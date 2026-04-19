@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("boardPostRepository")
+@Repository
 public interface BoardPostRepository
         extends BaseStreamRepository<BoardPostEntity, Integer> {
     //
 }
+

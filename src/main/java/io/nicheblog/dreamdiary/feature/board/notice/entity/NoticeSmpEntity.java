@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.board.notice.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -27,10 +27,10 @@ import javax.persistence.*;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE notice SET del_yn = 'Y' WHERE post_no = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE notice SET deleted_at = NOW() WHERE id = ?")
 public class NoticeSmpEntity
-        extends BaseClsfEntity {
+        extends BaseAttachableEntity {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -39,9 +39,9 @@ public class NoticeSmpEntity
     /** 글 번호 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("공지사항 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default
@@ -54,8 +54,8 @@ public class NoticeSmpEntity
     private String title;
 
     /** 내용 */
-    @Column(name = "cn")
-    private String cn;
+    @Column(name = "content")
+    private String content;
 
     /* ----- */
 

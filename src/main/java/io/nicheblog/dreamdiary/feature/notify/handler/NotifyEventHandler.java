@@ -2,18 +2,17 @@ package io.nicheblog.dreamdiary.feature.notify.handler;
 
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
-import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
-import io.nicheblog.dreamdiary.feature.schdul.service.SchdulService;
-import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
+import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.type.JandiTopic;
 import lombok.RequiredArgsConstructor;
@@ -30,26 +29,26 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("notifyService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class NotifyEventHandler {
 
-    private final SchdulService schdulService;
+    private final ScheduleService scheduleService;
     private final UserService userService;
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
     private final JandiApiService jandiApiService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 공지사항 등록 잔디 알림 메시지 발송
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public String notifyNoticeReg(
             final JandiTopic trgetTopic,
             final NoticeDto result,
-            final LogSysParam logParam
+            final LogParam logParam
     ) throws Exception {
         String jandiRsltMsg;
         try {
@@ -58,7 +57,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 공지사항이 등록되었습니다.";
             // url
-            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
+            final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.NOTICE_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -66,7 +65,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -74,12 +73,12 @@ public class NotifyEventHandler {
     /**
      * 게시판 등록 잔디 알림 메시지 발송
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public String notifyBoardPostReg(
             final JandiTopic trgetTopic,
             final BoardPostDto result,
-            final LogSysParam logParam
+            final LogParam logParam
     ) throws Exception {
         String jandiRsltMsg;
         try {
@@ -88,7 +87,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 글이 등록되었습니다.";
             // url
-            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getBoardDef() + "&" + Code.UTM_SOURCE + "=jandi";
+            final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -96,7 +95,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             logParam.setExceptionInfo(e);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -104,34 +103,34 @@ public class NotifyEventHandler {
     /**
      * 일정 등록 잔디 알림 메시지 발송
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
-    public String notifySchdulReg(
+    public String notifyScheduleReg(
             final JandiTopic trgetTopic,
-            final SchdulDto result,
-            final LogSysParam logParam
+            final ScheduleDto result,
+            final LogParam logParam
     ) {
         String jandiRsltMsg;
         try {
             // title
-            final String schdulTyNm = cdLookupService.getDtlCdNm(Code.SCHDUL_CD, result.getSchdulCd());
-            String title = "[" + schdulTyNm + "] " + result.getBgnDt() + " / " + result.getSchdulNm();
+            final String scheduleTyNm = codeLookupService.getCodeName(Code.SCHEDULE_CD, result.getScheduleCd());
+            String title = "[" + scheduleTyNm + "] " + result.getBgnDt() + " / " + result.getScheduleNm();
             String prtcpntStr = result.getPrtcpntListStr();
             if (StringUtils.isNotEmpty(prtcpntStr)) {
-                title = "[" + schdulTyNm + "] " + result.getBgnDt() + " / " + prtcpntStr + " : " + result.getSchdulNm();
+                title = "[" + scheduleTyNm + "] " + result.getBgnDt() + " / " + prtcpntStr + " : " + result.getScheduleNm();
             }
             // msg
             final String msg = "새로운 일정이 등록되었습니다.";
             // url
             final String param = Code.UTM_SOURCE + "=jandi";
-            final String fullUrl = Url.DOMAIN + Url.SCHDUL_CAL + "?" + param;
+            final String fullUrl = Url.DOMAIN + Url.SCHEDULE_CAL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
         } catch (final Exception e) {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -140,7 +139,7 @@ public class NotifyEventHandler {
      * 일정 > 생일인 현재 직원에 대하여 알림 발송
      */
     // public Boolean notifyCrdtUserBrthdy(
-    //         final LogSysParam logParam
+    //         final LogParam logParam
     // ) throws Exception {
     //     // 생일인 직원 목록 조회
     //     List<UserDto> brthdyUserList = userService.getBrthdyCrdtUser();
@@ -148,7 +147,7 @@ public class NotifyEventHandler {
     //     String jandiRsltMsg = "";
     //     boolean isSuccess = false;
     //     try {
-    //         JandiTopic trgetTopic = JandiTopic.SCHDUL;
+    //         JandiTopic trgetTopic = JandiTopic.SCHEDULE;
     //         for (UserDto user : brthdyUserList) {
     //             // title
     //             String title = "[생일] " + user.getUserNm();
@@ -167,9 +166,9 @@ public class NotifyEventHandler {
     //     } catch (final Exception e) {
     //         jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
     //         logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-    //         publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+    //         publisher.publishAsyncEvent(new LogEvent(this, logParam));
     //     }
-    //     log.info("{}", jandiRsltMsg);
+    //     log.account("{}", jandiRsltMsg);
     //     return isSuccess;
     // }
 

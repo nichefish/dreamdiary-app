@@ -8,11 +8,6 @@
     <#--include::Notion-->
     <#include "/layout/header/navbar/_navbar_btn_notion.ftlh">
 
-    <#--include::Flsys-->
-    <#include "/layout/header/navbar/_navbar_btn_flsys.ftlh">
-
-    <span class="my-6 border-gray-300 border-start ms-3 mx-2"></span>
-
     <#--include::테스트 페이지 -->
     <#include "/layout/header/navbar/_navbar_btn_test_page.ftlh">
     <#include "/layout/header/navbar/_navbar_btn_swagger.ftlh">
@@ -54,8 +49,8 @@
                  data-kt-menu-placement="bottom-end">
                 <!--begin::Menu wrapper-->
                 <div class="cursor-pointer symbol symbol-35px">
-                    <#if (authInfo.proflImgUrl)??>
-                        <img src="${authInfo.proflImgUrl!}" class="img-thumbnail p-0 w-100" onerror="this.src='/metronic/assets/media/avatars/avatar_blank.png';" />
+                    <#if (authInfo.profileImageUrl)??>
+                        <img src="${authInfo.profileImageUrl!}" class="img-thumbnail p-0 w-100" onerror="this.src='/metronic/assets/media/avatars/avatar_blank.png';" />
                     <#else>
                         <span class="svg-icon svg-icon-1">
                             <i class="fas fa-user-circle fs-2"></i>
@@ -64,7 +59,7 @@
                 </div>
                 <div class="cursor-pointer mt-2">
                     <div class="w-75px ms-2 text-truncate">
-                        ${(authInfo.nickNm)!}
+                        ${(authInfo.nickname)!}
                         <#if isMngr>
                             <i class="bi bi-person-lines-fill fs-5 text-info ms-1 opacity-75"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-dismiss="click" title="관리자"></i>   <!-- 관리자 -->
@@ -74,7 +69,7 @@
                         </#if>
                     </div>
                     <div class="w-75px ms-2 mb-1 fs-7 text-muted text-truncate">
-                        (${(authInfo.userId)!})
+                        (${(authInfo.username)!})
                     </div>
                 </div>
                 <!--begin::User account menu-->

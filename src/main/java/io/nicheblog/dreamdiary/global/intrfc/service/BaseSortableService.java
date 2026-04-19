@@ -18,27 +18,27 @@ import java.util.List;
  *
  * @author nichefish
  */
-public interface BaseSortableService<SortIdxDto extends Identifiable<Key> & Sortable, Key extends Serializable, Entity extends BaseCrudEntity & Sortable>
+public interface BaseSortableService<SortOrderDto extends Identifiable<Key> & Sortable, Key extends Serializable, Entity extends BaseCrudEntity & Sortable>
         extends BaseEntityWritableService<Key, Entity> {
 
     /**
      * 정렬 순서 업데이트.
      *
-     * @param idxs 키 + 정렬 순서로 이루어진 목록
+     * @param sortOrders 키 + 정렬 순서로 이루어진 목록
      * @return {@link Boolean} -- 성공시 true 반환
      */
     @Transactional
-    default ServiceResponse sortIdx(final List<SortIdxDto> idxs) throws Exception {
-        if (CollectionUtils.isEmpty(idxs)) {
+    default ServiceResponse sortOrder(final List<SortOrderDto> sortOrders) throws Exception {
+        if (CollectionUtils.isEmpty(sortOrders)) {
             return ServiceResponse.builder()
                     .rslt(true)
                     .build();
         }
         int i = 0;
-        idxs.forEach(dto -> {
+        sortOrders.forEach(dto -> {
             try {
                 final Entity e = this.getDtlEntity(dto.getKey());
-                e.setIdx(dto.getIdx());
+                e.setSortOrder(dto.getSortOrder());
                 this.updt(e);
             } catch (final Exception ex) {
                 ex.printStackTrace();
@@ -48,7 +48,7 @@ public interface BaseSortableService<SortIdxDto extends Identifiable<Key> & Sort
         });
 
         // 변경 후처리
-        this.postSortIdx(idxs);
+        this.postSortOrder(sortOrders);
 
         return ServiceResponse.builder()
                 .rslt(true)
@@ -59,7 +59,7 @@ public interface BaseSortableService<SortIdxDto extends Identifiable<Key> & Sort
      * default: 정렬 순서 업데이트 후 해당 로직을 수행한다.
      *
      */
-    default void postSortIdx(final List<SortIdxDto> idxs) throws Exception {
+    default void postSortOrder(final List<SortOrderDto> sortOrders) throws Exception {
         // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 }

@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -57,7 +57,7 @@ public class MenuRestController
     ) throws Exception {
 
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
         final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -76,12 +76,12 @@ public class MenuRestController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegAjax(
-            final @PathVariable(value = "menuNo", required = false) Integer menuNo,
+            final @PathVariable(value = "id", required = false) Integer id,
             final @Valid MenuPostDto menu
     ) throws Exception {
 
-        final boolean isMdf = menuNo != null;
-        if (isMdf) menu.setMenuNo(menuNo);
+        final boolean isMdf = id != null;
+        if (isMdf) menu.setId(id);
         final ServiceResponse result = isMdf ? menuService.modify(menu) : menuService.regist(menu);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -93,17 +93,17 @@ public class MenuRestController
      * 메뉴 관리 상세 조회 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param menuNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDtlAjax(
-            final @PathVariable("menuNo") Integer menuNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final MenuDto retrievedDto = menuService.getDtlDto(menuNo);
+        final MenuDto retrievedDto = menuService.getDtlDto(id);
         final boolean isSuccess = retrievedDto != null;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -114,18 +114,18 @@ public class MenuRestController
      * 메뉴 상태 변경 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param menuNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PatchMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuPatchAjax(
-            final @PathVariable("menuNo") Integer menuNo,
+            final @PathVariable("id") Integer id,
             final @RequestBody MenuPatchDto patchDto
     ) throws Exception {
 
-        final ServiceResponse result = menuService.patch(menuNo, patchDto);
+        final ServiceResponse result = menuService.patch(id, patchDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -139,14 +139,14 @@ public class MenuRestController
      * @param menuParam 키+정렬 순서 목록을 담은 파라미터
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PutMapping(Url.MENUS_IDX)
+    @PutMapping(Url.MENUS_SORT_ORDERS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuSortOrdrAjax(
             final @RequestBody MenuParam menuParam
     ) throws Exception {
 
-        final ServiceResponse result = menuService.sortIdx(menuParam.getIdxs());
+        final ServiceResponse result = menuService.sortOrder(menuParam.getSortOrders());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -178,17 +178,17 @@ public class MenuRestController
      * 메뉴 관리 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param menuNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDelAjax(
-            final @PathVariable("menuNo") Integer menuNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = menuService.delete(menuNo);
+        final ServiceResponse result = menuService.delete(id);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));

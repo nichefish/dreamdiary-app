@@ -1,13 +1,13 @@
 package io.nicheblog.dreamdiary.feature.board.notice.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeXlsxDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -20,9 +20,9 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, CodeUtils.class}, builder = @Builder(disableBuilder = true))
 public interface NoticeMapstruct
-        extends BaseWriteMapstruct<NoticeDto, NoticeEntity>, BaseClsfMapstruct<NoticeDto, NoticeEntity> {
+        extends BaseWriteMapstruct<NoticeDto, NoticeEntity>, BaseAttachableMapstruct<NoticeDto, NoticeEntity> {
 
     NoticeMapstruct INSTANCE = Mappers.getMapper(NoticeMapstruct.class);
 
@@ -34,8 +34,8 @@ public interface NoticeMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getCodeName(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     NoticeDto toDto(final NoticeEntity entity) throws Exception;
 
     /**
@@ -54,7 +54,7 @@ public interface NoticeMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     NoticeEntity toEntity(final NoticeDto dto) throws Exception;
 
     /**
@@ -65,6 +65,6 @@ public interface NoticeMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     void updateFromDto(final NoticeDto dto, final @MappingTarget NoticeEntity entity) throws Exception;
 }

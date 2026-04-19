@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.report.pdf.util;
 
-import io.nicheblog.dreamdiary.feature.clsf.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.feature.file.model.FileRecordDto;
+import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -35,15 +35,15 @@ public class PdfBoxUtils {
      * @param fileNm 생성될 PDF 파일의 이름
      * @param fileList 변환할 이미지 파일들의 정보 리스트
      */
-    public static void imgCmbnPdfDownload(final String fileNm, final List<AtchFileDtlDto> fileList) throws Exception {
+    public static void imgCmbnPdfDownload(final String fileNm, final List<FileRecordDto> fileList) throws Exception {
         try (final PDDocument doc = new PDDocument()) {
             // 폴더 생성
             final String pdfPath = createPdfPath();
 
-            for (final AtchFileDtlDto atchFile : fileList) {
+            for (final FileRecordDto fileGroup : fileList) {
                 // 이미지 파일 로드
-                final BufferedImage awtImage = validateAndLoadImage(atchFile);
-                final String imagePath = atchFile.getFileStrePath() + "/" + atchFile.getStreFileNm();
+                final BufferedImage awtImage = validateAndLoadImage(fileGroup);
+                final String imagePath = fileGroup.getFileStrePath() + "/" + fileGroup.getStreFileNm();
                 addImageToPdf(doc, awtImage, imagePath);
                 doc.save(pdfPath + fileNm);
             }
@@ -75,11 +75,11 @@ public class PdfBoxUtils {
     /**
      * 이미지 파일을 검증한 후 BufferedImage 객체로 로드합니다.
      *
-     * @param atchFile 이미지 파일 정보 객체
+     * @param fileGroup 이미지 파일 정보 객체
      * @return {@link BufferedImage} -- 로드된 이미지 객체
      */
-    private static BufferedImage validateAndLoadImage(final AtchFileDtlDto atchFile) throws Exception {
-        final File imageFile = new File(atchFile.getFileStrePath(), atchFile.getStreFileNm());
+    private static BufferedImage validateAndLoadImage(final FileRecordDto fileGroup) throws Exception {
+        final File imageFile = new File(fileGroup.getFileStrePath(), fileGroup.getStreFileNm());
         if (!imageFile.exists()) throw new FileNotFoundException(MessageUtils.getExceptionMsg("FileNotFoundException"));
         if (!imageFile.canRead()) throw new SecurityException("파일을 읽을 권한이 없습니다.");
         return ImageIO.read(imageFile);

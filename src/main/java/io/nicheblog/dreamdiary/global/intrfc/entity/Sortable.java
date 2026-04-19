@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.global.intrfc.entity;
 /**
  * Sortable
  * <pre>
- *  (공통/상속) idx 인터페이스
+ *  (공통/상속) sortOrder 인터페이스
  * </pre>
  *
  * @author nichefish
@@ -11,14 +11,14 @@ package io.nicheblog.dreamdiary.global.intrfc.entity;
 public interface Sortable {
 
     /**
-     * idx 반환
-     * @return idx
+     * sortOrder 반환
+     * @return sortOrder
      */
-    Integer getIdx();
+    Integer getSortOrder();
     
     /**
-     * idx 세팅
-     * @param idx idx
+     * sortOrder 세팅
+     * @param sortOrder sortOrder
      */
-    void setIdx(final Integer idx);
+    void setSortOrder(final Integer sortOrder);
 }

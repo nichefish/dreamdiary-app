@@ -2,12 +2,12 @@ package io.nicheblog.dreamdiary.feature.user.my.service;
 
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserPwChgParam;
-import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
-import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.file.model.FileRecordDto;
+import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
+import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  *
  * @author nichefish
  */
-@Service("userMyService")
+@Service
 @RequiredArgsConstructor
 public class UserMyService {
 
@@ -42,12 +42,12 @@ public class UserMyService {
      * @return 비밀번호 변경 성공 여부 (boolean)
      */
     @Transactional
-    public Boolean lgnPwChg(final UserPwChgParam param) throws Exception {
-        final String userId = param.getUserId();
+    public Boolean loginPwChg(final UserPwChgParam param) throws Exception {
+        final String username = param.getUsername();
         final String currPw = param.getCurrPw();
         final String newPw = param.getNewPw();
 
-        final UserEntity retrievedEntity = userService.getDtlEntity(userId);
+        final UserEntity retrievedEntity = userService.getDtlEntity(username);
         if (retrievedEntity == null) return false;
 
         // password 일치여부 체크
@@ -55,24 +55,25 @@ public class UserMyService {
             throw new BadCredentialsException(MessageUtils.PW_MISMATCH);
         }
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
-        retrievedEntity.acntStus.setNeedsPwReset("N");
-        retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setNeedsPasswordReset("N");
+        retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
-        refreshTokenService.revoke(userId);
+        refreshTokenService.revoke(username);
 
-        return modified.getUserNo() != null;
+        return modified.getId() != null;
     }
 
     /**
      * 사용자 관리 > 내 비밀번호 확인
      *
-     * @param lgnUserId String
+     * @param loginUsername String
      * @param currPw String
      * @return 내 비밀번호 확인 성공 여부 (boolean)
      */
-    public Boolean myPwCf(final String lgnUserId, final String currPw) throws Exception {
+    public Boolean myPwCf(final String loginUsername, final String currPw) throws Exception {
         // Entity 레벨 조회
-        final UserEntity retrievedEntity = userService.getDtlEntity(lgnUserId);
+        final UserEntity retrievedEntity = userService.getDtlEntity(loginUsername);
         if (retrievedEntity == null) return false;
 
         // 1. 내 비밀번호가 맞는지부터 확인
@@ -103,10 +104,10 @@ public class UserMyService {
      */
     @Transactional
     public Boolean myPwChg(final String currPw, final String newPw) throws Exception {
-        final String lgnUserId = AuthUtils.getLgnUserId();
+        final String loginUsername = AuthUtils.getLoginUsername();
 
         // Entity 레벨 조회
-        final UserEntity retrievedEntity = userService.getDtlEntity(lgnUserId);
+        final UserEntity retrievedEntity = userService.getDtlEntity(loginUsername);
         if (retrievedEntity == null) return false;
 
         // 1. 내 비밀번호가 맞는지부터 확인
@@ -115,12 +116,13 @@ public class UserMyService {
         }
         // 2. 맞으면 비밀번호 업데이트
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
-        retrievedEntity.acntStus.setNeedsPwReset("N");
-        retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setNeedsPasswordReset("N");
+        retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
-        refreshTokenService.revoke(lgnUserId);
+        refreshTokenService.revoke(loginUsername);
 
-        return modified.getUserNo() != null;
+        return modified.getId() != null;
     }
 
     /**
@@ -132,20 +134,20 @@ public class UserMyService {
     @Transactional
     public boolean uploadProflImg(final MultipartHttpServletRequest request) throws Exception {
         // 파일 영역 처리 후 업로드 정보 받아서 반환
-        final AtchFileDtlDto uploaded = FileUtils.uploadDtlFile(request);
+        final FileRecordDto uploaded = FileUtils.uploadDtlFile(request);
         if (uploaded == null) return false;
 
         // 프로필 url 업데이트
         final String url = uploaded.getUrl();
-        final String lgnUserId = AuthUtils.getLgnUserId();
-        final UserEntity retrievedEntity = userService.getDtlEntity(lgnUserId);
-        retrievedEntity.setProflImgUrl(url);
+        final String loginUsername = AuthUtils.getLoginUsername();
+        final UserEntity retrievedEntity = userService.getDtlEntity(loginUsername);
+        retrievedEntity.setProfileImageUrl(url);
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제
-        EhCacheUtils.evictCacheByKey("auditorInfo", lgnUserId);
+        EhCacheUtils.evictCacheByKey("auditorInfo", loginUsername);
 
-        return modified.getUserNo() != null;
+        return modified.getId() != null;
     }
 
     /**
@@ -156,14 +158,15 @@ public class UserMyService {
     @Transactional
     public boolean removeProflImg() throws Exception {
         // 프로필 url 삭제
-        final String lgnUserId = AuthUtils.getLgnUserId();
-        final UserEntity retrievedEntity = userService.getDtlEntity(lgnUserId);
-        retrievedEntity.setProflImgUrl(null);
+        final String loginUsername = AuthUtils.getLoginUsername();
+        final UserEntity retrievedEntity = userService.getDtlEntity(loginUsername);
+        retrievedEntity.setProfileImageUrl(null);
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제
-        EhCacheUtils.evictCacheByKey("auditorInfo", lgnUserId);
+        EhCacheUtils.evictCacheByKey("auditorInfo", loginUsername);
 
-        return updatedEntity.getUserNo() != null;
+        return updatedEntity.getId() != null;
     }
 }
+

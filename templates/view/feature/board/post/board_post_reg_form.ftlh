@@ -1,6 +1,6 @@
 <#--
- * 게시판(board_post) > 등록/수정 화면
- * tinyMCE 정책 때문에 문서 최상단에 <!DOCTYPE html> 추가
+ * 寃뚯떆??board_post) > ?깅줉/?섏젙 ?붾㈃
+ * tinyMCE ?뺤콉 ?뚮Ц??臾몄꽌 理쒖긽?⑥뿉 <!DOCTYPE html> 異붽?
  -->
 
 <!DOCTYPE html>
@@ -16,24 +16,23 @@
     <div class="card-body">
         <!--begin:Form-->
         <form name="postRegForm" id="postRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="postNo" value="${post.postNo!}">
-            <input type="hidden" name="boardDef" id="boardDef" value="<#if isMdf!false>${post.boardDef!}<#else>${boardDef!}</#if>">
-            <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
-            <input type="hidden" name="hitCnt" value="${post.hitCnt!0?string.number}">
+            <input type="hidden" name="id" value="${post.id!}">
+            <input type="hidden" name="board" id="board" value="<#if isMdf!false>${post.board!}<#else>${board!}</#if>">
+            <input type="hidden" name="fileGroupId" value="${post.fileGroupId!}">
             <#--begin::Row-->
             <div class="row d-flex mb-8">
                 <div class="col-12">
                     <label class="d-flex align-items-center mb-2" for="title">
                         <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.title'/></span>
-                        <span class="text-gray-500 fs-9">(최대 50자)</span>
+                        <span class="text-gray-500 fs-9">(理쒕? 50??</span>
                     </label>
                 </div>
                 <div class="col-lg-2">
-                    <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="글분류를 선택합니다.">
-                        <option value="">--글분류--</option>
+                    <select name="categoryCode" id="categoryCode" class="form-select form-select-solid"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="湲遺꾨쪟瑜??좏깮?⑸땲??">
+                        <option value="">--湲遺꾨쪟--</option>
                         <#list POST_CTGR_CD![] as ctgr>
-                            <option value="${ctgr.dtlCd!}" id="${ctgr.dtlCd!}"<#if ctgr.dtlCd == (post.ctgrCd)!> selected="selected"</#if>>[${ctgr.dtlCdNm!}]</option>
+                            <option value="${ctgr.code!}" id="${ctgr.code!}"<#if ctgr.code == (post.categoryCode)!> selected="selected"</#if>>[${ctgr.codeName!}]</option>
                         </#list>
                     </select>
                 </div>
@@ -43,92 +42,49 @@
                     <span id="title_validate_span"></span>
                 </div>
             </div>
-            <div class="row <#if isMdf!false>mb-2</#if>">
-                <div class="col-lg-1 col-3 d-flex align-items-center">
-                    <label class="text-gray-700 fs-6 fw-bolder cursor-help"
-                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                           title="해당 글은 페이지에 상관없이&#10;항상 목록의 상단에 노출됩니다.">
-                        상단 고정
-                        <i class="bi bi-question-circle"></i>
-                    </label>
-                </div>
-                <div class="col-lg-2 col-9 d-flex align-items-center">
-                    <@component.checkbox post "fxdYn" "고정//해제", "blue//gray" "defaultOff" />
-                </div>
-                <div class="col-lg-1 col-3 d-flex align-items-center">
-                    <label for="mdfable" class="text-gray-700 fs-6 fw-bolder cursor-help"
-                          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                           title="해당 글을 수정할 수 있는 권한의&#10;범위를 설정합니다.&#10;(기본 : 등록자)">
-                        수정 권한
-                        <i class="bi bi-question-circle"></i>
-                    </label>
-                </div>
-                <div class="col-lg-2 col-9 d-flex align-items-center">
-                    <select name="mdfable" id="mdfable" class="form-select form-select-solid">
-                        <#list MDFABLE_CD![] as mdfable>
-                            <option value="${mdfable.dtlCd!}" id="${mdfable.dtlCd!}"<#if (post.mdfable!"REGSTR") == (mdfable.dtlCd)> selected="selected"</#if>>[${mdfable.dtlCdNm!}]</option>
-                        </#list>
-                    </select>
-                </div>
-            </div>
-            <#if isMdf!false>
-                <div class="row">
-                    <div class="col-lg-1 col-3 d-flex align-items-center">
-                        <label class="text-gray-700 fs-6 fw-bolder cursor-help"
-                               data-bs-toggle="tooltip" data-bs-placement="top" title="미설정시 수정 일자가&#10;기존 일자로 유지됩니다.&#10;(기본 : ON)">
-                            수정일자 변경
-                            <i class="bi bi-question-circle"></i>
-                        </label>
-                    </div>
-                    <div class="col-lg-2 col-9 d-flex align-items-center">
-                        <@component.checkbox post "managt.managtDtUpdtYn" "변경//미변경", "blue//gray", "defaultOn" />
-                    </div>
-                </div>
-            </#if>
-
             <div class="separator my-8"></div>
 
             <div class="d-flex flex-column mb-8">
                 <!--begin::Label-->
-                <label class="mb-2" for="tinymce_cn">
-                    <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
+                <label class="mb-2" for="tinymce_content">
+                    <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.content'/></span>
                     <span class="text-gray-500 fs-9">&nbsp;</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Form control-->
                 <div class="mb-3">
-                    <textarea name="cn" id="tinymce_cn" class="form-control required" rows="10" placeholder="내용을 입력하세요.">${post.cn!}</textarea>
+                    <textarea name="content" id="tinymce_content" class="form-control required" rows="10" placeholder="?댁슜???낅젰?섏꽭??">${post.content!}</textarea>
                 </div>
-                <div id="tinymce_cn_validate_span"></div>
+                <div id="tinymce_content_validate_span"></div>
                 <!--end::Form control-->
             </div>
 
-            <#--페이지:: 첨부파일 추가추가 영역-->
-            <#include "/view/feature/clsf/file/_atch_file_page_reg_area.ftlh">
+            <#--?섏씠吏:: 泥⑤??뚯씪 異붽?異붽? ?곸뿭-->
+            <#include "/view/feature/file/_file_page_reg_area.ftlh">
 
-            <!-- #include:: component:: 파일시스템 참조 -->
+            <!-- #include:: component:: ?뚯씪?쒖뒪??李몄“ -->
 
-            <!-- #include:: component:: NOTION 참조 ID -->
+            <!-- #include:: component:: NOTION 李몄“ ID -->
 
-            <!-- #include:: component:: 태그 태그 -->
-            <#include "/view/feature/clsf/tag/_tag_page_reg_area.ftlh">
+            <!-- #include:: component:: ?쒓렇 ?쒓렇 -->
+            <#include "/view/feature/attachable/tag/_tag_page_reg_area.ftlh">
 
             <div class="separator my-8"></div>
 
-            <#--페이지:: 잔디 알림 발송 영역-->
+            <#--?섏씠吏:: ?붾뵒 ?뚮┝ 諛쒖넚 ?곸뿭-->
             <@component.jandi_reg_area 1 "" />
         </form>
     </div>
     <#--begin::Card footer-->
     <div class="card-footer">
-        <#--버튼 영역-->
+        <#--踰꾪듉 ?곸뿭-->
         <div class="d-flex justify-content-between">
-            <#--페이지:: 버튼: 미리보기-->
+            <#--?섏씠吏:: 踰꾪듉: 誘몃━蹂닿린-->
             <@component.post_btn_preview_pop "dF.BoardPost.preview();" />
             <div>
-                <#--페이지:: 버튼: 저장하기-->
+                <#--?섏씠吏:: 踰꾪듉: ??ν븯湲?->
                 <@component.post_btn_submit "dF.BoardPost.submit();" />
-                <#--페이지:: 버튼: 목록으로 가기-->
+                <#--?섏씠吏:: 踰꾪듉: 紐⑸줉?쇰줈 媛湲?->
                 <@component.post_btn_toList "dF.BoardPost.list();" />
             </div>
         </div>

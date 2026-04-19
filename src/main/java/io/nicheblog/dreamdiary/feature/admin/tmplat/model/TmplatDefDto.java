@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.admin.tmplat.model;
 
 import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -30,9 +30,9 @@ public class TmplatDefDto
         extends BaseAuditDto
         implements Identifiable<Integer>, StateCmpstnModule {
 
-    /** 고유 ID (PK) */
+    /** 고유 ID */
     @Positive
-    private Integer tmplatDefNo;
+    private Integer id;
 
     /** 템플릿 정의 코드 */
     @Size(max = 50)
@@ -45,7 +45,7 @@ public class TmplatDefDto
 
     @Override
     public Integer getKey() {
-        return this.tmplatDefNo;
+        return this.id;
     }
 
     /** 위임 :: 상태 관리 모듈 */

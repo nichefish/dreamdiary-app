@@ -1,24 +1,23 @@
 package io.nicheblog.dreamdiary;
 
-import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
-import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
-import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserRoleDto;
+import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.CacheWarmupEvent;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,8 +75,8 @@ public class DreamdiaryInitializer
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
-            final LogSysParam logParam = new LogSysParam(true, MessageUtils.getMessage("msg.rslt.system-restarted"), ActvtyCtgr.SYSTEM);
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            final LogParam logParam = LogParam.forSystem(true, MessageUtils.getMessage("msg.rslt.system-restarted"), ActvtyCtgr.SYSTEM);
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         log.info("Application initialization completed. profile={}", activeProfile.getActive());
     }
@@ -87,7 +86,7 @@ public class DreamdiaryInitializer
      */
     public void regSystemAcntIfEmpty() {
 
-        final LogSysParam logParam = new LogSysParam();
+        final LogParam logParam = LogParam.forSystem();
 
         boolean isSuccess = false;
         boolean systemAcntExists = false;
@@ -112,7 +111,7 @@ public class DreamdiaryInitializer
             // 시스템 계정 등록 처리했을 경우 로그 적재
             if (!systemAcntExists) {
                 logParam.setResult(isSuccess, rsltMsg);
-                publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+                publisher.publishAsyncEvent(new LogEvent(this, logParam));
             }
         }
     }
@@ -123,19 +122,19 @@ public class DreamdiaryInitializer
      */
     public boolean regSystemAcnt() throws Exception {
 
-        final AuthRoleEntity authRoleEntityMngr = authService.getAuthRole(Code.AUTH_MNGR);
+        final RoleEntity mngrRole = authService.getRole(Code.AUTH_MNGR);
 
-        final UserAuthRoleDto userAuthRole = UserAuthRoleDto.builder()
-                .authCd(Code.AUTH_MNGR)
-                .role(authRoleEntityMngr)
+        final UserRoleDto userRole = UserRoleDto.builder()
+                .roleKey(Code.AUTH_MNGR)
+                .role(mngrRole)
                 .build();
 
         final UserDto systemAcnt = UserDto.builder()
-                .nickNm(Constant.SYSTEM_ACNT_NM)
-                .userId(Constant.SYSTEM_ACNT)
+                .nickname(Constant.SYSTEM_ACNT_NM)
+                .username(Constant.SYSTEM_ACNT)
                 .password(SYSTEM_INIT_TEMP_PW)
-                .authList(List.of(userAuthRole))
-                .regstrId(Constant.SYSTEM_ACNT)
+                .userRoles(List.of(userRole))
+                .createdBy(Constant.SYSTEM_ACNT)
                 .build();
 
         final ServiceResponse result = userService.regist(systemAcnt);
@@ -145,11 +144,11 @@ public class DreamdiaryInitializer
     /**
      * 최초 실행시 인증 정책이 공백이므로 기본값 자동 등록. (PW 암호화)
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public void regAuthPolicyIfEmpty() {
 
-        final LogSysParam logParam = new LogSysParam();
+        final LogParam logParam = LogParam.forSystem();
 
         boolean isSuccess = false;
         boolean authPolicyExists = false;
@@ -174,7 +173,7 @@ public class DreamdiaryInitializer
             // 인증 정책 등록 처리했을 경우 로그 적재
             if (!authPolicyExists) {
                 logParam.setResult(isSuccess, rsltMsg);
-                publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+                publisher.publishAsyncEvent(new LogEvent(this, logParam));
             }
         }
     }
@@ -186,10 +185,12 @@ public class DreamdiaryInitializer
     public boolean regAuthPolicy() throws Exception {
 
         final AuthPolicyDto authPolicy = AuthPolicyDto.builder()
-                .lgnTryLmt(5)
-                .pwChgDy(90)
-                .lgnLockDy(90)
-                .pwForReset(SYSTEM_INIT_TEMP_PW)
+                .loginAttemptLimit(5)
+                .loginAttemptWindowMinutes(10)
+                .accountLockDurationMinutes(30)
+                .passwordChangeCycleDays(90)
+                .inactiveLockDays(90)
+                .passwordResetTokenExpiryMinutes(30)
                 .build();
 
         return authPolicyService.regist(authPolicy).getRslt();

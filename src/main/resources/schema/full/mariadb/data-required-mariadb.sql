@@ -6,7 +6,7 @@
 -- -------------------
 
 -- 필수 :: 권한 정보 추가
-INSERT IGNORE INTO auth_role (auth_cd, auth_nm, auth_level, top_auth_cd, idx, use_yn, regstr_id) VALUES ('MNGR', '관리자', 9, null, 1, 'Y', 'system');
-INSERT IGNORE INTO auth_role (auth_cd, auth_nm, auth_level, top_auth_cd, idx, use_yn, regstr_id) VALUES ('USER', '사용자', 5, null, 2, 'Y', 'system');
-INSERT IGNORE INTO auth_role (auth_cd, auth_nm, auth_level, top_auth_cd, idx, use_yn, regstr_id) VALUES ('DEV', '개발자', 99, null, 99, 'Y', 'system');
+INSERT IGNORE INTO `role` (role_key, role_name, auth_level, parent_role_id, sort_order, use_yn, created_by) VALUES ('MNGR', '관리자', 9, null, 1, 'Y', 'system');
+INSERT IGNORE INTO `role` (role_key, role_name, auth_level, parent_role_id, sort_order, use_yn, created_by) VALUES ('USER', '사용자', 5, null, 2, 'Y', 'system');
+INSERT IGNORE INTO `role` (role_key, role_name, auth_level, parent_role_id, sort_order, use_yn, created_by) VALUES ('DEV', '개발자', 99, null, 99, 'Y', 'system');
 

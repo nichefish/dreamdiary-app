@@ -22,7 +22,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("authPolicyService")
+@Service
 @RequiredArgsConstructor
 public class AuthPolicyService {
 
@@ -74,8 +74,9 @@ public class AuthPolicyService {
         final AuthPolicyEntity updated = repository.save(retrievedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updated.getAuthPolicyNo() != null)
+                .rslt(updated.getId() != null)
                 .rsltObj(mapstruct.toDto(updated))
                 .build();
     }
 }
+

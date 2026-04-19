@@ -20,7 +20,6 @@
 !/file/content
 !/file/report/xlsx_template
 !/file/upfile/.file_upload_path.md
-!/file/flsys/.file_system_path.md
 !/file/report/pdf_temp/.pdf_generated_temp_path.md
 # .env 제외
 /config/env/.env*

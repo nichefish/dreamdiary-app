@@ -21,9 +21,9 @@
 
         <div class="separator separator-dashed border-gray-300 my-8"></div>
 
-        <#--begin::cn-->
+        <#--begin::content-->
         <div class="fs-4 fw-normal text-gray-800 px-5 py-1 pb-6 min-h-150px">
-            ${post.markdownCn?no_esc}
+            ${post.markdownContent?no_esc}
         </div>
     </div>
 
@@ -40,7 +40,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
+    <input type="hidden" name="id" id="id" value="${post.id!}" />
 </form>
 
 </@layout.layout>

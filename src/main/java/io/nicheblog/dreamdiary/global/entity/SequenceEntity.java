@@ -15,21 +15,21 @@ import java.io.Serializable;
  * @author nichefish
  */
 @Entity
-@Table(name = "cmm_sequence")
+@Table(name = "sequence")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 public class SequenceEntity
         implements Serializable {
 
-    /** 시퀀스 번호 (PK) */
+    /** 시퀀스 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "seqId")
-    private Integer seqId;
+    @Column(name = "id")
+    private Integer id;
 
     /** 시퀀스 이름 */
     @Column(name = "seq_nm", length = 20)

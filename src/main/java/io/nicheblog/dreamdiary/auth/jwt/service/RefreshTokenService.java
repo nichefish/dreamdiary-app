@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.auth.jwt.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.Date;
  * <pre>
  *  DB 기반 리프레시 토큰 발급/검증/회전 처리.
  *  - 토큰 자체는 서버에 저장하지 않고 "해시"만 저장 (탈취 대비)
- *  - refresh token은 userId + random 조합으로 구성
+ *  - refresh token은 username + random 조합으로 구성
  *  - rotate 시 기존 토큰 검증 후 "무조건 재발급" (one-time token 구조)
  * </pre>
  *
@@ -47,7 +47,7 @@ public class RefreshTokenService {
     @Getter
     @RequiredArgsConstructor
     public static class RefreshResult {
-        private final String userId;
+        private final String username;
         private final String refreshToken;
     }
 
@@ -55,13 +55,13 @@ public class RefreshTokenService {
      * 신규 refresh token 발급
      * - 기존 토큰 여부 상관없이 항상 새 토큰 발급
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @return 리프레시 토큰 문자열
      */
     @Transactional
-    public String issue(final String userId) {
-        if (StringUtils.isBlank(userId)) throw new IllegalArgumentException("userId is required.");
-        final UserEntity user = userRepository.findByUserId(userId)
+    public String issue(final String username) {
+        if (StringUtils.isBlank(username)) throw new IllegalArgumentException("username is required.");
+        final UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
         return issueForUser(user);
     }
@@ -80,8 +80,8 @@ public class RefreshTokenService {
             throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         }
 
-        final String userId = extractUserId(refreshToken);
-        final UserEntity user = userRepository.findByUserId(userId)
+        final String username = extractUsername(refreshToken);
+        final UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
 
         if (user.getRefreshTokenHash() == null || user.getRefreshTokenExpiresAt() == null) {
@@ -102,17 +102,17 @@ public class RefreshTokenService {
         }
 
         final String newToken = issueForUser(user);
-        return new RefreshResult(userId, newToken);
+        return new RefreshResult(username, newToken);
     }
 
     /**
      * 사용자 ID 기반 revoke
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      */
     @Transactional
-    public void revoke(final String userId) {
-        if (StringUtils.isBlank(userId)) return;
-        userRepository.findByUserId(userId).ifPresent(this::revoke);
+    public void revoke(final String username) {
+        if (StringUtils.isBlank(username)) return;
+        userRepository.findByUsername(username).ifPresent(this::revoke);
     }
 
     /**
@@ -132,7 +132,7 @@ public class RefreshTokenService {
      * @return 리프레시 토큰 문자열
      */
     private String issueForUser(final UserEntity user) {
-        final String refreshToken = generateToken(user.getUserId());
+        final String refreshToken = generateToken(user.getUsername());
         final String refreshTokenHash = hashToken(refreshToken);
         final Date now = DateUtils.getCurrDate();
 
@@ -147,34 +147,34 @@ public class RefreshTokenService {
     /**
      * 리프레시 토큰용 문자열 생성
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @return 생성된 토큰 문자열
      */
-    private String generateToken(final String userId) {
+    private String generateToken(final String username) {
         final byte[] randomBytes = new byte[RANDOM_BYTES];
         secureRandom.nextBytes(randomBytes);
-        final String userPart = BASE64_URL.encodeToString(userId.getBytes(StandardCharsets.UTF_8));
+        final String userPart = BASE64_URL.encodeToString(username.getBytes(StandardCharsets.UTF_8));
         final String randomPart = BASE64_URL.encodeToString(randomBytes);
         return userPart + DELIMITER + randomPart;
     }
 
     /**
-     * 리프레시 토큰에서 사용자 ID 추출
+     * 리프레시 토큰에서 사용자 계정명 추출
      * @param refreshToken 리프레시 토큰 문자열
-     * @return 사용자 ID
+     * @return 사용자 계정명
      */
-    private String extractUserId(final String refreshToken) {
+    private String extractUsername(final String refreshToken) {
         final int idx = refreshToken.indexOf(DELIMITER);
         if (idx <= 0) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
 
         final String encodedUser = refreshToken.substring(0, idx);
         try {
             final byte[] decoded = BASE64_URL_DECODER.decode(encodedUser);
-            final String userId = new String(decoded, StandardCharsets.UTF_8);
-            if (StringUtils.isBlank(userId)) {
+            final String username = new String(decoded, StandardCharsets.UTF_8);
+            if (StringUtils.isBlank(username)) {
                 throw new AuthenticationFailureException("exception.AuthenticationFailureException");
             }
-            return userId;
+            return username;
         } catch (final IllegalArgumentException e) {
             throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         }

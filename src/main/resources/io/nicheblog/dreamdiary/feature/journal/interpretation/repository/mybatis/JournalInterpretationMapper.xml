@@ -1,0 +1,54 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.nicheblog.dreamdiary.feature.journal.interpretation.repository.mybatis.JournalInterpretationMapper">
+
+    <resultMap id="JournalInterpretationMap" type="io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto">
+        <id property="id" column="id"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="refId" column="ref_id"/>
+        <result property="refContentType" column="ref_content_type"/>
+        <result property="journalDayId" column="journal_day_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="yy" column="yy"/>
+        <result property="mnth" column="mnth"/>
+    </resultMap>
+
+    <!-- 삭제 데이터 조회 -->
+    <select id="getDeletedById" resultMap="JournalInterpretationMap">
+        /* JournalInterpretationMapper.getDeletedById */
+        SELECT
+            ji.id,
+            ji.created_by,
+            ji.ref_id,
+            ji.ref_content_type,
+            ji.journal_day_id,
+            ji.sort_order,
+            day.yy,
+            day.mnth
+        FROM journal_interpretation ji
+            LEFT JOIN journal_day day ON ji.journal_day_id = day.id
+        WHERE ji.id = #{id}
+    </select>
+
+    <!-- 인덱스 갱신을 위한 전체 객체 조회 -->
+    <select id="findAllForReorder" resultMap="JournalInterpretationMap">
+        /* JournalInterpretationMapper.findAllForReorder */
+        SELECT *
+        FROM journal_interpretation
+        WHERE ref_id = #{refId}
+          AND ref_content_type = #{refContentType}
+          AND deleted_at IS NULL
+        ORDER BY sort_order
+    </select>
+
+    <!-- 인덱스 갱신 -->
+    <update id="batchUpdateIdx">
+        /* JournalInterpretationMapper.batchUpdateIdx */
+        <foreach collection="list" item="item" separator=";">
+            UPDATE journal_interpretation
+            SET sort_order = #{item.sortOrder}
+            WHERE id = #{item.id} AND deleted_at IS NULL
+        </foreach>
+    </update>
+</mapper>

@@ -23,8 +23,8 @@ public class FreemarkerModelContext {
     private final HttpSession session;
     private final ModelAndView mav;
 
-    /** 현재 로그인한 사용자 ID */
-    private final String userId;
+    /** 현재 로그인한 사용자 계정명 */
+    private final String username;
 
     /**
      * 모델에서 지정한 키에 해당하는 값을 조회한다.

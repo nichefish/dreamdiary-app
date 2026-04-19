@@ -19,7 +19,7 @@ public enum TextClass {
 
     DEFAULT("DEFAULT", ""),
     SUCCESS("SUCCESS", "text-success"),
-    INFO("INFO", "text-info"),
+    INFO("INFO", "text-account"),
     WARNING("WARNING",  "text-warning"),
     DANGER("DANGER", "text-danger"),
     PRIMARY("PRIMARY", "text-primary"),
@@ -27,7 +27,8 @@ public enum TextClass {
     DARK("DARK", "text-dark"),
     MUTED("MUTED", "text-muted"),
     DIALOG("DIALOG", "text-dialog"),
-    NOTI("NOTI", "text-noti");
+    NOTI("NOTI", "text-noti"),
+    BURNT("BURNT", "text-burnt");
 
     private final String key;
     private final String textClass;

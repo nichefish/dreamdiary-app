@@ -1,15 +1,13 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,69 +31,74 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(of = {"userId"}, callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(of = {"username"}, callSuper = false)
 public class AuthInfo
         implements UserDetails, OAuth2User {
 
     /** 사용자 ID */
-    private String userId;
+    private String username;
 
     /** 사용자 PW */
     private String password;
 
-    /** 권한 목록 */
-    private List<AuthRoleDto> authList;
+    /** Spring Security에 매핑할 부여 역할 목록 (RoleDto) */
+    private List<RoleDto> roles;
 
     /** 사용자 이름 */
-    private String nickNm;
+    private String nickname;
 
     /** 프로필 이미지 URL */
-    private String proflImgUrl;
+    private String profileImageUrl;
 
     /** email */
     private String email;
-
-    /** 승인 여부 (Y/N) */
-    private String cfYn;
 
     /** 잠금 여부 (Y/N) */
     private String lockedYn;
 
     /** 접속 IP 사용 여부 (Y/N) */
-    private String useAcsIpYn;
+    private String useAllowedIpYn;
 
     /** 접속 IP 목록 */
-    private List<String> acsIpStrList;
+    private List<String> allowedIpStrList;
 
     /** 최종접속일시 */
-    private Date lstLgnDt;
+    private Date lastLoginAt;
+
+    /** 계정 잠금 만료 시각 */
+    private Date lockExpiresAt;
 
     /** 최종비밀번호변경일시 */
-    private Date pwChgDt;
+    private Date passwordChangedAt;
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
-    private String needsPwReset;
+    private String needsPasswordReset;
+
+    /** 패스워드 리셋 토큰 발급 시각 */
+    private Date passwordResetTokenIssuedAt;
 
     /** 사용자 정보 ID */
-    private Integer userProflNo;
+    private Integer userProfileId;
     /** 사용자 정보 통으로 저장 (일단) */
-    private UserProflDto profl;
+    private UserProfileDto profile;
 
     /* ----- */
 
     /**
      * Getter :: 사용자 프로필 정보
      */
-    public String getProflImgUrl() {
-        if (StringUtils.isEmpty(this.proflImgUrl)) return (Constant.BLANK_AVATAR_URL);
-        return this.proflImgUrl;
+    public String getProfileImageUrl() {
+        if (StringUtils.isEmpty(this.profileImageUrl)) return (Constant.BLANK_AVATAR_URL);
+        return this.profileImageUrl;
     }
 
     /**
      * Getter :: 사용자 프로필 정보 존재 여부 (내부사용자)
      */
-    public Boolean getHasUserProfl() {
-        return this.profl != null && this.userProflNo != null;
+    public Boolean getHasUserProfile() {
+        return this.profile != null && this.userProfileId != null;
     }
 
     /**
@@ -128,13 +131,15 @@ public class AuthInfo
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (CollectionUtils.isEmpty(this.authList)) throw new RuntimeException(MessageUtils.getMessage("msg.user.auth.empty"));
+        if (CollectionUtils.isEmpty(this.roles)) {
+            throw new AuthenticationServiceException(MessageUtils.getMessage("msg.user.auth.empty"));
+        }
 
-        return this.authList.stream()
+        return this.roles.stream()
                 .map(entity -> {
                     try {
-                        if (Code.AUTH_DEV.equals(entity.getAuthCd())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
-                        return new SimpleGrantedAuthority("ROLE_" + entity.getAuthCd());
+                        if (Code.AUTH_DEV.equals(entity.getRoleKey())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
+                        return new SimpleGrantedAuthority("ROLE_" + entity.getRoleKey());
                     } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -160,7 +165,7 @@ public class AuthInfo
      */
     @Override
     public String getUsername() {
-        return this.userId;
+        return this.username;
     }
 
     /**
@@ -168,7 +173,7 @@ public class AuthInfo
      */
     @Override
     public String getName() {
-        return this.userId;
+        return this.username;
     }
 
     /**
@@ -176,7 +181,9 @@ public class AuthInfo
      */
     @Override
     public boolean isAccountNonLocked() {
-        return !"Y".equals(this.getLockedYn());
+        if (!"Y".equals(this.getLockedYn())) return true;
+        if (this.lockExpiresAt == null) return false;
+        return this.lockExpiresAt.after(new Date()) ? false : true;
     }
 
     /**
@@ -184,7 +191,7 @@ public class AuthInfo
      */
     @Override
     public boolean isEnabled() {
-        return !"Y".equals(this.getCfYn());
+        return true;
     }
 
     /**
@@ -211,9 +218,46 @@ public class AuthInfo
     }
 
     /**
+     * 템플릿/헤더용: 첫 번째 부여 역할의 키 (아이콘 분기 등)
+     */
+    public String getPrimaryRoleKey() {
+        if (CollectionUtils.isEmpty(this.roles)) return null;
+        return this.roles.get(0).getRoleKey();
+    }
+
+    /**
      * UsernamePasswordAuthenticationToken 생성
      */
     public UsernamePasswordAuthenticationToken getAuthToken() {
         return new UsernamePasswordAuthenticationToken(this, this.password, this.getAuthorities());
     }
+
+    public AuthInfo(Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes, String userNameAttributeName) {
+        // ===== 기본 식별 =====
+        this.username = (String) attributes.get(userNameAttributeName);
+        this.email = (String) attributes.get("email");
+
+        // ===== 기본값 세팅 =====
+        this.password = null;
+        this.nickname = (String) attributes.getOrDefault("name", this.username);
+        this.profileImageUrl = (String) attributes.get("profile_image");
+
+        // ===== OAuth 기본 상태 =====
+        this.lockedYn = "N";
+        this.useAllowedIpYn = "N";
+        this.needsPasswordReset = "N";
+
+        // ===== 권한 처리 =====
+        this.roles = authorities.stream()
+                .map(auth -> RoleDto.builder()
+                        .roleKey(auth.getAuthority().replace("ROLE_", ""))
+                        .build())
+                .collect(Collectors.toList());
+
+        // ===== 기타 =====
+        this.allowedIpStrList = List.of();
+        this.lastLoginAt = new Date();
+        this.passwordChangedAt = null;
+    }
+
 }

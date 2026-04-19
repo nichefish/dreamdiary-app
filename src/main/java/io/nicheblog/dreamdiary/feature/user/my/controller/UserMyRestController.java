@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.feature.user.my.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserPwChgParam;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -96,8 +96,8 @@ public class UserMyRestController
             final @RequestParam("currPw") @Nullable String currPw
     ) throws Exception {
 
-        final String lgnUserId = AuthUtils.getLgnUserId();
-        final boolean isSuccess = userMyService.myPwCf(lgnUserId, currPw);
+        final String loginUsername = AuthUtils.getLoginUsername();
+        final boolean isSuccess = userMyService.myPwCf(loginUsername, currPw);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));

@@ -92,7 +92,7 @@ public class DataSourceConfig
      * @param jpaProperties JPA 설정 정보 (from application.yml)
      * @return {@link EntityManagerFactory} -- EntityManagerFactory 객체
      */
-    @Bean(name = "entityManagerFactory")
+    @Bean
     @Primary
     public EntityManagerFactory entityManagerFactory(
             final @Qualifier("primaryDataSource") DataSource dataSource,
@@ -122,7 +122,7 @@ public class DataSourceConfig
      * @param entityManagerFactory JPA EntityManagerFactory 객체
      * @return PlatformTransactionManager 객체
      */
-    @Bean(name = "transactionManager")
+    @Bean
     @Primary
     public PlatformTransactionManager transactionManager(
             final @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory
@@ -138,7 +138,7 @@ public class DataSourceConfig
      * @param entityManagerFactory JPA {@link EntityManagerFactory} 객체
      * @return {@link SessionFactory} Hibernate SessionFactory
      */
-    @Bean(name = "hibernateSessionFactory")  // Hibernate용 SessionFactory
+    @Bean  // Hibernate용 SessionFactory
     public SessionFactory hibernateSessionFactory(
             final @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory
     ) {
@@ -152,7 +152,7 @@ public class DataSourceConfig
      * @param applicationContext 애플리케이션 컨텍스트 (ApplicationContext), MyBatis 매퍼 파일의 위치를 가져오기 위해 사용
      * @return {@link SqlSessionFactory} -- SqlSessionFactory 객체
      */
-    @Bean(name = "sqlSessionFactory")
+    @Bean
     @Primary
     public SqlSessionFactory sqlSessionFactory(
             final @Qualifier("primaryDataSource") DataSource dataSource,
@@ -173,7 +173,7 @@ public class DataSourceConfig
      * @param sqlSessionFactory MyBatis의 SqlSessionFactory 객체
      * @return {@link SqlSessionTemplate} -- SqlSessionTemplate 객체
      */
-    @Bean(name = "sqlSessionTemplate")
+    @Bean
     @Primary
     public SqlSessionTemplate sqlSessionTemplate(
             final @Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory

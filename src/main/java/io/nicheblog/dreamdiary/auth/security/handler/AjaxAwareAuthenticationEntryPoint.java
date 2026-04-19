@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.auth.security.handler;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Locale;
 
 /**
  * AjaxAwareAuthenticationEntryPoint
@@ -46,8 +48,12 @@ public class AjaxAwareAuthenticationEntryPoint
             // Ajax 요청일 경우 : 에러 응답을 내려보내고, js 레벨에서 처리한다.
             // @see commons.js
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{ \"error\": \"Unauthenticated\", \"message\": \"사용지 인증이 만료되었습니다.\"}");
+            response.setContentType("application/json;charset=UTF-8");
+            final String detail = (authException != null && StringUtils.isNotBlank(authException.getMessage()))
+                    ? authException.getMessage()
+                    : "로그인이 필요하거나 인증 정보가 없습니다.";
+            response.getWriter().write(String.format(Locale.ROOT,
+                    "{\"error\":\"Unauthenticated\",\"message\":\"%s\"}", escapeJson(detail)));
         } else {
             // 일반 요청일 경우 : 메세지 출력 후 로그인 페이지로 리다리렉트
             response.setContentType("text/html; charset=utf-8");
@@ -55,24 +61,68 @@ public class AjaxAwareAuthenticationEntryPoint
             final String currentUrl = request.getRequestURI();
             if (currentUrl.equals(Url.APP_AUTH_LGN_FORM)) return;
             // alert창 띄운 후 로그인 페이지로 리다이렉트1
-            final String msg = "세션이 만료되었습니다. 다시 로그인 해주세요.";
-            final String lgnFormUrl = Url.APP_AUTH_LGN_FORM;
+            final String msg = (authException != null && StringUtils.isNotBlank(authException.getMessage()))
+                    ? authException.getMessage()
+                    : "로그인이 필요하거나 인증 세션이 만료되었습니다. 다시 로그인해 주세요.";
+            final String loginFormUrl = Url.APP_AUTH_LGN_FORM;
             try (PrintWriter out = response.getWriter()) {
                 out.println("<script type=\"text/javascript\">");
                 out.println("const hasSwal = (typeof Swal !== \"undefined\");");
                 out.println("if (hasSwal) {");
-                out.println("    Swal.fire({text: '" + msg + "'}).then(function() {");
-                out.println("        location.replace('" + lgnFormUrl + "');");
+                out.println("    Swal.fire({text: '" + escapeJsStringLiteral(msg) + "'}).then(function() {");
+                out.println("        location.replace('" + loginFormUrl + "');");
                 out.println("    });");
                 out.println("} else {");
-                out.println("    alert('" + msg + "');");
-                out.println("    location.replace('" + lgnFormUrl + "');");
+                out.println("    alert('" + escapeJsStringLiteral(msg) + "');");
+                out.println("    location.replace('" + loginFormUrl + "');");
                 out.println("}");
                 out.println("</script>");
             } catch (final Exception e) {
                 // 예외 발생 시 로그인 페이지로 리다이렉트
-                response.sendRedirect(lgnFormUrl);
+                response.sendRedirect(loginFormUrl);
             }
         }
+    }
+
+    private static String escapeJson(final String s) {
+        if (s == null) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            switch (c) {
+                case '\\':
+                    sb.append("\\\\");
+                    break;
+                case '"':
+                    sb.append("\\\"");
+                    break;
+                case '\n':
+                    sb.append("\\n");
+                    break;
+                case '\r':
+                    sb.append("\\r");
+                    break;
+                case '\t':
+                    sb.append("\\t");
+                    break;
+                default:
+                    if (c < ' ') {
+                        sb.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+            }
+        }
+        return sb.toString();
+    }
+
+    /** HTML 내 <script> 단일 인용 문자열용 이스케이프 */
+    private static String escapeJsStringLiteral(final String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace("\\", "\\\\").replace("'", "\\'").replace("\r", " ").replace("\n", " ");
     }
 }

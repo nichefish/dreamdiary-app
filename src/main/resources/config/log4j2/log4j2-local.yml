@@ -5,8 +5,8 @@
 
 Configuration:
     # 일반 로그 출력 레벨 설정
-    # trace | debug | info | warn | error | fatal
-    status: info
+    # trace | debug | account | warn | error | fatal
+    status: account
 
     Properties:
         Property:
@@ -48,22 +48,22 @@ Configuration:
 
     Loggers:
         Root:
-            level: info
+            level: account
             AppenderRef:
               - ref: Console_Appender
         Logger:
           - name: dreamdiary.nicheblog.io
             additivity: false
-            level: info
+            level: account
             AppenderRef:
               - ref: Console_Appender
           - name: p6spy
             additivity: false
-            level: info
+            level: account
             AppenderRef:
               - ref: Console_Appender
           - name: com.p6spy
             additivity: false
-            level: info
+            level: account
             AppenderRef:
               - ref: Console_Appender

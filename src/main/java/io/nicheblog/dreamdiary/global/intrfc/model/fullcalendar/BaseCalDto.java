@@ -42,7 +42,7 @@ public class BaseCalDto
     // borderColor
     // textColor
 
-    /** 일정 고유 번호 (PK) */
+    /** 일정 고유 ID */
     protected String id;
 
     /** 일정 분류 코드 이름 */

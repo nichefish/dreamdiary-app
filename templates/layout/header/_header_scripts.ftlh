@@ -37,14 +37,14 @@
              * 현재 접속중인 메뉴 활성화
              */
             activateSelectedMenu: function() {
-                const upperMenuNo = "${upperMenuNo!}";
-                const siteMenuNo = "${siteMenuNo!}";
+                const upperMenuId = "${upperMenuId!}";
+                const siteMenuId = "${siteMenuId!}";
 
-                const siteAcsInfoExists = (upperMenuNo !== "") && (siteMenuNo !== "");
+                const siteAcsInfoExists = (upperMenuId !== "") && (siteMenuId !== "");
                 if (!siteAcsInfoExists) return;
 
-                document.getElementById(upperMenuNo)?.classList.add("hover");
-                document.getElementById(siteMenuNo)?.classList.add("hover");
+                document.getElementById(upperMenuId)?.classList.add("hover");
+                document.getElementById(siteMenuId)?.classList.add("hover");
             },
 
             /**

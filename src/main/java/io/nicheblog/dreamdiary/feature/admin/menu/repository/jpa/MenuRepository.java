@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("menuRepository")
+@Repository
 public interface MenuRepository
         extends BaseStreamRepository<MenuEntity, Integer> {
     //
 }
+

@@ -1,0 +1,618 @@
+/**
+ * journal.scss
+ * 저널 관련 css 내용을 정의한다.
+ *
+ * @auther : nichefish
+ */
+
+@use "abstracts/_mixins" as mixin;
+
+$color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
+@include mixin.color-classes("dream", $color-dream);
+
+/** ----------------------- */
+
+.journal-day {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+
+    .journal-day-header {
+        display: flex !important;
+        flex-wrap: wrap;
+    }
+}
+
+.journal-item {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: center;
+    margin-bottom: 0.25rem !important;
+    padding-right:0;
+
+    & > * {
+        box-sizing: border-box;
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+.journal-aside-week-nav {
+    margin-top: 0.25rem;
+}
+
+.journal-aside-week-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.35rem;
+}
+
+.journal-aside-week-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding: 0.45rem 0.1rem;
+    border: 1px solid #d8e2ec;
+    border-radius: 0.7rem;
+    background: #ffffff;
+    color: #5e6278;
+    transition: all 0.2s ease;
+
+    &:not(:disabled) {
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            border-color: #3699ff;
+            background: #eef6ff;
+            color: #1b84ff;
+        }
+    }
+
+    &.is-active {
+        border-color: #1b84ff;
+        background: #1b84ff;
+        color: #ffffff;
+        box-shadow: 0 0.35rem 0.9rem rgba(27, 132, 255, 0.2);
+    }
+
+    &:disabled {
+        border-style: dashed;
+        background: #f5f8fa;
+        color: #a1a5b7;
+        opacity: 1;
+        cursor: not-allowed;
+    }
+
+    .journal-aside-week-day__label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .journal-aside-week-day__date {
+        margin-top: 0.2rem;
+        font-size: 0.72rem;
+        line-height: 1;
+        opacity: 0.8;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .journal-aside-week-days {
+        gap: 0.25rem;
+    }
+
+    .journal-aside-week-day {
+        min-height: 3rem;
+        padding: 0.35rem 0.05rem;
+
+        .journal-aside-week-day__label {
+            font-size: 0.72rem;
+        }
+
+        .journal-aside-week-day__date {
+            font-size: 0.68rem;
+        }
+    }
+}
+
+.journal-interpretation {
+    margin-left: 1rem !important;
+}
+
+.journal-diary-item, .journal-dream-item, .journal-note-item, .journal-interpretation-item, .journal-sumry-review-item {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: start;
+    align-items: center;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
+.journal-note-content .journal-content {
+    p {
+        margin-top: 0.1rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+}
+
+.journal-chapter-item {
+    .journal-chapter-cn {
+        &.collapsed {
+            margin-left: 90px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        &.collapsed::before {
+            content: "(collapsed)";
+            display: block;
+            color: #999;
+            font-style: italic;
+            margin: 0.5em 0;
+        }
+        &.collapsed > * {
+            display: none !important;
+        }
+    }
+    .journal-chapter-tags {
+        margin-left: 90px !important;
+        margin-top: 12px;
+        margin-bottom: 15px;
+    }
+
+    .journal-chapter-cn.collapsed,
+    .journal-chapter-tags:not(.d-none) {
+        transition: background-color 0.2s ease, box-shadow 0.2s ease, padding-left 0.2s ease;
+    }
+
+    &[data-resolved="Y"] {
+        .journal-chapter-cn.collapsed,
+        .journal-chapter-tags:not(.d-none) {
+            background: rgba(34, 197, 94, 0.05);
+            box-shadow: inset 1px 0 0 rgba(34, 197, 94, 0.82);
+            padding-left: 0.85rem;
+        }
+    }
+
+    &:has(.journal-diary-content .journal-content.imprtc) {
+        .journal-chapter-cn.collapsed,
+        .journal-chapter-tags:not(.d-none) {
+            background: #fff5f5;
+            box-shadow: inset 2px 0 0 #ef4444;
+            padding-left: 0.85rem;
+        }
+    }
+
+    &:has(.journal-diary-content .journal-content.refrnc) {
+        .journal-chapter-cn.collapsed,
+        .journal-chapter-tags:not(.d-none) {
+            background: #fffcec;
+            box-shadow: inset 2px 0 0 #f59e0b;
+            padding-left: 0.85rem;
+        }
+    }
+
+    &:has(.journal-diary-content .journal-content.imprtc):has(.journal-diary-content .journal-content.refrnc) {
+        .journal-chapter-cn.collapsed,
+        .journal-chapter-tags:not(.d-none) {
+            background: #fff8ef;
+            box-shadow: inset 2px 0 0 #ef4444, inset 6px 0 0 #f59e0b;
+            padding-left: 1.1rem;
+        }
+    }
+}
+
+.journal-chapter-item[data-collapsed="N"] .journal-chapter-tags {
+    display: none;
+}
+
+.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
+.journal-note-content {
+    transition: all 0.2s ease;
+
+    .journal-content {
+        &.collapsed::before {
+            content: "(collapsed)";
+            display: block;
+            color: #999;
+            font-style: italic;
+            margin: 0.5em 0;
+        }
+        &.collapsed > * {
+            display: none;
+        }
+    }
+
+    blockquote {
+        width: auto;
+        position: relative;
+        padding-top: 0.75rem;
+        padding-left: 1rem;
+        color: #8e8e8e;
+
+        &::before {
+            position: absolute;
+            color: #ccc;
+            content: "\f10d";
+            font-family: "Font Awesome 6 Free", serif; /* Font Awesome 폰트 패밀리 */
+            font-size: 1.25em;
+            font-weight: 900;
+            top: 0;
+            left: 0.5rem;
+        }
+
+        p:first-child {
+            padding-left: 1rem;
+        }
+
+        p:last-child {
+            position: relative;
+            display: inline;
+
+            &::after {
+                position: absolute;
+                color: #ccc;
+                content: "\f10e";
+                font-family: "Font Awesome 6 Free", serif; /* Font Awesome 폰트 패밀리 */
+                font-size: 1.25em;
+                font-weight: 900;
+                bottom: 0.1rem;
+                right: -1.5rem;
+            }
+        }
+    }
+}
+
+.journal-diary-item[data-resolved="Y"] {
+    .journal-diary-content {
+        .journal-content.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
+.journal-dream-item[data-resolved="Y"] {
+    .journal-dream-content {
+        .journal-content.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
+.journal-interpretation-item[data-resolved="Y"] {
+    .journal-interpretation-content {
+        .journal-content.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
+.journal-note-item[data-resolved="Y"] {
+    .journal-note-content {
+        .journal-content.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
+
+.journal-diary-content, .journal-interpretation-content {
+    p {
+        color: rgba(75, 75, 75, 0.9);
+    }
+    .text-comment p {
+        color: initial;
+    }
+}
+.journal-dream-content {
+    p {
+        color: rgba(95, 0, 130, 0.8);
+    }
+    .text-comment {
+        p {
+            color: #ed7000 !important;
+        }
+    }
+}
+
+.text-comment {
+    .md-text-dialo32g {
+        color: #8b7f91 !important;
+    }
+    .md-text-muted {
+        color: #a67850 !important;
+    }
+    .md-text-dan2ger {
+        color: #a04435 !important;
+    }
+}
+
+/* 글접기 처리 */
+.modal-body {
+    .journal-dream-content, .journal-diary-content, .journal-note-content {
+
+        // 공통 스타일 믹스인
+        @mixin cn-collapse($lines, $height) {
+            display: -webkit-box;
+            -webkit-line-clamp: $lines; // 최대 줄 수
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            position: relative;
+            max-height: $height;
+
+            &.expanded {
+                display: unset !important;
+                -webkit-line-clamp: unset !important;
+                -webkit-box-orient: unset !important;
+                overflow: visible;
+                max-height: unset !important;
+
+                & + .expand-btn::after {
+                    content: "－ 접기";
+                }
+            }
+        }
+
+        [class*="collapse-"] {
+            &.collapse-3 {
+                @include cn-collapse(3, 62.3px);
+
+                &:has(p:nth-of-type(4)) + .expand-btn {
+                    display: inline-block; /* 4개 이상이면 버튼 표시 */
+                }
+
+                &:not(:has(p:nth-of-type(4))) + .expand-btn {
+                    display: none; /* 3개 이하라면 버튼 숨김 */
+                }
+            }
+
+            &.collapse-4 {
+                @include cn-collapse(4, 83px);
+
+                &:has(p:nth-of-type(5)) + .expand-btn {
+                    display: inline-block; /* 5개 이상이면 버튼 표시 */
+                }
+
+                &:not(:has(p:nth-of-type(5))) + .expand-btn {
+                    display: none; /* 4개 이하라면 버튼 숨김 */
+                }
+            }
+        }
+    }
+}
+
+/* 더보기 버튼 스타일 */
+.expand-btn {
+    display: none;
+    font-size: 0.85rem;
+    margin-top: 2px;
+    margin-left: 5px;
+
+    &::after {
+        content: "＋ ...더보기";
+    }
+}
+
+.icon-refrnc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--bs-warning);
+    color: #fff;
+
+    &:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+}
+
+.journal-dream-states {
+    min-height: 1.5rem;
+
+    .title-wrap {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+}
+
+.toggle-diary-btn,
+.toggle-dream-btn,
+.toggle-note-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 0.45rem;
+    background: rgba(255, 255, 255, 0.96);
+    color: #7c8aa0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(248, 250, 252, 1);
+        border-color: rgba(100, 116, 139, 0.34);
+        color: #475569;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    &.is-active {
+        background: rgba(14, 165, 233, 0.08);
+        border-color: rgba(14, 165, 233, 0.32);
+        color: #0284c7;
+        box-shadow: 0 2px 8px rgba(14, 165, 233, 0.12);
+    }
+}
+
+.journal-diary-item,
+.journal-dream-item {
+    .journal-diary-content,
+    .journal-dream-content {
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 0 0.5rem 0.5rem 0;
+        padding-left: 0.75rem !important;
+        background: transparent;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.3rem;
+            bottom: 0.3rem;
+            width: 1px;
+            background: rgba(148, 163, 184, 0.42);
+            pointer-events: none;
+        }
+    }
+
+    &.is-collapsed {
+        .toggle-diary-btn,
+        .toggle-dream-btn {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(14, 165, 233, 0.2);
+            color: #0284c7;
+        }
+    }
+}
+
+.journal-note-item {
+    .journal-note-content {
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 0 0.5rem 0.5rem 0;
+        padding-left: 0.75rem !important;
+        background: transparent;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.3rem;
+            bottom: 0.3rem;
+            width: 1px;
+            background: rgba(148, 163, 184, 0.42);
+            pointer-events: none;
+        }
+    }
+
+    &.is-collapsed {
+        .toggle-note-btn {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(14, 165, 233, 0.2);
+            color: #0284c7;
+        }
+    }
+}
+
+.journal-diary-item[data-resolved="Y"],
+.journal-dream-item[data-resolved="Y"] {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: rgba(34, 197, 94, 0.05);
+        border-color: rgba(34, 197, 94, 0.14);
+
+        &::before {
+            background: rgba(34, 197, 94, 0.82);
+            box-shadow: none;
+        }
+    }
+}
+
+.journal-diary-item[data-refrnc="Y"],
+.journal-dream-item[data-refrnc="Y"] {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: rgba(245, 158, 11, 0.07);
+        border-color: rgba(245, 158, 11, 0.16);
+
+        &::before {
+            background: rgba(245, 158, 11, 0.82);
+            box-shadow: none;
+        }
+    }
+}
+
+.journal-diary-item[data-imprtc="Y"],
+.journal-dream-item[data-imprtc="Y"] {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: rgba(239, 68, 68, 0.06);
+        border-color: rgba(239, 68, 68, 0.15);
+
+        &::before {
+            background: rgba(239, 68, 68, 0.8);
+            box-shadow: none;
+        }
+    }
+}
+
+.journal-diary-item[data-resolved="Y"][data-refrnc="Y"],
+.journal-dream-item[data-resolved="Y"][data-refrnc="Y"] {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: rgba(234, 179, 8, 0.08);
+        border-color: rgba(234, 179, 8, 0.17);
+
+        &::before {
+            background: rgba(34, 197, 94, 0.82);
+            box-shadow: 2px 0 0 rgba(245, 158, 11, 0.82);
+        }
+    }
+}
+
+.journal-diary-item[data-resolved="Y"][data-imprtc="Y"],
+.journal-dream-item[data-resolved="Y"][data-imprtc="Y"] {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: rgba(248, 113, 113, 0.08);
+        border-color: rgba(239, 68, 68, 0.16);
+
+        &::before {
+            background: rgba(34, 197, 94, 0.82);
+            box-shadow: 2px 0 0 rgba(239, 68, 68, 0.8);
+        }
+    }
+}
+
+.journal-diary-item[data-imprtc="Y"][data-refrnc="Y"],
+.journal-dream-item[data-imprtc="Y"][data-refrnc="Y"] {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: rgba(251, 191, 36, 0.09);
+        border-color: rgba(245, 158, 11, 0.18);
+
+        &::before {
+            background: rgba(239, 68, 68, 0.8);
+            box-shadow: 2px 0 0 rgba(245, 158, 11, 0.82);
+        }
+    }
+}
+
+.journal-diary-item[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"],
+.journal-dream-item[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"] {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: rgba(245, 208, 120, 0.1);
+        border-color: rgba(234, 179, 8, 0.2);
+
+        &::before {
+            background: rgba(34, 197, 94, 0.82);
+            box-shadow: 2px 0 0 rgba(239, 68, 68, 0.8), 4px 0 0 rgba(245, 158, 11, 0.82);
+        }
+    }
+}
+
+.journal-sumry-review-item {
+    border-left: 3px solid #f59e0b;
+}
+

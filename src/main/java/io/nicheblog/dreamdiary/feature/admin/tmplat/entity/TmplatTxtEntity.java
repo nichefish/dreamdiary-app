@@ -26,17 +26,17 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "update tmplat_txt SET del_yn = 'Y' WHERE tmplat_txt_no = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE tmplat_txt SET deleted_at = NOW() WHERE id = ?")
 public class TmplatTxtEntity
         extends BaseAuditEntity {
 
-    /** 템플릿 번호 (PK) */
+    /** 템플릿 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tmplat_txt_no")
-    @Comment("템플릿 번호 (PK)")
-    private Integer tmplatTxtNo;
+    @Column(name = "id")
+    @Comment("템플릿 ID")
+    private Integer id;
 
     /** 템플릿 정의 코드 */
     @Column(name = "tmplat_def_cd", length = 1000)
@@ -73,9 +73,9 @@ public class TmplatTxtEntity
     /**
      * 내용 (텍스트에디터)
      */
-    @Column(name = "cn", length = 1000)
+    @Column(name = "content", length = 1000)
     @Comment("내용")
-    private String cn;
+    private String content;
 
     /**
      * 기본설정 여부

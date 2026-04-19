@@ -24,13 +24,13 @@ public class MenuTreeMoveParam
         extends BaseParam {
 
     /** 이동한 메뉴 번호 */
-    private Integer movedMenuNo;
+    private Integer movedId;
 
     /** 기존 부모 메뉴 번호 */
-    private Integer sourceUpperMenuNo;
+    private Integer sourceUpperMenuId;
 
     /** 변경 대상 부모 메뉴 번호 */
-    private Integer targetUpperMenuNo;
+    private Integer targetUpperMenuId;
 
     /** 영향 받은 형제 그룹 목록 */
     private List<MenuTreeMoveGroupDto> groups;

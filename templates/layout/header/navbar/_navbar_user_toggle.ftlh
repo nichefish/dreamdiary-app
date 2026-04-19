@@ -10,8 +10,8 @@
         <div class="menu-content d-flex align-items-center px-3">
             <!--begin::Avatar-->
             <div class="d-flex flex-column align-items-center symbol symbol-50px me-5">
-                <#if (authInfo.proflImgUrl)??>
-                    <img src="${authInfo.proflImgUrl!}" class="img-thumbnail p-0 w-100" onerror="this.src='/metronic/assets/media/avatars/avatar_blank.png';" />
+                <#if (authInfo.profileImageUrl)??>
+                    <img src="${authInfo.profileImageUrl!}" class="img-thumbnail p-0 w-100" onerror="this.src='/metronic/assets/media/avatars/avatar_blank.png';" />
                 <#else>
                     <span class="svg-icon svg-icon-1">
                         <i class="fas fa-user-circle fs-2"></i>
@@ -27,7 +27,7 @@
             <!--begin::Username-->
             <div class="d-flex flex-column">
                 <div class="fw-bold d-flex align-items-center fs-5">
-                    ${(authInfo.nickNm)!}
+                    ${(authInfo.nickname)!}
                     <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
                         <#if isMngr>
                             <i class="bi bi-person-lines-fill fs-3 text-info me-1 opacity-75"
@@ -38,16 +38,16 @@
                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-dismiss="click" title="사용자"></i>   <!-- 사용자 -->
                             사용자
                         </#if>
-                        <#if ((authInfo.authCd)! == Code.AUTH_MNGR)>
+                        <#if ((authInfo.primaryRoleKey)! == Code.AUTH_MNGR)>
                             <i class="bi bi-person-lines-fill text-info opacity-75"></i>   <!-- 관리자 -->
-                        <#elseif ((authInfo.authCd)! == Code.AUTH_USER)>
+                        <#elseif ((authInfo.primaryRoleKey)! == Code.AUTH_USER)>
                             <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
                         </#if>
                     </span>
                 </div>
                 <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">${(authInfo.email)!}</a>
-                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${(authInfo.userId)!})</a>
-                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${acsIp!})</a>
+                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${(authInfo.username)!})</a>
+                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${remoteIp!})</a>
             </div>
             <!--end::Username-->
         </div>
@@ -277,7 +277,7 @@
     <!--begin::Menu item-->
     <div class="d-flex justify-content-center">
         <a href="javascript:void(0)" class="btn btn-light btn-light-primary fs-7 mt-2 w-85"
-           onclick="Layout.lgout();"
+           onclick="Layout.logout();"
            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="로그아웃합니다.">
             <#--begin::Svg Icon | path: assets/media/icons/duotune/arrows/arr076.svg-->
             <span class="svg-icon svg-icon-muted svg-icon-2">

@@ -21,17 +21,17 @@ import lombok.extern.log4j.Log4j2;
 public class SiteAcsInfo {
 
     /** 사이드바 메뉴 번호 */
-    private String menuNo;
+    private String id;
 
     /** 상위 메뉴 유형 코드 */
     private String upperMenuTyCd;
     /** 상위 메뉴 번호 (메뉴 활성화용) */
-    private String upperMenuNo;
+    private String upperMenuId;
     /** 상위 메뉴 이름 (툴바 표시용) */
     private String upperMenuNm;
 
-    /** 게시판 코드 */
-    private String boardDef;
+    /** 게시판 키 */
+    private String boardKey;
     /** 사이드바 메뉴 이름 (로깅 및 사이트 헤더 표시용) */
     private String menuNm;
 

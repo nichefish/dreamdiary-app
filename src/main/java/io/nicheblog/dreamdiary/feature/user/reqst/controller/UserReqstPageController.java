@@ -2,12 +2,12 @@ package io.nicheblog.dreamdiary.feature.user.reqst.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class UserReqstPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER_REQST;      // 작업 카테고리 (로그 적재용)
 
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     /**
      * 계정 정보 신청 화면 조회
@@ -58,11 +58,11 @@ public class UserReqstPageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
-        cdLookupService.setCdListToModel(Code.AUTH_CD, model);
-        cdLookupService.setCdListToModel(Code.CMPY_CD, model);
-        cdLookupService.setCdListToModel(Code.TEAM_CD, model);
-        cdLookupService.setCdListToModel(Code.EMPLYM_CD, model);
-        cdLookupService.setCdListToModel(Code.RANK_CD, model);
+        codeLookupService.setCdListToModel(Code.AUTH_CD, model);
+        codeLookupService.setCdListToModel(Code.CMPY_CD, model);
+        codeLookupService.setCdListToModel(Code.TEAM_CD, model);
+        codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
+        codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
         return "/view/feature/user/reqst/user_reqst_form";
     }

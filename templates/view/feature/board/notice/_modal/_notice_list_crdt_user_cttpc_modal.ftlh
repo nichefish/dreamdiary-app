@@ -5,13 +5,13 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="crdt_user_cttpc" size="xl">
+<@modal.layout id="crdt_user_phoneNumber" size="xl">
     <#--begin::Modal Header-->
     <div class="modal-header">
-        <h5 class="modal-title" id="crdtUserCttpcModalLongTitle">[직원 연락처 목록]</h5>
+        <h5 class="modal-title" id="crdtUserPhoneNumberModalLongTitle">[직원 연락처 목록]</h5>
         <#--begin::Close-->
         <button type="button" class="btn btn-sm btn-light-primary me-md-2 ms-auto"
-                onclick="Page.cttpcXlsxDownload();"
+                onclick="Page.phoneNumberXlsxDownload();"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="데이터를 엑셀 파일로&#10;다운로드합니다.">
             <i class="fas fa-download fs-7"></i>다운로드
         </button>
@@ -37,12 +37,12 @@
                 </thead>
                 <#--begin::Table body-->
                 <tbody>
-                    <#list crtdUserCttpcList![] as user>
+                    <#list crtdUserPhoneNumberList![] as user>
                         <tr>
                             <td>${user.userNm!}</td>
                             <td class="hidden-table">${user.teamNm!}</td>
                             <td>${user.rankNm!}</td>
-                            <td>${user.cttpc!}</td>
+                            <td>${user.phoneNumber!}</td>
                             <td>${user.email!}</td>
                         </tr>
                     </#list>

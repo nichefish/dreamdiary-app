@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.oauth2.service.impl;
 
+import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -7,7 +8,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ import java.util.Map;
  * 
  * @author nichefish
  */
-@Service("oauth2UserService")
+@Service
 public class OAuth2UserServiceImpl
         implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
@@ -70,7 +70,7 @@ public class OAuth2UserServiceImpl
             authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
         }
 
-        // 3) DefaultOAuth2User를 만들어 반환
-        return new DefaultOAuth2User(authorities, flattenedAttributes, userNameAttributeName);
+        // 3) AuthInfo를 만들어 반환
+        return new AuthInfo(authorities, flattenedAttributes, userNameAttributeName);
     }
 }

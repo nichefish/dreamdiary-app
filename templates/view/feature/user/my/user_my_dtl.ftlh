@@ -38,8 +38,8 @@
                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="프로필 이미지를 삭제합니다.">
                         <i class="bi bi-x icon-xs text-danger"></i>
                     </span>
-                    <#if user.proflImgUrl??>
-                        <img src="${user.proflImgUrl!}" class="img-thumbnail p-0 w-100" />
+                    <#if user.profileImageUrl??>
+                        <img src="${user.profileImageUrl!}" class="img-thumbnail p-0 w-100" />
                     <#else>
                         <span class="svg-icon svg-icon-1">
                             <i class="fas fa-user-circle fs-2 blink"></i>
@@ -47,7 +47,7 @@
                     </#if>
                     <#--end::Svg Icon-->
                 </div>
-                ${user.userId!}
+                ${user.username!}
             </div>
         </div>
         <#--begin::Row-->
@@ -66,45 +66,45 @@
         <#--begin::Row-->
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fs-6 fw-bold"><label for="authNm">권한</label></div>
+                <div class="col-form-label text-center fs-6 fw-bold"><label for="roleName">권한</label></div>
             </div>
             <div class="col-xl-2 col-8 col-form-label">
-                <#list user.authList![] as auth>
-                    <#if (auth.authCd! == Code.AUTH_MNGR)>
+                <#list user.userRoles![] as role>
+                    <#if (role.roleKey! == Code.AUTH_MNGR)>
                         <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"></i>   <!-- 관리자 -->
-                    <#elseif (auth.authCd! == Code.AUTH_USER)>
+                    <#elseif (role.roleKey! == Code.AUTH_USER)>
                         <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
-                    <#elseif (auth.authCd! == Code.AUTH_DEV)>
+                    <#elseif (role.roleKey! == Code.AUTH_DEV)>
                         <i class="bi bi-person-fill-gear ms-1"></i>        <!-- 개발자 -->
                     </#if>
-                    ${auth.authNm!}
+                    ${role.roleName!}
                 </#list>
             </div>
         </div>
         <#--begin::Row-->
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fs-6 fw-bold"><label for="nickNm">표시이름</label></div>
+                <div class="col-form-label text-center fs-6 fw-bold"><label for="nickname">표시이름</label></div>
             </div>
             <div class="col-xl-2 col-8 col-form-label">
-                ${user.nickNm!}
+                ${user.nickname!}
             </div>
         </div>
         <#--begin::Row-->
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
                 <div class="col-form-label text-center fs-6 fw-bold">
-                    <label for="acsIpListStr">접속IP</label>
+                    <label for="allowedIpListStr">접속IP</label>
                 </div>
             </div>
             <div class="col-xl-9 col-8 col-form-label">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                     <span class="me-8">
-                        <#if user.isAcsIpY!false><@spring.message 'txt.status.use'/><#else><@spring.message 'txt.status.unuse'/></#if>
+                        <#if user.isAllowedIpY!false><@spring.message 'txt.status.use'/><#else><@spring.message 'txt.status.unuse'/></#if>
                     </span>
-                    <#if user.isAcsIpY!false && user.acsIpList??>
-                        <#list user.acsIpList![] as item>
-                            <span class="div-textarea div-height-1 me-4">${item.acsIp!}</span>
+                    <#if user.isAllowedIpY!false && user.allowedIpList??>
+                        <#list user.allowedIpList![] as item>
+                            <span class="div-textarea div-height-1 me-4">${item.allowedIp!}</span>
                         </#list>
                     </#if>
                 </div>
@@ -120,7 +120,7 @@
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-4">
-                    <div class="col-form-label text-center fs-6 fw-bold"><label for="cttpc">부서</label></div>
+                    <div class="col-form-label text-center fs-6 fw-bold"><label for="phoneNumber">부서</label></div>
                 </div>
                 <div class="col-xl-2 col-8 col-form-label">
                     ${user.userInfo.cmpyNm!"-"} / ${user.userInfo.teamNm!"-"} / ${user.userInfo.emplymNm!"-"}
@@ -161,7 +161,7 @@
                     <div class="col-form-label text-center fs-6 fw-bold">전화번호</div>
                 </div>
                 <div class="col-xl-2 col-8 col-form-label">
-                    ${user.cttpc!"-"}
+                    ${user.phoneNumber!"-"}
                 </div>
             </div>
             <#--begin::Row-->
@@ -250,15 +250,15 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="userNo" value="${user.userNo!}">
+    <input type="hidden" name="id" value="${user.id!}">
     <#if user.userInfo??>
-        <input type="hidden" name="userProflNo" value="${user.userInfo.userProflNo!}">
+        <input type="hidden" name="userProfileId" value="${user.userInfo.userProfileId!}">
     </#if>
 </form>
 <div id="proflImageTemplate" hidden>
     <#--begin::Form-->
     <form name="profllImgForm" id="profllImgForm" class="form" enctype="multipart/form-data">
-        <input type="file" name="atchFile0" id="atchFile0" class="file"
+        <input type="file" name="fileGroup0" id="fileGroup0" class="file"
                onchange="return false;"
                accept=".png, .jpg, .jpeg" />
     </form>
@@ -266,9 +266,6 @@
 
 <#--include::modals-->
 <#include "/view/feature/user/my/_modal/_user_my_pw_chg_modal.ftlh">
-<#if (authInfo.hasEcnyDt!false)>
-    <#include "/view/feature/user/my/_modal/_user_my_vcatn_list_modal.ftlh">
-</#if>
 <script type="text/javascript" src="/js/view/feature/user/my/user_my_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/user/my/user_my_pw_chg_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/user/my/user_my_dtl.js?${releaseDate!}"></script>

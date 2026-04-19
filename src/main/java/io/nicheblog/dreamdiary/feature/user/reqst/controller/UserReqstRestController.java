@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -67,17 +67,17 @@ public class UserReqstRestController
      * 사용자 관리 > 계정 및 권한 관리 > 사용자 승인. (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param userNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_REQST_CF_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userCfAjax(
-            final @RequestParam("userNo") Integer userNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = userReqstService.cf(userNo);
+        final ServiceResponse result = userReqstService.cf(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -88,17 +88,17 @@ public class UserReqstRestController
      * 사용자 관리 > 계정 및 권한 관리 > 사용자 승인취소 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param userNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_REQST_UNCF_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userUncfAjax(
-            final @RequestParam("userNo") Integer userNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = userReqstService.uncf(userNo);
+        final ServiceResponse result = userReqstService.uncf(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

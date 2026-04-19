@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.notice.service;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.feature.board.notice.mapstruct.NoticeMapstruct;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
@@ -7,9 +9,7 @@ import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeXlsxDto;
 import io.nicheblog.dreamdiary.feature.board.notice.repository.jpa.NoticeRepository;
 import io.nicheblog.dreamdiary.feature.board.notice.spec.NoticeSpec;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
+import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +29,11 @@ import java.util.stream.Stream;
  *
  * @author nichefish
  */
-@Service("noticeService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class NoticeService
-        implements BaseClsfService<NoticeDto, NoticeDto, Integer, NoticeEntity>, BaseMultipartWritableService<NoticeDto, NoticeDto, Integer, NoticeEntity> {
+        implements BaseAttachableService<NoticeDto, NoticeDto, Integer, NoticeEntity>, BaseMultipartWritableService<NoticeDto, NoticeDto, Integer, NoticeEntity> {
 
     @Getter
     private final NoticeRepository repository;
@@ -54,13 +54,13 @@ public class NoticeService
     /**
      * 최종수정일이 조회기준일자 이내이고, 최종수정자(또는 작성자)가 내가 아니고, 내가 (수정 이후로) 조회하지 않은 글 갯수를 조회한다.
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param stdrdDt 조회기준일자 (ex.1주일)
      * @return Integer
      */
     @Transactional(readOnly = true)
-    public Integer getUnreadCnt(final @Param("userId") String userId, final @Param("stdrdDt") Date stdrdDt) {
-        return repository.getUnreadCnt(userId, stdrdDt);
+    public Integer getUnreadCnt(final @Param("username") String username, final @Param("stdrdDt") Date stdrdDt) {
+        return repository.getUnreadCnt(username, stdrdDt);
     }
 
     /**
@@ -71,7 +71,7 @@ public class NoticeService
     @Override
     public void postRegist(final NoticeDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -102,7 +102,7 @@ public class NoticeService
     @Override
     public void postModify(final NoticeDto postDto,  NoticeDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -129,3 +129,4 @@ public class NoticeService
         });
     }
 }
+

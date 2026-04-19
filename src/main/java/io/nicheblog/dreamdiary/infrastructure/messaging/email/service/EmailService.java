@@ -3,10 +3,9 @@ package io.nicheblog.dreamdiary.infrastructure.messaging.email.service;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailAddress;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailSendParam;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("mailService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class EmailService {
@@ -52,7 +51,7 @@ public class EmailService {
      *
      * @param mailSendParam 메일 발송에 필요한 정보가 담긴 MailSendParam 객체
      * @return {@link Boolean} -- 메일 발송 시도 결과
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public Boolean send(EmailSendParam mailSendParam) {
         try {
@@ -62,9 +61,9 @@ public class EmailService {
             emailSender.send(message);
         } catch (final Exception e) {
             log.warn("email send failed", e);
-            final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
+            final LogParam logParam = LogParam.forSystem(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
             logParam.setExceptionInfo(e);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
+            publisher.publishEvent(new LogEvent(this, logParam));
         }
         return true;
     }
@@ -90,9 +89,9 @@ public class EmailService {
         final Template tmplat = freemarkerEmailConfig.getTemplate(mailSendParam.getTmplat());
         final String compiledContent = FreeMarkerTemplateUtils.processTemplateIntoString(tmplat, dataMap);
         helper.setText(compiledContent, true);
-        if (CollectionUtils.isNotEmpty(mailSendParam.getAtchFileList())) {
+        if (CollectionUtils.isNotEmpty(mailSendParam.getFileRecordList())) {
             // 첨부파일 처리
-            mailSendParam.getAtchFileList().forEach(attachFile -> {
+            mailSendParam.getFileRecordList().forEach(attachFile -> {
                 try {
                     helper.addAttachment(attachFile.getFileNm(), new File(attachFile.getFilePath()));
                 } catch (MessagingException e) {

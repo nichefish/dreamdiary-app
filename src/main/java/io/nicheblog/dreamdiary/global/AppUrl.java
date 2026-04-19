@@ -12,7 +12,7 @@ package io.nicheblog.dreamdiary.global;
 public interface AppUrl {
 
     /** 로그인 관련 */
-    String APP_AUTH_LGN_FORM = Prefix.APP + "/auth/lgn-form.do";
+    String APP_AUTH_LGN_FORM = Prefix.APP + "/auth/login-form.do";
 
     /** 메인 */
     String ROOT = "/";
@@ -26,29 +26,29 @@ public interface AppUrl {
     String NOTION_HOME = Prefix.APP + "/notion-home.do";
 
     /** 저널 일자 (리스트) */
-    String JRNL_DAY_MONTHLY = Prefix.APP + "/jrnl/day/monthly.do";
-    String JRNL_DAY_WEEKLY = Prefix.APP + "/jrnl/day/weekly.do";
-    String JRNL_DAY_META_VIEW = Prefix.APP + "/jrnl/day/meta.do";
-    String JRNL_DAY_DAILY_VIEW_TODAY = Prefix.APP + "/jrnl/day.do";
-    String JRNL_DAY_DAILY_VIEW = Prefix.APP + "/jrnl/day/{stdrdDt}.do";
+    String JOURNAL_DAY_MONTHLY = Prefix.APP + "/journal/day/monthly.do";
+    String JOURNAL_DAY_WEEKLY = Prefix.APP + "/journal/day/weekly.do";
+    String JOURNAL_DAY_META_VIEW = Prefix.APP + "/journal/day/meta.do";
+    String JOURNAL_DAY_DAILY_VIEW_TODAY = Prefix.APP + "/journal/day.do";
+    String JOURNAL_DAY_DAILY_VIEW = Prefix.APP + "/journal/day/{stdrdDt}.do";
     /** 저널 일자 (달력) */
-    String JRNL_DAY_CAL = Prefix.APP + "/jrnl/day/cal.do";
+    String JOURNAL_DAY_CAL = Prefix.APP + "/journal/day/cal.do";
 
     /** 저널 일기 (검색) */
-    String JRNL_DIARY_SEARCH = Prefix.APP + "/jrnl/diary/search.do";
+    String JOURNAL_DIARY_SEARCH = Prefix.APP + "/journal/diary/search.do";
     /** 저널 꿈 (검색) */
-    String JRNL_DREAM_SEARCH = Prefix.APP + "/jrnl/dream/search.do";
+    String JOURNAL_DREAM_SEARCH = Prefix.APP + "/journal/dream/search.do";
 
     /** 저널 주제 */
-    String JRNL_SBJCT_LIST = Prefix.APP + "/jrnl/sbjct/list.do";
-    String JRNL_SBJCT_REG_FORM = Prefix.APP + "/jrnl/sbjct/reg-form.do";
-    String JRNL_SBJCT_REG_PREVIEW_POP = Prefix.APP + "/jrnl/sbjct/preview-pop.do";
-    String JRNL_SBJCT_DTL = Prefix.APP + "/jrnl/sbjct/dtl.do";
-    String JRNL_SBJCT_MDF_FORM = Prefix.APP + "/jrnl/sbjct/mdf-form.do";
+    String JOURNAL_SBJCT_LIST = Prefix.APP + "/journal/sbjct/list.do";
+    String JOURNAL_SBJCT_REG_FORM = Prefix.APP + "/journal/sbjct/reg-form.do";
+    String JOURNAL_SBJCT_REG_PREVIEW_POP = Prefix.APP + "/journal/sbjct/preview-pop.do";
+    String JOURNAL_SBJCT_DTL = Prefix.APP + "/journal/sbjct/dtl.do";
+    String JOURNAL_SBJCT_MDF_FORM = Prefix.APP + "/journal/sbjct/mdf-form.do";
 
-    /** 저널 결산 */
-    String JRNL_SUMRY_LIST = Prefix.APP + "/jrnl/sumry/list.do";
-    String JRNL_SUMRY_VIEW = Prefix.APP + "/jrnl/sumry/{yy}.do";
+    /** 저널 연간 */
+    String JOURNAL_ANNUAL_LIST = Prefix.APP + "/journal/annual/list.do";
+    String JOURNAL_ANNUAL_VIEW = Prefix.APP + "/journal/annual/{yy}.do";
 
     /** 공지사항 */
     String NOTICE_LIST = Prefix.APP + "/notice/list.do";
@@ -74,7 +74,6 @@ public interface AppUrl {
     String USER_MY_DTL = Prefix.APP + "/user/my/dtl.do";
 
     /** 태그 */
-    String TAG_LIST = Prefix.APP + "/tag/list.do";
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
 
     /** 인증 정책 관리 */
@@ -84,7 +83,7 @@ public interface AppUrl {
     String MENU_PAGE = Prefix.APP + "/menu/page.do";
 
     /** 게시판 관리 */
-    String BOARD_DEF_LIST = Prefix.APP + "/board/def/list.do";
+    String BOARD_GROUP_LIST = Prefix.APP + "/board/group/list.do";
 
     /** 템플릿 관리 (TODO) */
     String TMPLAT_DEF_LIST = Prefix.APP + "/tmplat/list.do";
@@ -94,19 +93,13 @@ public interface AppUrl {
     String POPUP_LIST = "";
 
     /** 코드 관리 */
-    String CL_CD_LIST = Prefix.APP + "/cd/list.do";
+    String CODE_GROUP_LIST = Prefix.APP + "/code/list.do";
 
-    /** 활동 로그 조회 */
-    String LOG_ACTVTY_LIST = Prefix.APP + "/log/actvty/list.do";
-
-    /** 시스템 로그 조회 */
-    String LOG_SYS_LIST = Prefix.APP + "/log/sys/list.do";
+    /** 로그 조회 */
+    String LOG_LIST = Prefix.APP + "/log/list.do";
 
     /** 로그 통계 조회 (TODO) */
     String LOG_STATS_USER_LIST = Prefix.APP + "/log/stats/list.do";
-
-    /** 파일시스템 */
-    String FLSYS_HOME = Prefix.APP + "/flsys/page.do";
 
     /** ERROR */
     // URL
@@ -117,7 +110,7 @@ public interface AppUrl {
 
     /* ---------- */
 
-    String SCHDUL_CAL = Prefix.APP + "/schdul/cal.do";
+    String SCHEDULE_CAL = Prefix.APP + "/schedule/cal.do";
 
     String USER_REQST_REG_FORM = Prefix.APP + "/user/reqst/form.do";
 

@@ -10,8 +10,8 @@ package io.nicheblog.dreamdiary.infrastructure.log.stats.model;
  */
 public interface LogStatsUserIntrfc {
 
-    /** 아이디 */
-    String getUserId();
+    /** 계정명 */
+    String getUsername();
 
     /** 이름 */
     String getUserNm();
@@ -22,11 +22,11 @@ public interface LogStatsUserIntrfc {
     /** 아이디 */
     String getRetireYn();
 
-    /** 아이디 */
-    String getAuthCd();
+    /** 역할 키 */
+    String getRoleKey();
 
-    /** 아이디 */
-    String getAuthNm();
+    /** 역할 표시명 */
+    String getRoleName();
 
     /** 로그 목록 건수 */
     Long getActvtyCnt();

@@ -9,18 +9,18 @@
         WITH RECURSIVE menu_hierarchy AS (
             -- 가장 처음은 입력받은 메뉴
             SELECT
-                menu_no, upper_menu_no, menu_ty_cd, mngr_yn
+                id, upper_menu_id, menu_ty_cd, mngr_yn
             FROM menu
-            WHERE menu_no = #{menuNo}
+            WHERE id = #{id}
 
             UNION ALL
 
             -- 부모 메뉴를 계속 타고 올라가면서 menu_ty_cd = 'MAIN'인 메뉴를 찾음
             SELECT
-                m.menu_no, m.upper_menu_no, m.menu_ty_cd, m.mngr_yn
+                m.id, m.upper_menu_id, m.menu_ty_cd, m.mngr_yn
             FROM menu m
             INNER JOIN menu_hierarchy mh
-                ON m.menu_no = mh.upper_menu_no
+                ON m.id = mh.upper_menu_id
         )
         -- 최상위 메뉴에서 menu_ty_cd = 'MAIN'인 메뉴를 찾고, 그 메뉴의 mngr_yn 값을 반환
         SELECT mngr_yn

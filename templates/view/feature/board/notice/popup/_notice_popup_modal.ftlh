@@ -7,7 +7,7 @@
 <@modal.layout id="notice_popup" size="xl">
     <#--begin::Modal Header-->
     <div class="modal-header">
-        <h5 class="modal-title" id="lgnNotifyModalLongTitle">[공지사항 팝업]</h5>
+        <h5 class="modal-title" id="loginNotifyModalLongTitle">[공지사항 팝업]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2"
              onclick="dF.NoticePopup.closeBtnFunc();" aria-label="Close">
             <i class="fas fa-times"></i>

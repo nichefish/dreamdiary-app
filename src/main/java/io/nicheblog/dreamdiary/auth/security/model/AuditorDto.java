@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserRoleDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,16 +28,17 @@ public class AuditorDto
 
     @PostLoad
     private void onLoad() {
-        if (StringUtils.isEmpty(this.proflImgUrl)) this.proflImgUrl = Constant.BLANK_AVATAR_URL;
+        if (StringUtils.isEmpty(this.profileImageUrl)) this.profileImageUrl = Constant.BLANK_AVATAR_URL;
     }
 
     /** 사용자 ID */
-    private String userId;
+    private String username;
     /** 사용자 이름 */
-    private String nickNm;
+    private String nickname;
     /** 프로필 이미지 URL */
-    private String proflImgUrl;
+    private String profileImageUrl;
 
-    /** 사용자 권한 정보 */
-    private List<UserAuthRoleDto> authList;
+    /** 사용자 역할(user_role) 목록 */
+    private List<UserRoleDto> userRoles;
+
 }

@@ -1,0 +1,12 @@
+<#--
+ * 저널 꿈(journal_dream) > 태그 목록 Template
+ * @included_in : journal_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="journal_dream_tag_list_template">
+    {{#each this}}
+        {{> tag_list_sized_partial this module="dF.JournalDreamTag"}}
+    {{else}}
+        -
+    {{/each}}
+</script>

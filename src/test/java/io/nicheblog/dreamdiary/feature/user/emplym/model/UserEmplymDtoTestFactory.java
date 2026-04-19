@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.emplym.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.emplym.UserEmplymDto;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -30,7 +30,7 @@ public class UserEmplymDtoTestFactory {
                 .apntcYn("Y")
                 .emplymEmailId("test_emplym_email_id")
                 .emplymEmailDomain("test_emplym_email_domain")
-                .emplymCttpc("000-0000-0000")
+                .emplymPhoneNumber("000-0000-0000")
                 .ecnyDt("2000-01-01")
                 .retireYn("Y")
                 .retireDt("2000-01-01")

@@ -35,7 +35,7 @@ public class EhCacheConfig {
      * ehCacheManager 빈 등록
      * (ehCache -> jCache로의 변환을 거쳐 사용)
      */
-    @Bean(name = "ehCacheManager")
+    @Bean
     @Primary
     public javax.cache.CacheManager ehCacheManager() {
         URL myUrl = getClass().getClassLoader().getResource("config/ehcache/ehcache.xml");

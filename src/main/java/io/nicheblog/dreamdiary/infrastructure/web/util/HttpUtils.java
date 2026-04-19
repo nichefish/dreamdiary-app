@@ -35,7 +35,11 @@ public class HttpUtils {
      * @return AJAX 요청 여부
      */
     public static boolean isAjaxRequest(final HttpServletRequest request) {
-        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            return true;
+        }
+        final String accept = request.getHeader("Accept");
+        return accept != null && accept.contains("application/json");
     }
 
     /**
@@ -46,6 +50,10 @@ public class HttpUtils {
      * @return AJAX 요청 여부
      */
     public static boolean isAjaxRequest(final WebRequest request) {
-        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            return true;
+        }
+        final String accept = request.getHeader("Accept");
+        return accept != null && accept.contains("application/json");
     }
 }

@@ -2,18 +2,18 @@ package io.nicheblog.dreamdiary.feature.board.notice.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagService;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.feature.board.notice.service.NoticeService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
 import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
@@ -50,7 +50,7 @@ public class NoticePageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.NOTICE;      // 작업 카테고리 (로그 적재용)
 
     private final NoticeService noticeService;
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
     private final TagService tagService;
 
     /**
@@ -85,7 +85,7 @@ public class NoticePageController
         // 컨텐츠 타입에 맞는 태그 목록 조회
         model.addAttribute("tagList", tagService.getContentSpecificSizedTagList(ContentType.NOTICE));
         // 코드 정보 모델에 추가
-        cdLookupService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
+        codeLookupService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
@@ -114,9 +114,9 @@ public class NoticePageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
-        cdLookupService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
-        cdLookupService.setCdListToModel(Code.MDFABLE_CD, model);
-        cdLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
+        codeLookupService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
+        codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
+        codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/board/notice/notice_reg_form";
     }
@@ -141,7 +141,7 @@ public class NoticePageController
         model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
-        notice.setMarkdownCn(MarkdownUtils.markdown(notice.getCn()));
+        notice.setMarkdownContent(MarkdownUtils.markdown(notice.getContent()));
         model.addAttribute("post", notice);
 
         return "/view/feature/board/notice/notice_preview_pop";
@@ -159,7 +159,7 @@ public class NoticePageController
     @GetMapping(Url.NOTICE_DTL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeDtl(
-            final @RequestParam("postNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 
@@ -185,7 +185,7 @@ public class NoticePageController
     @GetMapping(Url.NOTICE_MDF_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeMdfForm(
-            final @RequestParam("postNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 
@@ -199,9 +199,9 @@ public class NoticePageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
-        cdLookupService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
-        cdLookupService.setCdListToModel(Code.MDFABLE_CD, model);
-        cdLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
+        codeLookupService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
+        codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
+        codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/board/notice/notice_reg_form";
     }

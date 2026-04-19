@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.post.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.param.BaseClsfSearchParam;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.param.BaseAttachableSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -20,10 +20,9 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class BoardPostSearchParam
-        extends BaseClsfSearchParam {
+public class BoardPostSearchParam extends BaseAttachableSearchParam {
 
-    /** 게시판 정의 */
+    /** 글 분류 코드 (목록 필터) */
     @Size(max = 50)
-    private String boardDef;
+    private String categoryCode;
 }

@@ -18,9 +18,9 @@ const Page: Page = (function(): Page {
         /**
          * 휴일정보 : url, data 받아서 ajax 호출
          */
-        hldyAjax: function(): void {
-            const url: string = Url.API_HLDY_GET;
-            const ajaxData: Record<string, any> = { "yy" : $("#hldyYy option:selected").val() };
+        holydayAjax: function(): void {
+            const url: string = Url.API_HOLYDAY_GET;
+            const ajaxData: Record<string, any> = { "yy" : $("#holydayYy option:selected").val() };
             Page.ajax(url, ajaxData);
         },
 
@@ -63,7 +63,7 @@ const Page: Page = (function(): Page {
          * 코드 관리 페이지로 이동
          */
         cdList: function(): void {
-            cF.form.blockUISubmit("#procForm", Url.CL_CD_LIST);
+            cF.form.blockUISubmit("#procForm", Url.CODE_GROUP_LIST);
         },
     }
 })();

@@ -83,18 +83,18 @@ cF.tinymce = (function(): Module {
         /**
          * TinyMCE 에디터가 준비되면 컨텐츠를 설정합니다.
          * @param {string} editorNm - 설정할 에디터의 이름.
-         * @param {string} cn - 설정할 내용.
+         * @param {string} content - 설정할 내용.
          * @param {number} [attempt=0] - 현재 시도 횟수.
          */
-        setContentWhenReady: function(editorNm: string, cn: string, attempt: number = 0): void {
+        setContentWhenReady: function(editorNm: string, content: string, attempt: number = 0): void {
             const editor = tinymce.get(editorNm);
             const maxAttempts = 20; // 최대 시도 횟수
             if (editor && editor.initialized) {
-                editor.setContent(cn);
+                editor.setContent(content);
             } else if (attempt < maxAttempts) {
                 // 초기화가 완료될 때까지 재귀적으로 시도
                 setTimeout(function(): void {
-                    cF.tinymce.setContentWhenReady(editorNm, cn, attempt + 1);
+                    cF.tinymce.setContentWhenReady(editorNm, content, attempt + 1);
                 }, 50);
             } else {
                 console.warn("Unable to set content for editor " + editorNm + ": Initialization failed after " + maxAttempts + " + attempts.");
@@ -120,7 +120,7 @@ cF.tinymce = (function(): Module {
          * tinymce 에디터 이미지 첨부
          */
         imgRegFunc: function(): void {
-            const fileInput: HTMLInputElement = document.getElementById("atchFile0") as HTMLInputElement;
+            const fileInput: HTMLInputElement = document.getElementById("fileGroup0") as HTMLInputElement;
             fileInput.click();
 
             fileInput.addEventListener("change", function(): void {

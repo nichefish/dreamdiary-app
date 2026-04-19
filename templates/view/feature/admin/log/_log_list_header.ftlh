@@ -1,0 +1,36 @@
+<#--
+ * 로그 > 목록 검색 영역 Header
+ * @included_in : log_list.ftlh
+ -->
+
+<form name="listForm" id="listForm" class="d-none d-md-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get">
+    <input type="hidden" name="pageNo" id="pageNo" value="${searchParam.pageNo!1}">
+    <input type="hidden" name="pageSize" id="pageSize" value="${searchParam.pageSize!10}">
+
+    <div>
+        <@component.header_datepicker searchParam "searchStartDt" "" />
+        <@component.header_datepicker searchParam "searchEndDt" DateUtils.parser.eDateParseStr(DateUtils.getCurrDate()) />
+    </div>
+    <div>
+        <select name="rslt" id="rslt" class="form-select form-select-sm form-select-solid" data-hide-search="true">
+            <option value="">작업결과</option>
+            <option value="true" label="성공" ${fn.selected(searchParam.rslt!, "true")} />
+            <option value="false" label="실패" ${fn.selected(searchParam.rslt!, "false")} />
+        </select>
+    </div>
+    <div>
+        <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
+            <option value="nickname" label="이름" ${fn.selected(searchParam.searchType!, "nickname")} />
+            <option value="username" label="아이디" ${fn.selected(searchParam.searchType!, "username")} />
+        </select>
+    </div>
+    <div>
+        <@component.header_input_searchKeyword searchParam />
+    </div>
+    <div>
+        <@component.header_btn_search "dF.Log.search();" />
+    </div>
+    <div>
+        <@component.header_btn_xlsx_download "dF.Log.xlsxDownload();" />
+    </div>
+</form>

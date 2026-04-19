@@ -1,0 +1,49 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.nicheblog.dreamdiary.feature.journal.note.repository.mybatis.JournalNoteMapper">
+
+    <resultMap id="JournalNoteMap" type="io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto">
+        <id property="id" column="id"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="journalChapterId" column="journal_chapter_id"/>
+        <result property="journalDayId" column="journal_day_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="yy" column="yy"/>
+        <result property="mnth" column="mnth"/>
+    </resultMap>
+
+    <select id="getDeletedById" resultMap="JournalNoteMap">
+        SELECT
+            note.id,
+            note.created_by,
+            note.journal_chapter_id,
+            chapter.journal_day_id,
+            note.sort_order,
+            day.yy,
+            day.mnth
+        FROM journal_note note
+        LEFT JOIN journal_chapter chapter
+            ON note.journal_chapter_id = chapter.id
+        LEFT JOIN journal_day day
+            ON chapter.journal_day_id = day.id
+        WHERE note.id = #{id}
+    </select>
+
+    <select id="findAllForReorder" resultMap="JournalNoteMap">
+        SELECT note.*
+        FROM journal_note note
+        WHERE note.journal_chapter_id = #{journalChapterId}
+          AND note.deleted_at IS NULL
+        ORDER BY note.sort_order
+    </select>
+
+    <update id="batchUpdateIdx">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE journal_note
+            SET sort_order = #{item.sortOrder}
+            WHERE id = #{item.id}
+              AND deleted_at IS NULL
+        </foreach>
+    </update>
+</mapper>

@@ -72,11 +72,11 @@ public class AuthUtils {
      *
      * @return {@link Integer} -- 현재 로그인 중인 사용자 프로필 정보 번호
      */
-    public static Integer getAuthenticatedUserProflNo() {
+    public static Integer getAuthenticatedUserProfileId() {
         if (RequestContextHolder.getRequestAttributes() == null) return null;
         final AuthInfo authInfo = getAuthenticatedUser();
         assert authInfo != null;
-        return (authInfo.getProfl() == null) ? null : authInfo.getProfl().getUserProflNo();
+        return (authInfo.getProfile() == null) ? null : authInfo.getProfile().getUserProfileId();
     }
     
     /**
@@ -84,10 +84,10 @@ public class AuthUtils {
      * 
      * @return {@link String} -- 현재 로그인 중인 사용자 이름
      */
-    public static String getLgnUserNm() {
+    public static String getLoginUserNm() {
         final AuthInfo AuthInfo = getAuthenticatedUser();
         assert AuthInfo != null;
-        return AuthInfo.getNickNm();
+        return AuthInfo.getNickname();
     }
 
     /**
@@ -95,23 +95,23 @@ public class AuthUtils {
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디
      */
-    public static String getLgnUserId() {
+    public static String getLoginUsername() {
         final AuthInfo authInfo = getAuthenticatedUser();
         if (authInfo == null) return null;
-        return authInfo.getUserId();
+        return authInfo.getUsername();
     }
 
     /**
-     * userId 유효성 확인 (blank 불가)
+     * username 유효성 확인 (blank 불가)
      *
-     * @param userId 사용자 ID
-     * @return {@link String} -- 검증된 사용자 ID
+     * @param username 사용자 계정명
+     * @return {@link String} -- 검증된 사용자 계정명
      */
-    public static String requireUserId(final String userId) {
-        if (StringUtils.isBlank(userId)) {
-            throw new IllegalArgumentException("userId is required.");
+    public static String requireUsername(final String username) {
+        if (StringUtils.isBlank(username)) {
+            throw new IllegalArgumentException("username is required.");
         }
-        return userId;
+        return username;
     }
 
     /**
@@ -119,8 +119,8 @@ public class AuthUtils {
      *
      * @return {@link String} -- 검증된 현재 로그인 사용자 아이디
      */
-    public static String requireLgnUserId() {
-        return requireUserId(getLgnUserId());
+    public static String requireLoginUsername() {
+        return requireUsername(getLoginUsername());
     }
 
     /**
@@ -128,9 +128,9 @@ public class AuthUtils {
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디
      */
-    public static String getLgnUserIdOrDefault() {
+    public static String getLoginUsernameOrDefault() {
         if (!isAuthenticated()) return Constant.SYSTEM_ACNT;
-        return getLgnUserId();
+        return getLoginUsername();
     }
 
     /**
@@ -138,12 +138,12 @@ public class AuthUtils {
      *
      * @return {@link Boolean} -- 내가 작성한 정보일 경우 true.
      */
-    public static Boolean isMyInfo(final String paramUserId) {
-        if (paramUserId == null) return false;
+    public static Boolean isMyInfo(final String paramUsername) {
+        if (paramUsername == null) return false;
         final AuthInfo authInfo = getAuthenticatedUser();
         assert authInfo != null;
-        final String myUserId = authInfo.getUserId();
-        return paramUserId.equals(myUserId);
+        final String myUsername = authInfo.getUsername();
+        return paramUsername.equals(myUsername);
     }
 
     /**
@@ -151,13 +151,13 @@ public class AuthUtils {
      *
      * @return {@link Boolean} -- 해당 ID가 등록한 정보일 경우 true.
      */
-    public static Boolean isRegstr(final String regstrId) {
-        if (StringUtils.isEmpty(regstrId)) return false;
+    public static Boolean isCreatedBy(final String createdBy) {
+        if (StringUtils.isEmpty(createdBy)) return false;
         final AuthInfo authInfo = getAuthenticatedUser();
         if (authInfo == null) return false;
 
-        final String myUserId = authInfo.getUserId();
-        return regstrId.equals(myUserId);
+        final String myUsername = authInfo.getUsername();
+        return createdBy.equals(myUsername);
     }
 
     /**
@@ -165,8 +165,8 @@ public class AuthUtils {
      *
      * @return {@link Boolean} -- 해당 ID가 수정한 정보일 경우 true.
      */
-    public static Boolean isMdfusr(final String mdfusrId) {
-        return isRegstr(mdfusrId);
+    public static Boolean isUpdatedBy(final String updatedBy) {
+        return isCreatedBy(updatedBy);
     }
 
     /**
@@ -191,11 +191,11 @@ public class AuthUtils {
     }
 
     /**
-     * 사용자 IP 주소 조회 (헤더 조회)
+     * 접속한 클라이언트 IP 주소 조회 (헤더 우선)
      *
-     * @return {@link String} -- 현재 로그인 중인 사용자가 접속 중인 IP 주소.
+     * @return {@link String} -- 현재 요청의 원격 접속 IP 주소.
      */
-    public static String getAcsIpAddr() {
+    public static String getRemoteIpAddr() {
         // request 맥락 하에서만 실행
         if (request == null) return null;
         String ipType = "";

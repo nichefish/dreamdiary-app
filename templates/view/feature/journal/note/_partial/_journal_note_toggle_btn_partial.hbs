@@ -1,0 +1,12 @@
+<#--
+ * 저널 노트(journal_note) - 글접기 버튼 partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="journal_note_toggle_btn_partial" data-partial>
+    <button type="button"
+            class="btn btn-sm ms-2 px-3 toggle-note-btn {{#if (hasState state 'COLLAPSED')}}is-active{{/if}}"
+            onclick="dF.JournalNote.toggle({{id}}, this)">
+        <i class="bi bi-arrows-{{#if (hasState state 'COLLAPSED')}}expand{{else}}collapse{{/if}} pe-0 note-toggle-icon"></i>
+    </button>
+</script>

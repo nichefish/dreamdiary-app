@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.entity;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * AuditorInfo
  * <pre>
- *  (공통) Auditor(regstr, mdfusr) 정보 Entity.
+ *  (공통) Auditor(createdBy, updatedBy) 정보 Entity.
  *  연관관계 조회시에만 사용. 상호참조로 인한 무한재귀호출 방지를 위해서 UserEntity와 분리
  * </pre>
  *
@@ -30,45 +30,45 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AuditorInfo
         implements Serializable {
 
-    /** 사용자 번호 (PK) */
+    /** 사용자 ID */
     @Id
-    @Column(name = "user_no", length = 20, insertable = false, updatable = false)
-    private Integer userNo;
+    @Column(name = "id", length = 20, insertable = false, updatable = false)
+    private Integer id;
 
     /** 사용자 ID */
-    @Column(name = "user_id", length = 20, insertable = false, updatable = false)
-    private String userId;
+    @Column(name = "username", length = 20, insertable = false, updatable = false)
+    private String username;
 
     /** 사용자 이름 */
-    @Column(name = "nick_nm", length = 20, insertable = false, updatable = false)
-    private String nickNm;
+    @Column(name = "nickname", length = 20, insertable = false, updatable = false)
+    private String nickname;
 
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_no")
+    @JoinColumn(name = "user_id")
     @Fetch(FetchMode.SELECT)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("사용자 권한 정보")
-    private List<UserAuthRoleEntity> authList;
+    @Comment("사용자 역할(user_role) 목록")
+    private List<UserRoleEntity> userRoles;
 
     /** 프로필 이미지 URL */
-    @Column(name = "profl_img_url", length = 1000)
-    private String proflImgUrl;
+    @Column(name = "profile_image_url", length = 1000)
+    private String profileImageUrl;
 
     /* ----- */
 
     /**
      * 프로필 이미지 getter 재정의
      */
-    public String getProflImgUrl() {
-        if (StringUtils.isEmpty(this.proflImgUrl)) return (Constant.BLANK_AVATAR_URL);
+    public String getProfileImageUrl() {
+        if (StringUtils.isEmpty(this.profileImageUrl)) return (Constant.BLANK_AVATAR_URL);
 
-        return this.proflImgUrl;
+        return this.profileImageUrl;
     }
 }

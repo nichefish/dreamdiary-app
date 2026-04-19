@@ -20,10 +20,12 @@ public class AuthPolicyEntityTestFactory {
      */
     public static AuthPolicyEntity create() throws Exception {
         return AuthPolicyEntity.builder()
-                .lgnLockDy(30)
-                .lgnTryLmt(5)
-                .pwChgDy(30)
-                .pwForReset("test_password")
+                .loginAttemptLimit(5)
+                .loginAttemptWindowMinutes(10)
+                .accountLockDurationMinutes(30)
+                .passwordChangeCycleDays(30)
+                .inactiveLockDays(30)
+                .passwordResetTokenExpiryMinutes(30)
                 .build();
     }
 }

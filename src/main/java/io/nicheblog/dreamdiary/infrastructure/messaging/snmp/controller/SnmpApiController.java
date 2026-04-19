@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.messaging.snmp.controller;
 
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.messaging.snmp.model.SnmpApiParam;
 import io.nicheblog.dreamdiary.infrastructure.messaging.snmp.util.SnmpUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;

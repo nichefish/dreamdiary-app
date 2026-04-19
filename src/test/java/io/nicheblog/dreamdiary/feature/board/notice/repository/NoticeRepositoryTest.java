@@ -52,7 +52,7 @@ class NoticeRepositoryTest {
      */
     @BeforeEach
     void setUp() throws Exception {
-        // 공통적으로 사용할 jrnlDayEntity 초기화
+        // 공통적으로 사용할 journalDayEntity 초기화
         noticeEntity = NoticeEntityTestFactory.create();
     }
 
@@ -65,16 +65,16 @@ class NoticeRepositoryTest {
 
         // When::
         final NoticeEntity registered = noticeRepository.save(noticeEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
         final NoticeEntity retrieved = noticeRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
-        assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(retrieved.getCreatedAt(), "등록일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(retrieved.getCreatedBy(),  "등록자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getCreatedBy(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 
     /**
@@ -84,22 +84,22 @@ class NoticeRepositoryTest {
     public void testModify() throws Exception {
         // Given::
         NoticeEntity registered = noticeRepository.save(noticeEntity);
-        Integer key = registered.getPostNo();
+        Integer key = registered.getId();
 
         // When::
         NoticeEntity toModify = noticeRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
-        toModify.setCn("modified");
+        toModify.setContent("modified");
         NoticeEntity modified = noticeRepository.save(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
-        assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, modified.getMdfusrId(), "수정자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(modified.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
-        assertEquals("modified", modified.getCn(), "값이 정상적으로 수정되지 않았습니다.");
+        assertEquals("modified", modified.getContent(), "값이 정상적으로 수정되지 않았습니다.");
     }
 
     /**
@@ -109,7 +109,7 @@ class NoticeRepositoryTest {
     public void testDelete() throws Exception {
         // Given::
         final NoticeEntity registered = noticeRepository.save(noticeEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
 
         // When::
         final NoticeEntity toDelete = noticeRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
@@ -121,3 +121,4 @@ class NoticeRepositoryTest {
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");
     }
 }
+

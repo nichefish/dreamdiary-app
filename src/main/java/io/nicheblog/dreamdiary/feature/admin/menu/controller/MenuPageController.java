@@ -5,9 +5,9 @@ import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class MenuPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.MENU;        // 작업 카테고리 (로그 적재용)
 
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     /**
      * 관리자 > 메뉴 관리 > 메뉴 관리 화면 조회
@@ -59,7 +59,7 @@ public class MenuPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 코드 데이터 모델에 추가
-        cdLookupService.setCdListToModel(Code.MENU_SUB_EXTEND_TY_CD, model);
+        codeLookupService.setCdListToModel(Code.MENU_SUB_EXTEND_TY_CD, model);
 
         return "/view/feature/admin/menu/menu_page";
     }

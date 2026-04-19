@@ -35,7 +35,7 @@ dF.TmplatDef = (function(): dfModule {
          * Draggable 컴포넌트 init
          */
         initDraggable: function(): void {
-            const keyExtractor: Function = (item: HTMLElement) => ({ "menuNo": Number($(item).attr("id")), "upperMenuNo": Number($(item).data("upper-menu-no")) });
+            const keyExtractor: Function = (item: HTMLElement) => ({ "id": Number($(item).attr("id")), "upperMenuId": Number($(item).data("upper-menu-id")) });
             const url: string = Url.TEMPLATS_IDX;
             dF.TmplatDef.swappable = cF.draggable.init("", keyExtractor, url);
         },
@@ -43,9 +43,9 @@ dF.TmplatDef = (function(): dfModule {
         /**
          * 등록 모달 호출
          */
-        regModal: function(menuTyCd: string, upperMenuNo: string|number, upperMenuNm: string): void {
+        regModal: function(menuTyCd: string, upperMenuId: string|number, upperMenuNm: string): void {
             event.stopPropagation();
-            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuNo": upperMenuNo, "upperMenuNm": upperMenuNm };
+            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuId": upperMenuId, "upperMenuNm": upperMenuNm };
             dF.TmplatDef.initForm(obj);
         },
 
@@ -78,7 +78,7 @@ dF.TmplatDef = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const isReg: boolean = $("#menuRegForm #menuNo").val() === "";
+                const isReg: boolean = $("#menuRegForm #id").val() === "";
                 const url: string = isReg ? Url.MENUS : Url.MENU_MDF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#tmplatDefRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
@@ -93,10 +93,10 @@ dF.TmplatDef = (function(): dfModule {
         /**
          * 수정 모달 호출
          */
-        mdfModal: function(menuNo: string|number): void {
-            if (isNaN(Number(menuNo))) return;
+        mdfModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+            const url: string = cF.util.bindUrl(Url.MENU, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -110,10 +110,10 @@ dF.TmplatDef = (function(): dfModule {
 
         /**
          * 삭제 (Ajax)
-         * @param {string|number} menuNo - 메뉴 번호.
+         * @param {string|number} id - 메뉴 번호.
          */
-        delAjax: function(menuNo: string|number): void {
-            if (isNaN(Number(menuNo))) return;
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -121,7 +121,7 @@ dF.TmplatDef = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+                const url: string = cF.util.bindUrl(Url.MENU, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -136,7 +136,7 @@ dF.TmplatDef = (function(): dfModule {
          */
         search: function(): void {
             $("#listForm #pageNo").val(1);
-            cF.form.blockUISubmit("#listForm", `${Url.LOG_ACTVTY_LIST!}?actionTyCd=SEARCH`);
+            cF.form.blockUISubmit("#listForm", `${Url.LOG_LIST!}?actionTyCd=SEARCH`);
         },
 
         /**
@@ -150,7 +150,7 @@ dF.TmplatDef = (function(): dfModule {
                 if (!result.value) return;
 
                 cF.util.blockUIFileDownload();
-                $("#listForm").attr("action", `${Url.LOG_ACTVTY_LIST_XLSX_DOWNLOAD!}`).submit();
+                $("#listForm").attr("action", `${Url.LOG_LIST_XLSX_DOWNLOAD!}`).submit();
             });
         },
     }
