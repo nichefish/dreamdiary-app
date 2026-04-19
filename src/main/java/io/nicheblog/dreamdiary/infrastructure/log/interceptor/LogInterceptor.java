@@ -1,20 +1,14 @@
 package io.nicheblog.dreamdiary.infrastructure.log.interceptor;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
-import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.type.LogType;
-import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
+import io.nicheblog.dreamdiary.infrastructure.log.support.HttpRequestLogParamBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.MDC;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -22,7 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 요청 단위 로그 파라미터 수집.
+ * 요청 단위 로그(슬랙·DB) — {@link org.springframework.web.bind.annotation.RestController}는
+ * {@link io.nicheblog.dreamdiary.infrastructure.log.aspect.LogControllerAspect}가 적재한 뒤 중복 발행을 건너뛴다.
  */
 @Component
 @RequiredArgsConstructor
@@ -95,59 +90,11 @@ public class LogInterceptor implements HandlerInterceptor {
             );
         }
 
-        final LogParam param = createLogParam(request, response, handlerMethod, ex, duration);
-        if (param != null) {
-            publisher.publishAsyncEvent(new LogEvent(this, param));
+        final LogParam param = HttpRequestLogParamBuilder.build(request, response, handlerMethod, ex, duration, null);
+        if (Boolean.TRUE.equals(request.getAttribute(HttpRequestLogParamBuilder.REST_ACTIVITY_LOGGED))) {
+            return;
         }
-    }
-
-    private LogParam createLogParam(final HttpServletRequest request, final HttpServletResponse response, final Object handler, final Exception ex, final long duration) {
-
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return null;
-        }
-
-        final LogParam param = new LogParam();
-
-        param.setTraceId(MDC.get("traceId"));
-        param.setRequestUri(request.getRequestURI());
-        param.setHttpMethod(request.getMethod());
-        param.setUsername(AuthUtils.getLoginUsername());
-        param.setDurationMs(duration);
-        param.setHttpStatus(response.getStatus());
-        param.setReferer(request.getHeader(Constant.REFERER));
-        param.setIpAddr(AuthUtils.getRemoteIpAddr());
-
-        final boolean success = (ex == null) && response.getStatus() < 400;
-        param.setRslt(success);
-
-        if (ex != null) {
-            param.setExceptionInfo(ex);
-        }
-
-        final Class<?> controllerClass = handlerMethod.getBeanType();
-        final Object bean = handlerMethod.getBean();
-
-        if (bean instanceof BaseControllerImpl baseController) {
-            final ActvtyCtgr ctgr = baseController.getActvtyCtgr();
-            param.setActvtyCtgr(ctgr);
-        }
-
-        final boolean isRest = AnnotatedElementUtils.hasAnnotation(controllerClass, RestController.class);
-        if (isRest) {
-            final String method = request.getMethod();
-            if ("GET".equalsIgnoreCase(method)) {
-                param.setLogType(LogType.VIEW);
-            } else {
-                param.setLogType(LogType.ACTION);
-            }
-        } else {
-            param.setLogType(LogType.PAGE);
-        }
-
-        param.setSignature(getHandlerSignature(handlerMethod));
-
-        return param;
+        publisher.publishAsyncEvent(new LogEvent(this, param));
     }
 
     private String getHandlerSignature(final HandlerMethod handlerMethod) {
