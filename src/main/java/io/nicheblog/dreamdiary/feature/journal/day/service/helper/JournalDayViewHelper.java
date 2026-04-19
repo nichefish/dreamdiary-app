@@ -105,7 +105,7 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> interpretationMap
     ) {
         for (JournalDayDto day : listDto) {
-            JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap);
+            JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, interpretationMap);
             JournalDreamViewHelper.applyStates(day.getJournalDreamList(), dreamMap, interpretationMap);
             JournalDreamViewHelper.applyStates(day.getJournalElseDreamList(), dreamMap, interpretationMap);
         }
@@ -132,7 +132,7 @@ public final class JournalDayViewHelper {
         for (JournalDayDto day : listDto) {
 
             if (searchParam.isShowDiaries()) {
-                JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap);
+                JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, interpretationMap);
             }
 
             if (searchParam.isShowDreams()) {
@@ -173,4 +173,3 @@ public final class JournalDayViewHelper {
         }
     }
 }
-

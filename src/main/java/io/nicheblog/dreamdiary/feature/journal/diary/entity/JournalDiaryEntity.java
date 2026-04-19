@@ -13,20 +13,34 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModul
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
-import lombok.*;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * JournalDiaryEntity
- * <pre>
- *  저널 일기 Entity.
- *  Entity that contains each distinct diary.
- * </pre>
  *
  * @author nichefish
  */
@@ -43,72 +57,63 @@ public class JournalDiaryEntity
         extends BaseAttachableEntity
         implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
 
-    /** 필수: 컨텐츠 타입 */
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_DIARY;
 
-    /** 저널 꿈 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @Comment("저널 일기 고유 번호")
+    @Comment("journal diary id")
     private Integer id;
 
-    /** 컨텐츠 타입 */
     @Builder.Default
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JOURNAL_DIARY'")
-    @Comment("컨텐츠 타입")
+    @Comment("content type")
     private String contentType = CONTENT_TYPE.key;
 
-    /** 제목 */
     @Column(name = "title")
     private String title;
 
-    /** 내용 */
     @Column(name = "content")
     private String content;
 
-    /* ----- */
-
-    /** 저널 챕터 정보 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "journal_chapter_id", nullable = false)
-    @Comment("저널 챕터 정보")
+    @Comment("journal chapter")
     private JournalChapterEntity journalChapter;
 
-    /** 순번 */
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
     private Integer sortOrder;
 
-    /** 인덱스 변경 여부 */
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ref_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @Where(clause = "ref_content_type = 'JOURNAL_DIARY'")
+    @OrderBy("sortOrder ASC")
+    private List<JournalInterpretationEntity> journalInterpretationList;
+
     @Builder.Default
     @Transient
     private Boolean isSortOrderChanged = false;
 
-    /** 저널 챕터 변경 여부 */
     @Builder.Default
     @Transient
     private Boolean isChapterChanged = false;
 
-    /** 이전 저널 챕터 번호 */
     @Transient
     private Integer prevJournalChapterId;
 
-    /* ----- */
-
-    /** 위임 :: 첨부파일 모듈 */
     @Embedded
     public FileEmbed file;
-    /** 위임 :: 댓글 정보 모듈 */
+
     @Embedded
     public CommentEmbed comment;
-    /** 위임 :: 태그 정보 모듈 */
+
     @Embedded
     public TagEmbed tag;
-    /** 위임 :: 상태 정보 모듈 */
+
     @Embedded
     public StateEmbed state;
+
     @Embedded
     public HistoryEmbed history;
 }
-

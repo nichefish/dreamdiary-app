@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryPostDto;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.mapstruct.JournalInterpretationMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -29,6 +30,7 @@ import javax.persistence.PersistenceContext;
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class, JournalDatePrecision.class },
+    uses = { JournalInterpretationMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalDiaryMapstruct
@@ -88,4 +90,3 @@ public abstract class JournalDiaryMapstruct
         return em.getReference(JournalChapterEntity.class, journalChapterId);
     }
 }
-

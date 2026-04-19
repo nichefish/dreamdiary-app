@@ -16,6 +16,7 @@ import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -80,6 +81,9 @@ public class JournalDiaryDto
     /** 순번 */
     private Integer sortOrder;
 
+    /** 저널 해석 목록 */
+    private List<JournalInterpretationDto> journalInterpretationList;
+
     /* ----- */
 
     /** 인덱스 변경 여부 */
@@ -129,4 +133,3 @@ public class JournalDiaryDto
     @Builder.Default
     private List<RelatedContentDto> relatedContentList = List.of();
 }
-

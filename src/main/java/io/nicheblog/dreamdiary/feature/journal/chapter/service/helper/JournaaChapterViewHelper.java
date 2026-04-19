@@ -28,7 +28,8 @@ public class JournaaChapterViewHelper {
     public static void applyStates(
         final List<JournalChapterDto> listDto,
         final Map<Integer, JournalState> chapterMap,
-        final Map<Integer, JournalState> diaryMap
+        final Map<Integer, JournalState> diaryMap,
+        final Map<Integer, JournalState> interpretationMap
     ) {
 
         if (CollectionUtils.isEmpty(listDto)) return;
@@ -39,8 +40,7 @@ public class JournaaChapterViewHelper {
                 entry.state.apply(StateCd.COLLAPSED, s.getCollapsed());
             }
 
-            JournalDiaryViewHelper.applyStates(entry.getJournalDiaryList(), diaryMap);
+            JournalDiaryViewHelper.applyStates(entry.getJournalDiaryList(), diaryMap, interpretationMap);
         }
     }
 }
-
