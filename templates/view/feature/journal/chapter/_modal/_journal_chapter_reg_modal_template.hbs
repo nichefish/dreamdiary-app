@@ -32,11 +32,25 @@
             </label>
         </div>
         <div class="col-lg-2">
-            <select name="chapterType" id="chapterType" class="form-select form-select-solid">
-                <option value="DIARY" {{selectedIf (equals chapterType "DIARY")}}>일기</option>
-                <option value="DREAM" {{selectedIf (equals chapterType "DREAM")}}>꿈</option>
-                <option value="NOTE" {{selectedIf (equals chapterType "NOTE")}}>노트</option>
-            </select>
+            {{#if (exists id)}}
+                {{#if (equals chapterType "DREAM")}}
+                    <input type="hidden" name="chapterType" value="DREAM" />
+                    <div class="form-control form-control-solid form-control-sm d-flex align-items-center min-h-40px">
+                        <span class="fw-bolder"><@spring.message 'txt.dream'/></span>
+                        <span class="text-muted fs-8 ms-2">(<@spring.message 'msg.journal.chapter.dream-auto-label'/>)</span>
+                    </div>
+                {{else}}
+                    <select name="chapterType" id="chapterType" class="form-select form-select-solid">
+                        <option value="DIARY" {{selectedIf (equals chapterType "DIARY")}}>일기</option>
+                        <option value="NOTE" {{selectedIf (equals chapterType "NOTE")}}>노트</option>
+                    </select>
+                {{/if}}
+            {{else}}
+                <select name="chapterType" id="chapterType" class="form-select form-select-solid">
+                    <option value="DIARY" {{selectedIf (equals chapterType "DIARY")}}>일기</option>
+                    <option value="NOTE" {{selectedIf (equals chapterType "NOTE")}}>노트</option>
+                </select>
+            {{/if}}
         </div>
         <div class="col-lg-2">
             <select name="categoryCode" id="categoryCode" class="form-select form-select-solid">

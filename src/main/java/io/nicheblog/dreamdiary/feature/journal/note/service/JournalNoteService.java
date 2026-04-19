@@ -107,7 +107,7 @@ public class JournalNoteService
      */
     @Override
     public void preRegist(final JournalNotePostDto registDto) throws Exception {
-        assertDiaryChapterForNote(registDto.getJournalChapterId());
+        assertNoteChapterForNote(registDto.getJournalChapterId());
         // 정렬 순서 처리
         final Integer lastSortOrder = repository.findLastIndexByJournalChapter(registDto.getJournalChapterId()).orElse(0);
         registDto.setSortOrder(lastSortOrder + 1);
@@ -136,7 +136,7 @@ public class JournalNoteService
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
-        assertDiaryChapterForNote(modifyDto.getJournalChapterId());
+        assertNoteChapterForNote(modifyDto.getJournalChapterId());
 
         final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
         modifyDto.setIsSortOrderChanged(isSortOrderChanged);
@@ -353,15 +353,15 @@ public class JournalNoteService
     }
 
     /**
-     * 노트는 일기(DIARY) 챕터 하위에만 등록·이동 가능하다.
+     * 노트는 노트(NOTE) 챕터에만 등록·이동 가능하다.
      *
      * @param journalChapterId 검증할 챕터 ID
      */
-    private void assertDiaryChapterForNote(final Integer journalChapterId) {
+    private void assertNoteChapterForNote(final Integer journalChapterId) {
         final JournalChapterEntity chapter = journalChapterRepository.findById(journalChapterId)
-                .orElseThrow(() -> new BusinessException("msg.journal.note.chapter-not-found"));
-        if (chapter.getChapterType() != ChapterType.DIARY) {
-            throw new BusinessException("msg.journal.note.diary-chapter-only");
+                .orElseThrow(() -> new BusinessException("msg.journal.chapter.not-found"));
+        if (chapter.getChapterType() != ChapterType.NOTE) {
+            throw new BusinessException("msg.journal.note.note-chapter-only");
         }
     }
 }

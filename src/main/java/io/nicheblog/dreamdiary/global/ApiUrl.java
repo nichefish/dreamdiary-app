@@ -57,6 +57,8 @@ public interface ApiUrl {
     String JOURNAL_INTERPRETATION_SET_COLLAPSE_AJAX = Prefix.API + "/journal/interpretation/set-collapse";
     /** 저널 챕터 */
     String JOURNAL_CHAPTERS = Prefix.API + "/journal/chapters";
+    /** 꿈(DREAM) 챕터 자동 생성 전용 (수동 챕터 등록 API로는 DREAM 생성 불가) */
+    String JOURNAL_CHAPTER_DREAM_AUTO = Prefix.API + "/journal/chapters/dream-auto";
     String JOURNAL_CHAPTER = Prefix.API + "/journal/chapter/{id}";
     String JOURNAL_CHAPTER_EXPORT = Prefix.API + "/journal/chapter/{id}/export";
 

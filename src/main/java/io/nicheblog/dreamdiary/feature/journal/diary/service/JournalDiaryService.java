@@ -19,7 +19,11 @@ import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
 import io.nicheblog.dreamdiary.feature.journal.diary.repository.mybatis.JournalDiaryMapper;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.diary.spec.JournalDiarySpec;
+import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -68,6 +72,7 @@ public class JournalDiaryService
 
     private final JournalCacheEvictWorker journalCacheEvictWorker;
     private final RelatedContentService relatedContentService;
+    private final JournalChapterRepository journalChapterRepository;
 
     private final ApplicationContext context;
     private JournalDiaryService getSelf() {
@@ -102,6 +107,7 @@ public class JournalDiaryService
      */
     @Override
     public void preRegist(final JournalDiaryPostDto registDto) throws Exception {
+        assertDiaryChapterForDiary(registDto.getJournalChapterId());
         // 정렬 순서 처리
         final Integer lastSortOrder = repository.findLastIndexByJournalChapter(registDto.getJournalChapterId()).orElse(0);
         registDto.setSortOrder(lastSortOrder + 1);
@@ -129,6 +135,8 @@ public class JournalDiaryService
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
+
+        assertDiaryChapterForDiary(modifyDto.getJournalChapterId());
 
         final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
         modifyDto.setIsSortOrderChanged(isSortOrderChanged);
@@ -341,6 +349,14 @@ public class JournalDiaryService
         if (isHolyday) {
             final String concatHolydayNm = String.join(", ", holydayMap.get(stdrdDt));
             journalDiary.setHolydayNm(concatHolydayNm);
+        }
+    }
+
+    private void assertDiaryChapterForDiary(final Integer journalChapterId) {
+        final JournalChapterEntity chapter = journalChapterRepository.findById(journalChapterId)
+                .orElseThrow(() -> new BusinessException("msg.journal.chapter.not-found"));
+        if (chapter.getChapterType() != ChapterType.DIARY) {
+            throw new BusinessException("msg.journal.diary.diary-chapter-only");
         }
     }
 }

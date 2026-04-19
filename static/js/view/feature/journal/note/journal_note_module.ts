@@ -55,7 +55,7 @@ dF.JournalNote = (function(): dfModule {
         },
 
         /**
-         * 노트 등록 모달 (상위 챕터는 DIARY일 때만 UI에서 호출)
+         * 노트 등록 모달 (NOTE 챕터만 대상)
          */
         regModal: function({
             journalDayId,
@@ -76,10 +76,10 @@ dF.JournalNote = (function(): dfModule {
                 if (!res.rslt) return;
                 const rawList: Record<string, any>[] = res.rsltObj.chapterList ?? [];
                 const chapterList: Record<string, any>[] = rawList.filter(
-                    (c: Record<string, any>): boolean => c?.chapterType === "DIARY"
+                    (c: Record<string, any>): boolean => c?.chapterType === "NOTE"
                 );
                 if (!chapterList.length) {
-                    Swal.fire({ text: Message.get("msg.journal.note.diary-chapter-only") });
+                    Swal.fire({ text: Message.get("msg.journal.note.note-chapter-only") });
                     return;
                 }
                 let resolvedChapterId: number = Number(journalChapterId);

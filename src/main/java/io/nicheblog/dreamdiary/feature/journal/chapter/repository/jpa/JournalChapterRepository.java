@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa;
 
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -36,6 +37,7 @@ public interface JournalChapterRepository
             "INNER JOIN FETCH JournalDayEntity day ON entry.journalDayId = day.id " +
             "WHERE entry.journalDayId = :journalDayId")
     Optional<Integer> findLastIndexByJournalDay(final @Param("journalDayId") Integer journalDayId);
+
+    /** 동일 일자의 꿈(DREAM) 챕터 1건 (없으면 empty) */
+    Optional<JournalChapterEntity> findFirstByJournalDayIdAndChapterType(Integer journalDayId, ChapterType chapterType);
 }
-
-

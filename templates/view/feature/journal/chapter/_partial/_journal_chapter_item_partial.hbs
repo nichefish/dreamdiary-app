@@ -7,18 +7,40 @@
     <div class="d-flex align-items-center mt-2">
         <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
             <span class="{{#ifYn chapterResolvedYn}}text-success{{/ifYn}} me-2">
-                <@spring.message 'txt.diary'/>{{#if (exists categoryCode)}}:{{/if}}
+                {{#if (equals chapterType "DREAM")}}
+                    <@spring.message 'txt.dream'/>
+                {{else}}
+                    {{#if (equals chapterType "NOTE")}}
+                        <@spring.message 'txt.journal.note'/>
+                    {{else}}
+                        <@spring.message 'txt.diary'/>
+                    {{/if}}
+                {{/if}}
+                {{#if (exists categoryCode)}}:{{/if}}
                 {{#if (exists categoryCode)}}
                     <span style=color:#287D94;">{{categoryName}}</span>
                     <span class="text-muted fs-8 me-1">{{categoryCode}}</span>
                 {{/if}}
             </span>
-            <i class="bi bi-book fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+            {{#if (equals chapterType "DREAM")}}
+                <i class="bi bi-moon-stars fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+            {{else}}
+                {{#if (equals chapterType "NOTE")}}
+                    <i class="bi bi-journal-text fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                {{else}}
+                    <i class="bi bi-book fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                {{/if}}
+            {{/if}}
         </div>
         <div class="col-3 d-none d-md-flex align-items-center gap-2">
             {{#if (equals chapterType "DIARY")}}
                 {{> journal_diary_reg_btn_partial this}}
+            {{/if}}
+            {{#if (equals chapterType "NOTE")}}
                 {{> journal_note_reg_btn_partial this}}
+            {{/if}}
+            {{#if (equals chapterType "DREAM")}}
+                {{> journal_dream_reg_btn_partial journalDayId=journalDayId journalChapterId=id stdrdDt=stdrdDt journalDateWeekDay=journalDateWeekDay}}
             {{/if}}
             {{> journal_chapter_copy_btn_partial this}}
             {{> journal_chapter_export_btn_partial this}}

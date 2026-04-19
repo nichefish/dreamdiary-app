@@ -125,10 +125,8 @@ dF.JournalDream = (function(): dfModule {
         ): void {
             const ajaxData: FormData = new FormData();
             ajaxData.append("journalDayId", String(journalDayId));
-            ajaxData.append("chapterType", "DREAM");
-            ajaxData.append("title", "꿈");
 
-            cF.$ajax.multipart(Url.JOURNAL_CHAPTERS, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.multipart(Url.JOURNAL_CHAPTER_DREAM_AUTO, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
