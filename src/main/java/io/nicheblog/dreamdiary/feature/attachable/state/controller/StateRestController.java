@@ -52,6 +52,11 @@ public class StateRestController
     ) throws Exception {
 
         final ServiceResponse result = stateService.toggle(stateToggle);
+        if (!Boolean.TRUE.equals(result.getRslt())) {
+            final String failMsg = result.getMessage() != null ? result.getMessage() : MessageUtils.RSLT_FAILURE;
+            return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, failMsg));
+        }
+
         final String rsltSts = result.getRsltSts();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

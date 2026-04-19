@@ -25,6 +25,19 @@ import java.util.Map;
 @UtilityClass
 public final class JournalDayStateMapHelper {
 
+    private static JournalState dreamStateFromEntity(final JournalDreamEntity dream) {
+        final boolean nhtmr = dream.state.hasState(StateKey.NHTMR) || "Y".equals(dream.getNhtmrYn());
+        final boolean halluc = dream.state.hasState(StateKey.HALLUC) || "Y".equals(dream.getHallucYn());
+        return JournalState.builder()
+                .resolved(dream.state.hasState(StateKey.RESOLVED))
+                .collapsed(dream.state.hasState(StateKey.COLLAPSED))
+                .imprtc(dream.state.hasState(StateKey.IMPRTC))
+                .refrnc(dream.state.hasState(StateKey.REFRNC))
+                .nhtmr(nhtmr)
+                .halluc(halluc)
+                .build();
+    }
+
     /**
      * JournalDayEntity 리스트를 순회하여 각 id 기준의 JournalState 맵(entry, diary, note, dream, interpretation)을 생성한다.
      * @param journalDayEntityList 조회된 JournalDayEntity 리스트
@@ -66,12 +79,7 @@ public final class JournalDayStateMapHelper {
                         final List<JournalDreamEntity> dreamList = entry.getJournalDreamList();
                         if (CollectionUtils.isNotEmpty(dreamList)) {
                             for (final JournalDreamEntity dream : dreamList) {
-                                final JournalState dreamState = JournalState.builder()
-                                        .resolved(dream.state.hasState(StateKey.RESOLVED))
-                                        .collapsed(dream.state.hasState(StateKey.COLLAPSED))
-                                        .imprtc(dream.state.hasState(StateKey.IMPRTC))
-                                        .refrnc(dream.state.hasState(StateKey.REFRNC))
-                                        .build();
+                                final JournalState dreamState = dreamStateFromEntity(dream);
                                 dreamMap.put(dream.getId(), dreamState);
 
                                 final List<JournalInterpretationEntity> journalInterpretationList = dream.getJournalInterpretationList();
@@ -89,12 +97,7 @@ public final class JournalDayStateMapHelper {
                         final List<JournalDreamEntity> elseDreamList = entry.getJournalElseDreamList();
                         if (CollectionUtils.isNotEmpty(elseDreamList)) {
                             for (final JournalDreamEntity dream : elseDreamList) {
-                                final JournalState dreamState = JournalState.builder()
-                                        .resolved(dream.state.hasState(StateKey.RESOLVED))
-                                        .collapsed(dream.state.hasState(StateKey.COLLAPSED))
-                                        .imprtc(dream.state.hasState(StateKey.IMPRTC))
-                                        .refrnc(dream.state.hasState(StateKey.REFRNC))
-                                        .build();
+                                final JournalState dreamState = dreamStateFromEntity(dream);
                                 dreamMap.put(dream.getId(), dreamState);
                             }
                         }

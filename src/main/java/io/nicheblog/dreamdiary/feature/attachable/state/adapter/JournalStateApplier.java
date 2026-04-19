@@ -26,6 +26,8 @@ public final class JournalStateApplier {
             case COLLAPSED -> state.setCollapsed(isEnabled);
             case IMPRTC -> state.setImprtc(isEnabled);
             case REFRNC -> state.setRefrnc(isEnabled);
+            case NHTMR -> state.setNhtmr(isEnabled);
+            case HALLUC -> state.setHalluc(isEnabled);
         }
     }
 }
