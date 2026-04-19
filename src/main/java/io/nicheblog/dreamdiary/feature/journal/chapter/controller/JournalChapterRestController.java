@@ -101,6 +101,27 @@ public class JournalChapterRestController
     }
 
     /**
+     * 꿈(DREAM) 챕터 자동 생성 (이미 있으면 기존 챕터 반환).
+     * 수동 챕터 등록 API에서는 DREAM을 만들 수 없다.
+     *
+     * @param journalDayId 저널 일자 ID
+     * @return {@link ResponseEntity} -- 처리 결과
+     */
+    @PostMapping(value = {Url.JOURNAL_CHAPTER_DREAM_AUTO})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalChapterDreamAutoRegAjax(
+            final @RequestParam("journalDayId") Integer journalDayId
+    ) throws Exception {
+
+        final ServiceResponse result = journalChapterService.registAutoDreamChapter(journalDayId);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
      * 저널 챕터 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *

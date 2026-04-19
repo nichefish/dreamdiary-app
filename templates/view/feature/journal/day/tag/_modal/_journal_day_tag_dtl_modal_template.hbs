@@ -55,19 +55,52 @@
                             <div class="d-flex align-items-center mt-2">
                                 <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
                                     {{#ifYn chapterResolvedYn}}
-                                        <span class="text-success"><@spring.message 'txt.chapter'/></span>
+                                        <span class="text-success">
+                                            {{#if (equals chapterType "DREAM")}}
+                                                <@spring.message 'txt.dream'/>
+                                            {{else}}
+                                                {{#if (equals chapterType "NOTE")}}
+                                                    <@spring.message 'txt.journal.note'/>
+                                                {{else}}
+                                                    <@spring.message 'txt.diary'/>
+                                                {{/if}}
+                                            {{/if}}
+                                        </span>
                                         <span class="position-relative d-inline-block">
-                                          <i class="bi bi-book fs-4 text-success"></i>
+                                            {{#if (equals chapterType "DREAM")}}
+                                                <i class="bi bi-moon-stars fs-4 text-success"></i>
+                                            {{else}}
+                                                {{#if (equals chapterType "NOTE")}}
+                                                    <i class="bi bi-journal-text fs-4 text-success"></i>
+                                                {{else}}
+                                                    <i class="bi bi-book fs-4 text-success"></i>
+                                                {{/if}}
+                                            {{/if}}
                                         </span>
                                     {{else}}
-                                        <@spring.message 'txt.chapter'/>
-                                        <i class="bi bi-book fs-4 pe-1"></i>
+                                        {{#if (equals chapterType "DREAM")}}
+                                            <@spring.message 'txt.dream'/>
+                                            <i class="bi bi-moon-stars fs-4 pe-1"></i>
+                                        {{else}}
+                                            {{#if (equals chapterType "NOTE")}}
+                                                <@spring.message 'txt.journal.note'/>
+                                                <i class="bi bi-journal-text fs-4 pe-1"></i>
+                                            {{else}}
+                                                <@spring.message 'txt.diary'/>
+                                                <i class="bi bi-book fs-4 pe-1"></i>
+                                            {{/if}}
+                                        {{/if}}
                                     {{/ifYn}}
                                 </div>
                                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                                     {{#if (equals chapterType "DIARY")}}
                                         {{> journal_diary_reg_btn_partial this}}
+                                    {{/if}}
+                                    {{#if (equals chapterType "NOTE")}}
                                         {{> journal_note_reg_btn_partial this}}
+                                    {{/if}}
+                                    {{#if (equals chapterType "DREAM")}}
+                                        {{> journal_dream_reg_btn_partial journalDayId=journalDayId journalChapterId=id stdrdDt=stdrdDt journalDateWeekDay=journalDateWeekDay}}
                                     {{/if}}
                                     {{> journal_chapter_context_btn_partial this}}
                                     {{> journal_chapter_toggle_btn_partial this}}
@@ -135,12 +168,6 @@
                             </div>
                         {{/each}}
                         {{#if hasDream}}
-                            <div class="d-flex align-items-center mt-2">
-                                <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
-                                    <@spring.message 'txt.dream'/>
-                                    <i class="bi bi-moon-stars fs-4 pe-1"></i>
-                                </span>
-                            </div>
                             {{#each journalDreamList}}
                                 <div class="journal-item">
                                     <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
