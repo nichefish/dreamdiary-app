@@ -4,7 +4,7 @@
  -->
 
 <script type="text/x-handlebars-template" id="journal_dream_content_search_partial" data-partial>
-    <div class="{{#if (exists contentClass)}}{{contentClass}}{{else}}journal-content {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
+    <div class="{{#if (exists contentClass)}}{{contentClass}}{{else}}journal-content {{contentStateClass state}}{{#if (hasState state 'COLLAPSED')}} collapse-4{{/if}}{{/if}}">
         {{{markdownContent}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->

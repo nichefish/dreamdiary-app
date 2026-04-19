@@ -211,7 +211,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     display: none;
 }
 
-.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content {
+.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
+.journal-note-content {
     transition: all 0.2s ease;
 
     .journal-content {
@@ -288,6 +289,13 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         }
     }
 }
+.journal-note-item[data-resolved="Y"] {
+    .journal-note-content {
+        .journal-content.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
 
 .journal-diary-content, .journal-interpretation-content {
     p {
@@ -322,7 +330,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 /* 글접기 처리 */
 .modal-body {
-    .journal-dream-content, .journal-diary-content {
+    .journal-dream-content, .journal-diary-content, .journal-note-content {
 
         // 공통 스타일 믹스인
         @mixin cn-collapse($lines, $height) {
