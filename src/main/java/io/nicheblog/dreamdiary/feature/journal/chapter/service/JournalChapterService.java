@@ -30,6 +30,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,6 +53,20 @@ public class JournalChapterService
 
     /** 자동 생성 꿈 챕터 기본 제목 */
     private static final String AUTO_DREAM_CHAPTER_TITLE = "꿈";
+
+    /** 화면·저장 정렬: 일기 → 노트 → 꿈 */
+    private static int chapterTypeOrderKey(final JournalChapterEntity e) {
+        return chapterTypeOrder(e.getChapterType());
+    }
+
+    private static int chapterTypeOrder(final ChapterType t) {
+        if (t == null) return 99;
+        return switch (t) {
+            case DIARY -> 0;
+            case NOTE -> 1;
+            case DREAM -> 2;
+        };
+    }
 
     @Getter
     private final JournalChapterRepository repository;
@@ -148,7 +163,9 @@ public class JournalChapterService
 
         final JournalChapterEntity existing = repository.findFirstByJournalDayIdAndChapterType(journalDayId, ChapterType.DREAM).orElse(null);
         if (existing != null) {
-            final JournalChapterDto dto = mapstruct.toDto(existing);
+            this.getSelf().normalizeSortOrder(journalDayId);
+            final JournalChapterEntity synced = repository.findById(existing.getId()).orElse(existing);
+            final JournalChapterDto dto = mapstruct.toDto(synced);
             final ServiceResponse response = new ServiceResponse();
             response.setRslt(dto.getId() != null);
             response.setRsltObj(dto);
@@ -180,6 +197,7 @@ public class JournalChapterService
      */
     @Override
     public void postRegist(final JournalChapterDto updatedDto) throws Exception {
+        this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_CHAPTER);
     }
@@ -213,8 +231,8 @@ public class JournalChapterService
      */
     @Override
     public void postModify(final JournalChapterDto postDto, final JournalChapterDto updatedDto) throws Exception {
-        // 정렬 순서 재조정
-        if (updatedDto.getIsSortOrderChanged()) this.getSelf().reorderSortOrder(updatedDto);
+        // 일기 → 노트 → 꿈 순으로 sort_order 정리 (타입 변경·순번 변경 모두 반영)
+        this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
 
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_CHAPTER);
@@ -240,8 +258,7 @@ public class JournalChapterService
 
     @Override
     public void postDelete(final JournalChapterDto deletedDto) throws Exception {
-        // 정렬 순서 재조정
-        this.getSelf().reorderSortOrder(deletedDto);
+        this.getSelf().normalizeSortOrder(deletedDto.getJournalDayId());
 
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), ContentType.JOURNAL_CHAPTER);
@@ -270,15 +287,19 @@ public class JournalChapterService
      */
     @Transactional
     public void normalizeSortOrder(final Integer journalDayId) {
-        final List<JournalChapterDto> list = journalChapterMapper.findAllForReorder(journalDayId);
+        final List<JournalChapterEntity> list = repository.findAllByJournalDayId(journalDayId);
         if (CollectionUtils.isEmpty(list)) return;
 
+        list.sort(Comparator
+                .comparingInt(JournalChapterService::chapterTypeOrderKey)
+                .thenComparingInt(e -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
+                .thenComparing(JournalChapterEntity::getId));
+
         int sortOrder = 1;
-        for (final JournalChapterDto e : list) {
+        for (final JournalChapterEntity e : list) {
             e.setSortOrder(sortOrder++);
         }
-
-        journalChapterMapper.batchUpdateIdx(list);
+        repository.saveAllAndFlush(list);
     }
     
     /**
@@ -327,10 +348,8 @@ public class JournalChapterService
      */
     @Transactional
     public void reorderSortOrder(final JournalChapterDto updatedDto) throws Exception {
-        // 1단계: 현재 chapter 그룹 정리 (기존 sortOrder 값을 normalize하여 안정화)
+        // 일기 → 노트 → 꿈 순으로 sort_order 재부여 (같은 타입 내에서는 기존 sort_order·id 순 유지)
         normalizeSortOrder(updatedDto.getJournalDayId());
-        // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJournalDayId(), updatedDto.getId(), updatedDto.getSortOrder());
     }
 }
 

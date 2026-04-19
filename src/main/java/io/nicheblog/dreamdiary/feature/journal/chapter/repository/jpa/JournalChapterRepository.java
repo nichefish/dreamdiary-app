@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.QueryHint;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,4 +41,7 @@ public interface JournalChapterRepository
 
     /** 동일 일자의 꿈(DREAM) 챕터 1건 (없으면 empty) */
     Optional<JournalChapterEntity> findFirstByJournalDayIdAndChapterType(Integer journalDayId, ChapterType chapterType);
+
+    /** 동일 일자의 전체 챕터 (삭제 제외, @Where 적용) */
+    List<JournalChapterEntity> findAllByJournalDayId(Integer journalDayId);
 }
