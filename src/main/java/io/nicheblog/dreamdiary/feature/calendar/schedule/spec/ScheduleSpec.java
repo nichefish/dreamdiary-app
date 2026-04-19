@@ -69,7 +69,7 @@ public class ScheduleSpec
         // expressions
         final Expression<Date> endDtExp = root.get("endDt");
         final Expression<Date> bgnDtExp = root.get("bgnDt");
-        final Expression<String> prvtYnExp = root.get("prvtYn");
+        final Expression<String> privateYnExp = root.get("privateYn");
         final Expression<String> scheduleCdExp = root.get("scheduleCd");
 
         // 파라미터 비교
@@ -86,21 +86,21 @@ public class ScheduleSpec
                     continue;
                 case "getHolydayCeremonyOnly":
                     // 휴일/공휴일, 행사 조회
-                    predicate.add(builder.equal(prvtYnExp, "N"));
+                    predicate.add(builder.equal(privateYnExp, "N"));
                     Predicate holyday = builder.equal(scheduleCdExp, Code.SCHEDULE_HOLYDAY);
                     Predicate ceremony = builder.equal(scheduleCdExp, Code.SCHEDULE_CEREMONY);
                     predicate.add(builder.or(holyday, ceremony));
                     continue;
                 case "getExceptHolydayCeremony":
                     // 휴일/공휴일, 행사 제외하고 조회
-                    predicate.add(builder.equal(prvtYnExp, "N"));
+                    predicate.add(builder.equal(privateYnExp, "N"));
                     Predicate notHolyday = builder.notEqual(scheduleCdExp, Code.SCHEDULE_HOLYDAY);
                     Predicate notCeremony = builder.notEqual(scheduleCdExp, Code.SCHEDULE_CEREMONY);
                     predicate.add(builder.and(notHolyday, notCeremony));
                     continue;
                 case "getPrvtOnly":
                     // 개인 일정 조회
-                    predicate.add(builder.equal(prvtYnExp, "Y"));
+                    predicate.add(builder.equal(privateYnExp, "Y"));
                     prtcpntJoin = root.join("prtcpntList", JoinType.INNER);
                     predicate.add(builder.equal(prtcpntJoin.get("username"), AuthUtils.getLoginUsername()));
                     continue;

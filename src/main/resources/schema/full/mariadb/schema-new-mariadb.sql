@@ -49,16 +49,12 @@ CREATE TABLE IF NOT EXISTS schedule (
     schedule_cd VARCHAR(30) COMMENT '일정 코드',
     bgn_dt DATETIME DEFAULT NULL COMMENT '시작일자',
     end_dt DATETIME DEFAULT NULL COMMENT '종료일자',
-    prvt_yn CHAR(1) DEFAULT 'N' COMMENT '개인일정 여부 (Y/N)',
+    private_yn CHAR(1) DEFAULT 'N' COMMENT '개인일정 여부 (Y/N)',
     src VARCHAR(50) DEFAULT '출처',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    category_code VARCHAR(50) COMMENT '글 분류 코드',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
