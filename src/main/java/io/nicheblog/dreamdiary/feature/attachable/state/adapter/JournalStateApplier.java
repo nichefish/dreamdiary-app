@@ -1,30 +1,31 @@
 package io.nicheblog.dreamdiary.feature.attachable.state.adapter;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
-import lombok.experimental.UtilityClass;
 
 /**
  * JournalStateApplier
  *
  * @author nichefish
  */
-@UtilityClass
 public final class JournalStateApplier {
 
+    private JournalStateApplier() {
+    }
+
     /**
-     * 저널 상태 적용
+     * 캐시 맵에 상태 반영
      * @param state JournalState
-     * @param stateCd StateCd
-     * @param isEnabled Boolean
+     * @param stateKey StateKey
+     * @param isEnabled 활성화 여부
      */
-    public static void apply(final JournalState state, final StateCd stateCd, final Boolean isEnabled) {
-         switch (stateCd) {
-            case IMPRTC -> state.setImprtc(isEnabled);
-            case COLLAPSED-> state.setCollapsed(isEnabled);
-            case REFRNC -> state.setRefrnc(isEnabled);
+    public static void apply(final JournalState state, final StateKey stateKey, final Boolean isEnabled) {
+        if (state == null || stateKey == null) return;
+        switch (stateKey) {
             case RESOLVED -> state.setResolved(isEnabled);
+            case COLLAPSED -> state.setCollapsed(isEnabled);
+            case IMPRTC -> state.setImprtc(isEnabled);
+            case REFRNC -> state.setRefrnc(isEnabled);
         }
     }
 }
-

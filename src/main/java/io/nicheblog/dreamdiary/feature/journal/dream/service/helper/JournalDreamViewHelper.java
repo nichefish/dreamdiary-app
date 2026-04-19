@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.service.helper;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.service.helper.JournalInterpretationViewHelper;
@@ -32,10 +32,10 @@ public class JournalDreamViewHelper {
 
             final JournalState s = dreamMap.get(dream.getId());
             if (s != null) {
-                dream.state.apply(StateCd.COLLAPSED, s.getCollapsed());
-                dream.state.apply(StateCd.RESOLVED, s.getResolved());
-                dream.state.apply(StateCd.IMPRTC, s.getImprtc());
-                dream.state.apply(StateCd.REFRNC, s.getRefrnc());
+                dream.state.apply(StateKey.COLLAPSED, s.getCollapsed());
+                dream.state.apply(StateKey.RESOLVED, s.getResolved());
+                dream.state.apply(StateKey.IMPRTC, s.getImprtc());
+                dream.state.apply(StateKey.REFRNC, s.getRefrnc());
             }
 
             JournalInterpretationViewHelper.applyState(dream.getJournalInterpretationList(), interpretationMap);

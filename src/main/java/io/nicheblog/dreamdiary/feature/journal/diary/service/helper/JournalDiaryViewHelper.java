@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.service.helper;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.service.helper.JournalInterpretationViewHelper;
@@ -33,10 +33,10 @@ public class JournalDiaryViewHelper {
         for (final JournalDiaryDto diary : listDto) {
             final JournalState d = diaryMap.get(diary.getId());
             if (d != null) {
-                diary.state.apply(StateCd.COLLAPSED, d.getCollapsed());
-                diary.state.apply(StateCd.RESOLVED, d.getResolved());
-                diary.state.apply(StateCd.IMPRTC, d.getImprtc());
-                diary.state.apply(StateCd.REFRNC, d.getRefrnc());
+                diary.state.apply(StateKey.COLLAPSED, d.getCollapsed());
+                diary.state.apply(StateKey.RESOLVED, d.getResolved());
+                diary.state.apply(StateKey.IMPRTC, d.getImprtc());
+                diary.state.apply(StateKey.REFRNC, d.getRefrnc());
             }
 
             JournalInterpretationViewHelper.applyState(diary.getJournalInterpretationList(), interpretationMap);

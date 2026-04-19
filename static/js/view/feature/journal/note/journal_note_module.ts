@@ -176,19 +176,19 @@ dF.JournalNote = (function(): dfModule {
             });
         },
 
-        toggleStateAjax: function(id: string|number, stateCode: string, { onOffFunc }: { onOffFunc: Function }): void {
+        toggleStateAjax: function(id: string|number, stateKey: string, { onOffFunc }: { onOffFunc: Function }): void {
             if (isNaN(Number(id))) return;
 
             const item = document.querySelector(`.journal-note-item[data-id='${id}']`) as HTMLElement;
             const cacheContext = dF.State.resolveJournalCacheContext(item);
-            const payload = { id, contentType: "JOURNAL_NOTE", stateCode, cacheContext };
+            const payload = { id, contentType: "JOURNAL_NOTE", stateKey, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
                 if (!item) return;
-                const lowerStateCode: string = stateCode.toLowerCase();
-                item.dataset[lowerStateCode] = res.rsltSts === "ON" ? "Y" : "N";
-                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCode}`);
+                const lowerStateKey: string = stateKey.toLowerCase();
+                item.dataset[lowerStateKey] = res.rsltSts === "ON" ? "Y" : "N";
+                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateKey}`);
                 icon?.classList.toggle("d-none", res.rsltSts !== "ON");
-                const chk: HTMLInputElement = item.querySelector(`.note-context-${lowerStateCode}-check`);
+                const chk: HTMLInputElement = item.querySelector(`.note-context-${lowerStateKey}-check`);
                 if (chk) chk.checked = res.rsltSts === "ON";
                 onOffFunc(res, item);
             });

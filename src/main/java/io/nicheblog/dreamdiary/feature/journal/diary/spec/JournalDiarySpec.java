@@ -190,7 +190,7 @@ public class JournalDiarySpec
                         builder.and(
                             builder.equal(stateRoot.get("refId"), root.get("id")),
                             builder.equal(stateRoot.get("refContentType"), ContentType.JOURNAL_DIARY.key),
-                            stateRoot.get("stateCode").in(states)
+                            stateRoot.get("stateKey").in(states)
                         )
                     );
 

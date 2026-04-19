@@ -185,7 +185,7 @@ public class JournalDreamSpec
                         builder.and(
                             builder.equal(stateRoot.get("refId"), root.get("id")),
                             builder.equal(stateRoot.get("refContentType"), ContentType.JOURNAL_DREAM.key),
-                            stateRoot.get("stateCode").in(states)
+                            stateRoot.get("stateKey").in(states)
                         )
                     );
 

@@ -16,8 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface StateRepository
         extends BaseStreamRepository<StateEntity, Integer> {
 
-    StateEntity findByRefIdAndRefContentTypeAndStateCode(final Integer id, final String key, final String stateCode);
+    StateEntity findByRefIdAndRefContentTypeAndStateKey(final Integer id, final String refContentType, final String stateKey);
 
     //
 }
-
