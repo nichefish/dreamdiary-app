@@ -163,7 +163,7 @@ public class JournalCacheEvictParam {
                 .journalDayId(dto.getJournalDayId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
-                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
+                .weekStartDt(dto.getStdrdDt() == null ? null : DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
 
@@ -212,4 +212,3 @@ public class JournalCacheEvictParam {
     }
 
 }
-

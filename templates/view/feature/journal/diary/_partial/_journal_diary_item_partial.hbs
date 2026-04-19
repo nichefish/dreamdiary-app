@@ -33,4 +33,9 @@
             {{> journal_diary_context_btn_partial this}}
         </div>
     </div>
+    <div class="journal-item">
+        {{#each journalInterpretationList}}
+            {{> journal_interpretation_item_partial this}}
+        {{/each}}
+    </div>
 </script>

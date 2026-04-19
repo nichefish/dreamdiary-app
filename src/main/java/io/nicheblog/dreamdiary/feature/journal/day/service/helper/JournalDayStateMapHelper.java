@@ -101,6 +101,17 @@ public final class JournalDayStateMapHelper {
                                         .refrnc(diary.state.hasState(StateCd.REFRNC))
                                         .build();
                                 diaryMap.put(diary.getId(), diaryState);
+
+                                final List<JournalInterpretationEntity> journalInterpretationList = diary.getJournalInterpretationList();
+                                if (CollectionUtils.isNotEmpty(journalInterpretationList)) {
+                                    for (final JournalInterpretationEntity interpretation : journalInterpretationList) {
+                                        final JournalState interpretationState = JournalState.builder()
+                                                .resolved(interpretation.state.hasState(StateCd.RESOLVED))
+                                                .collapsed(interpretation.state.hasState(StateCd.COLLAPSED))
+                                                .build();
+                                        interpretationMap.put(interpretation.getId(), interpretationState);
+                                    }
+                                }
                             }
                         }
                     }
@@ -110,4 +121,3 @@ public final class JournalDayStateMapHelper {
         return JournalStateMaps.builder().chapterMap(chapterMap).diaryMap(diaryMap).dreamMap(dreamMap).interpretationMap(interpretationMap).build();
     }
 }
-

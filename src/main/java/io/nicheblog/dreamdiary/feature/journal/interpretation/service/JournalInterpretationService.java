@@ -9,7 +9,10 @@ import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
+import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
+import io.nicheblog.dreamdiary.feature.journal.dream.repository.jpa.JournalDreamRepository;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.mapstruct.JournalInterpretationMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
@@ -35,7 +38,7 @@ import java.util.Objects;
 /**
  * JournalInterpretationService
  * <pre>
- *  저널 일기 관리 서비스 모듈.
+ *   Journal interpretation management service.
  * </pre>
  *
  * @author nichefish
@@ -44,7 +47,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JournalInterpretationService
-        implements BaseAttachableService<JournalInterpretationDto, JournalInterpretationDto, Integer, JournalInterpretationEntity>, BaseMultipartWritableService<JournalInterpretationDto, JournalInterpretationDto, Integer, JournalInterpretationEntity> {
+        implements BaseAttachableService<JournalInterpretationDto, JournalInterpretationDto, Integer, JournalInterpretationEntity>,
+        BaseMultipartWritableService<JournalInterpretationDto, JournalInterpretationDto, Integer, JournalInterpretationEntity> {
 
     @Getter
     private final JournalInterpretationRepository repository;
@@ -58,13 +62,18 @@ public class JournalInterpretationService
     public JournalInterpretationMapstruct getReadMapstruct() {
         return this.mapstruct;
     }
+
     public JournalInterpretationMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
-    
+
+    private final JournalDiaryRepository journalDiaryRepository;
+    private final JournalDreamRepository journalDreamRepository;
+    private final JournalChapterRepository journalChapterRepository;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
 
     private final ApplicationContext context;
+
     private JournalInterpretationService getSelf() {
         return context.getBean(this.getClass());
     }
@@ -75,33 +84,33 @@ public class JournalInterpretationService
     }
 
     /**
-     * 등록 전처리. (override)
+     * Registration pre-processing.
      *
-     * @param registDto 등록할 객체
+     * @param registDto registration dto
      */
     @Override
     public void preRegist(final JournalInterpretationDto registDto) throws Exception {
-        // 정렬 순서 처리
+        this.applyJournalDayIdFromRef(registDto);
+
         final Integer lastSortOrder = repository.findLastIndexByRef(registDto.getRefId(), registDto.getRefContentType()).orElse(0);
         registDto.setSortOrder(lastSortOrder + 1);
     }
 
     /**
-     * 등록 후처리. (override)
+     * Registration post-processing.
      *
-     * @param updatedDto - 등록된 객체
+     * @param updatedDto saved dto
      */
     @Override
     public void postRegist(final JournalInterpretationDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_INTERPRETATION);
     }
-    
+
     /**
-     * 수정 전처리. (override)
+     * Modify pre-processing.
      *
-     * @param modifyDto - 수정할 객체
-     * @param modifyEntity - 수정할 객체
+     * @param modifyDto modify dto
+     * @param modifyEntity existing entity
      */
     @Override
     public void preModify(final JournalInterpretationDto modifyDto, final JournalInterpretationEntity modifyEntity) throws Exception {
@@ -109,36 +118,39 @@ public class JournalInterpretationService
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
+        this.applyJournalDayIdFromRef(modifyDto);
+
         final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
         modifyDto.setIsSortOrderChanged(isSortOrderChanged);
     }
 
     /**
-     * 수정 후처리. (override)
+     * Modify post-processing.
      *
-     * @param updatedDto - 등록된 객체
+     * @param postDto request dto
+     * @param updatedDto updated dto
      */
     @Override
     public void postModify(final JournalInterpretationDto postDto, final JournalInterpretationDto updatedDto) throws Exception {
-        // 정렬 순서 재조정
         if (updatedDto.getIsSortOrderChanged()) this.getSelf().reorderSortOrder(updatedDto);
 
-        // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_INTERPRETATION);
     }
 
     /**
-     * 상세 조회 (dto level) :: 캐시 처리
+     * Cached detail dto lookup by user.
      *
-     * @param key 식별자
-     * @return {@link JournalInterpretationDto} -- 조회된 객체
+     * @param username username
+     * @param key interpretation id
+     * @return detail dto
      */
-    @Cacheable(value="journalInterpretationDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    @Cacheable(value = "journalInterpretationDtlDtoByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
     public JournalInterpretationDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JournalInterpretationEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalInterpretationDto retrieved = mapstruct.toDto(retrievedEntity);
-        // 권한 체크
-        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) {
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        }
         return retrieved;
     }
 
@@ -166,9 +178,9 @@ public class JournalInterpretationService
     }
 
     /**
-     * 삭제 전처리. (override)
+     * Delete pre-processing.
      *
-     * @param deletedDto - 삭제된 객체
+     * @param deletedDto delete target dto
      */
     @Override
     public void preDelete(final JournalInterpretationDto deletedDto) throws Exception {
@@ -178,25 +190,21 @@ public class JournalInterpretationService
     }
 
     /**
-     * 삭제 후처리. (override)
+     * Delete post-processing.
      *
-     * @param deletedDto - 삭제된 객체
+     * @param deletedDto deleted dto
      */
     @Override
     public void postDelete(final JournalInterpretationDto deletedDto) throws Exception {
-        // 정렬 순서 재조정
         this.getSelf().reorderSortOrder(deletedDto);
-
-        // 태그 처리 :: 메인 로직과 분리
-        // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), ContentType.JOURNAL_INTERPRETATION);
     }
 
     /**
-     * 삭제 데이터 조회
+     * Retrieve deleted detail dto.
      *
-     * @param key 삭제된 데이터의 키
-     * @return {@link JournalInterpretationDto} -- 삭제된 데이터 Dto
+     * @param key deleted id
+     * @return deleted dto
      */
     @Transactional(readOnly = true)
     public JournalInterpretationDto getDeletedDtlDto(final Integer key) throws Exception {
@@ -207,12 +215,12 @@ public class JournalInterpretationService
         }
         return deleted;
     }
-    
+
     /**
-     * 해당 ref 그룹 전체를 sortOrder = 1부터 다시 정렬한다.
+     * Normalize sort order within a ref group.
      *
-     * @param refId 참조 엔티티 번호
-     * @param refContentType 참조 컨텐츠 타입
+     * @param refId ref id
+     * @param refContentType ref content type
      */
     @Transactional
     public void normalizeSortOrder(final Integer refId, final ContentType refContentType) {
@@ -229,38 +237,32 @@ public class JournalInterpretationService
     }
 
     /**
-     * 대상 ref 그룹에 엔티티를 특정 위치에 삽입 후 재정렬한다.
+     * Insert target into a specific position within a ref group.
      *
-     * @param refId 참조 엔티티 번호
-     * @param refContentType 참조 컨텐츠 타입
-     * @param id 게시물 PK
-     * @param targetSortOrder 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     * @param refId ref id
+     * @param refContentType ref content type
+     * @param id target interpretation id
+     * @param targetSortOrder 1-based target position
      */
     @Transactional
     public void insert(final Integer refId, final ContentType refContentType, final Integer id, Integer targetSortOrder) throws Exception {
         final List<JournalInterpretationDto> list = mapper.findAllForReorder(refId, refContentType);
 
-        // target 조회
         final JournalInterpretationEntity targetEntity = findDtlEntity(id);
         if (targetEntity == null) return;
         final JournalInterpretationDto target = mapstruct.toDto(targetEntity);
 
-        // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getId(), id));
 
-        // ref 변경
         target.setRefId(refId);
         target.setRefContentType(refContentType);
 
-        // targetSortOrder 보정 (upper bound)
         final int maxIdx = list.size() + 1;
         final int normalizedIdx = Math.min(targetSortOrder == null ? maxIdx : targetSortOrder, maxIdx);
-        // 삽입 위치 계산
         int pos = normalizedIdx - 1;
         pos = Math.min(pos, list.size());
         list.add(pos, target);
 
-        // sortOrder 재정렬
         int sortOrder = 1;
         for (final JournalInterpretationDto e : list) {
             e.setSortOrder(sortOrder++);
@@ -271,23 +273,21 @@ public class JournalInterpretationService
     }
 
     /**
-     * 정렬 순서 변경 시 관련 순서를 업데이트
+     * Reorder sort order for updated dto.
      *
-     * @param updatedDto 업데이트된 객체
+     * @param updatedDto updated dto
      */
     @Transactional
     public void reorderSortOrder(final JournalInterpretationDto updatedDto) throws Exception {
-        // 1단계: 현재 ref 그룹 정리 (기존 sortOrder 값을 normalize하여 안정화)
         normalizeSortOrder(updatedDto.getRefId(), updatedDto.getRefContentType());
-        // 2단계: 해당 group에 새 위치로 target 삽입
         insert(updatedDto.getRefId(), updatedDto.getRefContentType(), updatedDto.getId(), updatedDto.getSortOrder());
     }
 
     /**
-     * 주어진 {@link JournalDayDto} 객체에 공휴일 및 주말 여부 정보를 설정한다.
+     * Apply holiday/weekend info.
      *
-     * @param journalInterpretation 공휴일 및 주말 정보를 설정할 대상 DTO
-     * @param holydayMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
+     * @param journalInterpretation target dto
+     * @param holydayMap holiday map
      */
     private void setHolydayInfo(final JournalInterpretationDto journalInterpretation, final Map<String, List<String>> holydayMap) throws Exception {
         if (journalInterpretation == null || holydayMap == null) return;
@@ -301,6 +301,27 @@ public class JournalInterpretationService
             journalInterpretation.setHolydayNm(concatHolydayNm);
         }
     }
+
+    private void applyJournalDayIdFromRef(final JournalInterpretationDto dto) {
+        if (dto == null || dto.getRefId() == null || dto.getRefContentType() == null) return;
+        dto.setJournalDayId(this.resolveJournalDayIdFromRef(dto.getRefId(), dto.getRefContentType()));
+    }
+
+    private Integer resolveJournalDayIdFromRef(final Integer refId, final ContentType refContentType) {
+        if (refId == null || refContentType == null) return null;
+
+        return switch (refContentType) {
+            case JOURNAL_DAY -> refId;
+            case JOURNAL_CHAPTER -> journalChapterRepository.findById(refId)
+                    .map(entity -> entity.getJournalDayId())
+                    .orElse(null);
+            case JOURNAL_DIARY -> journalDiaryRepository.findById(refId)
+                    .map(entity -> entity.getJournalChapter() != null ? entity.getJournalChapter().getJournalDayId() : null)
+                    .orElse(null);
+            case JOURNAL_DREAM -> journalDreamRepository.findById(refId)
+                    .map(entity -> entity.getJournalChapter() != null ? entity.getJournalChapter().getJournalDayId() : null)
+                    .orElse(null);
+            default -> null;
+        };
+    }
 }
-
-
