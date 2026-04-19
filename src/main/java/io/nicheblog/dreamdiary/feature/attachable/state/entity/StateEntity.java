@@ -48,10 +48,10 @@ public class StateEntity
     @Comment("참조 컨텐츠 타입")
     private String refContentType;
 
-    /** 상태 코드 */
-    @Column(name = "state_code")
-    @Comment("상태 코드")
-    private String stateCode;
+    /** 상태 키 */
+    @Column(name = "state_key")
+    @Comment("상태 키")
+    private String stateKey;
 
     /**
      * 생성자
@@ -62,7 +62,7 @@ public class StateEntity
         return StateEntity.builder()
                 .refId(stateToggle.getId())
                 .refContentType(stateToggle.getContentType().key)
-                .stateCode(stateToggle.getStateCode().key)
+                .stateKey(stateToggle.getStateKey().key)
                 .build();
     }
 }

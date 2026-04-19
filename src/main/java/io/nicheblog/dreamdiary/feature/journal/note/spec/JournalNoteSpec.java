@@ -189,7 +189,7 @@ public class JournalNoteSpec
                         builder.and(
                             builder.equal(stateRoot.get("refId"), root.get("id")),
                             builder.equal(stateRoot.get("refContentType"), ContentType.JOURNAL_NOTE.key),
-                            stateRoot.get("stateCode").in(states)
+                            stateRoot.get("stateKey").in(states)
                         )
                     );
 

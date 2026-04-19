@@ -166,9 +166,9 @@ CREATE TABLE IF NOT EXISTS state (
     ref_id INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     --
-    state_code VARCHAR(64) COMMENT '상태 코드',
+    state_key VARCHAR(64) COMMENT '상태 키',
     deleted_at DATETIME COMMENT '삭제일시',
-    UNIQUE KEY uk_state (ref_content_type, ref_id, state_code)
+    UNIQUE KEY uk_state (ref_content_type, ref_id, state_key)
 ) COMMENT = '상태';
 
 -- ---------- --

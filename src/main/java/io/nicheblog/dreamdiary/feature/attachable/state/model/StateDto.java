@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable.state.model;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
@@ -31,9 +31,9 @@ public class StateDto
     @Positive
     private Integer id;
 
-    /** 상태 코드 */
+    /** 상태 키 */
     @Size(max = 50)
-    private String stateCode;
+    private String stateKey;
 
     /** 참조 글 번호 */
     @Positive
@@ -48,7 +48,7 @@ public class StateDto
         return this.id;
     }
 
-    public StateDto(final StateCd stateCd) {
-        this.stateCode = stateCd.key;
+    public StateDto(final StateKey stateKeyEnum) {
+        this.stateKey = stateKeyEnum.key;
     }
 }

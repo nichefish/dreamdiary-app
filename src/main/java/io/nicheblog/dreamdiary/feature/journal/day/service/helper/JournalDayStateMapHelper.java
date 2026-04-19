@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.helper;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateMaps;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
@@ -57,7 +57,7 @@ public final class JournalDayStateMapHelper {
             if (CollectionUtils.isNotEmpty(journalChapterList)) {
                 for (final JournalChapterEntity entry : journalChapterList) {
                     final JournalState entryState = JournalState.builder()
-                            .collapsed(entry.state.hasState(StateCd.COLLAPSED))
+                            .collapsed(entry.state.hasState(StateKey.COLLAPSED))
                             .build();
                     chapterMap.put(entry.getId(), entryState);
 
@@ -67,10 +67,10 @@ public final class JournalDayStateMapHelper {
                         if (CollectionUtils.isNotEmpty(dreamList)) {
                             for (final JournalDreamEntity dream : dreamList) {
                                 final JournalState dreamState = JournalState.builder()
-                                        .resolved(dream.state.hasState(StateCd.RESOLVED))
-                                        .collapsed(dream.state.hasState(StateCd.COLLAPSED))
-                                        .imprtc(dream.state.hasState(StateCd.IMPRTC))
-                                        .refrnc(dream.state.hasState(StateCd.REFRNC))
+                                        .resolved(dream.state.hasState(StateKey.RESOLVED))
+                                        .collapsed(dream.state.hasState(StateKey.COLLAPSED))
+                                        .imprtc(dream.state.hasState(StateKey.IMPRTC))
+                                        .refrnc(dream.state.hasState(StateKey.REFRNC))
                                         .build();
                                 dreamMap.put(dream.getId(), dreamState);
 
@@ -78,8 +78,8 @@ public final class JournalDayStateMapHelper {
                                 if (CollectionUtils.isNotEmpty(journalInterpretationList)) {
                                     for (final JournalInterpretationEntity interpretation : journalInterpretationList) {
                                         final JournalState interpretationState = JournalState.builder()
-                                                .resolved(interpretation.state.hasState(StateCd.RESOLVED))
-                                                .collapsed(interpretation.state.hasState(StateCd.COLLAPSED))
+                                                .resolved(interpretation.state.hasState(StateKey.RESOLVED))
+                                                .collapsed(interpretation.state.hasState(StateKey.COLLAPSED))
                                                 .build();
                                         interpretationMap.put(interpretation.getId(), interpretationState);
                                     }
@@ -90,10 +90,10 @@ public final class JournalDayStateMapHelper {
                         if (CollectionUtils.isNotEmpty(elseDreamList)) {
                             for (final JournalDreamEntity dream : elseDreamList) {
                                 final JournalState dreamState = JournalState.builder()
-                                        .resolved(dream.state.hasState(StateCd.RESOLVED))
-                                        .collapsed(dream.state.hasState(StateCd.COLLAPSED))
-                                        .imprtc(dream.state.hasState(StateCd.IMPRTC))
-                                        .refrnc(dream.state.hasState(StateCd.REFRNC))
+                                        .resolved(dream.state.hasState(StateKey.RESOLVED))
+                                        .collapsed(dream.state.hasState(StateKey.COLLAPSED))
+                                        .imprtc(dream.state.hasState(StateKey.IMPRTC))
+                                        .refrnc(dream.state.hasState(StateKey.REFRNC))
                                         .build();
                                 dreamMap.put(dream.getId(), dreamState);
                             }
@@ -104,10 +104,10 @@ public final class JournalDayStateMapHelper {
                         if (CollectionUtils.isNotEmpty(journalDiaryList)) {
                             for (final JournalDiaryEntity diary : journalDiaryList) {
                                 final JournalState diaryState = JournalState.builder()
-                                        .resolved(diary.state.hasState(StateCd.RESOLVED))
-                                        .collapsed(diary.state.hasState(StateCd.COLLAPSED))
-                                        .imprtc(diary.state.hasState(StateCd.IMPRTC))
-                                        .refrnc(diary.state.hasState(StateCd.REFRNC))
+                                        .resolved(diary.state.hasState(StateKey.RESOLVED))
+                                        .collapsed(diary.state.hasState(StateKey.COLLAPSED))
+                                        .imprtc(diary.state.hasState(StateKey.IMPRTC))
+                                        .refrnc(diary.state.hasState(StateKey.REFRNC))
                                         .build();
                                 diaryMap.put(diary.getId(), diaryState);
 
@@ -115,8 +115,8 @@ public final class JournalDayStateMapHelper {
                                 if (CollectionUtils.isNotEmpty(journalInterpretationList)) {
                                     for (final JournalInterpretationEntity interpretation : journalInterpretationList) {
                                         final JournalState interpretationState = JournalState.builder()
-                                                .resolved(interpretation.state.hasState(StateCd.RESOLVED))
-                                                .collapsed(interpretation.state.hasState(StateCd.COLLAPSED))
+                                                .resolved(interpretation.state.hasState(StateKey.RESOLVED))
+                                                .collapsed(interpretation.state.hasState(StateKey.COLLAPSED))
                                                 .build();
                                         interpretationMap.put(interpretation.getId(), interpretationState);
                                     }
@@ -127,10 +127,10 @@ public final class JournalDayStateMapHelper {
                         if (CollectionUtils.isNotEmpty(journalNoteList)) {
                             for (final JournalNoteEntity note : journalNoteList) {
                                 final JournalState noteState = JournalState.builder()
-                                        .resolved(note.state.hasState(StateCd.RESOLVED))
-                                        .collapsed(note.state.hasState(StateCd.COLLAPSED))
-                                        .imprtc(note.state.hasState(StateCd.IMPRTC))
-                                        .refrnc(note.state.hasState(StateCd.REFRNC))
+                                        .resolved(note.state.hasState(StateKey.RESOLVED))
+                                        .collapsed(note.state.hasState(StateKey.COLLAPSED))
+                                        .imprtc(note.state.hasState(StateKey.IMPRTC))
+                                        .refrnc(note.state.hasState(StateKey.REFRNC))
                                         .build();
                                 noteMap.put(note.getId(), noteState);
                             }

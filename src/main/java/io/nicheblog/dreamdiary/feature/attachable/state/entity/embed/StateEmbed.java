@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable.state.entity.embed;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,12 +47,12 @@ public class StateEmbed
 
     /**
      * 상태 존재 여부 반환
-     * @param stateCd 상태 코드
+     * @param stateKey 상태 키
      * @return 상태 존재 여부
      */
-    public boolean hasState(final StateCd stateCd) {
-        if (stateCd == null || CollectionUtils.isEmpty(this.list)) return false;
+    public boolean hasState(final StateKey stateKey) {
+        if (stateKey == null || CollectionUtils.isEmpty(this.list)) return false;
         return this.list.stream()
-            .anyMatch(s -> stateCd.key.equals(s.getStateCode()));
+            .anyMatch(s -> stateKey.key.equals(s.getStateKey()));
     }
 }

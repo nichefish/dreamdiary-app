@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.note.service.helper;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
 import lombok.experimental.UtilityClass;
@@ -19,10 +19,10 @@ public class JournalNoteViewHelper {
             final JournalState state = noteMap.get(note.getId());
             if (state == null) continue;
 
-            note.state.apply(StateCd.COLLAPSED, state.getCollapsed());
-            note.state.apply(StateCd.RESOLVED, state.getResolved());
-            note.state.apply(StateCd.IMPRTC, state.getImprtc());
-            note.state.apply(StateCd.REFRNC, state.getRefrnc());
+            note.state.apply(StateKey.COLLAPSED, state.getCollapsed());
+            note.state.apply(StateKey.RESOLVED, state.getResolved());
+            note.state.apply(StateKey.IMPRTC, state.getImprtc());
+            note.state.apply(StateKey.REFRNC, state.getRefrnc());
         }
     }
 }

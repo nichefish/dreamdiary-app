@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.model;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.*;
@@ -76,8 +76,8 @@ public class JournalDreamSearchParam
     public void resolveStates(final Boolean showImprtc, final Boolean showRefrnc) {
         final List<String> states = new ArrayList<>(2);
 
-        if (showImprtc) states.add(StateCd.IMPRTC.key);
-        if (showRefrnc) states.add(StateCd.REFRNC.key);
+        if (showImprtc) states.add(StateKey.IMPRTC.key);
+        if (showRefrnc) states.add(StateKey.REFRNC.key);
 
         this.states = states;
     }

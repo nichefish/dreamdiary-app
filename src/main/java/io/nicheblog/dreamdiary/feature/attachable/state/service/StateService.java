@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.attachable.state.service;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.attachable.state.adapter.StateCacheUpdater;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
 import io.nicheblog.dreamdiary.feature.attachable.state.mapstruct.StateMapstruct;
@@ -133,12 +133,12 @@ public class StateService
      * @param stateToggle StateToggleDto
      */
     private void applyDerivedStates(final StateToggleDto stateToggle, final Boolean isEnabled) throws Exception {
-        if (StateCd.RESOLVED.equals(stateToggle.getStateCode())) {
+        if (StateKey.RESOLVED.equals(stateToggle.getStateKey())) {
             if (isEnabled) {
                 final StateToggleDto collapsedToggle = StateToggleDto.builder()
                         .id(stateToggle.getId())
                         .contentType(stateToggle.getContentType())
-                        .stateCode(StateCd.COLLAPSED)
+                        .stateKey(StateKey.COLLAPSED)
                         .cacheContext(stateToggle.getCacheContext())
                         .build();
 
@@ -164,7 +164,7 @@ public class StateService
                         "State cache update failed [{}:{}:{}]: {}",
                         stateToggle.getContentType(),
                         stateToggle.getId(),
-                        stateToggle.getStateCode(),
+                        stateToggle.getStateKey(),
                         e.getMessage(),
                         e
                 )
@@ -177,7 +177,7 @@ public class StateService
      * @return StateEntity 상태
      */
     public StateEntity getDtlEntity(StateToggleDto stateToggle) throws Exception {
-        return repository.findByRefIdAndRefContentTypeAndStateCode(stateToggle.getId(), stateToggle.getContentType().key, stateToggle.getStateCode().key);
+        return repository.findByRefIdAndRefContentTypeAndStateKey(
+                stateToggle.getId(), stateToggle.getContentType().key, stateToggle.getStateKey().key);
     }
 }
-

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.attachable.state.model;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import lombok.*;
 
 import javax.validation.constraints.Positive;
@@ -23,8 +23,8 @@ public class StateToggleDto {
     private Integer id;
     /** 컨텐츠 타입 */
     private ContentType contentType;
-    /** 표시 코드 */
-    private StateCd stateCode;
+    /** 상태 키 */
+    private StateKey stateKey;
 
     /** 캐시 파라미터 */
     private CacheContext cacheContext;

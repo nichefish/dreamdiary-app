@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * StateCd
+ * StateKey
  * <pre>
- *  상태 코드 정보
+ *  attachable 글에 부여되는 상태의 저장/전송용 키 (DB {@code state.state_key}, API JSON {@code stateKey}).
  * </pre>
  *
  * @author nichefish
@@ -15,25 +15,27 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public enum StateCd {
+public enum StateKey {
 
     RESOLVED("RESOLVED", "정리완료"),
     COLLAPSED("COLLAPSED", "접기"),
     IMPRTC("IMPRTC", "중요"),
     REFRNC("REFRNC", "참조");
 
+    /** DB 및 API에 사용되는 문자열 키 */
     public final String key;
     public final String desc;
     public String icon;
 
     /**
-     * 키와 일치하는 컨텐츠 타입 enum 반환
-     * @param contentType 문자열
-     * @return ContentType enum
+     * 키 문자열과 일치하는 enum 반환
+     * @param key 상태 키 문자열
+     * @return 일치 시 enum, 없으면 null
      */
-    public static StateCd get(final String contentType) {
-        for (final StateCd type : StateCd.values()) {
-            if (type.key.equals(contentType)) return type;
+    public static StateKey getByKey(final String key) {
+        if (key == null) return null;
+        for (final StateKey sk : StateKey.values()) {
+            if (sk.key.equals(key)) return sk;
         }
         return null;
     }

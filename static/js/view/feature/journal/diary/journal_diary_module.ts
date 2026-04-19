@@ -254,22 +254,22 @@ dF.JournalDiary = (function(): dfModule {
         /**
          * 상태 토글 (Ajax)
          * @param id
-         * @param stateCode
+         * @param stateKey
          * @param {object} object
          */
-        toggleStateAjax: function(id: string|number, stateCode: string, { onOffFunc }): void {
+        toggleStateAjax: function(id: string|number, stateKey: string, { onOffFunc }): void {
             if (isNaN(Number(id))) return;
 
             const item = document.querySelector(`.journal-diary-item[data-id='${id}']`) as HTMLElement;
             const cacheContext = dF.State.resolveJournalCacheContext(item);
-            const payload = { id, contentType: "JOURNAL_DIARY", stateCode, cacheContext };
+            const payload = { id, contentType: "JOURNAL_DIARY", stateKey, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
                 if (!item) return;
-                const lowerStateCode: string = stateCode.toLowerCase();
-                item.dataset[lowerStateCode] = res.rsltSts === "ON" ? "Y" : "N";
-                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCode}`);
+                const lowerStateKey: string = stateKey.toLowerCase();
+                item.dataset[lowerStateKey] = res.rsltSts === "ON" ? "Y" : "N";
+                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateKey}`);
                 icon?.classList.toggle("d-none", res.rsltSts !== "ON");
-                const chk: HTMLInputElement = item.querySelector(`.diary-context-${lowerStateCode}-check`);
+                const chk: HTMLInputElement = item.querySelector(`.diary-context-${lowerStateKey}-check`);
                 if (chk) chk.checked = res.rsltSts === "ON";
                 onOffFunc(res, item);
             });
@@ -432,7 +432,7 @@ dF.JournalDiary = (function(): dfModule {
             if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
 
             const hasState = (targetState: string): boolean =>
-                Array.isArray(diary.state?.list) && diary.state.list.some((state: any): boolean => state?.stateCode === targetState);
+                Array.isArray(diary.state?.list) && diary.state.list.some((state: any): boolean => state?.stateKey === targetState);
 
             return {
                 ...diary,

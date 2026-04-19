@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn;
 
-import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateDto;
 import lombok.*;
 
@@ -33,28 +33,28 @@ public class StateCmpstn
 
     /**
      * 상태 추가
-     * @param stateCd 상태 코드
+     * @param stateKey 상태 키
      */
-    public void put(final StateCd stateCd) {
-        if (stateCd == null) return;
+    public void put(final StateKey stateKey) {
+        if (stateKey == null) return;
         if (this.list == null) this.list = new ArrayList<>();
         final boolean exists = this.list.stream()
-            .anyMatch(s -> stateCd.key.equals(s.getStateCode()));
+            .anyMatch(s -> stateKey.key.equals(s.getStateKey()));
 
         if (exists) return;
 
-        this.list.add(new StateDto(stateCd));
+        this.list.add(new StateDto(stateKey));
     }
 
     /**
      * 상태 제거
-     * @param stateCd 상태 코드
+     * @param stateKey 상태 키
      */
-    public void remove(final StateCd stateCd) {
-        if (stateCd == null) return;
+    public void remove(final StateKey stateKey) {
+        if (stateKey == null) return;
         if (this.list == null) return;
 
-        this.list.removeIf(s -> stateCd.key.equals(s.getStateCode()));
+        this.list.removeIf(s -> stateKey.key.equals(s.getStateKey()));
 
         if (this.list.isEmpty()) this.list = null; // 선택 사항: 직렬화/메모리 정리 목적
     }
@@ -62,12 +62,12 @@ public class StateCmpstn
     /**
      * toggle
      */
-    public void apply(final StateCd stateCd, final Boolean isEnabled) {
-        if (stateCd == null) return;
+    public void apply(final StateKey stateKey, final Boolean isEnabled) {
+        if (stateKey == null) return;
         if (Boolean.TRUE.equals(isEnabled)) {
-            put(stateCd);
+            put(stateKey);
         } else {
-            remove(stateCd);
+            remove(stateKey);
         }
     }
 }
