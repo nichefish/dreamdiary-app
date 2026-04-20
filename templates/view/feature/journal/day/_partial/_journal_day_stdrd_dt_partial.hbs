@@ -8,7 +8,12 @@
         <i class="bi bi-calendar3 fs-6 me-1 {{#if isHolyday}}text-danger{{/if}}"></i>
         {{stdrdDt}}
         <span class="fs-8 {{#if isHolyday}}text-danger{{else}}text-gray-600{{/if}}">({{journalDateWeekDay}})</span>
-        <span class="badge badge-light-primary ms-2">{{journalDatePrecision}}</span>
+        {{#if (equals journalDatePrecision "APPROXIMATE")}}
+            <span class="badge badge-light-primary ms-2">{{journalDatePrecision}}</span>
+        {{/if}}
+        {{#if (equals journalDatePrecision "UNKNOWN")}}
+            <span class="badge badge-light-primary ms-2">{{journalDatePrecision}}</span>
+        {{/if}}
         <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
         {{#if (exists holydayNm)}}<div class="w-100 ps-5 fs-6 fw-normal text-truncate">{{holydayNm}}</div>{{/if}}
     </div>
