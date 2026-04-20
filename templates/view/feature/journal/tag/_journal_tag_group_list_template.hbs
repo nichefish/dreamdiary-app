@@ -8,7 +8,7 @@
         {{#each tagList}}
             <span class="py-2 me-3 cursor-pointer opacity-hover"
                   onclick="dF.JournalDreamTag.dtlModal({{id}}, '{{tagNm}}');"
-                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 태그로 게시물 목록을&#10;필터링합니다.">
+                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.journal.tag.filter-by-tag'/>">
                 <span class="{{tagClass}} {{textClass}}">
                     {{#if (exists ctgr)}}
                         <span class="fs-7 text-noti">[{{ctgr}}]</span>

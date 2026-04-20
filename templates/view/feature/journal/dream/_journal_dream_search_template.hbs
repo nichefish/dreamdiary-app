@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="journal_dream_search_template">
     {{#each this}}
         {{^if (equals this.mnth (lookup @root._locals "prevMnth"))}}
-            <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}년 {{mnth}}월</div>
+            <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}<@spring.message 'txt.date.suffix.after-year-number'/>{{mnth}}<@spring.message 'txt.date.suffix.after-month-number'/></div>
         {{/if}}
 
         <div class="journal-dream-item {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"

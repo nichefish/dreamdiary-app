@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="journal_day_meta_modal_template">
     <div class="d-flex flex-column mb-4">
         <div class="d-flex justify-content-start align-items-center gap-3 mb-4">
-            <label for="journal_day_meta_yy" class="form-label mb-0 fw-bold">년도</label>
+            <label for="journal_day_meta_yy" class="form-label mb-0 fw-bold"><@spring.message 'txt.yy'/></label>
             <select id="journal_day_meta_yy"
                     class="form-select form-select-sm w-auto"
                     onchange="dF.JournalDayMeta.changeYy({{metaId}}, this.value);">
@@ -18,7 +18,7 @@
         {{#each list}}
             {{!-- 저장된 previousMnth 변수를 비교 --}}
             {{^if (equals mnth (lookup @root._locals "prevMnth"))}}
-                <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}년 {{mnth}}월</div>
+                <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}<@spring.message 'txt.date.suffix.after-year-number'/>{{mnth}}<@spring.message 'txt.date.suffix.after-month-number'/></div>
             {{/if}}
 
             <div class="d-flex align-items-center gap-2">

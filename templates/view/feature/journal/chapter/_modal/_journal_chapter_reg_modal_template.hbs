@@ -28,7 +28,7 @@
         <div class="col-12">
             <label class="d-flex align-items-center mb-2" for="title">
                 <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.title'/></span>
-                <span class="text-gray-500 fs-9">(최대 50자)</span>
+                <span class="text-gray-500 fs-9"><@spring.message 'txt.journal.field.title-max-50'/></span>
             </label>
         </div>
         <div class="col-lg-2">
@@ -41,20 +41,20 @@
                     </div>
                 {{else}}
                     <select name="chapterType" id="chapterType" class="form-select form-select-solid">
-                        <option value="DIARY" {{selectedIf (equals chapterType "DIARY")}}>일기</option>
-                        <option value="NOTE" {{selectedIf (equals chapterType "NOTE")}}>노트</option>
+                        <option value="DIARY" {{selectedIf (equals chapterType "DIARY")}}><@spring.message 'txt.diary'/></option>
+                        <option value="NOTE" {{selectedIf (equals chapterType "NOTE")}}><@spring.message 'txt.chapter.type.note'/></option>
                     </select>
                 {{/if}}
             {{else}}
                 <select name="chapterType" id="chapterType" class="form-select form-select-solid">
-                    <option value="DIARY" {{selectedIf (equals chapterType "DIARY")}}>일기</option>
-                    <option value="NOTE" {{selectedIf (equals chapterType "NOTE")}}>노트</option>
+                    <option value="DIARY" {{selectedIf (equals chapterType "DIARY")}}><@spring.message 'txt.diary'/></option>
+                    <option value="NOTE" {{selectedIf (equals chapterType "NOTE")}}><@spring.message 'txt.chapter.type.note'/></option>
                 </select>
             {{/if}}
         </div>
         <div class="col-lg-2">
             <select name="categoryCode" id="categoryCode" class="form-select form-select-solid">
-                <option value="">--글분류--</option>
+                <option value=""><@spring.message 'txt.journal.select.post-ctgr'/></option>
                 <#list JOURNAL_CHAPTER_CTGR_CD![] as ctgr>
                     <option value="${ctgr.code!}" {{#if (equals categoryCode "${ctgr.code!}")}}selected{{/if}}>[${ctgr.codeName!}]</option>
                 </#list>
@@ -69,8 +69,8 @@
             <div class="col-1 d-flex ps-0">
                 <div class="d-flex-center p-2 fw-bold fs-5 text-gray-600">#</div>
                 <input type="number" class="form-control form-control-sm" name="sortOrder" id="sortOrder" min="1" max="99"
-                       value="{{sortOrder}}" placeholder="정렬순번" maxlength="3"
-                       data-bs-toggle="tooltip" data-bs-placement="top" title="현재 일자 안에서의 챕터 정렬 순서입니다.">
+                       value="{{sortOrder}}" placeholder="<@spring.message 'txt.journal.field.sort-order.placeholder'/>" maxlength="3"
+                       data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.journal.sort-order.chapter-in-day'/>">
             </div>
         {{/if}}
     </div>
