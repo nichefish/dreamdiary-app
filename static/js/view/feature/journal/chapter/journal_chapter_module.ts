@@ -216,6 +216,9 @@ dF.JournalChapter = (function(): dfModule {
                 } else {
                     chk.checked = res.rsltSts === "ON";
                 }
+                if (stateKey === "COLLAPSED") {
+                    item.dataset.collapsed = res.rsltSts === "ON" ? "Y" : "N";
+                }
                 const tagDiv: HTMLInputElement = item.querySelector(".journal-chapter-tags");
                 if (!tagDiv) {
                     console.warn("tagDiv not found.");
@@ -264,6 +267,7 @@ dF.JournalChapter = (function(): dfModule {
             if (shouldCollapse) {
                 // 전체 접기
                 content.classList.add("collapsed");
+                item.dataset.collapsed = "Y";
                 icon?.classList.add("bi-arrows-expand");
                 icon?.classList.remove("bi-arrows-collapse");
                 tagDiv?.classList.remove("d-none");
@@ -274,6 +278,7 @@ dF.JournalChapter = (function(): dfModule {
             } else {
                 // 전체 펼치기
                 content.classList.remove("collapsed");
+                item.dataset.collapsed = "N";
                 icon?.classList.add("bi-arrows-collapse");
                 icon?.classList.remove("bi-arrows-expand");
                 tagDiv?.classList.add("d-none");
