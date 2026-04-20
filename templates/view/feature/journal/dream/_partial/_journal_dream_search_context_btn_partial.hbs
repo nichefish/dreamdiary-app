@@ -86,7 +86,7 @@
                                        onclick="dF.JournalDream.resolveAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'RESOLVED')}}text-success{{else}}text-muted{{/if}}"><@spring.message 'txt.status.resolved'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
@@ -107,7 +107,7 @@
                                        onclick="dF.JournalDream.imprtcAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'IMPRTC')}}text-danger{{else}}text-muted{{/if}}"><@spring.message 'txt.status.imprtc'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
@@ -125,7 +125,7 @@
                                        onclick="dF.JournalDream.refrncAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.refrnc'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'REFRNC')}}text-warning{{else}}text-muted{{/if}}"><@spring.message 'txt.status.refrnc'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
@@ -138,7 +138,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.dream.nhtmr'/>">
                                 <input class="form-check-input w-30px h-20px cursor-pointer dream-context-nhtmr-check" type="checkbox" value="1" {{#if (hasState state 'NHTMR')}}checked="checked"{{/if}}
                                        onclick="dF.JournalDream.nhtmrAjax({{id}});">
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.dream.nhtmr'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'NHTMR')}}text-info{{else}}text-muted{{/if}}"><@spring.message 'txt.dream.nhtmr'/></span>
                             </label>
                         </div>
                     </div>
@@ -148,7 +148,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.dream.halluc'/>">
                                 <input class="form-check-input w-30px h-20px cursor-pointer dream-context-halluc-check" type="checkbox" value="1" {{#if (hasState state 'HALLUC')}}checked="checked"{{/if}}
                                        onclick="dF.JournalDream.hallucAjax({{id}});">
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.dream.halluc'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'HALLUC')}}text-gray-700{{else}}text-muted{{/if}}"><@spring.message 'txt.dream.halluc'/></span>
                             </label>
                         </div>
                     </div>
@@ -163,7 +163,7 @@
                                        onclick="dF.JournalDream.collapseAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'COLLAPSED')}}text-gray-700{{else}}text-muted{{/if}}"><@spring.message 'txt.status.collapsed'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->

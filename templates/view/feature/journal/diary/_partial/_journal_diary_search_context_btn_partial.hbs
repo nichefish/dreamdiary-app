@@ -84,7 +84,7 @@
                                        onclick="dF.JournalDiary.resolveAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'RESOLVED')}}text-success{{else}}text-muted{{/if}}"><@spring.message 'txt.status.resolved'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
@@ -105,7 +105,7 @@
                                        onclick="dF.JournalDiary.imprtcAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'IMPRTC')}}text-danger{{else}}text-muted{{/if}}"><@spring.message 'txt.status.imprtc'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
@@ -123,7 +123,7 @@
                                        onclick="dF.JournalDiary.refrncAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.refrnc'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'REFRNC')}}text-warning{{else}}text-muted{{/if}}"><@spring.message 'txt.status.refrnc'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
@@ -141,7 +141,7 @@
                                        onclick="dF.JournalDiary.collapseAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>
+                                <span class="form-check-label fs-7 {{#if (hasState state 'COLLAPSED')}}text-gray-700{{else}}text-muted{{/if}}"><@spring.message 'txt.status.collapsed'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
