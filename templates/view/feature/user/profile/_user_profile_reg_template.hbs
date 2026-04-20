@@ -13,8 +13,8 @@
         <div class="col-xl-2">
             <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center">
                 <label for="userInfoDc" class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="주소를 작성합니다.">
-                    주소
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.profile.address'/>">
+                    <@spring.message 'txt.user.profile.address'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
             </div>
@@ -29,8 +29,8 @@
         <div class="col-xl-2">
             <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center ">
                 <label for="brthdy" class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="생년월일을 입력합니다.">
-                    생년월일
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.profile.birth-date'/>">
+                    <@spring.message 'txt.user.profile.birth-date'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
             </div>
@@ -48,18 +48,18 @@
                 </svg>
             </span>
             <input type="text" name="profile.brthdy" id="brthdy" class="form-control form-control-solid ps-12"
-                   value="${(user.profile.brthdy)!}" placeholder="생년월일" readonly/>
+                   value="${(user.profile.brthdy)!}" placeholder="<@spring.message 'txt.user.profile.birth-date'/>" readonly/>
         </div>
         <div class="col-xl-2">
             <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
                 <label class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="음력 생일 사용시 체크합니다.">
-                    음력여부 :
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.profile.lunar'/>">
+                    <@spring.message 'txt.user.profile.lunar-yn'/>
                 </label>
                 <input type="checkbox" name="profile.lunarYn" id="lunarYn" class="form-check-input cursor-pointer ms-3"
                        value="Y" <#if (((user.profile.lunarYn)!"N") == "Y")!false>checked="checked"</#if> />
                 <label class="form-check-label fw-bold ms-3" for="lunarYn" id="lunarYnLabel" <#if ((user.profile.lunarYn)!"N") == "Y">blue<#else>gray</#if>;>
-                    <#if ((user.profile.lunarYn)!"N") == "Y">음력<#else>양력</#if>
+                    <#if ((user.profile.lunarYn)!"N") == "Y"><@spring.message 'txt.user.profile.lunar'/><#else><@spring.message 'txt.user.profile.solar'/></#if>
                 </label>
             </div>
         </div>
@@ -69,8 +69,8 @@
         <div class="col-xl-2">
             <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center">
                 <label for="userInfoDc" class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="프로필을 작성합니다.">
-                    사용자 프로필
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.profile.profile'/>">
+                    <@spring.message 'txt.user.profile.profile'/>
                 </label>
             </div>
         </div>

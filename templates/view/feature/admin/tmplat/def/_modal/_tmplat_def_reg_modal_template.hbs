@@ -13,13 +13,13 @@
             <#--begin::title-->
             <div class="col-2 col-form-label">
                 <label class="cursor-help required"
-                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="코드를 특정할 때 내부적으로&#10;사용되는 고유 코드를&#10;입력합니다.&#10;(등록 후 수정할 수 없습니다.)">
-                    템플릿 정의 코드
+                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.admin.tmplat.def.form.def-code'/>">
+                    <@spring.message 'txt.admin.tmplat.def.form.def-code'/>
                 </label>
             </div>
             <div class="col-10">
                 <input type="text" name="tmplatDefCd" id="tmplatDefCd" class="form-control {{#isMdf}}bg-secondary{{/isMdf}}"
-                       {{#isMdf}}data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="분류 코드는 수정할 수 없습니다."{{/isMdf}}
+                       {{#isMdf}}data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.admin.tmplat.def.form.def-code-readonly'/>"{{/isMdf}}
                        value="{{tmplatDefCd}}" maxlength="50" {{#isMdf}}readonly{{/isMdf}}>
             </div>
             <!--end::Title-->
@@ -28,8 +28,8 @@
             <#--begin::title-->
             <div class="col-2 col-form-label">
                 <label class="cursor-help required"
-                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="외부적으로 사용되는&#10;코드 이름을 입력합니다.">
-                    템플릿 정의명
+                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.admin.tmplat.def.form.def-name'/>">
+                    <@spring.message 'txt.admin.tmplat.def.form.def-name'/>
                 </label>
             </div>
             <div class="col-10">
@@ -41,7 +41,7 @@
         <div class="row mb-4">
             <#--begin::title-->
             <div class="col-2 col-form-label">
-                템플릿 정의 설명
+                <@spring.message 'txt.admin.tmplat.def.form.def-description'/>
             </div>
             <div class="col-10">
                 <textarea name="description" id="description" class="form-control h-75px">{{description}}</textarea>
@@ -51,13 +51,13 @@
         <div class="row mb-4">
             <#--begin::title-->
             <div class="col-2 col-form-label">
-                사용여부
+                <@spring.message 'txt.admin.tmplat.def.form.use-yn'/>
             </div>
             <div class="col-10">
                 <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
                     <input type="checkbox" name="useYn" id="useYn" class="form-check-input cursor-pointer ms-3"
                            value="Y" />
-                    <label class="form-check-label fw-bold ms-3" for="useYn" id="useYnLabel">미사용</label>
+                    <label class="form-check-label fw-bold ms-3" for="useYn" id="useYnLabel"><@spring.message 'txt.status.unuse'/></label>
                 </div>
             </div>
             <!--end::Title-->
@@ -66,7 +66,7 @@
         <div class="row mb-4">
             <#--begin::title-->
             <div class="col-2 col-form-label">
-                정렬 순서
+                <@spring.message 'txt.admin.tmplat.def.form.sort-order'/>
             </div>
             <div class="col-10">
                 <input type="text" name="sortOrder" id="sortOrder" class="form-control"

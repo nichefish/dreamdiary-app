@@ -22,7 +22,7 @@
                 <div class="badge {{#ifYn useYn}}badge-success{{else}}badge-secondary btn-white{{/ifYn}} cursor-pointer"
                      onclick="event.stopPropagation(); dF.CodeGroup.toggleUseAjax({{id}});"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                     title="클릭하여 사용 상태를 변경합니다.">
+                     title="<@spring.message 'bs.tooltip.admin.code.group.list.toggle-use'/>">
                     <i class="bi bi-check text-light blink-slow"></i>
                     {{#ifYn useYn}}<@spring.message 'txt.status.use'/>{{else}}<@spring.message 'txt.status.unuse'/>{{/ifYn}}
                 </div>

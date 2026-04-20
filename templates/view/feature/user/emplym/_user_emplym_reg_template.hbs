@@ -13,15 +13,15 @@
         <div class="col-xl-2">
             <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center required">
                 <label for="userNm" class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원명(실명)을 입력합니다.">
-                    직원명
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.user-name'/>">
+                    <@spring.message 'txt.user.emplym.user-name'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
             </div>
         </div>
         <div class="col-xl-2">
             <input type="text" name="emplym.userNm" id="userNm" class="form-control form-control-solid required"
-                   value="${(user.emplym.userNm)!}" placeholder="이름" maxlength="20" />
+                   value="${(user.emplym.userNm)!}" placeholder="<@spring.message 'txt.user.emplym.name-placeholder'/>" maxlength="20" />
             <div class="form-text text-noti">
                 <@spring.message "txt.req.nicknm"/>
             </div>
@@ -33,15 +33,15 @@
         <div class="col-xl-2">
             <div class="fw-bold col-form-label text-sm-start text-lg-center required">
                 <label for="emplymEmailId" class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="업무용 이메일 주소입니다.">
-                    직원 E-mail
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.email'/>">
+                    <@spring.message 'txt.user.emplym.email'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
             </div>
         </div>
         <div class="col-lg-2 col-4">
             <input type="text" name="emplym.emplymEmailId" id="emplymEmailId" class="form-control form-control-solid no-space required"
-                   value="${(user.emplym.emplymEmailId)!}" placeholder="이메일 ID 입력" maxlength="20" />
+                   value="${(user.emplym.emplymEmailId)!}" placeholder="<@spring.message 'txt.user.form.email-id-placeholder'/>" maxlength="20" />
             <div id="emplymEmailId_validate_span"></div>
         </div>
         <div class="col-xl-2 col-1 d-flex-center fw-bold text-gray-700" style="width:2%;">
@@ -49,12 +49,12 @@
         </div>
         <div class="col-lg-2 col-5 vertical-center">
             <input type="text" name="emplym.emplymEmailDomain" id="emplymEmailDomain" class="form-control form-control-solid no-space required"
-                   value="${(user.emplym.emplymEmailDomain)!}" placeholder="직접입력" maxlength="20" />
+                   value="${(user.emplym.emplymEmailDomain)!}" placeholder="<@spring.message 'txt.user.form.custom-input'/>" maxlength="20" />
             <div id="emplymEmailDomain_validate_span"></div>
         </div>
         <div class="col-xl-2 col-1">
             <select name="emplymEmailDomainSelect" id="emplymEmailDomainSelect" class="form-select form-select-solid">
-                <option value="">직접입력</option>
+                <option value=""><@spring.message 'txt.user.form.custom-input'/></option>
                 <option value="gmail.com" <#if isReg!false>selected</#if>>gmail.com</option>
                 <option value="naver.com">naver.com</option>
                 <option value="kakao.com">kakao.com</option>
@@ -66,8 +66,8 @@
         <div class="col-xl-2">
             <div class="fw-bold col-form-label text-sm-start text-lg-center required">
                 <label for="phoneNumber"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="업무용 연락처입니다.">
-                    직원 전화번호
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.phone'/>">
+                    <@spring.message 'txt.user.emplym.phone-number'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
             </div>
@@ -84,15 +84,15 @@
         <div class="col-xl-2">
             <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center">
                 <label for="cmpyCd" class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="소속회사, 소속팀,&#10;재직/프리랜서 여부를&#10;입력합니다.">
-                    소속
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.affiliation'/>">
+                    <@spring.message 'txt.user.emplym.affiliation'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
             </div>
         </div>
         <div class="col-xl-2 col-6">
             <select name="emplym.cmpyCd" id="cmpyCd" class="form-select form-select-solid">
-                <option value="">--회사--</option>
+                <option value=""><@spring.message 'txt.user.emplym.company-option'/></option>
                 <#list CMPY_CD![] as cmpy>
                     <option value="${cmpy.code!}" <#if user.emplym?? && cmpy.code == (user.emplym.cmpyCd)!>"selected"</#if>>${cmpy.codeName!}</option>
                 </#list>
@@ -101,7 +101,7 @@
         </div>
         <div class="col-xl-1 col-6">
             <select name="emplym.teamCd" id="teamCd" class="form-select form-select-solid">
-                <option value="">--팀--</option>
+                <option value=""><@spring.message 'txt.user.emplym.team-option'/></option>
                 <#list TEAM_CD![] as team>
                     <option value="${team.code!}" <#if user.emplym?? && team.code == (user.emplym.teamCd)!>"selected"</#if>>${team.codeName!}</option>
                 </#list>
@@ -110,7 +110,7 @@
         </div>
         <div class="col-xl-2 mg-lg-0">
             <select name="emplym.emplymCd" id="emplymCd" class="form-select form-select-solid">
-                <option value="">--재직구분--</option>
+                <option value=""><@spring.message 'txt.user.emplym.employment-type-option'/></option>
                 <#list EMPLYM_CD![] as emplym>
                     <option value="${emplym.code!}" <#if emplym.code == (user.emplym.emplymCd)!>"selected"</#if>>${emplym.codeName!}</option>
                 </#list>
@@ -121,11 +121,11 @@
     <#--begin::Row-->
     <div class="row mb-4">
         <div class="col-xl-2">
-            <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center "><label for="rankCd">직급</label></div>
+            <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center "><label for="rankCd"><@spring.message 'txt.user.emplym.rank'/></label></div>
         </div>
         <div class="col-xl-2">
             <select name="emplym.rankCd" id="rankCd" class="form-select form-select-solid">
-                <option value="">--선택--</option>
+                <option value=""><@spring.message 'txt.user.emplym.select-option'/></option>
                 <#list RANK_CD![] as rank>
                     <option value="${rank.code!}" <#if rank.code == (user.emplym.rankCd)!>"selected"</#if>>${rank.codeName!}</option>
                 </#list>
@@ -135,10 +135,10 @@
         <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
         <div class="col-xl-2" id="apntcYnDiv" style="display:none;">
             <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
-                수습여부 :
+                <@spring.message 'txt.user.emplym.probation'/>
                 <input type="checkbox" name="emplym.apntcYn" id="apntcYn" class="form-check-input cursor-pointer ms-3"
                        value="Y" <#if (((user.emplym.apntcYn)!"N") == "Y")!false>checked="checked"</#if> />
-                <label class="form-check-label fw-bold ms-3" for="apntcYn" id="apntcYnLabel" style="color:<#if (((user.emplym.apntcYn)!"N") == "Y")!false>blue<#else>gray</#if>;"><#if ((user.emplym.apntcYn)! == "Y")!false>수습<#else>해당없음</#if></label>
+                <label class="form-check-label fw-bold ms-3" for="apntcYn" id="apntcYnLabel" style="color:<#if (((user.emplym.apntcYn)!"N") == "Y")!false>blue<#else>gray</#if>;"><#if ((user.emplym.apntcYn)! == "Y")!false><@spring.message 'txt.user.emplym.probation.active'/><#else><@spring.message 'txt.user.emplym.not-applicable'/></#if></label>
             </div>
         </div>
     </div>
@@ -146,7 +146,7 @@
     <div class="row mb-4">
         <div class="col-xl-2">
             <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center required">
-                <label for="ecnyDt">입사일</label>
+                <label for="ecnyDt"><@spring.message 'txt.user.emplym.join-date'/></label>
             </div>
         </div>
         <div class="col-xl-2">
@@ -163,27 +163,27 @@
                 </svg>
             </span>
             <input type="text" name="emplym.ecnyDt" id="ecnyDt" class="form-control form-control-solid ps-12 required"
-                   value="${(user.emplym.ecnyDt)!}" placeholder="입사일" readonly/>
-            <div class="text-noti form-text">※입사일 정보가 없는 계정은 '현재 직원' 대상에 포함되지 않습니다.</div>
+                   value="${(user.emplym.ecnyDt)!}" placeholder="<@spring.message 'txt.user.emplym.join-date'/>" readonly/>
+            <div class="text-noti form-text"><@spring.message 'txt.user.emplym.join-date-guide'/></div>
             <div id="ecnyDt_validate_span"></div>
         </div>
         <div class="col-xl-2">
             <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
                 <label class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="퇴사한 인원의 경우&#10;체크합니다.">
-                    퇴사여부 :
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.retired'/>">
+                    <@spring.message 'txt.user.emplym.retired-yn'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
                 <input type="checkbox" name="emplym.retireYn" id="retireYn" class="form-check-input cursor-pointer ms-3"
                        value="Y" <#if (((user.emplym.retireYn)!"N") == "Y")!false>checked="checked"</#if> />
                 <label class="form-check-label fw-bold ms-3" for="retireYn" id="retireYnLabel" style="color:<#if ((user.emplym.retireYn)!"N") == "Y">red<#else>gray</#if>;">
-                    <#if ((user.emplym.retireYn)!"N") == "Y">퇴사<#else>해당없음</#if>
+                    <#if ((user.emplym.retireYn)!"N") == "Y"><@spring.message 'txt.user.emplym.retired'/><#else><@spring.message 'txt.user.emplym.not-applicable'/></#if>
                 </label>
             </div>
         </div>
         <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
         <div class="col-xl-1 col-form-label fw-bold col-2 my-2 my-lg-0 retireDtDiv" <#if (((user.emplym.retireYn)!"N") == "N")!false>style="display:none;"</#if>>
-            <label for="retireDt">퇴사일</label>
+            <label for="retireDt"><@spring.message 'txt.user.emplym.retired-date'/></label>
         </div>
         <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
         <div class="col-xl-2 col-10 retireDtDiv" <#if !(user.emplym.retireDt)??>style="display:none;"</#if>>
@@ -199,8 +199,8 @@
                 </svg>
             </span>
             <input type="text" name="emplym.retireDt" id="retireDt"  class="form-control form-control-solid ps-12"
-                   value="${(user.emplym.retireDt)!}" placeholder="퇴사일" readonly/>
-            <div class="text-noti form-text mt-0">※퇴사일 정보가 입력되지 않은 계정은 '현재 직원' 대상 로직에 포함됩니다.</div>
+                   value="${(user.emplym.retireDt)!}" placeholder="<@spring.message 'txt.user.emplym.retired-date'/>" readonly/>
+            <div class="text-noti form-text mt-0"><@spring.message 'txt.user.emplym.retired-date-guide'/></div>
         </div>
     </div>
     <#--begin::Row-->
@@ -208,21 +208,21 @@
         <div class="col-xl-2">
             <div class="fs-6 fw-bold col-form-label text-sm-start text-lg-center ">
                 <label for="acntNo" class="cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원 급여 관리에 사용될&#10;계좌번호입니다.">
-                    급여 계좌번호
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.payroll-account'/>">
+                    <@spring.message 'txt.user.emplym.payroll-account'/>
                     <i class="bi bi-question-circle"></i>
                 </label>
             </div>
         </div>
         <div class="col-xl-1">
             <input type="text" name="emplym.acntBank" id="acntBank" class="form-control form-control-solid"
-                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="급여계좌 은행을&#10;입력합니다."
-                   value="${(user.emplym.acntBank)!}" placeholder="은행" maxlength="40">
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.bank'/>"
+                   value="${(user.emplym.acntBank)!}" placeholder="<@spring.message 'txt.user.emplym.bank'/>" maxlength="40">
         </div>
         <div class="col-xl-2">
             <input type="text" name="emplym.acntNo" id="acntNo" class="form-control form-control-solid"
-                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="급여계좌 계좌번호를&#10;입력합니다."
-                   value="${(user.emplym.acntNo)!}" placeholder="계좌번호" maxlength="40">
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.emplym.account-number'/>"
+                   value="${(user.emplym.acntNo)!}" placeholder="<@spring.message 'txt.user.emplym.account-number'/>" maxlength="40">
             <div id="acntNo_validate_span"></div>
         </div>
     </div>

@@ -29,7 +29,7 @@
                  data-content-type="JOURNAL_NOTE">
                 <div class="d-flex align-items-center gap-2 mb-3 text-gray-700">
                     <i class="bi bi-link-45deg"></i>
-                    <span class="fw-semibold">관련 글</span>
+                    <span class="fw-semibold"><@spring.message 'txt.related-content'/></span>
                 </div>
                 <div class="related-content-list">
                     {{#each relatedContentList}}
@@ -45,9 +45,9 @@
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
                                     <button type="button" class="btn btn-xxs btn-light-primary btn-outlined"
-                                            onclick="dF.RelatedContent.openTarget('{{targetContentType}}', {{targetPostNo}});">열기</button>
+                                            onclick="dF.RelatedContent.openTarget('{{targetContentType}}', {{targetPostNo}});"><@spring.message 'txt.comm.open'/></button>
                                     <button type="button" class="btn btn-xxs btn-light-danger btn-outlined"
-                                            onclick="dF.RelatedContent.deleteAjax({{id}}, this);">삭제</button>
+                                            onclick="dF.RelatedContent.deleteAjax({{id}}, this);"><@spring.message 'txt.comm.del'/></button>
                                 </div>
                             </div>
                         </div>

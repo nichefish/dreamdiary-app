@@ -10,7 +10,7 @@
     <div>
         <#--헤더:: 인풋: 권한 코드-->
         <select name="roleKey" id="roleKey" class="form-select form-select-sm form-select-solid">
-            <option value="">전체 권한</option>
+            <option value=""><@spring.message 'txt.user.list.header.all-roles'/></option>
             <#list AUTH_CD![] as auth>
                 <option value="${auth.code!}" id="${auth.code!}">${auth.codeName!}</option>
             </#list>
@@ -19,7 +19,7 @@
     <div>
         <#--헤더:: 인풋: 직급 코드-->
         <select name="rankCd" id="rankCd" class="form-select form-select-sm form-select-solid">
-            <option value="">직급</option>
+            <option value=""><@spring.message 'txt.user.list.header.rank'/></option>
             <#list RANK_CD![] as rank>
                 <option value="${rank.code!}" id="${rank.code!}">${rank.codeName!}</option>
             </#list>
@@ -28,7 +28,7 @@
     <div>
         <#--헤더:: 인풋: 팀 코드-->
         <select name="teamCd" id="teamCd" class="form-select form-select-sm form-select-solid">
-            <option value="">팀</option>
+            <option value=""><@spring.message 'txt.user.list.header.team'/></option>
             <#list TEAM_CD![] as team>
                 <option value="${team.code!}" id="${team.code!}">${team.codeName!}</option>
             </#list>
@@ -37,7 +37,7 @@
     <div>
         <#--헤더:: 인풋: 회사 코드-->
         <select name="cmpyCd" id="cmpyCd" class="form-select form-select-sm form-select-solid">
-            <option value="">회사</option>
+            <option value=""><@spring.message 'txt.user.list.header.company'/></option>
             <#list CMPY_CD![] as cmpy>
                 <option value="${cmpy.code!}" id="${cmpy.code!}">${cmpy.codeName!}</option>
             </#list>
@@ -46,8 +46,8 @@
     <div>
         <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
-            <option value="nickname">이름</option>
-            <option value="username">아이디</option>
+            <option value="nickname"><@spring.message 'txt.user.list.header.name'/></option>
+            <option value="username"><@spring.message 'txt.user.form.username'/></option>
         </select>
     </div>
     <div>

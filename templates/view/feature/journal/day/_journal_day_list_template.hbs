@@ -40,7 +40,7 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="d-flex flex-wrap align-items-center gap-2 ps-1 ps-md-5">
                                 <span class="badge badge-light-warning text-warning fw-semibold">CHAPTER FILTER</span>
-                                <span class="text-muted fs-7">숨겨진 카테고리:</span>
+                                <span class="text-muted fs-7"><@spring.message 'txt.journal.day.list.hidden-chapter-ctgr'/></span>
                                 {{#each hiddenChapterCtgrList}}
                                     <span class="badge badge-light-secondary text-muted">{{categoryName}} {{categoryCode}}</span>
                                 {{/each}}
@@ -64,7 +64,7 @@
                             <div class="col ps-1 ps-md-5">
                                 <span class="badge badge-light-secondary text-muted fw-normal">
                                     <i class="bi bi-moon-stars me-1"></i>
-                                    꿈 숨김
+                                    <@spring.message 'txt.journal.day.list.dreams-hidden'/>
                                 </span>
                             </div>
                         </div>
