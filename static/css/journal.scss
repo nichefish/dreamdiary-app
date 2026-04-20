@@ -141,19 +141,131 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
+@mixin collapsed-indicator {
+    content: "(collapsed)";
+    display: block;
+    color: #999;
+    font-style: italic;
+    margin: 0.5em 0;
+}
+
+@mixin chapter-highlight($bg, $shadow, $padding-left) {
+    background: $bg;
+    box-shadow: $shadow;
+    padding-left: $padding-left;
+}
+
+@mixin cn-collapse($lines, $height) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines; // 최대 줄 수
+    line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+    max-height: $height;
+
+    &.expanded {
+        display: unset !important;
+        -webkit-line-clamp: unset !important;
+        line-clamp: unset !important;
+        -webkit-box-orient: unset !important;
+        overflow: visible;
+        max-height: unset !important;
+
+        & + .expand-btn::after {
+            content: "－ 접기";
+        }
+    }
+}
+
+@mixin journal-entry-content-base {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding-left: 0.75rem !important;
+    background: transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.3rem;
+        bottom: 0.3rem;
+        width: 1px;
+        background: rgba(148, 163, 184, 0.42);
+        pointer-events: none;
+    }
+}
+
+@mixin journal-paired-state($bg, $border, $before-bg, $before-shadow: none) {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: $bg;
+        border-color: $border;
+
+        &::before {
+            background: $before-bg;
+            box-shadow: $before-shadow;
+        }
+    }
+}
+
+$journal-paired-states: (
+    '[data-resolved="Y"]': (
+        bg: rgba(34, 197, 94, 0.05),
+        border: rgba(34, 197, 94, 0.14),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: none
+    ),
+    '[data-refrnc="Y"]': (
+        bg: rgba(245, 158, 11, 0.07),
+        border: rgba(245, 158, 11, 0.16),
+        before-bg: rgba(245, 158, 11, 0.82),
+        before-shadow: none
+    ),
+    '[data-imprtc="Y"]': (
+        bg: rgba(239, 68, 68, 0.06),
+        border: rgba(239, 68, 68, 0.15),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: none
+    ),
+    '[data-resolved="Y"][data-refrnc="Y"]': (
+        bg: rgba(234, 179, 8, 0.08),
+        border: rgba(234, 179, 8, 0.17),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"]': (
+        bg: rgba(248, 113, 113, 0.08),
+        border: rgba(239, 68, 68, 0.16),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: 2px 0 0 rgba(239, 68, 68, 0.8)
+    ),
+    '[data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(251, 191, 36, 0.09),
+        border: rgba(245, 158, 11, 0.18),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(245, 208, 120, 0.1),
+        border: rgba(234, 179, 8, 0.2),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: (2px 0 0 rgba(239, 68, 68, 0.8), 4px 0 0 rgba(245, 158, 11, 0.82))
+    )
+);
+
 .journal-chapter-item {
-    .journal-chapter-cn {
+    /* 마크업은 `journal-chapter-content` (구 cn 클래스명과 불일치해 접기 스타일이 적용되지 않던 문제 수정) */
+    .journal-chapter-content {
         &.collapsed {
             margin-left: 90px;
             margin-top: 20px;
             margin-bottom: 10px;
         }
         &.collapsed::before {
-            content: "(collapsed)";
-            display: block;
-            color: #999;
-            font-style: italic;
-            margin: 0.5em 0;
+            @include collapsed-indicator;
         }
         &.collapsed > * {
             display: none !important;
@@ -165,44 +277,45 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         margin-bottom: 15px;
     }
 
-    .journal-chapter-cn.collapsed,
+    .journal-chapter-content.collapsed,
     .journal-chapter-tags:not(.d-none) {
         transition: background-color 0.2s ease, box-shadow 0.2s ease, padding-left 0.2s ease;
     }
 
     &[data-resolved="Y"] {
-        .journal-chapter-cn.collapsed,
+        .journal-chapter-content.collapsed,
         .journal-chapter-tags:not(.d-none) {
-            background: rgba(34, 197, 94, 0.05);
-            box-shadow: inset 1px 0 0 rgba(34, 197, 94, 0.82);
-            padding-left: 0.85rem;
+            @include chapter-highlight(
+                rgba(34, 197, 94, 0.05),
+                inset 1px 0 0 rgba(34, 197, 94, 0.82),
+                0.85rem
+            );
         }
     }
 
-    &:has(.journal-diary-content .journal-content.imprtc) {
-        .journal-chapter-cn.collapsed,
+    /* 챕터 접힘 하이라이트는 diary 전용 구조가 아니라 내부 항목의 상태를 공통으로 본다. */
+    &:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]) {
+        .journal-chapter-content.collapsed,
         .journal-chapter-tags:not(.d-none) {
-            background: #fff5f5;
-            box-shadow: inset 2px 0 0 #ef4444;
-            padding-left: 0.85rem;
+            @include chapter-highlight(#fff5f5, inset 2px 0 0 #ef4444, 0.85rem);
         }
     }
 
-    &:has(.journal-diary-content .journal-content.refrnc) {
-        .journal-chapter-cn.collapsed,
+    &:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
+        .journal-chapter-content.collapsed,
         .journal-chapter-tags:not(.d-none) {
-            background: #fffcec;
-            box-shadow: inset 2px 0 0 #f59e0b;
-            padding-left: 0.85rem;
+            @include chapter-highlight(#fffcec, inset 2px 0 0 #f59e0b, 0.85rem);
         }
     }
 
-    &:has(.journal-diary-content .journal-content.imprtc):has(.journal-diary-content .journal-content.refrnc) {
-        .journal-chapter-cn.collapsed,
+    &:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
+        .journal-chapter-content.collapsed,
         .journal-chapter-tags:not(.d-none) {
-            background: #fff8ef;
-            box-shadow: inset 2px 0 0 #ef4444, inset 6px 0 0 #f59e0b;
-            padding-left: 1.1rem;
+            @include chapter-highlight(
+                #fff8ef,
+                (inset 2px 0 0 #ef4444, inset 6px 0 0 #f59e0b),
+                1.1rem
+            );
         }
     }
 }
@@ -217,11 +330,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
     .journal-content {
         &.collapsed::before {
-            content: "(collapsed)";
-            display: block;
-            color: #999;
-            font-style: italic;
-            margin: 0.5em 0;
+            @include collapsed-indicator;
         }
         &.collapsed > * {
             display: none;
@@ -268,33 +377,11 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
-.journal-diary-item[data-resolved="Y"] {
-    .journal-diary-content {
-        .journal-content.collapsed::before {
-            color: #8ab89a;
-        }
-    }
-}
-.journal-dream-item[data-resolved="Y"] {
-    .journal-dream-content {
-        .journal-content.collapsed::before {
-            color: #8ab89a;
-        }
-    }
-}
-.journal-interpretation-item[data-resolved="Y"] {
-    .journal-interpretation-content {
-        .journal-content.collapsed::before {
-            color: #8ab89a;
-        }
-    }
-}
-.journal-note-item[data-resolved="Y"] {
-    .journal-note-content {
-        .journal-content.collapsed::before {
-            color: #8ab89a;
-        }
-    }
+.journal-diary-item[data-resolved="Y"] .journal-diary-content .journal-content.collapsed::before,
+.journal-dream-item[data-resolved="Y"] .journal-dream-content .journal-content.collapsed::before,
+.journal-interpretation-item[data-resolved="Y"] .journal-interpretation-content .journal-content.collapsed::before,
+.journal-note-item[data-resolved="Y"] .journal-note-content .journal-content.collapsed::before {
+    color: #8ab89a;
 }
 
 .journal-diary-content, .journal-interpretation-content {
@@ -331,29 +418,6 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 /* 글접기 처리 */
 .modal-body {
     .journal-dream-content, .journal-diary-content, .journal-note-content {
-
-        // 공통 스타일 믹스인
-        @mixin cn-collapse($lines, $height) {
-            display: -webkit-box;
-            -webkit-line-clamp: $lines; // 최대 줄 수
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            position: relative;
-            max-height: $height;
-
-            &.expanded {
-                display: unset !important;
-                -webkit-line-clamp: unset !important;
-                -webkit-box-orient: unset !important;
-                overflow: visible;
-                max-height: unset !important;
-
-                & + .expand-btn::after {
-                    content: "－ 접기";
-                }
-            }
-        }
-
         [class*="collapse-"] {
             &.collapse-3 {
                 @include cn-collapse(3, 62.3px);
@@ -455,23 +519,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 .journal-dream-item {
     .journal-diary-content,
     .journal-dream-content {
-        position: relative;
-        border: 1px solid transparent;
-        border-radius: 0 0.5rem 0.5rem 0;
-        padding-left: 0.75rem !important;
-        background: transparent;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
-
-        &::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0.3rem;
-            bottom: 0.3rem;
-            width: 1px;
-            background: rgba(148, 163, 184, 0.42);
-            pointer-events: none;
-        }
+        @include journal-entry-content-base;
     }
 
     &.is-collapsed {
@@ -486,23 +534,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-note-item {
     .journal-note-content {
-        position: relative;
-        border: 1px solid transparent;
-        border-radius: 0 0.5rem 0.5rem 0;
-        padding-left: 0.75rem !important;
-        background: transparent;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
-
-        &::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0.3rem;
-            bottom: 0.3rem;
-            width: 1px;
-            background: rgba(148, 163, 184, 0.42);
-            pointer-events: none;
-        }
+        @include journal-entry-content-base;
     }
 
     &.is-collapsed {
@@ -514,105 +546,19 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
-.journal-diary-item[data-resolved="Y"],
-.journal-dream-item[data-resolved="Y"] {
-    .journal-diary-content,
-    .journal-dream-content {
-        background: rgba(34, 197, 94, 0.05);
-        border-color: rgba(34, 197, 94, 0.14);
-
-        &::before {
-            background: rgba(34, 197, 94, 0.82);
-            box-shadow: none;
-        }
-    }
-}
-
-.journal-diary-item[data-refrnc="Y"],
-.journal-dream-item[data-refrnc="Y"] {
-    .journal-diary-content,
-    .journal-dream-content {
-        background: rgba(245, 158, 11, 0.07);
-        border-color: rgba(245, 158, 11, 0.16);
-
-        &::before {
-            background: rgba(245, 158, 11, 0.82);
-            box-shadow: none;
-        }
-    }
-}
-
-.journal-diary-item[data-imprtc="Y"],
-.journal-dream-item[data-imprtc="Y"] {
-    .journal-diary-content,
-    .journal-dream-content {
-        background: rgba(239, 68, 68, 0.06);
-        border-color: rgba(239, 68, 68, 0.15);
-
-        &::before {
-            background: rgba(239, 68, 68, 0.8);
-            box-shadow: none;
-        }
-    }
-}
-
-.journal-diary-item[data-resolved="Y"][data-refrnc="Y"],
-.journal-dream-item[data-resolved="Y"][data-refrnc="Y"] {
-    .journal-diary-content,
-    .journal-dream-content {
-        background: rgba(234, 179, 8, 0.08);
-        border-color: rgba(234, 179, 8, 0.17);
-
-        &::before {
-            background: rgba(34, 197, 94, 0.82);
-            box-shadow: 2px 0 0 rgba(245, 158, 11, 0.82);
-        }
-    }
-}
-
-.journal-diary-item[data-resolved="Y"][data-imprtc="Y"],
-.journal-dream-item[data-resolved="Y"][data-imprtc="Y"] {
-    .journal-diary-content,
-    .journal-dream-content {
-        background: rgba(248, 113, 113, 0.08);
-        border-color: rgba(239, 68, 68, 0.16);
-
-        &::before {
-            background: rgba(34, 197, 94, 0.82);
-            box-shadow: 2px 0 0 rgba(239, 68, 68, 0.8);
-        }
-    }
-}
-
-.journal-diary-item[data-imprtc="Y"][data-refrnc="Y"],
-.journal-dream-item[data-imprtc="Y"][data-refrnc="Y"] {
-    .journal-diary-content,
-    .journal-dream-content {
-        background: rgba(251, 191, 36, 0.09);
-        border-color: rgba(245, 158, 11, 0.18);
-
-        &::before {
-            background: rgba(239, 68, 68, 0.8);
-            box-shadow: 2px 0 0 rgba(245, 158, 11, 0.82);
-        }
-    }
-}
-
-.journal-diary-item[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"],
-.journal-dream-item[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"] {
-    .journal-diary-content,
-    .journal-dream-content {
-        background: rgba(245, 208, 120, 0.1);
-        border-color: rgba(234, 179, 8, 0.2);
-
-        &::before {
-            background: rgba(34, 197, 94, 0.82);
-            box-shadow: 2px 0 0 rgba(239, 68, 68, 0.8), 4px 0 0 rgba(245, 158, 11, 0.82);
-        }
+@each $selector, $state in $journal-paired-states {
+    .journal-diary-item#{$selector},
+    .journal-dream-item#{$selector} {
+        @include journal-paired-state(
+            map-get($state, bg),
+            map-get($state, border),
+            map-get($state, before-bg),
+            map-get($state, before-shadow)
+        );
     }
 }
 
 .journal-sumry-review-item {
     border-left: 3px solid #f59e0b;
 }
-
+ 

@@ -11,7 +11,7 @@
         <div class="col-xl-11 text-sm-start" id="tag_div">
             <#list post.tag.list as tag>
                 <span class="py-2 me-3 cursor-pointer opacity-hover"
-                      onclick="dF.Tag.dtlModal('${tag.refTagNo}');"
+                      onclick="dF.Tag.dtlModal('${tag.tagId}');"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                       title="<@spring.message 'view.tag.content-list'/>">
                     <span class="${tag.tagClass!} ${tag.textClass!}">
