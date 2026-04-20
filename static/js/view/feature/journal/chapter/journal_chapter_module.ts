@@ -259,27 +259,27 @@ dF.JournalChapter = (function(): dfModule {
             const shouldCollapse: boolean = content && !content.classList.contains("collapsed");
             const diaries: NodeListOf<HTMLElement> = item.querySelectorAll(".journal-diary-content");
             const tagDiv = item.querySelector(".journal-chapter-tags");
-            const icon: HTMLElement = document.querySelector(`#chapter-toggle-icon-${id}`);
-            if (!icon) console.log("icon not found.");
+            const icon: HTMLElement | null = document.querySelector(`#chapter-toggle-icon-${id}`);
+            if (!icon) console.warn("chapter toggle icon not found:", id);
             if (shouldCollapse) {
                 // 전체 접기
                 content.classList.add("collapsed");
-                icon.classList.add("bi-arrows-expand");
-                icon.classList.remove("bi-arrows-collapse");
-                tagDiv.classList.remove("d-none");
+                icon?.classList.add("bi-arrows-expand");
+                icon?.classList.remove("bi-arrows-collapse");
+                tagDiv?.classList.remove("d-none");
                 diaries.forEach((diary: HTMLElement): void => {
-                    const content: HTMLElement = diary.querySelector(".journal-content");
-                    content.classList.add("collapsed");
+                    const inner: HTMLElement | null = diary.querySelector(".journal-content");
+                    inner?.classList.add("collapsed");
                 });
             } else {
                 // 전체 펼치기
                 content.classList.remove("collapsed");
-                icon.classList.add("bi-arrows-collapse");
-                icon.classList.remove("bi-arrows-expand");
-                tagDiv.classList.add("d-none");
+                icon?.classList.add("bi-arrows-collapse");
+                icon?.classList.remove("bi-arrows-expand");
+                tagDiv?.classList.add("d-none");
                 diaries.forEach((diary: HTMLElement): void => {
-                    const content: HTMLElement = diary.querySelector(".journal-content");
-                    content.classList.remove("collapsed");
+                    const inner: HTMLElement | null = diary.querySelector(".journal-content");
+                    inner?.classList.remove("collapsed");
                 });
             }
         },
