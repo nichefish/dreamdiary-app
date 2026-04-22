@@ -43,18 +43,6 @@ public interface ApiUrl {
     String JOURNAL_DAY_META_YYS = Prefix.API + "/journal/day/metas/{id}/years";
     String JOURNAL_DAY_META_CTGR_MAP = Prefix.API + "/journal/day/meta/ctgr-map";
 
-    /** 저널 꿈 */
-    String JOURNAL_DREAMS = Prefix.API + "/journal/dreams";
-    String JOURNAL_DREAM = Prefix.API + "/journal/dream/{id}";
-    String JOURNAL_DREAMS_EXPORT = Prefix.API + "/journal/dreams/export";
-    /** 저널 꿈 태그 */
-    String JOURNAL_DREAM_TAGS = Prefix.API + "/journal/dream/tags";
-    String JOURNAL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/dream/tag-group-list";
-    String JOURNAL_DREAM_TAG_CTGR_MAP = Prefix.API + "/journal/dream/tag/ctgr-map";
-    /** 저널 해석 */
-    String JOURNAL_INTERPRETATIONS = Prefix.API + "/journal/interpretations";
-    String JOURNAL_INTERPRETATION = Prefix.API + "/journal/interpretation/{id}";
-    String JOURNAL_INTERPRETATION_SET_COLLAPSE_AJAX = Prefix.API + "/journal/interpretation/set-collapse";
     /** 저널 챕터 */
     String JOURNAL_CHAPTERS = Prefix.API + "/journal/chapters";
     /** 꿈(DREAM) 챕터 자동 생성 전용 (수동 챕터 등록 API로는 DREAM 생성 불가) */
@@ -62,17 +50,18 @@ public interface ApiUrl {
     String JOURNAL_CHAPTER = Prefix.API + "/journal/chapter/{id}";
     String JOURNAL_CHAPTER_EXPORT = Prefix.API + "/journal/chapter/{id}/export";
 
-    /** 저널 일기 */
-    String JOURNAL_DIARIES = Prefix.API + "/journal/diaries";
-    String JOURNAL_DIARY = Prefix.API + "/journal/diary/{id}";
-    String JOURNAL_DIARIES_EXPORT = Prefix.API + "/journal/diaries/export";
-    /** 저널 노트 */
-    String JOURNAL_NOTES = Prefix.API + "/journal/notes";
-    String JOURNAL_NOTE = Prefix.API + "/journal/note/{id}";
-    /** 저널 일기 태그 */
-    String JOURNAL_DIARY_TAGS = Prefix.API + "/journal/diary/tags";
-    String JOURNAL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/diary/tag/group-list";
-    String JOURNAL_DIARY_TAG_CTGR_MAP = Prefix.API + "/journal/diary/tag/ctgr-map";
+    /** 저널 엔트리(통합) */
+    String JOURNAL_ENTRIES = Prefix.API + "/journal/entries";
+    String JOURNAL_ENTRY = Prefix.API + "/journal/entry/{id}";
+    String JOURNAL_ENTRIES_EXPORT = Prefix.API + "/journal/entries/export";
+    /** 저널 엔트리 태그(통합) */
+    String JOURNAL_ENTRY_TAGS = Prefix.API + "/journal/entry/tags";
+    String JOURNAL_ENTRY_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/entry/tag/group-list";
+    String JOURNAL_ENTRY_TAG_CTGR_MAP = Prefix.API + "/journal/entry/tag/ctgr-map";
+    /** 저널 해석 */
+    String JOURNAL_INTERPRETATIONS = Prefix.API + "/journal/interpretations";
+    String JOURNAL_INTERPRETATION = Prefix.API + "/journal/interpretation/{id}";
+    String JOURNAL_INTERPRETATION_SET_COLLAPSE_AJAX = Prefix.API + "/journal/interpretation/set-collapse";
 
     /** 저널 할일 */
     String JOURNAL_TODOS = Prefix.API + "/journal/todos";

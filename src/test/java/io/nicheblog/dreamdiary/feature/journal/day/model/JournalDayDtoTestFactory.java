@@ -43,7 +43,7 @@ public class JournalDayDtoTestFactory {
         return JournalDayDto.builder()
                 .id(0)
                 .contentType(ContentType.JOURNAL_DAY.key)
-                .journalDt(journalDtStr)
+                .journalDate(journalDtStr)
                 .build();
     }
 

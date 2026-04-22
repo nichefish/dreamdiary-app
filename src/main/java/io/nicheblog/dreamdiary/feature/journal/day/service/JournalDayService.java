@@ -6,7 +6,9 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachable
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateMaps;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.mapstruct.JournalDayMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
@@ -16,6 +18,8 @@ import io.nicheblog.dreamdiary.feature.journal.day.repository.mybatis.JournalDay
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayStateMapHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.spec.JournalDaySpec;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
+import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -63,6 +67,7 @@ public class JournalDayService
 
     private final JournalDayMapper journalDayMapper;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
+    private final JournalInterpretationQueryService journalInterpretationQueryService;
 
     private final ApplicationContext context;
     private JournalDayService getSelf() {
@@ -90,13 +95,14 @@ public class JournalDayService
 
         // 1) stateMap 만들기
         final JournalStateMaps maps = JournalDayStateMapHelper.makeJournalStateMaps(myJournalDayEntityList);
+        final Map<Integer, io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState> interpretationStateMap =
+                this.getInterpretationStateMap(resolvedUsername, myJournalDayEntityList);
         // 2) stateMap 캐시에 저장
         final SimpleKey cacheKey = new SimpleKey(resolvedUsername, yy, mnth);
-        EhCacheUtils.put("journalChapterStateMapByUser", cacheKey, maps.getChapterMap());
-        EhCacheUtils.put("journalDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
-        EhCacheUtils.put("journalNoteStateMapByUser", cacheKey, maps.getNoteMap());
-        EhCacheUtils.put("journalDreamStateMapByUser", cacheKey, maps.getDreamMap());
-        EhCacheUtils.put("journalInterpretationStateMapByUser", cacheKey, maps.getInterpretationMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_CHAPTER), cacheKey, maps.getChapterMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DIARY), cacheKey, maps.getDiaryMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DREAM), cacheKey, maps.getDreamMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_INTERPRETATION), cacheKey, interpretationStateMap);
 
         return mapstruct.toDtoList(myJournalDayEntityList);
     }
@@ -135,12 +141,13 @@ public class JournalDayService
         final List<JournalDayEntity> myJournalDayEntityList = this.getListEntity(searchParamMap);
 
         final JournalStateMaps maps = JournalDayStateMapHelper.makeJournalStateMaps(myJournalDayEntityList);
+        final Map<Integer, io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState> interpretationStateMap =
+                this.getInterpretationStateMap(resolvedUsername, myJournalDayEntityList);
         final SimpleKey cacheKey = new SimpleKey(resolvedUsername, weekStartDt);
-        EhCacheUtils.put("journalChapterWeeklyStateMapByUser", cacheKey, maps.getChapterMap());
-        EhCacheUtils.put("journalDiaryWeeklyStateMapByUser", cacheKey, maps.getDiaryMap());
-        EhCacheUtils.put("journalNoteWeeklyStateMapByUser", cacheKey, maps.getNoteMap());
-        EhCacheUtils.put("journalDreamWeeklyStateMapByUser", cacheKey, maps.getDreamMap());
-        EhCacheUtils.put("journalInterpretationWeeklyStateMapByUser", cacheKey, maps.getInterpretationMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_CHAPTER), cacheKey, maps.getChapterMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_DIARY), cacheKey, maps.getDiaryMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_DREAM), cacheKey, maps.getDreamMap());
+        EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_INTERPRETATION), cacheKey, interpretationStateMap);
 
         return mapstruct.toDtoList(myJournalDayEntityList);
     }
@@ -325,6 +332,47 @@ public class JournalDayService
         }
         return deleted;
     }
+
+    private Map<Integer, io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState> getInterpretationStateMap(
+            final String createdBy,
+            final List<JournalDayEntity> journalDayEntityList
+    ) {
+        return journalInterpretationQueryService.getInterpretationStateMapByRefs(
+                this.collectInterpretationRefs(journalDayEntityList),
+                createdBy
+        );
+    }
+
+    private List<io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey> collectInterpretationRefs(
+            final List<JournalDayEntity> journalDayEntityList
+    ) {
+        final List<io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey> refKeyList = new java.util.ArrayList<>();
+        if (journalDayEntityList == null || journalDayEntityList.isEmpty()) return refKeyList;
+
+        for (final JournalDayEntity journalDayEntity : journalDayEntityList) {
+            if (journalDayEntity == null || journalDayEntity.getJournalChapterList() == null) continue;
+
+            for (final JournalChapterEntity journalChapterEntity : journalDayEntity.getJournalChapterList()) {
+                if (journalChapterEntity == null) continue;
+
+                final List<JournalEntryEntity> journalEntryList = journalChapterEntity.getJournalEntryList();
+                if (journalEntryList == null) continue;
+
+                for (final JournalEntryEntity journalEntryEntity : journalEntryList) {
+                    if (journalEntryEntity == null || journalEntryEntity.getId() == null) continue;
+
+                    final ContentType contentType = ContentType.get(journalEntryEntity.getContentType());
+                    if (contentType != ContentType.JOURNAL_DIARY && contentType != ContentType.JOURNAL_DREAM) {
+                        continue;
+                    }
+
+                    refKeyList.add(new io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey(
+                            journalEntryEntity.getId(),
+                            contentType
+                    ));
+                }
+            }
+        }
+        return refKeyList;
+    }
 }
-
-

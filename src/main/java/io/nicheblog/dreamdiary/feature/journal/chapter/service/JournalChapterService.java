@@ -54,20 +54,6 @@ public class JournalChapterService
     /** 자동 생성 꿈 챕터 기본 제목 */
     private static final String AUTO_DREAM_CHAPTER_TITLE = "꿈";
 
-    /** 화면·저장 정렬: 일기 → 노트 → 꿈 */
-    private static int chapterTypeOrderKey(final JournalChapterEntity e) {
-        return chapterTypeOrder(e.getChapterType());
-    }
-
-    private static int chapterTypeOrder(final ChapterType t) {
-        if (t == null) return 99;
-        return switch (t) {
-            case DIARY -> 0;
-            case NOTE -> 1;
-            case DREAM -> 2;
-        };
-    }
-
     @Getter
     private final JournalChapterRepository repository;
     @Getter
@@ -231,7 +217,7 @@ public class JournalChapterService
      */
     @Override
     public void postModify(final JournalChapterDto postDto, final JournalChapterDto updatedDto) throws Exception {
-        // 일기 → 노트 → 꿈 순으로 sort_order 정리 (타입 변경·순번 변경 모두 반영)
+        // sort_order 기준으로 재정렬 (동순위는 id 순)
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
 
         // 관련 캐시 삭제
@@ -291,8 +277,9 @@ public class JournalChapterService
         if (CollectionUtils.isEmpty(list)) return;
 
         list.sort(Comparator
-                .comparingInt(JournalChapterService::chapterTypeOrderKey)
-                .thenComparingInt(e -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
+                // DREAM 챕터는 sortOrder와 무관하게 항상 마지막으로 배치
+                .comparingInt((JournalChapterEntity e) -> e.getChapterType() == ChapterType.DREAM ? 1 : 0)
+                .thenComparingInt((JournalChapterEntity e) -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
                 .thenComparing(JournalChapterEntity::getId));
 
         int sortOrder = 1;
@@ -348,7 +335,7 @@ public class JournalChapterService
      */
     @Transactional
     public void reorderSortOrder(final JournalChapterDto updatedDto) throws Exception {
-        // 일기 → 노트 → 꿈 순으로 sort_order 재부여 (같은 타입 내에서는 기존 sort_order·id 순 유지)
+        // sort_order 재부여 (동순위는 id 순)
         normalizeSortOrder(updatedDto.getJournalDayId());
     }
 }

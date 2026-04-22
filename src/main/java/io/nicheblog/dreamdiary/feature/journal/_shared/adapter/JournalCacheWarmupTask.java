@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal._shared.adapter;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayMetaService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayTagService;
-import io.nicheblog.dreamdiary.feature.journal.diary.service.JournalDiaryTagService;
-import io.nicheblog.dreamdiary.feature.journal.dream.service.JournalDreamTagService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryTagService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.CacheWarmupTask;
@@ -31,8 +31,7 @@ public class JournalCacheWarmupTask
 
     private final JournalDayService journalDayService;
     private final JournalDayTagService journalDayTagService;
-    private final JournalDiaryTagService journalDiaryTagService;
-    private final JournalDreamTagService journalDreamTagService;
+    private final JournalEntryTagService journalEntryTagService;
     private final JournalDayMetaService journalDayMetaService;
 
     /**
@@ -40,11 +39,10 @@ public class JournalCacheWarmupTask
      */
     @Override
     public void warmup() throws Exception {
-        // 사용자 기반 워밍업
         journalDayTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
         journalDayMetaService.getMetaCtgrMapByUser(Constant.SYSTEM_ACNT);
-        journalDiaryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
-        journalDreamTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
+        journalEntryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT, ContentType.JOURNAL_DIARY);
+        journalEntryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT, ContentType.JOURNAL_DREAM);
     }
 
     /**
@@ -53,7 +51,6 @@ public class JournalCacheWarmupTask
      */
     @Override
     public void warmupOnLogin(final String username) throws Exception {
-        // 로그인 시 해당 사용자의 월별 저널 목록(휴일 포함) 캐시 워밍업
         journalDayService.getCachedYyMnthListDtoByUser(username, DateUtils.getCurrYy(), DateUtils.getCurrMnth());
     }
 }

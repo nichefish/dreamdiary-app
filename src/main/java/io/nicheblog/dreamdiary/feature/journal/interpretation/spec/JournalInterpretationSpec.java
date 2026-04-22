@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.interpretation.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
-import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

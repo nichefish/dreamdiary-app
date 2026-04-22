@@ -27,6 +27,7 @@ public class JournalInterpretationCacheEvictor
      * 해당 컨텐츠 타입 관련 캐시를 제거한다.
      *
      * @param param 캐시 삭제 파라미터 객체
+     * @throws Exception 캐시 무효화 중 예외
      */
     @Override
     @Transactional

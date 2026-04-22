@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal._shared.handler;
 
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import org.springframework.cache.interceptor.SimpleKey;
@@ -121,22 +122,26 @@ public interface JournalCacheEvictor
         if (yy != null && mnth != null) {
             // Current journal month list cache and companion state maps share the same key scope.
             this.evictMyYyMnthCache(username, "journalDayYyMnthListByUser", yy, mnth);
-            this.evictMyYyMnthCache(username, "journalChapterStateMapByUser", yy, mnth);
-            this.evictMyYyMnthCache(username, "journalDiaryStateMapByUser", yy, mnth);
-            this.evictMyYyMnthCache(username, "journalNoteStateMapByUser", yy, mnth);
-            this.evictMyYyMnthCache(username, "journalDreamStateMapByUser", yy, mnth);
-            this.evictMyYyMnthCache(username, "journalInterpretationStateMapByUser", yy, mnth);
+            JournalStateCacheRegistry.stateContentTypes().forEach(
+                    contentType -> this.evictMyYyMnthCache(
+                            username,
+                            JournalStateCacheRegistry.monthlyMapCacheName(contentType),
+                            yy,
+                            mnth
+                    )
+            );
             // Legacy cache names kept as no-op-safe fallback during migration.
             this.evictMyYyMnthCache(username, "myJournalDayList", yy, mnth);
             this.evictMyYyMnthCache(username, "myJournalDayCalList", yy, mnth);
             return;
         }
         EhCacheUtils.clearUserCache("journalDayYyMnthListByUser", username);
-        EhCacheUtils.clearUserCache("journalChapterStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalDiaryStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalNoteStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalDreamStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalInterpretationStateMapByUser", username);
+        JournalStateCacheRegistry.stateContentTypes().forEach(
+                contentType -> EhCacheUtils.clearUserCache(
+                        JournalStateCacheRegistry.monthlyMapCacheName(contentType),
+                        username
+                )
+        );
         EhCacheUtils.clearUserCache("myJournalDayList", username);
         EhCacheUtils.clearUserCache("myJournalDayCalList", username);
     }
@@ -146,11 +151,12 @@ public interface JournalCacheEvictor
      */
     default void evictMyJournalDayWeeklyCaches(final String username) {
         EhCacheUtils.clearUserCache("journalDayWeeklyListByUser", username);
-        EhCacheUtils.clearUserCache("journalChapterWeeklyStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalDiaryWeeklyStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalNoteWeeklyStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalDreamWeeklyStateMapByUser", username);
-        EhCacheUtils.clearUserCache("journalInterpretationWeeklyStateMapByUser", username);
+        JournalStateCacheRegistry.stateContentTypes().forEach(
+                contentType -> EhCacheUtils.clearUserCache(
+                        JournalStateCacheRegistry.weeklyMapCacheName(contentType),
+                        username
+                )
+        );
     }
 
     /**
@@ -169,11 +175,13 @@ public interface JournalCacheEvictor
             if (weekStartDt == null || weekStartDt.isBlank()) continue;
             hasTarget = true;
             EhCacheUtils.evictUserCacheByKey("journalDayWeeklyListByUser", username, weekStartDt);
-            EhCacheUtils.evictUserCacheByKey("journalChapterWeeklyStateMapByUser", username, weekStartDt);
-            EhCacheUtils.evictUserCacheByKey("journalDiaryWeeklyStateMapByUser", username, weekStartDt);
-            EhCacheUtils.evictUserCacheByKey("journalNoteWeeklyStateMapByUser", username, weekStartDt);
-            EhCacheUtils.evictUserCacheByKey("journalDreamWeeklyStateMapByUser", username, weekStartDt);
-            EhCacheUtils.evictUserCacheByKey("journalInterpretationWeeklyStateMapByUser", username, weekStartDt);
+            JournalStateCacheRegistry.stateContentTypes().forEach(
+                    contentType -> EhCacheUtils.evictUserCacheByKey(
+                            JournalStateCacheRegistry.weeklyMapCacheName(contentType),
+                            username,
+                            weekStartDt
+                    )
+            );
         }
 
         if (!hasTarget) this.evictMyJournalDayWeeklyCaches(username);

@@ -12,7 +12,6 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,12 +44,7 @@ public class TagProcService {
      * @param mnth 저널 월
      */
     @Transactional
-    public void process(
-            final BaseAttachableKey attachableKey,
-            final TagCmpstn tagCmpstn,
-            final Integer yy,
-            final Integer mnth
-    ) throws Exception {
+    public void process(final BaseAttachableKey attachableKey, final TagCmpstn tagCmpstn, final Integer yy, final Integer mnth) throws Exception {
         if (attachableKey == null) return;
 
         final boolean isJournal = yy != null || mnth != null;
@@ -108,12 +102,7 @@ public class TagProcService {
      * @param mnth 저널 월
      */
     @Transactional
-    public void procTags(
-            final BaseAttachableKey attachableKey,
-            final TagCmpstn tagCmpstn,
-            final Integer yy,
-            final Integer mnth
-    ) throws Exception {
+    public void procTags(final BaseAttachableKey attachableKey, final TagCmpstn tagCmpstn, final Integer yy, final Integer mnth) throws Exception {
         if (attachableKey == null || tagCmpstn == null) return;
 
         final List<TagDto> existingTagList = tagContentService.getTagStrListByAttachableKey(attachableKey);
@@ -156,19 +145,11 @@ public class TagProcService {
     /**
      * 트랜잭션 commit 이후 태그 캐시 갱신 이벤트를 발행한다.
      */
-    private void publishTagCacheUpdateAfterCommit(
-            final BaseAttachableKey attachableKey,
-            final Integer yy,
-            final Integer mnth,
-            final Map<Integer, Integer> tagCntChangeMap
-    ) throws Exception {
-        final Object cacheKey = new SimpleKey(AuthUtils.getLoginUsername(), yy, mnth);
+    private void publishTagCacheUpdateAfterCommit(final BaseAttachableKey attachableKey, final Integer yy, final Integer mnth, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         final String contentType = attachableKey.getContentType();
-        final Map<Integer, Integer> safeChangeMap = new HashMap<>(tagCntChangeMap);
         TransactionHookUtils.runAfterCommitOrNow(
-                () -> journalTagCacheUpdtWorker.handle(contentType, cacheKey, safeChangeMap),
+                () -> journalTagCacheUpdtWorker.handle(contentType, AuthUtils.getLoginUsername(), yy, mnth),
                 e -> log.error("Tag cache update failed [{}:{}:{}]: {}", contentType, yy, mnth, e.getMessage(), e)
         );
     }
 }
-

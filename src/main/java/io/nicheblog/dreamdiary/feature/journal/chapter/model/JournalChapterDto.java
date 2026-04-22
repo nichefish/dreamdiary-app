@@ -8,8 +8,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
-import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
-import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -22,7 +21,7 @@ import java.util.List;
 /**
  * JournalChapterDto
  * <pre>
- *  저널 챕터 Dto.
+ *  ????筌?벤苑?Dto.
  * </pre>
  *
  * @author nichefish
@@ -37,56 +36,51 @@ public class JournalChapterDto
         extends BaseAttachableDto
         implements Identifiable<Integer>, StateCmpstnModule, TagCmpstnModule, JournalPeriodModule, Comparable<JournalChapterDto> {
 
-    /** 필수: 컨텐츠 타입 */
+    /** ?袁⑸땾: ?뚢뫂?쀯㎘?????*/
     @Builder.Default
     private String contentType = ContentType.JOURNAL_CHAPTER.key;
 
-    /** 챕터 타입 (DIARY | DREAM) */
+    /** 筌?벤苑?????(DIARY | DREAM) */
     @Builder.Default
     private ChapterType chapterType = ChapterType.DIARY;
 
-    /** 제목 */
+    /** ??뺛걠 */
     private String title;
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
+    /** 疫꼲?브쑬履??꾨뗀諭?:: join????볤탢??랁?筌롫뗀?덄뵳?筌?Ŋ??筌ｌ꼶??*/
     private String categoryCode;
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
+    /** 疫꼲?브쑬履??꾨뗀諭???已?:: join????볤탢??랁?筌롫뗀?덄뵳?筌?Ŋ??筌ｌ꼶??*/
     private String categoryName;
 
-    /** 마크다운 처리된 내용 */
+    /** 筌띾뜇寃??쇱뒲 筌ｌ꼶?????곸뒠 */
     private String markdownContent;
 
-    /** 인덱스 변경 여부 */
+    /** ?紐껊쑔??癰궰野???? */
     @Builder.Default
     private Boolean isSortOrderChanged = false;
 
     /* ----- */
 
-    /** 저널 일자 번호 */
+    /** ??????깆쁽 甕곕뜇??*/
     private Integer journalDayId;
-    /** 저널 기준일자 */
+    /** ????疫꿸퀣???깆쁽 */
     private String stdrdDt;
-    /** 저널 일자 요일 */
+    /** ??????깆쁽 ?遺우뵬 */
     private String journalDateWeekDay;
-    /** 저널 기준일자 */
+    /** ????疫꿸퀣???깆쁽 */
     private Integer yy;
-    /** 저널 기준일자 */
+    /** ????疫꿸퀣???깆쁽 */
     private Integer mnth;
-    /** 순번 */
+    /** ??뺤쓰 */
     private Integer sortOrder;
 
-    /** 저널 일기 목록 */
-    private List<JournalDiaryDto> journalDiaryList;
-
-    /** 저널 노트 목록 */
-    private List<JournalNoteDto> journalNoteList;
-
+    /** ??????⑤┛ 筌뤴뫖以?*/
+    private List<JournalEntryDto> journalEntryList;
     /* ----- */
 
     /**
-     * 날짜 오름차순 정렬
+     * ?醫롮? ??살カ筌△뫁???類ｌ졊
      *
-     * @param other - 비교할 객체
-     * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
+     * @param other - ??쑨???揶쏆빘猿?     * @return ?臾믩땾: ?袁⑹삺 揶쏆빘猿쒎첎? ???? ???땾: ?袁⑹삺 揶쏆빘猿쒎첎? ???臾믪벉, 0: ??揶쏆빘猿쒎첎? 揶쏆늿??
      */
     @SneakyThrows
     @Override
@@ -103,9 +97,10 @@ public class JournalChapterDto
         return this.id;
     }
 
-    /** 위임 :: 태그 정보 모듈 */
+    /** ?袁⑹뿫 :: ??볥젃 ?類ｋ궖 筌뤴뫀諭?*/
     public TagCmpstn tag;
-    /** 위임 :: 상태 정보 모듈 */
+    /** ?袁⑹뿫 :: ?怨밴묶 ?類ｋ궖 筌뤴뫀諭?*/
     public StateCmpstn state;
 }
+
 

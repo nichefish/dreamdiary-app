@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * AttachableHistoryFacade
@@ -34,14 +31,19 @@ public class HistoryFacade {
     @PostConstruct
     private void initStrategyMap() {
         for (final HistoryStrategy<? extends BaseAttachableDto> strategy : strategies) {
-            final ContentType contentType = strategy.getContentType();
-            if (contentType == null || ContentType.DEFAULT.equals(contentType)) {
-                throw new IllegalStateException("Invalid HistoryStrategy contentType: " + strategy.getClass().getName());
+            final Set<ContentType> contentTypes = strategy.getContentTypes();
+            if (contentTypes == null || contentTypes.isEmpty()) {
+                throw new IllegalStateException("Invalid HistoryStrategy contentTypes: " + strategy.getClass().getName());
             }
-            if (strategyMap.containsKey(contentType)) {
-                throw new IllegalStateException("Duplicate HistoryStrategy mapping for ContentType: " + contentType);
+            for (final ContentType contentType : contentTypes) {
+                if (contentType == null || ContentType.DEFAULT.equals(contentType)) {
+                    throw new IllegalStateException("Invalid HistoryStrategy contentType: " + strategy.getClass().getName());
+                }
+                if (strategyMap.containsKey(contentType)) {
+                    throw new IllegalStateException("Duplicate HistoryStrategy mapping for ContentType: " + contentType);
+                }
+                strategyMap.put(contentType, strategy);
             }
-            strategyMap.put(contentType, strategy);
         }
     }
 
@@ -51,7 +53,7 @@ public class HistoryFacade {
             final Integer key
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(username, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key, contentType);
         return historyService.getHistoryList(currentDto.getAttachableKey());
     }
 
@@ -61,7 +63,7 @@ public class HistoryFacade {
             final Integer key
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(username, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key, contentType);
         final List<HistoryDto> historyList = historyService.getHistoryList(currentDto.getAttachableKey());
         return strategy.applyHistoryList(currentDto, historyList);
     }
@@ -73,13 +75,13 @@ public class HistoryFacade {
             final Integer historyId
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(username, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key, contentType);
         final Optional<HistoryDto> history = historyService.getHistory(currentDto.getAttachableKey(), historyId);
         if (history.isEmpty()) {
             throw new IllegalArgumentException("복구할 이력이 없습니다.");
         }
 
-        return strategy.updtContent(key, history.get().getContent(), HistoryType.RESTORE, historyId);
+        return strategy.updtContent(key, history.get().getContent(), HistoryType.RESTORE, historyId, contentType);
     }
 
     public <Dto extends BaseAttachableDto> boolean deleteHistoryByUser(
@@ -89,7 +91,7 @@ public class HistoryFacade {
             final Integer historyId
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(username, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key, contentType);
         return historyService.deleteHistory(currentDto.getAttachableKey(), historyId);
     }
 
@@ -99,7 +101,7 @@ public class HistoryFacade {
             final Integer key
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(username, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key, contentType);
         return historyService.deleteAllHistory(currentDto.getAttachableKey());
     }
 

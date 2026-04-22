@@ -7,9 +7,7 @@ import io.nicheblog.dreamdiary.feature.attachable.related.entity.RelatedContentE
 import io.nicheblog.dreamdiary.feature.attachable.related.mapstruct.RelatedContentMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.repository.jpa.RelatedContentRepository;
-import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
-import io.nicheblog.dreamdiary.feature.journal.dream.repository.jpa.JournalDreamRepository;
-import io.nicheblog.dreamdiary.feature.journal.note.repository.jpa.JournalNoteRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -31,9 +29,7 @@ public class RelatedContentQueryService {
 
     private final RelatedContentRepository relatedContentRepository;
     private final RelatedContentMapstruct relatedContentMapstruct;
-    private final JournalDiaryRepository journalDiaryRepository;
-    private final JournalNoteRepository journalNoteRepository;
-    private final JournalDreamRepository journalDreamRepository;
+    private final JournalEntryService journalEntryService;
 
     @Transactional(readOnly = true)
     public Map<String, List<RelatedContentDto>> getRelatedContentMapByRefs(
@@ -104,57 +100,29 @@ public class RelatedContentQueryService {
     }
 
     private Map<String, String> resolveTitleMap(final Collection<RelatedContentEntity> entityList) {
-        final Set<Integer> diaryIdSet = new LinkedHashSet<>();
-        final Set<Integer> noteIdSet = new LinkedHashSet<>();
-        final Set<Integer> dreamIdSet = new LinkedHashSet<>();
+        final Set<BaseAttachableKey> refKeySet = new LinkedHashSet<>();
 
         for (final RelatedContentEntity entity : entityList) {
-            this.collectTitleTarget(diaryIdSet, noteIdSet, dreamIdSet, entity.getLeftId(), entity.getLeftContentType());
-            this.collectTitleTarget(diaryIdSet, noteIdSet, dreamIdSet, entity.getRightId(), entity.getRightContentType());
+            this.collectTitleTarget(refKeySet, entity.getLeftId(), entity.getLeftContentType());
+            this.collectTitleTarget(refKeySet, entity.getRightId(), entity.getRightContentType());
         }
 
-        final Map<String, String> titleMap = new LinkedHashMap<>();
-        journalDiaryRepository.findAllById(diaryIdSet).forEach(entity ->
-                titleMap.put(this.toKey(ContentType.JOURNAL_DIARY.key, entity.getId()), entity.getTitle())
-        );
-        journalNoteRepository.findAllById(noteIdSet).forEach(entity ->
-                titleMap.put(this.toKey(ContentType.JOURNAL_NOTE.key, entity.getId()), entity.getTitle())
-        );
-        journalDreamRepository.findAllById(dreamIdSet).forEach(entity ->
-                titleMap.put(this.toKey(ContentType.JOURNAL_DREAM.key, entity.getId()), entity.getTitle())
-        );
-
-        return titleMap;
+        return journalEntryService.resolveTitleMap(refKeySet);
     }
 
     private void collectTitleTarget(
-            final Set<Integer> diaryIdSet,
-            final Set<Integer> noteIdSet,
-            final Set<Integer> dreamIdSet,
+            final Set<BaseAttachableKey> refKeySet,
             final Integer id,
             final String contentType
     ) {
         if (id == null || StringUtils.isBlank(contentType)) return;
-
-        if (Objects.equals(contentType, ContentType.JOURNAL_DIARY.key)) {
-            diaryIdSet.add(id);
-            return;
-        }
-
-        if (Objects.equals(contentType, ContentType.JOURNAL_NOTE.key)) {
-            noteIdSet.add(id);
-            return;
-        }
-
-        if (Objects.equals(contentType, ContentType.JOURNAL_DREAM.key)) {
-            dreamIdSet.add(id);
-        }
+        if (!this.isSupported(new BaseAttachableKey(id, contentType))) return;
+        refKeySet.add(new BaseAttachableKey(id, contentType));
     }
 
     private boolean isSupported(final BaseAttachableKey refKey) {
         if (refKey == null || refKey.getId() == null || StringUtils.isBlank(refKey.getContentType())) return false;
         return Objects.equals(refKey.getContentType(), ContentType.JOURNAL_DIARY.key)
-                || Objects.equals(refKey.getContentType(), ContentType.JOURNAL_NOTE.key)
                 || Objects.equals(refKey.getContentType(), ContentType.JOURNAL_DREAM.key);
     }
 

@@ -11,9 +11,11 @@ import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilterHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
-import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
-import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
-import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +26,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * JournalDayQueryService
  * <pre>
- *   JournalDay 조회 결과를 화면에 필요한 상태/메타 정보로 조립(enrich)하는 Query 전용 서비스
- * </pre>
+ *   JournalDay 議고쉶 寃곌낵瑜??붾㈃???꾩슂???곹깭/硫뷀? ?뺣낫濡?議곕┰(enrich)?섎뒗 Query ?꾩슜 ?쒕퉬?? * </pre>
  *
  * @author nichefish
  */
@@ -40,13 +42,13 @@ public class JournalDayQueryService {
 
     private final JournalDayService journalDayService;
     private final RelatedContentQueryService relatedContentQueryService;
+    private final JournalInterpretationQueryService journalInterpretationQueryService;
 
     /**
-     * 연월기준 목록 조회 + enrich
+     * ?곗썡湲곗? 紐⑸줉 議고쉶 + enrich
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건 (연도, 월, 필터 조건 포함)
-     * @return {@link List} -- 가공 완료된 일자 DTO 목록
+     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔 (?곕룄, ?? ?꾪꽣 議곌굔 ?ы븿)
+     * @return {@link List} -- 媛怨??꾨즺???쇱옄 DTO 紐⑸줉
      */
     public List<JournalDayDto> getYyMnthListDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
@@ -63,11 +65,10 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 기준일(standard day) 목록 조회 + enrich
+     * 湲곗???standard day) 紐⑸줉 議고쉶 + enrich
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔
+     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
      */
     public List<JournalDayDto> getStdrdDaysDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -76,11 +77,10 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 주간 목록 조회 + enrich
+     * 二쇨컙 紐⑸줉 議고쉶 + enrich
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔
+     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
      */
     public List<JournalDayDto> getWeeklyListDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
@@ -98,11 +98,10 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 메타 기준 조회 + enrich
+     * 硫뷀? 湲곗? 議고쉶 + enrich
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건 (metaId 포함)
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔 (metaId ?ы븿)
+     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
      */
     public List<JournalDayDto> getListDtoByMetaIdEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -111,11 +110,10 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 태그 기준 조회 + enrich
+     * ?쒓렇 湲곗? 議고쉶 + enrich
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건 (tagId 포함)
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔 (tagId ?ы븿)
+     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
      */
     public List<JournalDayDto> getListDtoByTagIdEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -124,11 +122,10 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 상세 조회 + enrich
+     * ?곸꽭 議고쉶 + enrich
      *
-     * @param username 조회 사용자 계정명
-     * @param key PK
-     * @return {@link JournalDayDto} -- 가공 완료된 DTO
+     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param key PK
+     * @return {@link JournalDayDto} -- 媛怨??꾨즺??DTO
      */
     public JournalDayDto getDtlDtoEnrichedByUser(final String username, final Integer key) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -137,17 +134,16 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 목록 공통 enrich 처리
-     * 1) 휴일 정보 매핑 2) 상태 병합 (조회 조건 기반) 3) 태그 요약 적용
+     * 紐⑸줉 怨듯넻 enrich 泥섎━
+     * 1) ?댁씪 ?뺣낫 留ㅽ븨 2) ?곹깭 蹂묓빀 (議고쉶 議곌굔 湲곕컲) 3) ?쒓렇 ?붿빟 ?곸슜
      *
-     * @param listDto 조회 결과 리스트
-     * @param searchParam 조회 조건
-     * @return enrich 완료 리스트
-     */
+     * @param listDto 議고쉶 寃곌낵 由ъ뒪??     * @param searchParam 議고쉶 議곌굔
+     * @return enrich ?꾨즺 由ъ뒪??     */
     private List<JournalDayDto> enrichList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
@@ -158,16 +154,15 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 주간 목록 전용 enrich 처리
+     * 二쇨컙 紐⑸줉 ?꾩슜 enrich 泥섎━
      *
-     * @param listDto 조회 결과 리스트
-     * @param searchParam 조회 조건
-     * @return enrich 완료 리스트
-     */
+     * @param listDto 議고쉶 寃곌낵 由ъ뒪??     * @param searchParam 議고쉶 議곌굔
+     * @return enrich ?꾨즺 由ъ뒪??     */
     private List<JournalDayDto> enrichWeeklyList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
@@ -178,100 +173,61 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 단건 공통 enrich 처리
+     * ?④굔 怨듯넻 enrich 泥섎━
      *
-     * @param retrieved 조회 결과
-     * @return enrich 완료 DTO
+     * @param retrieved 議고쉶 寃곌낵
+     * @return enrich ?꾨즺 DTO
      */
     private JournalDayDto enrichDetail(final String username, final JournalDayDto retrieved) throws Exception {
         if (retrieved == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(retrieved, getHolydayMap());
+        this.mergeInterpretations(username, List.of(retrieved));
         JournalDayViewHelper.mergeStates(username, retrieved);
         this.mergeRelatedContents(username, List.of(retrieved));
 
         return retrieved;
     }
 
+    private void mergeInterpretations(final String username, final List<JournalDayDto> listDto) throws Exception {
+        if (listDto == null || listDto.isEmpty()) return;
+
+        final List<BaseAttachableKey> refKeyList = new ArrayList<>();
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    refKeyList.add(new BaseAttachableKey(entry.getId(), policy.contentType))
+            );
+        }
+
+        final Map<String, List<JournalInterpretationDto>> interpretationMap =
+                journalInterpretationQueryService.getInterpretationMapByRefs(refKeyList, username);
+
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    entry.setJournalInterpretationList(
+                            interpretationMap.getOrDefault(buildRefMapKey(policy.contentType.key, entry.getId()), List.of())
+                    )
+            );
+        }
+    }
+
     private void mergeRelatedContents(final String username, final List<JournalDayDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
         final List<BaseAttachableKey> refKeyList = new ArrayList<>();
-        for (final JournalDayDto journalDay : listDto) {
-            if (journalDay == null) continue;
-
-            final List<JournalChapterDto> journalChapterList = journalDay.getJournalChapterList();
-            if (journalChapterList != null) {
-                for (final JournalChapterDto journalChapter : journalChapterList) {
-                    if (journalChapter == null) continue;
-
-                    if (journalChapter.getJournalDiaryList() != null) {
-                    for (final JournalDiaryDto journalDiary : journalChapter.getJournalDiaryList()) {
-                        if (journalDiary == null || journalDiary.getId() == null) continue;
-                        refKeyList.add(new BaseAttachableKey(journalDiary.getId(), ContentType.JOURNAL_DIARY));
-                    }
-                    }
-                    if (journalChapter.getJournalNoteList() != null) {
-                        for (final JournalNoteDto journalNote : journalChapter.getJournalNoteList()) {
-                            if (journalNote == null || journalNote.getId() == null) continue;
-                            refKeyList.add(new BaseAttachableKey(journalNote.getId(), ContentType.JOURNAL_NOTE));
-                        }
-                    }
-                }
-            }
-
-            this.collectDreamRefKeys(refKeyList, journalDay.getJournalDreamList());
-            this.collectDreamRefKeys(refKeyList, journalDay.getJournalElseDreamList());
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.values()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    refKeyList.add(new BaseAttachableKey(entry.getId(), policy.contentType))
+            );
         }
 
-        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
+        final Map<String, List<RelatedContentDto>> relatedMap =
+                relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
 
-        for (final JournalDayDto journalDay : listDto) {
-            if (journalDay == null) continue;
-
-            final List<JournalChapterDto> journalChapterList = journalDay.getJournalChapterList();
-            if (journalChapterList != null) {
-                for (final JournalChapterDto journalChapter : journalChapterList) {
-                    if (journalChapter == null) continue;
-
-                    if (journalChapter.getJournalDiaryList() != null) {
-                    for (final JournalDiaryDto journalDiary : journalChapter.getJournalDiaryList()) {
-                        if (journalDiary == null || journalDiary.getId() == null) continue;
-                        journalDiary.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_DIARY.key, journalDiary.getId()));
-                    }
-                    }
-                    if (journalChapter.getJournalNoteList() != null) {
-                        for (final JournalNoteDto journalNote : journalChapter.getJournalNoteList()) {
-                            if (journalNote == null || journalNote.getId() == null) continue;
-                            journalNote.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_NOTE.key, journalNote.getId()));
-                        }
-                    }
-                }
-            }
-
-            this.applyDreamRelatedContents(relatedMap, journalDay.getJournalDreamList());
-            this.applyDreamRelatedContents(relatedMap, journalDay.getJournalElseDreamList());
-        }
-    }
-
-    private void collectDreamRefKeys(final List<BaseAttachableKey> refKeyList, final List<JournalDreamDto> journalDreamList) {
-        if (journalDreamList == null) return;
-
-        for (final JournalDreamDto journalDream : journalDreamList) {
-            if (journalDream == null || journalDream.getId() == null) continue;
-            refKeyList.add(new BaseAttachableKey(journalDream.getId(), ContentType.JOURNAL_DREAM));
-        }
-    }
-
-    private void applyDreamRelatedContents(
-            final Map<String, List<RelatedContentDto>> relatedMap,
-            final List<JournalDreamDto> journalDreamList
-    ) {
-        if (journalDreamList == null) return;
-
-        for (final JournalDreamDto journalDream : journalDreamList) {
-            if (journalDream == null || journalDream.getId() == null) continue;
-            journalDream.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_DREAM.key, journalDream.getId()));
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.values()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()))
+            );
         }
     }
 
@@ -280,18 +236,47 @@ public class JournalDayQueryService {
             final String contentType,
             final Integer id
     ) {
-        return relatedMap.getOrDefault(String.format("%s:%d", contentType, id), List.of());
+        return relatedMap.getOrDefault(buildRefMapKey(contentType, id), List.of());
+    }
+
+    private String buildRefMapKey(final String contentType, final Integer id) {
+        return String.format("%s:%d", contentType, id);
+    }
+
+    private void forEachEntryByType(
+            final List<JournalDayDto> listDto,
+            final ContentType contentType,
+            final Consumer<JournalEntryDto> consumer
+    ) {
+        if (listDto == null || contentType == null || consumer == null) return;
+
+        for (final JournalDayDto journalDay : listDto) {
+            if (journalDay == null || journalDay.getJournalChapterList() == null) continue;
+
+            for (final JournalChapterDto journalChapter : journalDay.getJournalChapterList()) {
+                if (journalChapter == null) continue;
+                final List<JournalEntryDto> entryList =
+                        JournalEntryViewProjectionHelper.getEntriesByType(journalChapter, contentType);
+                forEachEntry(entryList, consumer);
+            }
+        }
+    }
+
+    private void forEachEntry(final List<JournalEntryDto> entryList, final Consumer<JournalEntryDto> consumer) {
+        if (entryList == null || consumer == null) return;
+
+        for (final JournalEntryDto entry : entryList) {
+            if (entry == null || entry.getId() == null) continue;
+            consumer.accept(entry);
+        }
     }
 
     /**
-     * 휴일 정보 캐시 조회
+     * ?댁씪 ?뺣낫 罹먯떆 議고쉶
      *
-     * @return 휴일 맵
-     */
+     * @return ?댁씪 留?     */
     @SuppressWarnings("unchecked")
     private Map<String, List<String>> getHolydayMap() {
         return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
     }
 }
-
-

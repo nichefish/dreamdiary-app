@@ -62,7 +62,6 @@ public class TagService
         return List.of(
                 ContentType.JOURNAL_DAY,
                 ContentType.JOURNAL_DIARY,
-                ContentType.JOURNAL_NOTE,
                 ContentType.JOURNAL_DREAM
         );
     }

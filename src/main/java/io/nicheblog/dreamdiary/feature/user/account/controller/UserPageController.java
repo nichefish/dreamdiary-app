@@ -6,7 +6,7 @@
  import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
  import io.nicheblog.dreamdiary.feature.user.account.model.UserSearchParam;
  import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
-import io.nicheblog.dreamdiary.feature.user.reqst.repository.jpa.UserSignupRequestRepository;
+ import io.nicheblog.dreamdiary.feature.user.reqst.repository.jpa.UserSignupRequestRepository;
  import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
  import io.nicheblog.dreamdiary.infrastructure.code.Code;
