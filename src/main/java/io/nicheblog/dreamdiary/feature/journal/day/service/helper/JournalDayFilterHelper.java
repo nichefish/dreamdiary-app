@@ -1,11 +1,12 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.helper;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrHintDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
-import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
-import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,14 +64,24 @@ public final class JournalDayFilterHelper {
                         if (filterChapterCtgr && !matchesChapterCtgr(chapter, hasNoneCategory, ctgrSet)) continue;
 
                         if (filterDiaries) {
-                            final List<JournalDiaryDto> diaryList = chapter.getJournalDiaryList();
+                            final List<JournalEntryDto> diaryList = JournalEntryViewProjectionHelper.getDiaryEntries(chapter);
                             if (CollectionUtils.isEmpty(diaryList)) continue;
-                            final List<JournalDiaryDto> filteredDiaries = new ArrayList<>();
-                            for (final JournalDiaryDto diary : diaryList) {
+                            final List<JournalEntryDto> filteredDiaries = new ArrayList<>();
+                            for (final JournalEntryDto diary : diaryList) {
                                 if (containsKeyword(diary.getContent(), diaryKeyword)) filteredDiaries.add(diary);
                             }
                             if (filteredDiaries.isEmpty()) continue;
-                            filteredEntries.add(chapter.toBuilder().journalDiaryList(filteredDiaries).build());
+
+                            final JournalChapterDto filteredChapter = chapter.toBuilder().build();
+                            JournalEntryViewProjectionHelper.applyChapterEntries(
+                                    filteredChapter,
+                                    JournalEntryViewProjectionHelper.replaceChapterEntries(
+                                            chapter,
+                                            ContentType.JOURNAL_DIARY,
+                                            filteredDiaries
+                                    )
+                            );
+                            filteredEntries.add(filteredChapter);
                         } else {
                             filteredEntries.add(chapter);
                         }
@@ -78,8 +89,8 @@ public final class JournalDayFilterHelper {
                 }
             }
 
-            List<JournalDreamDto> filteredDreams = day.getJournalDreamList();
-            List<JournalDreamDto> filteredElseDreams = day.getJournalElseDreamList();
+            List<JournalEntryDto> filteredDreams = day.getJournalDreamList();
+            List<JournalEntryDto> filteredElseDreams = day.getJournalElseDreamList();
             if (filterDreams) {
                 filteredDreams = filterDreamList(day.getJournalDreamList(), dreamKeyword);
                 filteredElseDreams = filterDreamList(day.getJournalElseDreamList(), dreamKeyword);
@@ -87,7 +98,7 @@ public final class JournalDayFilterHelper {
 
             final boolean hasHiddenChapterCtgr = !filterDiaries && CollectionUtils.isNotEmpty(hiddenChapterCtgrList);
 
-            // 챕터가 원래부터 없는 날은 챕터 카테고리 필터로 제외하지 않음
+            // 梨뺥꽣媛 ?먮옒遺???녿뒗 ?좎? 梨뺥꽣 移댄뀒怨좊━ ?꾪꽣濡??쒖쇅?섏? ?딆쓬
             if ((filterDiaries || (filterChapterCtgr && hadChapters))
                     && CollectionUtils.isEmpty(filteredEntries)
                     && !hasHiddenChapterCtgr) continue;
@@ -142,10 +153,10 @@ public final class JournalDayFilterHelper {
         return value.toLowerCase().contains(keyword);
     }
 
-    private static List<JournalDreamDto> filterDreamList(final List<JournalDreamDto> dreamList, final String keyword) {
+    private static List<JournalEntryDto> filterDreamList(final List<JournalEntryDto> dreamList, final String keyword) {
         if (CollectionUtils.isEmpty(dreamList)) return new ArrayList<>();
-        final List<JournalDreamDto> filtered = new ArrayList<>();
-        for (final JournalDreamDto dream : dreamList) {
+        final List<JournalEntryDto> filtered = new ArrayList<>();
+        for (final JournalEntryDto dream : dreamList) {
             if (containsKeyword(dream.getContent(), keyword)) filtered.add(dream);
         }
         return filtered;

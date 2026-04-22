@@ -1,8 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
-import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
-import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
@@ -46,13 +45,11 @@ public class JournalChapterSpec
         final List<Order> order = new ArrayList<>();
         final Join<JournalChapterEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
         order.add(builder.desc(journalDayJoin.get("journalDate")));
-        // 동일 일자(또는 동일 조회 묶음) 내: 일기 → 노트 → 꿈, 그 다음 sort_order
-        final Expression<Integer> chapterTypeRank = builder.<Integer>selectCase()
-                .when(builder.equal(root.get("chapterType"), ChapterType.DIARY), builder.literal(1))
-                .when(builder.equal(root.get("chapterType"), ChapterType.NOTE), builder.literal(2))
-                .when(builder.equal(root.get("chapterType"), ChapterType.DREAM), builder.literal(3))
-                .otherwise(builder.literal(99));
-        order.add(builder.asc(chapterTypeRank));
+        // 동일 일자(또는 동일 조회 묶음) 내: DREAM은 마지막, 그 외는 sort_order 기준
+        final Expression<Integer> dreamLastRank = builder.<Integer>selectCase()
+                .when(builder.equal(root.get("chapterType"), ChapterType.DREAM), builder.literal(1))
+                .otherwise(builder.literal(0));
+        order.add(builder.asc(dreamLastRank));
         order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
         // distinct
@@ -115,11 +112,7 @@ public class JournalChapterSpec
                     predicate.add(builder.like(root.get("content"), "%" + value + "%"));
                     continue;
                 case "tagId":
-                    // 특정 태그된 항목만 조회
-                    final Join<JournalChapterEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
-                    final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(tagContentJoin.get("createdBy"), createdBy));
-                    predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
+                    resolveTagIdPredicate(predicate, root, builder, value, createdBy, ContentType.JOURNAL_CHAPTER);
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
@@ -134,14 +127,4 @@ public class JournalChapterSpec
         return predicate;
     }
 
-    private String resolveCreatedBy(final Map<String, Object> searchParamMap) {
-        final Object createdBy = searchParamMap.get("createdBy");
-        if (createdBy != null) {
-            final String createdByStr = createdBy.toString();
-            if (!createdByStr.isBlank()) return createdByStr;
-        }
-        throw new IllegalArgumentException("createdBy is required.");
-    }
-
 }
-

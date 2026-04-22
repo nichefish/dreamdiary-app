@@ -50,7 +50,7 @@ public class JournalDayMetaPageController
     public String journalDayMetaPage(
             @ModelAttribute("searchParam") JournalDaySearchParam searchParam,
             final ModelMap model
-    ) throws Exception {
+    ) {
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);

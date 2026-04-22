@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.attachable.history.model.HistoryDto;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * HistoryStrategy
@@ -17,9 +18,19 @@ import java.util.List;
  */
 public interface HistoryStrategy<Dto extends BaseAttachableDto> {
 
-    ContentType getContentType();
+    default ContentType getContentType() {
+        return ContentType.DEFAULT;
+    }
+
+    default Set<ContentType> getContentTypes() {
+        return Set.of(this.getContentType());
+    }
 
     Dto getOwnedDto(final String username, final Integer key) throws Exception;
+
+    default Dto getOwnedDto(final String username, final Integer key, final ContentType contentType) throws Exception {
+        return this.getOwnedDto(username, key);
+    }
 
     Dto updtContent(
             final Integer key,
@@ -27,6 +38,16 @@ public interface HistoryStrategy<Dto extends BaseAttachableDto> {
             final HistoryType historyType,
             final Integer fromHistoryId
     ) throws Exception;
+
+    default Dto updtContent(
+            final Integer key,
+            final String content,
+            final HistoryType historyType,
+            final Integer fromHistoryId,
+            final ContentType contentType
+    ) throws Exception {
+        return this.updtContent(key, content, historyType, fromHistoryId);
+    }
 
     default Dto applyHistoryList(final Dto currentDto, final List<HistoryDto> historyList) {
         return currentDto;

@@ -1,0 +1,35 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.nicheblog.dreamdiary.feature.journal.entry.repository.mybatis.JournalEntryMapper">
+
+    <resultMap id="JournalEntryMap" type="io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto">
+        <id property="id" column="id"/>
+        <result property="contentType" column="content_type"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="journalChapterId" column="journal_chapter_id"/>
+        <result property="journalDayId" column="journal_day_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="yy" column="yy"/>
+        <result property="mnth" column="mnth"/>
+    </resultMap>
+
+    <select id="getDeletedByIdAndContentType" resultMap="JournalEntryMap">
+        SELECT
+            entry.id,
+            entry.content_type,
+            entry.created_by,
+            entry.journal_chapter_id,
+            chapter.journal_day_id,
+            entry.sort_order,
+            day.yy,
+            day.mnth
+        FROM journal_entry entry
+        LEFT JOIN journal_chapter chapter
+            ON entry.journal_chapter_id = chapter.id
+        LEFT JOIN journal_day day
+            ON chapter.journal_day_id = day.id
+        WHERE entry.id = #{id}
+          AND entry.content_type = #{contentType}
+    </select>
+</mapper>

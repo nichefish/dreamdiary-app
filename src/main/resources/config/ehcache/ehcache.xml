@@ -64,15 +64,12 @@
     <cache alias="journalDayWeeklyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayDtlDtoByUser" uses-template="defaultTemplate" />
     <!-- ?�???�자: ?�그 -->
-    <cache alias="journalDayYyMnthTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDayWeeklyTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDayYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDayWeeklySizedTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDayPeriodTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayTagYyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayMetaCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayMetaYyListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDayCountMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDayTagCountMapByUser" uses-template="defaultTemplate" />
 
     <!-- ?�??챕터 -->
     <cache alias="journalChapterDtlDtoByUser" uses-template="defaultTemplate" />
@@ -80,43 +77,22 @@
     <cache alias="journalChapterWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- ?�???�기 -->
-    <cache alias="journalDiaryDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryYyMnthTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryWeeklyTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryWeeklySizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryCountMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalEntryDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalEntryYyAnnualStatedListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalEntryTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalEntryPeriodTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalEntryTagCtgrMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalEntryTagCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryWeeklyStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryYyAnnualStatedListByUser" uses-template="defaultTemplate" />
 
     <!-- journal note -->
-    <cache alias="journalNoteDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteYyMnthTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteWeeklyTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteWeeklySizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalNoteStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalNoteWeeklyStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalNoteYyAnnualStatedListByUser" uses-template="defaultTemplate" />
 
     <!-- ?�??�?-->
-    <cache alias="journalDreamDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamYyMnthTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamWeeklyTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamWeeklySizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamWeeklyStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamYyAnnualStatedListByUser" uses-template="defaultTemplate" />
 
     <!-- ?�???�석 -->
     <cache alias="journalInterpretationDtlDtoByUser" uses-template="defaultTemplate" />
@@ -141,4 +117,3 @@
     <cache alias="metaContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="metaSmpDtlEntity" uses-template="defaultTemplate" />
 </config>
-

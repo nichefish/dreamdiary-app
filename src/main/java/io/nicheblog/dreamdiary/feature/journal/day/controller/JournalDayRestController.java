@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayCalSer
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayQueryService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayService;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -22,6 +23,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -90,7 +92,7 @@ public class JournalDayRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalDayRegAjax(
-            final @PathVariable(value = "id", required = false) Integer id,
+            final @PathVariable(required = false) Integer id,
             final @Valid JournalDayDto journalDay
     ) throws Exception {
 
@@ -120,10 +122,27 @@ public class JournalDayRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalDayDtlAjax(
-            final @PathVariable("id") Integer id
+            final @PathVariable Integer id,
+            final @RequestParam(name = "includeDreamChapter", defaultValue = "true") boolean includeDreamChapter
     ) throws Exception {
 
         final JournalDayDto retrievedDto = myJournalDayQueryService.getMyDtlDtoEnriched(id);
+        if (!includeDreamChapter) {
+            if (retrievedDto.getChapterList() != null) {
+                retrievedDto.setChapterList(
+                        new ArrayList<>(retrievedDto.getChapterList().stream()
+                                .filter(chapter -> chapter != null && chapter.getChapterType() != ChapterType.DREAM)
+                                .toList())
+                );
+            }
+            if (retrievedDto.getJournalChapterList() != null) {
+                retrievedDto.setJournalChapterList(
+                        new ArrayList<>(retrievedDto.getJournalChapterList().stream()
+                                .filter(chapter -> chapter != null && chapter.getChapterType() != ChapterType.DREAM)
+                                .toList())
+                );
+            }
+        }
         final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -141,7 +160,7 @@ public class JournalDayRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalDayDelAjax(
-            final @PathVariable("id") Integer id
+            final @PathVariable Integer id
     ) throws Exception {
 
         final ServiceResponse result = journalDayService.delete(id);

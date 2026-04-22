@@ -25,20 +25,11 @@ import java.util.Map;
 public class EhCacheEvictServiceImpl
         implements CacheEvictService {
 
-    // private final JournalDayCacheEvictor journalDayCacheEvictor;
-    // private final JournalDiaryCacheEvictor journalDiaryCacheEvictor;
-    // private final JournalDreamCacheEvictor journalDreamCacheEvictor;
-    // private final JournalAnnualCacheEvictor journalAnnualCacheEvictor;
-
     // CacheEvictor를 매핑하는 Map
     private final Map<String, CacheEvictor<Integer>> evictorMap = new HashMap<>();
 
     @PostConstruct
     private void initEvictorMap() {
-        // evictorMap.put(ContentType.JOURNAL_DAY.key, journalDayCacheEvictor);
-        // evictorMap.put(ContentType.JOURNAL_DIARY.key, journalDiaryCacheEvictor);
-        // evictorMap.put(ContentType.JOURNAL_DREAM.key, journalDreamCacheEvictor);
-        // evictorMap.put(ContentType.JOURNAL_ANNUAL.key, journalAnnualCacheEvictor);
     }
 
     /**
@@ -57,4 +48,3 @@ public class EhCacheEvictServiceImpl
         evictor.evict(refId);
     }
 }
-

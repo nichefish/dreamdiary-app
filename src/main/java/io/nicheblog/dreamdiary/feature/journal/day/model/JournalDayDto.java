@@ -11,7 +11,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrH
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
-import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * JournalDayDto
  * <pre>
- *  저널 일자 Dto.
+ *  ????쇱옄 Dto.
  * </pre>
  *
  * @author nichefish
@@ -41,69 +41,69 @@ public class JournalDayDto
         extends BaseAttachableDto
         implements Identifiable<Integer>, TagCmpstnModule, MetaCmpstnModule, JournalPeriodModule, Comparable<JournalDayDto>  {
 
-    /** 필수: 컨텐츠 타입 */
+    /** ?꾩닔: 而⑦뀗痢????*/
     @Builder.Default
     private String contentType = ContentType.JOURNAL_DAY.key;
 
     /* ----- */
 
-    /** 저널 일자 */
-    @Size(max = 10, message = "일자는 최대 10자여야 합니다.")
-    @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "일자는 'YYYY-MM-DD' 형식이어야 합니다.")
+    /** ????쇱옄 */
+    @Size(max = 10, message = "?쇱옄??理쒕? 10?먯뿬???⑸땲??")
+    @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "?쇱옄??'YYYY-MM-DD' ?뺤떇?댁뼱???⑸땲??")
     private String journalDate;
 
-    /** 저널 일자 요일 */
+    /** ????쇱옄 ?붿씪 */
     private String journalDateWeekDay;
 
-    /** 저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN) */
+    /** ????좎쭨 ?뺣???(EXACT | APPROXIMATE | UNKNOWN) */
     @Builder.Default
     private JournalDatePrecision journalDatePrecision = JournalDatePrecision.EXACT;
 
-    /** 기준일자 (저널일자 또는 대략일자) */
+    /** 湲곗??쇱옄 (??먯씪???먮뒗 ??듭씪?? */
     private String stdrdDt;
 
-    /** 년도 */
+    /** ?꾨룄 */
     private Integer yy;
-    /** 월 */
+    /** ??*/
     private Integer mnth;
-    /** 주 시작일자 (월요일 기준) */
+    /** 二??쒖옉?쇱옄 (?붿슂??湲곗?) */
     private String weekStartDt;
-    /** 이전 주 시작일자 */
+    /** ?댁쟾 二??쒖옉?쇱옄 */
     private String prevWeekStartDt;
 
-    /** 공휴일 여부 */
+    /** 怨듯쑕???щ? */
     private Boolean isHolyday;
-    /** 공휴일 이름 */
+    /** 怨듯쑕???대쫫 */
     private String holydayNm;
 
-    /** 날씨 */
-    @Size(max = 100, message = "날씨 정보는 100자 이하로 입력해야 합니다.")
+    /** ?좎뵪 */
+    @Size(max = 100, message = "?좎뵪 ?뺣낫??100???댄븯濡??낅젰?댁빞 ?⑸땲??")
     private String weather;
 
-    /** 저널 챕터 목록 */
+    /** ???梨뺥꽣 紐⑸줉 */
     private List<JournalChapterDto> journalChapterList;
-    /** 저널 챕터 목록 */
+    /** ???梨뺥꽣 紐⑸줉 */
     private List<JournalChapterSmpDto> chapterList;
-    /** 챕터 필터로 숨겨진 카테고리 목록 */
+    /** 梨뺥꽣 ?꾪꽣濡??④꺼吏?移댄뀒怨좊━ 紐⑸줉 */
     private List<JournalChapterCtgrHintDto> hiddenChapterCtgrList;
 
-    /** 저널 꿈 목록 */
-    private List<JournalDreamDto> journalDreamList;
+    /** ???轅?紐⑸줉 */
+    private List<JournalEntryDto> journalDreamList;
 
-    /** 저널 꿈 (타인) 목록 */
-    private List<JournalDreamDto> journalElseDreamList;
+    /** ???轅?(??? 紐⑸줉 */
+    private List<JournalEntryDto> journalElseDreamList;
 
     /* ----- */
 
     /**
-     * Getter :: 기준일자
+     * Getter :: 湲곗??쇱옄
      */
     public String getStdrdDt() {
         return journalDate;
     }
 
     /**
-     * Getter :: 꿈 목록 보유 여부
+     * Getter :: 轅?紐⑸줉 蹂댁쑀 ?щ?
      */
     public Boolean getHasDream() {
         return !CollectionUtils.isEmpty(this.journalDreamList) || !CollectionUtils.isEmpty(this.journalElseDreamList);
@@ -112,10 +112,10 @@ public class JournalDayDto
     /* ----- */
 
     /**
-     * 날짜 오름차순 정렬
+     * ?좎쭨 ?ㅻ쫫李⑥닚 ?뺣젹
      *
-     * @param other - 비교할 객체
-     * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
+     * @param other - 鍮꾧탳??媛앹껜
+     * @return ?묒닔: ?꾩옱 媛앹껜媛 ???? ?뚯닔: ?꾩옱 媛앹껜媛 ???묒쓬, 0: ??媛앹껜媛 媛숈쓬
      */
     @SneakyThrows
     @Override
@@ -132,9 +132,10 @@ public class JournalDayDto
         return this.id;
     }
 
-    /** 위임 :: 태그 정보 모듈 */
+    /** ?꾩엫 :: ?쒓렇 ?뺣낫 紐⑤뱢 */
     public TagCmpstn tag;
-    /** 위임 :: 메타 정보 모듈 */
+    /** ?꾩엫 :: 硫뷀? ?뺣낫 紐⑤뱢 */
     public MetaCmpstn meta;
 }
+
 

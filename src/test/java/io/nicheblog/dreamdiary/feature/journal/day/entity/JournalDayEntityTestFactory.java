@@ -24,7 +24,7 @@ public class JournalDayEntityTestFactory {
     public static JournalDayEntity createWithJournalDt(final String journalDtStr) throws Exception {
         return JournalDayEntity.builder()
                 .contentType(ContentType.JOURNAL_DAY.key)
-                .journalDt(DateUtils.asDate(journalDtStr))
+                .journalDate(DateUtils.asDate(journalDtStr))
                 .build();
     }
 

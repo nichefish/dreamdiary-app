@@ -4,12 +4,9 @@ import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualDto;
 import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualReviewDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
-import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
-import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryPostDto;
-import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
-import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
-import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNotePostDto;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -17,7 +14,7 @@ import lombok.*;
 /**
  * JournalCacheEvictParam
  * <pre>
- *  저널 캐시 초기화 관련 필요 인자 파라미터 객체
+ *  ???罹먯떆 珥덇린??愿???꾩슂 ?몄옄 ?뚮씪誘명꽣 媛앹껜
  * </pre>
  *
  * @author nichefish
@@ -28,29 +25,30 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JournalCacheEvictParam {
-    /** 등록자 ID */
+    /** ?깅줉??ID */
     private String createdBy;
-    /** 글 번호 */
+    private String contentType;
+    /** 湲 踰덊샇 */
     private Integer id;
-    /** 저널 일자 번호 */
+    /** ????쇱옄 踰덊샇 */
     private Integer journalDayId;
-    /** 저널 챕터 번호 */
+    /** ???梨뺥꽣 踰덊샇 */
     private Integer journalChapterId;
-    /** 저널 꿈 번호 */
+    /** ???轅?踰덊샇 */
     private Integer journalDreamId;
-    /** 저널 결산 번호 */
+    /** ???寃곗궛 踰덊샇 */
     private Integer journalAnnualId;
-    /** 년도 */
+    /** ?꾨룄 */
     private Integer yy;
-    /** 월 */
+    /** ??*/
     private Integer mnth;
-    /** 주 시작일자 */
+    /** 二??쒖옉?쇱옄 */
     private String weekStartDt;
-    /** 주 시작일자 (수정 전) */
+    /** 二??쒖옉?쇱옄 (?섏젙 ?? */
     private String prevWeekStartDt;
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param dto {@link JournalDayDto}
      * @return {@link JournalCacheEvictParam}
@@ -58,6 +56,7 @@ public class JournalCacheEvictParam {
     public static JournalCacheEvictParam of(final JournalDayDto dto) {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
+                .contentType(dto.getContentType())
                 .id(dto.getId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
@@ -66,7 +65,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param postDto {@link JournalDayDto}
      * @param updatedDto {@link JournalDayDto}
@@ -84,7 +83,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param dto {@link JournalChapterDto}
      * @return {@link JournalCacheEvictParam}
@@ -92,6 +91,7 @@ public class JournalCacheEvictParam {
     public static JournalCacheEvictParam of(final JournalChapterDto dto) throws Exception {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
+                .contentType(dto.getContentType())
                 .id(dto.getId())
                 .journalDayId(dto.getJournalDayId())
                 .yy(dto.getYy())
@@ -101,14 +101,15 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
-     * @param dto {@link JournalDiaryDto}
+     * @param dto {@link JournalEntryDto}
      * @return {@link JournalCacheEvictParam}
      */
-    public static JournalCacheEvictParam of(final JournalDiaryPostDto dto) {
+    public static JournalCacheEvictParam of(final JournalEntryPostDto dto) {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
+                .contentType(dto.getContentType())
                 .id(dto.getId())
                 .journalDayId(dto.getJournalDayId())
                 .journalChapterId(dto.getJournalChapterId())
@@ -118,32 +119,21 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param dto {@link JournalDayDto}
      * @return {@link JournalCacheEvictParam}
      */
-    public static JournalCacheEvictParam of(final JournalDiaryDto dto) throws Exception {
-        return JournalCacheEvictParam.builder()
-                .createdBy(dto.getCreatedBy())
-                .id(dto.getId())
-                .journalDayId(dto.getJournalDayId())
-                .journalChapterId(dto.getJournalChapterId())
-                .yy(dto.getYy())
-                .mnth(dto.getMnth())
-                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
-                .build();
-    }
-
-    /**
-     * 팩토리 메서드 패턴
+/**
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
-     * @param dto {@link JournalDreamDto}
+     * @param dto {@link JournalEntryDto}
      * @return {@link JournalCacheEvictParam}
      */
-    public static JournalCacheEvictParam of(final JournalDreamDto dto) throws Exception {
+    public static JournalCacheEvictParam of(final JournalEntryDto dto) throws Exception {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
+                .contentType(dto.getContentType())
                 .id(dto.getId())
                 .journalDayId(dto.getJournalDayId())
                 .yy(dto.getYy())
@@ -151,32 +141,8 @@ public class JournalCacheEvictParam {
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
-
-    public static JournalCacheEvictParam of(final JournalNotePostDto dto) {
-        return JournalCacheEvictParam.builder()
-                .createdBy(dto.getCreatedBy())
-                .id(dto.getId())
-                .journalDayId(dto.getJournalDayId())
-                .journalChapterId(dto.getJournalChapterId())
-                .yy(dto.getYy())
-                .mnth(dto.getMnth())
-                .build();
-    }
-
-    public static JournalCacheEvictParam of(final JournalNoteDto dto) throws Exception {
-        return JournalCacheEvictParam.builder()
-                .createdBy(dto.getCreatedBy())
-                .id(dto.getId())
-                .journalDayId(dto.getJournalDayId())
-                .journalChapterId(dto.getJournalChapterId())
-                .yy(dto.getYy())
-                .mnth(dto.getMnth())
-                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
-                .build();
-    }
-
-    /**
-     * 팩토리 메서드 패턴
+/**
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param dto {@link JournalInterpretationDto}
      * @return {@link JournalCacheEvictParam}
@@ -193,7 +159,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param dto {@link JournalTodoDto}
      * @return {@link JournalCacheEvictParam}
@@ -207,7 +173,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param dto {@link JournalTodoDto}
      * @return {@link JournalCacheEvictParam}
@@ -222,7 +188,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * 팩토리 메서드 패턴
+     * ?⑺넗由?硫붿꽌???⑦꽩
      *
      * @param dto {@link JournalTodoDto}
      * @return {@link JournalCacheEvictParam}
@@ -237,3 +203,4 @@ public class JournalCacheEvictParam {
     }
 
 }
+

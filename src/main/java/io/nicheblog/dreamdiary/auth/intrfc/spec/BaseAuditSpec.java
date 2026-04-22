@@ -57,4 +57,13 @@ public interface BaseAuditSpec<Entity extends BaseCrudEntity>
 
         return predicate;
     }
+
+    default String resolveCreatedBy(final Map<String, Object> searchParamMap) {
+        final Object createdBy = searchParamMap.get("createdBy");
+        if (createdBy != null) {
+            final String createdByStr = createdBy.toString();
+            if (!createdByStr.isBlank()) return createdByStr;
+        }
+        throw new IllegalArgumentException("createdBy is required. searchParamMapKeys=" + searchParamMap.keySet());
+    }
 }

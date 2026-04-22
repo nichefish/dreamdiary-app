@@ -25,7 +25,6 @@ public enum ContentType {
     JOURNAL_CHAPTER("JOURNAL_CHAPTER", "저널 챕터", "book"),
     JOURNAL_DIARY("JOURNAL_DIARY", "저널 일기", "book"),
     JOURNAL_DREAM("JOURNAL_DREAM", "저널 꿈", "moon-stars"),
-    JOURNAL_NOTE("JOURNAL_NOTE", "저널 노트", "sticky"),
     JOURNAL_INTERPRETATION("JOURNAL_INTERPRETATION", "저널 해석", "book"),
     JOURNAL_SBJCT("JOURNAL_SBJCT", "저널 주제"),
     JOURNAL_ANNUAL("JOURNAL_ANNUAL", "저널 연간"),
