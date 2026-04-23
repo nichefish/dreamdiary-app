@@ -52,7 +52,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#if (hasState state 'RESOLVED')}}tchecked="checked"{{/if}}
-                                       onclick="dF.JournalDiary.resolveAjax({{id}});">
+                                       onclick="dF.JournalEntry.get('JOURNAL_DIARY').resolveAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
@@ -90,7 +90,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapsed-check" type="checkbox" value="1" {{#if (hasState state 'COLLAPSED')}}checked="checked"{{/if}}
-                                       onclick="dF.JournalDiary.collapseAjax({{id}});">
+                                       onclick="dF.JournalEntry.get('JOURNAL_DIARY').collapseAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>

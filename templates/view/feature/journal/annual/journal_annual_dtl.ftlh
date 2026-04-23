@@ -97,19 +97,19 @@
 <#include "/view/feature/journal/day/_partial/_journal_day_meta_btn_partial.hbs">
 
 <#--include::journal_diary_module-->
-<#include "/view/feature/journal/diary/_partial/_journal_diary_reg_btn_partial.hbs">
-<#include "/view/feature/journal/diary/_partial/_journal_diary_context_btn_partial.hbs">
-<#include "/view/feature/journal/diary/_partial/_journal_diary_copy_btn_partial.hbs">
-<#include "/view/feature/journal/diary/_partial/_journal_diary_toggle_btn_partial.hbs">
-<#include "/view/feature/journal/diary/_partial/_journal_diary_content_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/diary/journal_diary_module.js?${releaseDate!}"></script>
+<#include "/view/feature/journal/entry/_partial/_journal_entry_reg_btn_partial.hbs">
+<#include "/view/feature/journal/entry/_partial/_journal_entry_context_btn_partial.hbs">
+<#include "/view/feature/journal/entry/_partial/_journal_entry_copy_btn_partial.hbs">
+<#include "/view/feature/journal/entry/_partial/_journal_entry_toggle_btn_partial.hbs">
+<#include "/view/feature/journal/entry/_partial/_journal_entry_content_partial.hbs">
+<script type="text/javascript" src="/js/view/feature/journal/entry/journal_entry_module.js?${releaseDate!}"></script>
 
 <#--include::journal_dream_module-->
-<#include "/view/feature/journal/dream/_modal/_journal_dream_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/journal/dream/journal_dream_module.js?${releaseDate!}"></script>
+<#assign journalEntryRegType = "DREAM">
+<#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
 
-<#--include::journal_dream_tag_module-->
-<script type="text/javascript" src="/js/view/feature/journal/dream/tag/journal_dream_tag_module.js?${releaseDate!}"></script>
+<#--include::journal_entry_tag_module-->
+<script type="text/javascript" src="/js/view/feature/journal/entry/tag/journal_entry_tag_module.js?${releaseDate!}"></script>
 
 <#--include::tag-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
@@ -136,11 +136,8 @@
 <#include "/view/feature/journal/annual/_partial/_journal_annual_review_context_btn_partial.hbs">
 <#include "/view/feature/journal/annual/_modal/_journal_annual_review_reg_modal.ftlh">
 <#include "/view/feature/journal/annual/_journal_annual_dtl_template.hbs">
-<#include "/view/feature/journal/annual/tag/_journal_annual_day_tag_list_template.hbs">
-<#include "/view/feature/journal/annual/tag/_journal_annual_diary_tag_list_template.hbs">
-<#include "/view/feature/journal/annual/tag/_journal_annual_dream_tag_list_template.hbs">
-<#include "/view/feature/journal/annual/_journal_annual_diary_list_template.hbs">
-<#include "/view/feature/journal/annual/_journal_annual_imprtc_dream_list_template.hbs">
+<#include "/view/feature/journal/annual/tag/_journal_annual_entry_tag_list_template.hbs">
+<#include "/view/feature/journal/annual/_journal_annual_entry_list_template.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/annual/journal_annual_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/journal/annual/journal_annual_review_module.js?${releaseDate!}"></script>
 

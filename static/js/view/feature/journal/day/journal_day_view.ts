@@ -13,9 +13,7 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* initialize modules. */
             dF.JournalDay.init('DAILY');
-            dF.JournalDiary.init('DAILY');
-            void dF.JournalNote.init("DAILY");
-            dF.JournalDream.init('DAILY');
+            void dF.JournalEntry.initAll("DAILY");
             dF.Comment.modal.init({
                 "refreshFunc": dF.JournalDay.getStdrdData
             });

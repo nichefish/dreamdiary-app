@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="journal_tag_list_modal_template">
     {{#each this}}
         <span class="py-2 me-3 cursor-pointer opacity-hover ctgr {{ifEmpty ctgr "defaultCtgr"}}"
-              onclick="dF.JournalDreamTag.dtlModal({{id}}, '{{tagNm}}');"
+              onclick="dF.JournalEntryTag.get('JOURNAL_DREAM').openSearch({{id}});"
               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.journal.tag.filter-by-tag'/>">
             <span class="{{tagClass}} {{textClass}}">
                 {{#if (exists ctgr)}}

@@ -6,6 +6,69 @@
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JournalAnnual = (function(): dfModule {
+    const createEntryListConfig = function(contentType: string, targetId: string, overrides: Record<string, any> = {}): Record<string, any> {
+        const meta: Record<string, any> = dF.JournalEntry.getMeta(contentType);
+        return {
+            targetId,
+            contentType,
+            module: meta.moduleExpr,
+            tagModule: meta.tagModuleExpr,
+            contentLabel: meta.contentLabel,
+            emptyLabel: meta.emptyLabel,
+            cssPrefix: meta.cssPrefix,
+            iconIdPrefix: meta.iconIdPrefix,
+            highlightImportant: meta.highlightImportant,
+            showDreamStates: meta.hasDreamStates,
+            ...overrides,
+        };
+    };
+
+    const entryListConfigs: Record<string, Record<string, any>> = {
+        DIARY: createEntryListConfig("JOURNAL_DIARY", "journal_annual_diary_list_div", {
+            contentPaddingClass: "p-2",
+            collapse: "collapse-4",
+        }),
+        DREAM: createEntryListConfig("JOURNAL_DREAM", "journal_annual_imprtc_dream_list_div", {
+            contentPaddingClass: "p-3",
+            contextFirst: true,
+        }),
+    };
+
+    const tagListConfigs: Record<string, Record<string, any>> = {
+        DAY: {
+            targetId: "journal_annual_day_tag_list_div",
+            label: Message.get("txt.day.tag"),
+            module: "dF.JournalDayTag",
+            tagListDivId: "journal_day_tag_list_div",
+        },
+        DIARY: {
+            targetId: "journal_annual_diary_tag_list_div",
+            label: Message.get("txt.diary.tag"),
+            module: dF.JournalEntry.getMeta("JOURNAL_DIARY").tagModuleExpr,
+            tagListDivId: dF.JournalEntry.getMeta("JOURNAL_DIARY").tagListTargetId,
+        },
+        DREAM: {
+            targetId: "journal_annual_dream_tag_list_div",
+            label: Message.get("txt.dream.tag"),
+            module: dF.JournalEntry.getMeta("JOURNAL_DREAM").tagModuleExpr,
+            tagListDivId: dF.JournalEntry.getMeta("JOURNAL_DREAM").tagListTargetId,
+        },
+    };
+
+    const renderToTarget = function(data: Record<string, any>, templateId: string, targetId: string): void {
+        const actual: string = cF.handlebars.compile(data, templateId);
+        if (actual == null) return console.error(`template compile error: ${templateId}`);
+
+        const targetElement: HTMLElement|null = document.getElementById(targetId);
+        if (!targetElement) return console.error(`target element not found: ${targetId}`);
+
+        targetElement.innerHTML = "";
+        targetElement.insertAdjacentHTML("beforeend", actual);
+        targetElement.querySelectorAll("[data-bs-toggle='tooltip']").forEach((tooltipEl: HTMLElement): void => {
+            new bootstrap.Tooltip(tooltipEl);
+        });
+    };
+
     return {
         initialized: false,
 
@@ -127,7 +190,7 @@ dF.JournalAnnual = (function(): dfModule {
 
             // 둘 다 false → 조회 의미 없음
             if (!showImprtc && !showRefrnc) {
-                cF.handlebars.template([], "journal_annual_diary_list");
+                dF.JournalAnnual.renderEntryList([], "DIARY");
                 return;
             }
 
@@ -143,9 +206,9 @@ dF.JournalAnnual = (function(): dfModule {
                 }
 
                 const viewModels: any[] = res.rsltList.map((diary: any): void =>
-                    dF.JournalDiary.buildViewModel(diary, 'ANNUAL')
+                    dF.JournalEntry.get("JOURNAL_DIARY").buildViewModel(diary, 'ANNUAL')
                 );
-                cF.handlebars.template(viewModels, "journal_annual_diary_list");
+                dF.JournalAnnual.renderEntryList(viewModels, "DIARY");
                 document.querySelectorAll(".journal-content.collapsed").forEach(el => el.classList.remove("collapsed"));
                 KTMenu.createInstances();
             });
@@ -155,6 +218,14 @@ dF.JournalAnnual = (function(): dfModule {
          * 중요 꿈 목록 조회 (Ajax) (년도로 조회)
          * @param {string|number} yy - 조회할 년도.
          */
+        renderEntryList: function(list: Record<string, any>[] = [], type: "DIARY"|"DREAM"): void {
+            const config: Record<string, any> = entryListConfigs[type];
+            renderToTarget({
+                list,
+                ...config,
+            }, "journal_annual_entry_list", config.targetId);
+        },
+
         getAnnualDreamListAjax: function(yy: string|number): void {
             const url: string = cF.util.bindUrl(Url.JOURNAL_ANNUAL_DREAMS, { yy });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
@@ -163,9 +234,9 @@ dF.JournalAnnual = (function(): dfModule {
                     return;
                 }
                 const viewModels: any[] = res.rsltList.map((dream: any): void =>
-                    dF.JournalDream.buildViewModel(dream, 'ANNUAL')
+                    dF.JournalEntry.get("JOURNAL_DREAM").buildViewModel(dream, 'ANNUAL')
                 );
-                cF.handlebars.template(viewModels, "journal_annual_dream_list");
+                dF.JournalAnnual.renderEntryList(viewModels, "DREAM");
                 document.querySelectorAll(".journal-content.collapsed").forEach(el => el.classList.remove("collapsed"));
                 KTMenu.createInstances();
             });
@@ -184,15 +255,21 @@ dF.JournalAnnual = (function(): dfModule {
                     return;
                 }
                 const { rsltList = [] } = res;
-                /* show modal */
-                const lowerType = type.toLowerCase();
-                cF.handlebars.template(rsltList, `journal_annual_${lowerType}_tag_list`);
+                dF.JournalAnnual.renderTagList(rsltList, type);
             });
         },
 
         /**
          * 목록 화면으로 이동
          */
+        renderTagList: function(list: Record<string, any>[] = [], type: "DAY"|"DIARY"|"DREAM"): void {
+            const config: Record<string, any> = tagListConfigs[type];
+            renderToTarget({
+                list,
+                ...config,
+            }, "journal_annual_entry_tag_list", config.targetId);
+        },
+
         list: function(): void {
             cF.ui.blockUIReplace(Url.JOURNAL_ANNUAL_LIST);
         },

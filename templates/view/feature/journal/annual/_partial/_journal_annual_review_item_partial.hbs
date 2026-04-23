@@ -13,7 +13,7 @@
         <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
         <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
             {{> comment_reg_btn_partial this contentType="JOURNAL_ANNUAL_REVIEW"}}
-            {{> journal_diary_copy_btn_partial this}}
+            {{> journal_entry_copy_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')"}}
             {{> journal_annual_review_context_btn_partial this}}
         </div>
     </div>

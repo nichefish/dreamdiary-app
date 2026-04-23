@@ -1,0 +1,63 @@
+ <#--
+ * journal_entry - list item partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="journal_entry_item_partial" data-partial>
+    <div class="journal-{{cssPrefix}}-item {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
+         data-id="{{id}}"
+         data-stdrd-dt="{{stdrdDt}}"
+         data-yy="{{yy}}"
+         data-mnth="{{mnth}}"
+         data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
+         data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+         data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
+         data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
+         {{#if showDreamStates}}
+             data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"
+             data-halluc="{{#if (hasState state 'HALLUC')}}Y{{else}}N{{/if}}"
+         {{/if}}>
+        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
+            <div class="d-flex flex-column align-items-center">
+                <span class="journal-{{idxPrefix}}-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                    # {{sortOrder}}
+                </span>
+                {{> journal_entry_toggle_btn_partial this module=module cssPrefix=cssPrefix iconIdPrefix=iconIdPrefix}}
+            </div>
+        </div>
+        <div class="col">
+            {{#if showDreamStates}}
+                {{> journal_entry_states_partial this showDreamStates=showDreamStates cssPrefix=cssPrefix}}
+            {{/if}}
+            <div class="journal-{{cssPrefix}}-content p-2">
+                {{#if showTitle}}
+                    {{#if (exists title)}}
+                        <div class="fw-semibold text-gray-800 mb-2">{{title}}</div>
+                    {{/if}}
+                {{/if}}
+                {{> journal_entry_content_partial this contentType=contentType tagModule=tagModule}}
+            </div>
+        </div>
+        <div class="col-1 {{rightBorderClass}} d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+            {{> comment_reg_btn_partial this contentType=contentType}}
+            {{> journal_entry_copy_btn_partial this module=module}}
+            {{> journal_entry_context_btn_partial this module=module contentType=contentType contentLabel=contentLabel cssPrefix=cssPrefix showInterpretation=showInterpretation showRelated=showRelated showDreamStates=showDreamStates}}
+        </div>
+    </div>
+    {{#if showInterpretationList}}
+        <div class="journal-item">
+            {{#each journalInterpretationList}}
+                {{> journal_interpretation_item_partial this}}
+            {{/each}}
+        </div>
+    {{/if}}
+</script>
+
+<script type="text/x-handlebars-template" id="journal_entry_item_by_type_partial" data-partial>
+    {{#if (equals contentType "JOURNAL_DIARY")}}
+        {{> journal_entry_item_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" contentType="JOURNAL_DIARY" contentLabel="<@spring.message 'txt.journal.diary'/>" cssPrefix="diary" idxPrefix="diary" tagModule="dF.JournalEntryTag.get('JOURNAL_DIARY')" rightBorderClass="ms-4" showInterpretation=true showRelated=true showInterpretationList=true}}
+    {{else}}
+        {{> journal_entry_item_partial this module="dF.JournalEntry.get('JOURNAL_DREAM')" contentType="JOURNAL_DREAM" contentLabel="<@spring.message 'txt.journal.dream'/>" cssPrefix="dream" idxPrefix="dream" tagModule="dF.JournalEntryTag.get('JOURNAL_DREAM')" iconIdPrefix="dream-toggle-icon-" showInterpretation=true showRelated=true showDreamStates=true showInterpretationList=true}}
+    {{/if}}
+</script>

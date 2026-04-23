@@ -15,7 +15,7 @@
                         {{> journal_chapter_reg_btn_partial this}}
                     {{/if}}
                     {{#if ../showDreams}}
-                        {{> journal_dream_reg_btn_partial journalDayId=id stdrdDt=stdrdDt journalDateWeekDay=journalDateWeekDay}}
+                        {{> journal_entry_reg_btn_by_type_partial this contentType="JOURNAL_DREAM" dayIdParam=id}}
                     {{/if}}
                     {{> journal_day_context_btn_partial this}}
                     {{> journal_day_meta_btn_partial this}}
@@ -53,10 +53,10 @@
                 {{/if}}
                 {{#if ../showDreams}}
                     {{#each journalDreamList}}
-                        {{> journal_dream_item_partial this}}
+                        {{> journal_entry_item_by_type_partial this contentType="JOURNAL_DREAM"}}
                     {{/each}}
                     {{#each journalElseDreamList}}
-                        {{> journal_dream_item_partial this}}
+                        {{> journal_entry_item_by_type_partial this contentType="JOURNAL_DREAM"}}
                     {{/each}}
                 {{else}}
                     {{#if hasDream}}

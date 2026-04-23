@@ -167,7 +167,7 @@ dF.RelatedContent = (function(): dfModule {
             const relatedContentId: number = Number(item?.relatedContentId ?? 0);
             const targetId: number = Number(item?.targetId ?? 0);
             const targetContentType: string = String(item?.targetContentType ?? "").trim();
-            const contentTypeLabel: string = dF.RelatedContent.CONTENT_TYPE_LABEL_MAP[targetContentType] ?? targetContentType;
+            const contentTypeLabel: string = dF.RelatedContent.getContentTypeLabel(targetContentType);
             const targetTitle: string = dF.RelatedContent.escapeHtml(item?.targetTitle || `#${targetId}`);
             const reason: string = String(item?.reason ?? "").trim();
 
@@ -206,8 +206,8 @@ dF.RelatedContent = (function(): dfModule {
         },
 
         openAddModalWithSource: function(source: RelatedSource): void {
-            const sourceLabel: string = dF.RelatedContent.CONTENT_TYPE_LABEL_MAP[source.contentType] ?? source.contentType;
-            const defaultTargetType: string = source.contentType === "JOURNAL_DIARY" ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
+            const sourceLabel: string = dF.RelatedContent.getContentTypeLabel(source.contentType);
+            const defaultTargetType: string = dF.RelatedContent.getDefaultTargetType(source.contentType);
             dF.RelatedContent.popupSearchMap = {};
 
             Swal.fire({
@@ -354,7 +354,11 @@ dF.RelatedContent = (function(): dfModule {
                 '</div>'
             ].join("");
 
-            const url: string = targetContentType === "JOURNAL_DREAM" ? Url.JOURNAL_DREAMS : Url.JOURNAL_DIARIES;
+            const url: string = dF.RelatedContent.getSearchUrl(targetContentType);
+            if (url.length === 0) {
+                resultsElmt.innerHTML = '<div class="rounded border border-dashed border-danger px-4 py-3 text-danger fs-7">지원하지 않는 대상 유형입니다.</div>';
+                return;
+            }
             const ajaxData: Record<string, any> = {
                 searchKeywords: keyword,
                 pageSize: 8,
@@ -434,7 +438,7 @@ dF.RelatedContent = (function(): dfModule {
                 selectedElmt.className = "rounded border border-primary bg-light-primary px-4 py-3 text-start mb-4";
                 selectedElmt.innerHTML = [
                     `<div class="fw-semibold text-primary mb-1">${dF.RelatedContent.escapeHtml(item.title || `#${item.id}`)}</div>`,
-                    `<div class="text-muted fs-7">${dF.RelatedContent.CONTENT_TYPE_LABEL_MAP[item.contentType] ?? item.contentType} #${item.id}${item.stdrdDt ? ` | ${dF.RelatedContent.escapeHtml(item.stdrdDt)}` : ""}</div>`
+                    `<div class="text-muted fs-7">${dF.RelatedContent.getContentTypeLabel(item.contentType)} #${item.id}${item.stdrdDt ? ` | ${dF.RelatedContent.escapeHtml(item.stdrdDt)}` : ""}</div>`
                 ].join("");
             }
 
@@ -496,17 +500,35 @@ dF.RelatedContent = (function(): dfModule {
         openTarget: function(contentType: string, id: number): void {
             if (!Number.isInteger(Number(id)) || Number(id) <= 0) return;
 
-            if (contentType === "JOURNAL_DIARY" && typeof dF.JournalDiary?.dtlModal === "function") {
-                dF.JournalDiary.dtlModal(id);
+            const entryModule = dF.JournalEntry?.get?.(contentType);
+
+            if (typeof entryModule?.dtlModal === "function") {
+                entryModule.dtlModal(id);
                 return;
             }
 
-            if (contentType === "JOURNAL_DREAM" && typeof dF.JournalDream?.dtlModal === "function") {
-                dF.JournalDream.dtlModal(id);
+            if (typeof entryModule?.mdfModal === "function") {
+                entryModule.mdfModal(id);
                 return;
             }
 
             Swal.fire({ text: "상세 화면을 열 수 없습니다." });
+        },
+
+        getContentTypeLabel: function(contentType: string): string {
+            return dF.RelatedContent.CONTENT_TYPE_LABEL_MAP[contentType] ?? contentType;
+        },
+
+        getDefaultTargetType: function(sourceContentType: string): string {
+            if (sourceContentType === "JOURNAL_DIARY") return "JOURNAL_DREAM";
+            if (sourceContentType === "JOURNAL_DREAM") return "JOURNAL_DIARY";
+            return "JOURNAL_DIARY";
+        },
+
+        getSearchUrl: function(contentType: string): string {
+            if (contentType === "JOURNAL_DIARY") return Url.JOURNAL_DIARIES;
+            if (contentType === "JOURNAL_DREAM") return Url.JOURNAL_DREAMS;
+            return "";
         },
 
         escapeHtml: function(value: any): string {

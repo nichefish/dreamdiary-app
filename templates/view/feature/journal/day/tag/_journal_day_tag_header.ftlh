@@ -63,11 +63,10 @@
                 <i class="bi bi-tag pe-0"></i>
             </button>
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                    onclick="dF.JournalDreamTag.listAllAjax();"
+                    onclick="dF.JournalEntryTag.get('JOURNAL_DREAM').listAllAjax();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="헤당 년도 전체 태그 모달 팝업을 호출합니다.">
                 <i class="bi bi-tag pe-0"></i>
             </button>
         </div>
     </div>
 </div>
-

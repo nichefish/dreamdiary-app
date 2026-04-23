@@ -14,9 +14,7 @@ const Page: Page = (function(): Page {
 
         init: function(): void {
             dF.JournalDay.init('WEEKLY');
-            dF.JournalDiary.init('WEEKLY');
-            void dF.JournalNote.init("WEEKLY");
-            dF.JournalDream.init('WEEKLY');
+            void dF.JournalEntry.initAll("WEEKLY");
             // dF.JournalTodo.init();
             dF.Comment.modal.init({
                 "refreshFunc": function(): void {
@@ -31,8 +29,7 @@ const Page: Page = (function(): Page {
             Page.targetDt = cF.util.isNotEmpty(targetDt) ? targetDt : null;
             Page.syncAsidePeriodState(stdrdDt);
             dF.JournalDayAside.init();
-            cF.util.enterKey("#diarySearchKeyword", dF.JournalDiary.searchPopup);
-            cF.util.enterKey("#dreamSearchKeyword", dF.JournalDream.searchPopup);
+            dF.JournalEntry.bindSearchPopupEnterKeys();
 
             Page.loadWeek(stdrdDt, cF.util.isNotEmpty(targetDt) ? targetDt : undefined);
         },
@@ -109,8 +106,11 @@ const Page: Page = (function(): Page {
                 $("#journal_tag_header").toggle(searchParams.showTagCloud !== false);
                 if (searchParams.showTagCloud !== false) {
                     dF.JournalDayTag.listAjax();
-                    if (showDiaries) dF.JournalDiaryTag.listAjax();
-                    if (showDreams) dF.JournalDreamTag.listAjax();
+                    dF.JournalEntry.getTaggableContentTypes().forEach(function(contentType: string): void {
+                        if (contentType === "JOURNAL_DIARY" && !showDiaries) return;
+                        if (contentType === "JOURNAL_DREAM" && !showDreams) return;
+                        dF.JournalEntryTag.get(contentType).listAjax();
+                    });
                 }
                 KTMenu.createInstances();
                 Page.scrollToTarget(Page.targetDt);
