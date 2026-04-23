@@ -1,0 +1,12 @@
+<#--
+ * journal_entry > tag list template
+ * @included_in : journal day/search pages
+ -->
+
+<script type="text/x-handlebars-template" id="journal_entry_tag_list_template">
+    {{#each list}}
+        {{> tag_list_sized_partial this module=../module}}
+    {{else}}
+        -
+    {{/each}}
+</script>

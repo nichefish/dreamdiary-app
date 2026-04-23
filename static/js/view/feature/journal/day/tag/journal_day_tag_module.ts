@@ -156,7 +156,9 @@ dF.JournalDayTag = (function(): dfModule {
         },
 
         isContextMenuEnabled: function(): boolean {
-            return dF.JournalDay?.initialized === true;
+            // Context menu should be available on journal entry pages too,
+            // even when JournalDay module itself is not initialized.
+            return true;
         },
 
         getCurrentClickEvent: function(): Event | null {
@@ -207,8 +209,7 @@ dF.JournalDayTag = (function(): dfModule {
         getContextTooltipSelector: function(): string {
             return [
                 "[onclick*='dF.JournalDayTag.select(']",
-                "[onclick*='dF.JournalDiaryTag.select(']",
-                "[onclick*='dF.JournalDreamTag.select(']",
+                "[onclick*='dF.JournalEntryTag.get(']",
             ].join(", ");
         },
 
@@ -491,6 +492,7 @@ dF.JournalDayTag = (function(): dfModule {
                         if (!res.rslt) return;
 
                         $("#tag_profile_modal").modal("hide");
+                        window.location.reload();
                     });
                     return res.rslt;
                 });
@@ -513,6 +515,7 @@ dF.JournalDayTag = (function(): dfModule {
                         if (!res.rslt) return;
 
                         $("#tag_profile_modal").modal("hide");
+                        window.location.reload();
                     });
                     return res.rslt;
                 });

@@ -13,9 +13,7 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* initialize modules. */
             dF.JournalDay.init('CAL');
-            dF.JournalDiary.init('CAL');
-            void dF.JournalNote.init("CAL");
-            dF.JournalDream.init('CAL');
+            void dF.JournalEntry.initAll("CAL");
             dF.JournalTodo.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JournalDay.yyMnthListAjax
@@ -25,11 +23,11 @@ const Page: Page = (function(): Page {
             dF.JournalDayAside.init();
             // 태그 조회
             dF.JournalDayTag.listAjax();
-            dF.JournalDiaryTag.listAjax();
-            dF.JournalDreamTag.listAjax();
+            dF.JournalEntry.getTaggableContentTypes().forEach(function(contentType: string): void {
+                dF.JournalEntryTag.get(contentType).listAjax();
+            });
             // 일기/꿈 키워드 검색창에 엔터키 처리
-            cF.util.enterKey("#diarySearchKeyword", dF.JournalDiary.searchPopup);
-            cF.util.enterKey("#dreamSearchKeyword", dF.JournalDream.searchPopup);
+            dF.JournalEntry.bindSearchPopupEnterKeys();
 
             // 초기 날짜 설정
             const yearElement: HTMLSelectElement = document.querySelector("#journal_aside #yy");
@@ -184,4 +182,3 @@ const Page: Page = (function(): Page {
 document.addEventListener("DOMContentLoaded", function(): void {
     Page.init();
 });
-

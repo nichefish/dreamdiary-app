@@ -6,6 +6,10 @@
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JournalChapterTag = (function(): dfModule {
+    const getEntryTagMeta = function(): Record<string, any> {
+        return dF.JournalEntry.getMeta("JOURNAL_DIARY");
+    };
+
     return {
         initialized: false,
         ctgrMap: new Map(),
@@ -26,7 +30,7 @@ dF.JournalChapterTag = (function(): dfModule {
          * 태그 카테고리 맵 조회
          */
         getCtgrMap: function(): void {
-            const url: string = Url.JOURNAL_DIARY_TAG_CTGR_MAP;
+            const url: string = getEntryTagMeta().tagCtgrMapUrl;
             cF.ajax.get(url, {}, function(res: AjaxResponse): void {
                 if (res.rsltMap) dF.JournalChapterTag.ctgrMap = res.rsltMap;
             });
@@ -41,7 +45,7 @@ dF.JournalChapterTag = (function(): dfModule {
             const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("journal_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JOURNAL_DIARY_TAGS;
+            const url: string = getEntryTagMeta().tagsUrl;
             const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -56,7 +60,7 @@ dF.JournalChapterTag = (function(): dfModule {
          * 목록에 따른 일기 태그 (전체) 조회 (Ajax)
          */
         listAllAjax: function(): void {
-            const url: string = Url.JOURNAL_DIARY_TAGS;
+            const url: string = getEntryTagMeta().tagsUrl;
             const ajaxData: Record<string, any> = { "yy": 9999, "mnth":99 };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {

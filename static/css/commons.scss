@@ -193,6 +193,20 @@
     }
 }
 
+/* emotion text semantic */
+.text-emotion {
+    color: #8b5cf6 !important;
+
+    &:hover {
+        color: #7c3aed !important;
+    }
+
+    &:active,
+    &.active {
+        color: #6d28d9 !important;
+    }
+}
+
 /* textarea 대체용 text-div (simple) */
 .div-textarea-smp {
     overflow-y: auto;

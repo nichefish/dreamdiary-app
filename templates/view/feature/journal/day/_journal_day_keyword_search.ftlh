@@ -9,7 +9,7 @@
             <input type="text" name="diarySearchKeyword" id="diarySearchKeyword" class="form-control form-control-sm"
                    value="" placeholder="<@spring.message 'txt.journal.diary.keyword.search'/>" maxlength="200"/>
             <button type="button" id="journal_diary_search_btn" class="btn btn-sm btn-outline btn-light-primary px-3"
-                    onclick="dF.JournalDiary.searchPopup();"
+                    onclick="dF.JournalEntry.get('JOURNAL_DIARY').searchPopup();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.journal.diary.keyword.search'/>">
                 <i class="bi bi-search pe-0"></i>
             </button>
@@ -18,7 +18,7 @@
             <input type="text" name="dreamSearchKeyword" id="dreamSearchKeyword" class="form-control form-control-sm"
                    value="" placeholder="<@spring.message 'txt.journal.dream.keyword.search'/>" maxlength="200"/>
             <button type="button" id="journal_dream_search_btn" class="btn btn-sm btn-outline btn-light-primary px-3"
-                    onclick="dF.JournalDream.searchPopup();"
+                    onclick="dF.JournalEntry.get('JOURNAL_DREAM').searchPopup();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.journal.dream.keyword.search'/>">
                 <i class="bi bi-search pe-0"></i>
             </button>
