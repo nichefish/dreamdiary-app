@@ -18,6 +18,9 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.spec.JournalChapterSpec;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import lombok.Getter;
@@ -71,6 +74,8 @@ public class JournalChapterService
     private final JournalChapterMapper journalChapterMapper;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
     private final JournalDayRepository journalDayRepository;
+    private final JournalEntryService journalEntryService;
+    private final JournalEntryRepository journalEntryRepository;
 
     private final ApplicationContext context;
     private JournalChapterService getSelf() {
@@ -183,9 +188,30 @@ public class JournalChapterService
      */
     @Override
     public void postRegist(final JournalChapterDto updatedDto) throws Exception {
+        this.createDefaultDiaryWhenSummaryAutoApplied(updatedDto);
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_CHAPTER);
+    }
+
+    private void createDefaultDiaryWhenSummaryAutoApplied(final JournalChapterDto updatedDto) throws Exception {
+        if (updatedDto == null || updatedDto.getId() == null) return;
+        if (updatedDto.getChapterType() != ChapterType.DIARY) return;
+        if (updatedDto.getSortOrder() == null || updatedDto.getSortOrder() != 1) return;
+        if (!StringUtils.equals(updatedDto.getCategoryCode(), FIRST_CHAPTER_CTGR_CD)) return;
+
+        final boolean hasDiary = journalEntryRepository
+                .findFirstByJournalChapterIdAndContentTypeOrderBySortOrderDesc(
+                        updatedDto.getId(),
+                        ContentType.JOURNAL_DIARY.key
+                )
+                .isPresent();
+        if (hasDiary) return;
+
+        final JournalEntryPostDto diaryPostDto = new JournalEntryPostDto();
+        diaryPostDto.setJournalChapterId(updatedDto.getId());
+        diaryPostDto.setContentType(ContentType.JOURNAL_DIARY.key);
+        journalEntryService.regist(diaryPostDto);
     }
     
     /**
