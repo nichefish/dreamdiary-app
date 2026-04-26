@@ -217,7 +217,11 @@ public class JournalChapterService
      */
     @Override
     public void postModify(final JournalChapterDto postDto, final JournalChapterDto updatedDto) throws Exception {
-        // sort_order 기준으로 재정렬 (동순위는 id 순)
+        if (Boolean.TRUE.equals(postDto.getIsSortOrderChanged())) {
+            // sortOrder 변경 시에는 목표 위치로 삽입 재배치 후 정규화
+            this.getSelf().insert(updatedDto.getJournalDayId(), updatedDto.getId(), postDto.getSortOrder());
+        }
+        // DREAM 마지막 규칙을 포함한 최종 정규화
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
 
         // 관련 캐시 삭제
@@ -288,7 +292,7 @@ public class JournalChapterService
         }
         repository.saveAllAndFlush(list);
     }
-    
+
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
