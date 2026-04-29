@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mockStatic;
 class JournalEntryDreamTypedServiceTest {
 
     @Resource
-    private JournalEntryTypedService journalEntryTypedService;
+    private JournalEntryService journalEntryService;
 
     @MockBean
     @SuppressWarnings("unused")
@@ -50,7 +50,7 @@ class JournalEntryDreamTypedServiceTest {
 
     @Test
     void regist() throws Exception {
-        final ServiceResponse registResult = journalEntryTypedService.registDream(journalDream, null);
+        final ServiceResponse registResult = journalEntryService.regist(ContentType.JOURNAL_DREAM, journalDream, null);
         final JournalEntryDto result = (JournalEntryDto) registResult.getRsltObj();
 
         assertNotNull(result.getId());
@@ -58,13 +58,13 @@ class JournalEntryDreamTypedServiceTest {
 
     @Test
     void modify() throws Exception {
-        final ServiceResponse registResult = journalEntryTypedService.registDream(journalDream, null);
+        final ServiceResponse registResult = journalEntryService.regist(ContentType.JOURNAL_DREAM, journalDream, null);
         final JournalEntryDto registered = (JournalEntryDto) registResult.getRsltObj();
         final Integer key = registered.getKey();
 
         final JournalEntryPostDto toModify = JournalEntryDtoTestFactory.createDreamPostWithKey(key);
         toModify.setContent("test");
-        final ServiceResponse modifyResult = journalEntryTypedService.modifyDream(toModify, null);
+        final ServiceResponse modifyResult = journalEntryService.modify(ContentType.JOURNAL_DREAM, toModify, null);
         final JournalEntryDto modified = (JournalEntryDto) modifyResult.getRsltObj();
 
         assertNotNull(modified.getId());
@@ -73,16 +73,16 @@ class JournalEntryDreamTypedServiceTest {
 
     @Test
     void delete() throws Exception {
-        final ServiceResponse registResult = journalEntryTypedService.registDream(journalDream, null);
+        final ServiceResponse registResult = journalEntryService.regist(ContentType.JOURNAL_DREAM, journalDream, null);
         final JournalEntryDto registered = (JournalEntryDto) registResult.getRsltObj();
         final Integer key = registered.getKey();
 
-        final ServiceResponse deleteResult = journalEntryTypedService.deleteDream(key);
-        final Boolean isDeleted = (Boolean) deleteResult.getRsltObj();
+        final ServiceResponse deleteResult = journalEntryService.delete(key, ContentType.JOURNAL_DREAM);
+        final Boolean isDeleted = deleteResult.getRslt();
 
         assertTrue(isDeleted);
         assertThrows(EntityNotFoundException.class,
-                () -> journalEntryTypedService.getDtlDto(key, ContentType.JOURNAL_DREAM)
+                () -> journalEntryService.getDtlDto(key)
         );
     }
 }
