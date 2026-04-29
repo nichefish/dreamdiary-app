@@ -13,6 +13,7 @@
 <#assign entryRegTinymceId = "tinymce_journalEntryCn">
 <#assign entryRegModalTitleKey = "txt.content.save">
 <#assign entryRegSubmitHandler = "">
+<#assign entryRegPreviewHandler = "">
 <#assign entryRegHeaderTemplateId = "journal_entry_reg_modal_header">
 <#assign entryRegBodyTemplateId = "journal_entry_reg_modal">
 <#assign entryRegUseLegacyStateHidden = false>
@@ -33,6 +34,7 @@
     <#assign entryRegTinymceId = "tinymce_journalDiaryCn">
     <#assign entryRegModalTitleKey = "txt.journal.diary.save">
     <#assign entryRegSubmitHandler = "dF.JournalEntry.get('JOURNAL_DIARY').submit();">
+    <#assign entryRegPreviewHandler = "dF.JournalEntry.get('JOURNAL_DIARY').preview();">
     <#assign entryRegHeaderTemplateId = "journal_diary_reg_modal_header">
     <#assign entryRegBodyTemplateId = "journal_diary_reg_modal">
     <#assign entryRegUseLegacyStateHidden = true>
@@ -51,6 +53,7 @@
     <#assign entryRegTinymceId = "tinymce_journalDreamCn">
     <#assign entryRegModalTitleKey = "txt.journal.dream.save">
     <#assign entryRegSubmitHandler = "dF.JournalEntry.get('JOURNAL_DREAM').submit();">
+    <#assign entryRegPreviewHandler = "dF.JournalEntry.get('JOURNAL_DREAM').preview();">
     <#assign entryRegHeaderTemplateId = "journal_dream_reg_modal_header">
     <#assign entryRegBodyTemplateId = "journal_dream_reg_modal">
     <#assign entryRegUseLegacyStateHidden = false>
@@ -69,7 +72,8 @@
 <@modal.layout id=entryRegModalId size="xl">
     <@component.modal_header entryRegModalTitle />
     <div class="modal-body modal-mbl-body my-5">
-        <form name="${entryRegFormId}" id="${entryRegFormId}" class="form" enctype="multipart/form-data">
+        <form name="${entryRegFormId}" id="${entryRegFormId}" class="form" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="type" value="${entryRegType}">
             <div id="${entryRegHeaderDivId}">
                 <#--Handlebars template goes in here-->
             </div>
@@ -91,6 +95,12 @@
     </div>
     <div class="modal-footer">
         <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-sm btn-light-primary me-2"
+                    onclick="${entryRegPreviewHandler!}"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                    title="<@spring.message 'bs.tooltip.journal.entry.preview'/>">
+                <i class="bi bi-eye"></i>미리보기
+            </button>
             <@component.modal_btn_save entryRegSubmitHandler />
             <@component.modal_btn_close_safe "" />
         </div>

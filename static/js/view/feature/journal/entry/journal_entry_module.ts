@@ -48,7 +48,7 @@ dF.JournalEntry = (function(): dfModule {
 
     const diaryPlugin: JournalEntryPlugin = {
         setupFormValidation(config: Record<string, any>, module: dfModule): void {
-            cF.validate.validateForm(config.formSelector, module.regAjax);
+            cF.validate.validateForm(config.formSelector, module.submitHandler);
         },
         collapseClass: "collapsed",
         persistToggleToStorage: false,
@@ -57,7 +57,7 @@ dF.JournalEntry = (function(): dfModule {
 
     const dreamPlugin: JournalEntryPlugin = {
         setupFormValidation(config: Record<string, any>, module: dfModule): void {
-            cF.validate.validateForm(config.formSelector, module.regAjax, {
+            cF.validate.validateForm(config.formSelector, module.submitHandler, {
                 rules: {
                     elseDreamerNm: {
                         required(): boolean {
@@ -164,6 +164,7 @@ dF.JournalEntry = (function(): dfModule {
             initPromise: null,
             inKeywordSearchMode: false,
             tagify: null,
+            submitMode: "",
 
             init: async function(viewType: "LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"): Promise<void> {
                 if (this.initPromise) return this.initPromise;
@@ -332,7 +333,41 @@ dF.JournalEntry = (function(): dfModule {
 
             submit: function(): void {
                 tinymce.get(config.tinymceId).save();
+                module.submitMode = "submit";
                 $(config.formSelector).submit();
+            },
+
+            preview: function(): void {
+                tinymce.get(config.tinymceId).save();
+                module.submitMode = "preview";
+                $(config.formSelector).submit();
+            },
+
+            submitHandler: function(): boolean {
+                if (module.submitMode === "preview") {
+                    const width: number = dF.JournalEntry.resolveJournalDayPreviewWidth();
+                    const height: number = Math.round(window.innerHeight * 0.9);
+                    const left: number = Math.max(0, Math.round((window.screen.availWidth - width) / 2));
+                    const top: number = Math.max(0, Math.round((window.screen.availHeight - height) / 2));
+                    const popupNm: string = `journal_entry_preview_${String(config.entryType).toLowerCase()}`;
+                    const option: string = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+                    const popup: Window | null = cF.ui.openPopup("", popupNm, option);
+                    popup?.focus();
+                    const previewUrl: string = Url.JOURNAL_ENTRY_PREVIEW_POP;
+                    $(config.formSelector)
+                        .attr("method", "post")
+                        .attr("action", previewUrl)
+                        .attr("target", popupNm);
+                    return true;
+                }
+                if (module.submitMode === "submit") {
+                    $(config.formSelector)
+                        .attr("method", "post")
+                        .removeAttr("action")
+                        .removeAttr("target");
+                    module.regAjax();
+                }
+                return false;
             },
 
             regAjax: function(): void {
@@ -674,5 +709,37 @@ dF.JournalEntry = (function(): dfModule {
                 cF.util.enterKey(meta.searchInputSelector, dF.JournalEntry.get(contentType).searchPopup);
             });
         },
+
+        /**
+         * 저널 일자 화면 본문 영역(월간/주간/달력/메타 래퍼) 너비에 맞춘 미리보기 팝업 폭.
+         */
+        resolveJournalDayPreviewWidth: function(): number {
+            // 본문 줄바꿈 기준과 최대한 일치시키기 위해 페이지 래퍼보다
+            // 실제 본문이 렌더링되는 카드/리스트 컨테이너 폭을 우선 사용한다.
+            const contentShell: HTMLElement | null = document.querySelector(
+                "#journal_day_list_div, .journal-day-monthly-page .card.post, .journal-day-weekly-page .card.post, .journal-day-calendar-page .card.post, .journal-day-meta-page .card.post"
+            );
+            if (contentShell) {
+                const shellWidth: number = Math.round(contentShell.getBoundingClientRect().width);
+                if (shellWidth > 320) return shellWidth;
+            }
+
+            const journalShell: HTMLElement | null = document.querySelector(
+                ".journal-day-monthly-page, .journal-day-weekly-page, .journal-day-calendar-page, .journal-day-meta-page"
+            );
+            if (journalShell) {
+                const shellWidth: number = Math.round(journalShell.getBoundingClientRect().width);
+                // 페이지 래퍼 폭은 본문보다 넓을 수 있어 보정값을 적용한다.
+                if (shellWidth > 320) return Math.max(480, shellWidth - 64);
+            }
+
+            const container: HTMLElement | null = document.querySelector("#kt_app_content_container");
+            if (container) {
+                const containerWidth: number = Math.round(container.getBoundingClientRect().width);
+                if (containerWidth > 320) return Math.max(480, containerWidth - 64);
+            }
+            return Math.min(Math.max(Math.round(window.innerWidth * 0.92), 480), 1600);
+        },
+
     };
 })();
