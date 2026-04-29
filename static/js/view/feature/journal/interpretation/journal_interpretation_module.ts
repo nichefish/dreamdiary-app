@@ -294,7 +294,10 @@ dF.JournalInterpretation = (function(): dfModule {
                 const date: string = stdrdDt + " (" + journalDateWeekDay + ")" + "\r\n";
                 const resultCn: string = rsltObj.content;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
-                const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
+                const replacedCn: string = resultCn
+                    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
+                    .replace(/<\s*br\s*\/?>/gi, "\n")
+                    .replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
                 div.innerHTML = date + replacedCn;
                 const textToCopy: string = (div.innerText ?? "")
