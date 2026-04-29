@@ -103,6 +103,15 @@ public class MarkdownUtils {
                     part = part.replace("\"" + group + "\"", "<span class='md-text-dialog'>“" + group + "”</span>");
                 }
 
+                // 『 』 로 묶인 부분도 대사 스타일 처리
+                final Pattern dialogBracketPattern = Pattern.compile("『(.*?)』");
+                final Matcher dialogBracketMatcher = dialogBracketPattern.matcher(part);
+                while (dialogBracketMatcher.find()) {
+                    final String group = dialogBracketMatcher.group(1);
+                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
+                    part = part.replace("『" + group + "』", "<span class='md-text-dialog'>『" + group + "』</span>");
+                }
+
                 // -- -- 로 묶인 부분을 회색으로 표시하되, - - 처리
                 final Pattern grayPattern = Pattern.compile("--(.*?)(--)");
                 final Matcher grayMatcher = grayPattern.matcher(part);
