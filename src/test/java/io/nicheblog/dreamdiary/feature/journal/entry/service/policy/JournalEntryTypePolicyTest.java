@@ -62,13 +62,19 @@ class JournalEntryTypePolicyTest {
     }
 
     // =========================================================
-    // reorderOnDelete()
+    // isEntryType()
     // =========================================================
 
     @Test
-    void reorderOnDelete_trueOnlyForDream() {
-        assertFalse(JournalEntryTypePolicy.DIARY.reorderOnDelete());
-        assertTrue(JournalEntryTypePolicy.DREAM.reorderOnDelete());
+    void isEntryType_trueForDiaryAndDream() {
+        assertTrue(JournalEntryTypePolicy.isEntryType(ContentType.JOURNAL_DIARY));
+        assertTrue(JournalEntryTypePolicy.isEntryType(ContentType.JOURNAL_DREAM));
+    }
+
+    @Test
+    void isEntryType_falseForDefaultAndNull() {
+        assertFalse(JournalEntryTypePolicy.isEntryType(ContentType.DEFAULT));
+        assertFalse(JournalEntryTypePolicy.isEntryType(null));
     }
 
     // =========================================================

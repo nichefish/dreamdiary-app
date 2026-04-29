@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mockStatic;
 class JournalEntryDiaryTypedServiceTest {
 
     @Resource
-    private JournalEntryTypedService journalEntryTypedService;
+    private JournalEntryService journalEntryService;
 
     @MockBean
     @SuppressWarnings("unused")
@@ -50,7 +50,7 @@ class JournalEntryDiaryTypedServiceTest {
 
     @Test
     void regist() throws Exception {
-        final ServiceResponse registResult = journalEntryTypedService.registDiary(journalDiary, null);
+        final ServiceResponse registResult = journalEntryService.regist(ContentType.JOURNAL_DIARY, journalDiary, null);
         final JournalEntryDto registered = (JournalEntryDto) registResult.getRsltObj();
 
         assertNotNull(registered.getId());
@@ -58,13 +58,13 @@ class JournalEntryDiaryTypedServiceTest {
 
     @Test
     void modify() throws Exception {
-        final ServiceResponse registResult = journalEntryTypedService.registDiary(journalDiary, null);
+        final ServiceResponse registResult = journalEntryService.regist(ContentType.JOURNAL_DIARY, journalDiary, null);
         final JournalEntryDto registered = (JournalEntryDto) registResult.getRsltObj();
         final Integer key = registered.getKey();
 
         final JournalEntryPostDto toModify = JournalEntryDtoTestFactory.createDiaryPostWithKey(key);
         toModify.setContent("test");
-        final ServiceResponse modifyResult = journalEntryTypedService.modifyDiary(toModify, null);
+        final ServiceResponse modifyResult = journalEntryService.modify(ContentType.JOURNAL_DIARY, toModify, null);
         final JournalEntryDto modified = (JournalEntryDto) modifyResult.getRsltObj();
 
         assertNotNull(modified.getId());
@@ -73,16 +73,16 @@ class JournalEntryDiaryTypedServiceTest {
 
     @Test
     void delete() throws Exception {
-        final ServiceResponse registResult = journalEntryTypedService.registDiary(journalDiary, null);
+        final ServiceResponse registResult = journalEntryService.regist(ContentType.JOURNAL_DIARY, journalDiary, null);
         final JournalEntryDto registered = (JournalEntryDto) registResult.getRsltObj();
         final Integer key = registered.getKey();
 
-        final ServiceResponse deletetResult = journalEntryTypedService.deleteDiary(key);
+        final ServiceResponse deletetResult = journalEntryService.delete(key, ContentType.JOURNAL_DIARY);
         final Boolean isDeleted = deletetResult.getRslt();
 
         assertTrue(isDeleted);
         assertThrows(EntityNotFoundException.class,
-                () -> journalEntryTypedService.getDtlDto(key, ContentType.JOURNAL_DIARY)
+                () -> journalEntryService.getDtlDto(key)
         );
     }
 }
