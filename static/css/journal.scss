@@ -146,6 +146,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     display: block;
     color: #999;
     font-style: italic;
+    font-size: 0.875rem;
+    line-height: 1.4;
     margin: 0.5em 0;
 }
 
@@ -342,6 +344,12 @@ $journal-paired-states: (
     .journal-content {
         &.collapsed::before {
             @include collapsed-indicator;
+        }
+        &.collapsed {
+            // BEFORE: text node 기반 구분선(예: ------)이 접기 상태에서 노출될 수 있었음
+            // AFTER : collapsed 본문 텍스트 노드를 렌더링하지 않아 구분선/본문이 함께 숨겨짐
+            font-size: 0;
+            line-height: 0;
         }
         &.collapsed > * {
             display: none;

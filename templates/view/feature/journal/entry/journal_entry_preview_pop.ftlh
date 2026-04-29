@@ -40,9 +40,6 @@
 
         <div class="px-2 py-1 pb-4 journal-markdown-preview">
             <div class="${previewEntryItemClass}">
-                <div class="col-1 py-3 d-none d-md-flex border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                    &nbsp;
-                </div>
                 <div class="col">
                     <div class="${previewEntryContentClass}">
                         <div class="journal-content">
@@ -50,7 +47,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-1 py-3 d-none d-md-flex w-50px ps-2">&nbsp;</div>
+                <div class="col-1 py-3 d-none d-md-flex w-25px ps-2">&nbsp;</div>
             </div>
         </div>
     </div>
