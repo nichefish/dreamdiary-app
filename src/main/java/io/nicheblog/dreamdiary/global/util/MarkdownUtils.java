@@ -94,8 +94,8 @@ public class MarkdownUtils {
             } else if (insidePreTag) {
                 result.append(part);
             } else {
-                // 줄 전체가 대시 6개 이상인 경우 수평선(<hr>)으로 처리
-                part = part.replaceAll("(?m)^[ \\t]*-{6,}[ \\t]*$", "<hr>");
+                // 줄 전체가 대시 3개 이상인 경우 수평선(<hr>)으로 처리
+                part = part.replaceAll("(?m)^[ \\t]*-{3,}[ \\t]*$", "<hr>");
 
                 // " " 로 묶인 부분을 대사 스타일 처리 (HTML 이스케이프 포함)
                 part = replaceDialogPattern(part, Pattern.compile("\"(.*?)\""), "“", "”", MAX_GROUP_LENGTH);

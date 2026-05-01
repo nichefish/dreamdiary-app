@@ -622,7 +622,7 @@ dF.JournalEntry = (function(): dfModule {
                     const date: string = stdrdDt + " (" + journalDateWeekDay + ")" + "\r\n";
                     const resultCn: string = rsltObj.content;
                     const replacedCn: string = resultCn
-                        .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
+                        .replace(/<\s*hr\b[^>]*\/?>/gi, "\n---\n")
                         .replace(/<\s*br\s*\/?>/gi, "\n")
                         .replace(/<\s*\/?p[^>]*>/gi, "\n");
                     const div: HTMLDivElement = document.createElement("div");
