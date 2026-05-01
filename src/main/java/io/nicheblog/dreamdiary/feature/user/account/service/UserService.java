@@ -152,7 +152,7 @@ public class UserService
         if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
         if (StringUtils.isBlank(systemInitTempPw)) {
-            throw new IllegalStateException("system.init-temp-pw 가 설정되어 있지 않아 비밀번호 초기화를 수행할 수 없습니다.");
+            throw new IllegalStateException("msg.user.pw.init-temp-pw.not-set");
         }
         retrievedEntity.setPassword(passwordEncoder.encode(systemInitTempPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
@@ -312,4 +312,3 @@ public class UserService
         });
     }
 }
-

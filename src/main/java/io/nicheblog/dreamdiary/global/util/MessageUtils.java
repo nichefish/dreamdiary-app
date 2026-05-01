@@ -66,9 +66,6 @@ public class MessageUtils
     public static final String LGN_FAIL_BADCREDENTIALS_CNT = "AbstractUserDetailsAuthenticationProvider.BadCredentials.failCnt";
     public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "AbstractUserDetailsAuthenticationProvider.BadCredentials.locked";
 
-    public static final String NOT_DELABLE_OWN_ID = "본인 아이디는 삭제할 수 없습니다.";
-    public static final String PW_MISMATCH = "비밀번호가 일치하지 않습니다.";
-
     /**
      * 코드로 사전 정의된 메세지 조회
      *
@@ -103,6 +100,27 @@ public class MessageUtils
      */
     public static void alertMessage(final String msg) throws IOException {
         alertMessage(msg, null);
+    }
+
+    /**
+     * Javascript로 message key에 해당하는 alert 처리
+     *
+     * @param key 메시지 키
+     * @throws IOException 응답에 문제가 발생할 경우
+     */
+    public static void alertMessageByKey(final String key) throws IOException {
+        alertMessageByKey(key, null);
+    }
+
+    /**
+     * Response에 message key에 해당하는 Javascript alert 처리 및 리다이렉트
+     *
+     * @param key 메시지 키
+     * @param url 리다이렉트할 URL (null 가능)
+     * @throws IOException 응답에 문제가 발생할 경우
+     */
+    public static void alertMessageByKey(final String key, final String url) throws IOException {
+        alertMessage(getMessage(key), url);
     }
 
     /**

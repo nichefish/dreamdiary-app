@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.AlreadyAuthenticatedExcep
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
 import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -48,17 +49,17 @@ public class AuthPageController
 
         String rsltMsg = null;
         try {
-            if (StringUtils.isEmpty(token)) throw new AuthenticationFailureException("인증에 필요한 정보가 없습니다.");
-            if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("이미 만료된 인증 코드입니다.");
+            if (StringUtils.isEmpty(token)) throw new AuthenticationFailureException("msg.auth.verify.token.empty");
+            if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("msg.auth.verify.token.expired");
             
             final String username = jwtTokenProvider.getUsernameFromToken(token);
             // 계정 승인 처리
             final boolean approved = userReqstService.cfByUsername(username).getRslt();
-            if (!approved) throw new AlreadyAuthenticatedException("이미 처리된 신청이거나 승인할 수 없는 상태입니다.");
+            if (!approved) throw new AlreadyAuthenticatedException("msg.auth.verify.request.not-approvable");
 
             return "/view/auth/security/verify_success";
         } catch (final Exception e) {
-            rsltMsg = e.getMessage();
+            rsltMsg = MessageUtils.getExceptionMsg(e);
             model.addAttribute("errorMsg", rsltMsg);
 
             return "/view/auth/security/verify_failure";

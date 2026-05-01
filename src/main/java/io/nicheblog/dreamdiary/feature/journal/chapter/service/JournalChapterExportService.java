@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * JournalChapterExportService
  * <pre>
- *  ???梨뺥꽣 ?대낫?닿린 ?쒕퉬??紐⑤뱢.
+ *  저널 챕터 내보내기 서비스 모듈.
  * </pre>
  *
  * @author nichefish
@@ -39,9 +39,7 @@ public class JournalChapterExportService {
         if (entry == null) return "";
 
         final StringBuilder sb = new StringBuilder();
-        // =========================
-        // 1. 寃??議곌굔 ?ㅻ뜑
-        // =========================
+        // 기본 헤더 정보를 작성한다.
         sb.append("=== dreamdiary export ===\r\n");
 
         final String stdrdDt = entry.getStdrdDt();
@@ -82,5 +80,3 @@ public class JournalChapterExportService {
         return sb.toString();
     }
 }
-
-

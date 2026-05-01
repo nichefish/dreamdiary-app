@@ -67,7 +67,7 @@ public class LoginPageController
         model.addAttribute("REMEMBER_ME_PARAM", REMEMBER_ME_PARAM);
 
         // 중복 로그인으로 인해 로그인 면으로 튕겨나왔을 경우 alert
-        if ("Y".equals(dupLoginAt)) MessageUtils.alertMessage("중복 로그인 방지에 의해 로그아웃 처리되었습니다.", Url.APP_AUTH_LGN_FORM);
+        if ("Y".equals(dupLoginAt)) MessageUtils.alertMessageByKey("msg.auth.dup-login.logged-out", Url.APP_AUTH_LGN_FORM);
 
         return "/view/auth/security/login_form";
     }

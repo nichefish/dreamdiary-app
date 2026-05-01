@@ -207,7 +207,7 @@ public class FileUtils
 
             return rslt.getId();
         } catch (final Exception e) {
-            MessageUtils.alertMessage("파일 업로드에 실패했습니다.");
+            MessageUtils.alertMessageByKey("msg.file.upload.failure");
         }
         return fileGroupId;
     }
@@ -289,7 +289,7 @@ public class FileUtils
             os.flush();
         } catch (final IOException e) {
             log.error("파일 다운로드 중 오류 발생: {}", e.getMessage(), e);
-            throw new IOException("파일 다운로드에 실패했습니다.", e);
+            throw new IOException("msg.file.download.failure", e);
         }
     }
 
