@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,6 @@ import java.util.*;
 public final class JournalDayFilterHelper {
 
     private static final String CHAPTER_CTGR_NONE = "__NONE__";
-
     public static List<JournalDayDto> filterInMemory(final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto) || searchParam == null) return listDto;
 
@@ -98,7 +98,7 @@ public final class JournalDayFilterHelper {
 
             final boolean hasHiddenChapterCtgr = !filterDiaries && CollectionUtils.isNotEmpty(hiddenChapterCtgrList);
 
-            // 梨뺥꽣媛 ?먮옒遺???녿뒗 ?좎? 梨뺥꽣 移댄뀒怨좊━ ?꾪꽣濡??쒖쇅?섏? ?딆쓬
+            // 챕터가 원래부터 없던 날은 챕터 카테고리 필터로 제외하지 않는다.
             if ((filterDiaries || (filterChapterCtgr && hadChapters))
                     && CollectionUtils.isEmpty(filteredEntries)
                     && !hasHiddenChapterCtgr) continue;
@@ -140,7 +140,7 @@ public final class JournalDayFilterHelper {
 
             hiddenMap.put(ctgrKey, JournalChapterCtgrHintDto.builder()
                     .categoryCode(categoryCode)
-                    .categoryName(StringUtils.defaultIfBlank(chapter.getCategoryName(), categoryCode.isEmpty() ? "미분류" : categoryCode))
+                    .categoryName(StringUtils.defaultIfBlank(chapter.getCategoryName(), categoryCode.isEmpty() ? MessageUtils.getMessage("txt.ctgr.none", null) : categoryCode))
                     .build());
         }
 
@@ -179,4 +179,3 @@ public final class JournalDayFilterHelper {
         return normalized;
     }
 }
-

@@ -81,7 +81,7 @@ public class PdfBoxUtils {
     private static BufferedImage validateAndLoadImage(final FileRecordDto fileGroup) throws Exception {
         final File imageFile = new File(fileGroup.getFileStrePath(), fileGroup.getStreFileNm());
         if (!imageFile.exists()) throw new FileNotFoundException(MessageUtils.getExceptionMsg("FileNotFoundException"));
-        if (!imageFile.canRead()) throw new SecurityException("파일을 읽을 권한이 없습니다.");
+        if (!imageFile.canRead()) throw new SecurityException("msg.report.pdf.file.read-denied");
         return ImageIO.read(imageFile);
     }
 

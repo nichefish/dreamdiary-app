@@ -142,7 +142,7 @@ public class UserRestController
         // 내 정보인지 비교 :: "내 정보는 삭제할 수 없습니다."
         final boolean isMyInfo = AuthUtils.isMyInfo(user.getUsername());
         if (!isMyInfo) {
-            final String rsltMsg = MessageUtils.NOT_DELABLE_OWN_ID;
+            final String rsltMsg = MessageUtils.getMessage("msg.user.id.delete-own-denied");
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, rsltMsg));
         }
 

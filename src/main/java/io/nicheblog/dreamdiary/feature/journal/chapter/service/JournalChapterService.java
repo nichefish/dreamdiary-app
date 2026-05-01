@@ -57,8 +57,6 @@ public class JournalChapterService
     /** 동일 일자 내 첫 항목 등록 시 기본 카테고리 코드 */
     private static final String FIRST_CHAPTER_CTGR_CD = "SUMMARY";
 
-    private static final String AUTO_DREAM_CHAPTER_TITLE_KEY = "txt.dream";
-
     @Getter
     private final JournalChapterRepository repository;
     @Getter
@@ -167,7 +165,7 @@ public class JournalChapterService
 
         final JournalChapterDto registDto = new JournalChapterDto();
         registDto.setJournalDayId(journalDayId);
-        registDto.setTitle(MessageUtils.getMessage(AUTO_DREAM_CHAPTER_TITLE_KEY, null));
+        registDto.setTitle(MessageUtils.getMessage("txt.dream", null));
         preRegistDreamChapterAuto(registDto);
 
         final JournalChapterEntity registEntity = mapstruct.toEntity(registDto);
@@ -186,7 +184,7 @@ public class JournalChapterService
     /**
      * 등록 후처리. (override)
      *
-     * @param updatedDto - 등록된 객체
+     * @param updatedDto 등록된 객체
      */
     @Override
     public void postRegist(final JournalChapterDto updatedDto) throws Exception {
@@ -241,7 +239,8 @@ public class JournalChapterService
     /**
      * 수정 후처리. (override)
      *
-     * @param updatedDto - 등록된 객체
+     * @param postDto 수정 요청 객체
+     * @param updatedDto 수정 결과 객체
      */
     @Override
     public void postModify(final JournalChapterDto postDto, final JournalChapterDto updatedDto) throws Exception {

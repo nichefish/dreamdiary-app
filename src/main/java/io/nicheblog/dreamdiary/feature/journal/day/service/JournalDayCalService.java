@@ -22,7 +22,8 @@ import java.util.List;
 /**
  * JournalDayCalService
  * <pre>
- *  ??????깆쁽 ??????뺥돩??筌뤴뫀諭? * </pre>
+ *  저널 일자 캘린더 서비스 모듈.
+ * </pre>
  *
  * @author nichefish
  */
@@ -37,9 +38,12 @@ public class JournalDayCalService {
     private final JournalEntryCalMapstruct entryCalMapstruct = JournalEntryCalMapstruct.INSTANCE;
 
     /**
-     * ????筌뤴뫖以?鈺곌퀬??(dto level)
+     * 캘린더 목록을 조회한다. (dto level)
      *
-     * @param searchParam 野꺜??鈺곌퀗援????용┸ ???뵬沃섎챸苑?揶쏆빘猿?     * @return {@link List} -- 鈺곌퀬???筌뤴뫖以?     */
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건
+     * @return {@link List} -- 캘린더 목록
+     */
     public List<BaseCalDto> getCalListDtoByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         final List<JournalDayDto> myJournalDayList = journalDayQueryService.getYyMnthListDtoEnrichedByUser(username, searchParam);
@@ -71,7 +75,7 @@ public class JournalDayCalService {
             }
         }
 
-        // ?醫롮??? ????JournalDay, JournalDiary, JournalDream) 疫꿸퀣???곗쨮 ?類ｌ졊
+        // 같은 날짜에서는 JournalDay, JournalDiary, JournalDream 순서로 정렬한다.
         journalCalEventList.sort((event1, event2) -> {
             final int dateComparison = event1.getStart().compareTo(event2.getStart());
             if (dateComparison != 0) {
@@ -84,19 +88,22 @@ public class JournalDayCalService {
     }
 
     /**
-     * ??源????????쑨??筌롫뗄苑??JournalDay, JournalDiary, JournalDream)
+     * 이벤트 타입 우선순위를 비교한다. (JournalDay, JournalDiary, JournalDream)
+     *
      * @param event1 BaseCalDto
      * @param event2 BaseCalDto
      */
     private int compareEventType(final BaseCalDto event1, final BaseCalDto event2) {
-        // ?怨쀪퐨??뽰맄 ?類ㅼ벥: JournalDay -> JournalDiary -> JournalDream
+        // 정렬 우선순위: JournalDay -> JournalDiary -> JournalDream
         final int eventType1 = getEventTypePriority(event1);
         final int eventType2 = getEventTypePriority(event2);
         return Integer.compare(eventType1, eventType2);
     }
 
     /**
-     * 揶???源?紐꾩벥 ?怨쀪퐨??뽰맄??獄쏆꼹???롫뮉 筌롫뗄苑??     * @param event BaseCalDto
+     * 이벤트 타입별 정렬 우선순위를 반환한다.
+     *
+     * @param event BaseCalDto
      */
     private int getEventTypePriority(final BaseCalDto event) {
         if (event instanceof JournalDayCalDto) return 1;
@@ -104,5 +111,3 @@ public class JournalDayCalService {
         return 2;
     }
 }
-
-

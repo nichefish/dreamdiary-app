@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * JournalChapterDto
  * <pre>
- *  ????筌?벤苑?Dto.
+ *  저널 챕터 Dto.
  * </pre>
  *
  * @author nichefish
@@ -36,51 +36,52 @@ public class JournalChapterDto
         extends BaseAttachableDto
         implements Identifiable<Integer>, StateCmpstnModule, TagCmpstnModule, JournalPeriodModule, Comparable<JournalChapterDto> {
 
-    /** ?袁⑸땾: ?뚢뫂?쀯㎘?????*/
+    /** 컨텐츠 타입: 저널 챕터 */
     @Builder.Default
     private String contentType = ContentType.JOURNAL_CHAPTER.key;
 
-    /** 筌?벤苑?????(DIARY | DREAM) */
+    /** 챕터 타입 (DIARY | DREAM) */
     @Builder.Default
     private ChapterType chapterType = ChapterType.DIARY;
 
-    /** ??뺛걠 */
+    /** 제목 */
     private String title;
-    /** 疫꼲?브쑬履??꾨뗀諭?:: join????볤탢??랁?筌롫뗀?덄뵳?筌?Ŋ??筌ｌ꼶??*/
+    /** 카테고리 코드: join 없이 화면 표시용으로 사용 */
     private String categoryCode;
-    /** 疫꼲?브쑬履??꾨뗀諭???已?:: join????볤탢??랁?筌롫뗀?덄뵳?筌?Ŋ??筌ｌ꼶??*/
+    /** 카테고리 이름: join 없이 화면 표시용으로 사용 */
     private String categoryName;
 
-    /** 筌띾뜇寃??쇱뒲 筌ｌ꼶?????곸뒠 */
+    /** 마크다운 변환용 원문 */
     private String markdownContent;
 
-    /** ?紐껊쑔??癰궰野???? */
+    /** 정렬순서 변경 여부 */
     @Builder.Default
     private Boolean isSortOrderChanged = false;
 
     /* ----- */
 
-    /** ??????깆쁽 甕곕뜇??*/
+    /** 저널 일자 ID */
     private Integer journalDayId;
-    /** ????疫꿸퀣???깆쁽 */
+    /** 기준 일자 */
     private String stdrdDt;
-    /** ??????깆쁽 ?遺우뵬 */
+    /** 저널 일자 요일 */
     private String journalDateWeekDay;
-    /** ????疫꿸퀣???깆쁽 */
+    /** 연도 */
     private Integer yy;
-    /** ????疫꿸퀣???깆쁽 */
+    /** 월 */
     private Integer mnth;
-    /** ??뺤쓰 */
+    /** 정렬순서 */
     private Integer sortOrder;
 
-    /** ??????⑤┛ 筌뤴뫖以?*/
+    /** 저널 엔트리 목록 */
     private List<JournalEntryDto> journalEntryList;
     /* ----- */
 
     /**
-     * ?醫롮? ??살カ筌△뫁???類ｌ졊
+     * 기준 일자 기준으로 비교한다.
      *
-     * @param other - ??쑨???揶쏆빘猿?     * @return ?臾믩땾: ?袁⑹삺 揶쏆빘猿쒎첎? ???? ???땾: ?袁⑹삺 揶쏆빘猿쒎첎? ???臾믪벉, 0: ??揶쏆빘猿쒎첎? 揶쏆늿??
+     * @param other 비교 대상
+     * @return 기준 일자 비교 결과
      */
     @SneakyThrows
     @Override
@@ -97,10 +98,8 @@ public class JournalChapterDto
         return this.id;
     }
 
-    /** ?袁⑹뿫 :: ??볥젃 ?類ｋ궖 筌뤴뫀諭?*/
+    /** 태그 컴포지션 모듈 */
     public TagCmpstn tag;
-    /** ?袁⑹뿫 :: ?怨밴묶 ?類ｋ궖 筌뤴뫀諭?*/
+    /** 상태 컴포지션 모듈 */
     public StateCmpstn state;
 }
-
-

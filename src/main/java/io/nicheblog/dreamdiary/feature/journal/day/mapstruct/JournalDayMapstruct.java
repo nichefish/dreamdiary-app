@@ -15,7 +15,7 @@ import org.mapstruct.*;
 /**
  * JournalDayMapstruct
  * <pre>
- *  ????쇱옄 MapStruct 湲곕컲 Mapper ?명꽣?섏씠??
+ *  저널 일자 MapStruct Mapper 인터페이스.
  * </pre>
  *
  * @author nichefish
@@ -31,9 +31,10 @@ public abstract class JournalDayMapstruct
         implements BaseWriteMapstruct<JournalDayDto, JournalDayEntity>, BaseAttachableMapstruct<JournalDayDto, JournalDayEntity> {
 
     /**
-     * Dto -> Entity 蹂??     *
-     * @param dto 蹂?섑븷 Dto 媛앹껜
-     * @return Entity -- 蹂?섎맂 Entity 媛앹껜
+     * Dto를 Entity로 변환한다.
+     *
+     * @param dto 변환할 Dto 객체
+     * @return Entity -- 변환된 Entity 객체
      */
     @Override
     @Named("toEntity")
@@ -42,10 +43,10 @@ public abstract class JournalDayMapstruct
     public abstract JournalDayEntity toEntity(final JournalDayDto dto) throws Exception;
 
     /**
-     * update Entity from Dto (Dto?먯꽌 null???꾨땶 媛믩쭔 Entity濡?留ㅽ븨)
+     * Dto 값으로 Entity를 갱신한다. Dto의 null 값은 Entity에 반영하지 않는다.
      *
-     * @param dto ?낅뜲?댄듃??Dto 媛앹껜
-     * @param entity ?낅뜲?댄듃?????Entity 媛앹껜
+     * @param dto 갱신할 값을 담은 Dto 객체
+     * @param entity 갱신 대상 Entity 객체
      */
     @Override
     @Mapping(target = "journalDate", expression = "java(DateUtils.asDate(dto.getJournalDate()))")
@@ -54,9 +55,10 @@ public abstract class JournalDayMapstruct
     public abstract void updateFromDto(final JournalDayDto dto, final @MappingTarget JournalDayEntity entity) throws Exception;
 
     /**
-     * Entity -> Dto 蹂??     *
-     * @param entity 蹂?섑븷 Entity 媛앹껜
-     * @return Dto -- 蹂?섎맂 Dto 媛앹껜
+     * Entity를 Dto로 변환한다.
+     *
+     * @param entity 변환할 Entity 객체
+     * @return Dto -- 변환된 Dto 객체
      */
     @Override
     @Named("toDto")
@@ -68,9 +70,10 @@ public abstract class JournalDayMapstruct
     public abstract JournalDayDto toDto(final JournalDayEntity entity) throws Exception;
 
     /**
-     * toDto ?꾩쿂由? DREAM 梨뺥꽣?먯꽌 轅?紐⑸줉??JournalDayDto濡??뚮옒?몃떇
+     * toDto 후처리: DREAM 챕터의 꿈 목록을 JournalDayDto로 플래트닝한다.
      *
-     * @param entity ?먮낯 ?뷀떚??     * @param dto 蹂?섎맂 Dto (MappingTarget)
+     * @param entity 변환 대상 엔티티
+     * @param dto 반환될 Dto (MappingTarget)
      */
     @AfterMapping
     protected void flattenDreamLists(final JournalDayEntity entity, final @MappingTarget JournalDayDto dto) throws Exception {

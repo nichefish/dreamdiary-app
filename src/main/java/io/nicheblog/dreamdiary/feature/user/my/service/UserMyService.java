@@ -52,7 +52,7 @@ public class UserMyService {
 
         // password 일치여부 체크
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.PW_MISMATCH);
+            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
         }
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
@@ -78,7 +78,7 @@ public class UserMyService {
 
         // 1. 내 비밀번호가 맞는지부터 확인
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.PW_MISMATCH);
+            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
         }
 
         return true;
@@ -112,7 +112,7 @@ public class UserMyService {
 
         // 1. 내 비밀번호가 맞는지부터 확인
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.PW_MISMATCH);
+            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
         }
         // 2. 맞으면 비밀번호 업데이트
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
@@ -169,4 +169,3 @@ public class UserMyService {
         return updatedEntity.getId() != null;
     }
 }
-

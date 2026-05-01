@@ -14,7 +14,7 @@ import lombok.*;
 /**
  * JournalCacheEvictParam
  * <pre>
- *  ???罹먯떆 珥덇린??愿???꾩슂 ?몄옄 ?뚮씪誘명꽣 媛앹껜
+ *  저널 캐시 무효화에 필요한 공통 파라미터.
  * </pre>
  *
  * @author nichefish
@@ -25,31 +25,34 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JournalCacheEvictParam {
-    /** ?깅줉??ID */
+
+    /** 작성자 ID */
     private String createdBy;
+    /** 컨텐츠 타입 */
     private String contentType;
-    /** 湲 踰덊샇 */
+    /** 글 번호 */
     private Integer id;
-    /** ????쇱옄 踰덊샇 */
+    /** 저널 일자 번호 */
     private Integer journalDayId;
-    /** ???梨뺥꽣 踰덊샇 */
+    /** 저널 챕터 번호 */
     private Integer journalChapterId;
+    /** 이전 저널 챕터 번호 */
     private Integer prevJournalChapterId;
-    /** ???轅?踰덊샇 */
+    /** 저널 꿈 번호 */
     private Integer journalDreamId;
-    /** ???寃곗궛 踰덊샇 */
+    /** 저널 결산 번호 */
     private Integer journalAnnualId;
-    /** ?꾨룄 */
+    /** 연도 */
     private Integer yy;
-    /** ??*/
+    /** 월 */
     private Integer mnth;
-    /** 二??쒖옉?쇱옄 */
+    /** 주 시작일자 */
     private String weekStartDt;
-    /** 二??쒖옉?쇱옄 (?섏젙 ?? */
+    /** 이전 주 시작일자 */
     private String prevWeekStartDt;
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 일자 DTO 기준 캐시 무효화 파라미터 생성.
      *
      * @param dto {@link JournalDayDto}
      * @return {@link JournalCacheEvictParam}
@@ -66,7 +69,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 일자 수정 전후 DTO 기준 캐시 무효화 파라미터 생성.
      *
      * @param postDto {@link JournalDayDto}
      * @param updatedDto {@link JournalDayDto}
@@ -84,7 +87,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 챕터 DTO 기준 캐시 무효화 파라미터 생성.
      *
      * @param dto {@link JournalChapterDto}
      * @return {@link JournalCacheEvictParam}
@@ -102,9 +105,9 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 엔트리 저장 DTO 기준 캐시 무효화 파라미터 생성.
      *
-     * @param dto {@link JournalEntryDto}
+     * @param dto {@link JournalEntryPostDto}
      * @return {@link JournalCacheEvictParam}
      */
     public static JournalCacheEvictParam of(final JournalEntryPostDto dto) {
@@ -120,6 +123,13 @@ public class JournalCacheEvictParam {
                 .build();
     }
 
+    /**
+     * 엔트리 수정 전후 DTO 기준 캐시 무효화 파라미터 생성.
+     *
+     * @param postDto 수정 요청 DTO
+     * @param updatedDto 수정 결과 DTO
+     * @return {@link JournalCacheEvictParam}
+     */
     public static JournalCacheEvictParam of(final JournalEntryPostDto postDto, final JournalEntryDto updatedDto) throws Exception {
         return JournalCacheEvictParam.builder()
                 .createdBy(updatedDto.getCreatedBy())
@@ -135,13 +145,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
-     *
-     * @param dto {@link JournalDayDto}
-     * @return {@link JournalCacheEvictParam}
-     */
-/**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 엔트리 DTO 기준 캐시 무효화 파라미터 생성.
      *
      * @param dto {@link JournalEntryDto}
      * @return {@link JournalCacheEvictParam}
@@ -159,8 +163,9 @@ public class JournalCacheEvictParam {
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
-/**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+
+    /**
+     * 해석 DTO 기준 캐시 무효화 파라미터 생성.
      *
      * @param dto {@link JournalInterpretationDto}
      * @return {@link JournalCacheEvictParam}
@@ -177,9 +182,9 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 결산 DTO 기준 캐시 무효화 파라미터 생성.
      *
-     * @param dto {@link JournalTodoDto}
+     * @param dto {@link JournalAnnualDto}
      * @return {@link JournalCacheEvictParam}
      */
     public static JournalCacheEvictParam of(final JournalAnnualDto dto) {
@@ -191,9 +196,9 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 결산 리뷰 DTO 기준 캐시 무효화 파라미터 생성.
      *
-     * @param dto {@link JournalTodoDto}
+     * @param dto {@link JournalAnnualReviewDto}
      * @return {@link JournalCacheEvictParam}
      */
     public static JournalCacheEvictParam of(final JournalAnnualReviewDto dto) {
@@ -206,7 +211,7 @@ public class JournalCacheEvictParam {
     }
 
     /**
-     * ?⑺넗由?硫붿꽌???⑦꽩
+     * 할일 DTO 기준 캐시 무효화 파라미터 생성.
      *
      * @param dto {@link JournalTodoDto}
      * @return {@link JournalCacheEvictParam}

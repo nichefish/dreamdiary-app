@@ -31,7 +31,8 @@ import java.util.function.Consumer;
 /**
  * JournalDayQueryService
  * <pre>
- *   JournalDay 議고쉶 寃곌낵瑜??붾㈃???꾩슂???곹깭/硫뷀? ?뺣낫濡?議곕┰(enrich)?섎뒗 Query ?꾩슜 ?쒕퉬?? * </pre>
+ *  JournalDay 조회 결과를 화면에 필요한 상태/메타 정보로 보강(enrich)하는 Query 전용 서비스.
+ * </pre>
  *
  * @author nichefish
  */
@@ -45,10 +46,11 @@ public class JournalDayQueryService {
     private final JournalInterpretationQueryService journalInterpretationQueryService;
 
     /**
-     * ?곗썡湲곗? 紐⑸줉 議고쉶 + enrich
+     * 연월 기준 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔 (?곕룄, ?? ?꾪꽣 議곌굔 ?ы븿)
-     * @return {@link List} -- 媛怨??꾨즺???쇱옄 DTO 紐⑸줉
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건 (연도, 월, 필터 조건 포함)
+     * @return {@link List} -- 보강된 저널 일자 DTO 목록
      */
     public List<JournalDayDto> getYyMnthListDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
@@ -65,10 +67,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 湲곗???standard day) 紐⑸줉 議고쉶 + enrich
+     * 기준일 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔
-     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getStdrdDaysDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -77,10 +80,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 二쇨컙 紐⑸줉 議고쉶 + enrich
+     * 주간 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔
-     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getWeeklyListDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
@@ -98,10 +102,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 硫뷀? 湲곗? 議고쉶 + enrich
+     * 메타 기준 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔 (metaId ?ы븿)
-     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건 (metaId 포함)
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getListDtoByMetaIdEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -110,10 +115,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * ?쒓렇 湲곗? 議고쉶 + enrich
+     * 태그 기준 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param searchParam 議고쉶 議곌굔 (tagId ?ы븿)
-     * @return {@link List} -- 媛怨??꾨즺??DTO 紐⑸줉
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건 (tagId 포함)
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getListDtoByTagIdEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -122,10 +128,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * ?곸꽭 議고쉶 + enrich
+     * 상세 조회 후 화면 정보를 보강한다.
      *
-     * @param username 議고쉶 ?ъ슜??怨꾩젙紐?     * @param key PK
-     * @return {@link JournalDayDto} -- 媛怨??꾨즺??DTO
+     * @param username 사용자 계정명
+     * @param key PK
+     * @return {@link JournalDayDto} -- 보강된 DTO
      */
     public JournalDayDto getDtlDtoEnrichedByUser(final String username, final Integer key) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -134,11 +141,14 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 紐⑸줉 怨듯넻 enrich 泥섎━
-     * 1) ?댁씪 ?뺣낫 留ㅽ븨 2) ?곹깭 蹂묓빀 (議고쉶 議곌굔 湲곕컲) 3) ?쒓렇 ?붿빟 ?곸슜
+     * 목록 공통 enrich 처리.
+     * 1) 휴일 정보 매핑 2) 해석 정보 병합 3) 상태 병합 4) 태그 요약 적용 5) 관련글 병합
      *
-     * @param listDto 議고쉶 寃곌낵 由ъ뒪??     * @param searchParam 議고쉶 議곌굔
-     * @return enrich ?꾨즺 由ъ뒪??     */
+     * @param username 사용자 계정명
+     * @param listDto 조회 결과 리스트
+     * @param searchParam 검색 조건
+     * @return enrich 완료 리스트
+     */
     private List<JournalDayDto> enrichList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
@@ -154,10 +164,13 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 二쇨컙 紐⑸줉 ?꾩슜 enrich 泥섎━
+     * 주간 목록 전용 enrich 처리.
      *
-     * @param listDto 議고쉶 寃곌낵 由ъ뒪??     * @param searchParam 議고쉶 議곌굔
-     * @return enrich ?꾨즺 由ъ뒪??     */
+     * @param username 사용자 계정명
+     * @param listDto 조회 결과 리스트
+     * @param searchParam 검색 조건
+     * @return enrich 완료 리스트
+     */
     private List<JournalDayDto> enrichWeeklyList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
@@ -173,10 +186,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * ?④굔 怨듯넻 enrich 泥섎━
+     * 상세 공통 enrich 처리.
      *
-     * @param retrieved 議고쉶 寃곌낵
-     * @return enrich ?꾨즺 DTO
+     * @param username 사용자 계정명
+     * @param retrieved 조회 결과
+     * @return enrich 완료 DTO
      */
     private JournalDayDto enrichDetail(final String username, final JournalDayDto retrieved) throws Exception {
         if (retrieved == null) return null;
@@ -272,9 +286,10 @@ public class JournalDayQueryService {
     }
 
     /**
-     * ?댁씪 ?뺣낫 罹먯떆 議고쉶
+     * 휴일 정보 캐시를 조회한다.
      *
-     * @return ?댁씪 留?     */
+     * @return 휴일 맵
+     */
     @SuppressWarnings("unchecked")
     private Map<String, List<String>> getHolydayMap() {
         return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");

@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * JournalDayDto
  * <pre>
- *  ????쇱옄 Dto.
+ *  저널 일자 Dto.
  * </pre>
  *
  * @author nichefish
@@ -41,69 +41,69 @@ public class JournalDayDto
         extends BaseAttachableDto
         implements Identifiable<Integer>, TagCmpstnModule, MetaCmpstnModule, JournalPeriodModule, Comparable<JournalDayDto>  {
 
-    /** ?꾩닔: 而⑦뀗痢????*/
+    /** 필수: 컨텐츠 타입 */
     @Builder.Default
     private String contentType = ContentType.JOURNAL_DAY.key;
 
     /* ----- */
 
-    /** ????쇱옄 */
-    @Size(max = 10, message = "?쇱옄??理쒕? 10?먯뿬???⑸땲??")
-    @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "?쇱옄??'YYYY-MM-DD' ?뺤떇?댁뼱???⑸땲??")
+    /** 저널 일자 */
+    @Size(max = 10, message = "{msg.journal.day.date.max-length}")
+    @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "{msg.journal.day.date.format}")
     private String journalDate;
 
-    /** ????쇱옄 ?붿씪 */
+    /** 저널 일자 요일 */
     private String journalDateWeekDay;
 
-    /** ????좎쭨 ?뺣???(EXACT | APPROXIMATE | UNKNOWN) */
+    /** 저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN) */
     @Builder.Default
     private JournalDatePrecision journalDatePrecision = JournalDatePrecision.EXACT;
 
-    /** 湲곗??쇱옄 (??먯씪???먮뒗 ??듭씪?? */
+    /** 기준일자 (저널일자 또는 대표일자) */
     private String stdrdDt;
 
-    /** ?꾨룄 */
+    /** 연도 */
     private Integer yy;
-    /** ??*/
+    /** 월 */
     private Integer mnth;
-    /** 二??쒖옉?쇱옄 (?붿슂??湲곗?) */
+    /** 주 시작일자 (월요일 기준) */
     private String weekStartDt;
-    /** ?댁쟾 二??쒖옉?쇱옄 */
+    /** 이전 주 시작일자 */
     private String prevWeekStartDt;
 
-    /** 怨듯쑕???щ? */
+    /** 공휴일 여부 */
     private Boolean isHolyday;
-    /** 怨듯쑕???대쫫 */
+    /** 공휴일 이름 */
     private String holydayNm;
 
-    /** ?좎뵪 */
-    @Size(max = 100, message = "?좎뵪 ?뺣낫??100???댄븯濡??낅젰?댁빞 ?⑸땲??")
+    /** 날씨 */
+    @Size(max = 100, message = "{msg.journal.day.weather.max-length}")
     private String weather;
 
-    /** ???梨뺥꽣 紐⑸줉 */
+    /** 저널 챕터 목록 */
     private List<JournalChapterDto> journalChapterList;
-    /** ???梨뺥꽣 紐⑸줉 */
+    /** 저널 챕터 간단 목록 */
     private List<JournalChapterSmpDto> chapterList;
-    /** 梨뺥꽣 ?꾪꽣濡??④꺼吏?移댄뀒怨좊━ 紐⑸줉 */
+    /** 챕터 필터로 숨겨진 카테고리 목록 */
     private List<JournalChapterCtgrHintDto> hiddenChapterCtgrList;
 
-    /** ???轅?紐⑸줉 */
+    /** 저널 꿈 목록 */
     private List<JournalEntryDto> journalDreamList;
 
-    /** ???轅?(??? 紐⑸줉 */
+    /** 저널 꿈(타인) 목록 */
     private List<JournalEntryDto> journalElseDreamList;
 
     /* ----- */
 
     /**
-     * Getter :: 湲곗??쇱옄
+     * Getter :: 기준일자
      */
     public String getStdrdDt() {
         return journalDate;
     }
 
     /**
-     * Getter :: 轅?紐⑸줉 蹂댁쑀 ?щ?
+     * Getter :: 꿈 목록 보유 여부
      */
     public Boolean getHasDream() {
         return !CollectionUtils.isEmpty(this.journalDreamList) || !CollectionUtils.isEmpty(this.journalElseDreamList);
@@ -112,10 +112,10 @@ public class JournalDayDto
     /* ----- */
 
     /**
-     * ?좎쭨 ?ㅻ쫫李⑥닚 ?뺣젹
+     * 날짜 오름차순 정렬
      *
-     * @param other - 鍮꾧탳??媛앹껜
-     * @return ?묒닔: ?꾩옱 媛앹껜媛 ???? ?뚯닔: ?꾩옱 媛앹껜媛 ???묒쓬, 0: ??媛앹껜媛 媛숈쓬
+     * @param other 비교할 객체
+     * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
      */
     @SneakyThrows
     @Override
@@ -132,10 +132,8 @@ public class JournalDayDto
         return this.id;
     }
 
-    /** ?꾩엫 :: ?쒓렇 ?뺣낫 紐⑤뱢 */
+    /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
-    /** ?꾩엫 :: 硫뷀? ?뺣낫 紐⑤뱢 */
+    /** 위임 :: 메타 정보 모듈 */
     public MetaCmpstn meta;
 }
-
-
