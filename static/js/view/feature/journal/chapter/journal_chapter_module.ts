@@ -304,10 +304,15 @@ dF.JournalChapter = (function(): dfModule {
                     return;
                 }
                 const rsltObj: Record<string, any> = res.rsltObj;
-                const journalDiaryList: object[] = rsltObj.journalDiaryList;
+                const journalEntryList: any[] = Array.isArray(rsltObj?.journalEntryList)
+                    ? rsltObj.journalEntryList
+                    : (Array.isArray(rsltObj?.journalDiaryList) ? rsltObj.journalDiaryList : []);
+                if (!Array.isArray(rsltObj?.journalEntryList) && !Array.isArray(rsltObj?.journalDiaryList)) {
+                    console.warn("journalEntryList is missing or invalid. fallback to empty list.", rsltObj?.journalEntryList);
+                }
                 const { stdrdDt, journalDateWeekDay } = rsltObj;
                 const date: string = stdrdDt + " (" + journalDateWeekDay + ")" + "\r\n";
-                const resultCn: string = journalDiaryList?.map((item: any): any => "#" + (item?.sortOrder ?? "") + (item?.content ?? "")).join("\r\n");
+                const resultCn: string = journalEntryList.map((item: any): string => "#" + (item?.sortOrder ?? "") + (item?.content ?? "")).join("\r\n");
 
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn

@@ -465,7 +465,7 @@ public class JournalEntryService
                     DTL_CACHE_NAME
             );
         }
-        journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), contentType);
+        journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(postDto, updatedDto), contentType);
     }
 
     /**

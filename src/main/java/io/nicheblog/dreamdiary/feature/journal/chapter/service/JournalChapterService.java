@@ -23,6 +23,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -51,11 +52,12 @@ import java.util.Objects;
 public class JournalChapterService
         implements BaseAttachableService<JournalChapterDto, JournalChapterDto, Integer, JournalChapterEntity> {
 
+    public static final String DTL_CACHE_NAME = "journalChapterDtlDtoByUser";
+
     /** 동일 일자 내 첫 항목 등록 시 기본 카테고리 코드 */
     private static final String FIRST_CHAPTER_CTGR_CD = "SUMMARY";
 
-    /** 자동 생성 꿈 챕터 기본 제목 */
-    private static final String AUTO_DREAM_CHAPTER_TITLE = "꿈";
+    private static final String AUTO_DREAM_CHAPTER_TITLE_KEY = "txt.dream";
 
     @Getter
     private final JournalChapterRepository repository;
@@ -94,7 +96,7 @@ public class JournalChapterService
      * @param key 일련번호
      * @return {@link JournalChapterDto} -- 조회된 객체
      */
-    @Cacheable(value="journalChapterDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    @Cacheable(value=DTL_CACHE_NAME, key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
     public JournalChapterDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JournalChapterEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalChapterDto retrieved = mapstruct.toDto(retrievedEntity);
@@ -165,7 +167,7 @@ public class JournalChapterService
 
         final JournalChapterDto registDto = new JournalChapterDto();
         registDto.setJournalDayId(journalDayId);
-        registDto.setTitle(AUTO_DREAM_CHAPTER_TITLE);
+        registDto.setTitle(MessageUtils.getMessage(AUTO_DREAM_CHAPTER_TITLE_KEY, null));
         preRegistDreamChapterAuto(registDto);
 
         final JournalChapterEntity registEntity = mapstruct.toEntity(registDto);
@@ -369,5 +371,3 @@ public class JournalChapterService
         normalizeSortOrder(updatedDto.getJournalDayId());
     }
 }
-
-

@@ -34,6 +34,7 @@ public class JournalCacheEvictParam {
     private Integer journalDayId;
     /** ???梨뺥꽣 踰덊샇 */
     private Integer journalChapterId;
+    private Integer prevJournalChapterId;
     /** ???轅?踰덊샇 */
     private Integer journalDreamId;
     /** ???寃곗궛 踰덊샇 */
@@ -113,8 +114,23 @@ public class JournalCacheEvictParam {
                 .id(dto.getId())
                 .journalDayId(dto.getJournalDayId())
                 .journalChapterId(dto.getJournalChapterId())
+                .prevJournalChapterId(dto.getPrevJournalChapterId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
+                .build();
+    }
+
+    public static JournalCacheEvictParam of(final JournalEntryPostDto postDto, final JournalEntryDto updatedDto) throws Exception {
+        return JournalCacheEvictParam.builder()
+                .createdBy(updatedDto.getCreatedBy())
+                .contentType(updatedDto.getContentType())
+                .id(updatedDto.getId())
+                .journalDayId(updatedDto.getJournalDayId())
+                .journalChapterId(updatedDto.getJournalChapterId())
+                .prevJournalChapterId(postDto.getPrevJournalChapterId())
+                .yy(updatedDto.getYy())
+                .mnth(updatedDto.getMnth())
+                .weekStartDt(DateUtils.getWeekStartDateStr(updatedDto.getStdrdDt()))
                 .build();
     }
 
@@ -136,6 +152,8 @@ public class JournalCacheEvictParam {
                 .contentType(dto.getContentType())
                 .id(dto.getId())
                 .journalDayId(dto.getJournalDayId())
+                .journalChapterId(dto.getJournalChapterId())
+                .prevJournalChapterId(dto.getPrevJournalChapterId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
@@ -203,4 +221,3 @@ public class JournalCacheEvictParam {
     }
 
 }
-

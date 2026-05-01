@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service.strategy;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.journal.chapter.service.JournalChapterService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -34,6 +35,8 @@ public class JournalEntryCacheEvictor
             final String username = param.getCreatedBy();
             final Integer id = param.getId();
             final Integer journalDayId = param.getJournalDayId();
+            final Integer journalChapterId = param.getJournalChapterId();
+            final Integer prevJournalChapterId = param.getPrevJournalChapterId();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
@@ -47,6 +50,12 @@ public class JournalEntryCacheEvictor
 
             if (journalDayId != null) {
                 EhCacheUtils.evictUserCacheByKey("journalDayDtlDtoByUser", username, journalDayId);
+            }
+            if (journalChapterId != null) {
+                EhCacheUtils.evictUserCacheByKey(JournalChapterService.DTL_CACHE_NAME, username, journalChapterId);
+            }
+            if (prevJournalChapterId != null && !prevJournalChapterId.equals(journalChapterId)) {
+                EhCacheUtils.evictUserCacheByKey(JournalChapterService.DTL_CACHE_NAME, username, prevJournalChapterId);
             }
             this.evictMyJournalDayYyMnthCaches(username, yy, mnth);
             this.evictMyJournalDayWeeklyCaches(username, weekStartDt);
