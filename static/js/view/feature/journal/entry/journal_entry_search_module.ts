@@ -163,20 +163,27 @@ dF.JournalEntrySearch = (function(): dfModule {
             },
 
             select: function(tagId: string|number, tagNm: string): void {
+                const normalizedTagId: string = String(tagId);
+                const exists: boolean = $("#journalTagNoHiddenContainer input[name='tagIds']")
+                    .filter(function(): boolean {
+                        return String($(this).val()) === normalizedTagId;
+                    }).length > 0;
+                if (exists) return;
+
                 const inputContainer: HTMLElement = document.getElementById("journalTagNoHiddenContainer");
                 const input: HTMLInputElement = document.createElement("input");
                 input.type = "hidden";
                 input.name = "tagIds";
-                input.value = tagId as string;
+                input.value = normalizedTagId;
                 inputContainer.appendChild(input);
 
                 const tagContainer: HTMLElement = document.getElementById("tagDisplay");
                 const tagBadge: HTMLDivElement = document.createElement("div");
                 tagBadge.className = "badge badge-light-primary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary";
-                tagBadge.dataset.value = tagId as string;
+                tagBadge.dataset.value = normalizedTagId;
                 tagBadge.innerHTML = `
                     #${tagNm}
-                    <i class="bi bi-x cursor-pointer" onclick="dF.JournalEntrySearch.get('${contentType}').removeTag('${tagId}')"></i>
+                    <i class="bi bi-x cursor-pointer" onclick="dF.JournalEntrySearch.get('${contentType}').removeTag('${normalizedTagId}')"></i>
                 `;
                 tagContainer.appendChild(tagBadge);
                 $("#msgDisplay").empty();
@@ -196,6 +203,90 @@ dF.JournalEntrySearch = (function(): dfModule {
                     })
                     .remove();
                 module.search();
+            },
+
+            /**
+             * 검색 결과 단일 row 렌더링에 필요한 공통 view model 을 만든다.
+             */
+            buildSearchItemModel: function(entry: Record<string, any>): Record<string, any> {
+                return {
+                    ...dF.JournalEntry.get(contentType).buildViewModel(entry, "SEARCH"),
+                    contentType: config.contentType,
+                    module: config.module,
+                    tagModule: config.tagModule,
+                    contentLabel: config.contentLabel,
+                    cssPrefix: config.cssPrefix,
+                    iconIdPrefix: config.iconIdPrefix,
+                    showDreamStates: config.showDreamStates,
+                    highlightImportant: config.highlightImportant,
+                    rightBorderClass: config.rightBorderClass,
+                };
+            },
+
+            /**
+             * 수정 성공 후 기존 검색 결과의 해당 entry row 만 단건 재조회 결과로 교체한다.
+             */
+            replaceItem: function(id: string|number): void {
+                const currentItem = document.querySelector(`.journal-${config.cssPrefix}-item[data-id='${id}']`) as HTMLElement;
+                if (!currentItem) {
+                    module.search();
+                    return;
+                }
+
+                const previousYy: string = currentItem.dataset.yy;
+                const previousMnth: string = currentItem.dataset.mnth;
+                const url: string = cF.util.bindUrl(dF.JournalEntry.getMeta(contentType).itemUrl, { id });
+                cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                    if (!res.rslt) {
+                        module.removeItem(id);
+                        return;
+                    }
+
+                    const viewModel: Record<string, any> = module.buildSearchItemModel(res.rsltObj);
+                    if (String(viewModel.yy) !== String(previousYy) || String(viewModel.mnth) !== String(previousMnth)) {
+                        module.search();
+                        return;
+                    }
+
+                    const actual: string = cF.handlebars.compile(viewModel, "journal_entry_search_item");
+                    if (actual == null) {
+                        module.search();
+                        return;
+                    }
+
+                    const wrapper: HTMLDivElement = document.createElement("div");
+                    wrapper.innerHTML = actual;
+                    const nextItem: HTMLElement = wrapper.querySelector(`.journal-${config.cssPrefix}-item[data-id='${id}']`);
+                    const nextRelated: HTMLElement = wrapper.querySelector(`.journal-entry-search-related[data-entry-id='${id}']`);
+                    const currentRelated = document.querySelector(`.journal-entry-search-related[data-entry-id='${id}']`) as HTMLElement;
+                    if (!nextItem) {
+                        module.search();
+                        return;
+                    }
+
+                    currentItem.replaceWith(nextItem);
+                    if (currentRelated && nextRelated) currentRelated.replaceWith(nextRelated);
+                    else if (nextRelated) nextItem.insertAdjacentElement("afterend", nextRelated);
+
+                    [nextItem, nextRelated].forEach((root: HTMLElement): void => {
+                        root?.querySelectorAll("[data-bs-toggle='tooltip']").forEach((tooltipEl: HTMLElement): void => {
+                            new bootstrap.Tooltip(tooltipEl);
+                        });
+                    });
+                    KTMenu.createInstances();
+
+                    const idx: number = module.currentResults.findIndex((item: any): boolean => Number(item.id) === Number(id));
+                    if (idx >= 0) module.currentResults[idx] = viewModel;
+                });
+            },
+
+            /**
+             * 삭제 성공 후 검색 결과에서 해당 entry row 와 하위 해석 영역을 제거한다.
+             */
+            removeItem: function(id: string|number): void {
+                document.querySelector(`.journal-${config.cssPrefix}-item[data-id='${id}']`)?.remove();
+                document.querySelector(`.journal-entry-search-related[data-entry-id='${id}']`)?.remove();
+                module.currentResults = module.currentResults.filter((item: any): boolean => Number(item.id) !== Number(id));
             },
 
             search: function(): void {
@@ -225,9 +316,7 @@ dF.JournalEntrySearch = (function(): dfModule {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return;
                     }
-                    const viewModels: any[] = res.rsltList.map((entry: any): any =>
-                        dF.JournalEntry.get(contentType).buildViewModel(entry, "SEARCH")
-                    );
+                    const viewModels: any[] = res.rsltList.map((entry: any): any => module.buildSearchItemModel(entry));
                     cF.handlebars.template({
                         list: viewModels,
                         contentType: config.contentType,

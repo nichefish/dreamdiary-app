@@ -49,7 +49,7 @@
                 {{> journal_entry_context_btn_partial this module=../module contentType=../contentType contentLabel=../contentLabel cssPrefix=../cssPrefix showDayOpen=true showInterpretation=true showRelated=true showDreamStates=../showDreamStates}}
             </div>
         </div>
-        <div class="journal-item">
+        <div class="journal-entry-search-related journal-item" data-entry-id="{{id}}">
             {{#each journalInterpretationList}}
                 {{> journal_interpretation_item_partial this}}
             {{/each}}
