@@ -198,7 +198,7 @@ dF.JournalEntry = (function(): dfModule {
                         dF.JournalDay.refresh();
                         break;
                     case "SEARCH":
-                        location.reload();
+                        dF.JournalEntrySearch?.get?.(config.contentType)?.search?.();
                         break;
                     default:
                         if (typeof dF.JournalDay?.refresh === "function") dF.JournalDay.refresh();
