@@ -12,6 +12,7 @@ import javax.persistence.*;
 
 /**
  * JournalSbjctSmpEntity
+ * 주제(JOURNAL_SBJCT) 목록·참조용 간소화 엔티티.
  *
  * @author nichefish
  */

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * ScheduleType
+ * 일정 유형 코드와 캘린더·폼에서 보여 줄 한글 설명.
  *
  * @author nichefish
  */

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * JournalAnnualTy
+ * 결산 상세에서 다루는 콘텐츠 축(꿈·일기) 구분 enum.
  *
  * @author nichefish
  */

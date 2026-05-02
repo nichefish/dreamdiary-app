@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  * JournalDayHolydayHelper
+ * 저널 일자 DTO에 공휴일명·주말 여부 등 표시용 정보를 채운다.
  *
  * @author nichefish
  */

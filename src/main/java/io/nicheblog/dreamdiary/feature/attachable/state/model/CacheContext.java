@@ -6,6 +6,7 @@ import javax.validation.constraints.Positive;
 
 /**
  * CacheContext
+ * 상태 캐시 조회·무효화 시 연·월·주 시작일 등을 묶어 전달하는 맥락 DTO.
  *
  * @author nichefish
  */

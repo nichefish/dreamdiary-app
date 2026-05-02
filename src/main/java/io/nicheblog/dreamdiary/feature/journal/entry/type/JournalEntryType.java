@@ -11,7 +11,8 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * JournalDayViewType
+ * JournalEntryType
+ * 저널 엔트리(일기·꿈) 콘텐츠 타입과 API·캐시에서 쓰는 별칭 집합을 정의한다.
  *
  * @author nichefish
  */

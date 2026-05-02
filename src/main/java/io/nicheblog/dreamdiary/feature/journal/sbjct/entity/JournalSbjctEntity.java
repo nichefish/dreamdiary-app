@@ -18,6 +18,7 @@ import javax.persistence.*;
 
 /**
  * JournalSbjctEntity
+ * 주제(JOURNAL_SBJCT) 영속 엔티티. 파일·댓글·태그 임베드를 포함한다.
  *
  * @author nichefish
  */

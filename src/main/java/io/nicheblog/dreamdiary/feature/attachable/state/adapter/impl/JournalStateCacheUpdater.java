@@ -17,6 +17,7 @@ import java.util.Map;
 
 /**
  * JournalStateCacheUpdater
+ * 저널 상태 토글 요청에 따라 EhCache 등에 보관된 상태 맵을 갱신한다.
  *
  * @author nichefish
  */
