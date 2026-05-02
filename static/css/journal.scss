@@ -437,6 +437,15 @@ $journal-paired-states: (
     }
 }
 
+.journal-history-detail {
+    p {
+        margin-bottom: 0.35rem;
+    }
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .text-comment {
     .md-text-dialo32g {
         color: #8b7f91 !important;
