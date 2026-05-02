@@ -49,6 +49,7 @@ public abstract class JournalChapterMapstruct
     public abstract JournalChapterDto toDto(final JournalChapterEntity entity) throws Exception;
 
     @Named("toSmpDto")
+    @Mapping(target = "categoryName", expression = "java(CodeUtils.getCodeName(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCategoryCode()))")
     public abstract JournalChapterSmpDto toSmpDto(final JournalChapterEntity entity) throws Exception;
 
     @Override

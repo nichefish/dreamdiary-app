@@ -17,6 +17,7 @@
 <#assign entryRegHeaderTemplateId = "journal_entry_reg_modal_header">
 <#assign entryRegBodyTemplateId = "journal_entry_reg_modal">
 <#assign entryRegUseLegacyStateHidden = false>
+<#assign entryRegShowChapterSelect = true>
 <#assign entryRegChapterCol = 1>
 <#assign entryRegShowCategorySelect = false>
 <#assign entryRegTitleColEdit = 10>
@@ -38,10 +39,11 @@
     <#assign entryRegHeaderTemplateId = "journal_diary_reg_modal_header">
     <#assign entryRegBodyTemplateId = "journal_diary_reg_modal">
     <#assign entryRegUseLegacyStateHidden = true>
-    <#assign entryRegChapterCol = 1>
+    <#assign entryRegShowChapterSelect = true>
+    <#assign entryRegChapterCol = 2>
     <#assign entryRegShowCategorySelect = true>
     <#assign entryRegTitleColEdit = 7>
-    <#assign entryRegTitleColNew = 9>
+    <#assign entryRegTitleColNew = 8>
     <#assign entryRegSortMaxLength = 3>
     <#assign entryRegSortTooltipKey = "bs.tooltip.journal.sort-order.in-day">
     <#assign entryRegShowTagify = true>
@@ -57,10 +59,11 @@
     <#assign entryRegHeaderTemplateId = "journal_dream_reg_modal_header">
     <#assign entryRegBodyTemplateId = "journal_dream_reg_modal">
     <#assign entryRegUseLegacyStateHidden = false>
-    <#assign entryRegChapterCol = 2>
-    <#assign entryRegShowCategorySelect = true>
-    <#assign entryRegTitleColEdit = 7>
-    <#assign entryRegTitleColNew = 8>
+    <#assign entryRegShowChapterSelect = false>
+    <#assign entryRegChapterCol = 0>
+    <#assign entryRegShowCategorySelect = false>
+    <#assign entryRegTitleColEdit = 11>
+    <#assign entryRegTitleColNew = 12>
     <#assign entryRegSortMaxLength = 2>
     <#assign entryRegSortTooltipKey = "bs.tooltip.journal.sort-order.in-dream-chapter">
     <#assign entryRegHideSortForElseDream = true>
