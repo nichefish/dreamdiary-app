@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * JournalInterpretationViewHelper
+ * 저널 해석 뷰 모델에 상태 캐시 값을 반영한다.
  *
  * @author nichefish
  */

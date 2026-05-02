@@ -16,6 +16,7 @@ import java.util.Map;
 
 /**
  * JournalDayStateMapHelper
+ * 일간 엔티티 트리로부터 챕터·일기·꿈·해석 상태 맵을 구성한다.
  *
  * @author nichefish
  */

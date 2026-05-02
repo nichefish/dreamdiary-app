@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycl
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
-import io.nicheblog.dreamdiary.feature.journal.chapter.service.helper.JournaaChapterViewHelper;
+import io.nicheblog.dreamdiary.feature.journal.chapter.service.helper.JournalChapterViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
@@ -22,6 +22,7 @@ import java.util.*;
 
 /**
  * JournalDayViewHelper
+ * 저널 일자 뷰 모델에 state·lifecycle 캐시 값을 병합한다.
  *
  * @author nichefish
  */
@@ -119,7 +120,7 @@ public final class JournalDayViewHelper {
         final Map<Integer, String> interpretationLifecycleMap
     ) {
         for (JournalDayDto day : listDto) {
-            JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
+            JournalChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
             JournalEntryStateViewHelper.applyDreamStates(day.getJournalDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
             JournalEntryStateViewHelper.applyDreamStates(day.getJournalElseDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
         }
@@ -147,7 +148,7 @@ public final class JournalDayViewHelper {
         for (JournalDayDto day : listDto) {
 
             if (searchParam.isShowDiaries()) {
-                JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
+                JournalChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
             }
 
             if (searchParam.isShowDreams()) {

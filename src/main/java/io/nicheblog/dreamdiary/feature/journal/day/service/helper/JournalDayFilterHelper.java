@@ -16,6 +16,7 @@ import java.util.*;
 
 /**
  * JournalDayFilterHelper
+ * 저널 일자 목록을 검색 조건에 맞게 메모리 상에서 필터링한다.
  *
  * @author nichefish
  */

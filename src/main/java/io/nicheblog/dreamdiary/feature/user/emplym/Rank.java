@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * Rank
+ * 사용자 직급 코드와 화면·검증용 한글 설명을 쌍으로 둔다.
  *
  * @author nichefish
  */

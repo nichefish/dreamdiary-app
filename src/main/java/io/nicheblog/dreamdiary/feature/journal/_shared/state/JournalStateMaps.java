@@ -8,6 +8,7 @@ import java.util.Map;
 
 /**
  * JournalStateMaps
+ * 챕터·일기·꿈·해석별 상태 캐시 맵을 한 묶음으로 전달하기 위한 DTO.
  *
  * @author nichefish
  */

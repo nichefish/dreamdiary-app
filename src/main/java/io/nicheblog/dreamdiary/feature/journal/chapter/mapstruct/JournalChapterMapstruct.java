@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * JournalChapterMapstruct
+ * JournalChapter 엔티티와 DTO 간 MapStruct 매핑을 담당한다.
  *
  * @author nichefish
  */

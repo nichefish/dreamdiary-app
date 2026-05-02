@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * Emplym
+ * 사용자 고용 형태 코드와 화면용 한글 설명을 쌍으로 둔다.
  *
  * @author nichefish
  */

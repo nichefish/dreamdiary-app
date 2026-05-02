@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * MenuSubExtendTy
+ * 관리자 메뉴에서 하위 항목을 어떻게 펼칠지(확장·목록·없음) 정의한다.
  *
  * @author nichefish
  */

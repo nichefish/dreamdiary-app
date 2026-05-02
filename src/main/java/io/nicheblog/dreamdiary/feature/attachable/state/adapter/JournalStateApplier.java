@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 
 /**
  * JournalStateApplier
+ * {@link io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState}에 상태 키별 값을 적용한다.
  *
  * @author nichefish
  */
