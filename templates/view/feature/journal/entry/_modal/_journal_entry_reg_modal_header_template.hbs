@@ -31,13 +31,17 @@
                 <span class="text-gray-500 fs-9"><@spring.message 'txt.journal.field.title-max-50'/></span>
             </label>
         </div>
-        <div class="col-lg-${entryRegChapterCol!1}">
-            <select name="journalChapterId" id="journalChapterId" class="form-select form-select-solid">
-                {{#each chapterList}}
-                    <option value="{{id}}" {{selectedIf (equals id ../journalChapterId)}}>{{sortOrder}} {{title}}</option>
-                {{/each}}
-            </select>
-        </div>
+        <#if entryRegShowChapterSelect!true>
+            <div class="col-lg-${entryRegChapterCol!2}">
+                <select name="journalChapterId" id="journalChapterId" class="form-select form-select-solid">
+                    {{#each chapterList}}
+                        <option value="{{id}}" {{selectedIf (equals id ../journalChapterId)}}>{{#if (exists categoryName)}}[{{categoryName}}] {{else}}{{#if (exists categoryCode)}}[{{categoryCode}}] {{/if}}{{/if}}{{sortOrder}} {{title}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        <#else>
+            <input type="hidden" name="journalChapterId" id="journalChapterId" value="{{journalChapterId}}">
+        </#if>
         <#if entryRegShowCategorySelect!false>
             <div class="col-lg-2">
                 <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid">
