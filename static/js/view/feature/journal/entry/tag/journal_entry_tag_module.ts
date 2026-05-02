@@ -148,7 +148,15 @@ dF.JournalEntryTag = (function(): dfModule {
                 });
             },
 
-            openSearch: function(tagId: string|number): void {
+            openSearch: function(tagId: string|number, tagNm?: string): void {
+                if ((window as any).journalEntrySearchContentType === config.contentType) {
+                    const resolvedTagNm: string = tagNm
+                        ?? module.list?.find?.((tag: any): boolean => Number(tag.id) === Number(tagId))?.tagNm
+                        ?? String(tagId);
+                    dF.JournalEntrySearch?.get?.(config.contentType)?.select?.(tagId, resolvedTagNm);
+                    return;
+                }
+
                 const baseSearchUrl: string = resolveSearchUrl(config);
                 let url: string = `${baseSearchUrl}?tagIds=${tagId}`;
                 if (dF.JournalDay?.viewType === "WEEKLY") {
@@ -164,12 +172,12 @@ dF.JournalEntryTag = (function(): dfModule {
             select: function(tagId: string|number, tagNm?: string, ctgr: string = ""): void {
                 if (dF.JournalDayTag?.isContextMenuEnabled?.()) {
                     dF.JournalDayTag.openContextMenu(tagId, tagNm ?? "", ctgr, function(): void {
-                        module.openSearch(tagId);
+                        module.openSearch(tagId, tagNm);
                     }, config.contentType);
                     return;
                 }
 
-                module.openSearch(tagId);
+                module.openSearch(tagId, tagNm);
             },
         };
 
