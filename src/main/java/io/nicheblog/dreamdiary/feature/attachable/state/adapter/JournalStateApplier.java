@@ -22,7 +22,6 @@ public final class JournalStateApplier {
     public static void apply(final JournalState state, final StateKey stateKey, final Boolean isEnabled) {
         if (state == null || stateKey == null) return;
         switch (stateKey) {
-            case RESOLVED -> state.setResolved(isEnabled);
             case COLLAPSED -> state.setCollapsed(isEnabled);
             case IMPRTC -> state.setImprtc(isEnabled);
             case REFRNC -> state.setRefrnc(isEnabled);

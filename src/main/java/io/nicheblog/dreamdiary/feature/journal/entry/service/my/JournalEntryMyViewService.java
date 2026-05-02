@@ -88,7 +88,10 @@ public class JournalEntryMyViewService {
             interpretationEnricher.enrich(contentType, username, listDto);
         }
         relatedEnricher.enrich(contentType, username, listDto);
-        if (!includeStates) return;
-        stateEnricher.enrich(policy, username, listDto);
+        if (includeStates) {
+            stateEnricher.enrich(policy, username, listDto);
+        } else {
+            stateEnricher.enrichLifecycle(policy, listDto);
+        }
     }
 }

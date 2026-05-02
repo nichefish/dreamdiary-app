@@ -128,6 +128,7 @@
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/lifecycle/lifecycle_module.js?${releaseDate!}"></script>
 
 <#--include::journal_annual_modules-->
 <#include "/view/feature/journal/annual/_partial/_journal_annual_context_btn_partial.hbs">

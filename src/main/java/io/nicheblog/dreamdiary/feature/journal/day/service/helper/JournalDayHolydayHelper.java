@@ -17,10 +17,10 @@ import java.util.Map;
 public final class JournalDayHolydayHelper {
 
     /**
-     * 二쇱뼱吏?{@link JournalDayDto} 媛앹껜??怨듯쑕??諛?二쇰쭚 ?щ? ?뺣낫瑜??ㅼ젙?쒕떎.
+     * 주어진 일자 목록에 공휴일 및 주말 여부 정보를 설정한다.
      *
-     * @param journalDayList 怨듯쑕??諛?二쇰쭚 ?뺣낫瑜??ㅼ젙?????DTO
-     * @param holydayMap ?좎쭨(String: yyyy-MM-dd) ??怨듯쑕???대쫫 紐⑸줉 留ㅽ븨 ?뺣낫
+     * @param journalDayList 공휴일 및 주말 정보를 설정할 일자 DTO 목록
+     * @param holydayMap 날짜(String: yyyy-MM-dd)별 공휴일 이름 목록 맵
      */
     public static void setHolydayInfo(final List<JournalDayDto> journalDayList, final Map<String, List<String>> holydayMap) throws Exception {
         if (CollectionUtils.isEmpty(journalDayList) || holydayMap == null) return;
@@ -31,10 +31,10 @@ public final class JournalDayHolydayHelper {
     }
 
     /**
-     * 二쇱뼱吏?{@link JournalDayDto} 媛앹껜??怨듯쑕??諛?二쇰쭚 ?щ? ?뺣낫瑜??ㅼ젙?쒕떎.
+     * 주어진 일자에 공휴일 및 주말 여부 정보를 설정한다.
      *
-     * @param journalDay 怨듯쑕??諛?二쇰쭚 ?뺣낫瑜??ㅼ젙?????DTO
-     * @param holydayMap ?좎쭨(String: yyyy-MM-dd) ??怨듯쑕???대쫫 紐⑸줉 留ㅽ븨 ?뺣낫
+     * @param journalDay 공휴일 및 주말 정보를 설정할 일자 DTO
+     * @param holydayMap 날짜(String: yyyy-MM-dd)별 공휴일 이름 목록 맵
      */
     public static void setHolydayInfo(final JournalDayDto journalDay, final Map<String, List<String>> holydayMap) throws Exception {
         if (journalDay == null || holydayMap == null) return;
@@ -49,4 +49,3 @@ public final class JournalDayHolydayHelper {
         }
     }
 }
-

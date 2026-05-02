@@ -134,6 +134,8 @@ public interface ApiUrl {
     /** 단락 */
     /** 상태 */
     String STATES = Prefix.API + "/states";
+    /** 라이프사이클 */
+    String LIFECYCLES = Prefix.API + "/lifecycles";
 
     /** 태그 */
     String TAGS = Prefix.API + "/tags";

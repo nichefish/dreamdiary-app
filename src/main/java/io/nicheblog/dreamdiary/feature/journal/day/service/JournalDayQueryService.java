@@ -3,8 +3,10 @@ package io.nicheblog.dreamdiary.feature.journal.day.service;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
@@ -44,6 +46,7 @@ public class JournalDayQueryService {
     private final JournalDayService journalDayService;
     private final RelatedContentQueryService relatedContentQueryService;
     private final JournalInterpretationQueryService journalInterpretationQueryService;
+    private final LifecycleService lifecycleService;
 
     /**
      * 연월 기준 목록 조회 후 화면 정보를 보강한다.
@@ -158,6 +161,7 @@ public class JournalDayQueryService {
             JournalDayViewHelper.mergeStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
+        this.mergeLifecycles(listDto);
         this.mergeRelatedContents(username, listDto);
 
         return listDto;
@@ -180,6 +184,7 @@ public class JournalDayQueryService {
             JournalDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
+        this.mergeLifecycles(listDto);
         this.mergeRelatedContents(username, listDto);
 
         return listDto;
@@ -198,6 +203,7 @@ public class JournalDayQueryService {
         JournalDayHolydayHelper.setHolydayInfo(retrieved, getHolydayMap());
         this.mergeInterpretations(username, List.of(retrieved));
         JournalDayViewHelper.mergeStates(username, retrieved);
+        this.mergeLifecycles(List.of(retrieved));
         this.mergeRelatedContents(username, List.of(retrieved));
 
         return retrieved;
@@ -245,6 +251,44 @@ public class JournalDayQueryService {
         }
     }
 
+    /**
+     * 캐시 누락 여부와 상관없이 DB 기준 lifecycle 값을 일자 트리에 병합한다.
+     *
+     * @param listDto 일자 목록
+     */
+    private void mergeLifecycles(final List<JournalDayDto> listDto) {
+        if (listDto == null || listDto.isEmpty()) return;
+
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+            final List<JournalEntryDto> entryList = this.collectEntriesByType(listDto, policy.contentType);
+            final List<Integer> entryIds = entryList.stream()
+                    .map(JournalEntryDto::getId)
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .toList();
+            JournalLifecycleViewHelper.applyEntryLifecycle(
+                    entryList,
+                    lifecycleService.getLifecycleMap(policy.contentType, entryIds)
+            );
+
+            final List<JournalInterpretationDto> interpretationList = entryList.stream()
+                    .flatMap(entry -> entry.getJournalInterpretationList() == null
+                            ? java.util.stream.Stream.empty()
+                            : entry.getJournalInterpretationList().stream())
+                    .filter(java.util.Objects::nonNull)
+                    .toList();
+            final List<Integer> interpretationIds = interpretationList.stream()
+                    .map(JournalInterpretationDto::getId)
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .toList();
+            JournalLifecycleViewHelper.applyInterpretationLifecycle(
+                    interpretationList,
+                    lifecycleService.getLifecycleMap(ContentType.JOURNAL_INTERPRETATION, interpretationIds)
+            );
+        }
+    }
+
     private List<RelatedContentDto> getRelatedList(
             final Map<String, List<RelatedContentDto>> relatedMap,
             final String contentType,
@@ -274,6 +318,22 @@ public class JournalDayQueryService {
                 forEachEntry(entryList, consumer);
             }
         }
+    }
+
+    /**
+     * 일자 트리에서 특정 컨텐츠 타입의 엔트리를 모은다.
+     *
+     * @param listDto 일자 목록
+     * @param contentType 컨텐츠 타입
+     * @return 엔트리 목록
+     */
+    private List<JournalEntryDto> collectEntriesByType(
+            final List<JournalDayDto> listDto,
+            final ContentType contentType
+    ) {
+        final List<JournalEntryDto> entryList = new ArrayList<>();
+        this.forEachEntryByType(listDto, contentType, entryList::add);
+        return entryList;
     }
 
     private void forEachEntry(final List<JournalEntryDto> entryList, final Consumer<JournalEntryDto> consumer) {

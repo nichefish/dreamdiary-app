@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.entry.service.policy;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 
@@ -17,6 +18,7 @@ public enum JournalEntryTypePolicy {
         @Override public boolean supportsChapterChange() { return true; }
         @Override public boolean supportsInterpretation() { return true; }
         @Override public String stateCacheName() { return JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DIARY); }
+        @Override public String lifecycleCacheName() { return JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DIARY); }
         @Override public Integer resolveModifiedChapterId(Integer dtoChapterId, Integer entityChapterId) {
             return dtoChapterId;
         }
@@ -26,6 +28,7 @@ public enum JournalEntryTypePolicy {
         @Override public boolean supportsChapterChange() { return false; }
         @Override public boolean supportsInterpretation() { return true; }
         @Override public String stateCacheName() { return JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DREAM); }
+        @Override public String lifecycleCacheName() { return JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DREAM); }
         @Override public Integer resolveModifiedChapterId(Integer dtoChapterId, Integer entityChapterId) {
             return dtoChapterId != null ? dtoChapterId : entityChapterId;
         }
@@ -50,6 +53,8 @@ public enum JournalEntryTypePolicy {
      * JournalEntryMyViewService의 state merge 여부 판단에 사용.
      */
     public abstract String stateCacheName();
+
+    public abstract String lifecycleCacheName();
 
     /**
      * 수정 요청의 챕터 ID 결정.

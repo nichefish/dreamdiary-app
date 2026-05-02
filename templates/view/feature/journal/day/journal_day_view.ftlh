@@ -129,6 +129,7 @@
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/lifecycle/lifecycle_module.js?${releaseDate!}"></script>
 
 <script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 

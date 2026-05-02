@@ -36,6 +36,43 @@
                     <i class="bi bi-clock-history fs-8"></i>
                 </div>
             </div>
+            <div class="separator my-2"></div>
+            <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+                <a href="#" class="menu-link px-3">
+                    <span class="menu-title"><@spring.message 'txt.lifecycle'/></span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <label class="form-check form-check-custom form-check-solid cursor-pointer">
+                                <input class="form-check-input w-18px h-18px cursor-pointer interpretation-context-lifecycle-check" type="radio" name="interpretation-lifecycle-{{id}}" value="OPEN" {{#if (equals lifecycle.lifecycleKey 'OPEN')}}checked="checked"{{/if}}
+                                       onclick="dF.JournalInterpretation.setLifecycleAjax({{id}}, 'OPEN');">
+                                <span class="form-check-label fs-7 {{#if (equals lifecycle.lifecycleKey 'OPEN')}}text-gray-800{{else}}text-muted{{/if}}"><@spring.message 'txt.lifecycle.open'/></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <label class="form-check form-check-custom form-check-solid cursor-pointer">
+                                <input class="form-check-input w-18px h-18px cursor-pointer interpretation-context-lifecycle-check" type="radio" name="interpretation-lifecycle-{{id}}" value="PENDING" {{#if (equals lifecycle.lifecycleKey 'PENDING')}}checked="checked"{{/if}}
+                                       onclick="dF.JournalInterpretation.setLifecycleAjax({{id}}, 'PENDING');">
+                                <span class="form-check-label fs-7 {{#if (equals lifecycle.lifecycleKey 'PENDING')}}text-primary{{else}}text-muted{{/if}}"><@spring.message 'txt.lifecycle.pending'/></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <label class="form-check form-check-custom form-check-solid cursor-pointer">
+                                <input class="form-check-input w-18px h-18px cursor-pointer interpretation-context-lifecycle-check interpretation-context-resolved-check" type="radio" name="interpretation-lifecycle-{{id}}" value="RESOLVED" {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}checked="checked"{{/if}}
+                                       onclick="dF.JournalInterpretation.setLifecycleAjax({{id}}, 'RESOLVED');">
+                                <span class="form-check-label fs-7 {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}text-success{{else}}text-muted{{/if}}"><@spring.message 'txt.status.resolved'/></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="separator my-2"></div>
             <!--begin::Menu item-->
             <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
                 <a href="#" class="menu-link px-3">
@@ -44,27 +81,6 @@
                 </a>
                 <!--begin::Menu sub-->
                 <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                    <!--begin::Menu item-->
-                    <div class="menu-item px-3">
-                        <div class="menu-content px-3">
-                            <!--begin::Switch-->
-                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
-                                <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#if (hasState state 'RESOLVED')}}tchecked="checked"{{/if}}
-                                       onclick="dF.JournalEntry.get('JOURNAL_DIARY').resolveAjax({{id}});">
-                                <!--end::Input-->
-                                <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
-                                <!--end::Label-->
-                            </label>
-                            <!--end::Switch-->
-                        </div>
-                    </div>
-                    <!--end::Menu item-->
-                    <!--begin::Menu separator-->
-                    <div class="separator my-2"></div>
-                    <!--end::Menu separator-->
                     <!--begin::Menu item-->
                     <div class="menu-item px-3">
                         <div class="menu-content px-3">

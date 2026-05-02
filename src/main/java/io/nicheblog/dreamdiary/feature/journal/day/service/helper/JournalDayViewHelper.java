@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.day.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
@@ -28,10 +29,10 @@ import java.util.*;
 public final class JournalDayViewHelper {
 
     /**
-     * ?곹깭state merge
+     * 월간 일자 목록에 state와 lifecycle 캐시 값을 병합한다.
      *
-     * @param listDto ????쇱옄 紐⑸줉
-     * @param searchParam 寃???뚮씪誘명꽣
+     * @param listDto 일자 목록
+     * @param searchParam 일자 검색 조건
      */
     @SuppressWarnings("unchecked")
     public static void mergeStates(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) {
@@ -43,15 +44,18 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> diaryMap = getStateMap(cacheKey, ContentType.JOURNAL_DIARY, false);
         final Map<Integer, JournalState> dreamMap = getStateMap(cacheKey, ContentType.JOURNAL_DREAM, false);
         final Map<Integer, JournalState> interpretationMap = getStateMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
+        final Map<Integer, String> diaryLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DIARY, false);
+        final Map<Integer, String> dreamLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DREAM, false);
+        final Map<Integer, String> interpretationLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
 
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, searchParam);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, diaryLifecycleMap, dreamLifecycleMap, interpretationLifecycleMap, searchParam);
     }
 
     /**
-     * 二쇨컙 議고쉶??state merge
+     * 주간 일자 목록에 state와 lifecycle 캐시 값을 병합한다.
      *
-     * @param listDto ?쇱옄 紐⑸줉
-     * @param searchParam 寃???뚮씪誘명꽣
+     * @param listDto 일자 목록
+     * @param searchParam 일자 검색 조건
      */
     @SuppressWarnings("unchecked")
     public static void mergeWeeklyStates(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) {
@@ -67,14 +71,17 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> diaryMap = getStateMap(cacheKey, ContentType.JOURNAL_DIARY, true);
         final Map<Integer, JournalState> dreamMap = getStateMap(cacheKey, ContentType.JOURNAL_DREAM, true);
         final Map<Integer, JournalState> interpretationMap = getStateMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, true);
+        final Map<Integer, String> diaryLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DIARY, true);
+        final Map<Integer, String> dreamLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DREAM, true);
+        final Map<Integer, String> interpretationLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, true);
 
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, searchParam);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, diaryLifecycleMap, dreamLifecycleMap, interpretationLifecycleMap, searchParam);
     }
 
     /**
-     * ?곹깭state merge
+     * 단일 일자에 state와 lifecycle 캐시 값을 병합한다.
      *
-     * @param journalDay ????쇱옄
+     * @param journalDay 일자 DTO
      */
     @SuppressWarnings("unchecked")
     public static void mergeStates(final String username, final JournalDayDto journalDay) {
@@ -86,37 +93,20 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> diaryMap = getStateMap(cacheKey, ContentType.JOURNAL_DIARY, false);
         final Map<Integer, JournalState> dreamMap = getStateMap(cacheKey, ContentType.JOURNAL_DREAM, false);
         final Map<Integer, JournalState> interpretationMap = getStateMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
+        final Map<Integer, String> diaryLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DIARY, false);
+        final Map<Integer, String> dreamLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DREAM, false);
+        final Map<Integer, String> interpretationLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
 
         final List<JournalDayDto> listDto = List.of(journalDay);
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, diaryLifecycleMap, dreamLifecycleMap, interpretationLifecycleMap);
     }
 
     /**
-     * 罹먯떆????λ맂 ?곹깭 留?chapter/diary/dream/interpretation)??湲곗??쇰줈 議고쉶??{@link JournalDayDto} ?몃━ 援ъ“???곹깭瑜?諛섏쁺?쒕떎.
+     * 캐시에 저장된 chapter/diary/dream/interpretation state와 lifecycle 값을 일자 트리에 반영한다.
      *
-     * @param listDto 議고쉶??????쇱옄 紐⑸줉 DTO
-     * @param chapterMap chapter id ??{@link JournalState} 留?     * @param diaryMap diary id ??{@link JournalState} 留?
-     */
-    public static void applyStates(
-        final List<JournalDayDto> listDto,
-        final Map<Integer, JournalState> chapterMap,
-        final Map<Integer, JournalState> diaryMap,
-        final Map<Integer, JournalState> dreamMap,
-        final Map<Integer, JournalState> interpretationMap
-    ) {
-        for (JournalDayDto day : listDto) {
-            JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, interpretationMap);
-            JournalEntryStateViewHelper.applyDreamStates(day.getJournalDreamList(), dreamMap, interpretationMap);
-            JournalEntryStateViewHelper.applyDreamStates(day.getJournalElseDreamList(), dreamMap, interpretationMap);
-        }
-    }
-
-    /**
-     * 罹먯떆????λ맂 ?곹깭 留?chapter/diary/dream/interpretation)??湲곗??쇰줈 議고쉶??{@link JournalDayDto} ?몃━ 援ъ“???곹깭瑜?諛섏쁺?쒕떎.
-     *
-     * @param listDto 議고쉶??????쇱옄 紐⑸줉 DTO
-     * @param chapterMap chapter id ??{@link JournalState} 留?     * @param diaryMap diary id ??{@link JournalState} 留?
-     * @param searchParam JournalDaySearchParam
+     * @param listDto 일자 목록 DTO
+     * @param chapterMap chapter id 기준 state 맵
+     * @param diaryMap diary id 기준 state 맵
      */
     public static void applyStates(
         final List<JournalDayDto> listDto,
@@ -124,25 +114,53 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> diaryMap,
         final Map<Integer, JournalState> dreamMap,
         final Map<Integer, JournalState> interpretationMap,
+        final Map<Integer, String> diaryLifecycleMap,
+        final Map<Integer, String> dreamLifecycleMap,
+        final Map<Integer, String> interpretationLifecycleMap
+    ) {
+        for (JournalDayDto day : listDto) {
+            JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
+            JournalEntryStateViewHelper.applyDreamStates(day.getJournalDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
+            JournalEntryStateViewHelper.applyDreamStates(day.getJournalElseDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
+        }
+    }
+
+    /**
+     * 검색 조건을 고려하여 캐시의 state와 lifecycle 값을 일자 트리에 반영한다.
+     *
+     * @param listDto 일자 목록 DTO
+     * @param chapterMap chapter id 기준 state 맵
+     * @param diaryMap diary id 기준 state 맵
+     * @param searchParam 일자 검색 조건
+     */
+    public static void applyStates(
+        final List<JournalDayDto> listDto,
+        final Map<Integer, JournalState> chapterMap,
+        final Map<Integer, JournalState> diaryMap,
+        final Map<Integer, JournalState> dreamMap,
+        final Map<Integer, JournalState> interpretationMap,
+        final Map<Integer, String> diaryLifecycleMap,
+        final Map<Integer, String> dreamLifecycleMap,
+        final Map<Integer, String> interpretationLifecycleMap,
         final JournalDaySearchParam searchParam
     ) {
         for (JournalDayDto day : listDto) {
 
             if (searchParam.isShowDiaries()) {
-                JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, interpretationMap);
+                JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
             }
 
             if (searchParam.isShowDreams()) {
-                JournalEntryStateViewHelper.applyDreamStates(day.getJournalDreamList(), dreamMap, interpretationMap);
-                JournalEntryStateViewHelper.applyDreamStates(day.getJournalElseDreamList(), dreamMap, interpretationMap);
+                JournalEntryStateViewHelper.applyDreamStates(day.getJournalDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
+                JournalEntryStateViewHelper.applyDreamStates(day.getJournalElseDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
             }
         }
     }
 
     /**
-     * Entry媛 collapsed ?곹깭??寃쎌슦, ?섏쐞 {@link JournalEntryDto} ?ㅼ뿉 ?ы븿???쒓렇瑜??섏쭛?섏뿬 以묐났 ?쒓굅??"?붿빟 ?쒓렇 紐⑸줉"??Entry??二쇱엯?쒕떎.
+     * chapter가 접힌 상태일 때 하위 일기의 태그를 모아 chapter 요약 태그 목록에 주입한다.
      *
-     * @param listDto 議고쉶??????쇱옄 紐⑸줉 DTO
+     * @param listDto 일자 목록 DTO
      */
     public static void applyChapterTagSummary(final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto)) return;
@@ -180,6 +198,27 @@ public final class JournalDayViewHelper {
                 ? JournalStateCacheRegistry.weeklyMapCacheName(contentType)
                 : JournalStateCacheRegistry.monthlyMapCacheName(contentType);
         return Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache(cacheName, cacheKey))
+                .orElse(Collections.emptyMap());
+    }
+
+    /**
+     * 월간 또는 주간 캐시에서 lifecycle 보조 맵을 읽는다.
+     *
+     * @param cacheKey 사용할 날짜 기준 캐시 키
+     * @param contentType lifecycle을 지원하는 컨텐츠 타입
+     * @param weekly 주간 캐시 namespace 사용 여부
+     * @return 컨텐츠 ID 기준 lifecycle 키 맵
+     */
+    @SuppressWarnings("unchecked")
+    private static Map<Integer, String> getLifecycleMap(
+            final Object cacheKey,
+            final ContentType contentType,
+            final boolean weekly
+    ) {
+        final String cacheName = weekly
+                ? JournalLifecycleCacheRegistry.weeklyMapCacheName(contentType)
+                : JournalLifecycleCacheRegistry.monthlyMapCacheName(contentType);
+        return Optional.ofNullable((Map<Integer, String>) EhCacheUtils.getObjectFromCache(cacheName, cacheKey))
                 .orElse(Collections.emptyMap());
     }
 }

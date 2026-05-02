@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCm
 import io.nicheblog.dreamdiary.feature.attachable.history.model.HistoryDto;
 import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
@@ -36,7 +38,7 @@ import java.util.List;
 public class JournalEntryDto extends BaseAttachableDto
         implements Identifiable<Integer>, Comparable<JournalEntryDto>,
         FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule,
-        HistoryCmpstnModule, JournalPeriodModule {
+        LifecycleCmpstnModule, HistoryCmpstnModule, JournalPeriodModule {
 
     private String title;
     private String content;
@@ -62,6 +64,7 @@ public class JournalEntryDto extends BaseAttachableDto
     public CommentCmpstn comment;
     public TagCmpstn tag;
     public StateCmpstn state;
+    public LifecycleCmpstn lifecycle;
     public HistoryCmpstn history;
     private List<HistoryDto> historyList;
 
