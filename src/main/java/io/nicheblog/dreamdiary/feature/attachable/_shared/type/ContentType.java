@@ -24,6 +24,7 @@ public enum ContentType {
     JOURNAL_DAY("JOURNAL_DAY", "저널 일자", "calendar3"),
     JOURNAL_CHAPTER("JOURNAL_CHAPTER", "저널 챕터", "book"),
     JOURNAL_DIARY("JOURNAL_DIARY", "저널 일기", "book"),
+    JOURNAL_NOTE("JOURNAL_NOTE", "저널 노트", "book"),
     JOURNAL_DREAM("JOURNAL_DREAM", "저널 꿈", "moon-stars"),
     JOURNAL_INTERPRETATION("JOURNAL_INTERPRETATION", "저널 해석", "book"),
     JOURNAL_SBJCT("JOURNAL_SBJCT", "저널 주제"),
@@ -41,9 +42,10 @@ public enum ContentType {
     public String icon;
 
     /**
-     * 키와 일치하는 컨텐츠 타입 enum 반환
-     * @param contentType 문자열
-     * @return ContentType enum
+     * 문자 값과 일치하는 컨텐츠 타입 enum을 반환한다.
+     *
+     * @param contentType 문자 값
+     * @return 컨텐츠 타입 enum
      */
     public static ContentType get(final String contentType) {
         for (final ContentType type : ContentType.values()) {

@@ -1,6 +1,6 @@
 /**
  * journal_entry_module.ts
- * Common journal entry module for diary, dream, and note.
+ * 일기, 꿈, 노트 공통 저널 entry 모듈.
  */
 if (typeof dF === "undefined") { var dF = {} as any; }
 
@@ -70,7 +70,6 @@ dF.JournalEntry = (function(): dfModule {
             $("#elseDreamYn").change(function(): void {
                 $("#elseDreamerNm").valid();
             });
-            cF.ui.chckboxLabel(`${config.formSelector} #resolvedYn`, "정리완료//정리중", "green//gray");
             cF.ui.chckboxLabel(`${config.formSelector} #imprtcYn`, "중요//해당없음", "red//gray");
             cF.ui.chckboxLabel(`${config.formSelector} #elseDreamYn`, "해당//미해당", "blue//gray", function(): void {
                 $("#elseDreamerNmDiv").removeClass("d-none");
@@ -171,6 +170,7 @@ dF.JournalEntry = (function(): dfModule {
 
                 this.initPromise = (async () => {
                     if (config.useTag) await dF.JournalEntryTag.get(config.contentType).init();
+                    dF.Lifecycle?.init?.();
                     this.viewType = viewType;
                     this.initialized = true;
                     console.log(`'dF.${config.moduleName}' module initialized.`);
@@ -490,11 +490,60 @@ dF.JournalEntry = (function(): dfModule {
                 this.toggleStateAjax(id, "COLLAPSED", { onOffFunc });
             },
 
-            resolveAjax: function(id: string|number): void {
+            /**
+             * 컨텍스트 메뉴 스위치 값에 따라 일기 라이프사이클을 RESOLVED 또는 OPEN으로 설정한다.
+             *
+             * RESOLVED는 더 이상 상태 토글이 아니다. 이 스위치는 라이프사이클을 저장하고,
+             * 백엔드가 영속화하는 글접기 파생 동작을 화면에도 즉시 반영한다.
+             *
+             * @param id journal entry ID
+             * @param trigger 원하는 완료 여부를 나타내는 checkbox
+             */
+            resolveAjax: function(id: string|number, trigger?: HTMLInputElement): void {
                 if (isNaN(Number(id))) return;
 
-                const onOffFunc: Function = function(res: AjaxResponse, item: HTMLElement): void {
-                    if (res.rsltSts !== "ON") return;
+                const lifecycleKey: string = trigger?.checked ? "RESOLVED" : "OPEN";
+                this.setLifecycleAjax(id, lifecycleKey);
+            },
+
+            /**
+             * 일기 라이프사이클을 명시적으로 설정한다.
+             *
+             * @param id 저널 entry ID
+             * @param lifecycleKey 설정할 라이프사이클 키
+             */
+            setLifecycleAjax: function(id: string|number, lifecycleKey: string): void {
+                if (isNaN(Number(id))) return;
+
+                const item = document.querySelector(`.${config.itemClass}[data-id='${id}']`) as HTMLElement;
+                const cacheContext = dF.Lifecycle.resolveJournalCacheContext(item);
+                const payload = { id, contentType: config.contentType, lifecycleKey, cacheContext };
+                dF.Lifecycle.setAjax(payload, function(_res: AjaxResponse): void {
+                    if (!item) return;
+
+                    item.dataset.lifecycle = lifecycleKey;
+                    item.dataset.resolved = lifecycleKey === "RESOLVED" ? "Y" : "N";
+
+                    const idx: HTMLElement = item.querySelector(`.journal-${config.cssPrefix}-idx`);
+                    idx?.classList.toggle("text-success", lifecycleKey === "RESOLVED");
+
+                    const resolvedChk: HTMLInputElement = item.querySelector(`.${config.cssPrefix}-context-resolved-check`);
+                    if (resolvedChk) resolvedChk.checked = lifecycleKey === "RESOLVED";
+
+                    const lifecycleChecks: NodeListOf<HTMLInputElement> = item.querySelectorAll(`.${config.cssPrefix}-context-lifecycle-check`);
+                    lifecycleChecks.forEach(function(chk: HTMLInputElement): void {
+                        chk.checked = chk.value === lifecycleKey;
+                        const label: HTMLElement = chk.closest("label")?.querySelector(".form-check-label") as HTMLElement;
+                        label?.classList.toggle("text-primary", chk.value === "PENDING" && chk.checked);
+                        label?.classList.toggle("text-success", chk.value === "RESOLVED" && chk.checked);
+                        label?.classList.toggle("text-muted", !chk.checked);
+                    });
+
+                    const resolvedLabel: HTMLElement = resolvedChk?.closest("label")?.querySelector(".form-check-label") as HTMLElement;
+                    resolvedLabel?.classList.toggle("text-success", lifecycleKey === "RESOLVED");
+                    resolvedLabel?.classList.toggle("text-muted", lifecycleKey !== "RESOLVED");
+
+                    if (lifecycleKey !== "RESOLVED") return;
 
                     const content: HTMLDivElement = item.querySelector(`div.${config.contentClass} .journal-content`);
                     if (!content) console.warn("content not found.");
@@ -505,9 +554,8 @@ dF.JournalEntry = (function(): dfModule {
                     const collapsedChk: HTMLInputElement = item.querySelector(`.${config.cssPrefix}-context-collapsed-check`);
                     if (collapsedChk) collapsedChk.checked = true;
                     const icon: HTMLElement = item.querySelector(".icon-collapsed");
-                    icon?.classList.toggle("d-none", res.rsltSts !== "ON");
-                };
-                this.toggleStateAjax(id, "RESOLVED", { onOffFunc });
+                    icon?.classList.toggle("d-none", false);
+                });
             },
 
             imprtcAjax: function(id: string|number): void {

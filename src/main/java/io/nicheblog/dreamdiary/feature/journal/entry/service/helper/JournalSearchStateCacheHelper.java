@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.entry.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
@@ -23,7 +24,13 @@ public class JournalSearchStateCacheHelper {
          * @param stateMap 상태 맵
          * @param interpretationMap 해석 상태 맵
          */
-        void apply(List<Dto> listDto, Map<Integer, JournalState> stateMap, Map<Integer, JournalState> interpretationMap);
+        void apply(
+                List<Dto> listDto,
+                Map<Integer, JournalState> stateMap,
+                Map<Integer, String> lifecycleMap,
+                Map<Integer, JournalState> interpretationMap,
+                Map<Integer, String> interpretationLifecycleMap
+        );
     }
 
     @SuppressWarnings("unchecked")
@@ -40,6 +47,7 @@ public class JournalSearchStateCacheHelper {
             final String username,
             final List<Dto> listDto,
             final String stateCacheName,
+            final String lifecycleCacheName,
             final MonthlyStateApplier<Dto> applier
     ) {
         if (CollectionUtils.isEmpty(listDto) || username == null) return;
@@ -62,7 +70,16 @@ public class JournalSearchStateCacheHelper {
                             cacheKey
                     )
             ).orElse(Collections.emptyMap());
-            applier.apply(entry.getValue(), stateMap, interpretationMap);
+            final Map<Integer, String> lifecycleMap = Optional.ofNullable(
+                    (Map<Integer, String>) EhCacheUtils.getObjectFromCache(lifecycleCacheName, cacheKey)
+            ).orElse(Collections.emptyMap());
+            final Map<Integer, String> interpretationLifecycleMap = Optional.ofNullable(
+                    (Map<Integer, String>) EhCacheUtils.getObjectFromCache(
+                            JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_INTERPRETATION),
+                            cacheKey
+                    )
+            ).orElse(Collections.emptyMap());
+            applier.apply(entry.getValue(), stateMap, lifecycleMap, interpretationMap, interpretationLifecycleMap);
         }
     }
 }

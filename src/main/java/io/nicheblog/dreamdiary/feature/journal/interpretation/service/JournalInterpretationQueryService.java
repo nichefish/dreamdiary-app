@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.interpretation.service;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
@@ -21,6 +22,7 @@ public class JournalInterpretationQueryService {
 
     private final JournalInterpretationRepository journalInterpretationRepository;
     private final JournalInterpretationMapstruct journalInterpretationMapstruct;
+    private final LifecycleService lifecycleService;
 
     @Transactional(readOnly = true)
     public Map<String, List<JournalInterpretationDto>> getInterpretationMapByRefs(
@@ -68,12 +70,41 @@ public class JournalInterpretationQueryService {
             interpretationStateMap.put(
                     interpretationEntity.getId(),
                     JournalState.builder()
-                            .resolved(interpretationEntity.state.hasState(StateKey.RESOLVED))
                             .collapsed(interpretationEntity.state.hasState(StateKey.COLLAPSED))
                             .build()
             );
         }
         return interpretationStateMap;
+    }
+
+    /**
+     * 저널 일기 ref 목록에 붙은 해석 라이프사이클 맵을 조회한다.
+     *
+     * <p>호출자는 보통 해석 ID가 아니라 일기 ref를 알고 있다. 그래서 먼저 해당 ref에 매칭되는
+     * 해석 row를 찾고, 그 ID로 라이프사이클 값을 일괄 조회한다.</p>
+     *
+     * @param refKeyList 해석이 붙어 있을 수 있는 저널 일기 ref 목록
+     * @param createdBy 해석 조회 범위를 제한할 작성자
+     * @return 해석 ID 기준 라이프사이클 키 맵
+     */
+    @Transactional(readOnly = true)
+    public Map<Integer, String> getInterpretationLifecycleMapByRefs(
+            final Collection<BaseAttachableKey> refKeyList,
+            final String createdBy
+    ) {
+        final List<BaseAttachableKey> normalizedRefKeyList = this.normalizeRefKeyList(refKeyList, createdBy);
+        if (normalizedRefKeyList.isEmpty()) return Map.of();
+
+        final List<JournalInterpretationEntity> interpretationEntityList = this.getInterpretationEntitiesByRefs(normalizedRefKeyList, createdBy);
+        if (interpretationEntityList.isEmpty()) return Map.of();
+
+        final List<Integer> interpretationIdList = interpretationEntityList.stream()
+                .filter(Objects::nonNull)
+                .map(JournalInterpretationEntity::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        return lifecycleService.getLifecycleMap(ContentType.JOURNAL_INTERPRETATION, interpretationIdList);
     }
 
     private String toRefKey(final BaseAttachableKey refKey) {

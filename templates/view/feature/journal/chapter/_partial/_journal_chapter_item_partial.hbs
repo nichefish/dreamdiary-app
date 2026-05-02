@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="journal_chapter_item_partial" data-partial>
     <div class="d-flex align-items-center mt-2">
         <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
-            <span class="{{#ifYn chapterResolvedYn}}text-success{{/ifYn}} me-2">
+            <span class="me-2">
                 {{#if (equals chapterType "DREAM")}}
                     <@spring.message 'txt.dream'/>
                 {{else}}
@@ -23,12 +23,12 @@
                 {{/if}}
             </span>
             {{#if (equals chapterType "DREAM")}}
-                <i class="bi bi-moon-stars fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                <i class="bi bi-moon-stars fs-4"></i>
             {{else}}
                 {{#if (equals chapterType "NOTE")}}
-                    <i class="bi bi-journal-text fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                    <i class="bi bi-journal-text fs-4"></i>
                 {{else}}
-                    <i class="bi bi-book fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                    <i class="bi bi-book fs-4"></i>
                 {{/if}}
             {{/if}}
         </div>
@@ -53,8 +53,7 @@
          data-stdrd-dt="{{stdrdDt}}"
          data-yy="{{yy}}"
          data-mnth="{{mnth}}"
-         data-collapsed="{{hasState state 'COLLAPSED'}}"
-         data-resolved="{{#ifYn chapterResolvedYn}}Y{{else}}N{{/ifYn}}">
+         data-collapsed="{{hasState state 'COLLAPSED'}}">
         <div class="journal-chapter-content {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
             {{#if (equals chapterType "DIARY")}}
                 {{#each journalEntryList}}

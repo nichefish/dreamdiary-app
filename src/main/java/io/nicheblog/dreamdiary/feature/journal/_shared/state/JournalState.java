@@ -15,8 +15,6 @@ import lombok.Setter;
 @Builder
 public class JournalState {
 
-    /** 정리완료 여부 */
-    private Boolean resolved;
     /** 글접기 여부 */
     private Boolean collapsed;
     /** 중요 여부 */

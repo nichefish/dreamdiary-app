@@ -24,7 +24,6 @@ public final class JournalDayStateMapHelper {
 
     private static JournalState dreamStateFromEntry(final JournalEntryEntity journalEntry) {
         return JournalState.builder()
-                .resolved(journalEntry.state.hasState(StateKey.RESOLVED))
                 .collapsed(journalEntry.state.hasState(StateKey.COLLAPSED))
                 .imprtc(journalEntry.state.hasState(StateKey.IMPRTC))
                 .refrnc(journalEntry.state.hasState(StateKey.REFRNC))
@@ -72,7 +71,6 @@ public final class JournalDayStateMapHelper {
                         diaryMap.put(
                                 journalEntry.getId(),
                                 JournalState.builder()
-                                        .resolved(journalEntry.state.hasState(StateKey.RESOLVED))
                                         .collapsed(journalEntry.state.hasState(StateKey.COLLAPSED))
                                         .imprtc(journalEntry.state.hasState(StateKey.IMPRTC))
                                         .refrnc(journalEntry.state.hasState(StateKey.REFRNC))

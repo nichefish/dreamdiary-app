@@ -54,7 +54,7 @@
                         {{#each journalChapterList}}
                             <div class="d-flex align-items-center mt-2">
                                 <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                                    {{#ifYn chapterResolvedYn}}
+                                    {{#if false}}
                                         <span class="text-success">
                                             {{#if (equals chapterType "DREAM")}}
                                                 <@spring.message 'txt.dream'/>
@@ -90,7 +90,7 @@
                                                 <i class="bi bi-book fs-4 pe-1"></i>
                                             {{/if}}
                                         {{/if}}
-                                    {{/ifYn}}
+                                    {{/if}}
                                 </div>
                                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                                     {{#if (equals chapterType "DIARY")}}
@@ -109,10 +109,10 @@
                             <div class="journal-chapter journal-item" data-id={{id}}>
                                 {{#if (equals chapterType "DIARY")}}
                                     {{#each journalEntryList}}
-                                        <div class="journal-diary-item" data-id={{id}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
+                                        <div class="journal-diary-item" data-id={{id}} data-collapsed="{{collapsedYn}}" data-lifecycle="{{lifecycle.lifecycleKey}}" data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}" data-imprtc="{{imprtcYn}}">
                                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                                 <div class="d-flex flex-column align-items-center">
-                                                    <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                                                    <span class="journal-diary-idx {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}text-success{{/if}}">
                                                         # {{sortOrder}}
                                                     </span>
                                                     {{> journal_entry_toggle_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" cssPrefix="diary"}}
@@ -138,12 +138,13 @@
                                                  data-yy="{{yy}}"
                                                  data-mnth="{{mnth}}"
                                                  data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
-                                                 data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                                 data-lifecycle="{{lifecycle.lifecycleKey}}"
+                                                 data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
                                                  data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
                                                  data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}">
                                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                                     <div class="d-flex flex-column align-items-center">
-                                                        <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                                                        <span class="journal-diary-idx {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}text-success{{/if}}">
                                                             # {{sortOrder}}
                                                         </span>
                                                         {{> journal_entry_toggle_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" cssPrefix="note"}}
@@ -175,7 +176,8 @@
                                      data-yy="{{yy}}"
                                      data-mnth="{{mnth}}"
                                      data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
-                                     data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                     data-lifecycle="{{lifecycle.lifecycleKey}}"
+                                     data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
                                      data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
                                      data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
                                      data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"
@@ -204,7 +206,8 @@
                                      data-yy="{{yy}}"
                                      data-mnth="{{mnth}}"
                                      data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
-                                     data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                     data-lifecycle="{{lifecycle.lifecycleKey}}"
+                                     data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
                                      data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
                                      data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
                                      data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"

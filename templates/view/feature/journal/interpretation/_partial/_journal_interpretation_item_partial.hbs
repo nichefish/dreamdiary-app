@@ -7,13 +7,16 @@
     <div class="journal-interpretation-item ps-7" data-id="{{id}}">
         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
             <div class="d-flex flex-column align-items-center">
-                <span {{#if (hasState state 'RESOLVED')}}tclass="text-success"{{/if}}>
+                <span {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}class="text-success"{{/if}}>
                     # {{sortOrder}}
                 </span>
                 {{> journal_interpretation_toggle_btn_partial this}}
             </div>
         </div>
-        <div class="col journal-interpretation-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}" data-resolved="{{resolvedYn}}">
+        <div class="col journal-interpretation-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}"
+             data-id="{{id}}"
+             data-lifecycle="{{lifecycle.lifecycleKey}}"
+             data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}">
             {{> journal_interpretation_content_partial this}}
         </div>
         <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>

@@ -15,7 +15,8 @@
              data-yy="{{yy}}"
              data-mnth="{{mnth}}"
              data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
-             data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+             data-lifecycle="{{lifecycle.lifecycleKey}}"
+             data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
              data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
              data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
              {{#if ../showDreamStates}}
@@ -24,7 +25,7 @@
              {{/if}}>
             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
                 <div class="d-flex flex-column align-items-center">
-                    <span class="journal-{{../cssPrefix}}-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                    <span class="journal-{{../cssPrefix}}-idx {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}text-success{{/if}}">
                         # {{sortOrder}}
                     </span>
                     {{> journal_entry_toggle_btn_partial this module=../module cssPrefix=../cssPrefix iconIdPrefix=../iconIdPrefix}}

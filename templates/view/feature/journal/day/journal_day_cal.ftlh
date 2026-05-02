@@ -209,6 +209,7 @@
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/lifecycle/lifecycle_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/feature/journal/day/journal_day_cal.js?${releaseDate!}"></script>

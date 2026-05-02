@@ -22,7 +22,6 @@ public final class AttachableContentStatePolicy {
         ALLOWED.put(ContentType.JOURNAL_CHAPTER, EnumSet.of(StateKey.COLLAPSED));
 
         final EnumSet<StateKey> diaryDreamKeys = EnumSet.of(
-                StateKey.RESOLVED,
                 StateKey.COLLAPSED,
                 StateKey.IMPRTC,
                 StateKey.REFRNC
@@ -36,12 +35,12 @@ public final class AttachableContentStatePolicy {
 
         ALLOWED.put(
                 ContentType.JOURNAL_INTERPRETATION,
-                EnumSet.of(StateKey.RESOLVED, StateKey.COLLAPSED, StateKey.IMPRTC)
+                EnumSet.of(StateKey.COLLAPSED, StateKey.IMPRTC)
         );
 
         ALLOWED.put(
                 ContentType.JOURNAL_DAY,
-                EnumSet.of(StateKey.RESOLVED, StateKey.COLLAPSED, StateKey.IMPRTC)
+                EnumSet.of(StateKey.COLLAPSED, StateKey.IMPRTC)
         );
     }
 

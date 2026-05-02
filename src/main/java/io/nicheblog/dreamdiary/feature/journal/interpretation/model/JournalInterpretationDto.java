@@ -7,6 +7,8 @@ import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCm
 import io.nicheblog.dreamdiary.feature.attachable.history.model.HistoryDto;
 import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
@@ -37,7 +39,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JournalInterpretationDto
         extends BaseAttachableDto
-        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JournalPeriodModule, Comparable<JournalInterpretationDto> {
+        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, StateCmpstnModule, LifecycleCmpstnModule, HistoryCmpstnModule, JournalPeriodModule, Comparable<JournalInterpretationDto> {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -111,7 +113,7 @@ public class JournalInterpretationDto
     public CommentCmpstn comment;
     /** 위임 :: 상태 정보 모듈 */
     public StateCmpstn state;
+    public LifecycleCmpstn lifecycle;
     public HistoryCmpstn history;
     private List<HistoryDto> historyList;
 }
-
