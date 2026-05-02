@@ -51,6 +51,7 @@ dF.JournalEntrySearch = (function(): dfModule {
             initSearch: function(): void {
                 module.initKeyword();
                 module.initTag();
+                module.initSort();
                 module.search();
             },
 
@@ -79,6 +80,19 @@ dF.JournalEntrySearch = (function(): dfModule {
                         module.select(tagId, tag.tagNm);
                     });
                 }
+            },
+
+            /**
+             * 팝업 재진입/새로고침 시 URL query 의 정렬 방향을 검색 폼과 아이콘에 복원한다.
+             */
+            initSort: function(): void {
+                const params: URLSearchParams = new URLSearchParams(window.location.search);
+                const sort: string = params.get("sort") === "asc" ? "asc" : "desc";
+                $("#sortInput").val(sort);
+
+                const icon = $(".bi-sort-down-alt, .bi-sort-up");
+                icon.toggleClass("bi-sort-down-alt", sort === "asc");
+                icon.toggleClass("bi-sort-up", sort !== "asc");
             },
 
             addKeyword: function(value?: string): void {
