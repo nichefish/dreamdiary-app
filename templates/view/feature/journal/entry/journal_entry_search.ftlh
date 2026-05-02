@@ -53,6 +53,7 @@
 
 <#--include::journal_diary_module-->
 <#include "/view/feature/journal/entry/_journal_entry_search_template.hbs">
+<#include "/view/feature/journal/entry/_journal_entry_search_item_template.hbs">
 <#assign journalEntryRegType = "DIARY">
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
 <#include "/view/feature/journal/entry/_partial/_journal_entry_item_partial.hbs">

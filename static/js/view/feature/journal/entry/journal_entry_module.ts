@@ -385,6 +385,16 @@ dF.JournalEntry = (function(): dfModule {
                         Swal.fire({ text: res.message })
                             .then(function(): void {
                                 if (!res.rslt) return;
+                                if (module.viewType === "SEARCH") {
+                                    closeOpenModals();
+                                    if (isMdf) {
+                                        dF.JournalEntrySearch?.get?.(config.contentType)?.replaceItem?.(id);
+                                    } else {
+                                        dF.JournalEntrySearch?.get?.(config.contentType)?.search?.();
+                                    }
+                                    cF.ui.unblockUI();
+                                    return;
+                                }
                                 module.refresh();
                             });
                     }, "block");
@@ -453,6 +463,11 @@ dF.JournalEntry = (function(): dfModule {
                         Swal.fire({ text: res.message })
                             .then(function(): void {
                                 if (!res.rslt) return;
+                                if (module.viewType === "SEARCH") {
+                                    dF.JournalEntrySearch?.get?.(config.contentType)?.removeItem?.(id);
+                                    cF.ui.unblockUI();
+                                    return;
+                                }
                                 module.refresh();
                             });
                     }, "block");
