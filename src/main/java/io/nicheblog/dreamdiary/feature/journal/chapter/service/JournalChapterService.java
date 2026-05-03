@@ -127,14 +127,28 @@ public class JournalChapterService
      */
     private void preRegistDreamChapterAuto(final JournalChapterDto registDto) throws Exception {
         registDto.setChapterType(ChapterType.DREAM);
-        applyNewChapterSortOrderAndDefaultCategory(registDto);
+        applyNewChapterSortOrder(registDto);
     }
 
+    /**
+     * 새 챕터의 정렬값을 계산하고, 첫 DIARY 챕터에는 기본 SUMMARY 카테고리를 보정한다.
+     *
+     * @param registDto 등록할 챕터 DTO
+     */
     private void applyNewChapterSortOrderAndDefaultCategory(final JournalChapterDto registDto) throws Exception {
-        final int lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDayId()).orElse(0);
-        if (lastSortOrder == 0 && StringUtils.isBlank(registDto.getCategoryCode())) {
+        applyNewChapterSortOrder(registDto);
+        if (registDto.getSortOrder() == 1 && StringUtils.isBlank(registDto.getCategoryCode())) {
             registDto.setCategoryCode(FIRST_CHAPTER_CTGR_CD);
         }
+    }
+
+    /**
+     * 같은 일자 안에서 새 챕터가 들어갈 다음 정렬값을 계산한다.
+     *
+     * @param registDto 등록할 챕터 DTO
+     */
+    private void applyNewChapterSortOrder(final JournalChapterDto registDto) throws Exception {
+        final int lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDayId()).orElse(0);
         registDto.setSortOrder(lastSortOrder + 1);
     }
 
@@ -154,6 +168,7 @@ public class JournalChapterService
 
         final JournalChapterEntity existing = repository.findFirstByJournalDayIdAndChapterType(journalDayId, ChapterType.DREAM).orElse(null);
         if (existing != null) {
+            clearFirstChapterCategoryIfDream(existing);
             this.getSelf().normalizeSortOrder(journalDayId);
             final JournalChapterEntity synced = repository.findById(existing.getId()).orElse(existing);
             final JournalChapterDto dto = mapstruct.toDto(synced);
@@ -192,6 +207,19 @@ public class JournalChapterService
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_CHAPTER);
+    }
+
+    /**
+     * 과거 로직으로 DREAM 자동 챕터에 SUMMARY가 들어간 경우 즉시 제거한다.
+     * SUMMARY 기본값은 첫 DIARY 챕터 전용 정책이다.
+     *
+     * @param chapter 보정할 기존 꿈 챕터 엔티티
+     */
+    private void clearFirstChapterCategoryIfDream(final JournalChapterEntity chapter) {
+        if (chapter == null || chapter.getChapterType() != ChapterType.DREAM) return;
+        if (!StringUtils.equals(chapter.getCategoryCode(), FIRST_CHAPTER_CTGR_CD)) return;
+        chapter.setCategoryCode(null);
+        repository.saveAndFlush(chapter);
     }
 
     private void createDefaultDiaryWhenSummaryAutoApplied(final JournalChapterDto updatedDto) throws Exception {
