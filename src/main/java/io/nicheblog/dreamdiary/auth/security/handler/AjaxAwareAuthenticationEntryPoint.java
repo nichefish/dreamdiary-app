@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -15,11 +15,8 @@ import java.io.PrintWriter;
 import java.util.Locale;
 
 /**
- * AjaxAwareAuthenticationEntryPoint
- * <pre>
- *  Spring Security에서 인증 포인트 주입.
- *  AJAX 요청에는 JSON 응답을 반환하도록 설정한다.
- * </pre>
+ * Spring Security에서 인증이 필요한 요청을 가로채는 진입점.
+ * AJAX 요청에는 JSON 응답을, 일반 요청에는 로그인 페이지 이동 스크립트를 반환한다.
  *
  * @author nichefish
  */
@@ -29,13 +26,13 @@ public class AjaxAwareAuthenticationEntryPoint
         implements AuthenticationEntryPoint {
 
     /**
-     * 인증되지 않은 요청이 감지되었을 때 호출되는 메서드.
-     * AJAX 요청과 일반 요청을 구분하여 적절한 응답을 반환합니다.
+     * 인증되지 않은 요청을 감지했을 때 호출되는 메서드.
+     * Spring Security 기본 영어 메시지가 화면에 새지 않도록 서비스 메시지 키를 사용한다.
      *
-     * @param request 인증되지 않은 요청 객체 (`HttpServletRequest`)
-     * @param response 인증 실패 시 응답을 처리할 객체 (`HttpServletResponse`)
-     * @param authException 발생한 인증 예외 객체 (`AuthenticationException`)
-     * @throws IOException 응답을 처리하는 중 입출력 오류가 발생할 경우
+     * @param request 인증되지 않은 요청 객체
+     * @param response 인증 실패 응답을 처리할 객체
+     * @param authException 발생한 인증 예외 객체
+     * @throws IOException 응답 처리 중 입출력 오류가 발생한 경우
      */
     @Override
     public void commence(
@@ -44,46 +41,47 @@ public class AjaxAwareAuthenticationEntryPoint
             final AuthenticationException authException
     ) throws IOException {
 
+        final String loginRequiredMessage = MessageUtils.getMessage("msg.auth.login-required");
         if (HttpUtils.isAjaxRequest(request)) {
-            // Ajax 요청일 경우 : 에러 응답을 내려보내고, js 레벨에서 처리한다.
+            // Ajax 요청은 클라이언트 공통 핸들러에서 처리할 수 있도록 JSON으로 내려보낸다.
             // @see commons.js
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            final String detail = (authException != null && StringUtils.isNotBlank(authException.getMessage()))
-                    ? authException.getMessage()
-                    : "로그인이 필요하거나 인증 정보가 없습니다.";
             response.getWriter().write(String.format(Locale.ROOT,
-                    "{\"error\":\"Unauthenticated\",\"message\":\"%s\"}", escapeJson(detail)));
-        } else {
-            // 일반 요청일 경우 : 메세지 출력 후 로그인 페이지로 리다리렉트
-            response.setContentType("text/html; charset=utf-8");
-            // 현재 요청 URL을 추출, 현재 URL이 로그인 페이지 URL과 다른 경우 리디렉션
-            final String currentUrl = request.getRequestURI();
-            if (currentUrl.equals(Url.APP_AUTH_LGN_FORM)) return;
-            // alert창 띄운 후 로그인 페이지로 리다이렉트1
-            final String msg = (authException != null && StringUtils.isNotBlank(authException.getMessage()))
-                    ? authException.getMessage()
-                    : "로그인이 필요하거나 인증 세션이 만료되었습니다. 다시 로그인해 주세요.";
-            final String loginFormUrl = Url.APP_AUTH_LGN_FORM;
-            try (PrintWriter out = response.getWriter()) {
-                out.println("<script type=\"text/javascript\">");
-                out.println("const hasSwal = (typeof Swal !== \"undefined\");");
-                out.println("if (hasSwal) {");
-                out.println("    Swal.fire({text: '" + escapeJsStringLiteral(msg) + "'}).then(function() {");
-                out.println("        location.replace('" + loginFormUrl + "');");
-                out.println("    });");
-                out.println("} else {");
-                out.println("    alert('" + escapeJsStringLiteral(msg) + "');");
-                out.println("    location.replace('" + loginFormUrl + "');");
-                out.println("}");
-                out.println("</script>");
-            } catch (final Exception e) {
-                // 예외 발생 시 로그인 페이지로 리다이렉트
-                response.sendRedirect(loginFormUrl);
-            }
+                    "{\"error\":\"Unauthenticated\",\"message\":\"%s\"}", escapeJson(loginRequiredMessage)));
+            return;
+        }
+
+        // 일반 요청은 안내 후 로그인 페이지로 보낸다.
+        response.setContentType("text/html; charset=utf-8");
+        final String currentUrl = request.getRequestURI();
+        if (currentUrl.equals(Url.APP_AUTH_LGN_FORM)) return;
+
+        final String loginFormUrl = Url.APP_AUTH_LGN_FORM;
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<script type=\"text/javascript\">");
+            out.println("const hasSwal = (typeof Swal !== \"undefined\");");
+            out.println("if (hasSwal) {");
+            out.println("    Swal.fire({text: '" + escapeJsStringLiteral(loginRequiredMessage) + "'}).then(function() {");
+            out.println("        location.replace('" + loginFormUrl + "');");
+            out.println("    });");
+            out.println("} else {");
+            out.println("    alert('" + escapeJsStringLiteral(loginRequiredMessage) + "');");
+            out.println("    location.replace('" + loginFormUrl + "');");
+            out.println("}");
+            out.println("</script>");
+        } catch (final Exception e) {
+            // 스크립트 응답 생성에 실패하면 최소한 로그인 페이지로 이동시킨다.
+            response.sendRedirect(loginFormUrl);
         }
     }
 
+    /**
+     * JSON 문자열 값으로 내려보낼 수 있도록 특수문자를 이스케이프한다.
+     *
+     * @param s 이스케이프할 문자열
+     * @return JSON 문자열 값에 안전하게 넣을 수 있는 문자열
+     */
     private static String escapeJson(final String s) {
         if (s == null) {
             return "";
@@ -118,7 +116,12 @@ public class AjaxAwareAuthenticationEntryPoint
         return sb.toString();
     }
 
-    /** HTML 내 <script> 단일 인용 문자열용 이스케이프 */
+    /**
+     * HTML script 문자열 리터럴에 넣을 수 있도록 특수문자를 이스케이프한다.
+     *
+     * @param s 이스케이프할 문자열
+     * @return script 문자열 리터럴에 안전하게 넣을 수 있는 문자열
+     */
     private static String escapeJsStringLiteral(final String s) {
         if (s == null) {
             return "";

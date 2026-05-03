@@ -168,15 +168,28 @@ public class MessageUtils
         if (msg != null) {
             final String resolvedMsg = getMessage(msg);
             if (!msg.equals(resolvedMsg)) return resolvedMsg;
+            final String exceptionMsg = getExceptionBundleMsg(e);
+            if (StringUtils.isAsciiPrintable(msg) && exceptionMsg != null) return exceptionMsg;
             if (msg.length() > 200) return msg.substring(0, 200) + "...";
             return msg;
         }
 
+        final String exceptionMsg = getExceptionBundleMsg(e);
+        return exceptionMsg != null ? exceptionMsg : getMessage("msg.rslt.exception");
+    }
+
+    /**
+     * 예외 클래스명에 대응되는 메시지 번들 값을 조회한다.
+     * 외부 라이브러리의 기본 영어 메시지가 사용자 화면에 노출되지 않도록 하는 보조 경로다.
+     *
+     * @param e 발생한 예외
+     * @return 메시지 번들에 등록된 예외 메시지, 없으면 null
+     */
+    private static String getExceptionBundleMsg(final Throwable e) {
         final String exceptionNm = getExceptionNm(e);
         final String bundleKey = RSLT_EXCEPTION + "." + exceptionNm;
         final String rsltMsg = getMessage(bundleKey);
-        if (!bundleKey.equals(rsltMsg)) return rsltMsg;
-        return "Unexpected error occurred.";
+        return bundleKey.equals(rsltMsg) ? null : rsltMsg;
     }
 
     /**
