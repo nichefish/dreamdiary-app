@@ -35,7 +35,7 @@ dF.TmplatDef = (function(): dfModule {
          * Draggable 컴포넌트 init
          */
         initDraggable: function(): void {
-            const keyExtractor: Function = (item: HTMLElement) => ({ "id": Number($(item).attr("id")), "upperMenuId": Number($(item).data("upper-menu-id")) });
+            const keyExtractor: Function = (item: HTMLElement) => ({ "id": Number($(item).attr("id")), "parentMenuId": Number($(item).data("parent-menu-id")) });
             const url: string = Url.TEMPLATS_IDX;
             dF.TmplatDef.swappable = cF.draggable.init("", keyExtractor, url);
         },
@@ -43,9 +43,9 @@ dF.TmplatDef = (function(): dfModule {
         /**
          * 등록 모달 호출
          */
-        regModal: function(menuTyCd: string, upperMenuId: string|number, upperMenuNm: string): void {
+        regModal: function(menuType: string, parentMenuId: string|number, upperMenuNm: string): void {
             event.stopPropagation();
-            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuId": upperMenuId, "upperMenuNm": upperMenuNm };
+            const obj: Record<string, any> = { "menuType": menuType, "parentMenuId": parentMenuId, "upperMenuNm": upperMenuNm };
             dF.TmplatDef.initForm(obj);
         },
 

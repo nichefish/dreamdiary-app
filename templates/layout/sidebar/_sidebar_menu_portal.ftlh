@@ -4,7 +4,7 @@
  -->
 <#import "/layout/sidebar/_sidebar_menu_template.ftlh" as menu >
 
-<#assign upperMenuId = (siteAcsInfo.upperMenuId)!>
+<#assign parentMenuId = (siteAcsInfo.parentMenuId)!>
 
 <!--begin::sidebar menu-->
 <div class="app-sidebar-menu overflow-hidden flex-column-fluid">
@@ -27,24 +27,24 @@
 
                 <#list userMenuList![] as userMenu>
                     <#list userMenu.subMenuList![] as subMenu>
-                        <#if subMenu.menuSubExtendTyCd == "NO_SUB">
-                            <@menu.noSubMenu upperMenuId=upperMenuId menu=subMenu />
+                        <#if subMenu.submenuExpandType == "NO_SUB">
+                            <@menu.noSubMenu parentMenuId=parentMenuId menu=subMenu />
                         </#if>
-                        <#if subMenu.menuSubExtendTyCd == "LIST">
-                            <@menu.listSubMenu upperMenuId=upperMenuId menu=subMenu />
+                        <#if subMenu.submenuExpandType == "LIST">
+                            <@menu.listSubMenu parentMenuId=parentMenuId menu=subMenu />
                         </#if>
-                        <#if subMenu.menuSubExtendTyCd == "EXTEND">
-                            <div>${menu.menuNm!}</div>
+                        <#if subMenu.submenuExpandType == "EXTEND">
+                            <div>${menu.menuName!}</div>
                             <#list subMenu.subMenuList![] as subSubMenu>
-                                <div>- ${subSubMenu.menuNm!}</div>
+                                <div>- ${subSubMenu.menuName!}</div>
                             </#list>
                         </#if>
-                        <#if subMenu.menuSubExtendTyCd == "COLLAPSE">
-                            <@menu.collapseSubMenu upperMenuId=upperMenuId menu=subMenu />
+                        <#if subMenu.submenuExpandType == "COLLAPSE">
+                            <@menu.collapseSubMenu parentMenuId=parentMenuId menu=subMenu />
                         </#if>
-                        <#if subMenu.menuSubExtendTyCd == "BOARD">
+                        <#if subMenu.submenuExpandType == "BOARD">
                             <!-- BOARD -->
-                            <@menu.boardMenu upperMenuId=upperMenuId menu=subMenu />
+                            <@menu.boardMenu parentMenuId=parentMenuId menu=subMenu />
                         </#if>
                     </#list>
                 </#list>

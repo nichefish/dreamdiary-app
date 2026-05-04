@@ -82,13 +82,13 @@ dF.Menu = (function(): dfModule {
          * 특정 트리 그룹(부모 메뉴 기준)의 정렬 상태를 서버 전송용 payload로 구성한다.
          * @param container 그룹 컨테이너 (부모 메뉴 기준)
          * @param itemSelector 정렬 대상 selector
-         * @returns upperMenuId + 정렬된 item 리스트
+         * @returns parentMenuId + 정렬된 item 리스트
          */
         buildTreeGroupPayload: function(container: HTMLElement, itemSelector: string): Record<string, any> | null {
             if (!container) return null;
 
-            const upperMenuId: number = Number(container.dataset.parentMenuId);
-            if (isNaN(upperMenuId)) return null;
+            const parentMenuId: number = Number(container.dataset.parentMenuId);
+            if (isNaN(parentMenuId)) return null;
 
             const items: Record<string, number>[] = dF.Menu.getSortableChildren(container, itemSelector)
                 .map((item: HTMLElement, idx: number): Record<string, number> => ({
@@ -97,7 +97,7 @@ dF.Menu = (function(): dfModule {
                 }));
 
             return {
-                "upperMenuId": upperMenuId,
+                "parentMenuId": parentMenuId,
                 "items": items,
             };
         },
@@ -118,9 +118,9 @@ dF.Menu = (function(): dfModule {
         ): void {
             const itemSelector: string = ".sortable-item.draggable-sub";
             const movedId: number = Number(movedItem.dataset.id);
-            const sourceUpperMenuId: number = Number(movedItem.dataset.upperMenuId);
-            const targetUpperMenuId: number = Number(targetContainer?.dataset.parentMenuId);
-            if (isNaN(movedId) || isNaN(sourceUpperMenuId) || isNaN(targetUpperMenuId)) return;
+            const sourceParentMenuId: number = Number(movedItem.dataset.parentMenuId);
+            const targetParentMenuId: number = Number(targetContainer?.dataset.parentMenuId);
+            if (isNaN(movedId) || isNaN(sourceParentMenuId) || isNaN(targetParentMenuId)) return;
 
             const groups: Record<string, any>[] = [];
 
@@ -131,7 +131,7 @@ dF.Menu = (function(): dfModule {
                     "sortOrder": idx,
                 })
             );
-            groups.push({ "upperMenuId": targetUpperMenuId, "items": targetItems });
+            groups.push({ "parentMenuId": targetParentMenuId, "items": targetItems });
 
             // 부모가 바뀐 경우: source 그룹도 추가 (movedItem 제외하고 DOM 읽기)
             if (sourceContainer !== targetContainer) {
@@ -141,13 +141,13 @@ dF.Menu = (function(): dfModule {
                         "id": Number(el.dataset.id),
                         "sortOrder": idx,
                     }));
-                groups.push({ "upperMenuId": sourceUpperMenuId, "items": sourceItems });
+                groups.push({ "parentMenuId": sourceParentMenuId, "items": sourceItems });
             }
 
             const ajaxData: Record<string, any> = {
                 "movedId": movedId,
-                "sourceUpperMenuId": sourceUpperMenuId,
-                "targetUpperMenuId": targetUpperMenuId,
+                "sourceParentMenuId": sourceParentMenuId,
+                "targetParentMenuId": targetParentMenuId,
                 "groups": groups,
             };
 
@@ -237,10 +237,10 @@ dF.Menu = (function(): dfModule {
         /**
          * 등록 모달 호출
          */
-        regModal: function(menuTyCd: string, upperMenuId: number, upperMenuNm: string): void {
+        regModal: function(menuType: string, parentMenuId: number, upperMenuNm: string): void {
             event.stopPropagation();
 
-            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuId": upperMenuId, "upperMenuNm": upperMenuNm };
+            const obj: Record<string, any> = { "menuType": menuType, "parentMenuId": parentMenuId, "upperMenuNm": upperMenuNm };
             /* initialize form. */
             dF.Menu.initForm(obj);
         },
@@ -260,8 +260,8 @@ dF.Menu = (function(): dfModule {
          * 하위메뉴 존재여부에 따라 url 영역 표시
          */
         toggleUrlSpan: function(obj: object): void {
-            const menuSubExtendTyCd = $(obj).val();
-            if (menuSubExtendTyCd !== "NO_SUB") {
+            const submenuExpandType = $(obj).val();
+            if (submenuExpandType !== "NO_SUB") {
                 $("#url_div").addClass("d-none");
             } else {
                 $("#url_div").removeClass("d-none");

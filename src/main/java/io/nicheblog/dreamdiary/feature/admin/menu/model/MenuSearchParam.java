@@ -27,7 +27,8 @@ public class MenuSearchParam
 
     /** 메뉴 유형 코드 */
     @Size(max = 50)
-    private String menuTyCd;
+    @Pattern(regexp = "^(MAIN|SUB)$")
+    private String menuType;
 
     /** 사용 여부 (Y/N) */
     @Size(min = 1, max = 1)
@@ -36,10 +37,10 @@ public class MenuSearchParam
 
     /** 메뉴 이름 */
     @Size(max = 50)
-    private String menuNm;
+    private String menuName;
 
     /** 관리자 메뉴 여부 (Y/N) */
     @Size(min = 1, max = 1)
     @Pattern(regexp = "^[YN]$")
-    private String mngrYn;
+    private String adminYn;
 }

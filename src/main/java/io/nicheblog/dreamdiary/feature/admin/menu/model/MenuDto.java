@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.model;
 
 import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SubmenuExpandType;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
@@ -38,19 +39,19 @@ public class MenuDto
 
     /** 상위 메뉴 번호 */
     @Positive
-    private Integer upperMenuId;
+    private Integer parentMenuId;
 
     /** 메뉴 구분 코드 (루트"ROOT", 대메뉴"MAIN", 중-소메뉴"SUB") */
     @Size(max = 50)
-    private String menuTyCd;
+    private String menuType;
 
     /** 메뉴 구분 코드명 (루트"ROOT", 대메뉴"MAIN", 중-소메뉴"SUB") */
     @Size(max = 50)
-    private String menuTyNm;
+    private String menuTypeName;
 
     /** 메뉴 이름 */
     @Size(max = 200)
-    private String menuNm;
+    private String menuName;
 
     /** 메뉴 라벨 */
     @Size(max = 100)
@@ -69,11 +70,11 @@ public class MenuDto
 
     /** 하위메뉴 확장유형 코드 */
     @Size(max = 50)
-    private String menuSubExtendTyCd;
+    private String submenuExpandType;
 
     /** 하위메뉴 확장유형 이름 */
     @Size(max = 50)
-    private String menuSubExtendTyNm;
+    private String submenuExpandTypeName;
 
     /** 정렬 순서 */
     private Integer sortOrder;
@@ -89,7 +90,7 @@ public class MenuDto
     
     /** 관리자 메뉴 여부 (Y/N) */
     @Builder.Default
-    private String mngrYn = "N";
+    private String adminYn = "N";
 
     /** 필수 여부 (Y/N) */
     @Builder.Default
@@ -103,7 +104,7 @@ public class MenuDto
     /** 셀프 참조 :: 상위메뉴명 */
     private String upperMenuNm;
     /** 셀프 참조 :: 상위메뉴구분코드 */
-    private String upperMenuTyCd;
+    private String parentMenuType;
     /** 셀프 참조 :: 하위메뉴 목록 조회 */
     private List<MenuDto> subMenuList;
 
@@ -115,7 +116,7 @@ public class MenuDto
     public boolean getIsMain() {
         MenuDto upperMenu = this.upperMenu;
         if (upperMenu == null) return false;
-        return "main".equals(upperMenu.getMenuTyCd());
+        return "main".equals(upperMenu.getMenuType());
     }
 
     /**
@@ -123,6 +124,13 @@ public class MenuDto
      */
     public Boolean isDir() {
         return "Y".equals(this.dirYn);
+    }
+
+    public String getSubmenuExpandTypeName() {
+        if (this.submenuExpandTypeName != null && !this.submenuExpandTypeName.isBlank()) {
+            return this.submenuExpandTypeName;
+        }
+        return SubmenuExpandType.getDesc(this.submenuExpandType);
     }
 
     /* ----- */

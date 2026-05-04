@@ -15,14 +15,14 @@
         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
             <!--begin::Heading-->
             <div class="menu-item px-3">
-                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase"><@spring.message 'txt.menu'/>: {{menuNm}}</div>
+                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase"><@spring.message 'txt.menu'/>: {{menuName}}</div>
             </div>
             <!--end::Heading-->
-            {{#if (equals upperMenuTyCd 'MAIN')}}
+            {{#if (equals parentMenuType 'MAIN')}}
                 <!--begin::Menu item-->
                 <div class="menu-item px-3 my-1 cursor-pointer"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.menu"/> <@spring.message 'bs.tooltip.modal.reg'/>">
-                    <div class="menu-link flex-stack px-3" onclick="dF.Menu.regModal('${Code.MENU_TY_SUB!}', '{{id}}', '{{menuNm}}');">
+                    <div class="menu-link flex-stack px-3" onclick="dF.Menu.regModal('SUB', '{{id}}', '{{menuName}}');">
                         <@spring.message "txt.menu"/> <@spring.message 'txt.comm.reg'/>
                         <i class="bi bi-pencil-square fs-8"></i>
                     </div>

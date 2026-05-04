@@ -25,7 +25,7 @@ public class MenuSortOrderDto
     /** 메뉴 번호 */
     private Integer id;
     /** 상위 메뉴 번호 (계층 보호/검증용) */
-    private Integer upperMenuId;
+    private Integer parentMenuId;
     /** 정렬 순서 */
     private Integer sortOrder;
 

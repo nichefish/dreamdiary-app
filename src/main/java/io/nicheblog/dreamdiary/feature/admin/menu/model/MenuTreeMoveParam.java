@@ -27,10 +27,10 @@ public class MenuTreeMoveParam
     private Integer movedId;
 
     /** 기존 부모 메뉴 번호 */
-    private Integer sourceUpperMenuId;
+    private Integer sourceParentMenuId;
 
     /** 변경 대상 부모 메뉴 번호 */
-    private Integer targetUpperMenuId;
+    private Integer targetParentMenuId;
 
     /** 영향 받은 형제 그룹 목록 */
     private List<MenuTreeMoveGroupDto> groups;

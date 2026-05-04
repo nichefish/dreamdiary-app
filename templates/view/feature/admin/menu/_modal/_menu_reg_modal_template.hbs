@@ -6,29 +6,29 @@
 <script type="text/x-handlebars-template" id="menu_reg_modal_template">
     <!-- form start -->
     <input type="hidden" name="id" id="id" value="{{id}}">
-    <input type="hidden" name="menuTyCd" id="menuTyCd" value="{{menuTyCd}}">
-    <input type="hidden" name="upperMenuId" id="upperMenuId" value="{{upperMenuId}}">
+    <input type="hidden" name="menuType" id="menuType" value="{{menuType}}">
+    <input type="hidden" name="parentMenuId" id="parentMenuId" value="{{parentMenuId}}">
 
     <#--begin::Row-->
     <div class="row mb-4">
-        {{#if (equals menuTyCd "${Code.MENU_TY_MAIN!}")}}
+        {{#if (equals menuType "MAIN")}}
             <div class="col-2 text-center">
-                <label for="menuNm" class="col-form-label fw-bold">
+                <label for="menuName" class="col-form-label fw-bold">
                     <@spring.message 'txt.admin.menu.form.manager-menu-yn'/>
                 </label>
             </div>
             <div class="col-10">
                 <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
-                    <input type="checkbox" name="mngrYn" id="useYn" class="form-check-input cursor-pointer"
-                           value="Y" {{checkedYn mngrYn}} />
-                    <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle mngrYn "color" "blue//gray"}}>
-                        {{^ifYn mngrYn}}<@spring.message 'txt.admin.menu.form.not-prefix'/>{{/ifYn}}<@spring.message 'txt.admin.menu.form.applicable'/>
+                    <input type="checkbox" name="adminYn" id="useYn" class="form-check-input cursor-pointer"
+                           value="Y" {{checkedYn adminYn}} />
+                    <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle adminYn "color" "blue//gray"}}>
+                        {{^ifYn adminYn}}<@spring.message 'txt.admin.menu.form.not-prefix'/>{{/ifYn}}<@spring.message 'txt.admin.menu.form.applicable'/>
                     </label>
                 </div>
             </div>
         {{else}}
             <div class="col-2 text-center">
-                <label for="menuNm" class="col-form-label fw-bold">
+                <label for="menuName" class="col-form-label fw-bold">
                     <@spring.message 'txt.admin.menu.form.upper-menu-name'/>
                 </label>
             </div>
@@ -42,14 +42,14 @@
     <#--begin::Row-->
     <div class="row mb-4">
         <div class="col-2 text-center">
-            <label for="menuNm" class="col-form-label fw-bold required">
+            <label for="menuName" class="col-form-label fw-bold required">
                 <@spring.message 'txt.admin.menu.form.menu-name'/>
             </label>
         </div>
         <div class="col-4">
-            <input type="text" name="menuNm" id="menuNm" class="form-control d-inline-block required"
-                   value="{{menuNm}}" maxlength="200" autocomplete="off">
-            <span id="menuNm_validate_span"></span>
+            <input type="text" name="menuName" id="menuName" class="form-control d-inline-block required"
+                   value="{{menuName}}" maxlength="200" autocomplete="off">
+            <span id="menuName_validate_span"></span>
         </div>
         <div class="col-2 text-center">
             <label for="menuLabel" class="col-form-label fw-bold cursor-help"
@@ -67,7 +67,7 @@
     <#--begin::Row-->
     <div class="row mb-4">
         <div class="col-2 text-center">
-            <label for="menuNm" class="col-form-label fw-bold cursor-help"
+            <label for="menuName" class="col-form-label fw-bold cursor-help"
                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                    title="<@spring.message 'bs.tooltip.admin.menu.form.menu-icon'/>">
                 <@spring.message 'txt.admin.menu.form.menu-icon'/>
@@ -120,20 +120,20 @@
             </label>
         </div>
         <div class="col-3">
-            <select name="menuSubExtendTyCd" id="menuSubExtendTyCd" class="form-select form-select-solid required"
+            <select name="submenuExpandType" id="submenuExpandType" class="form-select form-select-solid required"
                     onchange="dF.Menu.toggleUrlSpan(this);">
                 <option value="">----</option>
-                <#list MENU_SUB_EXTEND_TY_CD![] as menuSubExtend>
-                    <option value="${menuSubExtend.code!}" {{selectedIf (equals menuSubExtendTyCd "${menuSubExtend.code!}")}}>
+                <#list SUBMENU_EXPAND_TYPES![] as menuSubExtend>
+                    <option value="${menuSubExtend.code!}" {{selectedIf (equals submenuExpandType "${menuSubExtend.code!}")}}>
                         ${menuSubExtend.codeName!}
                     </option>
                 </#list>
             </select>
-            <div id="menuSubExtendTyCd_validate_span"></div>
+            <div id="submenuExpandType_validate_span"></div>
         </div>
     </div>
     <#--begin::Row-->
-    <div class="row mb-4 {{^if (equals menuSubExtendTyCd "NO_SUB")}}d-none{{/if}}" id="url_div">
+    <div class="row mb-4 {{^if (equals submenuExpandType "NO_SUB")}}d-none{{/if}}" id="url_div">
         <div class="col-2 text-center">
             <label for="url" class="col-form-label fw-bold">
                 <@spring.message 'txt.admin.menu.form.menu-url'/>
