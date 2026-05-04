@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -58,7 +58,7 @@ public class LoginPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.LGN_PAGE);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 로그인 상태일 경우:: 메인 화면으로 리다이렉트
         if (AuthUtils.isAuthenticated()) return "redirect:" + Url.MAIN;

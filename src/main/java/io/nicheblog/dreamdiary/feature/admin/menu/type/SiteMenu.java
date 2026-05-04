@@ -53,5 +53,5 @@ public enum SiteMenu {
     LOG_LIST("로그 목록"),
     LOG_STATS("로그 통계");
 
-    private final String pageNm;
+    private final String pageName;
 }

@@ -1,7 +1,7 @@
  package io.nicheblog.dreamdiary.feature.user.account.controller;
 
  import io.nicheblog.dreamdiary.auth.security.service.RoleService;
- import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+ import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
  import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
  import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
  import io.nicheblog.dreamdiary.feature.user.account.model.UserSearchParam;
@@ -72,7 +72,7 @@ public class UserPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (UserSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
@@ -110,7 +110,7 @@ public class UserPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.REG);
+        model.addAttribute("pageName", PageName.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("user", new UserDto());
@@ -147,7 +147,7 @@ public class UserPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("pageName", PageName.DTL);
 
         // 상세 조회 및 모델에 추가
         final UserDto retrievedDto = userService.getDtlDto(key);
@@ -173,7 +173,7 @@ public class UserPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.MDF);
+        model.addAttribute("pageName", PageName.MDF);
 
         // 상세 조회 및 모델에 추가
         final UserDto rsDto = userService.getDtlDto(key);

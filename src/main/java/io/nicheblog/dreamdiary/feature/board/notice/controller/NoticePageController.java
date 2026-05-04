@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.notice.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagService;
@@ -70,7 +70,7 @@ public class NoticePageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.NOTICE);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 :: 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (NoticeSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
@@ -107,7 +107,7 @@ public class NoticePageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.NOTICE);
-        model.addAttribute("pageNm", PageNm.REG);
+        model.addAttribute("pageName", PageName.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("post", new NoticeDto());
@@ -138,7 +138,7 @@ public class NoticePageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.NOTICE);
-        model.addAttribute("pageNm", PageNm.PREVIEW);
+        model.addAttribute("pageName", PageName.PREVIEW);
 
         // 객체 정보 모델에 추가
         notice.setMarkdownContent(MarkdownUtils.markdown(notice.getContent()));
@@ -165,7 +165,7 @@ public class NoticePageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.NOTICE);
-        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("pageName", PageName.DTL);
 
         // 객체 조회 및 모델에 추가
         final NoticeDto retrievedDto = noticeService.viewDtlPage(key);
@@ -191,7 +191,7 @@ public class NoticePageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.NOTICE);
-        model.addAttribute("pageNm", PageNm.MDF);
+        model.addAttribute("pageName", PageName.MDF);
 
         // 객체 조회 및 모델에 추가
         final NoticeDto rsDto = noticeService.getDtlDto(key);

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -55,7 +55,7 @@ public class JournalDayCalPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
-        model.addAttribute("pageNm", PageNm.CAL);
+        model.addAttribute("pageName", PageName.CAL);
 
         // URL 파라미터가 전부 존재한다면 그대로 페이지 렌더링
         if (searchParam.getYy() != null && searchParam.getMnth() != null) {

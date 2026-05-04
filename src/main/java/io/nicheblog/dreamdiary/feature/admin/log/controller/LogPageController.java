@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.admin.log.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.log.model.LogQueryDto;
 import io.nicheblog.dreamdiary.feature.admin.log.service.LogQueryService;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -61,7 +61,7 @@ public class LogPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.LOG_LIST);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         // 활동 로그 목록 조회
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
