@@ -25,8 +25,23 @@ cF.$ajax = (function(): Module {
                     if (!isSuccess) cF.ui.unblockUI();
                 }
             // @ts-ignore
-            }).fail(function(res: AjaxResponse): void {
-                if (cF.util.isNotEmpty(res.message)) cF.ui.swalOrAlert(res.message);
+            }).fail(function(jqXHR: JQuery.jqXHR): void {
+                // fail 첫 인자는 응답 본문이 아니라 jqXHR. responseJSON.message 에 Ajax 응답이 온다(BaseExceptionHandler 등).
+                let msg = "";
+                const json = jqXHR.responseJSON as AjaxResponse | undefined;
+                if (json) msg = json.message || (json as any).rsltMsg || "";
+                if (!cF.util.isNotEmpty(msg) && jqXHR.responseText) {
+                    try {
+                        const p = JSON.parse(jqXHR.responseText) as AjaxResponse;
+                        msg = p.message || (p as any).rsltMsg || "";
+                    }
+                    catch { /* non-json */ }
+                }
+                if (cF.util.isNotEmpty(msg)) cF.ui.swalOrAlert(msg);
+                else if (typeof Message !== "undefined" && typeof Message.get === "function")
+                    cF.ui.swalOrAlert(Message.get("view.error.request"));
+                else
+                    cF.ui.swalOrAlert("요청 처리 중 오류가 발생했습니다.");
                 cF.ui.unblockUI();
             }).always(function(): void {
                 if (continueBlock !== 'block') cF.ui.unblockUI();

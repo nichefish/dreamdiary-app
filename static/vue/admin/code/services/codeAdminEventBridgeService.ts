@@ -37,8 +37,10 @@ export default function bindCodeAdminEventBridge(params: EventBridgeParams): voi
         state.detail.description = payload.description || "";
         state.detail.codeItems = Array.isArray(payload.codeItems) ? payload.codeItems : [];
 
-        const groupCodeInput: HTMLInputElement | null = document.querySelector("#groupCode");
-        if (groupCodeInput) groupCodeInput.value = state.detail.groupCode;
+        // 상세 그룹코드는 procForm(#code_proc_groupCode)에만 반영한다.
+        // #codeGroupRegistForm #groupCode 는 그룹 등록 모달의 입력으로, 여기에 쓰면 Vue groupForm 과 DOM 이 불일치(오염)한다.
+        const procGroupCode: HTMLInputElement | null = document.querySelector("#code_proc_groupCode");
+        if (procGroupCode) procGroupCode.value = state.detail.groupCode;
 
         codeAdminUiService.openModal("code_group_detail_modal");
         setTimeout((): void => codeAdminUiService.initCodeItemDraggable(), 0);

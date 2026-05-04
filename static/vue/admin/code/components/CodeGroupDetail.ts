@@ -1,6 +1,7 @@
 import codeAdminUiService from "../services/codeAdminUiService.js";
 import { CodeItemRow } from "../types.js";
 
+/** thead 6열과 tbody 열 개수를 맞춘다. sortOrder 전용 td 는 헤더가 없어 제거(정렬 순서는 드래그·서버 sortOrder 로 유지). */
 export default {
     name: "CodeGroupDetail",
     props: {
@@ -49,10 +50,12 @@ export default {
             </tr>
         </thead>
         <tbody class="draggable-zone-code-item">
-            <tr v-if="detail.codeItems.length === 0"><td colspan="7" class="text-center">{{ $t('view.list.empty') }}</td></tr>
+            <template v-if="!(detail.codeItems && detail.codeItems.length)">
+                <tr><td colspan="6" class="text-center">{{ $t('view.list.empty') }}</td></tr>
+            </template>
+            <template v-else>
             <tr
                 v-for="item in detail.codeItems"
-                v-else
                 :key="item.id"
                 class="bg-hover-secondary cursor-pointer sortable-item draggable-code-item"
                 :id="'code-item-' + item.id"
@@ -73,7 +76,6 @@ export default {
                 <td class="text-start ps-6"><span class="fw-bold border-bottom">{{ item.code }}</span></td>
                 <td class="text-start ps-6"><span class="border-bottom">{{ item.codeName }}</span></td>
                 <td class="text-start ps-6">{{ item.description }}</td>
-                <td class="text-center">{{ item.sortOrder }}</td>
                 <td class="text-center">
                     <span :class="isUseYn(item) ? 'text-success' : 'text-muted'">
                         {{ isUseYn(item) ? $t('txt.comm.use') : $t('txt.status.unuse') }}
@@ -94,6 +96,7 @@ export default {
                     </div>
                 </td>
             </tr>
+            </template>
         </tbody>
     </table>
     `,

@@ -67,6 +67,8 @@ export type CodeAdminState = {
     groupForm: CodeGroupForm;
     detail: CodeGroupDetail;
     itemForm: CodeItemForm;
+    /** 상세 모달에서 자식 모달(항목/그룹 등록)로 들어갔을 때, 자식이 닫히면 다시 열 Bootstrap 모달 id */
+    modalReturnTarget: string | null;
 };
 
 export type CodeAdminActions = {

@@ -24,7 +24,7 @@ public enum SiteMenu {
 
     AUTH_POLICY("인증 정책 관리"),
     MENU("메뉴 관리"),
-    CD("코드 관리"),
+    CODE("코드 관리"),
 
     CONTENT("컨텐츠 관리"),
     BOARD_GROUP("게시판 관리"),

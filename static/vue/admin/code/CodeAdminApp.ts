@@ -12,10 +12,15 @@ import CodeGroupPagination from "./components/CodeGroupPagination.js";
 import codeAdminI18nService from "./services/codeAdminI18nService.js";
 import codeAdminDataService from "./services/codeAdminDataService.js";
 import bindCodeAdminEventBridge from "./services/codeAdminEventBridgeService.js";
+import codeAdminUiService from "./services/codeAdminUiService.js";
 import createCodeAdminActions from "./services/codeAdminActionService.js";
 import { CodeAdminActions, CodeAdminState } from "./types.js";
 
-const state: CodeAdminState = {
+/**
+ * 액션 클로저와 템플릿이 동일 반응형 객체를 보도록 Vue.reactive 로 감쌈.
+ * (일반 객체를 외부에서 mutate 하면 상세 등 화면 갱신이 어긋날 수 있음)
+ */
+const state = Vue.reactive({
     rows: [],
     pagination: {
         currPageNo: 1,
@@ -28,9 +33,10 @@ const state: CodeAdminState = {
         nextPageNo: 0,
     },
     groupForm: { groupCode: "", groupName: "", description: "", useYn: "Y", registYn: "Y" },
-    detail: { groupCode: "", groupName: "", description: "", codeItems: [] },
+    detail: { id: undefined, groupCode: "", groupName: "", description: "", codeItems: [] },
     itemForm: { groupCode: "", code: "", codeName: "", description: "", useYn: "Y", registYn: "Y" },
-};
+    modalReturnTarget: null,
+}) as CodeAdminState;
 
 function t(key: string): string {
     return codeAdminI18nService.t(key);
@@ -68,6 +74,14 @@ function runWhenDomReady(fn: () => void): void {
         return;
     }
     fn();
+}
+
+/** FTL 인라인 스크립트의 window.Model.locale 우선; 없으면 document.documentElement.lang 폴백 */
+function resolveCodeAdminPageLocale(): string {
+    const w = typeof window !== "undefined" ? (window as Window & { Model?: { locale?: string } }) : undefined;
+    const loc = w?.Model?.locale;
+    if (loc) return loc;
+    return (document.documentElement.lang || "ko").replace(/_/g, "-");
 }
 
 const CodeAdminRootApp = {
@@ -126,7 +140,7 @@ const CodeAdminRootApp = {
 };
 
 runWhenDomReady(async function(): Promise<void> {
-    await codeAdminI18nService.load(Model.locale);
+    await codeAdminI18nService.load(resolveCodeAdminPageLocale());
     state.rows = codeAdminDataService.parseRowsFromPageData();
     codeAdminDataService.applyPaginationFromPageData(state.pagination);
 
@@ -146,4 +160,5 @@ runWhenDomReady(async function(): Promise<void> {
 
     cF.table.initSort();
     bindCodeAdminEventBridge({ actions, state });
+    codeAdminUiService.bindNestedModalReturn(state);
 });

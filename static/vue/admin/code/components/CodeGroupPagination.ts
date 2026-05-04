@@ -1,5 +1,10 @@
 import { PaginationState } from "../types.js";
 
+/**
+ * 코드 그룹 목록 페이지네이션.
+ * 인접 페이지 번호(prev/next 한 칸)는 서버가 curr 와 동일한 값을 줄 수 있어(예: 마지막 페이지에서 nextPageNo === currPageNo)
+ * 무조건 렌더하면 현재 페이지와 중복 표시된다. `view/global/_pagination.ftlh` 와 같이 유효할 때만 출력한다.
+ */
 export default {
     name: "CodeGroupPagination",
     props: {
@@ -56,14 +61,20 @@ export default {
                 <li class="page-item previous" :class="{ disabled: p.isFirstPage }">
                     <a href="javascript:void(0);" class="page-link" @click="$emit('go-page', 1)"><i class="previous"></i></a>
                 </li>
-                <li class="page-item previous" :class="{ disabled: p.isFirstPage }">
-                    <a href="javascript:void(0);" class="page-link" @click="$emit('go-page', p.prevPageNo || 1)">{{ p.prevPageNo || 1 }}</a>
+                <li
+                    v-if="p.prevPageNo && p.prevPageNo < p.currPageNo"
+                    class="page-item previous"
+                >
+                    <a href="javascript:void(0);" class="page-link" @click="$emit('go-page', p.prevPageNo)">{{ p.prevPageNo }}</a>
                 </li>
                 <li class="page-item active">
                     <a href="javascript:void(0);" class="page-link">{{ p.currPageNo }}</a>
                 </li>
-                <li class="page-item" :class="{ disabled: p.isLastPage }">
-                    <a href="javascript:void(0);" class="page-link" @click="$emit('go-page', p.nextPageNo || p.lastPageNo)">{{ p.nextPageNo || p.lastPageNo }}</a>
+                <li
+                    v-if="p.nextPageNo && p.nextPageNo > p.currPageNo"
+                    class="page-item"
+                >
+                    <a href="javascript:void(0);" class="page-link" @click="$emit('go-page', p.nextPageNo)">{{ p.nextPageNo }}</a>
                 </li>
                 <li class="page-item next" :class="{ disabled: p.isLastPage }">
                     <a href="javascript:void(0);" class="page-link" @click="$emit('go-page', p.lastPageNo)"><i class="next"></i></a>
