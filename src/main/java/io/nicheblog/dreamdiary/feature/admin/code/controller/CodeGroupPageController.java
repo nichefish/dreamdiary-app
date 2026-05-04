@@ -32,7 +32,7 @@ public class CodeGroupPageController extends BaseControllerImpl {
     @Getter
     private final String baseUrl = Url.CODE_GROUP_LIST;
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CD;
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CODE;
 
     private final CodeGroupService codeGroupService;
     private final CodeLookupService codeLookupService;
