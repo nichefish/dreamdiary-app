@@ -131,7 +131,6 @@ public interface ApiUrl {
     String RELATEDS = Prefix.API + "/related/{contentType}/{id}";
     String RELATED = Prefix.API + "/related/{relatedContentId}";
 
-    /** 단락 */
     /** 상태 */
     String STATES = Prefix.API + "/states";
     /** 라이프사이클 */
@@ -139,12 +138,11 @@ public interface ApiUrl {
 
     /** 태그 */
     String TAGS = Prefix.API + "/tags";
-    String TAG_DTL_AJAX = Prefix.API + "/tag/tag-dtl";
-    String TAG_PROFILES = Prefix.API + "/tag/profiles";
-    String TAG_PROFILE = Prefix.API + "/tag-profile/{id}";
+    String TAG = Prefix.API + "/tags/{id}";
+    String TAG_PROFILE = Prefix.API + "/tags/{tagId}/profile";
 
     /** 인증 정책 관리 */
-    String AUTH_POLICY_REG_AJAX = Prefix.API + "/login-policy/reg";
+    String AUTH_POLICY_REG_AJAX = Prefix.API + "/auth/policy/reg";
 
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
