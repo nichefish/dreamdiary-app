@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.admin.code.controller;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupDto;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.code.service.CodeGroupService;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -44,7 +44,7 @@ public class CodeGroupPageController extends BaseControllerImpl {
             final ModelMap model
     ) throws Exception {
         model.addAttribute("menuLabel", SiteMenu.CD);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         searchParam = (CodeGroupSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");

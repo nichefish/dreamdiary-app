@@ -30,7 +30,7 @@
                 <li class="breadcrumb-item text-muted">${(siteAcsInfo.menuName)!}</li>
                 <!--begin::Item-->
                 <li class="breadcrumb-item text-muted text-underline-dotted" style=" text-underline-offset:3px;">
-                    ${(siteAcsInfo.pageNm)!}&nbsp;
+                    ${(siteAcsInfo.pageName)!}&nbsp;
                 </li>
                 <!--end::Item-->
             </ul>

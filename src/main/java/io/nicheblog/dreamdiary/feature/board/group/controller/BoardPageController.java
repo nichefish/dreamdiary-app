@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.group.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardSearchParam;
@@ -43,7 +43,7 @@ public class BoardPageController extends BaseControllerImpl {
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD_GROUP);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         searchParam = (BoardSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");

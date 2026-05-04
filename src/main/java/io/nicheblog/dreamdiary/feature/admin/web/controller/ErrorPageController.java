@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
@@ -74,7 +74,7 @@ public class ErrorPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.ERROR);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 에러 화면 반환
         return "/view/global/common/error/error_not_found";
@@ -94,7 +94,7 @@ public class ErrorPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.ERROR);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 에러 화면으로 리다이렉트 리다리렉트
         return "/view/global/common/error/error_access_denied";
@@ -114,7 +114,7 @@ public class ErrorPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.ERROR);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 에러 화면으로 리다이렉트 리다리렉트
         return "/view/global/common/error/error_page";

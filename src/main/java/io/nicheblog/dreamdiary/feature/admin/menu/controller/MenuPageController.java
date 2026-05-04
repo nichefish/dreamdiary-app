@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.model.MenuSearchParam;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SubmenuExpandType;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -58,7 +58,7 @@ public class MenuPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.MENU);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // enum 데이터를 모델에 추가 (코드테이블 의존 제거)
         final List<Map<String, String>> submenuExpandTypes = Arrays.stream(SubmenuExpandType.values())

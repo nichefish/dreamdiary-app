@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.my.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
@@ -53,7 +53,7 @@ public class UserMyPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.USER_MY);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 내 정보 조회 및 모델에 추가
         final String loginUsername = AuthUtils.getLoginUsername();

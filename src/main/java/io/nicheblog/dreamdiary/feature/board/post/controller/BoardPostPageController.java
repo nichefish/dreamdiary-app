@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.post.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagService;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
@@ -53,7 +53,7 @@ public class BoardPostPageController extends BaseControllerImpl {
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         searchParam = (BoardPostSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "createdAt", model);
@@ -77,7 +77,7 @@ public class BoardPostPageController extends BaseControllerImpl {
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.REG);
+        model.addAttribute("pageName", PageName.REG);
         model.addAttribute("post", new BoardPostDto());
         model.addAttribute(Constant.FORM_MODE, "regist");
 
@@ -97,7 +97,7 @@ public class BoardPostPageController extends BaseControllerImpl {
     ) {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.PREVIEW);
+        model.addAttribute("pageName", PageName.PREVIEW);
         model.addAttribute("contentType", contentType);
 
         boardPost.setMarkdownContent(MarkdownUtils.markdown(boardPost.getContent()));
@@ -115,7 +115,7 @@ public class BoardPostPageController extends BaseControllerImpl {
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("pageName", PageName.DTL);
         model.addAttribute("contentType", contentType);
 
         final BoardPostDto rsDto = boardPostService.viewDtlPage(id);
@@ -133,7 +133,7 @@ public class BoardPostPageController extends BaseControllerImpl {
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.MDF);
+        model.addAttribute("pageName", PageName.MDF);
         model.addAttribute("contentType", contentType);
 
         final BoardPostDto rsDto = boardPostService.getDtlDto(id);

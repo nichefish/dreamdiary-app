@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.admin.auth.policy.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -52,7 +52,7 @@ public class AuthPolicyPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.AUTH_POLICY);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 항목 조회 및 모델에 추가 :: 현재는 항상 고정 ID(1L)로 조회한다.
         final AuthPolicyDto authPolicy = authPolicyService.getDtlDto();

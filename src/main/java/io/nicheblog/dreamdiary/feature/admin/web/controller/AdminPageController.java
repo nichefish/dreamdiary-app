@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
 import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.auth.security.service.RoleService;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -55,7 +55,7 @@ public class AdminPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.ADMIN_PAGE);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 권한 정보 조회
         List<RoleDto> roleList = roleService.getListDto(new HashMap<>());

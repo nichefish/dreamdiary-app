@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.tmplat.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.model.TmplatDefDto;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.model.TmplatDefSearchParam;
@@ -61,7 +61,7 @@ public class TmplatDefPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.TMPLAT);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 :: 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (TmplatDefSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);

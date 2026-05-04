@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  * @author nichefish
  */
 @RequiredArgsConstructor
-public enum PageNm {
+public enum PageName {
 
     LGN("로그인"),
     MAIN("메인"),
@@ -28,5 +28,5 @@ public enum PageNm {
     PAGE("페이지"),
     DEFAULT("");
 
-    public final String pageNm;
+    public final String pageName;
 }
