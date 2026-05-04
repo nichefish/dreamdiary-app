@@ -146,6 +146,11 @@ public class WebSecurityAdapter {
                 // WebSocket 엔드포인트에 대한 접근 허용
                 .antMatchers("/chat/**")
                 .permitAll()
+                // 로그인 화면 i18n catalog json
+                // 변경 전: /i18n/** 경로는 anyRequest().authenticated()에 걸려 401 가능
+                // 변경 후: /i18n/** 경로는 비인증 접근 허용
+                .antMatchers("/i18n/**")
+                .permitAll()
                 // 이외 페이지 = 로그인 사용자만 접근
                 .anyRequest()
                 .authenticated();
