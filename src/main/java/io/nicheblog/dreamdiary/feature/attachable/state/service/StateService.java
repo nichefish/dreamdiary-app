@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable.state.service;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.attachable.state.adapter.StateCacheUpdater;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
 import io.nicheblog.dreamdiary.feature.attachable.state.mapstruct.StateMapstruct;
@@ -49,14 +48,13 @@ public class StateService
     private final List<StateCacheUpdater> cacheUpdaters;
 
     /**
-     * 전략 validation
+     * 캐시 갱신 전략이 필요한 컨텐츠 타입마다 하나씩 등록되어 있는지 검증한다.
      */
     @PostConstruct
     private void validateStateCacheUpdaters() {
         final Set<ContentType> requiredTypes = EnumSet.of(
                 ContentType.JOURNAL_CHAPTER,
                 ContentType.JOURNAL_DIARY,
-                ContentType.JOURNAL_NOTE,
                 ContentType.JOURNAL_DREAM,
                 ContentType.JOURNAL_INTERPRETATION
         );
@@ -92,9 +90,10 @@ public class StateService
     }
 
     /**
-     * 상태 토글
-     * @param stateToggle StateToggleDto
-     * @return ServiceResponse
+     * 상태 값을 토글한다.
+     *
+     * @param stateToggle 상태 토글 요청 DTO
+     * @return 서비스 처리 응답
      */
     @Transactional
     public ServiceResponse toggle(final StateToggleDto stateToggle) throws Exception {
@@ -109,7 +108,7 @@ public class StateService
             return ServiceResponse.builder()
                     .rslt(false)
                     .message(String.format(
-                            "해당 컨텐츠 타입에서 허용되지 않는 상태입니다. (contentType=%s, stateKey=%s)",
+                            "해당 컨텐츠 타입에서 허용하지 않는 상태입니다. (contentType=%s, stateKey=%s)",
                             stateToggle.getContentType().key,
                             stateToggle.getStateKey().key))
                     .build();
@@ -124,8 +123,6 @@ public class StateService
             repository.delete(existingEntity);
         }
 
-        // 의미 전이 규칙 처리
-        this.applyDerivedStates(stateToggle, isEnabled);
         // 캐시 처리
         this.scheduleCacheUpdateAfterCommit(stateToggle, isEnabled);
 
@@ -136,9 +133,10 @@ public class StateService
     }
 
     /**
-     * 캐시 처리
-     * @param stateToggle StateToggleDto
-     * @param isEnabled Boolean
+     * 상태 변경에 따른 캐시를 처리한다.
+     *
+     * @param stateToggle 상태 토글 요청 DTO
+     * @param isEnabled 활성화 여부
      */
     public void doCache(final StateToggleDto stateToggle, final Boolean isEnabled) throws Exception {
         for (final StateCacheUpdater updater : cacheUpdaters) {
@@ -150,31 +148,7 @@ public class StateService
     }
 
     /**
-     * 상태 등록 시 파생 상태 처리
-     * @param stateToggle StateToggleDto
-     */
-    private void applyDerivedStates(final StateToggleDto stateToggle, final Boolean isEnabled) throws Exception {
-        if (StateKey.RESOLVED.equals(stateToggle.getStateKey())) {
-            if (isEnabled) {
-                final StateToggleDto collapsedToggle = StateToggleDto.builder()
-                        .id(stateToggle.getId())
-                        .contentType(stateToggle.getContentType())
-                        .stateKey(StateKey.COLLAPSED)
-                        .cacheContext(stateToggle.getCacheContext())
-                        .build();
-
-                final StateEntity collapsed = this.getSelf().getDtlEntity(collapsedToggle);
-                if (collapsed == null) {
-                    repository.save(StateEntity.of(collapsedToggle));
-                }
-                // 캐시 처리
-                this.scheduleCacheUpdateAfterCommit(collapsedToggle, true);
-            }
-        }
-    }
-
-    /**
-     * commit 이후 상태 캐시를 반영한다.
+     * 커밋 이후 상태 캐시를 반영한다.
      */
     private void scheduleCacheUpdateAfterCommit(final StateToggleDto stateToggle, final Boolean isEnabled) throws Exception {
         if (stateToggle.getCacheContext() == null) return;
@@ -193,9 +167,10 @@ public class StateService
     }
 
     /**
-     * 기존 상태 조회
-     * @param stateToggle StateToggleDto
-     * @return StateEntity 상태
+     * 기존 상태 엔티티를 조회한다.
+     *
+     * @param stateToggle 상태 토글 요청 DTO
+     * @return 상태 엔티티
      */
     public StateEntity getDtlEntity(StateToggleDto stateToggle) throws Exception {
         return repository.findByRefIdAndRefContentTypeAndStateKey(

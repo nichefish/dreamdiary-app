@@ -50,7 +50,7 @@ public enum ActvtyCtgr {
     MENU("메뉴 관리"),
     BOARD_GROUP("게시판 관리"),
     TMPLAT("템플릿 관리"),
-    CD("코드 관리"),
+    CODE("코드 관리"),
     // LOG
     LOG("로그"),
     LOG_STATS("로그 통계"),

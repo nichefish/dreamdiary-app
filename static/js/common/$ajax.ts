@@ -171,7 +171,7 @@ cF.$ajax = (function(): Module {
             switch(statusCode) {
                 case 401: {
                     if (cF.ui.isPopupWindow()) {
-                        cF.ui.confirmClosePopup(msg);
+                        cF.ui.closePopupAndRedirectOpener(loginFormUrl, msg);
                         return;
                     }
                     cF.ui.swalOrConfirm(msg + "\n" + Message.get("view.auth.redirect-to-login-form"), function(): void {

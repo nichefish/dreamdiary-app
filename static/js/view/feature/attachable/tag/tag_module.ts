@@ -27,8 +27,8 @@ dF.Tag = (function(): dfModule {
             event.stopPropagation();
             if (isNaN(Number(id))) return;
 
-            const url: string = Url.TAG_DTL_AJAX;
-            const ajaxData: Record<string, any> = { id };
+            const url: string = cF.util.bindUrl(Url.TAG, { id: id });
+            const ajaxData: Record<string, any> = {};
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

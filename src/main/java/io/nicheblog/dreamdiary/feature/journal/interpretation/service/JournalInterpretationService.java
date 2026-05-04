@@ -10,9 +10,7 @@ import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
-import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
-import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
-import io.nicheblog.dreamdiary.feature.journal.dream.repository.jpa.JournalDreamRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.mapstruct.JournalInterpretationMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
@@ -67,8 +65,7 @@ public class JournalInterpretationService
         return this.mapstruct;
     }
 
-    private final JournalDiaryRepository journalDiaryRepository;
-    private final JournalDreamRepository journalDreamRepository;
+    private final JournalEntryService journalEntryService;
     private final JournalChapterRepository journalChapterRepository;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
 
@@ -308,20 +305,6 @@ public class JournalInterpretationService
     }
 
     private Integer resolveJournalDayIdFromRef(final Integer refId, final ContentType refContentType) {
-        if (refId == null || refContentType == null) return null;
-
-        return switch (refContentType) {
-            case JOURNAL_DAY -> refId;
-            case JOURNAL_CHAPTER -> journalChapterRepository.findById(refId)
-                    .map(entity -> entity.getJournalDayId())
-                    .orElse(null);
-            case JOURNAL_DIARY -> journalDiaryRepository.findById(refId)
-                    .map(entity -> entity.getJournalChapter() != null ? entity.getJournalChapter().getJournalDayId() : null)
-                    .orElse(null);
-            case JOURNAL_DREAM -> journalDreamRepository.findById(refId)
-                    .map(entity -> entity.getJournalChapter() != null ? entity.getJournalChapter().getJournalDayId() : null)
-                    .orElse(null);
-            default -> null;
-        };
+        return journalEntryService.resolveJournalDayId(refId, refContentType);
     }
 }

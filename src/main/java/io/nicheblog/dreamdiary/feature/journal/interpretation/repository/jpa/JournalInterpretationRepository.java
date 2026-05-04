@@ -3,11 +3,12 @@ package io.nicheblog.dreamdiary.feature.journal.interpretation.repository.jpa;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,6 +22,12 @@ import java.util.Optional;
 @Repository
 public interface JournalInterpretationRepository
         extends BaseStreamRepository<JournalInterpretationEntity, Integer> {
+
+    List<JournalInterpretationEntity> findAllByCreatedByAndRefIdInAndRefContentTypeInOrderByRefContentTypeAscRefIdAscSortOrderAsc(
+            String createdBy,
+            Collection<Integer> refIdList,
+            Collection<ContentType> refContentTypeList
+    );
 
     /**
      * 해당 참조 엔티티에서 해석 마지막 인덱스 조회

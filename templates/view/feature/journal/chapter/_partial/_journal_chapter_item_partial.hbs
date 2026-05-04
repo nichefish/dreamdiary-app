@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="journal_chapter_item_partial" data-partial>
     <div class="d-flex align-items-center mt-2">
         <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
-            <span class="{{#ifYn chapterResolvedYn}}text-success{{/ifYn}} me-2">
+            <span class="me-2">
                 {{#if (equals chapterType "DREAM")}}
                     <@spring.message 'txt.dream'/>
                 {{else}}
@@ -23,24 +23,24 @@
                 {{/if}}
             </span>
             {{#if (equals chapterType "DREAM")}}
-                <i class="bi bi-moon-stars fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                <i class="bi bi-moon-stars fs-4"></i>
             {{else}}
                 {{#if (equals chapterType "NOTE")}}
-                    <i class="bi bi-journal-text fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                    <i class="bi bi-journal-text fs-4"></i>
                 {{else}}
-                    <i class="bi bi-book fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+                    <i class="bi bi-book fs-4"></i>
                 {{/if}}
             {{/if}}
         </div>
         <div class="col-3 d-none d-md-flex align-items-center gap-2">
             {{#if (equals chapterType "DIARY")}}
-                {{> journal_diary_reg_btn_partial this}}
+                {{> journal_entry_reg_btn_by_type_partial this contentType="JOURNAL_DIARY" dayIdParam=journalDayId chapterIdParam=id}}
             {{/if}}
             {{#if (equals chapterType "NOTE")}}
-                {{> journal_note_reg_btn_partial this}}
+                {{> journal_entry_reg_btn_by_type_partial this contentType="JOURNAL_DIARY" dayIdParam=journalDayId chapterIdParam=id}}
             {{/if}}
             {{#if (equals chapterType "DREAM")}}
-                {{> journal_dream_reg_btn_partial journalDayId=journalDayId journalChapterId=id stdrdDt=stdrdDt journalDateWeekDay=journalDateWeekDay}}
+                {{> journal_entry_reg_btn_by_type_partial this contentType="JOURNAL_DREAM" dayIdParam=journalDayId chapterIdParam=id}}
             {{/if}}
             {{> journal_chapter_copy_btn_partial this}}
             {{> journal_chapter_export_btn_partial this}}
@@ -53,17 +53,16 @@
          data-stdrd-dt="{{stdrdDt}}"
          data-yy="{{yy}}"
          data-mnth="{{mnth}}"
-         data-collapsed="{{hasState state 'COLLAPSED'}}"
-         data-resolved="{{#ifYn chapterResolvedYn}}Y{{else}}N{{/ifYn}}">
+         data-collapsed="{{hasState state 'COLLAPSED'}}">
         <div class="journal-chapter-content {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
             {{#if (equals chapterType "DIARY")}}
-                {{#each journalDiaryList}}
-                    {{> journal_diary_item_partial this}}
+                {{#each journalEntryList}}
+                    {{> journal_entry_item_by_type_partial this contentType="JOURNAL_DIARY"}}
                 {{/each}}
             {{else}}
                 {{#if (equals chapterType "NOTE")}}
-                    {{#each journalNoteList}}
-                        {{> journal_note_item_partial this}}
+                    {{#each journalEntryList}}
+                        {{> journal_entry_item_by_type_partial this contentType="JOURNAL_DIARY"}}
                     {{/each}}
                 {{/if}}
             {{/if}}
@@ -71,7 +70,7 @@
         <div class="tags journal-chapter-tags ms-2 mt-3 {{#unless (hasState state 'COLLAPSED')}}d-none{{/unless}}">
             <i class="bi bi-tag"></i>
             {{#tag.list}}
-                {{> tag_list_partial this module="dF.JournalDiaryTag"}}
+                {{> tag_list_partial this module="dF.JournalEntryTag.get('JOURNAL_DIARY')"}}
             {{/tag.list}}
         </div>
     </div>

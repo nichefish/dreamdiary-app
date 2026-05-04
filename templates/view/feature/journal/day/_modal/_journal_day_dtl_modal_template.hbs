@@ -23,28 +23,30 @@
     </div>
 
     <div class="row p-5">
-        {{#if (exists journalDiaryList)}}
+        {{#if (exists journalChapterList)}}
             <div class="d-flex align-items-center mt-2">
                 <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
                     <@spring.message 'txt.diary'/>
                     <i class="bi bi-book fs-4 pe-1"></i>
                 </span>
             </div>
-            {{#each journalDiaryList}}
-                <div class="journal-diary-item" data-id="{{id}}">
-                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                        <div># {{sortOrder}}</div>
+            {{#each journalChapterList}}
+                {{#each journalEntryList}}
+                    <div class="journal-diary-item" data-id="{{id}}">
+                        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                            <div># {{sortOrder}}</div>
+                        </div>
+                        <div class="col journal-diary-content">
+                            {{> journal_entry_content_by_type_partial this contentType="JOURNAL_DIARY" collapse="collapse-4"}}
+                        </div>
+                        <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                        <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
+                            {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
+                            {{> journal_entry_copy_btn_by_type_partial this contentType="JOURNAL_DIARY"}}
+                            {{> journal_entry_context_btn_by_type_partial this contentType="JOURNAL_DIARY" showInterpretation=true showRelated=true}}
+                        </div>
                     </div>
-                    <div class="col journal-diary-content">
-                        {{> journal_diary_content_partial this collapse="collapse-4"}}
-                    </div>
-                    <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                        {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
-                        {{> journal_diary_copy_btn_partial this}}
-                        {{> journal_diary_context_btn_partial this}}
-                    </div>
-                </div>
+                {{/each}}
             {{/each}}
         {{/if}}
         {{#each journalDreamList}}
@@ -53,13 +55,13 @@
                     <div># {{sortOrder}}</div>
                 </div>
                 <div class="col py-3 journal-dream-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
-                    {{> journal_dream_content_partial this collapse="collapse-4"}}
+                    {{> journal_entry_content_by_type_partial this contentType="JOURNAL_DREAM" collapse="collapse-4"}}
                 </div>
                 <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                 <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                     {{> comment_reg_btn_partial this contentType="JOURNAL_DREAM"}}
-                    {{> journal_dream_copy_btn_partial this}}
-                    {{> journal_dream_context_btn_partial this}}
+                    {{> journal_entry_copy_btn_by_type_partial this contentType="JOURNAL_DREAM"}}
+                    {{> journal_entry_context_btn_by_type_partial this contentType="JOURNAL_DREAM" showInterpretation=true showRelated=true}}
                 </div>
             </div>
         {{/each}}
@@ -71,15 +73,15 @@
                     </div>
                 </div>
                 <div class="col py-3 journal-dream-content bg-secondary">
-                    {{> journal_diary_content_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                    {{> journal_entry_content_by_type_partial this contentType="JOURNAL_DIARY" collapse="collapse-4" elseDreamYn="Y"}}
                 </div>
                 <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
                     {{> comment_reg_btn_partial this contentType="JOURNAL_DREAM"}}
                 </div>
                 <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                 <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                    {{> journal_dream_copy_btn_partial this}}
-                    {{> journal_dream_context_btn_partial this}}
+                    {{> journal_entry_copy_btn_by_type_partial this contentType="JOURNAL_DREAM"}}
+                    {{> journal_entry_context_btn_by_type_partial this contentType="JOURNAL_DREAM" showInterpretation=true showRelated=true}}
                 </div>
             </div>
             {{/each}}

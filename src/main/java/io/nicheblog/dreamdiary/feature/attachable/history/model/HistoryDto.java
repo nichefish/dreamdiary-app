@@ -46,6 +46,8 @@ public class HistoryDto
 
     private String previewContent;
 
+    private String markdownContent;
+
     /* ----- */
 
     /**

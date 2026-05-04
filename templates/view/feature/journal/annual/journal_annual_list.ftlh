@@ -53,11 +53,12 @@
 <#include "/view/feature/journal/annual/_partial/_journal_annual_context_btn_partial.hbs">
 
 <#--include::journal_dream_module-->
-<#include "/view/feature/journal/dream/_modal/_journal_dream_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/journal/dream/journal_dream_module.js?${releaseDate!}"></script>
+<#assign journalEntryRegType = "DREAM">
+<#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/feature/journal/entry/journal_entry_module.js?${releaseDate!}"></script>
 
-<#--include::journal_dream_tag_module-->
-<script type="text/javascript" src="/js/view/feature/journal/dream/tag/journal_dream_tag_module.js?${releaseDate!}"></script>
+<#--include::journal_entry_tag_module-->
+<script type="text/javascript" src="/js/view/feature/journal/entry/tag/journal_entry_tag_module.js?${releaseDate!}"></script>
 
 <#--include::tag-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">

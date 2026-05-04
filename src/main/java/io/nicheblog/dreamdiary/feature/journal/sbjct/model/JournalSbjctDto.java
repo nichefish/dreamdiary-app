@@ -16,6 +16,7 @@ import javax.validation.constraints.Size;
 
 /**
  * JournalSbjctDto
+ * 주제(JOURNAL_SBJCT) 첨부 콘텐츠의 뷰·등록용 DTO.
  *
  * @author nichefish
  */

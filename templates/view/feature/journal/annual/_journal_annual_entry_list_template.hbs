@@ -1,0 +1,33 @@
+<#--
+ * journal_annual > journal entry list template
+ * @included_in : journal_annual_dtl.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="journal_annual_entry_list_template">
+    {{#each list}}
+        <div class="journal-{{../cssPrefix}}-item" data-id="{{id}}">
+            <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
+                {{#if ../contextFirst}}
+                    {{> journal_day_context_btn_partial this id=this.journalDayId}}
+                    {{> journal_day_stdrd_dt_partial this}}
+                {{else}}
+                    {{> journal_day_stdrd_dt_partial this}}
+                    {{> journal_day_context_btn_partial this id=this.journalDayId}}
+                {{/if}}
+            </div>
+            <div class="col {{../contentPaddingClass}} journal-{{../cssPrefix}}-content {{#if ../highlightImportant}}{{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}{{/if}}" data-id="{{id}}">
+                {{> journal_entry_content_partial this contentType=../contentType tagModule=../tagModule collapse=../collapse}}
+            </div>
+            <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+            <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
+                {{> comment_reg_btn_partial this contentType=../contentType}}
+                {{> journal_entry_copy_btn_partial this module=../module}}
+                {{> journal_entry_context_btn_partial this module=../module contentType=../contentType contentLabel=../contentLabel cssPrefix=../cssPrefix showInterpretation=true showRelated=true showDreamStates=../showDreamStates}}
+            </div>
+        </div>
+    {{else}}
+        <div class="journal-day d-flex-center">
+            {{emptyLabel}} <@spring.message 'view.list.empty'/>
+        </div>
+    {{/each}}
+</script>

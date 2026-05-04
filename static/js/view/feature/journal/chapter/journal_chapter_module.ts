@@ -216,6 +216,9 @@ dF.JournalChapter = (function(): dfModule {
                 } else {
                     chk.checked = res.rsltSts === "ON";
                 }
+                if (stateKey === "COLLAPSED") {
+                    item.dataset.collapsed = res.rsltSts === "ON" ? "Y" : "N";
+                }
                 const tagDiv: HTMLInputElement = item.querySelector(".journal-chapter-tags");
                 if (!tagDiv) {
                     console.warn("tagDiv not found.");
@@ -259,27 +262,29 @@ dF.JournalChapter = (function(): dfModule {
             const shouldCollapse: boolean = content && !content.classList.contains("collapsed");
             const diaries: NodeListOf<HTMLElement> = item.querySelectorAll(".journal-diary-content");
             const tagDiv = item.querySelector(".journal-chapter-tags");
-            const icon: HTMLElement = document.querySelector(`#chapter-toggle-icon-${id}`);
-            if (!icon) console.log("icon not found.");
+            const icon: HTMLElement | null = document.querySelector(`#chapter-toggle-icon-${id}`);
+            if (!icon) console.warn("chapter toggle icon not found:", id);
             if (shouldCollapse) {
                 // 전체 접기
                 content.classList.add("collapsed");
-                icon.classList.add("bi-arrows-expand");
-                icon.classList.remove("bi-arrows-collapse");
-                tagDiv.classList.remove("d-none");
+                item.dataset.collapsed = "Y";
+                icon?.classList.add("bi-arrows-expand");
+                icon?.classList.remove("bi-arrows-collapse");
+                tagDiv?.classList.remove("d-none");
                 diaries.forEach((diary: HTMLElement): void => {
-                    const content: HTMLElement = diary.querySelector(".journal-content");
-                    content.classList.add("collapsed");
+                    const inner: HTMLElement | null = diary.querySelector(".journal-content");
+                    inner?.classList.add("collapsed");
                 });
             } else {
                 // 전체 펼치기
                 content.classList.remove("collapsed");
-                icon.classList.add("bi-arrows-collapse");
-                icon.classList.remove("bi-arrows-expand");
-                tagDiv.classList.add("d-none");
+                item.dataset.collapsed = "N";
+                icon?.classList.add("bi-arrows-collapse");
+                icon?.classList.remove("bi-arrows-expand");
+                tagDiv?.classList.add("d-none");
                 diaries.forEach((diary: HTMLElement): void => {
-                    const content: HTMLElement = diary.querySelector(".journal-content");
-                    content.classList.remove("collapsed");
+                    const inner: HTMLElement | null = diary.querySelector(".journal-content");
+                    inner?.classList.remove("collapsed");
                 });
             }
         },
@@ -299,13 +304,21 @@ dF.JournalChapter = (function(): dfModule {
                     return;
                 }
                 const rsltObj: Record<string, any> = res.rsltObj;
-                const journalDiaryList: object[] = rsltObj.journalDiaryList;
+                const journalEntryList: any[] = Array.isArray(rsltObj?.journalEntryList)
+                    ? rsltObj.journalEntryList
+                    : (Array.isArray(rsltObj?.journalDiaryList) ? rsltObj.journalDiaryList : []);
+                if (!Array.isArray(rsltObj?.journalEntryList) && !Array.isArray(rsltObj?.journalDiaryList)) {
+                    console.warn("journalEntryList is missing or invalid. fallback to empty list.", rsltObj?.journalEntryList);
+                }
                 const { stdrdDt, journalDateWeekDay } = rsltObj;
                 const date: string = stdrdDt + " (" + journalDateWeekDay + ")" + "\r\n";
-                const resultCn: string = journalDiaryList?.map((item: any): any => "#" + (item?.sortOrder ?? "") + (item?.content ?? "")).join("\r\n");
+                const resultCn: string = journalEntryList.map((item: any): string => "#" + (item?.sortOrder ?? "") + (item?.content ?? "")).join("\r\n");
 
                 // 문단/줄바꿈을 먼저 텍스트로 치환
-                const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
+                const replacedCn: string = resultCn
+                    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n---\n")
+                    .replace(/<\s*br\s*\/?>/gi, "\n")
+                    .replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
                 div.innerHTML = date + replacedCn;
                 const textToCopy: string = (div.innerText ?? "")

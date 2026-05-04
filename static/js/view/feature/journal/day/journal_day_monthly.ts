@@ -13,9 +13,7 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* initialize modules. */
             dF.JournalDay.init('LIST');
-            dF.JournalDiary.init('LIST');
-            void dF.JournalNote.init("LIST");
-            dF.JournalDream.init('LIST');
+            void dF.JournalEntry.initAll("LIST");
             dF.JournalTodo.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JournalDay.yyMnthListAjax
@@ -28,8 +26,7 @@ const Page: Page = (function(): Page {
             dF.JournalDay.yyMnthListAjax();
 
             // 일기/꿈 키워드 검색창에 엔터키 처리
-            cF.util.enterKey("#diarySearchKeyword", dF.JournalDiary.searchPopup);
-            cF.util.enterKey("#dreamSearchKeyword", dF.JournalDream.searchPopup);
+            dF.JournalEntry.bindSearchPopupEnterKeys();
         },
 
         /**

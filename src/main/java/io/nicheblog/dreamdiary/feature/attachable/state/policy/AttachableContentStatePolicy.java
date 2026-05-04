@@ -3,11 +3,7 @@ package io.nicheblog.dreamdiary.feature.attachable.state.policy;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * AttachableContentStatePolicy
@@ -25,28 +21,26 @@ public final class AttachableContentStatePolicy {
     static {
         ALLOWED.put(ContentType.JOURNAL_CHAPTER, EnumSet.of(StateKey.COLLAPSED));
 
-        final EnumSet<StateKey> diaryDreamNote = EnumSet.of(
-                StateKey.RESOLVED,
+        final EnumSet<StateKey> diaryDreamKeys = EnumSet.of(
                 StateKey.COLLAPSED,
                 StateKey.IMPRTC,
                 StateKey.REFRNC
         );
-        ALLOWED.put(ContentType.JOURNAL_DIARY, EnumSet.copyOf(diaryDreamNote));
-        ALLOWED.put(ContentType.JOURNAL_NOTE, EnumSet.copyOf(diaryDreamNote));
+        ALLOWED.put(ContentType.JOURNAL_DIARY, EnumSet.copyOf(diaryDreamKeys));
 
-        final EnumSet<StateKey> dreamKeys = EnumSet.copyOf(diaryDreamNote);
+        final EnumSet<StateKey> dreamKeys = EnumSet.copyOf(diaryDreamKeys);
         dreamKeys.add(StateKey.NHTMR);
         dreamKeys.add(StateKey.HALLUC);
         ALLOWED.put(ContentType.JOURNAL_DREAM, dreamKeys);
 
         ALLOWED.put(
                 ContentType.JOURNAL_INTERPRETATION,
-                EnumSet.of(StateKey.RESOLVED, StateKey.COLLAPSED, StateKey.IMPRTC)
+                EnumSet.of(StateKey.COLLAPSED, StateKey.IMPRTC)
         );
 
         ALLOWED.put(
                 ContentType.JOURNAL_DAY,
-                EnumSet.of(StateKey.RESOLVED, StateKey.COLLAPSED, StateKey.IMPRTC)
+                EnumSet.of(StateKey.COLLAPSED, StateKey.IMPRTC)
         );
     }
 

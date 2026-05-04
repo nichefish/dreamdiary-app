@@ -14,7 +14,7 @@
         {{#if (equals menuTyCd "${Code.MENU_TY_MAIN!}")}}
             <div class="col-2 text-center">
                 <label for="menuNm" class="col-form-label fw-bold">
-                    관리자 메뉴 여부
+                    <@spring.message 'txt.admin.menu.form.manager-menu-yn'/>
                 </label>
             </div>
             <div class="col-10">
@@ -22,14 +22,14 @@
                     <input type="checkbox" name="mngrYn" id="useYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn mngrYn}} />
                     <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle mngrYn "color" "blue//gray"}}>
-                        {{^ifYn mngrYn}}미{{/ifYn}}해당
+                        {{^ifYn mngrYn}}<@spring.message 'txt.admin.menu.form.not-prefix'/>{{/ifYn}}<@spring.message 'txt.admin.menu.form.applicable'/>
                     </label>
                 </div>
             </div>
         {{else}}
             <div class="col-2 text-center">
                 <label for="menuNm" class="col-form-label fw-bold">
-                    상위메뉴 이름
+                    <@spring.message 'txt.admin.menu.form.upper-menu-name'/>
                 </label>
             </div>
             <div class="col-10 col-form-label">
@@ -43,7 +43,7 @@
     <div class="row mb-4">
         <div class="col-2 text-center">
             <label for="menuNm" class="col-form-label fw-bold required">
-                메뉴 이름
+                <@spring.message 'txt.admin.menu.form.menu-name'/>
             </label>
         </div>
         <div class="col-4">
@@ -53,8 +53,8 @@
         </div>
         <div class="col-2 text-center">
             <label for="menuLabel" class="col-form-label fw-bold cursor-help"
-                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="중메뉴 상단 라벨입니다.">
-                메뉴 라벨
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.admin.menu.form.menu-label'/>">
+                <@spring.message 'txt.admin.menu.form.menu-label'/>
                 <i class="bi bi-question-circle"></i>
             </label>
         </div>
@@ -69,15 +69,15 @@
         <div class="col-2 text-center">
             <label for="menuNm" class="col-form-label fw-bold cursor-help"
                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                   title="사이드바에서 메뉴 옆에 표시될 아이콘을 입력합니다.&#10;(미입력시 기본 · 으로 표현됩니다.)">
-                메뉴 아이콘
+                   title="<@spring.message 'bs.tooltip.admin.menu.form.menu-icon'/>">
+                <@spring.message 'txt.admin.menu.form.menu-icon'/>
                 <i class="bi bi-question-circle"></i>
             </label>
         </div>
         <div class="col-1 d-flex-center flex-column gap-3">
             <div id="menu_icon_div" class="cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                 title="아이콘 미리보기입니다.">
+                 title="<@spring.message 'bs.tooltip.admin.menu.form.icon-preview'/>">
                 {{#if (exists icon)}}
                     {{{icon}}}
                 {{else}}
@@ -86,13 +86,13 @@
             </div>
             <div class="btn btn-sm btn-icon btn-light-primary"
                  onclick="dF.Menu.refreshIcon();"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="아이콘을 미리보기합니다.">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.admin.menu.form.refresh-icon-preview'/>">
                 <i class="bi bi-arrow-repeat"></i>
             </div>
         </div>
         <div class="col-9">
             <textarea name="icon" id="icon" class="form-control form-control-solid d-block"
-                      placeholder="아이콘 html을 입력하세요." maxlength="1000" rows="5" >{{icon}}</textarea>
+                      placeholder="<@spring.message 'txt.admin.menu.form.icon-placeholder'/>" maxlength="1000" rows="5" >{{icon}}</textarea>
             <div id="icon_validate_span"></div>
         </div>
     </div>
@@ -100,7 +100,7 @@
     <div class="row mb-4">
         <div class="col-2 text-center">
             <label for="url" class="col-form-label fw-bold">
-                미열람 COUNT 변수명
+                <@spring.message 'txt.admin.menu.form.unread-count-name'/>
             </label>
         </div>
         <div class="col-10">
@@ -114,8 +114,8 @@
         <div class="col-2 text-center">
             <label for="url" class="cursor-help fw-bold required"
                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                   title="사이드바에서 하위 메뉴를&#10;표현할 방법을 선택합니다.">
-                하위메뉴<br />표시 방식
+                   title="<@spring.message 'bs.tooltip.admin.menu.form.submenu-display-type'/>">
+                <@spring.message 'txt.admin.menu.form.submenu-display-type'/>
                 <i class="bi bi-question-circle"></i>
             </label>
         </div>
@@ -136,7 +136,7 @@
     <div class="row mb-4 {{^if (equals menuSubExtendTyCd "NO_SUB")}}d-none{{/if}}" id="url_div">
         <div class="col-2 text-center">
             <label for="url" class="col-form-label fw-bold">
-                메뉴 URL
+                <@spring.message 'txt.admin.menu.form.menu-url'/>
             </label>
         </div>
         <div class="col-10">

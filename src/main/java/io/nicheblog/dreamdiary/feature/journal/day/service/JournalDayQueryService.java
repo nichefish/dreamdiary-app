@@ -3,17 +3,21 @@ package io.nicheblog.dreamdiary.feature.journal.day.service;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilterHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
-import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
-import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
-import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +28,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * JournalDayQueryService
  * <pre>
- *   JournalDay 조회 결과를 화면에 필요한 상태/메타 정보로 조립(enrich)하는 Query 전용 서비스
+ *  JournalDay 조회 결과를 화면에 필요한 상태/메타 정보로 보강(enrich)하는 Query 전용 서비스.
  * </pre>
  *
  * @author nichefish
@@ -40,13 +45,15 @@ public class JournalDayQueryService {
 
     private final JournalDayService journalDayService;
     private final RelatedContentQueryService relatedContentQueryService;
+    private final JournalInterpretationQueryService journalInterpretationQueryService;
+    private final LifecycleService lifecycleService;
 
     /**
-     * 연월기준 목록 조회 + enrich
+     * 연월 기준 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건 (연도, 월, 필터 조건 포함)
-     * @return {@link List} -- 가공 완료된 일자 DTO 목록
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건 (연도, 월, 필터 조건 포함)
+     * @return {@link List} -- 보강된 저널 일자 DTO 목록
      */
     public List<JournalDayDto> getYyMnthListDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
@@ -63,11 +70,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 기준일(standard day) 목록 조회 + enrich
+     * 기준일 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getStdrdDaysDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -76,11 +83,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 주간 목록 조회 + enrich
+     * 주간 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getWeeklyListDtoEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
@@ -98,11 +105,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 메타 기준 조회 + enrich
+     * 메타 기준 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건 (metaId 포함)
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건 (metaId 포함)
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getListDtoByMetaIdEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -111,11 +118,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 태그 기준 조회 + enrich
+     * 태그 기준 목록 조회 후 화면 정보를 보강한다.
      *
-     * @param username 조회 사용자 계정명
-     * @param searchParam 조회 조건 (tagId 포함)
-     * @return {@link List} -- 가공 완료된 DTO 목록
+     * @param username 사용자 계정명
+     * @param searchParam 검색 조건 (tagId 포함)
+     * @return {@link List} -- 보강된 DTO 목록
      */
     public List<JournalDayDto> getListDtoByTagIdEnrichedByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -124,11 +131,11 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 상세 조회 + enrich
+     * 상세 조회 후 화면 정보를 보강한다.
      *
-     * @param username 조회 사용자 계정명
+     * @param username 사용자 계정명
      * @param key PK
-     * @return {@link JournalDayDto} -- 가공 완료된 DTO
+     * @return {@link JournalDayDto} -- 보강된 DTO
      */
     public JournalDayDto getDtlDtoEnrichedByUser(final String username, final Integer key) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
@@ -137,49 +144,56 @@ public class JournalDayQueryService {
     }
 
     /**
-     * 목록 공통 enrich 처리
-     * 1) 휴일 정보 매핑 2) 상태 병합 (조회 조건 기반) 3) 태그 요약 적용
+     * 목록 공통 enrich 처리.
+     * 1) 휴일 정보 매핑 2) 해석 정보 병합 3) 상태 병합 4) 태그 요약 적용 5) 관련글 병합
      *
+     * @param username 사용자 계정명
      * @param listDto 조회 결과 리스트
-     * @param searchParam 조회 조건
+     * @param searchParam 검색 조건
      * @return enrich 완료 리스트
      */
     private List<JournalDayDto> enrichList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
+        this.mergeLifecycles(listDto);
         this.mergeRelatedContents(username, listDto);
 
         return listDto;
     }
 
     /**
-     * 주간 목록 전용 enrich 처리
+     * 주간 목록 전용 enrich 처리.
      *
+     * @param username 사용자 계정명
      * @param listDto 조회 결과 리스트
-     * @param searchParam 조회 조건
+     * @param searchParam 검색 조건
      * @return enrich 완료 리스트
      */
     private List<JournalDayDto> enrichWeeklyList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
+        this.mergeLifecycles(listDto);
         this.mergeRelatedContents(username, listDto);
 
         return listDto;
     }
 
     /**
-     * 단건 공통 enrich 처리
+     * 상세 공통 enrich 처리.
      *
+     * @param username 사용자 계정명
      * @param retrieved 조회 결과
      * @return enrich 완료 DTO
      */
@@ -187,91 +201,91 @@ public class JournalDayQueryService {
         if (retrieved == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(retrieved, getHolydayMap());
+        this.mergeInterpretations(username, List.of(retrieved));
         JournalDayViewHelper.mergeStates(username, retrieved);
+        this.mergeLifecycles(List.of(retrieved));
         this.mergeRelatedContents(username, List.of(retrieved));
 
         return retrieved;
+    }
+
+    private void mergeInterpretations(final String username, final List<JournalDayDto> listDto) throws Exception {
+        if (listDto == null || listDto.isEmpty()) return;
+
+        final List<BaseAttachableKey> refKeyList = new ArrayList<>();
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    refKeyList.add(new BaseAttachableKey(entry.getId(), policy.contentType))
+            );
+        }
+
+        final Map<String, List<JournalInterpretationDto>> interpretationMap =
+                journalInterpretationQueryService.getInterpretationMapByRefs(refKeyList, username);
+
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    entry.setJournalInterpretationList(
+                            interpretationMap.getOrDefault(buildRefMapKey(policy.contentType.key, entry.getId()), List.of())
+                    )
+            );
+        }
     }
 
     private void mergeRelatedContents(final String username, final List<JournalDayDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
         final List<BaseAttachableKey> refKeyList = new ArrayList<>();
-        for (final JournalDayDto journalDay : listDto) {
-            if (journalDay == null) continue;
-
-            final List<JournalChapterDto> journalChapterList = journalDay.getJournalChapterList();
-            if (journalChapterList != null) {
-                for (final JournalChapterDto journalChapter : journalChapterList) {
-                    if (journalChapter == null) continue;
-
-                    if (journalChapter.getJournalDiaryList() != null) {
-                    for (final JournalDiaryDto journalDiary : journalChapter.getJournalDiaryList()) {
-                        if (journalDiary == null || journalDiary.getId() == null) continue;
-                        refKeyList.add(new BaseAttachableKey(journalDiary.getId(), ContentType.JOURNAL_DIARY));
-                    }
-                    }
-                    if (journalChapter.getJournalNoteList() != null) {
-                        for (final JournalNoteDto journalNote : journalChapter.getJournalNoteList()) {
-                            if (journalNote == null || journalNote.getId() == null) continue;
-                            refKeyList.add(new BaseAttachableKey(journalNote.getId(), ContentType.JOURNAL_NOTE));
-                        }
-                    }
-                }
-            }
-
-            this.collectDreamRefKeys(refKeyList, journalDay.getJournalDreamList());
-            this.collectDreamRefKeys(refKeyList, journalDay.getJournalElseDreamList());
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.values()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    refKeyList.add(new BaseAttachableKey(entry.getId(), policy.contentType))
+            );
         }
 
-        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
+        final Map<String, List<RelatedContentDto>> relatedMap =
+                relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
 
-        for (final JournalDayDto journalDay : listDto) {
-            if (journalDay == null) continue;
-
-            final List<JournalChapterDto> journalChapterList = journalDay.getJournalChapterList();
-            if (journalChapterList != null) {
-                for (final JournalChapterDto journalChapter : journalChapterList) {
-                    if (journalChapter == null) continue;
-
-                    if (journalChapter.getJournalDiaryList() != null) {
-                    for (final JournalDiaryDto journalDiary : journalChapter.getJournalDiaryList()) {
-                        if (journalDiary == null || journalDiary.getId() == null) continue;
-                        journalDiary.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_DIARY.key, journalDiary.getId()));
-                    }
-                    }
-                    if (journalChapter.getJournalNoteList() != null) {
-                        for (final JournalNoteDto journalNote : journalChapter.getJournalNoteList()) {
-                            if (journalNote == null || journalNote.getId() == null) continue;
-                            journalNote.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_NOTE.key, journalNote.getId()));
-                        }
-                    }
-                }
-            }
-
-            this.applyDreamRelatedContents(relatedMap, journalDay.getJournalDreamList());
-            this.applyDreamRelatedContents(relatedMap, journalDay.getJournalElseDreamList());
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.values()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry ->
+                    entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()))
+            );
         }
     }
 
-    private void collectDreamRefKeys(final List<BaseAttachableKey> refKeyList, final List<JournalDreamDto> journalDreamList) {
-        if (journalDreamList == null) return;
+    /**
+     * 캐시 누락 여부와 상관없이 DB 기준 lifecycle 값을 일자 트리에 병합한다.
+     *
+     * @param listDto 일자 목록
+     */
+    private void mergeLifecycles(final List<JournalDayDto> listDto) {
+        if (listDto == null || listDto.isEmpty()) return;
 
-        for (final JournalDreamDto journalDream : journalDreamList) {
-            if (journalDream == null || journalDream.getId() == null) continue;
-            refKeyList.add(new BaseAttachableKey(journalDream.getId(), ContentType.JOURNAL_DREAM));
-        }
-    }
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+            final List<JournalEntryDto> entryList = this.collectEntriesByType(listDto, policy.contentType);
+            final List<Integer> entryIds = entryList.stream()
+                    .map(JournalEntryDto::getId)
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .toList();
+            JournalLifecycleViewHelper.applyEntryLifecycle(
+                    entryList,
+                    lifecycleService.getLifecycleMap(policy.contentType, entryIds)
+            );
 
-    private void applyDreamRelatedContents(
-            final Map<String, List<RelatedContentDto>> relatedMap,
-            final List<JournalDreamDto> journalDreamList
-    ) {
-        if (journalDreamList == null) return;
-
-        for (final JournalDreamDto journalDream : journalDreamList) {
-            if (journalDream == null || journalDream.getId() == null) continue;
-            journalDream.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_DREAM.key, journalDream.getId()));
+            final List<JournalInterpretationDto> interpretationList = entryList.stream()
+                    .flatMap(entry -> entry.getJournalInterpretationList() == null
+                            ? java.util.stream.Stream.empty()
+                            : entry.getJournalInterpretationList().stream())
+                    .filter(java.util.Objects::nonNull)
+                    .toList();
+            final List<Integer> interpretationIds = interpretationList.stream()
+                    .map(JournalInterpretationDto::getId)
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .toList();
+            JournalLifecycleViewHelper.applyInterpretationLifecycle(
+                    interpretationList,
+                    lifecycleService.getLifecycleMap(ContentType.JOURNAL_INTERPRETATION, interpretationIds)
+            );
         }
     }
 
@@ -280,11 +294,59 @@ public class JournalDayQueryService {
             final String contentType,
             final Integer id
     ) {
-        return relatedMap.getOrDefault(String.format("%s:%d", contentType, id), List.of());
+        return relatedMap.getOrDefault(buildRefMapKey(contentType, id), List.of());
+    }
+
+    private String buildRefMapKey(final String contentType, final Integer id) {
+        return String.format("%s:%d", contentType, id);
+    }
+
+    private void forEachEntryByType(
+            final List<JournalDayDto> listDto,
+            final ContentType contentType,
+            final Consumer<JournalEntryDto> consumer
+    ) {
+        if (listDto == null || contentType == null || consumer == null) return;
+
+        for (final JournalDayDto journalDay : listDto) {
+            if (journalDay == null || journalDay.getJournalChapterList() == null) continue;
+
+            for (final JournalChapterDto journalChapter : journalDay.getJournalChapterList()) {
+                if (journalChapter == null) continue;
+                final List<JournalEntryDto> entryList =
+                        JournalEntryViewProjectionHelper.getEntriesByType(journalChapter, contentType);
+                forEachEntry(entryList, consumer);
+            }
+        }
     }
 
     /**
-     * 휴일 정보 캐시 조회
+     * 일자 트리에서 특정 컨텐츠 타입의 엔트리를 모은다.
+     *
+     * @param listDto 일자 목록
+     * @param contentType 컨텐츠 타입
+     * @return 엔트리 목록
+     */
+    private List<JournalEntryDto> collectEntriesByType(
+            final List<JournalDayDto> listDto,
+            final ContentType contentType
+    ) {
+        final List<JournalEntryDto> entryList = new ArrayList<>();
+        this.forEachEntryByType(listDto, contentType, entryList::add);
+        return entryList;
+    }
+
+    private void forEachEntry(final List<JournalEntryDto> entryList, final Consumer<JournalEntryDto> consumer) {
+        if (entryList == null || consumer == null) return;
+
+        for (final JournalEntryDto entry : entryList) {
+            if (entry == null || entry.getId() == null) continue;
+            consumer.accept(entry);
+        }
+    }
+
+    /**
+     * 휴일 정보 캐시를 조회한다.
      *
      * @return 휴일 맵
      */
@@ -293,5 +355,3 @@ public class JournalDayQueryService {
         return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
     }
 }
-
-

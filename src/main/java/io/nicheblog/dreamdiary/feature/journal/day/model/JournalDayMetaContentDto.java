@@ -8,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * JournalDayMetaContentDto
+ * 저널 일자에 연결된 메타 콘텐츠 DTO({@link MetaContentDto} 확장).
  *
  * @author nichefish
  */

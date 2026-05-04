@@ -44,22 +44,22 @@
                 <#--begin::Form-->
                 <div class="mb-7 d-flex-between gap-4">
                     <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">년도</span>
+                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1"><@spring.message 'txt.yy'/></span>
                         <select name="yy" id="yy" class="form-select" aria-label="Select example"
                                 onchange="dF.JournalAnnualAsideyyMnth(this);">
-                            <option value="">모든 년도</option>
+                            <option value=""><@spring.message 'txt.journal.annual.all-years'/></option>
                             <#assign currYy = DateUtils.getCurrYy()?number />
                             <#assign startYy = 2010 />
                             <#list currYy..startYy as year>
-                                <option value="${year}"><#if year == 2010>~</#if>${year}년</option>
+                                <option value="${year}"><#if year == 2010>~</#if>${year}<@spring.message 'txt.date.suffix.year-after-number'/></option>
                             </#list>
                         </select>
                     </div>
                     <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">월</span>
+                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1"><@spring.message 'txt.mnth'/></span>
                         <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
                                 onchange="dF.JournalAnnualAsideyyMnth(this);">
-                            <option value="">모든 월</option>
+                            <option value=""><@spring.message 'txt.journal.annual.all-months'/></option>
                             <#list 1..12 as mnth>
                                 <option value="${mnth}">${mnth}</option>
                             </#list>

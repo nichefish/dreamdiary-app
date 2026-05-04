@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 
 /**
  * StateCacheUpdater
+ * 콘텐츠 타입별로 상태 캐시 갱신 로직을 분리하기 위한 SPI.
  *
  * @author nichefish
  */

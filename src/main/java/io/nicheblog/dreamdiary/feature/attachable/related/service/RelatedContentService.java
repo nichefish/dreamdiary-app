@@ -10,15 +10,10 @@ import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDt
 import io.nicheblog.dreamdiary.feature.attachable.related.repository.jpa.RelatedContentRepository;
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationOriginType;
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationType;
-import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
-import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
-import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
-import io.nicheblog.dreamdiary.feature.journal.dream.repository.jpa.JournalDreamRepository;
-import io.nicheblog.dreamdiary.feature.journal.note.entity.JournalNoteEntity;
-import io.nicheblog.dreamdiary.feature.journal.note.repository.jpa.JournalNoteRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,12 +31,10 @@ import java.util.Objects;
  * @author nichefish
  */
 @Service
-@RequiredArgsConstructor
 public class RelatedContentService {
 
     private static final EnumSet<ContentType> SUPPORTED_TYPES = EnumSet.of(
             ContentType.JOURNAL_DIARY,
-            ContentType.JOURNAL_NOTE,
             ContentType.JOURNAL_DREAM
     );
 
@@ -50,9 +43,17 @@ public class RelatedContentService {
     @Getter
     private final RelatedContentMapstruct mapstruct;
 
-    private final JournalDiaryRepository journalDiaryRepository;
-    private final JournalNoteRepository journalNoteRepository;
-    private final JournalDreamRepository journalDreamRepository;
+    private final JournalEntryService journalEntryService;
+
+    public RelatedContentService(
+            final RelatedContentRepository repository,
+            final RelatedContentMapstruct mapstruct,
+            final @Lazy JournalEntryService journalEntryService
+    ) {
+        this.repository = repository;
+        this.mapstruct = mapstruct;
+        this.journalEntryService = journalEntryService;
+    }
 
     @Transactional
     public RelatedContentDto saveManualRelation(
@@ -230,33 +231,11 @@ public class RelatedContentService {
     }
 
     private String resolveCreatedBy(final BaseAttachableKey refKey) {
-        return switch (refKey.getContentTypeEnum()) {
-            case JOURNAL_DIARY -> journalDiaryRepository.findById(refKey.getId())
-                    .map(JournalDiaryEntity::getCreatedBy)
-                    .orElse(null);
-            case JOURNAL_NOTE -> journalNoteRepository.findById(refKey.getId())
-                    .map(JournalNoteEntity::getCreatedBy)
-                    .orElse(null);
-            case JOURNAL_DREAM -> journalDreamRepository.findById(refKey.getId())
-                    .map(JournalDreamEntity::getCreatedBy)
-                    .orElse(null);
-            default -> null;
-        };
+        return journalEntryService.resolveCreatedBy(refKey);
     }
 
     private String resolveTitle(final BaseAttachableKey refKey) {
-        return switch (refKey.getContentTypeEnum()) {
-            case JOURNAL_DIARY -> journalDiaryRepository.findById(refKey.getId())
-                    .map(JournalDiaryEntity::getTitle)
-                    .orElse(null);
-            case JOURNAL_NOTE -> journalNoteRepository.findById(refKey.getId())
-                    .map(JournalNoteEntity::getTitle)
-                    .orElse(null);
-            case JOURNAL_DREAM -> journalDreamRepository.findById(refKey.getId())
-                    .map(JournalDreamEntity::getTitle)
-                    .orElse(null);
-            default -> null;
-        };
+        return journalEntryService.resolveTitle(refKey);
     }
 
     private BaseAttachableKey[] normalizePair(final BaseAttachableKey firstKey, final BaseAttachableKey secondKey) {
@@ -272,4 +251,3 @@ public class RelatedContentService {
         return Integer.compare(firstKey.getId(), secondKey.getId());
     }
 }
-

@@ -91,7 +91,7 @@
             <span class="pe-1 text-muted"><i class="bi bi-tags"></i></span>
             <#list post.tag.list as tag>
                 <span class="text-muted pe-1 cursor-pointer"
-                      onclick="dF.Tag.dtlModal('${tag.refTagNo!}')"
+                      onclick="dF.Tag.dtlModal('${tag.tagId!}')"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                       title="<@spring.message 'view.tag.content-list'/>">
                     <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>

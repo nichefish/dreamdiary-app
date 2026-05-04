@@ -27,4 +27,8 @@ public interface CommentCacheInvalidator {
      * @throws Exception 캐시 무효화 과정에서 발생할 수 있는 예외
      */
     void invalidate(final Integer refId) throws Exception;
+
+    default void invalidate(final Integer refId, final ContentType refContentType) throws Exception {
+        this.invalidate(refId);
+    }
 }

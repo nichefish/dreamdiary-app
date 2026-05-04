@@ -598,8 +598,6 @@ dF.JournalDay = (function(): dfModule {
                     $("#journal_aside #sortIcon").removeClass("bi-sort-numeric-down").addClass("bi-sort-numeric-up-alt");
                     if (cF.util.isNotEmpty(filteredList)) filteredList.reverse();
                 }
-                $("#journal_diary_list_div").empty();
-                $("#journal_dream_list_div").empty();
                 cF.ui.closeModal();
                 const renderModel = {
                     list: filteredList,
@@ -613,10 +611,16 @@ dF.JournalDay = (function(): dfModule {
                 $("#journal_tag_header").toggle(showTagCloud);
                 if (showTagCloud) {
                     dF.JournalDayTag.listAjax();
-                    $("#journal_diary_tag_header").toggleClass("d-none", !showDiaries);
-                    if (showDiaries) dF.JournalDiaryTag.listAjax();
-                    $("#journal_dream_tag_header").toggleClass("d-none", !showDreams);
-                    if (showDreams) dF.JournalDreamTag.listAjax();
+                    dF.JournalEntry.getTaggableContentTypes().forEach(function(contentType: string): void {
+                        const meta: Record<string, any> = dF.JournalEntry.getMeta(contentType);
+                        const headerSelector: string = `#journal_${meta.cssPrefix}_tag_header`;
+                        const isVisible: boolean =
+                            (contentType === "JOURNAL_DIARY" && showDiaries)
+                            || (contentType === "JOURNAL_DREAM" && showDreams);
+
+                        $(headerSelector).toggleClass("d-none", !isVisible);
+                        if (isVisible) dF.JournalEntryTag.get(contentType).listAjax();
+                    });
                 }
             }, "block");
         },

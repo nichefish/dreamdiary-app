@@ -173,6 +173,22 @@ CREATE TABLE IF NOT EXISTS state (
 
 -- ---------- --
 
+-- lifecycle
+-- @extends: BaseCrudEntity
+CREATE TABLE IF NOT EXISTS lifecycle (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'lifecycle ID',
+    ref_id INT COMMENT 'reference id',
+    ref_content_type VARCHAR(30) COMMENT 'reference content type',
+    --
+    lifecycle_key VARCHAR(32) NOT NULL COMMENT 'lifecycle key',
+    deleted_at DATETIME COMMENT 'deleted at',
+    UNIQUE KEY uk_lifecycle (ref_content_type, ref_id),
+    INDEX idx_lifecycle_key (lifecycle_key),
+    INDEX idx_lifecycle_ref (ref_id, ref_content_type)
+) COMMENT = 'lifecycle';
+
+-- ---------- --
+
 -- 조치자(managtr)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS managtr (

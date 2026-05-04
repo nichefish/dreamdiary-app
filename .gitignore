@@ -4,6 +4,8 @@
 /.idea/
 /.vscode/
 /build/
+/buildSrc/.gradle/
+/buildSrc/build/
 /node_modules/
 /.codex
 /*.log

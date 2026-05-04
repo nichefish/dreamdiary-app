@@ -32,8 +32,8 @@
                 <!--begin::Info-->
                 <div class="d-flex align-items-center py-1">
                     <a href="#answers" data-kt-scroll-toggle="true"
-                       class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2">댓글 {{commentCnt}}</a>
-                    <button class="btn btn-sm btn-light px-4 me-2 disabled">조회수 {{hitCnt}}</button>
+                       class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'txt.board.detail.comment'/> {{commentCnt}}</a>
+                    <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'txt.board.detail.hit'/> {{hitCnt}}</button>
                 </div>
             </div>
         </div>
@@ -53,17 +53,17 @@
         <#--begin::Modal Footer-->
         <div class="modal-footer">
             <div class="d-flex align-items-center me-10 text-muted"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="선택한 기간 동안&#10;이 팝업을 열지 않습니다.">
-                <label for="noticePopupCookieChk" class="cursor-help me-2">이 팝업을 브라우저에서</label>
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.board.notice.popup.hide-period'/>">
+                <label for="noticePopupCookieChk" class="cursor-help me-2"><@spring.message 'txt.board.notice.popup.browser-prefix'/></label>
                 <select name="noticePopupCookieTime" id="noticePopupCookieTime" class="form-select form-select-solid w-auto py-2 me-2 fs-7 cursor-help text-muted">
-                    <option value="600">10분간</option>
-                    <option value="midnight">오늘 하루</option>
-                    <option value="forever">영원히...</option>
+                    <option value="600"><@spring.message 'txt.board.notice.popup.period.10-minutes'/></option>
+                    <option value="midnight"><@spring.message 'txt.board.notice.popup.period.today'/></option>
+                    <option value="forever"><@spring.message 'txt.board.notice.popup.period.forever'/></option>
                 </select>
-                <label for="noticePopupCookieChk" class="me-2 text-muted cursor-help">보지 않기</label>
+                <label for="noticePopupCookieChk" class="me-2 text-muted cursor-help"><@spring.message 'txt.board.notice.popup.hide'/></label>
                 <input type="checkbox" name="noticePopupCookieChk" id="noticePopupCookieChk" class="form-check-input cursor-pointer">
             </div>
-            <button type="button" class="btn btn-sm btn-light" onclick="dF.NoticePopup.closeBtnFunc();">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" onclick="dF.NoticePopup.closeBtnFunc();"><@spring.message 'txt.comm.close'/></button>
         </div>
     </div>
 </script>

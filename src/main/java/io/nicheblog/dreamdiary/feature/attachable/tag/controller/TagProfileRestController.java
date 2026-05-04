@@ -37,11 +37,11 @@ public class TagProfileRestController
 
     private final TagProfileService tagProfileService;
 
-    @GetMapping(Url.TAG_PROFILES)
+    @GetMapping(Url.TAG_PROFILE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagProfileDtlAjax(
-            final @RequestParam("tagId") Integer tagId,
+            final @PathVariable Integer tagId,
             final @RequestParam("contentType") String contentType
     ) throws Exception {
         final TagProfileDto tagProfile = tagProfileService.getDtoByRefOrNew(tagId, contentType);
@@ -51,12 +51,16 @@ public class TagProfileRestController
         );
     }
 
-    @PostMapping(Url.TAG_PROFILES)
+    @PostMapping(Url.TAG_PROFILE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagProfileRegAjax(
+            final @PathVariable Integer tagId,
             final @Valid TagProfileDto tagProfile
     ) throws Exception {
+        // 변경 전: tagId를 body/form 데이터에서만 수신
+        // 변경 후: /tags/{tagId}/profile 경로 변수 기준으로 tagId를 고정
+        tagProfile.setTagId(tagId);
 
         final ServiceResponse result = tagProfileService.upsert(tagProfile);
         if (Boolean.TRUE.equals(result.getRslt())) {
@@ -70,14 +74,22 @@ public class TagProfileRestController
     @DeleteMapping(Url.TAG_PROFILE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> tagProfileDelAjax(
-            final @PathVariable("id") Integer id
+    public ResponseEntity<AjaxResponse> tagProfileDelByTagAjax(
+            final @PathVariable Integer tagId,
+            final @RequestParam("contentType") String contentType
     ) throws Exception {
 
-        final TagProfileDto existing = tagProfileService.getDtlDto(id);
-        final ServiceResponse result = tagProfileService.delete(id);
-        if (Boolean.TRUE.equals(result.getRslt()) && existing != null) {
-            tagProfileService.evictTagCloudCaches(existing.getContentType());
+        // 변경 전: /tag-profile/{id}로만 삭제 가능
+        // 변경 후: /tags/{tagId}/profile?contentType=... 형태로 삭제 가능
+        final TagProfileDto existing = tagProfileService.getDtoByTagIdAndContentType(tagId, contentType).orElse(null);
+        if (existing == null || existing.getId() == null) {
+            final ServiceResponse emptyResult = new ServiceResponse(false, MessageUtils.RSLT_EMPTY);
+            return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(emptyResult, MessageUtils.RSLT_EMPTY));
+        }
+
+        final ServiceResponse result = tagProfileService.delete(existing.getId());
+        if (Boolean.TRUE.equals(result.getRslt())) {
+            tagProfileService.evictTagCloudCaches(contentType);
         }
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.RSLT_SUCCESS));
     }

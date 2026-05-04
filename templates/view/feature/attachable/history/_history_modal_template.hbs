@@ -70,7 +70,31 @@
                             </button>
                         </div>
                     </div>
-                    <div class="journal-history-preview fs-7 text-gray-700">{{ifEmpty previewContent "-"}}</div>
+                    <div class="journal-history-preview fs-7 text-gray-700">
+                        <div class="fw-semibold text-muted mb-2"><@spring.message 'txt.history.summary'/></div>
+                        {{ifEmpty previewContent "-"}}
+                    </div>
+                    <div class="mt-3">
+                        <button type="button"
+                                class="btn btn-sm btn-light"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#attachable_history_detail_{{id}}"
+                                aria-expanded="false"
+                                aria-controls="attachable_history_detail_{{id}}">
+                            <i class="bi bi-layout-text-window"></i>
+                            <span><@spring.message 'txt.history.detail'/></span>
+                        </button>
+                    </div>
+                    <div id="attachable_history_detail_{{id}}" class="collapse mt-3">
+                        <div class="border rounded bg-light px-4 py-4 fs-7 text-gray-800 journal-history-detail">
+                            <div class="fw-semibold text-muted mb-3"><@spring.message 'txt.history.detail'/></div>
+                            {{#if markdownContent}}
+                                {{{markdownContent}}}
+                            {{else}}
+                                -
+                            {{/if}}
+                        </div>
+                    </div>
                 </div>
             </div>
         {{else}}

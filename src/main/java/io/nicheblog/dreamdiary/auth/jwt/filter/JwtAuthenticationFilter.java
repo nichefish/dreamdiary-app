@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.config.WebSecurityAdapter;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -87,11 +88,11 @@ public class JwtAuthenticationFilter
         } catch (final AuthenticationException e) {
             log.error("Authentication failed: {}", e.getMessage());
             invalidateAuthentication(request);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, MessageUtils.getMessage("msg.rslt.authentication-failed"));
             return; // 필터 체인 중단
         } catch (final Exception e) {
             log.error("Unexpected error: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, MessageUtils.getMessage("msg.rslt.exception"));
             return; // 필터 체인 중단
         }
 

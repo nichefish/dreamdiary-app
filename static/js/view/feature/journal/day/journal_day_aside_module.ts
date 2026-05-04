@@ -68,9 +68,9 @@ dF.JournalDayAside = (function(): dfModule {
         changeYy: function(): void {
             cF.handlebars.template(null, "journal_day_list");
             cF.handlebars.template([], "journal_day_tag_list");
-            cF.handlebars.template([], "journal_diary_tag_list");
-            cF.handlebars.template([], "journal_dream_tag_list");
-            dF.JournalDream.inKeywordSearchMode = false;
+            dF.JournalEntryTag?.get?.("JOURNAL_DIARY")?.renderList?.([]);
+            dF.JournalEntryTag?.get?.("JOURNAL_DREAM")?.renderList?.([]);
+            dF.JournalEntry.get("JOURNAL_DREAM").inKeywordSearchMode = false;
 
             const yyElement: HTMLSelectElement = document.querySelector("#journal_aside #yy") as HTMLSelectElement;
             const selectedYear: string = yyElement.value;
@@ -125,7 +125,7 @@ dF.JournalDayAside = (function(): dfModule {
             dF.JournalDayAside.syncWeekNavigator(dF.JournalDay.currentSearchParams.stdrdDt);
 
             if (dF.JournalDay.viewType === "WEEKLY") {
-                dF.JournalDream.inKeywordSearchMode = false;
+                dF.JournalEntry.get("JOURNAL_DREAM").inKeywordSearchMode = false;
                 // buildViewUrl → resolveAnchorDateForView가 Page.stdrdDt를 우선 참조하므로, 목적지 날짜로 미리 동기화해야 올바른 월로 이동한다.
                 Page.stdrdDt = dF.JournalDay.currentSearchParams.stdrdDt;
                 cF.ui.blockUIReplace(dF.JournalDay.buildViewUrl(Url.JOURNAL_DAY_MONTHLY));
@@ -142,7 +142,7 @@ dF.JournalDayAside = (function(): dfModule {
                 dF.JournalDay.yyMnthListAjax();
             }
 
-            dF.JournalDream.inKeywordSearchMode = false;
+            dF.JournalEntry.get("JOURNAL_DREAM").inKeywordSearchMode = false;
             Layout.toPageTop();
         },
 

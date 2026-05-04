@@ -94,14 +94,14 @@ public class MarkdownUtils {
             } else if (insidePreTag) {
                 result.append(part);
             } else {
-                // " " 로 묶인 부분을 색상 처리. 단순따옴표 → 특수문자 처리.
-                final Pattern highlightPattern = Pattern.compile("\"(.*?)\"");
-                final Matcher highlightMatcher = highlightPattern.matcher(part);
-                while (highlightMatcher.find()) {
-                    final String group = highlightMatcher.group(1);
-                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    part = part.replace("\"" + group + "\"", "<span class='md-text-dialog'>“" + group + "”</span>");
-                }
+                // 줄 전체가 대시 3개 이상인 경우 수평선(<hr>)으로 처리
+                part = part.replaceAll("(?m)^[ \\t]*-{3,}[ \\t]*$", "<hr>");
+
+                // " " 로 묶인 부분을 대사 스타일 처리 (HTML 이스케이프 포함)
+                part = replaceDialogPattern(part, Pattern.compile("\"(.*?)\""), "“", "”", MAX_GROUP_LENGTH);
+
+                // 『 』 로 묶인 부분도 대사 스타일 처리 (HTML 이스케이프 포함)
+                part = replaceDialogPattern(part, Pattern.compile("『(.*?)』"), "『", "』", MAX_GROUP_LENGTH);
 
                 // -- -- 로 묶인 부분을 회색으로 표시하되, - - 처리
                 final Pattern grayPattern = Pattern.compile("--(.*?)(--)");
@@ -165,6 +165,40 @@ public class MarkdownUtils {
         }
 
         return result.toString();
+    }
+
+    /**
+     * 대사 패턴 치환
+     *
+     * @param source 원본 문자열
+     * @param pattern 치환할 정규식 (group(1)에 본문)
+     * @param openPrefix 출력시 앞에 붙일 문자
+     * @param closeSuffix 출력시 뒤에 붙일 문자
+     * @param maxGroupLength 허용 최대 길이
+     * @return 치환 결과 문자열
+     */
+    private static String replaceDialogPattern(
+            final String source,
+            final Pattern pattern,
+            final String openPrefix,
+            final String closeSuffix,
+            final int maxGroupLength
+    ) {
+        final Matcher matcher = pattern.matcher(source);
+        final StringBuilder buffer = new StringBuilder();
+        while (matcher.find()) {
+            final String group = matcher.group(1);
+            if (group == null || group.length() > maxGroupLength) {
+                matcher.appendReplacement(buffer, Matcher.quoteReplacement(matcher.group(0)));
+                continue;
+            }
+
+            final String escaped = StringEscapeUtils.escapeHtml4(group);
+            final String replacement = "<span class='md-text-dialog'>" + openPrefix + escaped + closeSuffix + "</span>";
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
     }
 
     /**

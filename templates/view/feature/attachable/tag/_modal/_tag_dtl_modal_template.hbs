@@ -7,13 +7,13 @@
     <div class="d-flex align-items-center justify-content-between">
         <h1 class="fs-2x fw-bolder text-gray-900 mb-0 me-1">
             <span class="vertical-middle">
-                "<u class="border-bottom">{{tagNm}}</u>" : 총 <u>{{size}}</u>개의 글이 있습니다.
+                "<u class="border-bottom">{{tagNm}}</u>" : <@spring.message 'txt.attachable.tag.detail.post-count-prefix'/> <u>{{size}}</u><@spring.message 'txt.attachable.tag.detail.post-count-suffix'/>
              </span>
         </h1>
         <h5 class="modal-title">
             <div class="btn btn-sm bg-secondary btn-light-primary"
                  onclick="Tag.listAjax();"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="전체 태그 목록 팝업을&#10;호출합니다.">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.attachable.tag.detail.open-all-tags'/>">
                 <span class="border-bottom"><@spring.message "view.tag.list-all"/></span>
             </div>
         </h5>

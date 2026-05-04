@@ -8,6 +8,7 @@ import java.util.Optional;
 
 /**
  * ImageMimeType
+ * 업로드 허용·MIME 검증에 쓰는 이미지 확장자와 Content-Type 쌍.
  *
  * @author nichefish
  */

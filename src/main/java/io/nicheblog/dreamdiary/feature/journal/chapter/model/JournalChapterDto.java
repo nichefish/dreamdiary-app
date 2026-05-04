@@ -8,8 +8,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
-import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
-import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -37,7 +36,7 @@ public class JournalChapterDto
         extends BaseAttachableDto
         implements Identifiable<Integer>, StateCmpstnModule, TagCmpstnModule, JournalPeriodModule, Comparable<JournalChapterDto> {
 
-    /** 필수: 컨텐츠 타입 */
+    /** 컨텐츠 타입: 저널 챕터 */
     @Builder.Default
     private String contentType = ContentType.JOURNAL_CHAPTER.key;
 
@@ -47,46 +46,42 @@ public class JournalChapterDto
 
     /** 제목 */
     private String title;
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
+    /** 카테고리 코드: join 없이 화면 표시용으로 사용 */
     private String categoryCode;
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
+    /** 카테고리 이름: join 없이 화면 표시용으로 사용 */
     private String categoryName;
 
-    /** 마크다운 처리된 내용 */
+    /** 마크다운 변환용 원문 */
     private String markdownContent;
 
-    /** 인덱스 변경 여부 */
+    /** 정렬순서 변경 여부 */
     @Builder.Default
     private Boolean isSortOrderChanged = false;
 
     /* ----- */
 
-    /** 저널 일자 번호 */
+    /** 저널 일자 ID */
     private Integer journalDayId;
-    /** 저널 기준일자 */
+    /** 기준 일자 */
     private String stdrdDt;
     /** 저널 일자 요일 */
     private String journalDateWeekDay;
-    /** 저널 기준일자 */
+    /** 연도 */
     private Integer yy;
-    /** 저널 기준일자 */
+    /** 월 */
     private Integer mnth;
-    /** 순번 */
+    /** 정렬순서 */
     private Integer sortOrder;
 
-    /** 저널 일기 목록 */
-    private List<JournalDiaryDto> journalDiaryList;
-
-    /** 저널 노트 목록 */
-    private List<JournalNoteDto> journalNoteList;
-
+    /** 저널 엔트리 목록 */
+    private List<JournalEntryDto> journalEntryList;
     /* ----- */
 
     /**
-     * 날짜 오름차순 정렬
+     * 기준 일자 기준으로 비교한다.
      *
-     * @param other - 비교할 객체
-     * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
+     * @param other 비교 대상
+     * @return 기준 일자 비교 결과
      */
     @SneakyThrows
     @Override
@@ -103,9 +98,8 @@ public class JournalChapterDto
         return this.id;
     }
 
-    /** 위임 :: 태그 정보 모듈 */
+    /** 태그 컴포지션 모듈 */
     public TagCmpstn tag;
-    /** 위임 :: 상태 정보 모듈 */
+    /** 상태 컴포지션 모듈 */
     public StateCmpstn state;
 }
-
