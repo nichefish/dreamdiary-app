@@ -47,13 +47,13 @@ public class JournalSbjctService
     /**
      * 등록 후처리. (override)
      *
-     * @param updatedDto - 등록된 객체
+     * @param updatedDto 등록된 객체
      */
     @Override
     public void postRegist(final JournalSbjctDto updatedDto) throws Exception {
-        // 조치자 추가 :: 메인 로직과 분리
+        // 조치자 추가는 메인 로직과 분리한다.
         publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
-        // 잔디 메세지 발송 :: 메인 로직과 분리
+        // 잔디 메시지 발송은 메인 로직과 분리한다.
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyJournalSbjctReg(trgetTopic, result, logParam);
         //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
@@ -61,9 +61,9 @@ public class JournalSbjctService
     }
 
     /**
-     * 상세 페이지 조회 후처리 (dto level)
+     * 상세 페이지 조회 전처리. (dto level)
      *
-     * @param key - 조회된 Dto 객체
+     * @param key 조회할 DTO 식별자
      */
     @Transactional
     public JournalSbjctDto viewDtlPage(final Integer key) throws Exception {
@@ -73,8 +73,8 @@ public class JournalSbjctService
     /**
      * 수정 전처리. (override)
      *
-     * @param modifyDto - ?섏젙??媛앹껜
-     * @param modifyEntity - ?섏젙??媛앹껜
+     * @param modifyDto 수정 요청 객체
+     * @param modifyEntity 수정 대상 엔티티
      */
     @Override
     public void preModify(final JournalSbjctDto modifyDto, final JournalSbjctEntity modifyEntity) throws Exception {
@@ -86,13 +86,14 @@ public class JournalSbjctService
     /**
      * 수정 후처리. (override)
      *
-     * @param updatedDto - 등록된 객체
+     * @param postDto 수정 요청 객체
+     * @param updatedDto 수정 결과 객체
      */
     @Override
     public void postModify(final JournalSbjctDto postDto, final JournalSbjctDto updatedDto) throws Exception {
-        // 조치자 추가 :: 메인 로직과 분리
+        // 조치자 추가는 메인 로직과 분리한다.
         publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
-        // 잔디 메세지 발송 :: 메인 로직과 분리
+        // 잔디 메시지 발송은 메인 로직과 분리한다.
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyJournalSbjctReg(trgetTopic, result, logParam);
         //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
@@ -102,7 +103,7 @@ public class JournalSbjctService
     /**
      * 삭제 전처리. (override)
      *
-     * @param deletedDto - 삭제될 객체
+     * @param deletedDto 삭제할 객체
      */
     @Override
     public void preDelete(final JournalSbjctDto deletedDto) throws Exception {
@@ -111,5 +112,3 @@ public class JournalSbjctService
         }
     }
 }
-
-

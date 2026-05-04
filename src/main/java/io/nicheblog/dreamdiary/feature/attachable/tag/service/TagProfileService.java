@@ -199,26 +199,13 @@ public class TagProfileService
         if (StringUtils.isBlank(username) || StringUtils.isBlank(contentType)) return;
 
         if (ContentType.JOURNAL_DAY.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("journalDayYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDayWeeklyTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDayYyMnthSizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDayWeeklySizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDayPeriodTagListByUser", username);
             return;
         }
-        if (ContentType.JOURNAL_DIARY.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("journalDiaryTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDiaryYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDiaryWeeklyTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDiaryYyMnthSizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDiaryWeeklySizedTagListByUser", username);
-            return;
-        }
-        if (ContentType.JOURNAL_DREAM.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("journalDreamTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDreamYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDreamWeeklyTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDreamYyMnthSizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDreamWeeklySizedTagListByUser", username);
+        if (ContentType.JOURNAL_DIARY.key.equals(contentType)
+                || ContentType.JOURNAL_DREAM.key.equals(contentType)) {
+            EhCacheUtils.clearUserCache("journalEntryTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalEntryPeriodTagListByUser", username);
         }
     }
 
@@ -346,5 +333,4 @@ public class TagProfileService
         return "text-" + normalized.toLowerCase(Locale.ROOT);
     }
 }
-
 

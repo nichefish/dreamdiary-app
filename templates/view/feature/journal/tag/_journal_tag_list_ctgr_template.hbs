@@ -6,13 +6,13 @@
 <script type="text/x-handlebars-template" id="journal_tag_ctgr_template">
     <div class="btn btn-sm btn-outlined btn-light-secondary text-muted ctgr active"
          onclick="Tag.ctgrFilterAll(this);">
-        전체
+        <@spring.message 'txt.total'/>
         <i class="bi bi-check ctgr"></i>
     </div>
 
     <div class="btn btn-sm btn-outlined btn-light-secondary text-muted ctgr defaultCtgr active"
          onclick="Tag.ctgrFilter('defaultCtgr');">
-        카테고리 없음
+        <@spring.message 'txt.journal.tag.no-category'/>
         <i class="bi bi-check ctgr defaultCtgr"></i>
     </div>
     {{#each this}}

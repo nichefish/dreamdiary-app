@@ -30,6 +30,26 @@ cF.tinymce = (function(): Module {
         ], */
     };
 
+    const resetContentAsBaseline = function(editor: any, content: string): void {
+        const safeContent = content || "";
+
+        if (typeof editor.resetContent === "function") {
+            editor.resetContent(safeContent);
+        } else {
+            editor.setContent(safeContent);
+        }
+
+        if (editor.undoManager && typeof editor.undoManager.clear === "function") {
+            editor.undoManager.clear();
+        }
+        if (typeof editor.setDirty === "function") {
+            editor.setDirty(false);
+        }
+        if (typeof editor.save === "function") {
+            editor.save();
+        }
+    };
+
     return {
         /**
          * tinymce 에디터를 초기화합니다.
@@ -90,7 +110,7 @@ cF.tinymce = (function(): Module {
             const editor = tinymce.get(editorNm);
             const maxAttempts = 20; // 최대 시도 횟수
             if (editor && editor.initialized) {
-                editor.setContent(content);
+                resetContentAsBaseline(editor, content);
             } else if (attempt < maxAttempts) {
                 // 초기화가 완료될 때까지 재귀적으로 시도
                 setTimeout(function(): void {

@@ -65,11 +65,11 @@ public class TagRestController
      * @param id 태그 ID
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.TAG_DTL_AJAX)
+    @GetMapping(Url.TAG)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> TagDtlAjax(
-            final @RequestParam(value = "id", required = false) Integer id
+            final @PathVariable Integer id
     ) throws Exception {
 
         final TagDto tagDto = tagService.getDtlDto(id);

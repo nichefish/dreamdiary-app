@@ -4,8 +4,9 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachab
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
-import io.nicheblog.dreamdiary.feature.journal.diary.mapstruct.JournalDiaryMapstruct;
-import io.nicheblog.dreamdiary.feature.journal.note.mapstruct.JournalNoteMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.entry.mapstruct.JournalEntryMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -14,15 +15,14 @@ import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * JournalChapterMapstruct
- * <pre>
- *  저널 챕터 MapStruct 기반 Mapper 인터페이스.
- * </pre>
+ * JournalChapter 엔티티와 DTO 간 MapStruct 매핑을 담당한다.
  *
  * @author nichefish
  */
@@ -30,18 +30,15 @@ import java.util.stream.Collectors;
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class },
-    uses = { JournalDiaryMapstruct.class, JournalNoteMapstruct.class },
+    uses = { JournalEntryMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalChapterMapstruct
         implements BaseWriteMapstruct<JournalChapterDto, JournalChapterEntity>, BaseAttachableMapstruct<JournalChapterDto, JournalChapterEntity> {
 
-    /**
-     * Entity -> Dto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return Dto -- 변환된 Dto 객체
-     */
+    @Autowired
+    protected JournalEntryMapstruct journalEntryMapstruct;
+
     @Override
     @Named("toDto")
     @Mapping(target = "stdrdDt", expression = "java(entity.getJournalDay() != null ? DateUtils.asStr(entity.getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
@@ -51,40 +48,25 @@ public abstract class JournalChapterMapstruct
     @Mapping(target = "categoryName", expression = "java(CodeUtils.getCodeName(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCategoryCode()))")
     public abstract JournalChapterDto toDto(final JournalChapterEntity entity) throws Exception;
 
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
     @Named("toSmpDto")
+    @Mapping(target = "categoryName", expression = "java(CodeUtils.getCodeName(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCategoryCode()))")
     public abstract JournalChapterSmpDto toSmpDto(final JournalChapterEntity entity) throws Exception;
 
-    /**
-     * Dto -> Entity 변환
-     *
-     * @param dto 변환할 Dto 객체
-     * @return Entity -- 변환된 Entity 객체
-     */
     @Override
     public abstract JournalChapterEntity toEntity(final JournalChapterDto dto) throws Exception;
 
-    /**
-     * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
-     *
-     * @param dto 업데이트할 Dto 객체
-     * @param entity 업데이트할 대상 Entity 객체
-     */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract void updateFromDto(final JournalChapterDto dto, final @MappingTarget JournalChapterEntity entity) throws Exception;
 
-    /**
-     * EntityList to DtoList
-     *
-     * @param entityList 변환할 Entity 목록
-     * @return {@link List} -- 변환된 Dto 목록
-     */
+    @AfterMapping
+    protected void mapEntryLists(final JournalChapterEntity entity, final @MappingTarget JournalChapterDto dto) throws Exception {
+        final List<JournalEntryDto> journalEntryList = CollectionUtils.isEmpty(entity.getJournalEntryList())
+                ? null
+                : journalEntryMapstruct.toDtoList(entity.getJournalEntryList());
+        JournalEntryViewProjectionHelper.applyChapterEntries(dto, journalEntryList);
+    }
+
     public List<JournalChapterSmpDto> toSmpDtoList(final List<JournalChapterEntity> entityList) {
         if (CollectionUtils.isEmpty(entityList)) return null;
         return entityList.stream()
@@ -98,4 +80,3 @@ public abstract class JournalChapterMapstruct
                 .collect(Collectors.toList());
     }
 }
-

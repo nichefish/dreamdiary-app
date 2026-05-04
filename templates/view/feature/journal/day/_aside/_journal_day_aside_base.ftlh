@@ -60,11 +60,27 @@
                     <!-- separator -->
                     <div class="separator"></div>
                     <!-- 일기 필터 -->
-                    <#include "/view/feature/journal/day/_aside/_journal_day_aside_diary_filter.ftlh">
+                    <#assign journalEntryFilterTitle = "DIARIES">
+                    <#assign journalEntryFilterToggleId = "toggleDiaries">
+                    <#assign journalEntryFilterTooltipKey = "bs.tooltip.journal.aside-diary-toggle">
+                    <#assign journalEntryFilterKeywordId = "diaryFilterKeyword">
+                    <#assign journalEntryFilterKeywordName = "diaryFilterKeyword">
+                    <#assign journalEntryFilterKeywordLabel = "- DIARY KEYWORDS">
+                    <#assign journalEntryFilterKeywordPlaceholderKey = "txt.journal.day.filter.diary.placeholder">
+                    <#assign journalEntryFilterShowChapterCtgr = true>
+                    <#include "/view/feature/journal/day/_aside/_journal_day_aside_entry_filter.ftlh">
                     <!-- separator -->
                     <div class="separator"></div>
                     <!-- 꿈 필터 -->
-                    <#include "/view/feature/journal/day/_aside/_journal_day_aside_dream_filter.ftlh">
+                    <#assign journalEntryFilterTitle = "DREAMS">
+                    <#assign journalEntryFilterToggleId = "toggleDreams">
+                    <#assign journalEntryFilterTooltipKey = "bs.tooltip.journal.aside-dream-toggle">
+                    <#assign journalEntryFilterKeywordId = "dreamFilterKeyword">
+                    <#assign journalEntryFilterKeywordName = "dreamFilterKeyword">
+                    <#assign journalEntryFilterKeywordLabel = "- DREAM KEYWORDS">
+                    <#assign journalEntryFilterKeywordPlaceholderKey = "txt.journal.day.filter.dream.placeholder">
+                    <#assign journalEntryFilterShowChapterCtgr = false>
+                    <#include "/view/feature/journal/day/_aside/_journal_day_aside_entry_filter.ftlh">
                     <!-- separator -->
                     <div class="separator"></div>
                     <!-- 필터 -->

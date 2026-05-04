@@ -9,10 +9,10 @@
             <#--begin::Table head-->
             <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                    <th class="col-lg-6 col-6 text-center wb-keepall">제목</th>
-                    <th class="col-2 text-center wb-keepall">작성자</th>
-                    <th class="col-lg-2 text-center wb-keepall hidden-table">등록일</th>
-                    <th class="text-center wb-keepall w-15 hidden-table">조회수</th>
+                    <th class="col-lg-6 col-6 text-center wb-keepall"><@spring.message 'txt.attachable.tag.post-list.title'/></th>
+                    <th class="col-2 text-center wb-keepall"><@spring.message 'txt.attachable.tag.post-list.author'/></th>
+                    <th class="col-lg-2 text-center wb-keepall hidden-table"><@spring.message 'txt.attachable.tag.post-list.created-at'/></th>
+                    <th class="text-center wb-keepall w-15 hidden-table"><@spring.message 'txt.attachable.tag.post-list.hit'/></th>
                 </tr>
             </thead>
             <#--begin::Table body-->
@@ -20,7 +20,7 @@
                 {{#each this}}
                     <tr class="bg-hover-secondary"
                         onclick="Page.dtl('{{id}}');"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 글로 이동합니다.">
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.attachable.tag.post-list.move-post'/>">
                         <td class="text-start px-2">
                             <span class="vertical-middle">
                                 {{#if hasCtgrNm}}

@@ -55,27 +55,6 @@
                         <div class="menu-content px-3">
                             <!--begin::Switch-->
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
-                                <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#if (hasState state 'RESOLVED')}}tchecked="checked"{{/if}}
-                                       onclick="dF.JournalDiary.resolveAjax({{id}});">
-                                <!--end::Input-->
-                                <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
-                                <!--end::Label-->
-                            </label>
-                            <!--end::Switch-->
-                        </div>
-                    </div>
-                    <!--end::Menu item-->
-                    <!--begin::Menu separator-->
-                    <div class="separator my-2"></div>
-                    <!--end::Menu separator-->
-                    <!--begin::Menu item-->
-                    <div class="menu-item px-3">
-                        <div class="menu-content px-3">
-                            <!--begin::Switch-->
-                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.imprtc'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#if (hasState state 'IMPRTC')}}checked="checked"{{/if}}>
@@ -96,7 +75,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapsed-check" type="checkbox" value="1" {{#if (hasState state 'COLLAPSED')}}checked="checked"{{/if}}
-                                       onclick="dF.JournalDiary.collapseAjax({{id}});">
+                                       onclick="dF.JournalEntry.get('JOURNAL_DIARY').collapseAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>

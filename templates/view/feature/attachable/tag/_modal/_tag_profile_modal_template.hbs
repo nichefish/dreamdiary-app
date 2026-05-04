@@ -21,10 +21,12 @@
         <div class="row">
             <div class="col-6 mb-3 {{#if tagCategoryId}}{{else}}opacity-50{{/if}}" {{#if tagCategoryId}}{{else}}style="filter: grayscale(1); pointer-events: none;" aria-disabled="true"{{/if}}>
                 <label for="tagCategoryTextClassCd" class="form-label fw-bold">
-                    <span id="tagCategoryColorPreview">{{#if tagCategoryId}}[{{ctgr}}]{{/if}}</span> 카테고리 태그 색상
+                    <span id="tagCategoryColorPreview">{{#if tagCategoryId}}[{{ctgr}}]{{/if}}</span> <@spring.message 'txt.attachable.tag.profile.category-tag-color'/>
                 </label>
                 <select id="tagCategoryTextClassCd" name="categoryTextClassCd" class="form-select form-select-solid" {{#if tagCategoryId}}{{else}}disabled{{/if}}>
+                    <#assign hasEmotionInTextClassCode = false>
                     <#list TEXT_CLASS_CD![] as item>
+                        <#if item.code! == "EMOTION"><#assign hasEmotionInTextClassCode = true></#if>
                         <option value="${item.code!}"
                                 data-text-class="${item.description!}"
                                 class="${item.description!}"
@@ -32,19 +34,26 @@
                             ${item.codeName!}
                         </option>
                     </#list>
+                    <#if !hasEmotionInTextClassCode>
+                        <option value="EMOTION" data-text-class="text-emotion" class="text-emotion" {{#if (equals categoryTextClassCd "EMOTION")}}selected{{/if}}>
+                            EMOTION
+                        </option>
+                    </#if>
                 </select>
                 {{#if tagCategoryId}}{{else}}
-                    <div class="fs-8 text-muted mt-1 fw-bold">이 태그는 카테고리가 없어 설정할 수 없습니다.</div>
+                    <div class="fs-8 text-muted mt-1 fw-bold"><@spring.message 'txt.attachable.tag.profile.no-category-guide'/></div>
                 {{/if}}
             </div>
 
             <div class="col-6 mb-4">
-                <label for="tagTextClassCd" class="form-label fw-bold"><span id="tagColorPreview"><span>#</span>{{tagNm}}</span> 개별 태그 색상</label>
+                <label for="tagTextClassCd" class="form-label fw-bold"><span id="tagColorPreview"><span>#</span>{{tagNm}}</span> <@spring.message 'txt.attachable.tag.profile.individual-tag-color'/></label>
                 <select id="tagTextClassCd" name="textClassCd" class="form-select form-select-solid">
                     <option value="" data-text-class="" class="" {{#unless textClassCd}}selected{{/unless}}>
-                        {{#if tagCategoryId}}카테고리와 동일 (상속){{else}}기본 (카테고리 없음){{/if}}
+                        {{#if tagCategoryId}}<@spring.message 'txt.attachable.tag.profile.same-as-category'/>{{else}}<@spring.message 'txt.attachable.tag.profile.default-no-category'/>{{/if}}
                     </option>
+                    <#assign hasEmotionInTextClassCode = false>
                     <#list TEXT_CLASS_CD![] as item>
+                        <#if item.code! == "EMOTION"><#assign hasEmotionInTextClassCode = true></#if>
                         <option value="${item.code!}"
                                 data-text-class="${item.description!}"
                                 class="${item.description!}"
@@ -52,13 +61,18 @@
                             ${item.codeName!}
                         </option>
                     </#list>
+                    <#if !hasEmotionInTextClassCode>
+                        <option value="EMOTION" data-text-class="text-emotion" class="text-emotion" {{#if (equals textClassCd "EMOTION")}}selected{{/if}}>
+                            EMOTION
+                        </option>
+                    </#if>
                 </select>
             </div>
         </div>
 
 
-        <label for="tagProfileCn" class="form-label fw-bold">프로필</label>
+        <label for="tagProfileCn" class="form-label fw-bold"><@spring.message 'txt.attachable.tag.profile.profile'/></label>
         <textarea id="tagProfileCn" name="content" class="form-control" rows="10"
-                  placeholder="이 태그가 각 콘텐츠 타입에서 어떤 의미인지 메모합니다.">{{content}}</textarea>
+                  placeholder="<@spring.message 'txt.attachable.tag.profile.profile-placeholder'/>">{{content}}</textarea>
     </form>
 </script>

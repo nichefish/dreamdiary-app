@@ -30,6 +30,7 @@ public class MyJournalChapterService {
      *
      * @param searchParam 검색조건을 담고 있는 파라미터 객체
      * @return {@link List} -- 조회된 목록
+     * @throws Exception 조회 중 예외
      */
     public List<JournalChapterDto> getMyListDto(final JournalChapterSearchParam searchParam) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
@@ -41,6 +42,7 @@ public class MyJournalChapterService {
      *
      * @param key 일련번호
      * @return {@link JournalChapterDto} -- 조회된 객체
+     * @throws Exception 조회 중 예외
      */
     public JournalChapterDto getMyDtlDtoWithCache(final Integer key) throws Exception {
         final String username = AuthUtils.requireLoginUsername();

@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="journal_day_tag_dtl_modal_template">
     <div class="d-flex flex-column mb-4">
         <div class="d-flex justify-content-start align-items-center gap-3 mb-4">
-            <label for="journal_day_tag_yy" class="form-label mb-0 fw-bold">년도</label>
+            <label for="journal_day_tag_yy" class="form-label mb-0 fw-bold"><@spring.message 'txt.yy'/></label>
             <select id="journal_day_tag_yy"
                     class="form-select form-select-sm w-auto"
                     onchange="dF.JournalDayTag.changeYy({{id}}, this.value);">
@@ -18,7 +18,7 @@
         {{#each list}}
             {{^if (equals this.mnth (lookup @root._locals "prevMnth"))}}
                 <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">
-                    {{yy}}년 {{mnth}}월
+                    {{yy}}<@spring.message 'txt.date.suffix.after-year-number'/>{{mnth}}<@spring.message 'txt.date.suffix.after-month-number'/>
                 </div>
             {{/if}}
 
@@ -54,7 +54,7 @@
                         {{#each journalChapterList}}
                             <div class="d-flex align-items-center mt-2">
                                 <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                                    {{#ifYn chapterResolvedYn}}
+                                    {{#if false}}
                                         <span class="text-success">
                                             {{#if (equals chapterType "DREAM")}}
                                                 <@spring.message 'txt.dream'/>
@@ -90,17 +90,17 @@
                                                 <i class="bi bi-book fs-4 pe-1"></i>
                                             {{/if}}
                                         {{/if}}
-                                    {{/ifYn}}
+                                    {{/if}}
                                 </div>
                                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                                     {{#if (equals chapterType "DIARY")}}
-                                        {{> journal_diary_reg_btn_partial this}}
+                                        {{> journal_entry_reg_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" iconClass="bi-book" tooltipLabel="<@spring.message 'txt.journal.diary'/>" buttonLabel="<@spring.message 'txt.journal.diary.reg'/>" dayIdParam=journalDayId chapterIdParam=id}}
                                     {{/if}}
                                     {{#if (equals chapterType "NOTE")}}
-                                        {{> journal_note_reg_btn_partial this}}
+                                        {{> journal_entry_reg_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" iconClass="bi-journal-text" tooltipLabel="<@spring.message 'txt.journal.note'/>" buttonLabel="<@spring.message 'txt.journal.note.reg'/>" dayIdParam=journalDayId chapterIdParam=id}}
                                     {{/if}}
                                     {{#if (equals chapterType "DREAM")}}
-                                        {{> journal_dream_reg_btn_partial journalDayId=journalDayId journalChapterId=id stdrdDt=stdrdDt journalDateWeekDay=journalDateWeekDay}}
+                                        {{> journal_entry_reg_btn_partial this module="dF.JournalEntry.get('JOURNAL_DREAM')" iconClass="bi-moon-stars" tooltipLabel="<@spring.message 'txt.journal.dream'/>" buttonLabel="<@spring.message 'txt.journal.dream.reg'/>" dayIdParam=journalDayId chapterIdParam=id}}
                                     {{/if}}
                                     {{> journal_chapter_context_btn_partial this}}
                                     {{> journal_chapter_toggle_btn_partial this}}
@@ -108,58 +108,59 @@
                             </div>
                             <div class="journal-chapter journal-item" data-id={{id}}>
                                 {{#if (equals chapterType "DIARY")}}
-                                    {{#each journalDiaryList}}
-                                        <div class="journal-diary-item" data-id={{id}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
+                                    {{#each journalEntryList}}
+                                        <div class="journal-diary-item" data-id={{id}} data-collapsed="{{collapsedYn}}" data-lifecycle="{{lifecycle.lifecycleKey}}" data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}" data-imprtc="{{imprtcYn}}">
                                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                                 <div class="d-flex flex-column align-items-center">
-                                                    <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                                                    <span class="journal-diary-idx {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}text-success{{/if}}">
                                                         # {{sortOrder}}
                                                     </span>
-                                                    {{> journal_diary_toggle_btn_partial this}}
+                                                    {{> journal_entry_toggle_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" cssPrefix="diary"}}
                                                 </div>
                                             </div>
                                             <div class="col journal-diary-content">
-                                                {{> journal_diary_content_partial this}}
+                                                {{> journal_entry_content_partial this contentType="JOURNAL_DIARY" tagModule="dF.JournalEntryTag.get('JOURNAL_DIARY')"}}
                                             </div>
                                             <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                             <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
                                                 {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
-                                                {{> journal_diary_copy_btn_partial this}}
-                                                {{> journal_diary_context_btn_partial this}}
+                                                {{> journal_entry_copy_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')"}}
+                                                {{> journal_entry_context_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" contentType="JOURNAL_DIARY" contentLabel="<@spring.message 'txt.journal.diary'/>" cssPrefix="diary" showInterpretation=true showRelated=true}}
                                             </div>
                                         </div>
                                     {{/each}}
                                 {{else}}
                                     {{#if (equals chapterType "NOTE")}}
-                                        {{#each journalNoteList}}
+                                        {{#each journalEntryList}}
                                             <div class="journal-note-item {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
                                                  data-id="{{id}}"
                                                  data-stdrd-dt="{{stdrdDt}}"
                                                  data-yy="{{yy}}"
                                                  data-mnth="{{mnth}}"
                                                  data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
-                                                 data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                                 data-lifecycle="{{lifecycle.lifecycleKey}}"
+                                                 data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
                                                  data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
                                                  data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}">
                                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                                     <div class="d-flex flex-column align-items-center">
-                                                        <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                                                        <span class="journal-diary-idx {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}text-success{{/if}}">
                                                             # {{sortOrder}}
                                                         </span>
-                                                        {{> journal_note_toggle_btn_partial this}}
+                                                        {{> journal_entry_toggle_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" cssPrefix="note"}}
                                                     </div>
                                                 </div>
                                                 <div class="col journal-note-content">
                                                     {{#if (exists title)}}
                                                         <div class="fw-semibold text-gray-800 mb-2">{{title}}</div>
                                                     {{/if}}
-                                                    {{> journal_note_content_partial this}}
+                                                    {{> journal_entry_content_partial this contentType="JOURNAL_DIARY" tagModule="dF.JournalDayTag"}}
                                                 </div>
                                                 <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                                 <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-                                                    {{> comment_reg_btn_partial this contentType="JOURNAL_NOTE"}}
-                                                    {{> journal_note_copy_btn_partial this}}
-                                                    {{> journal_note_context_btn_partial this}}
+                                                    {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
+                                                    {{> journal_entry_copy_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')"}}
+                                                    {{> journal_entry_context_btn_partial this module="dF.JournalEntry.get('JOURNAL_DIARY')" contentType="JOURNAL_DIARY" contentLabel="<@spring.message 'txt.journal.note'/>" cssPrefix="note" showRelated=true}}
                                                 </div>
                                             </div>
                                         {{/each}}
@@ -175,7 +176,8 @@
                                      data-yy="{{yy}}"
                                      data-mnth="{{mnth}}"
                                      data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
-                                     data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                     data-lifecycle="{{lifecycle.lifecycleKey}}"
+                                     data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
                                      data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
                                      data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
                                      data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"
@@ -184,16 +186,16 @@
                                         <div># {{sortOrder}}</div>
                                     </div>
                                     <div class="col py-3">
-                                        {{> journal_dream_states_partial this}}
+                                        {{> journal_entry_states_partial this showDreamStates=true cssPrefix="dream"}}
                                         <div class="journal-dream-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
-                                            {{> journal_dream_content_partial this collapse="collapse-4"}}
+                                            {{> journal_entry_content_partial this contentType="JOURNAL_DREAM" tagModule="dF.JournalEntryTag.get('JOURNAL_DREAM')" collapse="collapse-4"}}
                                         </div>
                                     </div>
                                     <div class="col-1 bd-none d-md-flex order-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                     <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                         {{> comment_reg_btn_partial this contentType="JOURNAL_DREAM"}}
-                                        {{> journal_dream_copy_btn_partial this}}
-                                        {{> journal_dream_context_btn_partial this}}
+                                        {{> journal_entry_copy_btn_partial this module="dF.JournalEntry.get('JOURNAL_DREAM')"}}
+                                        {{> journal_entry_context_btn_partial this module="dF.JournalEntry.get('JOURNAL_DREAM')" contentType="JOURNAL_DREAM" contentLabel="<@spring.message 'txt.journal.dream'/>" cssPrefix="dream" showInterpretation=true showRelated=true showDreamStates=true}}
                                     </div>
                                 </div>
                             {{/each}}
@@ -204,7 +206,8 @@
                                      data-yy="{{yy}}"
                                      data-mnth="{{mnth}}"
                                      data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
-                                     data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                     data-lifecycle="{{lifecycle.lifecycleKey}}"
+                                     data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
                                      data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
                                      data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
                                      data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"
@@ -213,16 +216,16 @@
                                         -
                                     </div>
                                     <div class="col py-3">
-                                        {{> journal_dream_states_partial this}}
+                                        {{> journal_entry_states_partial this showDreamStates=true cssPrefix="dream"}}
                                         <div class="journal-dream-content bg-secondary">
-                                            {{> journal_dream_content_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                                            {{> journal_entry_content_partial this contentType="JOURNAL_DREAM" tagModule="dF.JournalEntryTag.get('JOURNAL_DREAM')" collapse="collapse-4" elseDreamYn="Y"}}
                                         </div>
                                     </div>
                                     <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                     <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                         {{> comment_reg_btn_partial this contentType="JOURNAL_DREAM"}}
-                                        {{> journal_dream_copy_btn_partial this}}
-                                        {{> journal_dream_context_btn_partial this}}
+                                        {{> journal_entry_copy_btn_partial this module="dF.JournalEntry.get('JOURNAL_DREAM')"}}
+                                        {{> journal_entry_context_btn_partial this module="dF.JournalEntry.get('JOURNAL_DREAM')" contentType="JOURNAL_DREAM" contentLabel="<@spring.message 'txt.journal.dream'/>" cssPrefix="dream" showInterpretation=true showRelated=true showDreamStates=true}}
                                     </div>
                                 </div>
                             {{/each}}

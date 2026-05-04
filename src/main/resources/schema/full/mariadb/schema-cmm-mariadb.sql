@@ -165,3 +165,28 @@ CREATE TABLE IF NOT EXISTS `log` (
     INDEX idx_log_trace (trace_id),
     INDEX idx_log_type (log_type)
 ) COMMENT = '통합 로그';
+
+-- -----------------------
+
+-- 릴리즈 히스토리 (release_info)
+-- @extends: BaseAuditRegEntity
+CREATE TABLE IF NOT EXISTS release_info (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '릴리즈 히스토리 ID',
+    event_type VARCHAR(20) NOT NULL COMMENT '이벤트 타입 (SERVER_START/DEPLOY)',
+    app_version VARCHAR(50) NOT NULL COMMENT '애플리케이션 버전',
+    commit_hash VARCHAR(100) NOT NULL COMMENT '커밋 해시',
+    release_key VARCHAR(160) NOT NULL COMMENT '릴리즈 식별 키 (version+commit)',
+    started_at DATETIME NULL COMMENT '서버 시작 시각',
+    deployed_at DATETIME NULL COMMENT '배포 판정 시각',
+    profile VARCHAR(20) NULL COMMENT '실행 프로필',
+    host_name VARCHAR(255) NULL COMMENT '호스트 이름',
+    instance_id VARCHAR(255) NULL COMMENT '인스턴스 식별자',
+    -- AUDIT
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    -- INDEX
+    INDEX idx_release_info_started_at (started_at),
+    INDEX idx_release_info_event_type (event_type),
+    INDEX idx_release_info_release_key (release_key)
+) COMMENT = '서버 시작 및 배포 히스토리';

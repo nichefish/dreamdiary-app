@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.adapter.StateCacheUpdate
 import io.nicheblog.dreamdiary.feature.attachable.state.model.CacheContext;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
+import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.interceptor.SimpleKey;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 /**
  * JournalStateCacheUpdater
+ * 저널 상태 토글 요청에 따라 EhCache 등에 보관된 상태 맵을 갱신한다.
  *
  * @author nichefish
  */
@@ -23,28 +25,11 @@ import java.util.Map;
 public class JournalStateCacheUpdater
         implements StateCacheUpdater {
 
-    /**
-     * 지원 여부 반환
-     * @param contentType ContentType
-     * @return 지원 여부
-     */
     @Override
     public boolean supports(final ContentType contentType) {
-        return switch (contentType) {
-            case JOURNAL_CHAPTER,
-                 JOURNAL_DIARY,
-                 JOURNAL_NOTE,
-                 JOURNAL_DREAM,
-                 JOURNAL_INTERPRETATION -> true;
-            default -> false;
-        };
+        return JournalStateCacheRegistry.supports(contentType);
     }
 
-    /**
-     * 캐시 업데이트
-     * @param toggle 전달된 toggle 객체
-     * @param isEnabled 활성화 여부
-     */
     public void update(final StateToggleDto toggle, final Boolean isEnabled) {
         final ContentType contentType = toggle.getContentType();
         final CacheContext cacheContext = toggle.getCacheContext();
@@ -56,18 +41,12 @@ public class JournalStateCacheUpdater
         this.updateMonthlyCacheMap(toggle, contentType, cacheContext, username, isEnabled);
         this.updateWeeklyCacheMap(toggle, contentType, cacheContext, username, isEnabled);
 
-        final String evictCacheNm = this.getEvictCacheNm(contentType);
+        final String evictCacheNm = JournalStateCacheRegistry.annualStateListCacheName(contentType);
         if (evictCacheNm != null) {
             EhCacheUtils.clearMyCache(evictCacheNm);
         }
     }
 
-    /**
-     * 캐시 맵 업데이트
-     * @param contentType 컨텐츠 타입
-     * @param toggle 전달된 toggle 객체
-     * @param isEnabled 활성화 여부
-     */
     private void updateMonthlyCacheMap(
             final StateToggleDto toggle,
             final ContentType contentType,
@@ -78,7 +57,7 @@ public class JournalStateCacheUpdater
         if (cacheContext.getYy() == null || cacheContext.getMnth() == null) return;
 
         final Object cacheKey = new SimpleKey(username, cacheContext.getYy(), cacheContext.getMnth());
-        this.updateCacheMap(toggle, this.getMonthlyCacheMapNm(contentType), cacheKey, isEnabled);
+        this.updateCacheMap(toggle, JournalStateCacheRegistry.monthlyMapCacheName(contentType), cacheKey, isEnabled);
     }
 
     private void updateWeeklyCacheMap(
@@ -91,16 +70,7 @@ public class JournalStateCacheUpdater
         if (StringUtils.isBlank(cacheContext.getWeekStartDt())) return;
 
         final Object cacheKey = new SimpleKey(username, cacheContext.getWeekStartDt());
-        this.updateCacheMap(toggle, this.getWeeklyCacheMapNm(contentType), cacheKey, isEnabled);
-    }
-
-    private String getEvictCacheNm(final ContentType contentType) {
-        return switch (contentType) {
-            case JOURNAL_DIARY -> "journalDiaryYyAnnualStatedListByUser";
-            case JOURNAL_NOTE -> "journalNoteYyAnnualStatedListByUser";
-            case JOURNAL_DREAM -> "journalDreamYyAnnualStatedListByUser";
-            default -> null;
-        };
+        this.updateCacheMap(toggle, JournalStateCacheRegistry.weeklyMapCacheName(contentType), cacheKey, isEnabled);
     }
 
     @SuppressWarnings("unchecked")
@@ -116,40 +86,7 @@ public class JournalStateCacheUpdater
         final JournalState state = map.get(toggle.getId());
         if (state == null) return;
 
-        JournalStateApplier.apply(state, toggle.getStateKey(), isEnabled);      // 같은 객체 수정. put 필요없음.
+        JournalStateApplier.apply(state, toggle.getStateKey(), isEnabled);
         EhCacheUtils.put(cacheMapNm, cacheKey, map);
     }
-
-    /**
-     * 컨텐츠 타입별 캐시 이름 반환
-     * @param contentType ContentType
-     * @return 캐시 이름
-     */
-    private String getMonthlyCacheMapNm(final ContentType contentType) {
-        return switch (contentType) {
-            case JOURNAL_CHAPTER -> "journalChapterStateMapByUser";
-            case JOURNAL_DIARY -> "journalDiaryStateMapByUser";
-            case JOURNAL_NOTE -> "journalNoteStateMapByUser";
-            case JOURNAL_DREAM -> "journalDreamStateMapByUser";
-            case JOURNAL_INTERPRETATION -> "journalInterpretationStateMapByUser";
-            default -> throw new IllegalStateException("Unexpected value: " + contentType);
-        };
-    }
-
-    /**
-     * 컨텐츠 타입별 캐시 이름 반환
-     * @param contentType ContentType
-     * @return 캐시 이름
-     */
-    private String getWeeklyCacheMapNm(final ContentType contentType) {
-        return switch (contentType) {
-            case JOURNAL_CHAPTER -> "journalChapterWeeklyStateMapByUser";
-            case JOURNAL_DIARY -> "journalDiaryWeeklyStateMapByUser";
-            case JOURNAL_NOTE -> "journalNoteWeeklyStateMapByUser";
-            case JOURNAL_DREAM -> "journalDreamWeeklyStateMapByUser";
-            case JOURNAL_INTERPRETATION -> "journalInterpretationWeeklyStateMapByUser";
-            default -> throw new IllegalStateException("Unexpected value: " + contentType);
-        };
-    }
 }
-

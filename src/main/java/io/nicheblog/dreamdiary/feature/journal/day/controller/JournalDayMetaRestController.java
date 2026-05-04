@@ -93,7 +93,7 @@ public class JournalDayMetaRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalDayMetaYyListAjax(
-            final @PathVariable("id") Integer id
+            final @PathVariable Integer id
     ) {
 
         final List<Integer> yyList = myJournalDayMetaService.getMyYyListByMetaId(id);

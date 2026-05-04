@@ -35,9 +35,10 @@ public interface AppUrl {
     String JOURNAL_DAY_CAL = Prefix.APP + "/journal/day/cal.do";
 
     /** 저널 일기 (검색) */
-    String JOURNAL_DIARY_SEARCH = Prefix.APP + "/journal/diary/search.do";
-    /** 저널 꿈 (검색) */
-    String JOURNAL_DREAM_SEARCH = Prefix.APP + "/journal/dream/search.do";
+    String JOURNAL_EMTRY_SEARCH = Prefix.APP + "/journal/{type}/search.do";
+
+    /** 저널 일기/꿈 (미리보기 팝업) */
+    String JOURNAL_ENTRY_PREVIEW_POP = Prefix.APP + "/journal/entry/preview-pop.do";
 
     /** 저널 주제 */
     String JOURNAL_SBJCT_LIST = Prefix.APP + "/journal/sbjct/list.do";

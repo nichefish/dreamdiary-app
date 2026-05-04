@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * JournalInterpretationViewHelper
+ * 저널 해석 뷰 모델에 상태 캐시 값을 반영한다.
  *
  * @author nichefish
  */
@@ -18,10 +19,10 @@ import java.util.Map;
 public class JournalInterpretationViewHelper {
 
     /**
-     * 캐시에 저장된 상태 맵을 기준으로 조회된 {@link JournalInterpretationDto} 트리 구조에 상태를 반영한다.
+     * 캐시에 저장된 state 맵을 기준으로 해석 트리에 상태를 반영한다.
      *
-     * @param listDto 조회된 저널 일자 목록 DTO
-     * @param interpretationMap interpretation id → {@link JournalState} map
+     * @param listDto 조회 대상 해석 목록 DTO
+     * @param interpretationMap interpretation id 기준 state 맵
      */
     public static void applyState(List<JournalInterpretationDto> listDto, Map<Integer, JournalState> interpretationMap) {
         if (CollectionUtils.isEmpty(listDto)) return;
@@ -29,7 +30,6 @@ public class JournalInterpretationViewHelper {
             final JournalState d = interpretationMap.get(interpretation.getId());
             if (d != null) {
                 interpretation.state.apply(StateKey.COLLAPSED, d.getCollapsed());
-                interpretation.state.apply(StateKey.RESOLVED, d.getResolved());
             }
         }
     }

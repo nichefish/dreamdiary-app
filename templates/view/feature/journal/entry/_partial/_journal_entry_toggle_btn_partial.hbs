@@ -1,0 +1,13 @@
+<#--
+ * journal_entry - toggle button partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="journal_entry_toggle_btn_partial" data-partial>
+    <button type="button"
+            class="btn btn-sm ms-2 px-3 toggle-{{cssPrefix}}-btn {{#if (hasState state 'COLLAPSED')}}is-active{{/if}}"
+            onclick="{{module}}.toggle({{id}}, this)">
+        <i {{#if (exists iconIdPrefix)}}id="{{iconIdPrefix}}{{id}}"{{/if}}
+           class="bi bi-arrows-{{#if (hasState state 'COLLAPSED')}}expand{{else}}collapse{{/if}} pe-0 {{cssPrefix}}-toggle-icon"></i>
+    </button>
+</script>

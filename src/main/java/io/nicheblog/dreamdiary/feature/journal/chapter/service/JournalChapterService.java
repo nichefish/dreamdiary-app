@@ -18,8 +18,12 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.spec.JournalChapterSpec;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -48,25 +52,10 @@ import java.util.Objects;
 public class JournalChapterService
         implements BaseAttachableService<JournalChapterDto, JournalChapterDto, Integer, JournalChapterEntity> {
 
+    public static final String DTL_CACHE_NAME = "journalChapterDtlDtoByUser";
+
     /** 동일 일자 내 첫 항목 등록 시 기본 카테고리 코드 */
     private static final String FIRST_CHAPTER_CTGR_CD = "SUMMARY";
-
-    /** 자동 생성 꿈 챕터 기본 제목 */
-    private static final String AUTO_DREAM_CHAPTER_TITLE = "꿈";
-
-    /** 화면·저장 정렬: 일기 → 노트 → 꿈 */
-    private static int chapterTypeOrderKey(final JournalChapterEntity e) {
-        return chapterTypeOrder(e.getChapterType());
-    }
-
-    private static int chapterTypeOrder(final ChapterType t) {
-        if (t == null) return 99;
-        return switch (t) {
-            case DIARY -> 0;
-            case NOTE -> 1;
-            case DREAM -> 2;
-        };
-    }
 
     @Getter
     private final JournalChapterRepository repository;
@@ -85,6 +74,8 @@ public class JournalChapterService
     private final JournalChapterMapper journalChapterMapper;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
     private final JournalDayRepository journalDayRepository;
+    private final JournalEntryService journalEntryService;
+    private final JournalEntryRepository journalEntryRepository;
 
     private final ApplicationContext context;
     private JournalChapterService getSelf() {
@@ -103,7 +94,7 @@ public class JournalChapterService
      * @param key 일련번호
      * @return {@link JournalChapterDto} -- 조회된 객체
      */
-    @Cacheable(value="journalChapterDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    @Cacheable(value=DTL_CACHE_NAME, key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
     public JournalChapterDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JournalChapterEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalChapterDto retrieved = mapstruct.toDto(retrievedEntity);
@@ -136,14 +127,28 @@ public class JournalChapterService
      */
     private void preRegistDreamChapterAuto(final JournalChapterDto registDto) throws Exception {
         registDto.setChapterType(ChapterType.DREAM);
-        applyNewChapterSortOrderAndDefaultCategory(registDto);
+        applyNewChapterSortOrder(registDto);
     }
 
+    /**
+     * 새 챕터의 정렬값을 계산하고, 첫 DIARY 챕터에는 기본 SUMMARY 카테고리를 보정한다.
+     *
+     * @param registDto 등록할 챕터 DTO
+     */
     private void applyNewChapterSortOrderAndDefaultCategory(final JournalChapterDto registDto) throws Exception {
-        final int lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDayId()).orElse(0);
-        if (lastSortOrder == 0 && StringUtils.isBlank(registDto.getCategoryCode())) {
+        applyNewChapterSortOrder(registDto);
+        if (registDto.getSortOrder() == 1 && StringUtils.isBlank(registDto.getCategoryCode())) {
             registDto.setCategoryCode(FIRST_CHAPTER_CTGR_CD);
         }
+    }
+
+    /**
+     * 같은 일자 안에서 새 챕터가 들어갈 다음 정렬값을 계산한다.
+     *
+     * @param registDto 등록할 챕터 DTO
+     */
+    private void applyNewChapterSortOrder(final JournalChapterDto registDto) throws Exception {
+        final int lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDayId()).orElse(0);
         registDto.setSortOrder(lastSortOrder + 1);
     }
 
@@ -163,6 +168,7 @@ public class JournalChapterService
 
         final JournalChapterEntity existing = repository.findFirstByJournalDayIdAndChapterType(journalDayId, ChapterType.DREAM).orElse(null);
         if (existing != null) {
+            clearFirstChapterCategoryIfDream(existing);
             this.getSelf().normalizeSortOrder(journalDayId);
             final JournalChapterEntity synced = repository.findById(existing.getId()).orElse(existing);
             final JournalChapterDto dto = mapstruct.toDto(synced);
@@ -174,7 +180,7 @@ public class JournalChapterService
 
         final JournalChapterDto registDto = new JournalChapterDto();
         registDto.setJournalDayId(journalDayId);
-        registDto.setTitle(AUTO_DREAM_CHAPTER_TITLE);
+        registDto.setTitle(MessageUtils.getMessage("txt.dream", null));
         preRegistDreamChapterAuto(registDto);
 
         final JournalChapterEntity registEntity = mapstruct.toEntity(registDto);
@@ -193,13 +199,47 @@ public class JournalChapterService
     /**
      * 등록 후처리. (override)
      *
-     * @param updatedDto - 등록된 객체
+     * @param updatedDto 등록된 객체
      */
     @Override
     public void postRegist(final JournalChapterDto updatedDto) throws Exception {
+        this.createDefaultDiaryWhenSummaryAutoApplied(updatedDto);
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_CHAPTER);
+    }
+
+    /**
+     * 과거 로직으로 DREAM 자동 챕터에 SUMMARY가 들어간 경우 즉시 제거한다.
+     * SUMMARY 기본값은 첫 DIARY 챕터 전용 정책이다.
+     *
+     * @param chapter 보정할 기존 꿈 챕터 엔티티
+     */
+    private void clearFirstChapterCategoryIfDream(final JournalChapterEntity chapter) {
+        if (chapter == null || chapter.getChapterType() != ChapterType.DREAM) return;
+        if (!StringUtils.equals(chapter.getCategoryCode(), FIRST_CHAPTER_CTGR_CD)) return;
+        chapter.setCategoryCode(null);
+        repository.saveAndFlush(chapter);
+    }
+
+    private void createDefaultDiaryWhenSummaryAutoApplied(final JournalChapterDto updatedDto) throws Exception {
+        if (updatedDto == null || updatedDto.getId() == null) return;
+        if (updatedDto.getChapterType() != ChapterType.DIARY) return;
+        if (updatedDto.getSortOrder() == null || updatedDto.getSortOrder() != 1) return;
+        if (!StringUtils.equals(updatedDto.getCategoryCode(), FIRST_CHAPTER_CTGR_CD)) return;
+
+        final boolean hasDiary = journalEntryRepository
+                .findFirstByJournalChapterIdAndContentTypeOrderBySortOrderDesc(
+                        updatedDto.getId(),
+                        ContentType.JOURNAL_DIARY.key
+                )
+                .isPresent();
+        if (hasDiary) return;
+
+        final JournalEntryPostDto diaryPostDto = new JournalEntryPostDto();
+        diaryPostDto.setJournalChapterId(updatedDto.getId());
+        diaryPostDto.setContentType(ContentType.JOURNAL_DIARY.key);
+        journalEntryService.regist(diaryPostDto);
     }
     
     /**
@@ -227,11 +267,16 @@ public class JournalChapterService
     /**
      * 수정 후처리. (override)
      *
-     * @param updatedDto - 등록된 객체
+     * @param postDto 수정 요청 객체
+     * @param updatedDto 수정 결과 객체
      */
     @Override
     public void postModify(final JournalChapterDto postDto, final JournalChapterDto updatedDto) throws Exception {
-        // 일기 → 노트 → 꿈 순으로 sort_order 정리 (타입 변경·순번 변경 모두 반영)
+        if (Boolean.TRUE.equals(postDto.getIsSortOrderChanged())) {
+            // sortOrder 변경 시에는 목표 위치로 삽입 재배치 후 정규화
+            this.getSelf().insert(updatedDto.getJournalDayId(), updatedDto.getId(), postDto.getSortOrder());
+        }
+        // DREAM 마지막 규칙을 포함한 최종 정규화
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
 
         // 관련 캐시 삭제
@@ -291,8 +336,9 @@ public class JournalChapterService
         if (CollectionUtils.isEmpty(list)) return;
 
         list.sort(Comparator
-                .comparingInt(JournalChapterService::chapterTypeOrderKey)
-                .thenComparingInt(e -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
+                // DREAM 챕터는 sortOrder와 무관하게 항상 마지막으로 배치
+                .comparingInt((JournalChapterEntity e) -> e.getChapterType() == ChapterType.DREAM ? 1 : 0)
+                .thenComparingInt((JournalChapterEntity e) -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
                 .thenComparing(JournalChapterEntity::getId));
 
         int sortOrder = 1;
@@ -301,7 +347,7 @@ public class JournalChapterService
         }
         repository.saveAllAndFlush(list);
     }
-    
+
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
@@ -348,9 +394,7 @@ public class JournalChapterService
      */
     @Transactional
     public void reorderSortOrder(final JournalChapterDto updatedDto) throws Exception {
-        // 일기 → 노트 → 꿈 순으로 sort_order 재부여 (같은 타입 내에서는 기존 sort_order·id 순 유지)
+        // sort_order 재부여 (동순위는 id 순)
         normalizeSortOrder(updatedDto.getJournalDayId());
     }
 }
-
-

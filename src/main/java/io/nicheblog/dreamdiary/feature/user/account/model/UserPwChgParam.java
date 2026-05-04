@@ -32,8 +32,8 @@ public class UserPwChgParam {
 
     /** 변경할 패스워드 */
     @NotEmpty
-    @Size(min = 9, max = 15, message = "비밀번호는 9자 이상 15자 이하로 입력해야 합니다.")
-    @Pattern(regexp = Regex.PW_REGEX, message = "비밀번호가 형식에 맞지 않습니다.")
+    @Size(min = 9, max = 15, message = "{msg.user.pw.size}")
+    @Pattern(regexp = Regex.PW_REGEX, message = "{msg.user.pw.pattern}")
     private String newPw;
 
 }

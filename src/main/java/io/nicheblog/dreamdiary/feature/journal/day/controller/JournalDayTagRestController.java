@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayTagQuery;
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayQueryService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayTagService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -78,9 +79,7 @@ public class JournalDayTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final List<TagDto> tagList = searchParam.hasWeekStartDt()
-                ? myJournalDayTagService.getMyWeeklySizedListDto(searchParam.getWeekStartDt())
-                : myJournalDayTagService.getMyYyMnthSizedListDto(searchParam.getYy(), searchParam.getMnth());
+        final List<TagDto> tagList = myJournalDayTagService.getMySizedTagList(toTagQuery(searchParam));
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -101,9 +100,7 @@ public class JournalDayTagRestController
             @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = searchParam.hasWeekStartDt()
-                ? myJournalDayTagService.getMyWeeklySizedGroupListDto(searchParam.getWeekStartDt())
-                : myJournalDayTagService.getMyYyMnthSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = myJournalDayTagService.getMySizedTagGroupMap(toTagQuery(searchParam));
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -120,7 +117,7 @@ public class JournalDayTagRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalDayTagYyListAjax(
-            final @PathVariable("tagId") Integer tagId
+            final @PathVariable Integer tagId
     ) {
 
         final List<Integer> yyList = myJournalDayTagService.getMyYyListByTagId(tagId);
@@ -141,7 +138,7 @@ public class JournalDayTagRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalDayListByTagIdAjax(
-            final @PathVariable("tagId") Integer tagId,
+            final @PathVariable Integer tagId,
             final JournalDaySearchParam searchParam
     ) throws Exception {
 
@@ -152,5 +149,11 @@ public class JournalDayTagRestController
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(journalDayList));
     }
-}
 
+    private JournalDayTagQuery toTagQuery(final TagSearchParam searchParam) {
+        if (searchParam.hasWeekStartDt()) {
+            return JournalDayTagQuery.weekly(searchParam.getWeekStartDt());
+        }
+        return JournalDayTagQuery.of(searchParam.getYy(), searchParam.getMnth());
+    }
+}

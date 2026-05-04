@@ -156,7 +156,9 @@ dF.JournalDayTag = (function(): dfModule {
         },
 
         isContextMenuEnabled: function(): boolean {
-            return dF.JournalDay?.initialized === true;
+            // Context menu should be available on journal entry pages too,
+            // even when JournalDay module itself is not initialized.
+            return true;
         },
 
         getCurrentClickEvent: function(): Event | null {
@@ -207,8 +209,7 @@ dF.JournalDayTag = (function(): dfModule {
         getContextTooltipSelector: function(): string {
             return [
                 "[onclick*='dF.JournalDayTag.select(']",
-                "[onclick*='dF.JournalDiaryTag.select(']",
-                "[onclick*='dF.JournalDreamTag.select(']",
+                "[onclick*='dF.JournalEntryTag.get(']",
             ].join(", ");
         },
 
@@ -453,8 +454,8 @@ dF.JournalDayTag = (function(): dfModule {
         profileModal: function(tagId: string|number, contentType: string, tagNm: string, ctgr?: string): void {
             if (isNaN(Number(tagId)) || cF.util.isEmpty(contentType)) return;
 
-            const url: string = Url.TAG_PROFILES;
-            const ajaxData: Record<string, any> = { tagId, contentType };
+            const url: string = cF.util.bindUrl(Url.TAG_PROFILE, { tagId });
+            const ajaxData: Record<string, any> = { contentType };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -486,11 +487,13 @@ dF.JournalDayTag = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                cF.$ajax.post(Url.TAG_PROFILES, ajaxData, function(res: AjaxResponse): boolean {
+                const url: string = cF.util.bindUrl(Url.TAG_PROFILE, { tagId: ajaxData.tagId });
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): boolean {
                     Swal.fire({ text: res.message }).then(function(): void {
                         if (!res.rslt) return;
 
                         $("#tag_profile_modal").modal("hide");
+                        window.location.reload();
                     });
                     return res.rslt;
                 });
@@ -498,8 +501,9 @@ dF.JournalDayTag = (function(): dfModule {
         },
 
         deleteProfileAjax: function(): void {
-            const id: string = cF.util.getInputValue("#tagProfileForm [name='id']");
-            if (isNaN(Number(id))) return;
+            const tagId: string = cF.util.getInputValue("#tagProfileForm [name='tagId']");
+            const contentType: string = cF.util.getInputValue("#tagProfileForm [name='contentType']");
+            if (isNaN(Number(tagId)) || cF.util.isEmpty(contentType)) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -507,12 +511,13 @@ dF.JournalDayTag = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.TAG_PROFILE, { id });
-                cF.$ajax.delete(url, null, function(res: AjaxResponse): boolean {
+                const url: string = cF.util.bindUrl(Url.TAG_PROFILE, { tagId });
+                cF.$ajax.delete(url, { contentType }, function(res: AjaxResponse): boolean {
                     Swal.fire({ text: res.message }).then(function(): void {
                         if (!res.rslt) return;
 
                         $("#tag_profile_modal").modal("hide");
+                        window.location.reload();
                     });
                     return res.rslt;
                 });

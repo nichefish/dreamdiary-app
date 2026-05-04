@@ -1,10 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.day.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.meta.entity.MetaContentEntity;
 import io.nicheblog.dreamdiary.feature.attachable.meta.entity.embed.MetaEmbed;
-import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
-import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -108,11 +107,7 @@ public class JournalDaySpec
                     predicate.add(builder.equal(root.get(key), DateUtils.asDate(value)));
                     continue;
                 case "tagId":
-                    // 특정 태그된 일자만 조회
-                    final Join<JournalDayEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
-                    final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(tagContentJoin.get("createdBy"), createdBy));
-                    predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
+                    resolveTagIdPredicate(predicate, root, builder, value, createdBy, ContentType.JOURNAL_DAY);
                     continue;
                 case "metaId":
                     // 특정 메타 지칭된 일자만 조회
@@ -134,13 +129,4 @@ public class JournalDaySpec
         return predicate;
     }
 
-    private String resolveCreatedBy(final Map<String, Object> searchParamMap) {
-        final Object createdBy = searchParamMap.get("createdBy");
-        if (createdBy != null) {
-            final String createdByStr = createdBy.toString();
-            if (!createdByStr.isBlank()) return createdByStr;
-        }
-        throw new IllegalArgumentException("createdBy is required. searchParamMapKeys=" + searchParamMap.keySet());
-    }
 }
-

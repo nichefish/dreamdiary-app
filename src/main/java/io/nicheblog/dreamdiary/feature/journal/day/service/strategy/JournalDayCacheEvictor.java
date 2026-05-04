@@ -45,11 +45,8 @@ public class JournalDayCacheEvictor
             this.evictMyJournalDayWeeklyCaches(username, prevWeekStartDt, weekStartDt);
             // journal_day_tag
             EhCacheUtils.clearUserCache("journalDayTagCtgrMapByUser", username);
-            EhCacheUtils.clearUserCache("journalDayYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDayWeeklyTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDayYyMnthSizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDayWeeklySizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalDayCountMapByUser", username);
+            EhCacheUtils.clearUserCache("journalDayPeriodTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDayTagCountMapByUser", username);
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JOURNAL_DAY");
             // journal_day_meta
             EhCacheUtils.clearUserCache("journalDayMetaCtgrMapByUser", username);
@@ -60,4 +57,3 @@ public class JournalDayCacheEvictor
         }
     }
 }
-

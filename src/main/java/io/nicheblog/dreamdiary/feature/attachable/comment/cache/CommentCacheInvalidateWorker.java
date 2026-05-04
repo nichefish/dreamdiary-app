@@ -33,7 +33,6 @@ public class CommentCacheInvalidateWorker {
         final Set<ContentType> requiredTypes = EnumSet.of(
                 ContentType.JOURNAL_DAY,
                 ContentType.JOURNAL_DIARY,
-                ContentType.JOURNAL_NOTE,
                 ContentType.JOURNAL_DREAM,
                 ContentType.JOURNAL_INTERPRETATION,
                 ContentType.JOURNAL_ANNUAL_REVIEW
@@ -92,7 +91,7 @@ public class CommentCacheInvalidateWorker {
         for (final CommentCacheInvalidator strategy : strategies) {
             if (!strategy.supports(refContentType)) continue;
 
-            strategy.invalidate(refId);
+            strategy.invalidate(refId, refContentType);
             return;
         }
         log.warn("No Comment cache invalidation strategy found for ContentType: {}", refContentType);

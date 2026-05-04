@@ -7,7 +7,8 @@ import lombok.*;
 import javax.validation.constraints.Positive;
 
 /**
- * MarkToggleDto
+ * StateToggleDto
+ * 첨부 콘텐츠 상태 토글 REST 요청 바디(id, 타입, 상태 키, 캐시 맥락).
  *
  * @author nichefish
  */

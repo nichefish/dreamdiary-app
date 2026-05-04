@@ -11,7 +11,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrH
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
-import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -48,8 +48,8 @@ public class JournalDayDto
     /* ----- */
 
     /** 저널 일자 */
-    @Size(max = 10, message = "일자는 최대 10자여야 합니다.")
-    @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "일자는 'YYYY-MM-DD' 형식이어야 합니다.")
+    @Size(max = 10, message = "{msg.journal.day.date.max-length}")
+    @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "{msg.journal.day.date.format}")
     private String journalDate;
 
     /** 저널 일자 요일 */
@@ -59,10 +59,10 @@ public class JournalDayDto
     @Builder.Default
     private JournalDatePrecision journalDatePrecision = JournalDatePrecision.EXACT;
 
-    /** 기준일자 (저널일자 또는 대략일자) */
+    /** 기준일자 (저널일자 또는 대표일자) */
     private String stdrdDt;
 
-    /** 년도 */
+    /** 연도 */
     private Integer yy;
     /** 월 */
     private Integer mnth;
@@ -77,21 +77,21 @@ public class JournalDayDto
     private String holydayNm;
 
     /** 날씨 */
-    @Size(max = 100, message = "날씨 정보는 100자 이하로 입력해야 합니다.")
+    @Size(max = 100, message = "{msg.journal.day.weather.max-length}")
     private String weather;
 
     /** 저널 챕터 목록 */
     private List<JournalChapterDto> journalChapterList;
-    /** 저널 챕터 목록 */
+    /** 저널 챕터 간단 목록 */
     private List<JournalChapterSmpDto> chapterList;
     /** 챕터 필터로 숨겨진 카테고리 목록 */
     private List<JournalChapterCtgrHintDto> hiddenChapterCtgrList;
 
     /** 저널 꿈 목록 */
-    private List<JournalDreamDto> journalDreamList;
+    private List<JournalEntryDto> journalDreamList;
 
-    /** 저널 꿈 (타인) 목록 */
-    private List<JournalDreamDto> journalElseDreamList;
+    /** 저널 꿈(타인) 목록 */
+    private List<JournalEntryDto> journalElseDreamList;
 
     /* ----- */
 
@@ -114,7 +114,7 @@ public class JournalDayDto
     /**
      * 날짜 오름차순 정렬
      *
-     * @param other - 비교할 객체
+     * @param other 비교할 객체
      * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
      */
     @SneakyThrows
@@ -137,4 +137,3 @@ public class JournalDayDto
     /** 위임 :: 메타 정보 모듈 */
     public MetaCmpstn meta;
 }
-

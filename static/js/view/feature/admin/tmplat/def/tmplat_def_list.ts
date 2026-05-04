@@ -52,9 +52,9 @@ const Page: Page = (function(): Page {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                $("#codeGroupRegForm #regYn").val("Y");
+                $("#codeGroupRegistForm #regYn").val("Y");
                 const url: string = Url.TMPLAT_DEF_REG_AJAX;
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#codeGroupRegForm");
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#codeGroupRegistForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

@@ -92,13 +92,13 @@ class JournalDayServiceTest {
 
         // When::
         final JournalDayDto toModify = JournalDayDtoTestFactory.createWithKey(key);
-        toModify.setJournalDt("2020-01-01");
+        toModify.setJournalDate("2020-01-01");
         final ServiceResponse modifyResult =  journalDayService.modify(toModify);
         final JournalDayDto updated = (JournalDayDto) modifyResult.getRsltObj();
 
         // Then::
         assertNotNull(updated.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
-        assertEquals("2020-01-01", updated.getJournalDt(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertEquals("2020-01-01", updated.getJournalDate(), "수정이 정상적으로 이루어지지 않았습니다.");
         // audit
         assertNotNull(updated.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(updated.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");

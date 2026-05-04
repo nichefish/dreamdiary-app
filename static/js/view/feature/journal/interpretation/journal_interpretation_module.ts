@@ -18,6 +18,7 @@ dF.JournalInterpretation = (function(): dfModule {
         init: function(): void {
             if (dF.JournalInterpretation.initialized) return;
 
+            dF.Lifecycle?.init?.();
             dF.JournalInterpretation.initialized = true;
             console.log("'dF.JournalInterpretation' module initialized.");
         },
@@ -33,7 +34,6 @@ dF.JournalInterpretation = (function(): dfModule {
             /* jquery vali  dation */
             cF.validate.validateForm("#journalInterpretationRegForm", dF.JournalInterpretation.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("#journalInterpretationRegForm #resolvedYn", "정리완료//정리중", "green//gray");
             cF.ui.chckboxLabel("#journalInterpretationRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_journalInterpretationCn');
@@ -200,6 +200,66 @@ dF.JournalInterpretation = (function(): dfModule {
         },
 
         /**
+         * 컨텍스트 메뉴 스위치 값에 따라 해석 라이프사이클을 RESOLVED 또는 OPEN으로 설정한다.
+         *
+         * 완료 진행 상태는 라이프사이클 endpoint가 소유한다. 이 메소드는 보이는 항목을 즉시 갱신하고,
+         * 완료 상태일 때 글접기 표시를 적용한다.
+         *
+         * @param id interpretation ID
+         * @param trigger 원하는 완료 여부를 나타내는 checkbox
+         */
+        resolveAjax: function(id: string|number, trigger?: HTMLInputElement): void {
+            if (isNaN(Number(id))) return;
+
+            const lifecycleKey: string = trigger?.checked ? "RESOLVED" : "OPEN";
+            this.setLifecycleAjax(id, lifecycleKey);
+        },
+
+        /**
+         * 해석 라이프사이클을 명시적으로 설정한다.
+         *
+         * @param id 해석 ID
+         * @param lifecycleKey 설정할 라이프사이클 키
+         */
+        setLifecycleAjax: function(id: string|number, lifecycleKey: string): void {
+            if (isNaN(Number(id))) return;
+
+            const content = document.querySelector(`.journal-interpretation-content[data-id='${id}']`) as HTMLElement;
+            const item = content?.closest(".journal-interpretation-item") as HTMLElement;
+            const cacheContext = dF.Lifecycle.resolveJournalCacheContext(content);
+            const payload = { id, contentType: "JOURNAL_INTERPRETATION", lifecycleKey, cacheContext };
+            dF.Lifecycle.setAjax(payload, function(_res: AjaxResponse): void {
+                if (!content) return;
+
+                content.dataset.lifecycle = lifecycleKey;
+                content.dataset.resolved = lifecycleKey === "RESOLVED" ? "Y" : "N";
+
+                const idx: HTMLElement = item?.querySelector(".col-1 span") as HTMLElement;
+                idx?.classList.toggle("text-success", lifecycleKey === "RESOLVED");
+
+                const resolvedChk: HTMLInputElement = item?.querySelector(".interpretation-context-resolved-check") as HTMLInputElement;
+                if (resolvedChk) resolvedChk.checked = lifecycleKey === "RESOLVED";
+
+                const lifecycleChecks: NodeListOf<HTMLInputElement> = item?.querySelectorAll(".interpretation-context-lifecycle-check") as NodeListOf<HTMLInputElement>;
+                lifecycleChecks?.forEach(function(chk: HTMLInputElement): void {
+                    chk.checked = chk.value === lifecycleKey;
+                    const label: HTMLElement = chk.closest("label")?.querySelector(".form-check-label") as HTMLElement;
+                    label?.classList.toggle("text-primary", chk.value === "PENDING" && chk.checked);
+                    label?.classList.toggle("text-success", chk.value === "RESOLVED" && chk.checked);
+                    label?.classList.toggle("text-muted", !chk.checked);
+                });
+
+                const resolvedLabel: HTMLElement = resolvedChk?.closest("label")?.querySelector(".form-check-label") as HTMLElement;
+                resolvedLabel?.classList.toggle("text-success", lifecycleKey === "RESOLVED");
+                resolvedLabel?.classList.toggle("text-muted", lifecycleKey !== "RESOLVED");
+
+                if (lifecycleKey !== "RESOLVED") return;
+                const journalContent: HTMLElement = content.querySelector(".journal-content") as HTMLElement;
+                journalContent?.classList.add("collapsed");
+            });
+        },
+
+        /**
          * @param {string|number} id - 글 번호.
          * @param {'Y'|'N'} collapsedYn - 글접기 여부.
          */
@@ -294,7 +354,10 @@ dF.JournalInterpretation = (function(): dfModule {
                 const date: string = stdrdDt + " (" + journalDateWeekDay + ")" + "\r\n";
                 const resultCn: string = rsltObj.content;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
-                const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
+                const replacedCn: string = resultCn
+                    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n---\n")
+                    .replace(/<\s*br\s*\/?>/gi, "\n")
+                    .replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
                 div.innerHTML = date + replacedCn;
                 const textToCopy: string = (div.innerText ?? "")

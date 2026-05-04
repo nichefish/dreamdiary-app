@@ -14,17 +14,17 @@
 <#if (pendingSignupReqList?? && pendingSignupReqList?size > 0)>
 <div class="card post mb-4">
     <div class="card-header">
-        <h3 class="card-title">대기 중 가입 신청</h3>
+        <h3 class="card-title"><@spring.message 'txt.user.list.pending-signup-requests'/></h3>
     </div>
     <div class="card-body">
         <table class="table align-middle table-row-dashed fs-small gy-3 table-fixed mb-0">
             <thead>
             <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 fw-bolder text-muted">
-                <th class="text-center w-10">번호</th>
-                <th class="text-center w-20">이름 (아이디)</th>
+                <th class="text-center w-10"><@spring.message 'txt.user.list.column.number'/></th>
+                <th class="text-center w-20"><@spring.message 'txt.user.list.column.name-username'/></th>
                 <th class="text-center w-25">E-MAIL</th>
-                <th class="text-center w-20">신청일시</th>
-                <th class="text-center w-25">처리</th>
+                <th class="text-center w-20"><@spring.message 'txt.user.list.column.requested-at'/></th>
+                <th class="text-center w-25"><@spring.message 'txt.user.list.column.action'/></th>
             </tr>
             </thead>
             <tbody>
@@ -35,8 +35,8 @@
                     <td class="text-start">${req.email!'-'}</td>
                     <td class="text-center">${req.createdAt?string("yyyy-MM-dd HH:mm")!'-'}</td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="dF.User.cfReqAjax(${req.id!});">승인</button>
-                        <button type="button" class="btn btn-sm btn-light-danger" onclick="dF.User.uncfReqAjax(${req.id!});">반려</button>
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="dF.User.cfReqAjax(${req.id!});"><@spring.message 'txt.user.list.action.approve'/></button>
+                        <button type="button" class="btn btn-sm btn-light-danger" onclick="dF.User.uncfReqAjax(${req.id!});"><@spring.message 'txt.user.list.action.reject'/></button>
                     </td>
                 </tr>
             </#list>
@@ -54,14 +54,14 @@
             <#--begin::Table head-->
             <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 fw-bolder text-muted">
-                    <th class="text-center wb-keepall w-10 hidden-table">번호</th>
-                    <th class="text-center wb-keepall hidden-table">권한</th>
-                    <th class="col-2 text-center wb-keepall">이름 (아이디)</th>
-                    <th class="col-1 text-center wb-keepall hidden-table">소속</th>
-                    <th class="col-1 text-center wb-keepall hidden-table">팀</th>
-                    <th class="col-1 text-center wb-keepall">직급</th>
+                    <th class="text-center wb-keepall w-10 hidden-table"><@spring.message 'txt.user.list.column.number'/></th>
+                    <th class="text-center wb-keepall hidden-table"><@spring.message 'txt.user.list.column.role'/></th>
+                    <th class="col-2 text-center wb-keepall"><@spring.message 'txt.user.list.column.name-username'/></th>
+                    <th class="col-1 text-center wb-keepall hidden-table"><@spring.message 'txt.user.list.column.affiliation'/></th>
+                    <th class="col-1 text-center wb-keepall hidden-table"><@spring.message 'txt.user.list.header.team'/></th>
+                    <th class="col-1 text-center wb-keepall"><@spring.message 'txt.user.list.header.rank'/></th>
                     <th class="col-3 text-center wb-keepall hidden-table">E-MAIL</th>
-                    <th class="text-center wb-keepall hidden-table">잠금여부</th>
+                    <th class="text-center wb-keepall hidden-table"><@spring.message 'txt.user.list.column.locked-yn'/></th>
                 </tr>
             </thead>
             <#--begin::Table body-->
@@ -96,13 +96,13 @@
                             </a>
                             <#if (user.userProflYn!"Y") == "N">
                                 <i class="bi bi-person-dash vertical-middle text-muted"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원정보가 없습니다.&#10;(접속은 가능하지만&#10;일부 기능이 제한됩니다.)"></i>
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.list.no-profile'/>"></i>
                             <#elseif (user.retireYn!"N") == "Y">
                                 <i class="bi bi-person-dash vertical-middle text-danger"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="퇴사한 인원입니다.&#10;(접속이 불가능합니다.)"></i>
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.list.retired'/>"></i>
                             <#else>
                                 <i class="bi bi-person-check vertical-middle text-success"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="소속된 직원입니다."></i>
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.list.active-employee'/>"></i>
                             </#if>
                         </td>
                         <td class="text-center hidden-table">
@@ -113,7 +113,7 @@
                         </td>
                         <td class="text-center">
                             ${(user.rankNm)!"-"}
-                            <#if (user.rankNm)! == "사원" && user.apntcYn! == "Y"><span class="text-muted">(수습)</span></#if>
+                            <#if (user.rankNm)! == "사원" && user.apntcYn! == "Y"><span class="text-muted">(<@spring.message 'txt.user.list.probation'/>)</span></#if>
                         </td>
                         <td class="text-start ps-8 hidden-table">
                             ${(user.email)!"-"}
@@ -121,11 +121,11 @@
                         <td class="text-center hidden-table">
                             <#if user.isLocked!false>
                                 <span class="text-danger">
-                                    잠김<i class="bi bi-lock fs-9 text-danger"></i>
+                                    <@spring.message 'txt.user.list.locked'/><i class="bi bi-lock fs-9 text-danger"></i>
                                 </span>
                             <#else>
                                 <span class="text-success">
-                                    사용<i class="bi bi-check text-success"></i>
+                                    <@spring.message 'txt.comm.use'/><i class="bi bi-check text-success"></i>
                                 </span>
                             </#if>
                         </td>

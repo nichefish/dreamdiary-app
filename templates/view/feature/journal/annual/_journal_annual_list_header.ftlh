@@ -10,7 +10,7 @@
     <div>
         <#--헤더:: 인풋: searchType-->
         <select name="yy" id="yy" class="form-select" aria-label="Select example">
-            <option value="">모든 년도</option>
+            <option value=""><@spring.message 'txt.journal.annual.all-years'/></option>
             <#assign currYy = DateUtils.getCurrYy()?number />
             <#assign startYy = 2011 />
             <#list currYy..startYy as year>

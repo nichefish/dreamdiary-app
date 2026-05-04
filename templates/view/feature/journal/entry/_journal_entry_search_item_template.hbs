@@ -1,0 +1,52 @@
+<#--
+ * journal_entry - single keyword/tag search result item template
+ * @included_in : journal entry search pages
+ -->
+
+<script type="text/x-handlebars-template" id="journal_entry_search_item_template">
+    <div class="journal-{{cssPrefix}}-item {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
+         data-id="{{id}}"
+         data-stdrd-dt="{{stdrdDt}}"
+         data-yy="{{yy}}"
+         data-mnth="{{mnth}}"
+         data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
+         data-lifecycle="{{lifecycle.lifecycleKey}}"
+         data-resolved="{{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}Y{{else}}N{{/if}}"
+         data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
+         data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
+         {{#if showDreamStates}}
+             data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"
+             data-halluc="{{#if (hasState state 'HALLUC')}}Y{{else}}N{{/if}}"
+         {{/if}}>
+        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
+            <div class="d-flex flex-column align-items-center">
+                <span class="journal-{{cssPrefix}}-idx {{#if (equals lifecycle.lifecycleKey 'RESOLVED')}}text-success{{/if}}">
+                    # {{sortOrder}}
+                </span>
+                {{> journal_entry_toggle_btn_partial this module=module cssPrefix=cssPrefix iconIdPrefix=iconIdPrefix}}
+            </div>
+        </div>
+        <div class="col">
+            <div class="d-flex flex-wrap align-items-center fs-5 fw-bold mb-2 ps-1">
+                {{> journal_day_stdrd_dt_partial this}}
+            </div>
+            {{#if showDreamStates}}
+                {{> journal_entry_states_partial this showDreamStates=showDreamStates cssPrefix=cssPrefix}}
+            {{/if}}
+            <div class="journal-{{cssPrefix}}-content p-2 {{#if highlightImportant}}{{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}{{/if}}">
+                {{> journal_entry_content_partial this contentType=contentType tagModule=tagModule collapse="collapse-4"}}
+            </div>
+        </div>
+        <div class="col-1 {{rightBorderClass}} d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+            {{> comment_reg_btn_partial this contentType=contentType}}
+            {{> journal_entry_copy_btn_partial this module=module}}
+            {{> journal_entry_context_btn_partial this module=module contentType=contentType contentLabel=contentLabel cssPrefix=cssPrefix showDayOpen=true showInterpretation=true showRelated=true showDreamStates=showDreamStates}}
+        </div>
+    </div>
+    <div class="journal-entry-search-related journal-item" data-entry-id="{{id}}">
+        {{#each journalInterpretationList}}
+            {{> journal_interpretation_item_partial this}}
+        {{/each}}
+    </div>
+</script>

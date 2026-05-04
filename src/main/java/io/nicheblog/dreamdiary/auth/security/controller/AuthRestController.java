@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * AuthRestController
  * <pre>
- *  인증 관련 컨트롤러.
+ *  인증 관련 REST 컨트롤러.
  * </pre>
  *
  * @author nichefish
@@ -51,7 +51,7 @@ public class AuthRestController {
     @Getter
     private final String baseUrl = Url.APP_AUTH_LGN_FORM;
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리
 
     private final UserMyService userMyService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -59,11 +59,11 @@ public class AuthRestController {
     private final RefreshTokenService refreshTokenService;
 
     /**
-     * 인증 정보 조회
-     * (JWT 토큰 검증 및 사용자 정보 추출)
+     * 인증 정보를 조회한다.
+     * JWT 토큰을 검증하고 사용자 정보를 추출한다.
      *
      * @param request HTTP 요청 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @return {@link ResponseEntity} 처리 결과와 메시지
      */
     @GetMapping(Url.API_AUTH_INFO)
     public ResponseEntity<AjaxResponse> getAuthInfo(
@@ -90,10 +90,10 @@ public class AuthRestController {
     }
 
     /**
-     * Refresh Token 재발급
+     * Refresh Token을 재발급한다.
      *
-     * @param request HTTP ?붿껌 媛앹껜
-     * @return {@link ResponseEntity} -- 泥섎━ 寃곌낵? 硫붿떆吏
+     * @param request HTTP 요청 객체
+     * @return {@link ResponseEntity} 처리 결과와 메시지
      */
     @PostMapping(Url.API_AUTH_REFRESH)
     @PermitAll
@@ -136,11 +136,11 @@ public class AuthRestController {
 
 
     /**
-     * 비밀번호 강제 변경 처리 (장기간 비밀번호 미변경시, 또는 비밀번호 리셋시)
-     * (비로그인 사용자도 외부에서 접근 가능)
+     * 비밀번호 강제 변경을 처리한다.
+     * 만료 비밀번호 또는 비밀번호 리셋 상황에서 비로그인 사용자도 접근할 수 있다.
      *
-     * @param userPwChgParam 비밀번호 변경을 위한 파라미터 객체 (유효성 검사 적용)
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @param userPwChgParam 비밀번호 변경 파라미터
+     * @return {@link ResponseEntity} 처리 결과와 메시지
      */
     @PostMapping(Url.API_AUTH_LGN_PW_CHG)
     @PermitAll
@@ -156,10 +156,11 @@ public class AuthRestController {
     }
 
     /**
-     * 세션 강제 만료 처리 (중복 로그인 '기존 아이디 끊기'에서 취소 선택시)
+     * 세션 강제 만료를 처리한다.
+     * 중복 로그인에서 기존 아이디 끊기를 취소한 경우 사용한다.
      *
      * @param request HTTP 요청 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @return {@link ResponseEntity} 처리 결과와 메시지
      */
     @PostMapping(Url.API_AUTH_EXPIRE_SESSION)
     @PermitAll
@@ -176,10 +177,10 @@ public class AuthRestController {
     }
 
     /**
-     * 인증 무효화
+     * 인증 실패 응답을 반환하고 인증 상태를 무효화한다.
      *
-     * @param request HttpServletRequest
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @param request HTTP 요청 객체
+     * @return {@link ResponseEntity} 처리 결과와 메시지
      */
     private ResponseEntity<AjaxResponse> unauthorizedAndInvalidate(final HttpServletRequest request) {
         invalidateAuthentication(request);
@@ -189,9 +190,9 @@ public class AuthRestController {
     }
 
     /**
-     * 인증 무효화
+     * 인증 상태를 무효화한다.
      *
-     * @param request HttpServletRequest
+     * @param request HTTP 요청 객체
      */
     private void invalidateAuthentication(final HttpServletRequest request) {
         SecurityContextHolder.clearContext();

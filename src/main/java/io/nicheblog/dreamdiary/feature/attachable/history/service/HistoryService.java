@@ -7,6 +7,8 @@ import io.nicheblog.dreamdiary.feature.attachable.history.entity.HistoryEntity;
 import io.nicheblog.dreamdiary.feature.attachable.history.mapstruct.HistoryMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.history.model.HistoryDto;
 import io.nicheblog.dreamdiary.feature.attachable.history.repository.jpa.HistoryRepository;
+import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -70,7 +72,7 @@ public class HistoryService {
         final List<HistoryDto> result = new ArrayList<>();
         for (final HistoryEntity history : historyList) {
             final HistoryDto dto = historyMapstruct.toDto(history);
-            dto.setPreviewContent(buildPreview(dto.getContent()));
+            enrichViewFields(history, dto);
             result.add(dto);
         }
         return result;
@@ -84,7 +86,7 @@ public class HistoryService {
         if (history.isEmpty()) return Optional.empty();
 
         final HistoryDto dto = historyMapstruct.toDto(history.get());
-        dto.setPreviewContent(buildPreview(dto.getContent()));
+        enrichViewFields(history.get(), dto);
         return Optional.of(dto);
     }
 
@@ -112,5 +114,19 @@ public class HistoryService {
         final String plainText = CmmUtils.htmlToText(content).replaceAll("\\s+", " ").trim();
         return StringUtils.abbreviate(plainText, 240);
     }
-}
 
+    private void enrichViewFields(final HistoryEntity history, final HistoryDto dto) {
+        if (dto == null) return;
+
+        dto.setPreviewContent(buildPreview(dto.getContent()));
+        dto.setMarkdownContent(buildMarkdownContent(dto.getContent()));
+        if (StringUtils.isBlank(dto.getCreatedByNm())) {
+            final AuditorInfo createdByInfo = history != null ? history.getCreatedByInfo() : null;
+            dto.setCreatedByNm(createdByInfo != null ? createdByInfo.getNickname() : dto.getCreatedBy());
+        }
+    }
+
+    private String buildMarkdownContent(final String content) {
+        return StringUtils.isBlank(content) ? "-" : MarkdownUtils.markdown(content);
+    }
+}

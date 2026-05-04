@@ -10,12 +10,12 @@
     <#--begin::Row-->
     <div class="row mb-3">
         <div class="col-xl-2 col-2">
-            <label class="col-form-label text-center fs-6 fw-bold required">제목</label>
+            <label class="col-form-label text-center fs-6 fw-bold required"><@spring.message 'txt.calendar.schedule.form.title'/></label>
         </div>
         <div class="col-xl-3 col-4">
             <select name="scheduleCd" id="scheduleCd" class="form-select form-select-solid required"
                     onchange="dF.Schedule.scheduleCd(this);">
-                <option value="">--구분--</option>
+                <option value=""><@spring.message 'txt.calendar.schedule.form.type-option'/></option>
                 <#list SCHEDULE_CD![] as topic>
                     {{#if isPrvt}}
                         {{#unless (equals "${topic.code!}" "HOLYDAY")}}
@@ -34,7 +34,7 @@
         </div>
         <div class="col-xl-7 col-6">
             <input type="text" name="title" id="title" class="form-control form-control-solid required"
-                   value="{{title}}" placeholder="제목" maxlength="120" />
+                   value="{{title}}" placeholder="<@spring.message 'txt.calendar.schedule.form.title'/>" maxlength="120" />
             <span id="title_validate_span"></span>
         </div>
     </div>
@@ -42,7 +42,7 @@
     <div class="row mb-3">
         <div class="col-xl-2 col-2 d-flex align-items-center justify-content-between">
             <label class="col-form-label text-center fs-6 fw-bold" for="prtcpnt">
-                참여자
+                <@spring.message 'txt.calendar.schedule.form.participants'/>
             </label>
             <span class="btn btn-sm btn-icon btn-light-primary" onclick="dF.Schedule.addPrtcpnt();">
                 <i class="fas fa-plus float-end"></i>
@@ -50,7 +50,7 @@
         </div>
         {{#if isPrvt}}
             <div class="col-xl-10 col-10 d-flex align-items-center">
-                <div class="text-noti fs-small">※개인용 일정의 경우 참여자에게 공유할 수 있습니다. (본인과 참여자 화면에만 노출됩니다.)</div>
+                <div class="text-noti fs-small"><@spring.message 'txt.calendar.schedule.form.participants-guide'/></div>
             </div>
             <div class="col-xl-2 col-2"></div>
         {{/if}}
@@ -58,7 +58,7 @@
             {{#prtcpntList}}
                 <div id="prtcpntRow{{@index}}" class="d-flex align-items-center mb-1">
                     <select name="prtcpntList[{{@index}}].username" class="form-select form-select-solid me-2">
-                        <option value="">--선택--</option>
+                        <option value=""><@spring.message 'txt.calendar.schedule.form.select-option'/></option>
                         <#list crtdUserList![] as user>
                             <option value="${user.username!}" id="${user.username!}" {{selectedIf (equals username "${user.username}")}}>${user.userNm!}</option>
                         </#list>
@@ -74,7 +74,7 @@
     <#--begin::Row-->
     <div class="row mb-3">
         <div class="col-xl-2 col-2">
-            <label class="col-form-label text-center fs-6 fw-bold mb-2" for="content">내용</label>
+            <label class="col-form-label text-center fs-6 fw-bold mb-2" for="content"><@spring.message 'txt.calendar.schedule.form.content'/></label>
         </div>
         <div class="col-xl-10 col-10">
             <textarea name="content" id="content" class="form-control form-control-solid h-100px"
@@ -84,19 +84,19 @@
     <#--begin::Row-->
     <div class="row row-cols-lg-2 mb-3">
         <div class="col-xl-2 col-2">
-            <label class="col-form-label text-center fs-6 fw-bold mb-2" for="scheduleResn">일정</label>
+            <label class="col-form-label text-center fs-6 fw-bold mb-2" for="scheduleResn"><@spring.message 'txt.calendar.schedule.form.period'/></label>
         </div>
         <div class="col-xl-5 col-5">
-            <label class="fs-6 mt-3 mb-2 required" for="bgnDt">시작일</label>
+            <label class="fs-6 mt-3 mb-2 required" for="bgnDt"><@spring.message 'txt.calendar.schedule.form.start-date'/></label>
             <input name="bgnDt" id="bgnDt" class="form-control form-control-solid required"
-                   value="{{bgnDt}}" placeholder="시작일" readonly/>
+                   value="{{bgnDt}}" placeholder="<@spring.message 'txt.calendar.schedule.form.start-date'/>" readonly/>
             <div id="bgnDt_validate_span"></div>
         </div>
         <div class="col-xl-5 col-5" id="endDtDiv">
-            <label class="fs-6 mt-3 mb-2" for="endDt">종료일</label>
+            <label class="fs-6 mt-3 mb-2" for="endDt"><@spring.message 'txt.calendar.schedule.form.end-date'/></label>
             <input name="endDt" id="endDt" class="form-control form-control-solid"
-                   value="{{endDt}}" placeholder="종료일" readonly />
-            <div id="endDtSpan" class="text-noti">※미입력시 시작일자와 같게끔 처리됩니다.</div>
+                   value="{{endDt}}" placeholder="<@spring.message 'txt.calendar.schedule.form.end-date'/>" readonly />
+            <div id="endDtSpan" class="text-noti"><@spring.message 'txt.calendar.schedule.form.end-date-guide'/></div>
         </div>
     </div>
     {{^if isPrvt}}
