@@ -17,7 +17,7 @@
     </div>
     <div class="modal-footer">
         <div class="d-flex justify-content-end">
-            <@component.modal_btn_save "window.dispatchEvent(new CustomEvent("code-admin:request-submit-group-regist"));" />
+            <@component.modal_btn_save "window.dispatchEvent(new CustomEvent('code-admin:request-submit-group-regist'));" />
             <@component.modal_btn_close_safe "" />
         </div>
     </div>

@@ -35,7 +35,8 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="groupCode" id="groupCode" />
+    <#-- id=groupCode 는 등록 모달(CodeGroupRegistForm) 내 입력과 중복되면 document.querySelector("#groupCode") 가 잘못된 노드를 가리킨다. -->
+    <input type="hidden" name="groupCode" id="code_proc_groupCode" />
 </form>
 
 <script id="code_group_list_data" type="application/json">
@@ -60,8 +61,9 @@
     "lastPageNo": ${paginationInfo.lastPageNo!1},
     "totalCnt": ${paginationInfo.totalCnt!0},
     "pageSize": ${searchParam.pageSize!10},
-    "isFirstPage": ${paginationInfo.isFirstPage!false?c},
-    "isLastPage": ${paginationInfo.isLastPage!false?c},
+    <#-- ! 가 ?c 보다 낮아서 묶지 않으면 isFirstPage!(false?c)로 해석되고, 값이 있으면 boolean이 ${}에 그대로 들어가 formatBoolean 오류가 남 -->
+    "isFirstPage": ${(paginationInfo.isFirstPage!false)?c},
+    "isLastPage": ${(paginationInfo.isLastPage!false)?c},
     "prevPageNo": ${paginationInfo.prevPageNo!0},
     "nextPageNo": ${paginationInfo.nextPageNo!0}
 }
@@ -77,6 +79,14 @@
 
 <#--include::code_item_modules-->
 <#include "/view/feature/admin/code/_modal/_code_item_regist_modal.ftlh">
+<#-- LoginFormApp 등과 동일: ES module(CodeAdminApp)이 i18n용 로케일을 읽을 수 있게 window 에 노출(var Model). -->
+<script>
+    var Model = (function() {
+        return {
+            locale: "${.locale?replace('_', '-')?js_string}",
+        };
+    })();
+</script>
 <div id="code_admin_app" class="d-none"></div>
 <script type="module" src="/vue/admin/code/CodeAdminApp.js?${releaseDate!}"></script>
 
