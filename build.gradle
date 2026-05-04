@@ -1,3 +1,5 @@
+import dreamdiary.gradle.GenerateI18nCatalogsTask
+
 /**
  * build.gradle
  * Gradle 빌드 관련 설정 및 스크립트 (Groovy)
@@ -22,7 +24,7 @@ plugins {
  * 프로젝트 정보
  */
 group = 'dreamdiary.io'
-version = '0.17.0'
+version = '0.17.2'
 
 /**
  * Java, Spring Boot 및 추가 설정
@@ -133,11 +135,21 @@ tasks.register('buildFrontend', NpmTask) {
     args = ['run', 'build']
 }
 
+def i18nCatalogRoot = layout.buildDirectory.dir('generated/i18n-catalogs')
+def generateI18nCatalogs = tasks.register('generateI18nCatalogs', GenerateI18nCatalogsTask) {
+    group = 'build'
+    description = 'Spring 메시지 번들을 Vue용 JSON catalog로 변환합니다.'
+
+    messagesDir = layout.projectDirectory.dir('src/main/resources/messages')
+    outputDir = i18nCatalogRoot.map { it.dir('static/i18n') }
+}
+
 /**
  * build, run/debug, bootJar 등 실행시 ts, scss 등 자동 컴파일 설정
  */
 tasks.named('processResources') {
-    dependsOn tasks.named('buildFrontend')
+    dependsOn tasks.named('buildFrontend'), tasks.named('bootBuildInfo'), generateI18nCatalogs
+    from(i18nCatalogRoot)
 }
 
 tasks.named('bootJar') {
