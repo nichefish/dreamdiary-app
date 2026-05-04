@@ -60,8 +60,13 @@ public class AjaxAwareAuthenticationEntryPoint
         final String loginFormUrl = Url.APP_AUTH_LGN_FORM;
         try (PrintWriter out = response.getWriter()) {
             out.println("<script type=\"text/javascript\">");
+            out.println("const isPopup = !!window.opener && window.opener !== window;");
             out.println("const hasSwal = (typeof Swal !== \"undefined\");");
-            out.println("if (hasSwal) {");
+            out.println("if (isPopup) {");
+            out.println("    try { window.opener.location.href = '" + loginFormUrl + "'; } catch (e) {}");
+            out.println("    alert('" + escapeJsStringLiteral(loginRequiredMessage) + "');");
+            out.println("    window.close();");
+            out.println("} else if (hasSwal) {");
             out.println("    Swal.fire({text: '" + escapeJsStringLiteral(loginRequiredMessage) + "'}).then(function() {");
             out.println("        location.replace('" + loginFormUrl + "');");
             out.println("    });");

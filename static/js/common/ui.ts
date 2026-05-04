@@ -120,6 +120,32 @@ cF.ui = (function(): Module {
         },
 
         /**
+         * 팝업 창에서 인증이 만료된 경우 부모 창을 로그인으로 보내고 현재 팝업을 닫는다.
+         * 로그인 화면은 메인 창에서만 열리게 하여 팝업 안에 로그인 페이지가 끼는 상황을 막는다.
+         *
+         * @param {string} loginFormUrl - 부모 창에서 이동할 로그인 URL.
+         * @param {string?} msg - 닫기 전에 표시할 안내 메시지.
+         */
+        closePopupAndRedirectOpener: function(loginFormUrl: string, msg?: string): void {
+            const closePopup = function(): void {
+                try {
+                    if (window.opener && window.opener !== window) {
+                        window.opener.location.href = loginFormUrl;
+                    }
+                } catch (error) {
+                    console.warn("Failed to redirect opener to login page.", error);
+                }
+                window.close();
+            };
+
+            if (cF.util.isNotEmpty(msg)) {
+                cF.ui.swalOrAlert(msg, closePopup);
+                return;
+            }
+            closePopup();
+        },
+
+        /**
          * 요청 중 blockUI를 적용합니다.
          * 서버에서 응답 쿠키를 생성할 때까지 blockUI를 유지합니다.
          * @dependency blockUI (optional)
