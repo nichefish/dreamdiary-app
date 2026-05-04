@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.infrastructure.release.service.ReleaseHistoryService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.CacheWarmupEvent;
@@ -46,6 +47,7 @@ public class DreamdiaryInitializer
     private final UserService userService;
     private final AuthPolicyService authPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
+    private final ReleaseHistoryService releaseHistoryService;
 
     @Value("${system.init-temp-pw:}")
     public String SYSTEM_INIT_TEMP_PW;
@@ -59,6 +61,15 @@ public class DreamdiaryInitializer
     public void run(final String... args) throws Exception {
 
         log.info("Application initialization started. profile={}", activeProfile.getActive());
+
+        try {
+            releaseHistoryService.recordServerStart();
+            releaseHistoryService.recordDeployIfChanged();
+        } catch (final Exception e) {
+            // 변경 전: release history 적재 로직이 없어 서버 시작/배포 히스토리 영속화 불가
+            // 변경 후: 시작 시도 시 기록하되 실패해도 초기화 로직은 계속 진행
+            log.error("Release history recording failed. startup continues.", e);
+        }
 
         this.regSystemAcntIfEmpty();
         // 인증 정책 부재시 등록 :: 메소드 분리
