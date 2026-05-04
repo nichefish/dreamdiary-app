@@ -10,7 +10,7 @@
         <!--begin::Page title-->
         <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
             <#--begin::title-->
-            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">${(siteAcsInfo.menuNm)!}</h1>
+            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">${(siteAcsInfo.menuName)!}</h1>
             <!--end::Title-->
             <!--begin::Breadcrumb-->
             <ul class="breadcrumb fw-semibold fs-7 my-0 pt-1">
@@ -23,11 +23,11 @@
                 </li>
                 <!--end::Item-->
                 <!--begin::Item-->
-                <#if ((siteAcsInfo.upperMenuTyCd)! != "MAIN")>
+                <#if ((siteAcsInfo.parentMenuType)! != "MAIN")>
                     <li class="breadcrumb-item text-muted">${(siteAcsInfo.upperMenuNm)!}</li>
                 </#if>
                 <!--end::Item-->
-                <li class="breadcrumb-item text-muted">${(siteAcsInfo.menuNm)!}</li>
+                <li class="breadcrumb-item text-muted">${(siteAcsInfo.menuName)!}</li>
                 <!--begin::Item-->
                 <li class="breadcrumb-item text-muted text-underline-dotted" style=" text-underline-offset:3px;">
                     ${(siteAcsInfo.pageNm)!}&nbsp;

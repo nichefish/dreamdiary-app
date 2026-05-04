@@ -21,7 +21,7 @@ public interface BoardMapstruct extends BaseWriteMapstruct<BoardDto, BoardEntity
     BoardEntity toEntity(final BoardDto dto) throws Exception;
 
     @Mapping(target = "boardKey", source = "boardKey")
-    @Mapping(target = "menuNm", expression = "java(entity.getBoardName())")
+    @Mapping(target = "menuName", expression = "java(entity.getBoardName())")
     SiteAcsInfo toMenu(final BoardEntity entity) throws Exception;
 
     @Override

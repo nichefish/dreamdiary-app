@@ -43,9 +43,6 @@ public interface Code {
     /** 분류 분류 코드 */
     String CL_CTGR_CD = "CL_CTGR_CD";
 
-    /** 하위메뉴 확장 유형 코드 */
-    String MENU_SUB_EXTEND_TY_CD = "MENU_SUB_EXTEND_TY_CD";
-
     /** 텍스트 클래스 코드 */
     String TEXT_CLASS_CD = "TEXT_CLASS_CD";
 
@@ -70,11 +67,6 @@ public interface Code {
 
     String ACTVTY_CTGR_CD = "ACTVTY_CTGR_CD";     // 작업 카테고리 코드
     String ACTION_TY_CD = "ACTION_TY_CD";         // 액션 유형 코드
-
-    /* 메뉴 분류 코드 */
-    String MENU_TY_CD = "MENU_TY_CD";
-    String MENU_TY_MAIN = "MAIN";
-    String MENU_TY_SUB = "SUB";
 
     /** 꿈 결산 구분 코드 */
     String JOURNAL_ANNUAL_TY_CD = "JOURNAL_ANNUAL_TY_CD";

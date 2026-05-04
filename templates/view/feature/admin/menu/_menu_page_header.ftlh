@@ -30,7 +30,7 @@
     </div>
     <div>
         <#--헤더:: 버튼: 등록 화면 이동하기-->
-        <@component.header_btn_reg_modal "dF.Menu.regModal('${Code.MENU_TY_MAIN!}');" />
+        <@component.header_btn_reg_modal "dF.Menu.regModal('MAIN');" />
     </div>
 </form>
 

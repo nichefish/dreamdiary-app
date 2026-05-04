@@ -1,12 +1,11 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.model.MenuSearchParam;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SubmenuExpandType;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -17,6 +16,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * MenuPageController
@@ -37,8 +41,6 @@ public class MenuPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.MENU;        // 작업 카테고리 (로그 적재용)
 
-    private final CodeLookupService codeLookupService;
-
     /**
      * 관리자 > 메뉴 관리 > 메뉴 관리 화면 조회
      * (관리자MNGR만 접근 가능.)
@@ -58,8 +60,11 @@ public class MenuPageController
         model.addAttribute("menuLabel", SiteMenu.MENU);
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
-        // 코드 데이터 모델에 추가
-        codeLookupService.setCdListToModel(Code.MENU_SUB_EXTEND_TY_CD, model);
+        // enum 데이터를 모델에 추가 (코드테이블 의존 제거)
+        final List<Map<String, String>> submenuExpandTypes = Arrays.stream(SubmenuExpandType.values())
+                .map(type -> Map.of("code", type.name(), "codeName", type.desc))
+                .collect(Collectors.toList());
+        model.addAttribute("SUBMENU_EXPAND_TYPES", submenuExpandTypes);
 
         return "/view/feature/admin/menu/menu_page";
     }

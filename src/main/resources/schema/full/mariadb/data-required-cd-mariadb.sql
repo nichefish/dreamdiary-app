@@ -52,16 +52,6 @@ INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_ord
 
 -- -----------------------
 
--- 하위메뉴 확장 유형 분류 코드 추가
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('MENU_SUB_EXTEND_TY_CD', '하위메뉴 확장 유형 코드', '하위메뉴 확장 유형 코드');
--- 하위메뉴 확장 유형 상세 코드 추가
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'NO_SUB', '하위메뉴 없음', '하위메뉴 없음 (대메뉴가 링크로 기능함)', '0');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'LIST', '아래로 목록 표시', '아래로 목록 표시', '1');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'EXTEND', '우측으로 확장', '우측으로 확장', '2');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'COLLAPSE', '글접기', '글접기', '3');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'BOARD', '일반게시판', '일반게시판', '4');
--- -----------------------
-
 -- text class code group
 INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('TEXT_CLASS_CD', 'Text Class', 'text semantic code');
 -- text class detail codes
