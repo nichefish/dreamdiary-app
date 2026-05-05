@@ -119,7 +119,11 @@ dF.Cache = (function(): Module {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (!res.rslt) cF.ui.swalOrAlert(res.message);
+                        if (!res.rslt) {
+                            cF.ui.swalOrAlert(res.message);
+                            return;
+                        }
+                        cF.ui.blockUIReload();
                     });
             });
         },
