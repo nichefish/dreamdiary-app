@@ -4,7 +4,7 @@ type SubmenuExpandOption = {
 };
 
 export default {
-    name: "MenuRegForm",
+    name: "MenuRegistForm",
     props: {
         form: { type: Object, required: true },
         submenuExpandOptions: { type: Array, required: true },
