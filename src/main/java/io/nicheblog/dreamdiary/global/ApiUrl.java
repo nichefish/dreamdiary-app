@@ -150,13 +150,11 @@ public interface ApiUrl {
     String MENU = Prefix.API + "/menu/{id}";
 
     /** 게시판 관리 */
-    String BOARD_GROUP_REG_AJAX = Prefix.API + "/board/group/board-reg";
-    String BOARD_GROUP_DTL_AJAX = Prefix.API + "/board/group/board-dtl";
-    String BOARD_GROUP_MDF_ITEM_AJAX = Prefix.API + "/board/group/board-mdf-item";
-    String BOARD_GROUP_DEL_AJAX = Prefix.API + "/board/group/board-del";
-    String BOARD_GROUP_USE_AJAX = Prefix.API + "/board/group/board-use";
-    String BOARD_GROUP_UNUSE_AJAX = Prefix.API + "/board/group/board-unuse";
-    String BOARD_GROUP_SORT_ORDR_AJAX = Prefix.API + "/board/group/board-sort-ordr";
+    String BOARD_GROUPS = Prefix.API + "/board/groups";
+    String BOARD_GROUP = Prefix.API + "/board/groups/{id}";
+    String BOARD_GROUP_USE = Prefix.API + "/board/groups/{id}/use";
+    String BOARD_GROUP_UNUSE = Prefix.API + "/board/groups/{id}/unuse";
+    String BOARD_GROUPS_SORT_ORDERS = Prefix.API + "/board/groups/sort-orders";
 
     /** 템플릿 관리 (TODO) */
     String TMPLAT_DEF_REG_AJAX = Prefix.API + "/tmplat/tmplat-def-reg";
