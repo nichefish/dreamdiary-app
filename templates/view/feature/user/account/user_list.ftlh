@@ -11,41 +11,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#if (pendingSignupReqList?? && pendingSignupReqList?size > 0)>
-<div class="card post mb-4">
-    <div class="card-header">
-        <h3 class="card-title"><@spring.message 'txt.user.list.pending-signup-requests'/></h3>
-    </div>
-    <div class="card-body">
-        <table class="table align-middle table-row-dashed fs-small gy-3 table-fixed mb-0">
-            <thead>
-            <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 fw-bolder text-muted">
-                <th class="text-center w-10"><@spring.message 'txt.user.list.column.number'/></th>
-                <th class="text-center w-20"><@spring.message 'txt.user.list.column.name-username'/></th>
-                <th class="text-center w-25">E-MAIL</th>
-                <th class="text-center w-20"><@spring.message 'txt.user.list.column.requested-at'/></th>
-                <th class="text-center w-25"><@spring.message 'txt.user.list.column.action'/></th>
-            </tr>
-            </thead>
-            <tbody>
-            <#list pendingSignupReqList as req>
-                <tr>
-                    <td class="text-center">${req.id!}</td>
-                    <td class="text-start">${req.nickname!'-'} (${req.username!'-'})</td>
-                    <td class="text-start">${req.email!'-'}</td>
-                    <td class="text-center">${req.createdAt?string("yyyy-MM-dd HH:mm")!'-'}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="dF.User.cfReqAjax(${req.id!});"><@spring.message 'txt.user.list.action.approve'/></button>
-                        <button type="button" class="btn btn-sm btn-light-danger" onclick="dF.User.uncfReqAjax(${req.id!});"><@spring.message 'txt.user.list.action.reject'/></button>
-                    </td>
-                </tr>
-            </#list>
-            </tbody>
-        </table>
-    </div>
-</div>
-</#if>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">

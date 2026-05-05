@@ -66,6 +66,7 @@ public interface AppUrl {
 
     /** 사용자 관리 */
     String USER_LIST = Prefix.APP + "/user/list.do";
+    String USER_SIGNUP_LIST = Prefix.APP + "/user/signup/list.do";
     String USER_REG_FORM = Prefix.APP + "/user/reg-form.do";
     String USER_DTL = Prefix.APP + "/user/dtl.do";
     String USER_MDF_FORM = Prefix.APP + "/user/mdf-form.do";

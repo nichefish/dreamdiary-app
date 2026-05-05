@@ -6,7 +6,6 @@
  import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
  import io.nicheblog.dreamdiary.feature.user.account.model.UserSearchParam;
  import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
- import io.nicheblog.dreamdiary.feature.user.signup.repository.jpa.UserSignupRequestRepository;
  import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
  import io.nicheblog.dreamdiary.infrastructure.code.Code;
@@ -51,7 +50,6 @@ public class UserPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER;      // 작업 카테고리 (로그 적재용)
 
     private final UserService userService;
-    private final UserSignupRequestRepository userSignupRequestRepository;
     private final RoleService roleService;
     private final CodeLookupService codeLookupService;
 
@@ -83,7 +81,6 @@ public class UserPageController
         // 목록 조회
         final Page<UserDto> userList = userService.getPageDto(searchParam, pageRequest);
         model.addAttribute("userList", userList.getContent());
-        model.addAttribute("pendingSignupReqList", userSignupRequestRepository.findByStatusOrderByCreatedAtDesc("PENDING"));
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.AUTH_CD, model);
