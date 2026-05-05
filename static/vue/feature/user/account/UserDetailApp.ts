@@ -5,6 +5,7 @@
  * @author nichefish
  */
 import UserDetailPanel from "./components/UserDetailPanel.js";
+import UserDetailProfileEmplymPanel from "./components/UserDetailProfileEmplymPanel.js";
 import UserDetailFooter from "./components/UserDetailFooter.js";
 import userDetailDataService from "./services/userDetailDataService.js";
 import createUserDetailActions from "./services/userDetailActionService.js";
@@ -27,6 +28,17 @@ const state = Vue.reactive({
         deleteTooltip: "",
         listTooltip: "",
         passwordResetTooltip: "",
+        profileAddress: "주소",
+        profileBirthDate: "생년월일",
+        profileLunar: "음력",
+        profileProfile: "사용자 프로필",
+        emplymUserName: "직원명",
+        emplymEmail: "업무용 이메일",
+        emplymPhoneNumber: "업무용 연락처",
+        emplymAffiliation: "소속",
+        emplymRank: "직급",
+        emplymJoinDate: "입사일",
+        emplymPayrollAccount: "급여 계좌 정보",
         ...userDetailDataService.parseLabels(),
     },
 }) as UserDetailState;
@@ -45,6 +57,7 @@ const UserDetailRootApp = {
     name: "UserDetailRootApp",
     components: {
         UserDetailPanel,
+        UserDetailProfileEmplymPanel,
         UserDetailFooter,
     },
     data(): { state: UserDetailState } {
@@ -64,6 +77,12 @@ const UserDetailRootApp = {
             @password-reset="onPasswordReset"
         />
     </teleport>
+    <teleport to="#user_detail_profile_emplym_div">
+        <UserDetailProfileEmplymPanel
+            :detail="state.detail"
+            :labels="state.labels"
+        />
+    </teleport>
     <teleport to="#user_detail_footer_div">
         <UserDetailFooter
             :labels="state.labels"
@@ -78,6 +97,7 @@ const UserDetailRootApp = {
 runWhenDomReady(function(): void {
     if (!document.getElementById("user_detail_app")
         || !document.getElementById("user_detail_div")
+        || !document.getElementById("user_detail_profile_emplym_div")
         || !document.getElementById("user_detail_footer_div")) {
         console.error("[UserDetailApp] Vue mount root not found.");
         return;

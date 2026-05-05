@@ -72,7 +72,7 @@ public interface AppUrl {
     String USER_MDF_FORM = Prefix.APP + "/user/mdf-form.do";
 
     /** 내 정보 관리 */
-    String USER_MY_DTL = Prefix.APP + "/user/my/dtl.do";
+    String USER_MY_PAGE = Prefix.APP + "/user/my/page.do";
 
     /** 태그 */
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
