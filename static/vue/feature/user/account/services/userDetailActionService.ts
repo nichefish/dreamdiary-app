@@ -12,9 +12,9 @@ export default function createUserDetailActions(): UserDetailActions {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.USER_PW_RESET_AJAX;
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const id = cF.util.getInputValue("#procForm #id");
+                const url: string = cF.util.bindUrl(Url.USER_PASSWORD_RESET, { id });
+                cF.$ajax.post(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReload();
@@ -37,9 +37,9 @@ export default function createUserDetailActions(): UserDetailActions {
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                const url: string = Url.USER_DEL_AJAX;
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const id = cF.util.getInputValue("#procForm #id");
+                const url: string = cF.util.bindUrl(Url.USER, { id });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReplace(Url.USER_LIST);

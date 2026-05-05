@@ -103,7 +103,7 @@ export default function createUserFormActions(): UserFormActions {
                 return false;
             }
 
-            const url: string = Url.USERNAME_DUP_CHK_AJAX;
+            const url: string = Url.USERS_DUPLICATE_USERNAME_CHECK;
             const ajaxData: Record<string, any> = { "username": username };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 usernameValidSpan.text(res.message);
@@ -132,7 +132,7 @@ export default function createUserFormActions(): UserFormActions {
                 return false;
             }
 
-            const url: string = Url.USER_EMAIL_DUP_CHK_AJAX;
+            const url: string = Url.USERS_DUPLICATE_EMAIL_CHECK;
             const ajaxData: Record<string, any> = { "email": email };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 emailValidSpan.text(res.message);
@@ -152,7 +152,8 @@ export default function createUserFormActions(): UserFormActions {
          * 등록/수정 처리(Ajax)
          */
         regAjax(): void {
-            const url: string = isMdf() ? Url.USER_MDF_AJAX : Url.USER_REG_AJAX;
+            const id: string = cF.util.getInputValue("#userRegForm #id");
+            const url: string = isMdf() ? cF.util.bindUrl(Url.USER, { id }) : Url.USERS;
             const ajaxData: FormData = new FormData(document.getElementById("userRegForm") as HTMLFormElement);
             cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })

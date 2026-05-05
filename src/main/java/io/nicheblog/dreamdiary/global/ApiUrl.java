@@ -101,13 +101,12 @@ public interface ApiUrl {
     String BOARD_POST = Prefix.API + "/board/posts/{id}";
 
     /** 사용자 관리 */
-    String USER_REG_AJAX = Prefix.API + "/user/reg";
-    String USER_MDF_AJAX = Prefix.API + "/user/mdf";
-    String USER_PW_RESET_AJAX = Prefix.API + "/user/password-reset";
-    String USER_DEL_AJAX = Prefix.API + "/user/del";
-    String USER_LIST_XLSX_DOWNLOAD = Prefix.API + "/user/list-xlsx-download.do";
-    String USERNAME_DUP_CHK_AJAX = Prefix.API + "/user/id-dup-chk";
-    String USER_EMAIL_DUP_CHK_AJAX = Prefix.API + "/user/email-dup-chk";
+    String USERS = Prefix.API + "/users";
+    String USER = Prefix.API + "/users/{id}";
+    String USER_PASSWORD_RESET = Prefix.API + "/users/{id}/password-reset";
+    String USERS_XLSX_DOWNLOAD = Prefix.API + "/users/xlsx-download";
+    String USERS_DUPLICATE_USERNAME_CHECK = Prefix.API + "/users/duplicate-check/username";
+    String USERS_DUPLICATE_EMAIL_CHECK = Prefix.API + "/users/duplicate-check/email";
 
     /** 내 정보 관리 */
     String USER_MY_UPLOAD_PROFL_IMG_AJAX = Prefix.API + "/user/my/upload-profl-img";

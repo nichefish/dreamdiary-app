@@ -170,7 +170,7 @@ export function dupCheckUsername(username: string, form: UserSignupFormState, t:
         return;
     }
 
-    cF.ajax.get(Url.USERNAME_DUP_CHK_AJAX, { username: un }, function(res: AjaxResponse): void {
+    cF.ajax.get(Url.USERS_DUPLICATE_USERNAME_CHECK, { username: un }, function(res: AjaxResponse): void {
         form.usernameMsg = res.message || "";
         form.usernameDupPassed = res.rslt ? "Y" : "N";
         form.usernameMsgIsError = !res.rslt;
@@ -190,7 +190,7 @@ export function dupCheckEmail(emailId: string, emailDomain: string, form: UserSi
         return;
     }
 
-    cF.ajax.get(Url.USER_EMAIL_DUP_CHK_AJAX, { email: em }, function(res: AjaxResponse): void {
+    cF.ajax.get(Url.USERS_DUPLICATE_EMAIL_CHECK, { email: em }, function(res: AjaxResponse): void {
         form.emailMsg = res.message || "";
         form.emailDupPassed = res.rslt ? "Y" : "N";
         form.emailMsgIsError = !res.rslt;
