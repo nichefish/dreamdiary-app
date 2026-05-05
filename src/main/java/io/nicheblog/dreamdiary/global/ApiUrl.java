@@ -90,11 +90,10 @@ public interface ApiUrl {
     String JOURNAL_ANNUAL_REVIEW = Prefix.API + "/journal/annual/review/{id}";
 
     /** 공지사항 */
-    String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";
-    String NOTICE = Prefix.API + "/notice/{id}";
-    String NOTICE_MDF_AJAX = Prefix.API + "/notice/mdf";
-    String NOTICE_POPUP_LIST_AJAX = Prefix.API + "/notice/popup-list";
-    String NOTICE_LIST_XLSX_DOWNLOAD = Prefix.API + "/notice/list-xlsx-download.do";
+    String NOTICES = Prefix.API + "/notices";
+    String NOTICE = Prefix.API + "/notices/{id}";
+    String NOTICES_POPUP_LIST = Prefix.API + "/notices/popup-list";
+    String NOTICES_XLSX_DOWNLOAD = Prefix.API + "/notices/xlsx-download";
 
     /** 게시판 */
     String BOARD_POSTS = Prefix.API + "/board/posts";

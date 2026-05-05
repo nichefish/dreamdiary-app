@@ -99,9 +99,9 @@ public class NoticePageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.NOTICE_REG_FORM)
+    @GetMapping(Url.NOTICE_REGIST_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String noticeRegForm(
+    public String noticeRegistForm(
             final ModelMap model
     ) throws Exception {
 
@@ -118,7 +118,7 @@ public class NoticePageController
         codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
-        return "/view/feature/board/notice/notice_reg_form";
+        return "/view/feature/board/notice/notice_regist_form";
     }
 
     /**
@@ -129,9 +129,9 @@ public class NoticePageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @PostMapping(Url.NOTICE_REG_PREVIEW_POP)
+    @PostMapping(Url.NOTICE_REGIST_PREVIEW_POP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String noticeRegPreviewPop(
+    public String noticeRegistPreviewPop(
             final NoticeDto notice,
             final ModelMap model
     ) {
@@ -156,9 +156,9 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      * @see ViewerEventListener
      */
-    @GetMapping(Url.NOTICE_DTL)
+    @GetMapping(Url.NOTICE_DETAIL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String noticeDtl(
+    public String noticeDetail(
             final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
@@ -171,7 +171,7 @@ public class NoticePageController
         final NoticeDto retrievedDto = noticeService.viewDtlPage(key);
         model.addAttribute("post", retrievedDto);
 
-        return "/view/feature/board/notice/notice_dtl";
+        return "/view/feature/board/notice/notice_detail";
     }
 
     /**
@@ -182,9 +182,9 @@ public class NoticePageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.NOTICE_MDF_FORM)
+    @GetMapping(Url.NOTICE_MODIFY_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String noticeMdfForm(
+    public String noticeModifyForm(
             final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
@@ -203,6 +203,6 @@ public class NoticePageController
         codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
-        return "/view/feature/board/notice/notice_reg_form";
+        return "/view/feature/board/notice/notice_regist_form";
     }
 }

@@ -49,11 +49,11 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 수정하기-->
-            <@component.post_btn_modify "dF.Notice.mdfForm();" post isMngr />
+            <@component.post_btn_modify "window.dispatchEvent(new CustomEvent('notice:detail-modify-form'));" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "dF.Notice.delAjax(${post.id});" post isMngr />
+            <@component.post_btn_delete "window.dispatchEvent(new CustomEvent('notice:detail-delete', { detail: { id: ${post.id?c} } }));" post isMngr />
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "dF.Notice.list();" />
+            <@component.post_btn_toList "window.dispatchEvent(new CustomEvent('notice:detail-list'));" />
         </div>
         <#--페이지:: 댓글 영역-->
         <#include "/view/feature/attachable/comment/_comment_page_area.ftlh">
@@ -63,15 +63,13 @@
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="id" id="id" value="${post.id!}" />
 </form>
+<div id="notice_detail_app" class="d-none"></div>
 
 <#--include::comment-->
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::notice_modules-->
-<script type="text/javascript" src="/js/view/feature/board/notice/notice_module.js?${releaseDate!}"></script>
-
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/board/notice/notice_dtl.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/board/notice/NoticeDetailApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

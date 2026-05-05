@@ -52,10 +52,10 @@ public interface AppUrl {
 
     /** 공지사항 */
     String NOTICE_LIST = Prefix.APP + "/notice/list.do";
-    String NOTICE_REG_FORM = Prefix.APP + "/notice/reg-form.do";
-    String NOTICE_DTL = Prefix.APP + "/notice/dtl.do";
-    String NOTICE_MDF_FORM = Prefix.APP + "/notice/mdf-form.do";
-    String NOTICE_REG_PREVIEW_POP = Prefix.APP + "/notice/preview-pop.do";
+    String NOTICE_REGIST_FORM = Prefix.APP + "/notice/regist-form.do";
+    String NOTICE_DETAIL = Prefix.APP + "/notice/detail.do";
+    String NOTICE_MODIFY_FORM = Prefix.APP + "/notice/modify-form.do";
+    String NOTICE_REGIST_PREVIEW_POP = Prefix.APP + "/notice/preview-pop.do";
 
     /** 게시판 */
     String BOARD_POST_LIST = Prefix.APP + "/board/post/list.do";

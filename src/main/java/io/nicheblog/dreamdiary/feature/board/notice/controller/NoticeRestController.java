@@ -52,7 +52,7 @@ public class NoticeRestController
      * @param searchParam 검색 조건 파라미터
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.NOTICE_POPUP_LIST_AJAX)
+    @GetMapping(Url.NOTICES_POPUP_LIST)
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticePopupListAjax(
             final NoticeSearchParam searchParam
@@ -81,7 +81,7 @@ public class NoticeRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.NOTICE_REG_AJAX, Url.NOTICE_MDF_AJAX})
+    @PostMapping(Url.NOTICES)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeRegAjax(
@@ -89,8 +89,33 @@ public class NoticeRestController
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isReg = (notice.getKey() == null);
-        final ServiceResponse result = isReg ? noticeService.regist(notice, request) : noticeService.modify(notice, request);
+        final ServiceResponse result = noticeService.regist(notice, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 공지사항 수정 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param id 식별자
+     * @param notice 등록/수정 처리할 객체
+     * @param request Multipart 요청
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @PostMapping(Url.NOTICE)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> noticeModifyAjax(
+            final @PathVariable("id") Integer id,
+            final @Valid NoticeDto notice,
+            final MultipartHttpServletRequest request
+    ) throws Exception {
+
+        notice.setId(id);
+        final ServiceResponse result = noticeService.modify(notice, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -108,7 +133,7 @@ public class NoticeRestController
     @GetMapping(Url.NOTICE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> noticeDtlAjax(
+    public ResponseEntity<AjaxResponse> noticeDetailAjax(
             final @PathVariable("id") Integer key
     ) throws Exception {
 
@@ -147,7 +172,7 @@ public class NoticeRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * TODO: AOP 예외 처리
      */
-    @GetMapping(Url.NOTICE_LIST_XLSX_DOWNLOAD)
+    @GetMapping(Url.NOTICES_XLSX_DOWNLOAD)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeListXlsxDownload(

@@ -22,7 +22,7 @@ dF.NoticePopup = (function(): Module {
          * 팝업 목록 조회 및 처리
          */
         showNoticePopupAjax(): void {
-            // const url: string = Url.NOTICE_POPUP_LIST_AJAX;
+            // const url: string = Url.NOTICES_POPUP_LIST;
             // cF.ajax.get(url, null, function(res) {
             //     if (cF.util.isNotEmpty(res.rsltList)) {
             //         let rsltList = res.rsltList;
