@@ -97,10 +97,8 @@ public interface ApiUrl {
     String NOTICE_LIST_XLSX_DOWNLOAD = Prefix.API + "/notice/list-xlsx-download.do";
 
     /** 게시판 */
-    String BOARD_POST_REG_AJAX = Prefix.API + "/board/post/reg";
-    String BOARD_POST_DTL_AJAX = Prefix.API + "/board/post/dtl";
-    String BOARD_POST_MDF_AJAX = Prefix.API + "/board/post/mdf";
-    String BOARD_POST_DEL_AJAX = Prefix.API + "/board/post/del";
+    String BOARD_POSTS = Prefix.API + "/board/posts";
+    String BOARD_POST = Prefix.API + "/board/posts/{id}";
 
     /** 사용자 관리 */
     String USER_REG_AJAX = Prefix.API + "/user/reg";
