@@ -11,7 +11,7 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
-            /* initialize modules. */
+            /* 모듈 초기화 */
             dF.JournalSbjct.init();
         },
     };

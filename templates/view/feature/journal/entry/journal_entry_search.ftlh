@@ -22,6 +22,7 @@
         <div id="journal_entry_search_div">
             <#--handlebars template goes in here-->
         </div>
+    <div id="journal_entry_search_app" class="d-none" data-content-type="${entrySearchContentType}"></div>
     </div>
 </div>
 <!--end::Card-->
@@ -33,37 +34,24 @@
 <#include "/view/global/_tinymce_img.ftlh">
 
 <#--include::journal_day_module-->
-<#include "/view/feature/journal/day/_journal_day_list_template.hbs">
 <#include "/view/feature/journal/day/_modal/_journal_day_reg_modal.ftlh">
 <#include "/view/feature/journal/day/_modal/_journal_day_dtl_modal.ftlh">
-<#include "/view/feature/journal/day/_partial/_journal_day_stdrd_dt_partial.hbs">
-<#include "/view/feature/journal/day/_partial/_journal_day_context_btn_partial.hbs">
-<#include "/view/feature/journal/day/_partial/_journal_day_meta_btn_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/day/journal_day_module.js?${releaseDate!}"></script>
+<#-- 변경(A-8): `_journal_day_stdrd_dt_partial` / `_journal_day_context_btn_partial` / `_journal_day_meta_btn_partial`
+     include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건이라 dead partial 로 확정. partial 파일 자체도 삭제. -->
+<script type="module" src="/vue/feature/journal/day/registerJournalDayShellServices.js?${releaseDate!}"></script>
 
-<#--include::journal_chapter_module-->
-<#include "/view/feature/journal/chapter/_journal_chapter_list_template.hbs">
 <#include "/view/feature/journal/chapter/_modal/_journal_chapter_reg_modal.ftlh">
-<#include "/view/feature/journal/chapter/_partial/_journal_chapter_item_partial.hbs">
-<#include "/view/feature/journal/chapter/_partial/_journal_chapter_reg_btn_partial.hbs">
-<#include "/view/feature/journal/chapter/_partial/_journal_chapter_copy_btn_partial.hbs">
-<#include "/view/feature/journal/chapter/_partial/_journal_chapter_context_btn_partial.hbs">
-<#include "/view/feature/journal/chapter/_partial/_journal_chapter_toggle_btn_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/chapter/journal_chapter_module.js?${releaseDate!}"></script>
+
 
 <#--include::journal_diary_module-->
-<#include "/view/feature/journal/entry/_journal_entry_search_template.hbs">
-<#include "/view/feature/journal/entry/_journal_entry_search_item_template.hbs">
 <#assign journalEntryRegType = "DIARY">
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_item_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_reg_btn_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_context_btn_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_copy_btn_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_toggle_btn_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_states_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_content_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/entry/journal_entry_module.js?${releaseDate!}"></script>
+<#-- 변경(A-8): `_journal_entry_context_btn_partial` / `_journal_entry_copy_btn_partial` / `_journal_entry_content_partial`
+     include 제거 — `{{>}}` 호출 0건(자기 자신 `_by_type` 래퍼도 호출자 0건), JS 문자열 참조 0건이라 dead partial 로 확정. -->
+<#-- 변경(A-10): `_journal_entry_reg_btn_partial` / `_journal_entry_toggle_btn_partial` / `_journal_entry_states_partial`
+     include 제거 — `{{>}}` 호출 0건(자기 자신 `_by_type` 래퍼 포함), JS 문자열 참조 0건. 등록 버튼/토글 버튼/상태 뱃지 마크업은
+     Vue 컴포넌트(`JournalDayCard` / `JournalEntryItem` / `JournalChapterItem` / `JournalEntrySearchItem` / `JournalInterpretationItem`)에 흡수됨. -->
+<#-- 변경(E-4-δ-3): journalEntryService 적재는 _journal_entry_reg_modal.ftlh 의 ES module 묶음으로 단일 수렴. -->
 
 <#--include::journal_note_module-->
 <#assign journalEntryRegType = "NOTE">
@@ -74,33 +62,24 @@
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
 
 <#--include::journal_interpretation_module-->
-<#include "/view/feature/journal/interpretation/_journal_interpretation_list_template.hbs">
 <#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_reg_modal.ftlh">
-<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_item_partial.hbs">
-<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_copy_btn_partial.hbs">
-<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_context_btn_partial.hbs">
-<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_toggle_btn_partial.hbs">
-<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_content_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/interpretation/journal_interpretation_module.js?${releaseDate!}"></script>
 
-<#--include::journal_todo_module-->
-<#include "/view/feature/journal/todo/_journal_todo_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/todo/journal_todo_module.js?${releaseDate!}"></script>
 
-<#--include::journal_entry_tag_module-->
-<#include "/view/feature/journal/entry/tag/_journal_entry_tag_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/entry/tag/journal_entry_tag_module.js?${releaseDate!}"></script>
+<#--include::journal_entry_tag_module — E-4-γ: journalEntryTagService.js 가 _journal_entry_reg_modal.ftlh 에서 적재됨(journal_entry_tag_module 제거).-->
+<#-- 변경(A-9): `_journal_entry_tag_list_template` include 제거 — 일기/꿈 태그 헤더 Vue 흡수(JournalDayEntryTagListApp).
+     journalEntryTagService.renderList 가 본 앱의 setList 브리지로 수렴(Handlebars 컴파일 비경유). -->
 
 <#--include::tags-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
-<#include "/view/feature/attachable/tag/_partial/_tag_list_partial.hbs">
-<#include "/view/feature/attachable/tag/_partial/_tag_list_sized_partial.hbs">
+<#-- 변경(A-9): `_tag_list_partial` / `_tag_list_sized_partial` include 제거 — `{{>}}` 호출 0건(이전 유일 호출자
+     `_journal_entry_tag_list_template` 도 함께 제거), JS 문자열 참조 0건이라 dead partial 로 확정. -->
 
 <#--include::comment-->
 <#include "/view/feature/attachable/history/_history_modal.ftlh">
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">
-<#include "/view/feature/attachable/comment/_partial/_comment_reg_btn_partial.hbs">
+<#-- 변경(A-10): `_comment_list_partial` include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건. id `comment_list_partial` 자체는
+     호출자 없음(별개의 id `comment_list` 모달은 `_comment_list_modal.ftlh` 가 보유, 본 정리 범위 밖). -->
+<#-- 변경(A-8): `_comment_reg_btn_partial` include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건이라 dead partial 로 확정. -->
 <script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/attachable/related/related_content_module.js?${releaseDate!}"></script>
 
@@ -108,11 +87,15 @@
 <script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/attachable/lifecycle/lifecycle_module.js?${releaseDate!}"></script>
 
+<#-- 변경(A-9): 일기/꿈 태그 헤더 Vue 흡수. journalEntryTagService 적재(=_journal_entry_reg_modal.ftlh ESM 묶음) 이후
+     본 앱이 마운트되어 `JournalDayEntryTagListVueApp.setList` 브리지를 노출한다.
+     마운트 전 호출은 `pendingByType` 큐잉으로 흡수 — 적재 경합 방지. -->
+<script type="module" src="/vue/feature/journal/day/JournalDayEntryTagListApp.js?${releaseDate!}"></script>
+
 <!--include::page scripts-->
 <script type="text/javascript">
     window.journalEntrySearchContentType = "${entrySearchContentType}";
 </script>
-<script type="text/javascript" src="/js/view/feature/journal/entry/journal_entry_search_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/feature/journal/entry/journal_entry_search.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/journal/entry/JournalEntrySearchApp.js?${releaseDate!}"></script>
 
 </@layout.layout>
