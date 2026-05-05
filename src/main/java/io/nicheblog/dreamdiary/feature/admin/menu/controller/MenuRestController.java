@@ -36,7 +36,7 @@ public class MenuRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.MENU_PAGE;             // 기본 URL
+    private final String baseUrl = Url.MENU_ADMIN_PAGE;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.MENU;        // 작업 카테고리 (로그 적재용)
 

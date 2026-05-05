@@ -37,7 +37,7 @@ public class MenuPageController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.MENU_PAGE;             // 기본 URL
+    private final String baseUrl = Url.MENU_ADMIN_PAGE;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.MENU;        // 작업 카테고리 (로그 적재용)
 
@@ -49,7 +49,7 @@ public class MenuPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.MENU_PAGE)
+    @GetMapping(Url.MENU_ADMIN_PAGE)
     @Secured({Constant.ROLE_MNGR})
     public String menuPage(
             final @ModelAttribute("searchParam") MenuSearchParam searchParam,
@@ -57,7 +57,7 @@ public class MenuPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.MENU);
+        model.addAttribute("menuLabel", SiteMenu.MENU_ADMIN);
         model.addAttribute("pageName", PageName.DEFAULT);
 
         // enum 데이터를 모델에 추가 (코드테이블 의존 제거)
@@ -66,6 +66,6 @@ public class MenuPageController
                 .collect(Collectors.toList());
         model.addAttribute("SUBMENU_EXPAND_TYPES", submenuExpandTypes);
 
-        return "/view/feature/admin/menu/menu_page";
+        return "/view/feature/admin/menu/menu_admin_page";
     }
 }

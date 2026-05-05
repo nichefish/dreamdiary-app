@@ -59,7 +59,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'USER' AS upper_label )
-SELECT M.id, 'SUB', '계정 관리', '/app/user/list.do', NULL, 12, 'nichefish', 'NO_SUB', 'USER_INFO', 'N', 'Y', 'N', 'Y'
+SELECT M.id, 'SUB', '계정 관리', '/app/user/list.do', NULL, 12, 'nichefish', 'NO_SUB', 'USER_ACCOUNT', 'N', 'Y', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
@@ -84,7 +84,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'ADMIN' AS upper_label )
-SELECT M.id, 'SUB', '메뉴 관리', '/app/menu/page.do', NULL, 16, 'nichefish', 'NO_SUB', 'MENU', 'N', 'Y', 'Y', 'Y'
+SELECT M.id, 'SUB', '메뉴 관리', '/app/admin/menu/page.do', NULL, 16, 'nichefish', 'NO_SUB', 'MENU_ADMIN', 'N', 'Y', 'Y', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
@@ -96,7 +96,14 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'ADMIN' AS upper_label )
-SELECT M.id, 'SUB', '코드 관리', '/app/admin/code/page.do', NULL, 17, 'nichefish', 'NO_SUB', 'CODE', 'N', 'Y', 'Y', 'Y'
+SELECT M.id, 'SUB', '코드 관리', '/app/admin/code/page.do', NULL, 17, 'nichefish', 'NO_SUB', 'CODE_ADMIN', 'N', 'Y', 'Y', 'Y'
+FROM T
+INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
+
+-- 컨텐츠 관리
+INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
+WITH T AS ( SELECT 'CONTENT' AS upper_label )
+SELECT M.id, 'SUB', '게시판 관리', '/app/admin/board/page.do', NULL, 22, 'nichefish', 'NO_SUB', 'BOARD_ADMIN', 'N', 'Y', 'Y', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
@@ -115,3 +122,27 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 
 
+-- 메뉴 라벨 마이그레이션 (기존 운영/개발 데이터 정합)
+UPDATE menu
+SET menu_label = 'MENU_ADMIN'
+WHERE deleted_at IS NULL
+  AND menu_label = 'MENU'
+  AND menu_name = '메뉴 관리';
+
+UPDATE menu
+SET menu_label = 'CODE_ADMIN'
+WHERE deleted_at IS NULL
+  AND menu_label = 'CODE'
+  AND menu_name = '코드 관리';
+
+UPDATE menu
+SET menu_label = 'USER_ACCOUNT'
+WHERE deleted_at IS NULL
+  AND menu_label = 'USER_INFO'
+  AND menu_name = '계정 관리';
+
+UPDATE menu
+SET menu_label = 'BOARD_ADMIN'
+WHERE deleted_at IS NULL
+  AND menu_label = 'BOARD'
+  AND menu_name = '게시판 관리';

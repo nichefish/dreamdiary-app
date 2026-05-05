@@ -27,7 +27,7 @@
 </style>
 
 <ul class="row mt-2 mb-6 px-10 draggable-zone-main" id="menu_main_card_div">
-    <#--handlebars template goes in here-->
+    <#-- Vue(MenuAdminApp > MenuTreeNode)가 메뉴 트리를 렌더링 -->
 </ul>
 <!--end::Card-->
 
@@ -39,15 +39,24 @@
 <script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
 <script type="text/javascript" src="/js/common/helper/jstree.js"></script>
 
-<#--include::menu_module-->
 <#include "/view/feature/admin/menu/_modal/_menu_reg_modal.ftlh">
-<#include "/view/feature/admin/menu/_menu_main_card_template.hbs">
-<#include "/view/feature/admin/menu/_menu_sub_template.hbs">
-<script type="text/javascript" src="/js/view/feature/admin/menu/menu_module.js"></script>
 
-<#include "/view/feature/admin/menu/_partial/_menu_context_btn_partial.hbs">
-
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/admin/menu/menu_page.js"></script>
+<#-- LoginFormApp 등과 동일: ES module(MenuAdminApp)이 i18n용 로케일을 읽을 수 있게 window 에 노출(var Model). -->
+<script>
+    var Model = (function() {
+        return {
+            locale: "${.locale?replace('_', '-')?js_string}",
+        };
+    })();
+</script>
+<script id="menu_submenu_expand_types_data" type="application/json">
+[
+<#list SUBMENU_EXPAND_TYPES![] as row>
+    { "code": "${(row.code!'')?js_string}", "codeName": "${(row.codeName!'')?js_string}" }<#if row_has_next>,</#if>
+</#list>
+]
+</script>
+<div id="menu_admin_app" class="d-none"></div>
+<script type="module" src="/vue/feature/admin/menu/MenuAdminApp.js?${releaseDate!}"></script>
 
 </@layout.layout>
