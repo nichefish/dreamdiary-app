@@ -8,154 +8,8 @@
 
 <div class="card post">
     <#--begin::Card body-->
-    <div class="card-body">
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-4 d-flex-center">
-                <label class="fw-bold">아이디</label>
-            </div>
-            <div class="col-xl-2 col-8 col-form-label">
-                <div class="btn btn-icon btn-secondary position-relative w-30px h-30px w-md-40px h-md-40px me-3">
-                    <#if user.profileImageUrl??>
-                        <img src="${user.profileImageUrl!}" class="img-thumbnail p-0 w-100" />
-                    <#else>
-                        <span class="svg-icon svg-icon-1">
-                            <i class="fas fa-user-circle fs-2"></i>
-                        </span>
-                    </#if>
-                </div>
-                ${user.username!}
-            </div>
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">등록자</div>
-            </div>
-            <div class="col-xl-6 col-8 pc-d-flex col-form-label">
-                <div class="col-xl-2 col-12">${user.createdBy!}</div>
-                <div class="col-xl-6 col-12"> (${user.createdAt!})</div>
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 d-flex-center">
-                <label class="fw-bold">비밀번호</label>
-            </div>
-            <div class="col-xl-2">
-                <button type="button" class="btn btn-sm btn-secondary"
-                        onclick="dF.User.pwResetAjax();"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="비밀번호를 초기화합니다.&#10;인증 정책 관리 메뉴에서&#10;초기화 값을 설정할 수&#10;있습니다.">
-                    비밀번호 초기화
-                </button>
-            </div>
-            <div class="col-xl-8">
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">
-                    <label for="roleName">권한</label>
-                </div>
-            </div>
-            <div class="col-xl-2 col-8 col-form-label">
-                <#list user.userRoles![] as role>
-                    <#if (role.roleKey! == Code.AUTH_MNGR)>
-                        <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"></i>   <!-- 관리자 -->
-                    <#elseif (role.roleKey! == Code.AUTH_USER)>
-                        <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
-                    <#elseif (role.roleKey! == Code.AUTH_DEV)>
-                        <i class="bi bi-person-fill-gear ms-1"></i>        <!-- 개발자 -->
-                    </#if>
-                    ${role.roleName!}
-                </#list>
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">
-                    <label for="nickname">표시이름</label>
-                </div>
-            </div>
-            <div class="col-xl-2 col-8 col-form-label">
-                ${user.nickname!}
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">
-                    <label for="email">이메일</label>
-                </div>
-            </div>
-            <div class="col-xl-2 col-8 col-form-label">
-                ${user.email!}
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">
-                    <label for="phoneNumber">연락처</label>
-                </div>
-            </div>
-            <div class="col-xl-2 col-8 col-form-label">
-                ${user.phoneNumber!}
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">잠금여부</div>
-            </div>
-            <div class="col-xl-9 col-8 col-form-label">
-                <#if user.isLocked!false>
-                    <div class="text-danger">
-                        잠김<i class="bi bi-lock fs-9 text-danger"></i>
-                    </div>
-                <#else>
-                    <div class="text-success">
-                        <@spring.message 'txt.status.use'/><i class="bi bi-check text-success"></i>
-                    </div>
-                </#if>
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">
-                    <label for="allowedIpListStr">접속IP</label>
-                </div>
-            </div>
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label">
-                    <#if user.useAllowedIp!false>
-                        <div class="text-success">
-                            <@spring.message 'txt.status.use'/><i class="bi bi-check text-success"></i>
-                        </div>
-                    <#else>
-                        <div class="text-muted">
-                            <@spring.message 'txt.status.unuse'/><i class="bi bi-dash fs-9 text-muted"></i>
-                        </div>
-                    </#if>
-                </div>
-                <div class="form-check form-switch form-check-custom form-check-solid gap-4">
-                    <#if user.useAllowedIp! && user.allowedIpList??>
-                        <#list user.allowedIpList![] as item>
-                            <span class="div-textarea div-height-1 px-5">${item.allowedIp}</span>
-                        </#list>
-                    </#if>
-                </div>
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row">
-            <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fw-bold">계정 설명</div>
-            </div>
-            <div class="col-xl-9 col-8 col-form-label">
-                <div class="div-textarea h-auto min-h-125px">${user.content!}</div>
-            </div>
-        </div>
+    <div id="user_detail_div">
+        <#-- Vue(UserDetailApp)가 상세 본문을 렌더링 -->
     </div>
     <#--페이지:: 사용자 프로필 정보 영역-->
     <#if user.profile??>
@@ -166,13 +20,8 @@
         <#include "/view/feature/user/emplym/_user_emplym_dtl_area.ftlh">
     </#if>
     <#--begin::Card footer-->
-    <div class="card-footer d-flex justify-content-end py-6 px-9">
-        <#--페이지:: 버튼: 수정하기-->
-        <@component.post_btn_modify "dF.User.mdfForm();" user isMngr />
-        <#--페이지:: 버튼: 삭제하기-->
-        <@component.post_btn_delete "dF.User.delAjax(${post.id});" user isMngr />
-        <#--페이지:: 버튼: 목록으로 가기-->
-        <@component.post_btn_toList "dF.User.list();" />
+    <div id="user_detail_footer_div">
+        <#-- Vue(UserDetailApp)가 상세 footer 버튼을 렌더링 -->
     </div>
     <!--end::Card footer-->
 </div>
@@ -185,10 +34,56 @@
     </#if>
 </form>
 
-<#--include::script modules-->
-<script type="text/javascript" src="/js/view/feature/user/account/user_module.js?${releaseDate!}"></script>
+<script id="user_detail_data" type="application/json">
+{
+    "id": ${user.id!0},
+    "username": "${(user.username!'')?js_string}",
+    "profileImageUrl": "${(user.profileImageUrl!'')?js_string}",
+    "createdBy": "${(user.createdBy!'')?js_string}",
+    "createdAt": "${(user.createdAt!'')?js_string}",
+    "userRoles": [
+        <#list user.userRoles![] as role>
+            {
+                "roleKey": "${(role.roleKey!'')?js_string}",
+                "roleName": "${(role.roleName!'')?js_string}"
+            }<#if role_has_next>,</#if>
+        </#list>
+    ],
+    "nickname": "${(user.nickname!'')?js_string}",
+    "email": "${(user.email!'')?js_string}",
+    "phoneNumber": "${(user.phoneNumber!'')?js_string}",
+    "isLocked": ${(user.isLocked!false)?c},
+    "useAllowedIp": ${(user.useAllowedIp!false)?c},
+    "allowedIpList": [
+        <#list user.allowedIpList![] as item>
+            {
+                "id": ${item.id!0},
+                "userId": ${item.userId!0},
+                "allowedIp": "${(item.allowedIp!'')?js_string}"
+            }<#if item_has_next>,</#if>
+        </#list>
+    ],
+    "content": "${(user.content!'')?js_string}",
+    "userProfileId": <#if user.profile??>${user.profile.userProfileId!0}<#else>null</#if>
+}
+</script>
 
+<script id="user_detail_label_data" type="application/json">
+{
+    "locked": "${springMacroRequestContext.getMessage('txt.user.list.locked')?js_string}",
+    "use": "${springMacroRequestContext.getMessage('txt.status.use')?js_string}",
+    "unuse": "${springMacroRequestContext.getMessage('txt.status.unuse')?js_string}",
+    "modifyTooltip": "${springMacroRequestContext.getMessage('bs.tooltip.page.mdf')?js_string}",
+    "deleteTooltip": "${springMacroRequestContext.getMessage('bs.tooltip.del')?js_string}",
+    "listTooltip": "${springMacroRequestContext.getMessage('bs.tooltip.page.list')?js_string}",
+    "passwordResetTooltip": "비밀번호를 초기화합니다.\n인증 정책 관리 메뉴에서\n초기화 값을 설정할 수\n있습니다."
+}
+</script>
+
+<div id="user_detail_app" class="d-none"></div>
+<#--include::script modules-->
+<#-- Vue(UserDetailApp)가 기존 user_module.js의 상세 화면 동작을 대체 -->
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/user/account/user_dtl.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/user/account/UserDetailApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

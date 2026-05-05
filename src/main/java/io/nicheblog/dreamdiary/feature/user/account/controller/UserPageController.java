@@ -90,7 +90,7 @@ public class UserPageController
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
-        return "/view/feature/user/user_list";
+        return "/view/feature/user/account/user_list";
     }
 
     /**
@@ -124,7 +124,7 @@ public class UserPageController
         codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
         codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
-        return "/view/feature/user/user_reg_form";
+        return "/view/feature/user/account/user_reg_form";
     }
 
     /**
@@ -150,7 +150,7 @@ public class UserPageController
         final UserDto retrievedDto = userService.getDtlDto(key);
         model.addAttribute("user", retrievedDto);
 
-        return "/view/feature/user/user_dtl";
+        return "/view/feature/user/account/user_dtl";
     }
 
     /**
@@ -188,6 +188,6 @@ public class UserPageController
         codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
         codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
-        return "/view/feature/user/user_reg_form";
+        return "/view/feature/user/account/user_reg_form";
     }
 }

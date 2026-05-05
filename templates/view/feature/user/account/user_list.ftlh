@@ -30,87 +30,15 @@
                 </tr>
             </thead>
             <#--begin::Table body-->
-            <tbody>
-                <#list userList![] as user>
-                    <#assign divideRetireYn = prevRetireYn?? && user.retireYn! != prevRetireYn>
-                    <#assign divide = divideRetireYn>
-                    <tr class="<#if user.isMe!false>bg-light</#if> bg-hover-secondary <#if divide>border-top-5</#if>" onclick="dF.User.dtl(${user.id!});">
-                        <td class="text-center hidden-table">
-                            ${user.rnum}
-                        </td>
-                        <td class="text-center hidden-table">
-                            <#list user.userRoles![] as role>
-                                <#if (role.roleKey! == Code.AUTH_MNGR)>
-                                    <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"></i>   <!-- 관리자 -->
-                                <#elseif (role.roleKey! == Code.AUTH_USER)>
-                                    <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
-                                <#elseif (role.roleKey! == Code.AUTH_DEV)>
-                                    <i class="bi bi-person-fill-gear ms-1"></i>        <!-- 개발자 -->
-                                </#if>
-                                ${role.roleName!}
-                            </#list>
-                        </td>
-                        <td class="text-start ps-8">
-                            <a href="javascript:void(0);" class="text-dark">
-                                <#if (user.profileImageUrl)??>
-                                    <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                        <img src="${(user.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
-                                    </div>
-                                </#if>
-                                <span class="pe-1">${user.userNm!"-"} (${user.username!"-"})</span>
-                            </a>
-                            <#if (user.userProflYn!"Y") == "N">
-                                <i class="bi bi-person-dash vertical-middle text-muted"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.list.no-profile'/>"></i>
-                            <#elseif (user.retireYn!"N") == "Y">
-                                <i class="bi bi-person-dash vertical-middle text-danger"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.list.retired'/>"></i>
-                            <#else>
-                                <i class="bi bi-person-check vertical-middle text-success"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.user.list.active-employee'/>"></i>
-                            </#if>
-                        </td>
-                        <td class="text-center hidden-table">
-                            ${(user.cmpyNm)!"-"}
-                        </td>
-                        <td class="text-center hidden-table">
-                            ${(user.teamNm)!"-"}
-                        </td>
-                        <td class="text-center">
-                            ${(user.rankNm)!"-"}
-                            <#if (user.rankNm)! == "사원" && user.apntcYn! == "Y"><span class="text-muted">(<@spring.message 'txt.user.list.probation'/>)</span></#if>
-                        </td>
-                        <td class="text-start ps-8 hidden-table">
-                            ${(user.email)!"-"}
-                        </td>
-                        <td class="text-center hidden-table">
-                            <#if user.isLocked!false>
-                                <span class="text-danger">
-                                    <@spring.message 'txt.user.list.locked'/><i class="bi bi-lock fs-9 text-danger"></i>
-                                </span>
-                            <#else>
-                                <span class="text-success">
-                                    <@spring.message 'txt.comm.use'/><i class="bi bi-check text-success"></i>
-                                </span>
-                            </#if>
-                        </td>
-                    </tr>
-                    <!-- 계정 승인여부 상태 저장 -->
-                    <#assign prevRetireYn = user.retireYn! />
-                <#else>
-                    <tr>
-                        <td colspan="7" class="text-center">
-                            <@spring.message 'view.list.empty'/>
-                        </td>
-                    </tr>
-                </#list>
+            <tbody id="user_list_div">
+                <#-- Vue(UserListApp)가 행을 렌더링 -->
             </tbody>
         </table>
     </div>
     <#--begin::Card footer-->
     <div class="card-footer">
         <#--pagination::begin-->
-        <#include "/view/global/_pagination.ftlh">
+        <div id="user_pagination_div"></div>
         <#--pagination::end-->
     </div>
 </div>
@@ -119,10 +47,69 @@
     <input type="hidden" name="id" id="id" />
 </form>
 
-<#--include::script modules-->
-<script type="text/javascript" src="/js/view/feature/user/account/user_module.js?${releaseDate!}"></script>
+<script id="user_list_data" type="application/json">
+[
+<#list userList![] as user>
+    <#assign divideRetireYn = prevRetireYn?? && user.retireYn! != prevRetireYn>
+    <#assign divide = divideRetireYn>
+    {
+        "rnum": ${user.rnum!0},
+        "id": ${user.id!0},
+        "isMe": ${(user.isMe!false)?c},
+        "userRoles": [
+            <#list user.userRoles![] as role>
+                {
+                    "roleKey": "${(role.roleKey!'')?js_string}",
+                    "roleName": "${(role.roleName!'')?js_string}"
+                }<#if role_has_next>,</#if>
+            </#list>
+        ],
+        "profileImageUrl": "${(user.profileImageUrl!'')?js_string}",
+        "userNm": "${(user.userNm!'')?js_string}",
+        "username": "${(user.username!'')?js_string}",
+        "userProflYn": "${(user.userProflYn!'Y')?js_string}",
+        "retireYn": "${(user.retireYn!'N')?js_string}",
+        "cmpyNm": "${(user.cmpyNm!'')?js_string}",
+        "teamNm": "${(user.teamNm!'')?js_string}",
+        "rankNm": "${(user.rankNm!'')?js_string}",
+        "apntcYn": "${(user.apntcYn!'N')?js_string}",
+        "email": "${(user.email!'')?js_string}",
+        "isLocked": ${(user.isLocked!false)?c},
+        "divide": ${(divide!false)?c}
+    }<#if user_has_next>,</#if>
+    <#-- 계정 승인여부 상태 저장 -->
+    <#assign prevRetireYn = user.retireYn! />
+</#list>
+]
+</script>
 
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/user/account/user_list.js?${releaseDate!}"></script>
+<script id="user_pagination_data" type="application/json">
+{
+    "currPageNo": ${paginationInfo.currPageNo!1},
+    "lastPageNo": ${paginationInfo.lastPageNo!1},
+    "totalCnt": ${paginationInfo.totalCnt!0},
+    "pageSize": ${searchParam.pageSize!10},
+    "isFirstPage": ${(paginationInfo.isFirstPage!false)?c},
+    "isLastPage": ${(paginationInfo.isLastPage!false)?c},
+    "prevPageNo": ${paginationInfo.prevPageNo!0},
+    "nextPageNo": ${paginationInfo.nextPageNo!0}
+}
+</script>
+
+<script id="user_label_data" type="application/json">
+{
+    "noProfile": "${springMacroRequestContext.getMessage('bs.tooltip.user.list.no-profile')?js_string}",
+    "retired": "${springMacroRequestContext.getMessage('bs.tooltip.user.list.retired')?js_string}",
+    "activeEmployee": "${springMacroRequestContext.getMessage('bs.tooltip.user.list.active-employee')?js_string}",
+    "probation": "${springMacroRequestContext.getMessage('txt.user.list.probation')?js_string}",
+    "locked": "${springMacroRequestContext.getMessage('txt.user.list.locked')?js_string}",
+    "use": "${springMacroRequestContext.getMessage('txt.comm.use')?js_string}",
+    "emptyList": "${springMacroRequestContext.getMessage('view.list.empty')?js_string}",
+    "totalPrefix": "Total"
+}
+</script>
+
+<div id="user_app" class="d-none"></div>
+<script type="module" src="/vue/feature/user/account/UserListApp.js?${releaseDate!}"></script>
 
 </@layout.layout>
