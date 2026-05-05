@@ -1,6 +1,6 @@
 <#--
  * 사용자 인사정보(user_emplym) > 조회 영역
- * @included_in : user_dtl.ftlh
+ * @included_in : user_detail.ftlh
  -->
 
 <!--begin::Menu separator-->

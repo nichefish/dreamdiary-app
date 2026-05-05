@@ -65,8 +65,8 @@ const UserDetailRootApp = {
     },
     methods: {
         onPasswordReset(): void { actions.pwResetAjax(); },
-        onModify(): void { actions.mdfForm(); },
-        onDelete(): void { actions.delAjax(); },
+        onModify(): void { actions.modifyForm(); },
+        onDelete(): void { actions.deleteAjax(); },
         onList(): void { actions.list(); },
     },
     template: `

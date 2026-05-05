@@ -124,8 +124,8 @@ export type UserListActions = {
     page: (pageNo: number, pageSize?: number) => void;
     search: () => void;
     xlsxDownload: () => void;
-    regForm: () => void;
-    dtl: (id: string | number) => void;
+    registForm: () => void;
+    detail: (id: string | number) => void;
 };
 
 export type UserDetailState = {
@@ -135,8 +135,8 @@ export type UserDetailState = {
 
 export type UserDetailActions = {
     pwResetAjax: () => void;
-    mdfForm: () => void;
-    delAjax: () => void;
+    modifyForm: () => void;
+    deleteAjax: () => void;
     list: () => void;
 };
 

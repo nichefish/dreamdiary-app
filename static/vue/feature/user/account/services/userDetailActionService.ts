@@ -25,13 +25,13 @@ export default function createUserDetailActions(): UserDetailActions {
         /**
          * 수정 화면으로 이동
          */
-        mdfForm(): void {
-            cF.form.blockUISubmit("#procForm", Url.USER_MDF_FORM);
+        modifyForm(): void {
+            cF.form.blockUISubmit("#procForm", Url.USER_MODIFY_FORM);
         },
         /**
          * 삭제 (Ajax)
          */
-        delAjax(): void {
+        deleteAjax(): void {
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,

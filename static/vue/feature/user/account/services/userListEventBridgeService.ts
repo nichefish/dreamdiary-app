@@ -6,7 +6,7 @@ export default function bindUserListEventBridge(actions: UserListActions): void 
         init: function(): void {},
         search: actions.search,
         xlsxDownload: actions.xlsxDownload,
-        regForm: actions.regForm,
-        dtl: actions.dtl,
+        registForm: actions.registForm,
+        detail: actions.detail,
     };
 }

@@ -91,7 +91,7 @@ public class UserRestController
     @PostMapping(Url.USERS)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
-    public ResponseEntity<AjaxResponse> userRegAjax(
+    public ResponseEntity<AjaxResponse> userRegistAjax(
             final @Valid UserDto user
     ) throws Exception {
         final ServiceResponse result = userService.regist(user);
@@ -104,7 +104,7 @@ public class UserRestController
     @PostMapping(Url.USER)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
-    public ResponseEntity<AjaxResponse> userMdfAjax(
+    public ResponseEntity<AjaxResponse> userModifyAjax(
             final @PathVariable("id") Integer id,
             final @Valid UserDto user
     ) throws Exception {
