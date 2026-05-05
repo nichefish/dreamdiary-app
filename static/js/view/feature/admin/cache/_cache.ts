@@ -35,7 +35,7 @@ dF.Cache = (function(): Module {
         /**
          * url, data 받아서 ajax 호출
          */
-        dtlModal: function(cacheName: string, cacheKey: string|number): void {
+        detailModal: function(cacheName: string, cacheKey: string|number): void {
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
             openModals.forEach((modal: Node): void => {
@@ -49,7 +49,7 @@ dF.Cache = (function(): Module {
             const url: string = Url.CACHE_ACTIVE_DTL_AJAX;
             const ajaxData: Record<string, any> = { cacheName: cacheName, cacheKey: cacheKey };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                cF.handlebars.modal(res.rsltObj, "cache_dtl");
+                cF.handlebars.modal(res.rsltObj, "cache_detail");
 
                 /* modal history push */
                 ModalHistory.push(self, func, args);
