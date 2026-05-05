@@ -9,6 +9,8 @@ import userFormDataService from "./services/userFormDataService.js";
 import createUserFormActions from "./services/userFormActionService.js";
 import bindUserFormEventBridge from "./services/userFormEventBridgeService.js";
 import { UserFormState } from "./types.js";
+import { initEmplymFormPlugins, initProfileBirthDatepicker } from "../shared/profileEmplymShared.js";
+import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 
 const state = Vue.reactive({
     form: userFormDataService.parseForm(),
@@ -17,8 +19,8 @@ const state = Vue.reactive({
     teamOptions: userFormDataService.parseCodeOptions("user_form_team_data"),
     emplymOptions: userFormDataService.parseCodeOptions("user_form_emplym_data"),
     rankOptions: userFormDataService.parseCodeOptions("user_form_rank_data"),
-    labels: userFormDataService.parseLabels(),
 }) as UserFormState;
+const i18n = createScopedI18n();
 
 const actions = createUserFormActions();
 
@@ -30,6 +32,13 @@ function runWhenDomReady(fn: () => void): void {
     fn();
 }
 
+function resolvePageLocale(): string {
+    const w = typeof window !== "undefined" ? (window as Window & { Model?: { locale?: string } }) : undefined;
+    const loc = w?.Model?.locale;
+    if (loc) return loc;
+    return (document.documentElement.lang || "ko").replace(/_/g, "-");
+}
+
 const UserFormRootApp = {
     name: "UserFormRootApp",
     components: {
@@ -39,6 +48,7 @@ const UserFormRootApp = {
         return { state };
     },
     methods: {
+        t(key: string): string { return i18n.t(key); },
         onUsernameDupCheck(): void { actions.idDupChckAjax(); },
         onEmailDupCheck(): void { actions.emailDupChckAjax(); },
         onSubmit(): void { cF.form.submit("#userRegForm"); },
@@ -46,16 +56,20 @@ const UserFormRootApp = {
         initProfilePlugins(): void {
             requestAnimationFrame(function(): void {
                 cF.ui.chckboxLabel("#lunarYn", "음력//양력", "blue//gray");
-                cF.datepicker.singleDatePicker("#brthdy", "yyyy-MM-DD", $("#brthdy").val());
+                initProfileBirthDatepicker("#brthdy");
             });
         },
         initEmplymPlugins(): void {
             requestAnimationFrame(function(): void {
-                cF.validate.phoneNumber("#emplymPhoneNumber");
-                $("#emplymEmailDomainSelect").on("change", function(): void {
-                    $("#emplymEmailDomain").val($(this).val());
+                initEmplymFormPlugins({
+                    phoneSelector: "#emplymPhoneNumber",
+                    emailDomainSelectSelector: "#emplymEmailDomainSelect",
+                    emailDomainInputSelector: "#emplymEmailDomain",
+                    joinDateSelector: "#ecnyDt",
+                    retireDateSelector: "#retireDt",
+                    bindNamespace: "userFormVue",
                 });
-                $("#rankCd").on("change", function(): void {
+                $("#rankCd").off("change.userFormVue").on("change.userFormVue", function(): void {
                     if ($("#rankCd").val() === "STAFF") {
                         $("#apntcYnDiv").show();
                     } else {
@@ -64,8 +78,6 @@ const UserFormRootApp = {
                 }).trigger("change");
                 cF.ui.chckboxLabel("#apntcYn", "수습//해당없음", "blue//gray");
                 cF.ui.chckboxLabel("#retireYn", "퇴사//해당없음", "red//gray", function(): void {$(".retireDtDiv").show();}, function(): void {$(".retireDtDiv").hide();});
-                cF.datepicker.singleDatePicker("#ecnyDt", "yyyy-MM-DD", $("#ecnyDt").val());
-                cF.datepicker.singleDatePicker("#retireDt", "yyyy-MM-DD", $("#retireDt").val());
             });
         },
         onToggleProfile(): void {
@@ -80,7 +92,7 @@ const UserFormRootApp = {
     template: `
     <UserFormPanel
         :form="state.form"
-        :labels="state.labels"
+        :t="t"
         :roles="state.roles"
         :cmpy-options="state.cmpyOptions"
         :team-options="state.teamOptions"
@@ -96,7 +108,8 @@ const UserFormRootApp = {
     `,
 };
 
-runWhenDomReady(function(): void {
+runWhenDomReady(async function(): Promise<void> {
+    await i18n.load(resolvePageLocale());
     if (!document.getElementById("user_form_app")) {
         console.error("[UserFormApp] Vue mount root not found.");
         return;

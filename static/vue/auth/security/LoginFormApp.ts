@@ -6,7 +6,7 @@
  */
 import LoginPanel from "./components/LoginPanel.js";
 import PasswordChangeModal from "./components/PasswordChangeModal.js";
-import i18nCatalogService from "./services/i18nCatalogService.js";
+import i18nCatalogService from "../../global/services/i18nCatalogService.js";
 import loginAuthService from "./services/loginAuthService.js";
 import loginValidationService, {
     LoginErrors,

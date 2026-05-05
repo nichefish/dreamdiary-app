@@ -1,6 +1,6 @@
 <#--
  * Board > register modal (Vue: BoardRegistForm)
- * @included_in : board_list
+ * @included_in : board_admin_page
  -->
 
 <#import "/layout/modal_layout.ftlh" as modal>

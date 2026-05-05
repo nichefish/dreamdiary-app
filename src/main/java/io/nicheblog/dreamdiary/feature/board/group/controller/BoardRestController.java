@@ -25,7 +25,7 @@ import javax.validation.Valid;
 public class BoardRestController extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.BOARD_LIST;
+    private final String baseUrl = Url.BOARD_ADMIN_PAGE;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.BOARD;
 

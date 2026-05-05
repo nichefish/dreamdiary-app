@@ -1,6 +1,4 @@
-import { UserMyLabels } from "../types.js";
-
-export default function createUserMyActions(labels: UserMyLabels) {
+export default function createUserMyActions(t: (key: string) => string) {
     function uploadProflImg(): void {
         const $fileInput: JQuery<HTMLInputElement> = $("#fileGroup0");
         $fileInput.off("change.userMyVue").on("change.userMyVue", function(): void {
@@ -16,7 +14,7 @@ export default function createUserMyActions(labels: UserMyLabels) {
 
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        Swal.fire({ text: labels.changedProfileNotice })
+                        Swal.fire({ text: t("msg.user.my.changed-profile-notice") })
                             .then(function(): void {
                                 if (res.rslt) cF.ui.blockUIReload();
                             });
@@ -39,7 +37,7 @@ export default function createUserMyActions(labels: UserMyLabels) {
 
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        Swal.fire({ text: labels.changedProfileNotice })
+                        Swal.fire({ text: t("msg.user.my.changed-profile-notice") })
                             .then(function(): void {
                                 if (res.rslt) cF.ui.blockUIReload();
                             });

@@ -112,8 +112,8 @@
         <script type="text/javascript" src="/js/layout/modal_history.js?${releaseDate!}"></script>
 
         <!--scripts::chat-->
-        <link rel="stylesheet" type="text/css" href="/vue/chat/assets/css/style.css">
-        <script type="module" src="/vue/chat/App.js?${releaseDate!}"></script>z
+        <link rel="stylesheet" type="text/css" href="/vue/feature/chat/assets/css/style.css">
+        <script type="module" src="/vue/feature/chat/App.js?${releaseDate!}"></script>
     </body>
     <!--end::Body-->
 </html>

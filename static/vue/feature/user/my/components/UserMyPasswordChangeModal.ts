@@ -1,17 +1,10 @@
-import { UserMyLabels } from "../types.js";
-
 export default {
     name: "UserMyPasswordChangeModal",
     props: {
         errorMsg: { type: String, required: false, default: "" },
-        labels: { type: Object, required: true },
+        t: { type: Function, required: true },
     },
     emits: ["submit"],
-    computed: {
-        l(): UserMyLabels {
-            return this.labels as UserMyLabels;
-        },
-    },
     template: `
     <div>
         <!--begin::Row-->
@@ -24,7 +17,7 @@ export default {
         <div class="row mb-5">
             <div class="col-xl-3">
                 <div class="col-form-label text-center fs-6 fw-bold">
-                    <label for="currPw">{{ l.currentPassword }}</label>
+                    <label for="currPw">{{ t('txt.user.my.current-password') }}</label>
                 </div>
             </div>
             <div class="col-xl-9 text-start">
@@ -36,13 +29,13 @@ export default {
         <div class="row">
             <div class="col-xl-3">
                 <div class="col-form-label text-center fs-6 fw-bold">
-                    <label for="newPw">{{ l.newPassword }}</label>
+                    <label for="newPw">{{ t('txt.user.my.new-password') }}</label>
                 </div>
             </div>
             <div class="col-xl-9 text-start">
                 <input type="password" name="newPw" id="newPw" class="form-control required" maxlength="20">
                 <div class="fs-8 form-text text-noti">
-                    {{ l.passwordReq }}
+                    {{ t('txt.req.password') }}
                 </div>
                 <div id="newPw_validate_span"></div>
             </div>
@@ -51,7 +44,7 @@ export default {
         <div class="row mb-5">
             <div class="col-xl-3">
                 <div class="col-form-label text-center fs-6 fw-bold">
-                    <label for="newPwCf">{{ l.newPasswordConfirm }}</label>
+                    <label for="newPwCf">{{ t('txt.user.my.new-password-confirm') }}</label>
                 </div>
             </div>
             <div class="col-xl-9 text-start">

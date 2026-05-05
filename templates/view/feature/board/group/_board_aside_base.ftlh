@@ -1,6 +1,6 @@
 <!--
  * Board management aside — 예약 코드 행은 ReservedStructuralBoard enum + 컨트롤러 모델로만 채운다.
- * @included_in : board_list.ftlh
+ * @included_in : board_admin_page.ftlh
  -->
 
 <#--begin::aside-->

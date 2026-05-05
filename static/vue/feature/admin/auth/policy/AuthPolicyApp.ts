@@ -5,10 +5,10 @@
  */
 import AuthPolicyForm from "./components/AuthPolicyForm.js";
 import AuthPolicyFooter from "./components/AuthPolicyFooter.js";
-import authPolicyI18nService from "./services/authPolicyI18nService.js";
 import authPolicyDataService from "./services/authPolicyDataService.js";
 import createAuthPolicyActions from "./services/authPolicyActionService.js";
 import { AuthPolicyPageState } from "./types.js";
+import { createScopedI18n } from "../../../../global/services/scopedI18nService.js";
 
 const state = Vue.reactive({
     form: {
@@ -21,16 +21,17 @@ const state = Vue.reactive({
         passwordResetTokenExpiryMinutes: "",
     },
 }) as AuthPolicyPageState;
+const i18n = createScopedI18n();
 
 const actions = createAuthPolicyActions({
     getForm: (): AuthPolicyPageState["form"] => state.form,
     t(key: string): string {
-        return authPolicyI18nService.t(key);
+        return i18n.t(key);
     },
 });
 
 function t(key: string): string {
-    return authPolicyI18nService.t(key);
+    return i18n.t(key);
 }
 
 function runWhenDomReady(fn: () => void): void {
@@ -66,7 +67,7 @@ const AuthPolicyRoot = {
 };
 
 runWhenDomReady(async function(): Promise<void> {
-    await authPolicyI18nService.load(resolveAuthPolicyPageLocale());
+    await i18n.load(resolveAuthPolicyPageLocale());
     Object.assign(state.form, authPolicyDataService.parseInitialForm());
 
     if (!document.getElementById("auth_policy_app")) {

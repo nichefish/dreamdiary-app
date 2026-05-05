@@ -1,11 +1,18 @@
-import { UserMyLabels, UserMyPage, UserMyRole, UserMyVacation } from "../types.js";
+import { UserMyPage, UserMyRole, UserMyVacation } from "../types.js";
+import { fallbackText } from "../../shared/profileEmplymShared.js";
+import { formatEmplymAffiliation, formatEmplymJoinRetire, formatEmplymPayrollAccount, formatEmplymRank } from "../../shared/profileEmplymShared.js";
+import { resolveUserRoleIconClass } from "../../shared/profileEmplymShared.js";
+import UserProfileEmplymReadSection from "../../shared/components/UserProfileEmplymReadSection.js";
 
 export default {
     name: "UserMyPagePanel",
+    components: {
+        UserProfileEmplymReadSection,
+    },
     props: {
         user: { type: Object, required: true },
         vacation: { type: Object, required: true },
-        labels: { type: Object, required: true },
+        t: { type: Function, required: true },
     },
     emits: ["upload-profile-image", "remove-profile-image", "open-password-change"],
     computed: {
@@ -14,9 +21,6 @@ export default {
         },
         v(): UserMyVacation {
             return this.vacation as UserMyVacation;
-        },
-        l(): UserMyLabels {
-            return this.labels as UserMyLabels;
         },
         hasUserInfo(): boolean {
             return !!this.u.userInfo;
@@ -27,19 +31,44 @@ export default {
         hasInfoItems(): boolean {
             return !!this.u.userInfo?.itemList?.length;
         },
+        profileRows(): Array<{ label: string; value: string }> {
+            if (!this.hasUserInfo)
+                return [];
+            return [
+                { label: this.t("txt.user.my.phone-number"), value: this.u.phoneNumber || "" },
+                { label: this.t("txt.user.my.email"), value: this.u.email || "" },
+                { label: this.t("txt.user.my.birth-date"), value: this.u.userInfo?.brthdy || "" },
+            ];
+        },
+        emplymRows(): Array<{ label: string; value: string }> {
+            if (!this.hasUserInfo)
+                return [];
+            return [
+                {
+                    label: this.t("txt.user.my.department"),
+                    value: formatEmplymAffiliation(this.u.userInfo || {}),
+                },
+                {
+                    label: this.t("txt.user.my.rank"),
+                    value: formatEmplymRank(this.u.userInfo || {}, this.t("txt.user.my.probation")),
+                },
+                {
+                    label: this.t("txt.user.my.join-date"),
+                    value: formatEmplymJoinRetire(this.u.userInfo || {}, { retirePrefix: this.t("txt.user.my.retire-date") }),
+                },
+                {
+                    label: this.t("txt.user.my.account-number"),
+                    value: formatEmplymPayrollAccount(this.u.userInfo || {}, " | "),
+                },
+            ];
+        },
     },
     methods: {
         roleIconClass(role: UserMyRole): string {
-            // 관리자
-            if (role.roleKey === "MNGR") return "bi bi-person-lines-fill text-info ms-1 opacity-75";
-            // 사용자
-            if (role.roleKey === "USER") return "bi bi-people-fill ms-1";
-            // 개발자
-            if (role.roleKey === "DEV") return "bi bi-person-fill-gear ms-1";
-            return "bi bi-person ms-1";
+            return resolveUserRoleIconClass(role.roleKey);
         },
         fallback(value: string | null | undefined): string {
-            return value || "-";
+            return fallbackText(value);
         },
     },
     template: `
@@ -49,19 +78,19 @@ export default {
             <!--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-4 d-flex-center">
-                    <label class="fs-6 fw-bold">{{ l.username }}</label>
+                    <label class="fs-6 fw-bold">{{ t('txt.user.my.username') }}</label>
                 </div>
                 <div class="col-xl-2 col-8 col-form-label">
                     <div class="btn btn-icon btn-light-primary position-relative w-30px h-30px w-md-40px h-md-40px me-3 cursor-default">
                         <!-- TODO: 원본 프로필 이미지 조회 -->
                         <label class="position-absolute top-0 start-100 translate-middle badge badge-sm badge-circle badge-light-primary opacity-hover cursor-pointer"
                                @click="$emit('upload-profile-image')"
-                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="l.uploadProfileImageTooltip">
+                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('bs.tooltip.user.my.upload-profile-image')">
                             <i class="bi bi-pen icon-xs text-primary"></i>
                         </label>
                         <span class="position-absolute top-100 start-100 translate-middle badge badge-sm badge-circle badge-light-danger opacity-hover cursor-pointer"
                               @click="$emit('remove-profile-image')"
-                              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="l.removeProfileImageTooltip">
+                              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('bs.tooltip.user.my.remove-profile-image')">
                             <i class="bi bi-x icon-xs text-danger"></i>
                         </span>
                         <img v-if="u.profileImageUrl" :src="u.profileImageUrl" class="img-thumbnail p-0 w-100" />
@@ -76,20 +105,20 @@ export default {
             <!--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-4">
-                    <div class="col-form-label text-center fs-6 fw-bold">{{ l.password }}</div>
+                    <div class="col-form-label text-center fs-6 fw-bold">{{ t('txt.user.my.password') }}</div>
                 </div>
                 <div class="col-xl-2 col-5">
                     <button type="button" class="btn btn-sm btn-secondary"
                             @click="$emit('open-password-change')"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="l.passwordChangeTooltip">
-                        {{ l.passwordChange }}
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('bs.tooltip.user.my.password-change')">
+                        {{ t('txt.user.my.password-change') }}
                     </button>
                 </div>
             </div>
             <!--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-4">
-                    <div class="col-form-label text-center fs-6 fw-bold"><label for="roleName">{{ l.role }}</label></div>
+                    <div class="col-form-label text-center fs-6 fw-bold"><label for="roleName">{{ t('txt.user.my.role') }}</label></div>
                 </div>
                 <div class="col-xl-2 col-8 col-form-label">
                     <template v-for="role in u.userRoles" :key="role.roleKey">
@@ -101,7 +130,7 @@ export default {
             <!--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-4">
-                    <div class="col-form-label text-center fs-6 fw-bold"><label for="nickname">{{ l.nickname }}</label></div>
+                    <div class="col-form-label text-center fs-6 fw-bold"><label for="nickname">{{ t('txt.user.my.nickname') }}</label></div>
                 </div>
                 <div class="col-xl-2 col-8 col-form-label">{{ u.nickname }}</div>
             </div>
@@ -109,12 +138,12 @@ export default {
             <div class="row mb-4">
                 <div class="col-xl-2 col-4">
                     <div class="col-form-label text-center fs-6 fw-bold">
-                        <label for="allowedIpListStr">{{ l.allowedIp }}</label>
+                        <label for="allowedIpListStr">{{ t('txt.user.my.allowed-ip') }}</label>
                     </div>
                 </div>
                 <div class="col-xl-9 col-8 col-form-label">
                     <div class="form-check form-switch form-check-custom form-check-solid">
-                        <span class="me-8">{{ u.isAllowedIpY ? l.use : l.unuse }}</span>
+                        <span class="me-8">{{ u.isAllowedIpY ? t('txt.status.use') : t('txt.status.unuse') }}</span>
                         <template v-if="u.isAllowedIpY">
                             <span v-for="item in u.allowedIpList" :key="item.allowedIp" class="div-textarea div-height-1 me-4">
                                 {{ item.allowedIp }}
@@ -126,75 +155,14 @@ export default {
         </div>
 
         <template v-if="hasUserInfo">
-            <div class="separator my-2"></div>
-
-            <!--begin::Card body-->
+            <UserProfileEmplymReadSection
+                :profile-rows="profileRows"
+                :emplym-rows="emplymRows"
+            />
             <div class="card-body">
-                <!--begin::Row-->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold"><label for="phoneNumber">{{ l.department }}</label></div>
-                    </div>
-                    <div class="col-xl-2 col-8 col-form-label">
-                        {{ fallback(u.userInfo?.cmpyNm) }} / {{ fallback(u.userInfo?.teamNm) }} / {{ fallback(u.userInfo?.emplymNm) }}
-                    </div>
-                </div>
-                <!--begin::Row-->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold">{{ l.rank }}</div>
-                    </div>
-                    <div class="col-xl-2 col-8 col-form-label">
-                        {{ fallback(u.userInfo?.rankNm) }}
-                        <span v-if="u.userInfo?.rankCd === 'STAFF' && u.userInfo?.apntcYn === 'Y'" class="text-muted">({{ l.probation }})</span>
-                    </div>
-                </div>
-                <!--begin::Row-->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold">{{ l.joinDate }}</div>
-                    </div>
-                    <div class="col-xl-2 col-8 col-form-label">{{ fallback(u.userInfo?.ecnyDt) }}</div>
-                    <template v-if="hasRetired">
-                        <div class="col-xl-2 col-4">
-                            <div class="col-form-label text-center fs-6 fw-bold">{{ l.retireDate }}</div>
-                        </div>
-                        <div class="col-xl-2 col-4 col-form-label">{{ fallback(u.userInfo?.retireDt) }}</div>
-                    </template>
-                </div>
-                <!--begin::Row-->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold">{{ l.phoneNumber }}</div>
-                    </div>
-                    <div class="col-xl-2 col-8 col-form-label">{{ fallback(u.phoneNumber) }}</div>
-                </div>
-                <!--begin::Row-->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold">{{ l.email }}</div>
-                    </div>
-                    <div class="col-xl-2 col-8 col-form-label">{{ fallback(u.email) }}</div>
-                </div>
-                <!--begin::Row-->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold">{{ l.birthDate }}</div>
-                    </div>
-                    <div class="col-xl-2 col-8 col-form-label">{{ fallback(u.userInfo?.brthdy) }}</div>
-                </div>
-                <!--begin::Row-->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold">{{ l.accountNumber }}</div>
-                    </div>
-                    <div class="col-xl-8 col-8 col-form-label">
-                        {{ fallback(u.userInfo?.acntBank) }} <span class="px-3">|</span> {{ fallback(u.userInfo?.acntNo) }}
-                    </div>
-                </div>
                 <div v-if="hasInfoItems" class="row mb-4">
                     <div class="col-xl-2 col-4">
-                        <div class="col-form-label text-center fs-6 fw-bold">{{ l.additionalInfo }}</div>
+                        <div class="col-form-label text-center fs-6 fw-bold">{{ t('txt.user.my.additional-info') }}</div>
                     </div>
                     <div class="col-xl-9 col-8 col-form-label" id="userItemListDiv">
                         <div v-for="item in u.userInfo?.itemList" :key="item.itemNm + item.itemCn" class="row mb-2 ps-2 border-bottom border-1 text-muted">
@@ -215,19 +183,19 @@ export default {
             <div class="row mb-4">
                 <div class="col-xl-3 col-12">
                     <div class="fs-6 fw-bold text-center">
-                        {{ v.statsYy }}{{ l.vacationTitleSuffix }}<br />
+                        {{ v.statsYy }}{{ t('txt.user.my.vacation-title-suffix') }}<br />
                         ({{ v.bgnDt }} ~ {{ v.endDt }})
                     </div>
                 </div>
                 <div class="col-xl-1 col-sm-4 col-form-label"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="v.tooltip">
-                    <span class="cursor-help">{{ l.totalVacation }} : {{ v.total }}</span>
+                    <span class="cursor-help">{{ t('txt.user.my.total-vacation') }} : {{ v.total }}</span>
                 </div>
                 <div class="col-xl-1 col-sm-4 col-form-label">
-                    {{ l.usedVacation }} : {{ v.used }}
+                    {{ t('txt.user.my.used-vacation') }} : {{ v.used }}
                 </div>
                 <div class="col-xl-1 col-sm-4 col-form-label">
-                    {{ l.remainsVacation }} : {{ v.remains }}
+                    {{ t('txt.user.my.remains-vacation') }} : {{ v.remains }}
                 </div>
             </div>
         </div>

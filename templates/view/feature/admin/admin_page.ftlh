@@ -56,6 +56,6 @@
 
 <script type="text/javascript" src="/js/view/feature/admin/cache/_cache.js?${releaseDate!}"></script>
 
-<script type="module" src="/vue/admin/site/AdminPageApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/admin/site/AdminPageApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

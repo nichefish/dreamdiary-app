@@ -46,7 +46,7 @@ export default function createCodeAdminActions(params: CreateActionsParams): Cod
             }
 
             if (pageNoEl) pageNoEl.value = String(targetPageNo);
-            cF.form.blockUISubmit("#listForm", listForm.dataset.url || Url.CODE_GROUP_LIST);
+            cF.form.blockUISubmit("#listForm", listForm.dataset.url || Url.CODE_ADMIN_PAGE);
         },
     };
     const getActions = (): CodeAdminActions => actions as CodeAdminActions;
