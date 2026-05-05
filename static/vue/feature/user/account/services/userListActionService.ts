@@ -32,7 +32,7 @@ export default function createUserListActions(): UserListActions {
                 if (!result.value) return;
 
                 cF.util.blockUIFileDownload();
-                $("#listForm").attr("action", Url.USER_LIST_XLSX_DOWNLOAD).submit();
+                $("#listForm").attr("action", Url.USERS_XLSX_DOWNLOAD).submit();
             });
         },
         /**
