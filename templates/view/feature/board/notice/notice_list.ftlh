@@ -21,7 +21,7 @@
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원 연락처 팝업을 호출합니다.">
             <i class="bi bi-telephone"></i>직원 연락처
         </button>
-        <#include "/view/feature/board/notice/_modal/_notice_list_crdt_user_phoneNumber_modal.ftlh">
+        <#include "/view/feature/board/notice/_modal/_notice_list_crdt_user_cttpc_modal.ftlh">
         <button type="button" class="btn btn-sm btn-light btn-outline btn-active-secondary mx-1"
                 onclick="$('#extn_phone_modal').modal('show');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내선전화 관련 안내 팝업을&#10;호출합니다.">
@@ -183,7 +183,7 @@
 
 <#--include::modals-->
 <#include "/view/feature/attachable/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
+<#include "/view/feature/file/_modal/_file_list_modal.ftlh">
 
 <#--include::notice_modules-->
 <#include "/view/feature/board/notice/_modal/_notice_detail_modal.ftlh">

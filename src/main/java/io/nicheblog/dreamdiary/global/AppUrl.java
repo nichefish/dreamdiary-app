@@ -59,10 +59,10 @@ public interface AppUrl {
 
     /** 게시판 */
     String BOARD_POST_LIST = Prefix.APP + "/board/post/list.do";
-    String BOARD_POST_REG_FORM = Prefix.APP + "/board/post/reg-form.do";
-    String BOARD_POST_DTL = Prefix.APP + "/board/post/dtl.do";
-    String BOARD_POST_MDF_FORM = Prefix.APP + "/board/post/mdf-form.do";
-    String BOARD_POST_REG_PREVIEW_POP = Prefix.APP + "/board/post/preview-pop.do";
+    String BOARD_POST_REGIST_FORM = Prefix.APP + "/board/post/regist-form.do";
+    String BOARD_POST_DETAIL = Prefix.APP + "/board/post/detail.do";
+    String BOARD_POST_MODIFY_FORM = Prefix.APP + "/board/post/modify-form.do";
+    String BOARD_POST_REGIST_PREVIEW_POP = Prefix.APP + "/board/post/preview-pop.do";
 
     /** 사용자 관리 */
     String USER_LIST = Prefix.APP + "/user/list.do";

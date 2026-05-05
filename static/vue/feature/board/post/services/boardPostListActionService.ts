@@ -7,11 +7,11 @@ export type BoardPostListActions = {
     search: () => void;
     myPaprList: () => void;
     xlsxDownload: () => void;
-    regForm: () => void;
-    dtl: (id: string | number) => void;
-    dtlModal: (id: string | number) => void;
-    mdfForm: () => void;
-    delAjax: (id: string | number) => void;
+    registForm: () => void;
+    detail: (id: string | number) => void;
+    detailModal: (id: string | number) => void;
+    modifyForm: () => void;
+    deleteAjax: (id: string | number) => void;
     list: () => void;
 };
 
@@ -40,15 +40,15 @@ export default function createBoardPostListActions(): BoardPostListActions {
                 $("#listForm").attr("action", Url.BOARD_POST_LIST).submit();
             });
         },
-        regForm(): void {
-            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_REG_FORM);
+        registForm(): void {
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_REGIST_FORM);
         },
-        dtl(id: string | number): void {
+        detail(id: string | number): void {
             if (isNaN(Number(id))) return;
             $("#procForm #id").val(id);
-            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_DTL);
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_DETAIL);
         },
-        dtlModal(id: string | number): void {
+        detailModal(id: string | number): void {
             if (isNaN(Number(id))) return;
             const e = window.event as Event | undefined;
             if (e?.stopPropagation) e.stopPropagation();
@@ -59,13 +59,13 @@ export default function createBoardPostListActions(): BoardPostListActions {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.modal(res.rsltObj, "board_post_dtl");
+                cF.handlebars.modal(res.rsltObj, "board_post_detail");
             });
         },
-        mdfForm(): void {
-            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_MDF_FORM);
+        modifyForm(): void {
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_MODIFY_FORM);
         },
-        delAjax(id: string | number): void {
+        deleteAjax(id: string | number): void {
             if (isNaN(Number(id))) return;
             Swal.fire({
                 text: Message.get("view.cnfm.del"),

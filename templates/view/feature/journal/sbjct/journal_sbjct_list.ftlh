@@ -76,7 +76,7 @@
 </form>
 
 <#include "/view/feature/attachable/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
+<#include "/view/feature/file/_modal/_file_list_modal.ftlh">
 
 <script type="text/javascript" src="/js/view/feature/journal/sbjct/journal_sbjct_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/journal/sbjct/journal_sbjct_list.js?${releaseDate!}"></script>

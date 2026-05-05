@@ -46,7 +46,7 @@
     </div>
     <div>
         <#--헤더:: 버튼: 등록 화면 이동-->
-        <@component.header_btn_reg_form "window.dispatchEvent(new CustomEvent('board-post:open-reg-form'));" />
+        <@component.header_btn_reg_form "window.dispatchEvent(new CustomEvent('board-post:open-regist-form'));" />
     </div>
     <div>
         <#--헤더:: 버튼: 엑셀 다운로드-->

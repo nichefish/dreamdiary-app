@@ -22,17 +22,17 @@ function bindBoardPostListEventBridge(actions: ReturnType<typeof createBoardPost
     window.addEventListener("board-post:list-all", function(): void {
         actions.list();
     });
-    window.addEventListener("board-post:open-reg-form", function(): void {
-        actions.regForm();
+    window.addEventListener("board-post:open-regist-form", function(): void {
+        actions.registForm();
     });
     window.addEventListener("board-post:list-xlsx-download", function(): void {
         actions.xlsxDownload();
     });
-    window.addEventListener("board-post:open-dtl-modal", function(evt: Event): void {
+    window.addEventListener("board-post:open-detail-modal", function(evt: Event): void {
         const customEvt = evt as CustomEvent<{ id?: string | number }>;
         const id = customEvt.detail?.id;
         if (id === undefined || id === null) return;
-        actions.dtlModal(id);
+        actions.detailModal(id);
     });
 }
 

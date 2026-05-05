@@ -69,9 +69,9 @@ public class BoardPostPageController extends BaseControllerImpl {
         return "/view/feature/board/post/board_post_list";
     }
 
-    @GetMapping(Url.BOARD_POST_REG_FORM)
+    @GetMapping(Url.BOARD_POST_REGIST_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostRegForm(
+    public String boardPostRegistForm(
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
     ) throws Exception {
@@ -85,12 +85,12 @@ public class BoardPostPageController extends BaseControllerImpl {
         codeLookupService.setCdListToModel(board.getCategoryGroupCode(), model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
-        return "/view/feature/board/post/board_post_reg_form";
+        return "/view/feature/board/post/board_post_regist_form";
     }
 
-    @PostMapping(Url.BOARD_POST_REG_PREVIEW_POP)
+    @PostMapping(Url.BOARD_POST_REGIST_PREVIEW_POP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostRegPreviewPop(
+    public String boardPostRegistPreviewPop(
             final BoardPostDto boardPost,
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
@@ -106,9 +106,9 @@ public class BoardPostPageController extends BaseControllerImpl {
         return "/view/board/post/board_post_preview_pop";
     }
 
-    @GetMapping(value = Url.BOARD_POST_DTL)
+    @GetMapping(value = Url.BOARD_POST_DETAIL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostDtl(
+    public String boardPostDetail(
             final Integer id,
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
@@ -121,12 +121,12 @@ public class BoardPostPageController extends BaseControllerImpl {
         final BoardPostDto rsDto = boardPostService.viewDtlPage(id);
         model.addAttribute("post", rsDto);
 
-        return "/view/feature/board/post/board_post_dtl";
+        return "/view/feature/board/post/board_post_detail";
     }
 
-    @GetMapping(value = Url.BOARD_POST_MDF_FORM)
+    @GetMapping(value = Url.BOARD_POST_MODIFY_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostMdfForm(
+    public String boardPostModifyForm(
             final Integer id,
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
@@ -144,6 +144,6 @@ public class BoardPostPageController extends BaseControllerImpl {
         codeLookupService.setCdListToModel(board.getCategoryGroupCode(), model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
-        return "/view/feature/board/post/board_post_reg_form";
+        return "/view/feature/board/post/board_post_regist_form";
     }
 }

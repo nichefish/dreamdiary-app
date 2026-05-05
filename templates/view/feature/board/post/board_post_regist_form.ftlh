@@ -11,7 +11,7 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<div id="board_post_reg_form_app" class="d-none"></div>
+<div id="board_post_regist_form_app" class="d-none"></div>
 
 <div class="card post">
     <#--begin::Card body-->
@@ -100,6 +100,6 @@
 <#include "/view/global/_tinymce_img.ftlh">
 
 <#--include::vue module-->
-<script type="module" src="/vue/feature/board/post/BoardPostRegFormApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/board/post/BoardPostRegistFormApp.js?${releaseDate!}"></script>
 
 </@layout.layout>
