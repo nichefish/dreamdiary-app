@@ -31,7 +31,7 @@ public class AuthPolicyPageController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.AUTH_POLICY_FORM;             // 기본 URL
+    private final String baseUrl = Url.AUTH_POLICY_PAGE;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.AUTH_POLICY;        // 작업 카테고리 (로그 적재용)
 
@@ -44,7 +44,7 @@ public class AuthPolicyPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.AUTH_POLICY_FORM)
+    @GetMapping(Url.AUTH_POLICY_PAGE)
     @Secured(Constant.ROLE_MNGR)
     public String authPolicyForm(
             final ModelMap model
@@ -58,6 +58,6 @@ public class AuthPolicyPageController
         final AuthPolicyDto authPolicy = authPolicyService.getDtlDto();
         model.addAttribute("authPolicy", authPolicy);
 
-        return "/view/feature/admin/auth/policy/auth_policy_reg_form";
+        return "/view/feature/admin/auth/policy/auth_policy_page";
     }
 }
