@@ -13,24 +13,24 @@
     </div>
     <div>
         <select name="rslt" id="rslt" class="form-select form-select-sm form-select-solid" data-hide-search="true">
-            <option value="">작업결과</option>
-            <option value="true" label="성공" ${fn.selected(searchParam.rslt!, "true")} />
-            <option value="false" label="실패" ${fn.selected(searchParam.rslt!, "false")} />
+            <option value=""><@spring.message 'txt.admin.log.list.action-result'/></option>
+            <option value="true" label="<@spring.message 'txt.admin.log.list.result.success'/>" ${fn.selected(searchParam.rslt!, "true")} />
+            <option value="false" label="<@spring.message 'txt.admin.log.list.result.failure'/>" ${fn.selected(searchParam.rslt!, "false")} />
         </select>
     </div>
     <div>
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
-            <option value="nickname" label="이름" ${fn.selected(searchParam.searchType!, "nickname")} />
-            <option value="username" label="아이디" ${fn.selected(searchParam.searchType!, "username")} />
+            <option value="nickname" label="<@spring.message 'txt.admin.log.list.search-type.nickname'/>" ${fn.selected(searchParam.searchType!, "nickname")} />
+            <option value="username" label="<@spring.message 'txt.admin.log.list.search-type.username'/>" ${fn.selected(searchParam.searchType!, "username")} />
         </select>
     </div>
     <div>
         <@component.header_input_searchKeyword searchParam />
     </div>
     <div>
-        <@component.header_btn_search "dF.Log.search();" />
+        <@component.header_btn_search "window.LogAdminBridge && window.LogAdminBridge.searchLogs();" />
     </div>
     <div>
-        <@component.header_btn_xlsx_download "dF.Log.xlsxDownload();" />
+        <@component.header_btn_xlsx_download "window.LogAdminBridge && window.LogAdminBridge.downloadLogsAsExcel();" />
     </div>
 </form>
