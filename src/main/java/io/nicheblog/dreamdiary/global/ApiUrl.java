@@ -176,7 +176,7 @@ public interface ApiUrl {
     String CODE_ITEM_UNUSE = Prefix.API + "/code/item/unuse";
 
     /** 로그 조회 */
-    String LOG_DTL_AJAX = Prefix.API + "/log/dtl";
+    String LOG = Prefix.API + "/logs/{id}";
     String LOG_LIST_XLSX_DOWNLOAD = Prefix.API + "/log/list-xlsx-download.do";
 
     /** (공통) 파일 */

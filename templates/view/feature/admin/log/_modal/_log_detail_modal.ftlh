@@ -6,11 +6,11 @@
 <#import "/layout/modal_layout.ftlh" as modal>
 
 <#assign modal_title = "로그 조회" />
-<@modal.layout id="log_dtl" size="xl">
+<@modal.layout id="log_detail" size="xl">
     <@component.modal_header modal_title />
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">
-            <div id="log_dtl_div">
+            <div id="log_detail_div">
             </div>
         </div>
     </div>
@@ -21,4 +21,4 @@
     </div>
 </@modal.layout>
 
-<#include "_log_dtl_modal_template.hbs">
+<#include "_log_detail_modal_template.hbs">
