@@ -73,34 +73,35 @@
         /** AuthInfo 객체 생성 */
         const AuthInfo = (function() {
             return Object.freeze({
-                username: "${(authInfo.username)!}",
-                nickname: "${(authInfo.nickname)!}",
-                email: "${(authInfo.email)!}",
-                profileImageUrl: "${(authInfo.profileImageUrl)!}",
+                username: "${((authInfo.username)!'')?js_string}",
+                nickname: "${((authInfo.nickname)!'')?js_string}",
+                email: "${((authInfo.email)!'')?js_string}",
+                profileImageUrl: "${((authInfo.profileImageUrl)!'')?js_string}",
                 isMngr: ${((authInfo.isMngr)!false)?c},
                 roles: [
                     <#list (authInfo.roles)![] as role>
                         {
-                            roleKey: "${role.roleKey!}",
-                            roleName: "${role.roleName!}",
+                            roleKey: "${(role.roleKey!'')?js_string}",
+                            roleName: "${(role.roleName!'')?js_string}",
                         }<#if role_has_next>,</#if>
                     </#list>
                 ]
             });
         })();
         /** UrlMap으로부터 자바스크립트 객체 생성 */
-        const Url = (function() {
+        window.Url = (function() {
             return Object.freeze({
                 <#list urlMap! as key, value>
-                    "${(key!"")?string}": "${(value!"")?string}",
+                    "${(key!'')?js_string}": "${(value!'')?js_string}",
                 </#list>
             });
         })();
+        const Url = window.Url;
         /** MessageMap으로부터 자바스크립트 객체 생성 */
-        const Message = (function() {
+        window.Message = (function() {
             const messageMap = {
                 <#list messageMap! as key, value>
-                    "${(key!"")?string}": "${(value!"")?string}",
+                    "${(key!'')?js_string}": "${(value!'')?js_string}",
                 </#list>
             };
 
@@ -121,11 +122,12 @@
                 }
             });
         })();
+        const Message = window.Message;
         /** ConstantMap으로부터 자바스크립트 객체 생성 */
-        const Constant = (function() {
+        window.Constant = (function() {
             const constantMap = {
                 <#list constantMap! as key, value>
-                "${(key!"")?string}": "${(value!"")?string}",
+                "${(key!'')?js_string}": "${(value!'')?js_string}",
                 </#list>
             };
 
@@ -146,5 +148,6 @@
                 }
             });
         })();
+        const Constant = window.Constant;
     </script>
 </head>

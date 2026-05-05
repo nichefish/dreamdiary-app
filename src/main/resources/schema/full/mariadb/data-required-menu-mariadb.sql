@@ -65,7 +65,13 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'USER' AS upper_label )
-SELECT M.id, 'SUB', '인증 정책 관리', '/app/auth/policy/page.do', NULL, 13, 'nichefish', 'NO_SUB', 'AUTH_POLICY', 'N', 'Y', 'N', 'Y'
+SELECT M.id, 'SUB', '계정 신청 승인관리', '/app/user/signup/list.do', NULL, 13, 'nichefish', 'NO_SUB', 'USER_SIGNUP_APPROVAL', 'N', 'Y', 'N', 'Y'
+FROM T
+INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
+
+INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
+WITH T AS ( SELECT 'USER' AS upper_label )
+SELECT M.id, 'SUB', '인증 정책 관리', '/app/auth/policy/page.do', NULL, 14, 'nichefish', 'NO_SUB', 'AUTH_POLICY', 'N', 'Y', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 

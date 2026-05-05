@@ -33,6 +33,7 @@ public enum SiteMenu {
 
     USER("사용자 관리"),
     USER_INFO("계정 관리"),
+    USER_SIGNUP_APPROVAL("계정 신청 승인관리"),
     USER_SIGNUP("신규계정 신청"),
     USER_MY("내 정보"),
 
