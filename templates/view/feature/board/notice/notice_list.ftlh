@@ -56,7 +56,7 @@
                             <div class="row d-flex align-items-center justify-content-between">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.NOTICE_DTL!}?id=${post.id!}"
+                                        <a href="${Url.NOTICE_DETAIL!}?id=${post.id!}"
                                            class="title-fxd vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
                                     <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                    <@component.list_dtl_modal post "dF.Notice.dtlModal" />
+                                    <@component.list_dtl_modal post "window.dispatchEvent(new CustomEvent('notice:open-detail-modal', { detail: { id: __ID__ } }));" />
                                 </div>
                             </div>
                         </td>
@@ -114,7 +114,7 @@
                             <div class="row d-flex align-items-center justify-content-between">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.NOTICE_DTL!}?id=${post.id!}"
+                                        <a href="${Url.NOTICE_DETAIL!}?id=${post.id!}"
                                            class="text-dark vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold text-danger</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -141,7 +141,7 @@
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
                                     <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                    <@component.list_dtl_modal post "dF.Notice.dtlModal" />
+                                    <@component.list_dtl_modal post "window.dispatchEvent(new CustomEvent('notice:open-detail-modal', { detail: { id: __ID__ } }));" />
                                 </div>
                             </div>
                         </td>
@@ -186,10 +186,10 @@
 <#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
 
 <#--include::notice_modules-->
-<#include "/view/feature/board/notice/_modal/_notice_dtl_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/board/notice/notice_module.js?${releaseDate!}"></script>
+<#include "/view/feature/board/notice/_modal/_notice_detail_modal.ftlh">
+<div id="notice_list_app" class="d-none"></div>
 
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/board/notice/notice_list.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/board/notice/NoticeListApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

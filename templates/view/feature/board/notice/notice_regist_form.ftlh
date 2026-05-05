@@ -147,16 +147,17 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-between">
             <#--페이지:: 버튼: 미리보기-->
-            <@component.post_btn_preview_pop "dF.Notice.preview();" />
+            <@component.post_btn_preview_pop "window.dispatchEvent(new CustomEvent('notice:form-preview'));" />
             <div>
                 <#--페이지:: 버튼: 저장하기-->
-                <@component.post_btn_submit "dF.Notice.submit();" />
+                <@component.post_btn_submit "window.dispatchEvent(new CustomEvent('notice:form-submit'));" />
                 <#--페이지:: 버튼: 목록으로 가기-->
-                <@component.post_btn_toList "dF.Notice.list();" />
+                <@component.post_btn_toList "window.dispatchEvent(new CustomEvent('notice:form-list'));" />
             </div>
         </div>
     </div>
 </div>
+<div id="notice_regist_form_app" class="d-none"></div>
 
 <#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
@@ -170,9 +171,6 @@
 <script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::notice_module-->
-<script type="text/javascript" src="/js/view/feature/board/notice/notice_module.js?${releaseDate!}"></script>
-
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/board/notice/notice_reg_form.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/board/notice/NoticeRegistFormApp.js?${releaseDate!}"></script>
 
 </@layout.layout>
