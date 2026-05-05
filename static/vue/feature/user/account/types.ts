@@ -33,6 +33,30 @@ export type UserAllowedIpRow = {
     allowedIp: string;
 };
 
+export type UserDetailProfile = {
+    userProfileId: number | null;
+    addr: string;
+    zipcode: string;
+    brthdy: string;
+    lunarYn: string;
+    proflCn: string;
+};
+
+export type UserDetailEmplym = {
+    userNm: string;
+    emplymEmail: string;
+    emplymPhoneNumber: string;
+    cmpyNm: string;
+    teamNm: string;
+    emplymNm: string;
+    rankNm: string;
+    ecnyDt: string;
+    retireYn: string;
+    retireDt: string;
+    acntBank: string;
+    acntNo: string;
+};
+
 export type UserDetail = {
     id: number;
     username: string;
@@ -48,6 +72,8 @@ export type UserDetail = {
     allowedIpList: UserAllowedIpRow[];
     content: string;
     userProfileId: number | null;
+    profile: UserDetailProfile | null;
+    emplym: UserDetailEmplym | null;
 };
 
 export type PaginationState = {
@@ -75,6 +101,17 @@ export type UserLabels = {
     deleteTooltip: string;
     listTooltip: string;
     passwordResetTooltip: string;
+    profileAddress?: string;
+    profileBirthDate?: string;
+    profileLunar?: string;
+    profileProfile?: string;
+    emplymUserName?: string;
+    emplymEmail?: string;
+    emplymPhoneNumber?: string;
+    emplymAffiliation?: string;
+    emplymRank?: string;
+    emplymJoinDate?: string;
+    emplymPayrollAccount?: string;
 };
 
 export type UserListState = {

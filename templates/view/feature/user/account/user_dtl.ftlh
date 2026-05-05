@@ -12,13 +12,10 @@
         <#-- Vue(UserDetailApp)가 상세 본문을 렌더링 -->
     </div>
     <#--페이지:: 사용자 프로필 정보 영역-->
-    <#if user.profile??>
-        <#include "/view/feature/user/profile/_user_profile_dtl_area.ftlh">
-    </#if>
     <#--페이지:: 사용자 인사정보 영역-->
-    <#if user.emplym??>
-        <#include "/view/feature/user/emplym/_user_emplym_dtl_area.ftlh">
-    </#if>
+    <div id="user_detail_profile_emplym_div">
+        <#-- Vue(UserDetailApp)가 기존 _user_profile_dtl_area.ftlh/_user_emplym_dtl_area.ftlh를 대체 -->
+    </div>
     <#--begin::Card footer-->
     <div id="user_detail_footer_div">
         <#-- Vue(UserDetailApp)가 상세 footer 버튼을 렌더링 -->
@@ -64,7 +61,29 @@
         </#list>
     ],
     "content": "${(user.content!'')?js_string}",
-    "userProfileId": <#if user.profile??>${user.profile.userProfileId!0}<#else>null</#if>
+    "userProfileId": <#if user.profile??>${user.profile.userProfileId!0}<#else>null</#if>,
+    "profile": <#if user.profile??>{
+        "userProfileId": <#if user.profile.userProfileId??>${user.profile.userProfileId}<#else>null</#if>,
+        "addr": "${(user.profile.addr!'')?js_string}",
+        "zipcode": "${(user.profile.zipcode!'')?js_string}",
+        "brthdy": "${(user.profile.brthdy!'')?js_string}",
+        "lunarYn": "${(user.profile.lunarYn!'N')?js_string}",
+        "proflCn": "${(user.profile.proflCn!'')?js_string}"
+    }<#else>null</#if>,
+    "emplym": <#if user.emplym??>{
+        "userNm": "${(user.emplym.userNm!'')?js_string}",
+        "emplymEmail": "${(user.emplym.emplymEmail!'')?js_string}",
+        "emplymPhoneNumber": "${(user.emplym.emplymPhoneNumber!'')?js_string}",
+        "cmpyNm": "${(user.emplym.cmpyNm!'')?js_string}",
+        "teamNm": "${(user.emplym.teamNm!'')?js_string}",
+        "emplymNm": "${(user.emplym.emplymNm!'')?js_string}",
+        "rankNm": "${(user.emplym.rankNm!'')?js_string}",
+        "ecnyDt": "${(user.emplym.ecnyDt!'')?js_string}",
+        "retireYn": "${(user.emplym.retireYn!'')?js_string}",
+        "retireDt": "${(user.emplym.retireDt!'')?js_string}",
+        "acntBank": "${(user.emplym.acntBank!'')?js_string}",
+        "acntNo": "${(user.emplym.acntNo!'')?js_string}"
+    }<#else>null</#if>
 }
 </script>
 
@@ -76,7 +95,18 @@
     "modifyTooltip": "${springMacroRequestContext.getMessage('bs.tooltip.page.mdf')?js_string}",
     "deleteTooltip": "${springMacroRequestContext.getMessage('bs.tooltip.del')?js_string}",
     "listTooltip": "${springMacroRequestContext.getMessage('bs.tooltip.page.list')?js_string}",
-    "passwordResetTooltip": "비밀번호를 초기화합니다.\n인증 정책 관리 메뉴에서\n초기화 값을 설정할 수\n있습니다."
+    "passwordResetTooltip": "비밀번호를 초기화합니다.\n인증 정책 관리 메뉴에서\n초기화 값을 설정할 수\n있습니다.",
+    "profileAddress": "${springMacroRequestContext.getMessage('txt.user.profile.address')?js_string}",
+    "profileBirthDate": "${springMacroRequestContext.getMessage('txt.user.profile.birth-date')?js_string}",
+    "profileLunar": "${springMacroRequestContext.getMessage('txt.user.profile.lunar')?js_string}",
+    "profileProfile": "${springMacroRequestContext.getMessage('txt.user.profile.profile')?js_string}",
+    "emplymUserName": "${springMacroRequestContext.getMessage('txt.user.emplym.user-name')?js_string}",
+    "emplymEmail": "${springMacroRequestContext.getMessage('txt.user.emplym.email')?js_string}",
+    "emplymPhoneNumber": "${springMacroRequestContext.getMessage('txt.user.emplym.phone-number')?js_string}",
+    "emplymAffiliation": "${springMacroRequestContext.getMessage('txt.user.emplym.affiliation')?js_string}",
+    "emplymRank": "${springMacroRequestContext.getMessage('txt.user.emplym.rank')?js_string}",
+    "emplymJoinDate": "${springMacroRequestContext.getMessage('txt.user.emplym.join-date')?js_string}",
+    "emplymPayrollAccount": "${springMacroRequestContext.getMessage('txt.user.emplym.payroll-account')?js_string}"
 }
 </script>
 

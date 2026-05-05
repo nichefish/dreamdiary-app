@@ -15,6 +15,8 @@ const emptyDetail: UserDetail = {
     allowedIpList: [],
     content: "",
     userProfileId: null,
+    profile: null,
+    emplym: null,
 };
 
 export default {
