@@ -167,7 +167,9 @@
 
 <#--include::comment_module-->
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">
+<#-- 변경(A-10): `_comment_list_partial` include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건. id `comment_list_partial` 자체는
+     호출자 없음(별개의 id `comment_list` 모달은 `_comment_list_modal.ftlh` 가 보유, 본 정리 범위 밖). attachable 공용 partial 의 dead 정리
+     일관성을 위해 board/notice 도메인의 dead include 도 함께 제거. -->
 <script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::notice_module-->

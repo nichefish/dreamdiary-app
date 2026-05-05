@@ -138,7 +138,8 @@ public class JournalDayPageController
         codeLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
         codeLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
 
-        return "/view/feature/journal/day/journal_day_view";
+        /* 변경: 일간 FTL 경로 journal_day_view → journal_day_daily (이름만, URL 상수는 유지). */
+        return "/view/feature/journal/day/journal_day_daily";
     }
 }
 

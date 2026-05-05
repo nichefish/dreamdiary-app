@@ -43,6 +43,4 @@
     </div>
 </@modal.layout>
 
-<#--include:: Handlebars template-->
-<#include "_journal_tag_list_ctgr_template.hbs">
-<#include "_journal_tag_list_modal_template.hbs">
+<#--category/list sections are rendered by JournalDayTagPanelApp(Vue).-->

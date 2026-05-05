@@ -3,30 +3,38 @@
  * 저널 주제 스크립트 모듈
  * 
  * @author nichefish
+ *
+ * 변경(P10): classic <code>var dF</code> 제거. <code>globalThis.dF</code> + <code>dfNs</code> + IIFE
+ * (<code>journal_entry_tag_module.ts</code> P9 와 동일). FTL classic 이므로 <code>export {}</code> 없음.
  */
-if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JournalSbjct = (function(): dfModule {
+(function (g: any): void {
+    if (g.dF == null) {
+        g.dF = {};
+    }
+    const dfNs: any = g.dF;
+
+    dfNs.JournalSbjct = (function(): dfModule {
     return {
         initialized: false,
         isReg: $("#journalSbjctRegForm").data("mode") === "regist",
         isMdf: $("#journalSbjctRegForm").data("mode") === "modify",
 
         /**
-         * initializes module.
+         * 모듈을 초기화한다.
          */
         init: function(): void {
-            if (dF.JournalSbjct.initialized) return;
+            if (dfNs.JournalSbjct.initialized) return;
 
-            dF.JournalSbjct.initialized = true;
+            dfNs.JournalSbjct.initialized = true;
             console.log("'dF.JournalSbjct' module initialized.");
         },
 
         /**
-         * form init
+         * 폼 초기화
          */
         initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#journalSbjctRegForm", dF.JournalSbjct.submitHandler);
+            cF.validate.validateForm("#journalSbjctRegForm", dfNs.JournalSbjct.submitHandler);
             /* tinymce init */
             cF.tinymce.init("#tinymce_content");
             /* tagify */
@@ -43,7 +51,7 @@ dF.JournalSbjct = (function(): dfModule {
          * Custom SubmitHandler
          */
         submitHandler: function(): boolean {
-            if (dF.JournalSbjct.submitMode === "preview") {
+            if (dfNs.JournalSbjct.submitMode === "preview") {
                 const popupNm: string = "preview";
                 const options: string = 'width=1280,height=1440,top=0,left=270';
                 const popup: Window = cF.ui.openPopup("", popupNm, options);
@@ -51,15 +59,15 @@ dF.JournalSbjct = (function(): dfModule {
                 const popupUrl: string = Url.JOURNAL_SBJCT_REG_PREVIEW_POP;
                 $("#journalSbjctRegForm").attr("action", popupUrl).attr("target", popupNm);
                 return true;
-            } else if (dF.JournalSbjct.submitMode === "submit") {
+            } else if (dfNs.JournalSbjct.submitMode === "submit") {
                 $("#journalSbjctRegForm").removeAttr("action");
                 Swal.fire({
-                    text: Message.get(dF.JournalSbjct.isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+                    text: Message.get(dfNs.JournalSbjct.isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                     showCancelButton: true,
                 }).then(function(result: SwalResult): void {
                     if (!result.value) return;
 
-                    dF.JournalSbjct.regAjax();
+                    dfNs.JournalSbjct.regAjax();
                 });
             }
         },
@@ -89,11 +97,11 @@ dF.JournalSbjct = (function(): dfModule {
         },
 
         /**
-         * form submit
+         * 폼 제출
          */
         submit: function(): void {
             if (tinymce != null) tinymce.activeEditor.save();
-            dF.JournalSbjct.submitMode = "submit";
+            dfNs.JournalSbjct.submitMode = "submit";
             $("#journalSbjctRegForm").submit();
         },
 
@@ -102,7 +110,7 @@ dF.JournalSbjct = (function(): dfModule {
          */
         preview: function(): void {
             if (tinymce != null) tinymce.activeEditor.save();
-            dF.JournalSbjct.submitMode = "preview";
+            dfNs.JournalSbjct.submitMode = "preview";
             $("#journalSbjctRegForm").submit();
         },
 
@@ -110,14 +118,14 @@ dF.JournalSbjct = (function(): dfModule {
          * 등록/수정 처리(Ajax)
          */
         regAjax: function(): void {
-            const url: string = dF.JournalSbjct.isMdf ? Url.JOURNAL_SBJCT_MDF_AJAX : Url.JOURNAL_SBJCT_REG_AJAX;
+            const url: string = dfNs.JournalSbjct.isMdf ? Url.JOURNAL_SBJCT_MDF_AJAX : Url.JOURNAL_SBJCT_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("journalSbjctRegForm") as HTMLFormElement);
             cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({text: res.message})
                     .then(function(): void {
                         if (!res.rslt) return;
 
-                        if (res.rsltObj == null) dF.JournalSbjct.list();
+                        if (res.rsltObj == null) dfNs.JournalSbjct.list();
                         const id: number = res.rsltObj.id;
                         cF.ui.blockUIReplace(`${Url.JOURNAL_SBJCT_DTL!}?id=${id}`);
                     });
@@ -177,7 +185,7 @@ dF.JournalSbjct = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
                         .then(function(): void {
-                            if (res.rslt) dF.JournalSbjct.list();
+                            if (res.rslt) dfNs.JournalSbjct.list();
                         });
                 }, "block");
             });
@@ -191,4 +199,5 @@ dF.JournalSbjct = (function(): dfModule {
             cF.ui.blockUIReplace(listUrl);
         }
     }
-})();
+    })();
+})(typeof globalThis !== "undefined" ? globalThis : (window as any));

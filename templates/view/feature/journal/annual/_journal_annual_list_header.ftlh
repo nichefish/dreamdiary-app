@@ -24,6 +24,9 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
+        <#-- 변경(A-5-β-1) NOTE: `dF.JournalAnnual.search()` 본체는 현재 미정의(가시 dead). -->
+        <#-- 클릭 시 `Uncaught TypeError` 발생. 본 phase 에서는 `listAjax` 별칭화 등 정상 가장 우회를 추가하지 않고 -->
+        <#-- 미구현 상태를 가시화한 채로 보존한다(룰: '비정상 상태를 임시 우회로 감추지 마라'). -->
         <@component.header_btn_search "dF.JournalAnnual.search();" />
     </div>
     <div>
