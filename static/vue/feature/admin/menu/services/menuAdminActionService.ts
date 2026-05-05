@@ -16,10 +16,10 @@ type MenuActions = {
     refreshIcon: () => void;
     toggleUrlSpan: (obj: object) => void;
     submit: () => void;
-    regAjax: () => void;
-    mdfModal: (id: string | number) => void;
+    registAjax: () => void;
+    modifyModal: (id: string | number) => void;
     toggleUseAjax: (id: string | number) => void;
-    delAjax: (id: number) => void;
+    deleteAjax: (id: number) => void;
 };
 
 type MenuAdminActionHooks = {
@@ -164,10 +164,10 @@ export default function createMenuAdminActions(hooks: MenuAdminActionHooks): Men
             actions.initForm({ menuType, parentMenuId, upperMenuNm });
         },
         refreshIcon(): void {
-            const iconElmt = document.querySelector("#menuRegForm #icon") as HTMLInputElement | null;
+            const iconElmt = document.querySelector("#menuRegistForm #icon") as HTMLInputElement | null;
             if (!iconElmt)
                 return;
-            const menuIconDiv = document.querySelector("#menuRegForm #menu_icon_div") as HTMLElement | null;
+            const menuIconDiv = document.querySelector("#menuRegistForm #menu_icon_div") as HTMLElement | null;
             if (menuIconDiv)
                 menuIconDiv.innerHTML = iconElmt.value;
         },
@@ -180,9 +180,9 @@ export default function createMenuAdminActions(hooks: MenuAdminActionHooks): Men
             }
         },
         submit(): void {
-            $("#menuRegForm").submit();
+            $("#menuRegistForm").submit();
         },
-        regAjax(): void {
+        registAjax(): void {
             Swal.fire({
                 text: Message.get("view.cnfm.save"),
                 showCancelButton: true,
@@ -190,10 +190,10 @@ export default function createMenuAdminActions(hooks: MenuAdminActionHooks): Men
                 if (!result.value)
                     return;
 
-                const id = cF.util.getInputValue("#menuRegForm #id");
-                const isMdf = cF.util.isNotEmpty(id);
-                const url = isMdf ? cF.util.bindUrl(Url.MENU, { id }) : Url.MENUS;
-                const ajaxData = cF.util.getJsonFormData("#menuRegForm");
+                const id = cF.util.getInputValue("#menuRegistForm #id");
+                const isModify = cF.util.isNotEmpty(id);
+                const url = isModify ? cF.util.bindUrl(Url.MENU, { id }) : Url.MENUS;
+                const ajaxData = cF.util.getJsonFormData("#menuRegistForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -203,7 +203,7 @@ export default function createMenuAdminActions(hooks: MenuAdminActionHooks): Men
                 }, "block");
             });
         },
-        mdfModal(id: string | number): void {
+        modifyModal(id: string | number): void {
             if (isNaN(Number(id)))
                 return;
             const url = cF.util.bindUrl(Url.MENU, { id });
@@ -231,7 +231,7 @@ export default function createMenuAdminActions(hooks: MenuAdminActionHooks): Men
                 cF.ui.blockUIReload();
             });
         },
-        delAjax(id: number): void {
+        deleteAjax(id: number): void {
             if (isNaN(Number(id)))
                 return;
             Swal.fire({

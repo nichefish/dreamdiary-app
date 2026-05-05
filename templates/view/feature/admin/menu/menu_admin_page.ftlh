@@ -39,7 +39,7 @@
 <script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
 <script type="text/javascript" src="/js/common/helper/jstree.js"></script>
 
-<#include "/view/feature/admin/menu/_modal/_menu_reg_modal.ftlh">
+<#include "/view/feature/admin/menu/_modal/_menu_regist_modal.ftlh">
 
 <#-- LoginFormApp 등과 동일: ES module(MenuAdminApp)이 i18n용 로케일을 읽을 수 있게 window 에 노출(var Model). -->
 <script>

@@ -7,7 +7,7 @@
 import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 import createMenuAdminActions from "./services/menuAdminActionService.js";
 import MenuTreeNode from "./components/MenuTreeNode.js";
-import MenuRegForm from "./components/MenuRegForm.js";
+import MenuRegistForm from "./components/MenuRegistForm.js";
 
 type MenuNode = {
     id: number;
@@ -50,10 +50,10 @@ const actions = createMenuAdminActions({
     },
     afterFormRendered: function(): void {
         Vue.nextTick(function(): void {
-            cF.validate.validateForm("#menuRegForm", actions.regAjax);
-            cF.validate.toUpperCase("#menuRegForm #menuLabel");
+            cF.validate.validateForm("#menuRegistForm", actions.registAjax);
+            cF.validate.toUpperCase("#menuRegistForm #menuLabel");
             initBootstrapTooltips();
-            openMenuRegModal();
+            openMenuRegistModal();
         });
     },
 });
@@ -71,8 +71,8 @@ function initBootstrapTooltips(): void {
     });
 }
 
-function openMenuRegModal(): void {
-    const modalEl = document.getElementById("menu_reg_modal");
+function openMenuRegistModal(): void {
+    const modalEl = document.getElementById("menu_regist_modal");
     if (!modalEl)
         return;
     const b = (window as any).bootstrap;
@@ -80,7 +80,7 @@ function openMenuRegModal(): void {
         b.Modal.getOrCreateInstance(modalEl).show();
         return;
     }
-    $("#menu_reg_modal").modal("show");
+    $("#menu_regist_modal").modal("show");
 }
 
 function runWhenDomReady(fn: () => void): void {
@@ -121,7 +121,7 @@ const MenuAdminRootApp = {
     name: "MenuAdminRootApp",
     components: {
         MenuTreeNode,
-        MenuRegForm,
+        MenuRegistForm,
     },
     data(): { state: typeof state } {
         return { state };
@@ -130,9 +130,9 @@ const MenuAdminRootApp = {
         t(key: string): string { return i18n.t(key); },
         onOpenMainReg(): void { actions.regModal("MAIN", 0, ""); },
         onOpenSubAdd(id: number, menuName: string): void { actions.regModal("SUB", id, menuName); },
-        onOpenModify(id: number): void { actions.mdfModal(id); },
+        onOpenModify(id: number): void { actions.modifyModal(id); },
         onToggleUse(id: number): void { actions.toggleUseAjax(id); },
-        onDeleteNode(id: number): void { actions.delAjax(id); },
+        onDeleteNode(id: number): void { actions.deleteAjax(id); },
     },
     template: `
 <teleport to="#menu_main_card_div">
@@ -155,7 +155,7 @@ const MenuAdminRootApp = {
     </button>
 </teleport>
 <teleport to="#menu_reg_div">
-    <MenuRegForm :form="state.menuForm" :submenu-expand-options="state.submenuExpandOptions" :t="t" />
+    <MenuRegistForm :form="state.menuForm" :submenu-expand-options="state.submenuExpandOptions" :t="t" />
 </teleport>
 `,
 };
