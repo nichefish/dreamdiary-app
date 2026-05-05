@@ -110,7 +110,9 @@ public class UserDto
     /** 이메일 반환 (override) */
     public String getEmail() {
         if (!StringUtils.isEmpty(this.email)) return this.email;
-        if (!StringUtils.isEmpty(this.emailId) || !StringUtils.isEmpty(this.emailDomain)) return null;
+        // 변경 전: emailId 또는 emailDomain 중 하나만 비어 있지 않아도 null 을 반환하는 OR 조건이었어, 합성 주소를 만들지 못했다.
+        // 변경 후: 둘 다 채워진 경우에만 id@domain 을 반환한다(둘 중 하나만 있는 비정상 입력은 null).
+        if (StringUtils.isEmpty(this.emailId) || StringUtils.isEmpty(this.emailDomain)) return null;
         return this.emailId + "@" + this.emailDomain;
     }
 

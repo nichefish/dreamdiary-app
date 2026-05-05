@@ -39,7 +39,7 @@ dF.User = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* jquery validation */
-            cF.validate.validateForm("#userReqstForm", dF.UserReqst.submitHandler, {
+            cF.validate.validateForm("#userReqstForm", dF.UserSignup.submitHandler, {
                 rules: {
                     username: { minlength: 4, maxlength: 16 },
                     ipDupChckPassed: { dupChck: true },
@@ -237,9 +237,12 @@ dF.User = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.USER_REQST_CF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const reqId = ajaxData.id;
+                if (reqId === undefined || reqId === null || String(reqId).trim() === "") return;
+                const url: string = Url.USER_SIGNUP_REQUEST_APPROVAL.replace("{id}", String(reqId));
+                // 변경 후: 신청 id 는 경로 변수만 사용. 변경 전: 본문(JSON)에도 id 를 실어 보냄.
+                cF.$ajax.post(url, {}, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReload();
@@ -268,9 +271,12 @@ dF.User = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.USER_REQST_UNCF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const reqId = ajaxData.id;
+                if (reqId === undefined || reqId === null || String(reqId).trim() === "") return;
+                const url: string = Url.USER_SIGNUP_REQUEST_REJECTION.replace("{id}", String(reqId));
+                // 변경 후: 신청 id 는 경로 변수만 사용. 변경 전: 본문(JSON)에도 id 를 실어 보냄.
+                cF.$ajax.post(url, {}, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReload();

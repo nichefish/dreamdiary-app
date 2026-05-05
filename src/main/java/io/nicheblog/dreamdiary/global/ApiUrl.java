@@ -206,9 +206,14 @@ public interface ApiUrl {
     String SCHEDULE_MDF_AJAX = Prefix.API + "/schedule/cal-mdf";
     String SCHEDULE_DEL_AJAX = Prefix.API + "/schedule/cal-del";
 
-    String USER_REQST_REG_AJAX = Prefix.API + "/user/reqst/reqst-reg";
-    String USER_REQST_CF_AJAX = Prefix.API + "/user/reqst/reqst-cf";
-    String USER_REQST_UNCF_AJAX = Prefix.API + "/user/reqst/reqst-uncf";
+    /**
+     * 사용자 계정 신청(가입 요청) API.
+     * 변경 전: `/user/signup/signup-reg` 등 동사형·중복 접두.
+     * 변경 후: 컬렉션 `signup-requests` 및 하위 명사 리소스 (`approval` / `rejection`).
+     */
+    String USER_SIGNUP_REQUESTS = Prefix.API + "/user/signup-requests";
+    String USER_SIGNUP_REQUEST_APPROVAL = Prefix.API + "/user/signup-requests/{id}/approval";
+    String USER_SIGNUP_REQUEST_REJECTION = Prefix.API + "/user/signup-requests/{id}/rejection";
 
     String JANDI_CONNECT_WH = "https://wh.jandi.com/connect-api/webhook";
 
