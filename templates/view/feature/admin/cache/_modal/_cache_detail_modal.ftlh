@@ -6,12 +6,12 @@
 <#import "/layout/modal_layout.ftlh" as modal>
 
 <#assign modal_title = "사이트 캐시 목록 조회" />
-<@modal.layout id="cache_dtl" size="xl">
+<@modal.layout id="cache_detail" size="xl">
     <#--begin::Modal Header-->
     <@component.modal_header_with_back modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
-        <div id="cache_dtl_div">
+        <div id="cache_detail_div">
             <#--Handlebars template goes in here-->
         </div>
     </div>
@@ -26,5 +26,5 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "_cache_dtl_modal_template.hbs">
+<#include "_cache_detail_modal_template.hbs">
 <#include "_cache_entry_partial.hbs">
