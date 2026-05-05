@@ -22,7 +22,6 @@ public interface AppUrl {
 
     String ADMIN_MAIN = Prefix.APP + "/admin/main.do";
     String ADMIN_PAGE = Prefix.APP + "/admin/admin-page.do";
-    String ADMIN_TEST = Prefix.APP + "/admin/test-page.do";
     String NOTION_HOME = Prefix.APP + "/notion-home.do";
 
     /** 저널 일자 (리스트) */

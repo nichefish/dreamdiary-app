@@ -63,23 +63,4 @@ public class AdminPageController
 
         return "/view/feature/admin/admin_page";
     }
-
-    /**
-     * 사이트 관리 > 테스트 페이지
-     * (관리자MNGR만 접근 가능.)
-     *
-     * @param model 뷰에 전달할 데이터를 저장하는 ModelMap 객체
-     * @return {@link String} -- 뷰 이름을 나타내는 문자열
-     */
-    @GetMapping(Url.ADMIN_TEST)
-    @Secured(Constant.ROLE_MNGR)
-    public String testPage(
-            final ModelMap model
-    ) {
-
-        /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.ADMIN_PAGE);
-
-        return "/view/feature/admin/test_page";
-    }
 }

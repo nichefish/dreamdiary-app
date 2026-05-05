@@ -8,8 +8,6 @@
     <#--include::Notion-->
     <#include "/layout/header/navbar/_navbar_btn_notion.ftlh">
 
-    <#--include::테스트 페이지 -->
-    <#include "/layout/header/navbar/_navbar_btn_test_page.ftlh">
     <#include "/layout/header/navbar/_navbar_btn_swagger.ftlh">
     <#include "/layout/header/navbar/_navbar_btn_javadoc.ftlh">
 
