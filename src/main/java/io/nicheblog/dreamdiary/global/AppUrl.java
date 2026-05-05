@@ -76,8 +76,8 @@ public interface AppUrl {
     /** 태그 */
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
 
-    /** 인증 정책 관리 */
-    String AUTH_POLICY_FORM = Prefix.APP + "/auth/policy/form.do";
+    /** 인증 정책 관리 화면 (싱글톤 설정 1건, MVC는 타 페이지와 동일하게 *.do) */
+    String AUTH_POLICY_PAGE = Prefix.APP + "/auth/policy/page.do";
 
     /** 메뉴 관리 */
     String MENU_PAGE = Prefix.APP + "/menu/page.do";

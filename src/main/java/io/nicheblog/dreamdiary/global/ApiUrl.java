@@ -141,8 +141,8 @@ public interface ApiUrl {
     String TAG = Prefix.API + "/tags/{id}";
     String TAG_PROFILE = Prefix.API + "/tags/{tagId}/profile";
 
-    /** 인증 정책 관리 */
-    String AUTH_POLICY_REG_AJAX = Prefix.API + "/auth/policy/reg";
+    /** 인증 정책 (싱글톤 리소스: GET 조회, PUT 갱신) */
+    String AUTH_POLICY = Prefix.API + "/auth/policy";
 
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
