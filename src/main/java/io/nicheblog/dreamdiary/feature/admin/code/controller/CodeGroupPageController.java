@@ -43,7 +43,7 @@ public class CodeGroupPageController extends BaseControllerImpl {
             @ModelAttribute("searchParam") CodeGroupSearchParam searchParam,
             final ModelMap model
     ) throws Exception {
-        model.addAttribute("menuLabel", SiteMenu.CODE);
+        model.addAttribute("menuLabel", SiteMenu.CODE_ADMIN);
         model.addAttribute("pageName", PageName.LIST);
 
         searchParam = (CodeGroupSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);

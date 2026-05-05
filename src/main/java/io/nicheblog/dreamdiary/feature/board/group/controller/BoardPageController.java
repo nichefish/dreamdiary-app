@@ -43,7 +43,7 @@ public class BoardPageController extends BaseControllerImpl {
             final ModelMap model
     ) throws Exception {
 
-        model.addAttribute("menuLabel", SiteMenu.BOARD_GROUP);
+        model.addAttribute("menuLabel", SiteMenu.BOARD_ADMIN);
         model.addAttribute("pageName", PageName.DEFAULT);
 
         searchParam = (BoardSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);

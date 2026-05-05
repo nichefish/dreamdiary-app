@@ -81,7 +81,7 @@ public interface AppUrl {
     String AUTH_POLICY_PAGE = Prefix.APP + "/auth/policy/page.do";
 
     /** 메뉴 관리 */
-    String MENU_PAGE = Prefix.APP + "/menu/page.do";
+    String MENU_ADMIN_PAGE = Prefix.APP + "/admin/menu/page.do";
 
     /** 게시판 관리 */
     String BOARD_ADMIN_PAGE = Prefix.APP + "/admin/board/page.do";

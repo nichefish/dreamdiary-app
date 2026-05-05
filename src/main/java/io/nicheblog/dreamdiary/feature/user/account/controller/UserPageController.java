@@ -69,7 +69,7 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
         model.addAttribute("pageName", PageName.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
@@ -106,7 +106,7 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
         model.addAttribute("pageName", PageName.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
@@ -143,7 +143,7 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
         model.addAttribute("pageName", PageName.DTL);
 
         // 상세 조회 및 모델에 추가
@@ -169,7 +169,7 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
         model.addAttribute("pageName", PageName.MDF);
 
         // 상세 조회 및 모델에 추가

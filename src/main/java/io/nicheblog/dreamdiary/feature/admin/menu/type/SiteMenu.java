@@ -23,16 +23,16 @@ public enum SiteMenu {
     ERROR("에러"),
 
     AUTH_POLICY("인증 정책 관리"),
-    MENU("메뉴 관리"),
-    CODE("코드 관리"),
+    MENU_ADMIN("메뉴 관리"),
+    CODE_ADMIN("코드 관리"),
 
     CONTENT("컨텐츠 관리"),
-    BOARD_GROUP("게시판 관리"),
+    BOARD_ADMIN("게시판 관리"),
     TMPLAT("템플릿 관리"),
     POPUP("팝업 관리"),
 
     USER("사용자 관리"),
-    USER_INFO("계정 관리"),
+    USER_ACCOUNT("계정 관리"),
     USER_SIGNUP_APPROVAL("계정 신청 승인관리"),
     USER_SIGNUP("신규계정 신청"),
     USER_MY("내 정보"),
