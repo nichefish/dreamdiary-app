@@ -1,4 +1,4 @@
-﻿<#--
+<#--
  * 코드 그룹 목록 툴바 Header
  * @included_in : code_group_list.ftlh
  -->
