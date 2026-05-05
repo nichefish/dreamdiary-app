@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardSearchParam;
 import io.nicheblog.dreamdiary.feature.board.group.service.BoardService;
+import io.nicheblog.dreamdiary.feature.board.group.type.ReservedStructuralBoard;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
@@ -29,13 +30,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class BoardPageController extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.BOARD_GROUP_LIST;
+    private final String baseUrl = Url.BOARD_LIST;
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.BOARD_GROUP;
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.BOARD;
 
     private final BoardService boardService;
 
-    @GetMapping(Url.BOARD_GROUP_LIST)
+    @GetMapping(Url.BOARD_LIST)
     @Secured({Constant.ROLE_MNGR})
     public String boardList(
             @ModelAttribute("searchParam") BoardSearchParam searchParam,
@@ -51,6 +52,7 @@ public class BoardPageController extends BaseControllerImpl {
         final Page<BoardDto> boardList = boardService.getPageDto(searchParam, pageRequest);
         model.addAttribute("boardList", boardList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(boardList));
+        model.addAttribute("reservedStructuralBoards", ReservedStructuralBoard.values());
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
         return "/view/feature/board/group/board_list";

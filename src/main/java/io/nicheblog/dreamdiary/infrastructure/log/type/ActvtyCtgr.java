@@ -48,7 +48,7 @@ public enum ActvtyCtgr {
     // MANAGE
     AUTH_POLICY("인증 정책 관리"),
     MENU("메뉴 관리"),
-    BOARD_GROUP("게시판 관리"),
+    BOARD("게시판 관리"),
     TMPLAT("템플릿 관리"),
     CODE("코드 관리"),
     // LOG

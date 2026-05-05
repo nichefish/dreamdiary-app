@@ -84,7 +84,7 @@ public interface AppUrl {
     String MENU_PAGE = Prefix.APP + "/menu/page.do";
 
     /** 게시판 관리 */
-    String BOARD_GROUP_LIST = Prefix.APP + "/board/group/list.do";
+    String BOARD_LIST = Prefix.APP + "/board/list.do";
 
     /** 템플릿 관리 (TODO) */
     String TMPLAT_DEF_LIST = Prefix.APP + "/tmplat/list.do";
