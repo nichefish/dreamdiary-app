@@ -46,7 +46,7 @@ const UserListRootApp = {
         return { state };
     },
     methods: {
-        onOpenDetail(id: number): void { actions.dtl(id); },
+        onOpenDetail(id: number): void { actions.detail(id); },
         onGoPage(pageNo: number): void { actions.page(pageNo); },
         onChangePageSize(size: number): void { actions.page(1, size); },
     },

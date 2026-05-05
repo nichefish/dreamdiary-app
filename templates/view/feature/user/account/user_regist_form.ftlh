@@ -191,9 +191,9 @@
 </script>
 
 <#--include::user_emplym_modules-->
-<#-- Vue(UserFormApp)가 기존 _user_emplym_reg_template.hbs/user_emplym_module.js를 대체 -->
+<#-- Vue(UserFormApp)가 기존 _user_emplym_regist_template.hbs/user_emplym_module.js를 대체 -->
 <#--include::user_profile_modules-->
-<#-- Vue(UserFormApp)가 기존 _user_profile_reg_template.hbs/user_profile_module.js를 대체 -->
+<#-- Vue(UserFormApp)가 기존 _user_profile_regist_template.hbs/user_profile_module.js를 대체 -->
 
 <!--include::page scripts-->
 <script type="module" src="/vue/feature/user/account/UserFormApp.js?${releaseDate!}"></script>

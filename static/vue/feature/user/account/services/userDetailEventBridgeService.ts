@@ -5,8 +5,8 @@ export default function bindUserDetailEventBridge(actions: UserDetailActions): v
     window.dF.User = {
         init: function(): void {},
         pwResetAjax: actions.pwResetAjax,
-        mdfForm: actions.mdfForm,
-        delAjax: actions.delAjax,
+        modifyForm: actions.modifyForm,
+        deleteAjax: actions.deleteAjax,
         list: actions.list,
     };
 }

@@ -67,9 +67,9 @@ public interface AppUrl {
     /** 사용자 관리 */
     String USER_LIST = Prefix.APP + "/user/list.do";
     String USER_SIGNUP_LIST = Prefix.APP + "/user/signup/list.do";
-    String USER_REG_FORM = Prefix.APP + "/user/reg-form.do";
-    String USER_DTL = Prefix.APP + "/user/dtl.do";
-    String USER_MDF_FORM = Prefix.APP + "/user/mdf-form.do";
+    String USER_REGIST_FORM = Prefix.APP + "/user/regist-form.do";
+    String USER_DETAIL = Prefix.APP + "/user/detail.do";
+    String USER_MODIFY_FORM = Prefix.APP + "/user/modify-form.do";
 
     /** 내 정보 관리 */
     String USER_MY_PAGE = Prefix.APP + "/user/my/page.do";

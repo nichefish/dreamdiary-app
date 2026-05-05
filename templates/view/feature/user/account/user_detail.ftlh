@@ -14,7 +14,7 @@
     <#--페이지:: 사용자 프로필 정보 영역-->
     <#--페이지:: 사용자 인사정보 영역-->
     <div id="user_detail_profile_emplym_div">
-        <#-- Vue(UserDetailApp)가 기존 _user_profile_dtl_area.ftlh/_user_emplym_dtl_area.ftlh를 대체 -->
+        <#-- Vue(UserDetailApp)가 기존 _user_profile_detail_area.ftlh/_user_emplym_detail_area.ftlh를 대체 -->
     </div>
     <#--begin::Card footer-->
     <div id="user_detail_footer_div">

@@ -38,18 +38,18 @@ export default function createUserListActions(): UserListActions {
         /**
          * 등록 화면으로 이동
          */
-        regForm(): void {
-            cF.form.blockUISubmit("#procForm", Url.USER_REG_FORM);
+        registForm(): void {
+            cF.form.blockUISubmit("#procForm", Url.USER_REGIST_FORM);
         },
         /**
          * 상세 화면으로 이동
          * @param id 사용자 번호
          */
-        dtl(id: string | number): void {
+        detail(id: string | number): void {
             if (isNaN(Number(id))) return;
 
             $("#procForm #id").val(id);
-            cF.form.blockUISubmit("#procForm", Url.USER_DTL);
+            cF.form.blockUISubmit("#procForm", Url.USER_DETAIL);
         },
     };
 }

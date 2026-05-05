@@ -99,9 +99,9 @@ public class UserPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.USER_REG_FORM)
+    @GetMapping(Url.USER_REGIST_FORM)
     @Secured(Constant.ROLE_MNGR)
-    public String userRegForm(
+    public String userRegistForm(
             final ModelMap model
     ) throws Exception {
 
@@ -124,7 +124,7 @@ public class UserPageController
         codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
         codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
-        return "/view/feature/user/account/user_reg_form";
+        return "/view/feature/user/account/user_regist_form";
     }
 
     /**
@@ -135,9 +135,9 @@ public class UserPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.USER_DTL)
+    @GetMapping(Url.USER_DETAIL)
     @Secured(Constant.ROLE_MNGR)
-    public String userDtl(
+    public String userDetail(
             final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
@@ -150,7 +150,7 @@ public class UserPageController
         final UserDto retrievedDto = userService.getDtlDto(key);
         model.addAttribute("user", retrievedDto);
 
-        return "/view/feature/user/account/user_dtl";
+        return "/view/feature/user/account/user_detail";
     }
 
     /**
@@ -161,9 +161,9 @@ public class UserPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.USER_MDF_FORM)
+    @GetMapping(Url.USER_MODIFY_FORM)
     @Secured(Constant.ROLE_MNGR)
-    public String userMdfForm(
+    public String userModifyForm(
             final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
@@ -188,6 +188,6 @@ public class UserPageController
         codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
         codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
-        return "/view/feature/user/account/user_reg_form";
+        return "/view/feature/user/account/user_regist_form";
     }
 }

@@ -22,14 +22,14 @@ dF.User = (function(): dfModule {
         /**
          * 등록/수정 화면 모드 여부
          */
-        isMdf: function(): boolean {
+        isModify: function(): boolean {
             return $("#userRegForm").data("mode") === "modify";
         },
 
         /**
          * 페이지에 포함된 사용자 등록 폼 템플릿 렌더링
          */
-        renderRegFormFromPageData: function(): void {
+        renderRegistFormFromPageData: function(): void {
             cF.handlebars.template({}, "user_reg_form");
         },
 
@@ -108,11 +108,11 @@ dF.User = (function(): dfModule {
                 return false;
             }
             Swal.fire({
-                text: dF.User.isMdf() ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
+                text: dF.User.isModify() ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                dF.User.regAjax();
+                dF.User.registAjax();
             });
         },
 
@@ -142,8 +142,8 @@ dF.User = (function(): dfModule {
         /**
          * 등록 화면으로 이동
          */
-        regForm: function(): void {
-            cF.form.blockUISubmit("#procForm", Url.USER_REG_FORM);
+        registForm: function(): void {
+            cF.form.blockUISubmit("#procForm", Url.USER_REGIST_FORM);
         },
 
         /**
@@ -205,9 +205,9 @@ dF.User = (function(): dfModule {
         /**
          * 등록/수정 처리(Ajax)
          */
-        regAjax: function(): void {
+        registAjax: function(): void {
             const id: string = cF.util.getInputValue("#userRegForm #id");
-            const url: string = dF.User.isMdf() ? cF.util.bindUrl(Url.USER, { id }) : Url.USERS;
+            const url: string = dF.User.isModify() ? cF.util.bindUrl(Url.USER, { id }) : Url.USERS;
             const ajaxData: FormData = new FormData(document.getElementById("userRegForm") as HTMLFormElement);
             cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
@@ -221,11 +221,11 @@ dF.User = (function(): dfModule {
          * 상세 화면으로 이동
          * @param {string|number} id - 사용자 번호
          */
-        dtl: function(id: string|number): void {
+        detail: function(id: string|number): void {
             if (isNaN(Number(id))) return;
 
             $("#procForm #id").val(id);
-            cF.form.blockUISubmit("#procForm", Url.USER_DTL);
+            cF.form.blockUISubmit("#procForm", Url.USER_DETAIL);
         },
 
         /**
@@ -320,14 +320,14 @@ dF.User = (function(): dfModule {
         /**
          * 수정 화면으로 이동
          */
-        mdfForm: function(): void {
-            cF.form.blockUISubmit("#procForm", Url.USER_MDF_FORM);
+        modifyForm: function(): void {
+            cF.form.blockUISubmit("#procForm", Url.USER_MODIFY_FORM);
         },
 
         /**
          * 삭제 (Ajax)
          */
-        delAjax: function(): void {
+        deleteAjax: function(): void {
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
@@ -348,7 +348,7 @@ dF.User = (function(): dfModule {
          * 목록 화면으로 이동
          */
         list: function(): void {
-            const listUrl: string = Url.USER_LIST + (dF.User.isMdf() ? "?isBackToList=Y" : "");
+            const listUrl: string = Url.USER_LIST + (dF.User.isModify() ? "?isBackToList=Y" : "");
             cF.ui.blockUIReplace(listUrl);
         }
     }
