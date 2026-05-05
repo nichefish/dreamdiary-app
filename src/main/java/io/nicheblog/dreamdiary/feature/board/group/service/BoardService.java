@@ -30,6 +30,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * BoardService
+ * <pre>
+ *  게시판 그룹 도메인 서비스.
+ *  게시판 그룹의 CRUD/정렬/사용여부 처리와 메뉴 캐시 갱신을 담당한다.
+ * </pre>
+ *
+ * @author nichefish
+ */
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -37,29 +46,58 @@ public class BoardService
         implements BaseDtoWritableService<BoardDto, BoardDto, Integer, BoardEntity>,
                    BaseSortableService<BoardDto, Integer, BoardEntity> {
 
+    /** 게시판 저장소 */
     @Getter
     private final BoardRepository repository;
+    /** 게시판 검색 스펙 */
     @Getter
     private final BoardSpec spec;
+    /** 게시판 매핑 도구 */
     @Getter
     private final BoardMapstruct mapstruct = BoardMapstruct.INSTANCE;
 
+    /** 자기 자신 프록시 조회용 컨텍스트 */
     private final ApplicationContext context;
 
+    /** 게시글 저장소 (게시판별 글 건수 집계용) */
     private final BoardPostRepository boardPostRepository;
 
+    /**
+     * 트랜잭션/캐시 AOP 적용을 위해 자기 자신 프록시를 반환한다.
+     *
+     * @return BoardService 프록시 빈
+     */
     private BoardService getSelf() {
         return context.getBean(this.getClass());
     }
 
+    /**
+     * 읽기용 Mapstruct를 반환한다.
+     *
+     * @return BoardMapstruct 구현체
+     */
     public BoardMapstruct getReadMapstruct() {
         return this.mapstruct;
     }
 
+    /**
+     * 쓰기용 Mapstruct를 반환한다.
+     *
+     * @return BoardMapstruct 구현체
+     */
     public BoardMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
 
+    /**
+     * 사이드바/헤더용 게시판 메뉴 목록을 조회한다.
+     * <p>
+     * 사용중(`useYn=Y`) 게시판만 조회하고 메뉴 접근 정보로 변환한다.
+     * </p>
+     *
+     * @return 게시판 메뉴 접근 정보 목록
+     * @throws Exception 조회/매핑 중 예외
+     */
     @Transactional(readOnly = true)
     @Cacheable(value = "boardMenuList")
     public List<SiteAcsInfo> boardMenuList() throws Exception {
@@ -79,6 +117,13 @@ public class BoardService
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 게시판 키로 메뉴 접근 정보를 조회한다.
+     *
+     * @param boardKey 게시판 키
+     * @return 메뉴 접근 정보
+     * @throws Exception 조회/매핑 중 예외
+     */
     @Transactional(readOnly = true)
     @Cacheable(value = "boardMenu", key = "#boardKey")
     public SiteAcsInfo getMenuByBoardKey(final String boardKey) throws Exception {
@@ -86,11 +131,25 @@ public class BoardService
         return mapstruct.toMenu(retrievedEntity);
     }
 
+    /**
+     * 게시판 키로 상세 DTO를 조회한다.
+     *
+     * @param boardKey 게시판 키
+     * @return 게시판 상세 DTO
+     * @throws Exception 조회/매핑 중 예외
+     */
     @Transactional(readOnly = true)
     public BoardDto getDtlDtoByBoardKey(final String boardKey) throws Exception {
         return mapstruct.toDto(this.getDtlEntityByBoardKey(boardKey));
     }
 
+    /**
+     * 게시판 키로 상세 엔티티를 조회한다.
+     *
+     * @param boardKey 게시판 키
+     * @return 게시판 엔티티
+     * @throws EntityNotFoundException 대상이 없을 때
+     */
     @Transactional(readOnly = true)
     public BoardEntity getDtlEntityByBoardKey(final String boardKey) {
         return repository.findByBoardKey(boardKey)
@@ -211,29 +270,70 @@ public class BoardService
         });
     }
 
+    /**
+     * 등록 후처리.
+     * <p>
+     * 게시판 메뉴 목록 캐시를 비운다.
+     * </p>
+     *
+     * @param updatedDto 등록 완료 DTO
+     */
     @Override
     public void postRegist(final BoardDto updatedDto) {
         EhCacheUtils.clearCache("boardMenuList");
     }
 
+    /**
+     * 수정 후처리.
+     * <p>
+     * 게시판 메뉴 목록 캐시와 해당 게시판 메뉴 캐시를 무효화한다.
+     * </p>
+     *
+     * @param postDto 수정 요청 DTO
+     * @param updatedDto 수정 완료 DTO
+     */
     @Override
     public void postModify(final BoardDto postDto, final BoardDto updatedDto) {
         EhCacheUtils.clearCache("boardMenuList");
         EhCacheUtils.evictCacheByKey("boardMenu", updatedDto.getBoardKey());
     }
 
+    /**
+     * 삭제 후처리.
+     * <p>
+     * 게시판 메뉴 목록 캐시와 해당 게시판 메뉴 캐시를 무효화한다.
+     * </p>
+     *
+     * @param deletedDto 삭제된 게시판 DTO
+     */
     @Override
     public void postDelete(final BoardDto deletedDto) {
         EhCacheUtils.clearCache("boardMenuList");
         EhCacheUtils.evictCacheByKey("boardMenu", deletedDto.getBoardKey());
     }
 
+    /**
+     * 사용/미사용 변경 후처리.
+     * <p>
+     * 게시판 메뉴 목록 캐시와 해당 게시판 메뉴 캐시를 무효화한다.
+     * </p>
+     *
+     * @param updatedEntity 사용여부가 갱신된 엔티티
+     */
     @Override
     public void postSetUse(final BoardEntity updatedEntity) {
         EhCacheUtils.clearCache("boardMenuList");
         EhCacheUtils.evictCacheByKey("boardMenu", updatedEntity.getBoardKey());
     }
 
+    /**
+     * 정렬 변경 후처리.
+     * <p>
+     * 메뉴 목록/단건 캐시를 모두 비운다.
+     * </p>
+     *
+     * @param sortOrders 정렬 순서 목록
+     */
     @Override
     public void postSortOrder(final List<BoardDto> sortOrders) {
         EhCacheUtils.clearCache("boardMenuList");

@@ -59,9 +59,9 @@ export default function createBoardAdminActions(params: CreateParams): BoardAdmi
     };
 
     actions.openBoardModify = function(id: number): void {
-        const url: string = (Url as any).BOARD_GROUP_DTL_AJAX;
+        const url: string = cF.util.bindUrl((Url as any).BOARD_GROUP, { id });
         if (!url) return;
-        cF.ajax.get(url, { id }, (res: AjaxResponse): void => {
+        cF.ajax.get(url, null, (res: AjaxResponse): void => {
             if (showAjaxError(res)) return;
             const obj: Record<string, any> = res.rsltObj || {};
             resetBoardForm(obj);
@@ -73,9 +73,10 @@ export default function createBoardAdminActions(params: CreateParams): BoardAdmi
     actions.registBoardAjax = function(): void {
         confirmThen(t("view.cnfm.reg"), (): void => {
             const regYn: string = formValue("#boardRegForm", "regYn", "Y").toUpperCase();
+            const id: string = formValue("#boardRegForm", "id", "");
             const url: string = regYn === "Y"
-                ? (Url as any).BOARD_GROUP_REG_AJAX
-                : (Url as any).BOARD_GROUP_MDF_ITEM_AJAX;
+                ? (Url as any).BOARD_GROUPS
+                : cF.util.bindUrl((Url as any).BOARD_GROUP, { id });
             cF.$ajax.post(url, cF.util.getJsonFormData("#boardRegForm"), (res: AjaxResponse): void => {
                 Swal.fire({ text: res.message }).then((): void => {
                     if (res.rslt) cF.ui.blockUIReload();
@@ -88,9 +89,9 @@ export default function createBoardAdminActions(params: CreateParams): BoardAdmi
         const msgKey: string = currentlyUse ? "view.cnfm.unuse" : "view.cnfm.use";
         confirmThen(t(msgKey), (): void => {
             const url: string = currentlyUse
-                ? (Url as any).BOARD_GROUP_UNUSE_AJAX
-                : (Url as any).BOARD_GROUP_USE_AJAX;
-            cF.$ajax.post(url, { id }, (res: AjaxResponse): void => {
+                ? cF.util.bindUrl((Url as any).BOARD_GROUP_UNUSE, { id })
+                : cF.util.bindUrl((Url as any).BOARD_GROUP_USE, { id });
+            cF.$ajax.post(url, null, (res: AjaxResponse): void => {
                 Swal.fire({ text: res.message }).then((): void => {
                     if (res.rslt) cF.ui.blockUIReload();
                 });
@@ -100,7 +101,7 @@ export default function createBoardAdminActions(params: CreateParams): BoardAdmi
 
     actions.deleteBoard = function(id: number): void {
         confirmThen(t("view.cnfm.del"), (): void => {
-            cF.$ajax.post((Url as any).BOARD_GROUP_DEL_AJAX, { id }, (res: AjaxResponse): void => {
+            cF.$ajax.delete(cF.util.bindUrl((Url as any).BOARD_GROUP, { id }), null, (res: AjaxResponse): void => {
                 Swal.fire({ text: res.message }).then((): void => {
                     if (res.rslt) cF.ui.blockUIReload();
                 });

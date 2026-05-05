@@ -69,7 +69,7 @@ function resolveBoardAdminPageLocale(): string {
 
 function initBoardListDraggable(): void {
     const keyExtractor: (item: HTMLElement) => { id: number } = (item: HTMLElement) => ({ id: Number(item.dataset.id) });
-    const url: string = (Url as any).BOARD_GROUP_SORT_ORDR_AJAX;
+    const url: string = (Url as any).BOARD_GROUPS_SORT_ORDERS;
     cF.draggable.init("", keyExtractor, url);
 }
 
