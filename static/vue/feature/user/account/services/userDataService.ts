@@ -1,4 +1,5 @@
 import { PaginationState, UserLabels, UserRow } from "../types.js";
+import { applyPaginationFromPageData } from "../../../../global/services/paginationDataService.js";
 
 export default {
     parseRowsFromPageData(): UserRow[] {
@@ -13,21 +14,7 @@ export default {
         }
     },
     applyPaginationFromPageData(pagination: PaginationState): void {
-        const dataEl: HTMLElement | null = document.getElementById("user_pagination_data");
-        if (!dataEl) return;
-        try {
-            const parsed: any = JSON.parse(dataEl.textContent || "{}");
-            pagination.currPageNo = Number(parsed.currPageNo || 1);
-            pagination.lastPageNo = Number(parsed.lastPageNo || 1);
-            pagination.totalCnt = Number(parsed.totalCnt || 0);
-            pagination.pageSize = Number(parsed.pageSize || 10);
-            pagination.isFirstPage = !!parsed.isFirstPage;
-            pagination.isLastPage = !!parsed.isLastPage;
-            pagination.prevPageNo = Number(parsed.prevPageNo || 0);
-            pagination.nextPageNo = Number(parsed.nextPageNo || 0);
-        } catch (e) {
-            console.error("[UserListApp] user_pagination_data parse failed", e);
-        }
+        applyPaginationFromPageData("user_pagination_data", pagination, "[UserListApp]");
     },
     parseLabels(): UserLabels {
         const fallback: UserLabels = {
