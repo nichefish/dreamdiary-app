@@ -39,6 +39,12 @@ public class BoardDto extends BaseAuditDto implements Identifiable<Integer>, Sor
     @Builder.Default
     private String useYn = "Y";
 
+    /**
+     * 목록 화면 전용: {@code board_post.content_type} 이 {@link #boardKey} 와 일치하는 행 개수.
+     * 등록·수정 요청 본문에서는 채우지 않으며, 서버 목록 조회 시에만 세팅한다.
+     */
+    private Long postCount;
+
     @Override
     public Integer getKey() {
         return this.id;
