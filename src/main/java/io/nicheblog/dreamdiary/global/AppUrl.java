@@ -112,7 +112,7 @@ public interface AppUrl {
 
     String SCHEDULE_CAL = Prefix.APP + "/schedule/cal.do";
 
-    String USER_REQST_REG_FORM = Prefix.APP + "/user/reqst/form.do";
+    String USER_SIGNUP_PAGE = Prefix.APP + "/user/signup/page.do";
 
     /**
      * PREFIX 정의 정보

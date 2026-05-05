@@ -43,7 +43,7 @@ public enum ActvtyCtgr {
     // USER
     USER("사용자 관리"),
     USER_MY("내 정보 관리"),
-    USER_REQST("신규계정 신청"),
+    USER_SIGNUP("신규계정 신청"),
 
     // MANAGE
     AUTH_POLICY("인증 정책 관리"),

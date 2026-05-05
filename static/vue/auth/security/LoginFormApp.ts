@@ -128,8 +128,8 @@ const LoginFormApp = {
         t(key: string): string {
             return i18nCatalogService.t(i18nState.messages, key);
         },
-        reqstUser(): void {
-            loginAuthService.redirectUserRequest();
+        openUserSignup(): void {
+            loginAuthService.redirectUserSignup();
         },
         popupGoogle(): void {
             loginAuthService.openOAuthPopup(Url.OAUTH2_GOOGLE);
@@ -188,7 +188,7 @@ const LoginFormApp = {
                 @submit-login="submitLogin"
                 @popup-google="popupGoogle"
                 @popup-naver="popupNaver"
-                @request-user="reqstUser"
+                @open-user-signup="openUserSignup"
             />
             <PasswordChangeModal
                 ref="passwordChangeModal"
