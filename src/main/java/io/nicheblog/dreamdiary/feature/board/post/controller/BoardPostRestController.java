@@ -53,7 +53,7 @@ public class BoardPostRestController
     @PostMapping(value = {Url.BOARD_POSTS, Url.BOARD_POST})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> boardPostRegAjax(
+    public ResponseEntity<AjaxResponse> boardPostRegistAjax(
             final @Valid BoardPostDto boardPost,
             final MultipartHttpServletRequest request
     ) throws Exception {
@@ -77,7 +77,7 @@ public class BoardPostRestController
     @GetMapping(Url.BOARD_POST)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> boardPostDtlAjax(
+    public ResponseEntity<AjaxResponse> boardPostDetailAjax(
             final @RequestParam("id") Integer id
     ) throws Exception {
 
@@ -95,7 +95,7 @@ public class BoardPostRestController
      * @param id 복합키 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.BOARD_POST)
+    @DeleteMapping(Url.BOARD_POST)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDelAjax(

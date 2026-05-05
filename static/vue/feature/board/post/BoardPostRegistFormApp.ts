@@ -1,5 +1,5 @@
 /**
- * BoardPostRegFormApp.ts
+ * BoardPostRegistFormApp.ts
  * 일반게시판 등록/수정 화면 Vue 엔트리 (액션 브리지)
  */
 export {};
@@ -21,7 +21,7 @@ function createActions(): {
 } {
     let submitMode: SubmitMode = "";
     const mode = String($("#postRegForm").data("mode") || "");
-    const isMdf = mode === "modify";
+    const isModify = mode === "modify";
 
     function submitHandler(): boolean {
         if (submitMode === "preview") {
@@ -29,25 +29,25 @@ function createActions(): {
             const options = "width=1280,height=1440,top=0,left=270";
             const popup = cF.ui.openPopup("", popupNm, options);
             if (popup) popup.focus();
-            $("#postRegForm").attr("action", Url.BOARD_POST_REG_PREVIEW_POP).attr("target", popupNm);
+            $("#postRegForm").attr("action", Url.BOARD_POST_REGIST_PREVIEW_POP).attr("target", popupNm);
             return true;
         }
         if (submitMode === "submit") {
             $("#postRegForm").removeAttr("action").removeAttr("target");
             Swal.fire({
-                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+                text: Message.get(isModify ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                regAjax();
+                registAjax();
             });
         }
         return false;
     }
 
-    function regAjax(): void {
+    function registAjax(): void {
         const id = cF.util.getInputValue("#postRegForm input[name='id']");
-        const url = isMdf ? cF.util.bindUrl(Url.BOARD_POST, { id }) : Url.BOARD_POSTS;
+        const url = isModify ? cF.util.bindUrl(Url.BOARD_POST, { id }) : Url.BOARD_POSTS;
         const ajaxData = new FormData(document.getElementById("postRegForm") as HTMLFormElement);
         cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
             Swal.fire({ text: res.message }).then(function(): void {
@@ -58,7 +58,7 @@ function createActions(): {
 
     function list(): void {
         const contentType = $("#contentType").val() as string;
-        const listUrl = `${Url.BOARD_POST_LIST}?contentType=${contentType}` + (isMdf ? "&isBackToList=Y" : "");
+        const listUrl = `${Url.BOARD_POST_LIST}?contentType=${contentType}` + (isModify ? "&isBackToList=Y" : "");
         cF.ui.blockUIReplace(listUrl);
     }
 
@@ -105,11 +105,11 @@ function bindEventBridge(actions: { preview: () => void; submit: () => void; lis
 }
 
 runWhenDomReady(function(): void {
-    if (!document.getElementById("board_post_reg_form_app")) {
-        console.error("[BoardPostRegFormApp] Vue mount root not found.");
+    if (!document.getElementById("board_post_regist_form_app")) {
+        console.error("[BoardPostRegistFormApp] Vue mount root not found.");
         return;
     }
     const actions = createActions();
     bindEventBridge(actions);
-    Vue.createApp({}).mount("#board_post_reg_form_app");
+    Vue.createApp({}).mount("#board_post_regist_form_app");
 });

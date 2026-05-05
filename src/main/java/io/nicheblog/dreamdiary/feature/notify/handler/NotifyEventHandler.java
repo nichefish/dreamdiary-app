@@ -88,7 +88,7 @@ public class NotifyEventHandler {
             final String msg = "새로운 글이 등록되었습니다.";
             // url
             final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
-            final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DTL + "?" + param;
+            final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DETAIL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);

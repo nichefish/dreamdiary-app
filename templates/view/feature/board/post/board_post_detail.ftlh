@@ -6,7 +6,7 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<div id="board_post_dtl_app" class="d-none"></div>
+<div id="board_post_detail_app" class="d-none"></div>
 
 <div class="card post">
     <#--begin::Card body-->
@@ -50,11 +50,11 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 수정하기-->
-            <@component.post_btn_modify "window.dispatchEvent(new CustomEvent('board-post:dtl-mdf-form'));" post isMngr />
+            <@component.post_btn_modify "window.dispatchEvent(new CustomEvent('board-post:detail-modify-form'));" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "window.dispatchEvent(new CustomEvent('board-post:dtl-del', { detail: { id: ${post.id} } }));" post isMngr />
+            <@component.post_btn_delete "window.dispatchEvent(new CustomEvent('board-post:detail-delete', { detail: { id: ${post.id} } }));" post isMngr />
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "window.dispatchEvent(new CustomEvent('board-post:dtl-list'));" />
+            <@component.post_btn_toList "window.dispatchEvent(new CustomEvent('board-post:detail-list'));" />
         </div>
     </div>
 

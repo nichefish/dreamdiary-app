@@ -14,7 +14,7 @@
 <#--#include:: component:: 태그 클릭 필터바-->
 <#include "/view/feature/attachable/tag/_tag_list_header.ftlh">
 
-<#if board == "cmpyLife">
+<#if (board!"") == "cmpyLife">
     <button type="button" class="btn btn-sm btn-light btn-active-secondary mx-1"
             onclick="$('#cmpy_life_modal').modal('show');"
             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="?ш린濡쒖슫 ?뚯궗?앺솢 ?덈궡 ?앹뾽???몄텧?⑸땲??">
@@ -48,7 +48,7 @@
                             <div class="row d-flex align-items-center justify-content-between align-items-center">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.BOARD_POST_DTL!}?board=${post.board!}&id=${post.id!}&notionPageId=${post.notionPageId!}"
+                                        <a href="${Url.BOARD_POST_DETAIL!}?board=${post.board!}&id=${post.id!}&notionPageId=${post.notionPageId!}"
                                            class="text-dark vertical-middle text-underline-dotted"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
                                     <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                    <@component.list_dtl_modal post "window.dispatchEvent(new CustomEvent('board-post:open-dtl-modal', { detail: { id: __ID__ } }));" />
+                                    <@component.list_dtl_modal post "window.dispatchEvent(new CustomEvent('board-post:open-detail-modal', { detail: { id: __ID__ } }));" />
                                 </div>
                             </div>
                         </td>
@@ -102,10 +102,10 @@
 
 <#--include::modals-->
 <#include "/view/feature/attachable/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
+<#include "/view/feature/file/_modal/_file_list_modal.ftlh">
 
-<#--include::board_post_dtl_modal-->
-<#include "/view/feature/board/post/_modal/_board_post_dtl_modal.ftlh">
+<#--include::board_post_detail_modal-->
+<#include "/view/feature/board/post/_modal/_board_post_detail_modal.ftlh">
 
 <#--include::vue module-->
 <script type="module" src="/vue/feature/board/post/BoardPostListApp.js?${releaseDate!}"></script>
