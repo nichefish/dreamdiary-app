@@ -1,6 +1,6 @@
 <#--
  * 코드 그룹 등록 Modal
- * @included_in : code_group_list
+ * @included_in : code_admin_page
  -->
 
 <#import "/layout/modal_layout.ftlh" as modal>

@@ -40,7 +40,7 @@ export default function createBoardAdminActions(params: CreateParams): BoardAdmi
         }
 
         if (pageNoEl) pageNoEl.value = String(targetPageNo);
-        const listUrl: string = listForm.dataset.url || (typeof Url !== "undefined" ? (Url as any).BOARD_LIST : "");
+        const listUrl: string = listForm.dataset.url || (typeof Url !== "undefined" ? (Url as any).BOARD_ADMIN_PAGE : "");
         if (listUrl) cF.form.blockUISubmit("#listForm", listUrl);
     };
 

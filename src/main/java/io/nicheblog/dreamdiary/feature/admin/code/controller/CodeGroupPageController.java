@@ -30,14 +30,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Log4j2
 public class CodeGroupPageController extends BaseControllerImpl {
     @Getter
-    private final String baseUrl = Url.CODE_GROUP_LIST;
+    private final String baseUrl = Url.CODE_ADMIN_PAGE;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CODE;
 
     private final CodeGroupService codeGroupService;
     private final CodeLookupService codeLookupService;
 
-    @GetMapping(Url.CODE_GROUP_LIST)
+    @GetMapping(Url.CODE_ADMIN_PAGE)
     @Secured({Constant.ROLE_MNGR})
     public String codeGroupList(
             @ModelAttribute("searchParam") CodeGroupSearchParam searchParam,
@@ -55,6 +55,6 @@ public class CodeGroupPageController extends BaseControllerImpl {
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
         codeLookupService.setCdListToModel(Code.CL_CTGR_CD, model);
 
-        return "/view/feature/admin/code/code_group_list";
+        return "/view/feature/admin/code/code_admin_page";
     }
 }

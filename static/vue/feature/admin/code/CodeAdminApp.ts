@@ -9,12 +9,12 @@ import CodeGroupRegistForm from "./components/CodeGroupRegistForm.js";
 import CodeGroupDetail from "./components/CodeGroupDetail.js";
 import CodeItemRegistForm from "./components/CodeItemRegistForm.js";
 import CodeGroupPagination from "./components/CodeGroupPagination.js";
-import codeAdminI18nService from "./services/codeAdminI18nService.js";
 import codeAdminDataService from "./services/codeAdminDataService.js";
 import bindCodeAdminEventBridge from "./services/codeAdminEventBridgeService.js";
 import codeAdminUiService from "./services/codeAdminUiService.js";
 import createCodeAdminActions from "./services/codeAdminActionService.js";
 import { CodeAdminActions, CodeAdminState } from "./types.js";
+import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 
 /**
  * 액션 클로저와 템플릿이 동일 반응형 객체를 보도록 Vue.reactive 로 감쌈.
@@ -37,9 +37,10 @@ const state = Vue.reactive({
     itemForm: { groupCode: "", code: "", codeName: "", description: "", useYn: "Y", registYn: "Y" },
     modalReturnTarget: null,
 }) as CodeAdminState;
+const i18n = createScopedI18n();
 
 function t(key: string): string {
-    return codeAdminI18nService.t(key);
+    return i18n.t(key);
 }
 
 function resetGroupForm(payload: Record<string, any>): void {
@@ -140,7 +141,7 @@ const CodeAdminRootApp = {
 };
 
 runWhenDomReady(async function(): Promise<void> {
-    await codeAdminI18nService.load(resolveCodeAdminPageLocale());
+    await i18n.load(resolveCodeAdminPageLocale());
     state.rows = codeAdminDataService.parseRowsFromPageData();
     codeAdminDataService.applyPaginationFromPageData(state.pagination);
 

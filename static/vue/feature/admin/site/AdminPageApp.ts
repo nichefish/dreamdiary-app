@@ -4,11 +4,11 @@
  * @author nichefish
  */
 import AdminRoleTable from "./components/AdminRoleTable.js";
-import adminPageI18nService from "./services/adminPageI18nService.js";
 import adminPageDataService from "./services/adminPageDataService.js";
 import createAdminPageActions from "./services/adminPageActionService.js";
 import { AdminPageMeta, RoleRow } from "./types.js";
 import codeAdminUiService from "../code/services/codeAdminUiService.js";
+import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 
 type AdminPageState = {
     rows: RoleRow[];
@@ -30,11 +30,12 @@ const state = Vue.reactive({
     notionDataType: "PAGE",
     notionDataId: "",
 }) as AdminPageState;
+const i18n = createScopedI18n();
 
 const actions = createAdminPageActions();
 
 function t(key: string): string {
-    return adminPageI18nService.t(key);
+    return i18n.t(key);
 }
 
 function runWhenDomReady(fn: () => void): void {
@@ -168,7 +169,7 @@ const AdminPageRoot = {
 };
 
 runWhenDomReady(async function(): Promise<void> {
-    await adminPageI18nService.load(resolveAdminPageLocale());
+    await i18n.load(resolveAdminPageLocale());
     state.rows = adminPageDataService.parseRoles();
     state.meta = adminPageDataService.parseMeta();
     state.holydayYy = String(state.meta.currYy);

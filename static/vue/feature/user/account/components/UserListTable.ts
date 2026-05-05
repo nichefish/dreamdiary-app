@@ -1,4 +1,5 @@
 import { UserLabels, UserRoleRow, UserRow } from "../types.js";
+import { resolveUserRoleIconClass } from "../../shared/profileEmplymShared.js";
 
 export default {
     name: "UserListTable",
@@ -17,13 +18,7 @@ export default {
     },
     methods: {
         roleIconClass(role: UserRoleRow): string {
-            // 관리자
-            if (role.roleKey === "MNGR") return "bi bi-person-lines-fill text-info ms-1 opacity-75";
-            // 사용자
-            if (role.roleKey === "USER") return "bi bi-people-fill ms-1";
-            // 개발자
-            if (role.roleKey === "DEV") return "bi bi-person-fill-gear ms-1";
-            return "bi bi-person ms-1";
+            return resolveUserRoleIconClass(role.roleKey);
         },
         userStatusIconClass(row: UserRow): string {
             if (row.userProflYn === "N") return "bi bi-person-dash vertical-middle text-muted";

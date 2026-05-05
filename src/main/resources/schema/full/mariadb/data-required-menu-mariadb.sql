@@ -96,7 +96,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'ADMIN' AS upper_label )
-SELECT M.id, 'SUB', '코드 관리', '/app/code/list.do', NULL, 17, 'nichefish', 'NO_SUB', 'CODE', 'N', 'Y', 'Y', 'Y'
+SELECT M.id, 'SUB', '코드 관리', '/app/admin/code/page.do', NULL, 17, 'nichefish', 'NO_SUB', 'CODE', 'N', 'Y', 'Y', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 

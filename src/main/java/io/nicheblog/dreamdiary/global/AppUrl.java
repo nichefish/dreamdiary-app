@@ -84,7 +84,7 @@ public interface AppUrl {
     String MENU_PAGE = Prefix.APP + "/menu/page.do";
 
     /** 게시판 관리 */
-    String BOARD_LIST = Prefix.APP + "/board/list.do";
+    String BOARD_ADMIN_PAGE = Prefix.APP + "/admin/board/page.do";
 
     /** 템플릿 관리 (TODO) */
     String TMPLAT_DEF_LIST = Prefix.APP + "/tmplat/list.do";
@@ -94,7 +94,7 @@ public interface AppUrl {
     String POPUP_LIST = "";
 
     /** 코드 관리 */
-    String CODE_GROUP_LIST = Prefix.APP + "/code/list.do";
+    String CODE_ADMIN_PAGE = Prefix.APP + "/admin/code/page.do";
 
     /** 로그 조회 */
     String LOG_LIST = Prefix.APP + "/log/list.do";

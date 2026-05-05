@@ -96,6 +96,6 @@
     })();
 </script>
 <div id="board_admin_app" class="d-none"></div>
-<script type="module" src="/vue/admin/board/BoardAdminApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/admin/board/BoardAdminApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

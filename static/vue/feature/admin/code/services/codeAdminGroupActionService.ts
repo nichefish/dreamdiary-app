@@ -34,7 +34,7 @@ export default function createCodeAdminGroupActions(params: GroupActionParams): 
         search(): void {
             const pageNoEl: HTMLInputElement | null = document.querySelector("#listForm #pageNo");
             if (pageNoEl) pageNoEl.value = "1";
-            cF.form.blockUISubmit("#listForm", `${Url.CODE_GROUP_LIST}?actionTyCd=SEARCH`);
+            cF.form.blockUISubmit("#listForm", `${Url.CODE_ADMIN_PAGE}?actionTyCd=SEARCH`);
         },
         openGroupRegist(payload?: Record<string, any>): void {
             state.modalReturnTarget = null;

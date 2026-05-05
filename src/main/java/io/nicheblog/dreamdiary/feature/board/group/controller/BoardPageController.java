@@ -30,13 +30,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class BoardPageController extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.BOARD_LIST;
+    private final String baseUrl = Url.BOARD_ADMIN_PAGE;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.BOARD;
 
     private final BoardService boardService;
 
-    @GetMapping(Url.BOARD_LIST)
+    @GetMapping(Url.BOARD_ADMIN_PAGE)
     @Secured({Constant.ROLE_MNGR})
     public String boardList(
             @ModelAttribute("searchParam") BoardSearchParam searchParam,
@@ -55,6 +55,6 @@ public class BoardPageController extends BaseControllerImpl {
         model.addAttribute("reservedStructuralBoards", ReservedStructuralBoard.values());
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
-        return "/view/feature/board/group/board_list";
+        return "/view/feature/board/group/board_admin_page";
     }
 }

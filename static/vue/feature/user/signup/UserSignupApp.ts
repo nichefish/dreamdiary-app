@@ -6,7 +6,6 @@
 declare const Vue: { createApp: (opts: unknown) => { mount: (sel: string) => unknown } };
 import userSignupDataService from "./services/userSignupDataService.js";
 import type { CodeRow, UserSignupBootstrap } from "./services/userSignupDataService.js";
-import userSignupI18nService from "./services/userSignupI18nService.js";
 import userSignupActionService, {
     dupCheckEmail,
     dupCheckUsername,
@@ -15,6 +14,12 @@ import userSignupActionService, {
 } from "./services/userSignupActionService.js";
 import { initAllowedIpTagify } from "./services/userSignupDomHooks.js";
 import type { UserSignupFormState } from "./types.js";
+import { initEmplymFormPlugins, initProfileBirthDatepicker } from "../shared/profileEmplymShared.js";
+import UserProfileEmplymToggleButtons from "../shared/components/UserProfileEmplymToggleButtons.js";
+import { COMMON_EMAIL_DOMAIN_OPTIONS } from "../shared/emailDomainShared.js";
+import EmailDomainSelect from "../shared/components/EmailDomainSelect.js";
+import UserProfileEmplymFormSection from "../shared/components/UserProfileEmplymFormSection.js";
+import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 
 const CODE_JOB_TITLE_CD = "JOB_TITLE_CD";
 const SEL_ROOT = "#user_signup_vue_root";
@@ -22,6 +27,7 @@ const SEL_ROOT = "#user_signup_vue_root";
 let allowedIpTagifyDone = false;
 let profileDpDone = false;
 let emplymDpDone = false;
+const i18n = createScopedI18n();
 
 function resolvePageLocale(): string {
     const w = typeof window !== "undefined" ? (window as Window & { Model?: { locale?: string } }) : undefined;
@@ -113,7 +119,7 @@ function bindLegacyDomHelpers(inst: VueInst): void {
 
             /* eslint-disable @typescript-eslint/no-unsafe-call @typescript-eslint/no-unsafe-member-access */
             try {
-                cF.datepicker.singleDatePicker(`${SEL_ROOT} #brthdy`, "yyyy-MM-DD", $fn(`${SEL_ROOT} #brthdy`).val());
+                initProfileBirthDatepicker(`${SEL_ROOT} #brthdy`);
             }
 
             catch (e) {
@@ -129,15 +135,14 @@ function bindLegacyDomHelpers(inst: VueInst): void {
             emplymDpDone = true;
 
             try {
-                cF.validate.phoneNumber(`${SEL_ROOT} #emplymPhoneNumber`);
-                $fn(`${SEL_ROOT} #emplymEmailDomainSelect`).off("change.userSignupVue").on("change.userSignupVue", function(this: HTMLElement): void {
-                    $fn(`${SEL_ROOT} #emplymEmailDomain`).val($fn(this).val());
+                initEmplymFormPlugins({
+                    phoneSelector: `${SEL_ROOT} #emplymPhoneNumber`,
+                    emailDomainSelectSelector: `${SEL_ROOT} #emplymEmailDomainSelect`,
+                    emailDomainInputSelector: `${SEL_ROOT} #emplymEmailDomain`,
+                    joinDateSelector: `${SEL_ROOT} #ecnyDt`,
+                    retireDateSelector: inst.form.emplym.retireYn ? `${SEL_ROOT} #retireDt` : undefined,
+                    bindNamespace: "userSignupVue",
                 });
-
-                cF.datepicker.singleDatePicker(`${SEL_ROOT} #ecnyDt`, "yyyy-MM-DD", $fn(`${SEL_ROOT} #ecnyDt`).val());
-
-                if (inst.form.emplym.retireYn)
-                    cF.datepicker.singleDatePicker(`${SEL_ROOT} #retireDt`, "yyyy-MM-DD", $fn(`${SEL_ROOT} #retireDt`).val());
             }
 
             catch (e) {
@@ -159,6 +164,11 @@ type VueInst = {
 
 const UserSignupRoot = {
     name: "UserSignupRoot",
+    components: {
+        UserProfileEmplymToggleButtons,
+        EmailDomainSelect,
+        UserProfileEmplymFormSection,
+    },
     data(): {
         codeLists: Record<string, CodeRow[]>;
         siteAcs: UserSignupBootstrap["siteAcs"];
@@ -202,8 +212,8 @@ const UserSignupRoot = {
         rankList(): CodeRow[] {
             return listOf(this.codeLists, CODE_JOB_TITLE_CD);
         },
-        showApntcYn(): boolean {
-            return isStaffRank(this.form.emplym.rankCd, this.staffRankCd);
+        emailDomainOptions(): string[] {
+            return [...COMMON_EMAIL_DOMAIN_OPTIONS];
         },
     },
     watch: {
@@ -241,7 +251,14 @@ const UserSignupRoot = {
                 if (!on || !$fn?.fn)
                     return;
                 try {
-                    cF.datepicker.singleDatePicker(`${SEL_ROOT} #retireDt`, "yyyy-MM-DD", $fn(`${SEL_ROOT} #retireDt`).val());
+                    initEmplymFormPlugins({
+                        phoneSelector: `${SEL_ROOT} #emplymPhoneNumber`,
+                        emailDomainSelectSelector: `${SEL_ROOT} #emplymEmailDomainSelect`,
+                        emailDomainInputSelector: `${SEL_ROOT} #emplymEmailDomain`,
+                        joinDateSelector: `${SEL_ROOT} #ecnyDt`,
+                        retireDateSelector: `${SEL_ROOT} #retireDt`,
+                        bindNamespace: "userSignupVue",
+                    });
                 }
                 catch (e) {
                     console.error("[UserSignupApp] retireDt datepicker init 실패.", e);
@@ -259,7 +276,7 @@ const UserSignupRoot = {
     },
     methods: {
         t(key: string): string {
-            return userSignupI18nService.t(key);
+            return i18n.t(key);
         },
         breadcrumbHome(): void {
             userSignupActionService.confirmNavigateAway(this.t, (): void =>
@@ -419,12 +436,15 @@ const UserSignupRoot = {
                 @input="resetEmailDup" @change="resetEmailDup" />
             </div>
             <div class="col-xl-2 col-1">
-              <select id="emailDomainSelect" v-model="form.emailDomainSelect" class="form-select form-select-solid" @change="resetEmailDup">
-                <option value="">{{ t('txt.user.form.custom-input') }}</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="naver.com">naver.com</option>
-                <option value="kakao.com">kakao.com</option>
-              </select>
+              <EmailDomainSelect
+                id="emailDomainSelect"
+                name="emailDomainSelect"
+                :options="emailDomainOptions"
+                :custom-input-label="t('txt.user.form.custom-input')"
+                :model-value="form.emailDomainSelect"
+                @update:modelValue="form.emailDomainSelect = $event"
+                @change="resetEmailDup"
+              />
             </div>
             <div class="col-xl-2 col-4">
               <button id="emailDupChckBtn" type="button" class="btn btn-sm btn-secondary blink required"
@@ -473,142 +493,36 @@ const UserSignupRoot = {
             </div>
           </div>
 
-          <div v-if="form.showProfile" id="user_profile_div">
-            <div class="separator my-8"></div>
-            <div class="row mb-4">
-              <div class="col-xl-2">
-                <label for="proflCn" class="cursor-help fw-bold">{{ t('txt.user.profile.profile') }}</label>
-              </div>
-              <div class="col-xl-9">
-                <!-- 변경 전: Handlebars 에서 같은 name 두 textarea 존재. 변경 후: profile.proflCn 단일 매핑. -->
-                <textarea id="proflCn" v-model="form.profile.proflCn" maxlength="500" wrap="hard" class="form-control form-control-solid h-100px"></textarea>
-              </div>
-            </div>
-            <div class="row mb-4">
-              <div class="col-xl-2"><label>{{ t('txt.user.profile.birth-date') }}</label></div>
-              <div class="col-xl-2">
-                <input id="brthdy" v-model="form.profile.brthdy" type="text" readonly class="form-control form-control-solid ps-12" autocomplete="off" />
-              </div>
-              <div class="col-xl-2">
-                <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
-                  <label class="cursor-help" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('bs.tooltip.user.profile.lunar')">{{ t('txt.user.profile.lunar-yn') }}</label>
-                  <input id="lunarYn" v-model="form.profile.lunarYn" type="checkbox" class="form-check-input cursor-pointer ms-3" />
-                  <label class="form-check-label fw-bold ms-3" for="lunarYn">
-                    {{ form.profile.lunarYn ? t('txt.user.profile.lunar') : t('txt.user.profile.solar') }}
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="form.showEmplym" id="user_emplym_div">
-            <div class="separator my-8"></div>
-            <div class="row mb-4">
-              <div class="col-xl-2"><div class="fs-6 fw-bold col-form-label required"><label for="userNm">{{ t('txt.user.emplym.user-name') }}</label></div></div>
-              <div class="col-xl-2">
-                <input id="userNm" v-model.trim="form.emplym.userNm" maxlength="20" type="text" class="form-control form-control-solid required" />
-              </div>
-            </div>
-            <div class="row mb-4">
-              <div class="col-xl-2"><label class="required">{{ t('txt.user.emplym.email') }}</label></div>
-              <div class="col-lg-2 col-4">
-                <input id="emplymEmailId" v-model.trim="form.emplym.emplymEmailId" maxlength="20" type="text" class="form-control form-control-solid required" />
-              </div>
-              <div class="col-xl-2 col-1 d-flex-center fw-bold">@</div>
-              <div class="col-lg-2 col-5">
-                <input id="emplymEmailDomain" v-model.trim="form.emplym.emplymEmailDomain" maxlength="20" type="text" class="form-control form-control-solid required" />
-              </div>
-              <div class="col-xl-2 col-1">
-                <select id="emplymEmailDomainSelect" v-model="form.emplym.emplymEmailDomainSelect" class="form-select form-select-solid">
-                  <option value="">{{ t('txt.user.form.custom-input') }}</option>
-                  <option value="gmail.com">gmail.com</option>
-                  <option value="naver.com">naver.com</option>
-                  <option value="kakao.com">kakao.com</option>
-                </select>
-              </div>
-            </div>
-            <div class="row mb-4">
-              <div class="col-xl-2"><label class="required">{{ t('txt.user.emplym.phone-number') }}</label></div>
-              <div class="col-xl-2">
-                <input id="emplymPhoneNumber" v-model.trim="form.emplym.emplymPhoneNumber" maxlength="20" type="text" class="form-control form-control-solid required" />
-              </div>
-            </div>
-            <div class="row mb-4">
-              <div class="col-xl-2 fs-6 fw-bold"><label>{{ t('txt.user.emplym.affiliation') }}</label></div>
-              <div class="col-xl-2 col-6">
-                <select id="cmpyCd" v-model="form.emplym.cmpyCd" class="form-select">
-                  <option value="">{{ t('txt.user.emplym.company-option') }}</option>
-                  <option v-for="o in cmpyList" :key="'c'+o.code" :value="o.code">{{ o.codeName }}</option>
-                </select>
-              </div>
-              <div class="col-xl-1 col-6">
-                <select id="teamCd" v-model="form.emplym.teamCd" class="form-select">
-                  <option value="">{{ t('txt.user.emplym.team-option') }}</option>
-                  <option v-for="o in teamList" :key="'t'+o.code" :value="o.code">{{ o.codeName }}</option>
-                </select>
-              </div>
-              <div class="col-xl-2">
-                <select id="emplymCd" v-model="form.emplym.emplymCd" class="form-select">
-                  <option value="">{{ t('txt.user.emplym.employment-type-option') }}</option>
-                  <option v-for="o in emplymCdList" :key="'e'+o.code" :value="o.code">{{ o.codeName }}</option>
-                </select>
-              </div>
-            </div>
-            <div class="row mb-4">
-              <div class="col-xl-2 fs-6 fw-bold"><label>{{ t('txt.user.emplym.rank') }}</label></div>
-              <div class="col-xl-2">
-                <select id="rankCd" v-model="form.emplym.rankCd" class="form-select">
-                  <option value="">{{ t('txt.user.emplym.select-option') }}</option>
-                  <option v-for="o in rankList" :key="'r'+o.code" :value="o.code">{{ o.codeName }}</option>
-                </select>
-              </div>
-              <div v-if="showApntcYn" class="col-xl-2">
-                <div class="form-check form-switch mt-2">
-                  <span>{{ t('txt.user.emplym.probation') }}</span>
-                  <input id="apntcYn" v-model="form.emplym.apntcYn" type="checkbox" class="form-check-input cursor-pointer ms-3" />
-                  <label class="form-check-label fw-bold ms-3" for="apntcYn">{{ form.emplym.apntcYn ? t('txt.user.emplym.probation.active') : t('txt.user.emplym.not-applicable') }}</label>
-                </div>
-              </div>
-            </div>
-            <div class="row mb-4">
-              <div class="col-xl-2 fs-6 fw-bold required"><label>{{ t('txt.user.emplym.join-date') }}</label></div>
-              <div class="col-xl-2">
-                <input id="ecnyDt" v-model="form.emplym.ecnyDt" type="text" readonly class="form-control ps-12 required" />
-                <div class="text-noti form-text">{{ t('txt.user.emplym.join-date-guide') }}</div>
-              </div>
-              <div class="col-xl-2">
-                <div class="form-check form-switch">
-                  <label class="cursor-help" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('bs.tooltip.user.emplym.retired')">
-                    {{ t('txt.user.emplym.retired-yn') }} <i class="bi bi-question-circle"></i>
-                  </label>
-                  <input id="retireYn" v-model="form.emplym.retireYn" type="checkbox" class="form-check-input cursor-pointer ms-3" />
-                  <label class="form-check-label fw-bold ms-3" for="retireYn" :style="{color: form.emplym.retireYn ? 'red' : 'gray'}">{{ form.emplym.retireYn ? t('txt.user.emplym.retired') : t('txt.user.emplym.not-applicable') }}</label>
-                </div>
-              </div>
-              <template v-if="form.emplym.retireYn">
-                <div class="col-xl-1 fw-bold">{{ t('txt.user.emplym.retired-date') }}</div>
-                <div class="col-xl-2"><input id="retireDt" v-model="form.emplym.retireDt" type="text" readonly class="form-control ps-12" autocomplete="off" /></div>
-              </template>
-            </div>
-            <div class="row mb-4">
-              <div class="col-xl-2 fw-bold">{{ t('txt.user.emplym.payroll-account') }}</div>
-              <div class="col-xl-2"><input id="acntBank" v-model.trim="form.emplym.acntBank" maxlength="40" type="text" class="form-control form-control-solid" /></div>
-              <div class="col-xl-2"><input id="acntNo" v-model.trim="form.emplym.acntNo" maxlength="40" type="text" class="form-control form-control-solid" /></div>
-            </div>
-          </div>
+          <UserProfileEmplymFormSection
+            :form="form"
+            :t="t"
+            :show-profile="form.showProfile"
+            :show-emplym="form.showEmplym"
+            :cmpy-list="cmpyList"
+            :team-list="teamList"
+            :emplym-list="emplymCdList"
+            :rank-list="rankList"
+            :custom-input-label="t('txt.user.form.custom-input')"
+            :staff-rank-cd="staffRankCd"
+            mode="signup"
+          />
         </form>
       </div>
     </div>
 
     <div class="card-footer">
       <div class="d-flex justify-content-between">
-        <div class="d-flex gap-3 flex-wrap align-items-start">
-          <button type="button" class="btn btn-sm" :class="form.showProfile ? 'btn-danger' : 'btn-primary'" @click="toggleProfile">{{ form.showProfile ? t('txt.user.signup.profile.remove') : t('txt.user.form.add-profile') }}</button>
-          <div>
-            <button type="button" class="btn btn-sm mb-1" :class="form.showEmplym ? 'btn-danger' : 'btn-primary'" @click="toggleEmplym">{{ form.showEmplym ? t('txt.user.signup.employment.remove') : t('txt.user.form.add-employment') }}</button>
-            <div class="text-noti">{{ t('txt.req.user.emplym') }}</div>
-          </div>
-        </div>
+        <UserProfileEmplymToggleButtons
+            :has-profile="form.showProfile"
+            :has-emplym="form.showEmplym"
+            :add-profile-label="t('txt.user.form.add-profile')"
+            :remove-profile-label="t('txt.user.signup.profile.remove')"
+            :add-emplym-label="t('txt.user.form.add-employment')"
+            :remove-emplym-label="t('txt.user.signup.employment.remove')"
+            :emplym-notice-label="t('txt.req.user.emplym')"
+            @toggle-profile="toggleProfile"
+            @toggle-emplym="toggleEmplym"
+        />
         <div class="gap-2 d-flex flex-shrink-0">
           <button type="button" class="btn btn-sm btn-primary" @click.prevent="submit"><i class="bi bi-pencil-square"></i>{{ t('txt.user.form.request-new-account') }}</button>
           <button type="button" class="btn btn-sm btn-light" @click.prevent="breadcrumbHome"><i class="bi bi-backspace"></i>{{ t('txt.user.form.go-back') }}</button>
@@ -628,7 +542,7 @@ function runWhenDomReady(fn: () => void): void {
 }
 
 runWhenDomReady(async function(): Promise<void> {
-    await userSignupI18nService.load(resolvePageLocale());
+    await i18n.load(resolvePageLocale());
 
     const mount = document.getElementById("user_signup_app");
     if (!mount) {

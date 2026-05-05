@@ -1,6 +1,6 @@
 <#--
  * 코드 그룹 목록 툴바 Header
- * @included_in : code_group_list.ftlh
+ * @included_in : code_admin_page.ftlh
  -->
 
 <form name="listForm" id="listForm" class="d-none d-md-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get">

@@ -6,11 +6,11 @@
 import BoardListTable from "./components/BoardListTable.js";
 import BoardRegistForm from "./components/BoardRegistForm.js";
 import BoardAdminPagination from "./components/BoardAdminPagination.js";
-import boardAdminI18nService from "./services/boardAdminI18nService.js";
 import boardAdminDataService from "./services/boardAdminDataService.js";
 import bindBoardAdminEventBridge from "./services/boardAdminEventBridgeService.js";
 import createBoardAdminActions from "./services/boardAdminActionService.js";
 import { BoardAdminState } from "./types.js";
+import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 
 const state = Vue.reactive({
     rows: [],
@@ -34,9 +34,10 @@ const state = Vue.reactive({
         regYn: "Y",
     },
 }) as BoardAdminState;
+const i18n = createScopedI18n();
 
 function t(key: string): string {
-    return boardAdminI18nService.t(key);
+    return i18n.t(key);
 }
 
 function resetBoardForm(payload: Record<string, any>): void {
@@ -112,7 +113,7 @@ const BoardAdminRootApp = {
 };
 
 runWhenDomReady(async function(): Promise<void> {
-    await boardAdminI18nService.load(resolveBoardAdminPageLocale());
+    await i18n.load(resolveBoardAdminPageLocale());
     state.rows = boardAdminDataService.parseRowsFromPageData();
     boardAdminDataService.applyPaginationFromPageData(state.pagination);
 

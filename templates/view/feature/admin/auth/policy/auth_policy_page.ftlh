@@ -32,6 +32,6 @@
     <div id="auth_policy_app"></div>
 </div>
 
-<script type="module" src="/vue/admin/auth/policy/AuthPolicyApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/admin/auth/policy/AuthPolicyApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

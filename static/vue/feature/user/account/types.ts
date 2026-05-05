@@ -152,7 +152,7 @@ export type CodeOption = {
 
 export type UserProfileForm = {
     brthdy: string;
-    lunarYn: string;
+    lunarYn: boolean;
     proflCn: string;
 };
 
@@ -165,9 +165,9 @@ export type UserEmplymForm = {
     teamCd: string;
     emplymCd: string;
     rankCd: string;
-    apntcYn: string;
+    apntcYn: boolean;
     ecnyDt: string;
-    retireYn: string;
+    retireYn: boolean;
     retireDt: string;
     acntBank: string;
     acntNo: string;
@@ -267,7 +267,6 @@ export type UserFormState = {
     teamOptions: CodeOption[];
     emplymOptions: CodeOption[];
     rankOptions: CodeOption[];
-    labels: UserFormLabels;
 };
 
 export type UserFormActions = {
