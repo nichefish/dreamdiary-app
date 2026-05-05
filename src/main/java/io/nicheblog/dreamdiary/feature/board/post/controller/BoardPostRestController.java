@@ -50,7 +50,7 @@ public class BoardPostRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.BOARD_POST_REG_AJAX, Url.BOARD_POST_MDF_AJAX})
+    @PostMapping(value = {Url.BOARD_POSTS, Url.BOARD_POST})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostRegAjax(
@@ -74,7 +74,7 @@ public class BoardPostRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see ViewerEventListener
      */
-    @GetMapping(Url.BOARD_POST_DTL_AJAX)
+    @GetMapping(Url.BOARD_POST)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDtlAjax(
@@ -95,7 +95,7 @@ public class BoardPostRestController
      * @param id 복합키 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.BOARD_POST_DEL_AJAX)
+    @PostMapping(Url.BOARD_POST)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDelAjax(

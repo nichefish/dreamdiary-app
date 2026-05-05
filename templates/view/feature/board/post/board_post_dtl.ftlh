@@ -1,19 +1,21 @@
 <#--
- * 寃뚯떆??board_post) > ?곸꽭 ?붾㈃
- -->
+ * 게시판(board_post) > 상세 화면
+-->
 
 <#import "/layout/layout_default.ftlh" as layout >
 
 <@layout.layout toolbar=toolbar!"">
+
+<div id="board_post_dtl_app" class="d-none"></div>
 
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
         <#--begin::title-->
         <div class="mb-0">
-            <#--?섏씠吏:: ?ㅻ뜑: ?쒕ぉ ?곸뿭-->
+            <#--페이지:: 헤더: 제목 영역-->
             <@component.post_header_title post />
-            <#--?섏씠吏:: ?ㅻ뜑: 誘몃━蹂닿린 硫뷀? ?곸뿭-->
+            <#--페이지:: 헤더: 메타 영역-->
             <@component.post_header_meta post />
         </div>
 
@@ -28,35 +30,35 @@
 
         <#--begin::meta-->
         <div class="mb-0">
-            <#--?섏씠吏:: 泥⑤??뚯씪 ?쒖떆 ?곸뿭-->
+            <#--페이지:: 첨부파일 표시 영역-->
             <#include "/view/feature/file/_file_page_dtl_area.ftlh">
 
-            <#--?섏씠吏:: ?뚯씪?쒖뒪??李몄“ ?쒖떆 ?곸뿭-->
+            <#--페이지:: 파일소스 참조 표시 영역-->
 
-            <#--?섏씠吏:: ?몄뀡 李몄“ ?쒖떆 ?곸뿭-->
+            <#--페이지:: 노션 참조 표시 영역-->
 
-            <#--?섏씠吏:: ?쒓렇 ?쒖떆 ?곸뿭-->
+            <#--페이지:: 태그 표시 영역-->
             <#include "/view/feature/attachable/tag/_tag_page_dtl_area.ftlh">
 
-            <#--?섏씠吏:: ?대엺???쒖떆 ?곸뿭-->
+            <#--페이지:: 뷰어 표시 영역-->
             <@component.post_viewer_area post />
         </div>
     </div>
 
     <#--begin::Card footer-->
     <div class="card-footer">
-        <#--踰꾪듉 ?곸뿭-->
+        <#--버튼 영역-->
         <div class="d-flex justify-content-end">
-            <#--?섏씠吏:: 踰꾪듉: ?섏젙?섍린-->
-            <@component.post_btn_modify "dF.BoardPost.mdfForm();" post isMngr />
-            <#--?섏씠吏:: 踰꾪듉: ??젣?섍린-->
-            <@component.post_btn_delete "dF.BoardPost.delAjax(${post.id});" post isMngr />
-            <#--?섏씠吏:: 踰꾪듉: 紐⑸줉?쇰줈 媛湲?->
-            <@component.post_btn_toList "dF.BoardPost.list();" />
+            <#--페이지:: 버튼: 수정하기-->
+            <@component.post_btn_modify "window.dispatchEvent(new CustomEvent('board-post:dtl-mdf-form'));" post isMngr />
+            <#--페이지:: 버튼: 삭제하기-->
+            <@component.post_btn_delete "window.dispatchEvent(new CustomEvent('board-post:dtl-del', { detail: { id: ${post.id} } }));" post isMngr />
+            <#--페이지:: 버튼: 목록으로 가기-->
+            <@component.post_btn_toList "window.dispatchEvent(new CustomEvent('board-post:dtl-list'));" />
         </div>
     </div>
 
-    <#--?섏씠吏:: ?볤? ?곸뿭-->
+    <#--페이지:: 댓글 영역-->
     <#include "/view/feature/attachable/comment/_comment_page_area.ftlh">
 </div>
 
@@ -65,10 +67,7 @@
     <input type="hidden" name="board" id="board" value="${post.board!}" />
 </form>
 
-<#--include::script modules-->
-<script type="text/javascript" src="/js/view/feature/board/post/board_post_module.js?${releaseDate!}"></script>
-
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/board/post/board_post_dtl.js?${releaseDate!}"></script>
+<#--include::vue module-->
+<script type="module" src="/vue/feature/board/post/BoardPostDetailApp.js?${releaseDate!}"></script>
 
 </@layout.layout>
