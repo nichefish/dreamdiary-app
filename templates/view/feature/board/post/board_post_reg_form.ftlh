@@ -53,11 +53,11 @@
                 <!--end::Label-->
                 <!--begin::Form control-->
                 <div class="mb-3">
-                    <textarea name="content" id="tinymce_content" class="form-control required" rows="10" placeholder="?댁슜???낅젰?섏꽭??">${post.content!}</textarea>
+                    <textarea name="content" id="tinymce_content" class="form-control required" rows="10" placeholder="내용을 입력하세요.">${post.content!}</textarea>
                 </div>
                 <div id="tinymce_content_validate_span"></div>
                 <!--end::Form control-->
-            </div>
+            <#--페이지:: 첨부파일 추가 영역-->
 
             <#--?섏씠吏:: 泥⑤??뚯씪 異붽?異붽? ?곸뿭-->
             <#include "/view/feature/file/_file_page_reg_area.ftlh">
