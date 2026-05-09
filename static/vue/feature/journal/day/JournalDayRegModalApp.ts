@@ -7,6 +7,8 @@ import journalDayUiBridgeService from "./services/journalDayUiBridgeService.js";
 import { getJournalDayListBridge } from "./journalDayListBridge.js";
 import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 import JournalDayRegModalBody from "./components/JournalDayRegModalBody.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type JournalDayRegVueBridge = {
     mounted?: boolean;
@@ -126,7 +128,7 @@ function regAjax(): void {
     }
     setTimeout(function(): void {
         Swal.fire({
-            text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+            text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
             showCancelButton: true,
         }).then(function(result: SwalResult): void {
             if (!result.value) return;

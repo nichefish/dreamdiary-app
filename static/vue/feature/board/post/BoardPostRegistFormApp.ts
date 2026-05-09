@@ -1,7 +1,11 @@
 /**
  * BoardPostRegistFormApp.ts
  * 일반게시판 등록/수정 화면 Vue 엔트리 (액션 브리지)
+ *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
  */
+import { resolveMessage } from "../../../common/messageHelper.js";
+
 export {};
 
 type SubmitMode = "preview" | "submit" | "";
@@ -35,7 +39,7 @@ function createActions(): {
         if (submitMode === "submit") {
             $("#postRegForm").removeAttr("action").removeAttr("target");
             Swal.fire({
-                text: Message.get(isModify ? "view.cnfm.mdf" : "view.cnfm.reg"),
+                text: resolveMessage(isModify ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

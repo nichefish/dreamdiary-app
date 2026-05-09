@@ -2,8 +2,12 @@
  * menuAdminActionService.ts
  * 메뉴 관리 액션 서비스 (기존 dF.Menu 로직 이관)
  *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+ *
  * @author nichefish
  */
+import { resolveMessage } from "../../../../common/messageHelper.js";
+
 type MenuActions = {
     initialized: boolean;
     mainSwappable: any;
@@ -184,7 +188,7 @@ export default function createMenuAdminActions(hooks: MenuAdminActionHooks): Men
         },
         registAjax(): void {
             Swal.fire({
-                text: Message.get("view.cnfm.save"),
+                text: resolveMessage("view.cnfm.save"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value)
@@ -235,7 +239,7 @@ export default function createMenuAdminActions(hooks: MenuAdminActionHooks): Men
             if (isNaN(Number(id)))
                 return;
             Swal.fire({
-                text: Message.get("view.cnfm.del"),
+                text: resolveMessage("view.cnfm.del"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value)

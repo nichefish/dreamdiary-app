@@ -12,6 +12,8 @@ import loginValidationService, {
     LoginErrors,
     PasswordChangeErrors,
 } from "./services/loginValidationService.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../common/messageHelper.js";
 
 type I18nState = {
     messages: Record<string, string>;
@@ -106,8 +108,8 @@ const LoginFormApp = {
         },
         confirmDuplicateLogin(): void {
             Swal.fire({
-                title: Message.get("view.auth.dupLogin"),
-                text: Message.get("view.cnfm.dupLogin"),
+                title: resolveMessage("view.auth.dupLogin"),
+                text: resolveMessage("view.cnfm.dupLogin"),
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: this.t("txt.auth.login.sign-in"),

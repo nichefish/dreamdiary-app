@@ -10,8 +10,13 @@
  *   - JournalChapterItem.ts 등 Vue 컴포넌트는 이 서비스를 통해 액션을 수행한다.
  *   - dF.JournalChapter 모듈 자체는 외부 호출자가 사라진 시점에 Phase C-2 에서 통째로 제거된다.
  *
+ * 변경(D):
+ *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 import { getJournalDayListBridge } from "../../day/journalDayListBridge.js";
 
@@ -213,7 +218,7 @@ export function delAjax(id: string | number): void {
     if (isNaN(Number(id))) return;
 
     Swal.fire({
-        text: Message.get("view.cnfm.del"),
+        text: resolveMessage("view.cnfm.del"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

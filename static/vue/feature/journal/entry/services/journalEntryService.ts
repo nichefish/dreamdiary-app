@@ -34,8 +34,15 @@
  *   - 인스턴스 전용 로직(`init`/`refresh`/`initForm`/`resolveChapterList`) 은
  *     `journalEntryShellService.ts` 로 추출했다. 본 파일은 동일 시그니처 thin wrapper 만 유지한다.
  *
+ * 변경(D):
+ *   - module top-level `configs` 객체의 `contentLabel` / `emptyLabel` 평가에서 `Message.get(...)` 직호출 제거.
+ *     ESM 적재 즉시 평가되는 위치라 글로벌 `Message` 결의 race(미정의 시 ReferenceError) 위험을 갖고 있었다.
+ *     `resolveMessage` 헬퍼로 통일 — `window/globalThis.Message` 우선 결의 + 미정의 폴백(key 자체 반환).
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 import {
     openJournalEntryRegForm,
@@ -120,8 +127,8 @@ const configs: Record<string, Record<string, any>> = {
         entryType: "DIARY",
         moduleExpr: "dF.JournalEntry.get('JOURNAL_DIARY')",
         tagModuleExpr: "dF.JournalEntryTag.get('JOURNAL_DIARY')",
-        contentLabel: Message.get("txt.journal.diary"),
-        emptyLabel: Message.get("txt.journal.diary"),
+        contentLabel: resolveMessage("txt.journal.diary"),
+        emptyLabel: resolveMessage("txt.journal.diary"),
         chapterType: null,
         listUrl: Url.JOURNAL_ENTRIES,
         itemUrl: Url.JOURNAL_ENTRY,
@@ -152,8 +159,8 @@ const configs: Record<string, Record<string, any>> = {
         entryType: "DREAM",
         moduleExpr: "dF.JournalEntry.get('JOURNAL_DREAM')",
         tagModuleExpr: "dF.JournalEntryTag.get('JOURNAL_DREAM')",
-        contentLabel: Message.get("txt.journal.dream"),
-        emptyLabel: Message.get("txt.journal.dream"),
+        contentLabel: resolveMessage("txt.journal.dream"),
+        emptyLabel: resolveMessage("txt.journal.dream"),
         chapterType: "DREAM",
         listUrl: Url.JOURNAL_ENTRIES,
         itemUrl: Url.JOURNAL_ENTRY,

@@ -1,3 +1,6 @@
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../../common/messageHelper.js";
+
 type LogAdminActions = {
     searchLogs: () => void;
     downloadLogsAsExcel: () => void;
@@ -13,7 +16,7 @@ export default function createLogAdminActions(): LogAdminActions {
         },
         downloadLogsAsExcel(): void {
             Swal.fire({
-                text: Message.get("view.cnfm.download"),
+                text: resolveMessage("view.cnfm.download"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

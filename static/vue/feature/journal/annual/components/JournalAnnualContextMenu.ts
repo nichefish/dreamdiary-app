@@ -8,8 +8,13 @@
  *   - 호출 시그니처 보존: `dF.JournalAnnual.dtlView(yy)` / `dF.JournalAnnual.mdfModal(yy)`.
  *   - 메시지 키는 기존 partial 의 `<@spring.message ... />` 출력값을 보존하기 위해 `Message.get(...)` 으로 옮긴다.
  *
+ * 변경(D):
+ *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단(window/globalThis.Message 우선 결의 + key 폴백).
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 const JournalAnnualContextMenu = {
     name: "JournalAnnualContextMenu",
@@ -18,7 +23,7 @@ const JournalAnnualContextMenu = {
     },
     methods: {
         t(key: string): string {
-            return Message.get(key);
+            return resolveMessage(key);
         },
         tooltip(labelKey: string, actionKey: string): string {
             const label = this.t(labelKey);

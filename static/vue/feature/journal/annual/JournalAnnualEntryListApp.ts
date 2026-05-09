@@ -17,6 +17,8 @@
  */
 
 import JournalAnnualEntryItem from "./components/JournalAnnualEntryItem.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단.
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type EntryListKind = "DIARY" | "DREAM";
 
@@ -93,7 +95,7 @@ function createRootComponent(kind: EntryListKind): Record<string, unknown> {
         },
         methods: {
             t(key: string): string {
-                return Message.get(key);
+                return resolveMessage(key);
             },
         },
         template: `

@@ -5,6 +5,8 @@
 
 import journalDaySearchStateService from "./journalDaySearchStateService.js";
 import { getJournalDayListBridge } from "../journalDayListBridge.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 type YearOption = {
     value: string | number;
@@ -381,7 +383,7 @@ function submitTagProfile(): void {
     if (isNaN(Number(ajaxData.tagId)) || cF.util.isEmpty(ajaxData.contentType)) return;
 
     Swal.fire({
-        text: Message.get(cF.util.isEmpty(ajaxData.id) ? "view.cnfm.reg" : "view.cnfm.mdf"),
+        text: resolveMessage(cF.util.isEmpty(ajaxData.id) ? "view.cnfm.reg" : "view.cnfm.mdf"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
@@ -414,7 +416,7 @@ function deleteTagProfileAjax(): void {
     if (isNaN(Number(tagId)) || cF.util.isEmpty(contentType)) return;
 
     Swal.fire({
-        text: Message.get("view.cnfm.del"),
+        text: resolveMessage("view.cnfm.del"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

@@ -11,8 +11,13 @@
  *
  * 태그 클릭: partial 과 동일하게 `module` 문자열 식(`dF.JournalDayTagService` 등)을 런타임 해석해 `select(id, tagNm, ctgr)` 호출.
  *
+ * 변경(D):
+ *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type TagRowKind = "DAY" | "DIARY" | "DREAM";
 
@@ -98,7 +103,7 @@ function createTagRowRoot(kind: TagRowKind): Record<string, unknown> {
         },
         methods: {
             t(key: string): string {
-                return Message.get(key);
+                return resolveMessage(key);
             },
             /** 변경 전: `onclick="dF.Tag.hideSingleTag('#{{tagListDivId}}');"` */
             hideSingleTag(): void {

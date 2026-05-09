@@ -8,8 +8,13 @@
  *     model 기반 v-bind 로 옮긴다.
  *   - 메시지 키(`txt.attachable.tag.tagify.tag` 등)는 spring `Message` 글로벌(런타임 메시지 캐시)을 통해 가져온다(다른 Vue 폼들과 동일 패턴).
  *
+ * 변경(D):
+ *   - `Message.get(...)` 직호출을 `resolveMessage` 헬퍼로 통일 — ESM 스코프 식별자 결의 race 차단(window/globalThis.Message 우선 결의 + 미정의 폴백).
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 const JournalAnnualRegModalBody = {
     name: "JournalAnnualRegModalBody",
@@ -22,16 +27,16 @@ const JournalAnnualRegModalBody = {
             return tag?.tagListStrWithCtgr ?? "";
         },
         tagLabel(): string {
-            return Message.get("txt.attachable.tag.tagify.tag");
+            return resolveMessage("txt.attachable.tag.tagify.tag");
         },
         tagGuide(): string {
-            return Message.get("txt.attachable.tag.tagify.tag-guide");
+            return resolveMessage("txt.attachable.tag.tagify.tag-guide");
         },
         ctgrPlaceholder(): string {
-            return Message.get("txt.attachable.tag.tagify.category-placeholder");
+            return resolveMessage("txt.attachable.tag.tagify.category-placeholder");
         },
         customInputLabel(): string {
-            return Message.get("txt.user.form.custom-input");
+            return resolveMessage("txt.user.form.custom-input");
         },
     },
     template: `

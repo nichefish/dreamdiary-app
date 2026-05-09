@@ -6,8 +6,13 @@
  *   - 원본 hbs body 는 `<#include "/view/feature/attachable/tag/_tag_tagify_partial.hbs">` 한 줄로 tagify partial 만 들고 있었다(annual 과 동일).
  *   - 본 컴포넌트는 annual reg body 와 동일 마크업이며, model 인자 1개를 받는다.
  *
+ * 변경(D):
+ *   - `Message.get(...)` 직호출을 `resolveMessage` 헬퍼로 통일 — ESM 스코프 식별자 결의 race 차단.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 const JournalAnnualReviewRegModalBody = {
     name: "JournalAnnualReviewRegModalBody",
@@ -20,16 +25,16 @@ const JournalAnnualReviewRegModalBody = {
             return tag?.tagListStrWithCtgr ?? "";
         },
         tagLabel(): string {
-            return Message.get("txt.attachable.tag.tagify.tag");
+            return resolveMessage("txt.attachable.tag.tagify.tag");
         },
         tagGuide(): string {
-            return Message.get("txt.attachable.tag.tagify.tag-guide");
+            return resolveMessage("txt.attachable.tag.tagify.tag-guide");
         },
         ctgrPlaceholder(): string {
-            return Message.get("txt.attachable.tag.tagify.category-placeholder");
+            return resolveMessage("txt.attachable.tag.tagify.category-placeholder");
         },
         customInputLabel(): string {
-            return Message.get("txt.user.form.custom-input");
+            return resolveMessage("txt.user.form.custom-input");
         },
     },
     template: `

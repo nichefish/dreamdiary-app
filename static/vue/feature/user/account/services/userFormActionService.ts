@@ -1,4 +1,6 @@
 import { UserFormActions } from "../types.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 export default function createUserFormActions(): UserFormActions {
     function isMdf(): boolean {
@@ -84,7 +86,7 @@ export default function createUserFormActions(): UserFormActions {
                 return false;
             }
             Swal.fire({
-                text: isMdf() ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
+                text: isMdf() ? resolveMessage("view.cnfm.mdf") : resolveMessage("view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

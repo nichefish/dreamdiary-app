@@ -9,8 +9,13 @@
  *   - 인스턴스 필드 `tagify` 는 `JournalAnnualReviewRegModalApp.attachRegFormControls` 가 모듈 표면에
  *     `module.tagify = cF.tagify.init(...)` 로 직접 set 한다. 외부 read 사이트는 0 이지만 행위 보존.
  *
+ * 변경(D):
+ *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — ESM 스코프 식별자 결의 race 차단.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 function getReviewNs(): Record<string, any> | undefined {
     return (window as any).dF?.JournalAnnualReview as Record<string, any> | undefined;
@@ -64,7 +69,7 @@ export function regAjax(): void {
     const id: string = cF.util.getInputValue("#journalAnnualReviewRegForm [name='id']");
     const isMdf: boolean = cF.util.isNotEmpty(id);
     Swal.fire({
-        text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+        text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
@@ -90,7 +95,7 @@ export function delAjax(id: string|number): void {
     if (isNaN(Number(id))) return;
 
     Swal.fire({
-        text: Message.get("view.cnfm.del"),
+        text: resolveMessage("view.cnfm.del"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

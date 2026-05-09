@@ -24,6 +24,9 @@
  * @author nichefish
  */
 
+// 변경(D): 본 파일의 인라인 글로벌 결의 로직을 공용 헬퍼로 통일. 결의 race 사전 차단 + 미정의 폴백 시그니처 보존.
+import { resolveMessage } from "../../../common/messageHelper.js";
+
 type EntryTagKind = "DIARY" | "DREAM";
 
 interface EntryTagRowConfig {
@@ -112,15 +115,10 @@ function applyList(kind: EntryTagKind, list: Record<string, any>[], config: Entr
  *          `Cannot read properties of undefined (reading 'get')` 가 first render 시 터졌다.
  * 변경 후(A-9 hotfix): `window.Message` 를 직접 결의하고, 결의 결과를 `data()` 에서 한 번만 캐시해 재호출/재평가 비용 0.
  *                       `Message`/`Message.get` 미정의 환경에서는 빈 문자열로 폴백(타이틀만 비워질 뿐 렌더는 안전).
+ * 변경(D): 본 파일 내부에 인라인되어 있던 결의 로직을 공용 `resolveMessage` 헬퍼로 위임. 폴백 시그니처(빈 문자열)는 그대로 보존.
  */
 function resolveTooltipTitle(): string {
-    const w = window as any;
-    const messageNs = w.Message;
-    if (messageNs && typeof messageNs.get === "function") {
-        return String(messageNs.get("view.tag.content-list") ?? "");
-    }
-    console.warn("[JournalDayEntryTagListApp] window.Message.get 결의 실패 — 빈 title 로 폴백.");
-    return "";
+    return resolveMessage("view.tag.content-list", "");
 }
 
 /**
