@@ -39,12 +39,12 @@ public interface AppUrl {
     /** 저널 일기/꿈 (미리보기 팝업) */
     String JOURNAL_ENTRY_PREVIEW_POP = Prefix.APP + "/journal/entry/preview-pop.do";
 
-    /** 저널 주제 */
-    String JOURNAL_SBJCT_LIST = Prefix.APP + "/journal/sbjct/list.do";
-    String JOURNAL_SBJCT_REG_FORM = Prefix.APP + "/journal/sbjct/reg-form.do";
-    String JOURNAL_SBJCT_REG_PREVIEW_POP = Prefix.APP + "/journal/sbjct/preview-pop.do";
-    String JOURNAL_SBJCT_DTL = Prefix.APP + "/journal/sbjct/dtl.do";
-    String JOURNAL_SBJCT_MDF_FORM = Prefix.APP + "/journal/sbjct/mdf-form.do";
+    /** 저널 스레드 */
+    String JOURNAL_THREAD_LIST = Prefix.APP + "/journal/thread/list.do";
+    String JOURNAL_THREAD_REGIST_FORM = Prefix.APP + "/journal/thread/regist-form.do";
+    String JOURNAL_THREAD_REGIST_PREVIEW_POP = Prefix.APP + "/journal/thread/preview-pop.do";
+    String JOURNAL_THREAD_DETAIL = Prefix.APP + "/journal/thread/detail.do";
+    String JOURNAL_THREAD_MODIFY_FORM = Prefix.APP + "/journal/thread/modify-form.do";
 
     /** 저널 연간 */
     String JOURNAL_ANNUAL_LIST = Prefix.APP + "/journal/annual/list.do";
