@@ -51,7 +51,7 @@ public class TagContentDto
 
     /** 태그 이름 */
     @Size(max = 50)
-    private String tagNm;
+    private String name;
 
     /* ----- */
 
@@ -64,7 +64,7 @@ public class TagContentDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull TagContentDto compare) {
-        return this.getTagNm().compareTo(compare.getTagNm());
+        return this.getName().compareTo(compare.getName());
     }
 
     @Override

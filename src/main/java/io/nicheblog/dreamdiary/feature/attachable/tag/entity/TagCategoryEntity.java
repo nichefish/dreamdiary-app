@@ -40,11 +40,11 @@ public class TagCategoryEntity
     private Integer id;
 
     /** 태그 카테고리 이름 */
-    @Column(name = "ctgr_nm")
+    @Column(name = "name")
     @Comment("태그 카테고리 이름")
-    private String ctgrNm;
+    private String name;
 
-    public TagCategoryEntity(final String ctgrNm) {
-        this.ctgrNm = ctgrNm;
+    public TagCategoryEntity(final String name) {
+        this.name = name;
     }
 }

@@ -14,7 +14,7 @@
  *     이전에 적재해 Ajax 콜백 전 브리지가 존재하도록 한다.
  *
  * 보존 규칙:
- *   - 마크업: `<span class="py-2 me-3 cursor-pointer opacity-hover" ... onclick="{{module}}.select({id},'{tagNm}','{ctgr}')">`
+ *   - 마크업: `<span class="py-2 me-3 cursor-pointer opacity-hover" ... onclick="{{module}}.select({id},'{name}','{ctgr}')">`
  *     의 외곽 클래스, 내부 `tagClass`/`textClass`/`em_` prefix, `contentSize` 까지 1:1 보존.
  *   - module 문자열 결의: `dF.JournalEntryTag.get('JOURNAL_DIARY')` 등 표현식을 `new Function("return (" + expr + ");")`
  *     로 결의(레거시 onclick 의 동적 module 와 동일).
@@ -73,10 +73,10 @@ function runWhenDomReady(fn: () => void): void {
 }
 
 /**
- * 변경 전: Handlebars `tag_list_sized_partial` 의 `onclick="{{module}}.select({{id}}, '{{tagNm}}', '{{ctgr}}');"` 와 동등.
+ * 변경 전: Handlebars `tag_list_sized_partial` 의 `onclick="{{module}}.select({{id}}, '{{name}}', '{{ctgr}}');"` 와 동등.
  * module 문자열은 entry meta 의 `tagModuleExpr` (예: `dF.JournalEntryTag.get('JOURNAL_DIARY')`).
  */
-function resolveTagModuleForSelect(moduleExpr: string): { select?: (id: any, tagNm?: string, ctgr?: string) => void } | undefined {
+function resolveTagModuleForSelect(moduleExpr: string): { select?: (id: any, name?: string, ctgr?: string) => void } | undefined {
     if (cF.util.isEmpty(moduleExpr)) return undefined;
     try {
         const runner = new Function("return (" + moduleExpr + ");");
@@ -151,14 +151,14 @@ function createRootComponent(kind: EntryTagKind): Record<string, unknown> {
             /** 변경 전: `tag_list_sized_partial` onclick 의 module 결의 select. */
             selectSizedTag(tag: Record<string, any>): void {
                 const mod = resolveTagModuleForSelect(this.moduleExpr);
-                mod?.select?.(tag.id, tag.tagNm, tag.ctgr);
+                mod?.select?.(tag.id, tag.name, tag.ctgr);
             },
         },
         template: `
         <template v-if="hasList">
             <span
                 v-for="tag in slot.list"
-                :key="'entry-sized-tg-' + String(tag.id) + '-' + String(tag.tagNm)"
+                :key="'entry-sized-tg-' + String(tag.id) + '-' + String(tag.name)"
                 class="py-2 me-3 cursor-pointer opacity-hover"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                 :title="tooltipTitle"
@@ -166,7 +166,7 @@ function createRootComponent(kind: EntryTagKind): Record<string, unknown> {
             >
                 <span :class="[tag.tagClass, tag.textClass]">
                     <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                    <span :class="'em_' + tag.tagNm">{{ tag.tagNm }}</span>
+                    <span :class="'em_' + tag.name">{{ tag.name }}</span>
                 </span>
                 <span class="fs-9 text-noti fw-normal" style="margin-left:-0.25em;">{{ tag.contentSize }}</span>
             </span>

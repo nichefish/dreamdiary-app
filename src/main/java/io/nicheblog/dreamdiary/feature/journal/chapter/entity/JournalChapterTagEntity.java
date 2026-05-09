@@ -51,9 +51,9 @@ public class JournalChapterTagEntity
     private TagCategoryEntity tagCategory;
 
     /** 태그 이름 */
-    @Column(name = "tag_nm")
+    @Column(name = "name")
     @Comment("태그 이름")
-    private String tagNm;
+    private String name;
 
     /** 저널 챕터 태그 */
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
@@ -63,8 +63,8 @@ public class JournalChapterTagEntity
     private List<JournalChapterTagContentEntity> journalChapterTagList;
 
     public String getCtgr() {
-        if (this.tagCategory != null && this.tagCategory.getCtgrNm() != null) {
-            return this.tagCategory.getCtgrNm();
+        if (this.tagCategory != null && this.tagCategory.getName() != null) {
+            return this.tagCategory.getName();
         }
         return this.ctgr == null ? "" : this.ctgr;
     }

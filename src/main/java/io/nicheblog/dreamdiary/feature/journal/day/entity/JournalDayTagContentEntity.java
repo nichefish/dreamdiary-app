@@ -66,7 +66,7 @@ public class JournalDayTagContentEntity
 
     /** 태그 이름 */
     @Transient
-    private String tagNm;
+    private String name;
 
     /** 태그 카테고리 */
     @Transient

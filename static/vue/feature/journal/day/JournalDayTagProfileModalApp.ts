@@ -98,7 +98,7 @@ function applyPayload(model: TagProfilePayload): boolean {
         ctgrBadgeEl.textContent = `[${ctgrText}]`;
         ctgrBadgeEl.classList.toggle("d-none", cF.util.isEmpty(ctgrText));
     }
-    if (tagNmEl) tagNmEl.textContent = String(model.tagNm ?? "");
+    if (tagNmEl) tagNmEl.textContent = String(model.name ?? "");
 
     const categoryColEl: HTMLElement | null = document.querySelector("#tagCategoryTextClassCol");
     const categorySelectEl: HTMLSelectElement | null = document.querySelector("#tagCategoryTextClassCd");
@@ -134,7 +134,7 @@ function applyPayload(model: TagProfilePayload): boolean {
     const categoryPreviewEl: HTMLElement | null = document.querySelector("#tagCategoryColorPreview");
     if (categoryPreviewEl) categoryPreviewEl.textContent = hasTagCategory ? `[${String(model.ctgr ?? "")}]` : "";
     const tagColorPreviewEl: HTMLElement | null = document.querySelector("#tagColorPreview");
-    if (tagColorPreviewEl) tagColorPreviewEl.innerHTML = `<span>#</span>${String(model.tagNm ?? "")}`;
+    if (tagColorPreviewEl) tagColorPreviewEl.innerHTML = `<span>#</span>${String(model.name ?? "")}`;
 
     const contentTextareaEl: HTMLTextAreaElement | null = document.querySelector("#tagProfileCn");
     if (contentTextareaEl) contentTextareaEl.value = String(model.content ?? "");

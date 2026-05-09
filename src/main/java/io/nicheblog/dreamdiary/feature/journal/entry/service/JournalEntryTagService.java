@@ -126,7 +126,7 @@ public class JournalEntryTagService
         final List<JournalEntryTagEntity> tagList = this.getSelf().getListEntity(toTagListParamMap(username, contentType));
         return tagList.stream()
                 .collect(Collectors.groupingBy(
-                        JournalEntryTagEntity::getTagNm,
+                        JournalEntryTagEntity::getName,
                         Collectors.mapping(tag -> StringUtils.defaultString(tag.getCtgr()), Collectors.toList())
                 ));
     }

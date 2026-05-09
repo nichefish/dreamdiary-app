@@ -155,7 +155,7 @@ function openProfileModalByVueBridge(payload: Record<string, any>): boolean {
  */
 function openTagDetailByVueBridge(payload: {
     tagId: string | number;
-    tagNm: string;
+    name: string;
     yy: string;
     yearOptions: Array<{ value: string; label: string; selected?: boolean }>;
     list: Record<string, any>[];
@@ -469,7 +469,7 @@ async function refreshDayTagListAsync(): Promise<void> {
     setTagListByVueBridge(list);
 }
 
-async function openProfileModal(tagId: string | number, contentType: string, tagNm: string, ctgr: string = ""): Promise<void> {
+async function openProfileModal(tagId: string | number, contentType: string, name: string, ctgr: string = ""): Promise<void> {
     if (isNaN(Number(tagId)) || cF.util.isEmpty(contentType)) return;
 
     const profileObj = await getTagProfile(tagId, contentType);
@@ -478,14 +478,14 @@ async function openProfileModal(tagId: string | number, contentType: string, tag
         tagId: profileObj?.tagId ?? Number(tagId),
         tagCategoryId: profileObj?.tagCategoryId,
         contentType: profileObj?.contentType ?? contentType,
-        tagNm,
+        name,
         ctgr: profileObj?.ctgr ?? ctgr ?? "",
         contentTypeLabel: getContentTypeLabel(contentType),
     };
     openProfileModalByVueBridge(viewModel);
 }
 
-function selectDayTag(tagId: string | number, tagNm: string, ctgr: string = ""): void {
+function selectDayTag(tagId: string | number, name: string, ctgr: string = ""): void {
     /**
      * 변경 전: <code>dF.JournalDayTagContextMenu.openContextMenu</code> 직접 참조.
      * 변경 후: <code>dF.JournalDayTagContextMenu</code> 단일 경로 참조. 스크립트 미포함 시 상세만 연다.
@@ -494,14 +494,14 @@ function selectDayTag(tagId: string | number, tagNm: string, ctgr: string = ""):
     if (menu?.openContextMenu) {
         menu.openContextMenu({
             tagId,
-            tagNm,
+            name,
             ctgr,
             contentType: "JOURNAL_DAY",
             onSearch: function(): void {
-                void openDayTagDetail(tagId, tagNm);
+                void openDayTagDetail(tagId, name);
             },
             onConfigure: function(): void {
-                void openProfileModal(tagId, "JOURNAL_DAY", tagNm, ctgr);
+                void openProfileModal(tagId, "JOURNAL_DAY", name, ctgr);
             },
         });
         return;
@@ -509,10 +509,10 @@ function selectDayTag(tagId: string | number, tagNm: string, ctgr: string = ""):
     console.warn(
         "[journalDayTagService.selectDayTag] dF.JournalDayTagContextMenu 없음; 컨텍스트 메뉴 대신 태그 상세만 연다."
     );
-    void openDayTagDetail(tagId, tagNm);
+    void openDayTagDetail(tagId, name);
 }
 
-async function openDayTagDetail(tagId: string | number, tagNm: string, yy?: string | number): Promise<void> {
+async function openDayTagDetail(tagId: string | number, name: string, yy?: string | number): Promise<void> {
     if (typeof event !== "undefined" && event) event.stopPropagation();
     if (isNaN(Number(tagId))) return;
 
@@ -524,7 +524,7 @@ async function openDayTagDetail(tagId: string | number, tagNm: string, yy?: stri
         const list = await getTagDetail(tagId, { weekStartDt });
         const openedByVue: boolean = openTagDetailByVueBridge({
             tagId,
-            tagNm,
+            name,
             yy: weekStartDt,
             yearOptions: [{ value: weekStartDt, label: `Week ${weekStartDt}`, selected: true }],
             list,
@@ -540,7 +540,7 @@ async function openDayTagDetail(tagId: string | number, tagNm: string, yy?: stri
     const list = await getTagDetail(tagId, { yy: selectedYy });
     const openedByVue: boolean = openTagDetailByVueBridge({
         tagId,
-        tagNm,
+        name,
         yy: selectedYy,
         yearOptions: getYearOptions(selectedYy, yyList).map((option: YearOption) => ({
             value: String(option.value),

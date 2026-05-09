@@ -33,7 +33,7 @@ import JournalEntrySearchItem from "./components/JournalEntrySearchItem.js";
                 clearKeywordFields: function(): void {},
                 toggleSort: function(): void { forward("toggleSort"); },
                 resetSearch: function(): void { forward("resetSearch"); },
-                select: function(tagId: string|number, tagNm: string): void { forward("selectTag", tagId, tagNm); },
+                select: function(tagId: string|number, name: string): void { forward("selectTag", tagId, name); },
                 removeTag: function(value: string): void { forward("removeTag", value); },
                 search: function(): void { forward("search"); },
                 copy: function(): void { forward("copy"); },
@@ -70,7 +70,7 @@ type SearchState = {
     rightBorderClass: string;
     list: Record<string, any>[];
     keywordList: string[];
-    tagList: Array<{ id: string; tagNm: string }>;
+    tagList: Array<{ id: string; name: string }>;
     sort: "asc" | "desc";
 };
 
@@ -99,7 +99,7 @@ function mountSearchBridge(searchState: SearchState): void {
         const keywordDisplay = document.getElementById("keywordDisplay");
         const tagDisplay = document.getElementById("tagDisplay");
         if (keywordDisplay) keywordDisplay.innerHTML = searchState.keywordList.map((keyword: string): string => `<div class="badge badge-light-primary keyword-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary">${keyword}</div>`).join("");
-        if (tagDisplay) tagDisplay.innerHTML = searchState.tagList.map((tag): string => `<div class="badge badge-light-primary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary">#${tag.tagNm}</div>`).join("");
+        if (tagDisplay) tagDisplay.innerHTML = searchState.tagList.map((tag): string => `<div class="badge badge-light-primary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary">#${tag.name}</div>`).join("");
         const sortInput = document.getElementById("sortInput") as HTMLInputElement | null;
         if (sortInput) sortInput.value = searchState.sort;
     };
@@ -133,9 +133,9 @@ function mountSearchBridge(searchState: SearchState): void {
         searchState.keywordList = params.getAll("searchKeywords").map((k: string): string => String(k ?? "").trim()).filter((k: string): boolean => k.length > 0);
         searchState.sort = params.get("sort") === "asc" ? "asc" : "desc";
         const tagIds: string[] = params.getAll("tagIds");
-        searchState.tagList = tagIds.map((tagId: string): { id: string; tagNm: string } => {
+        searchState.tagList = tagIds.map((tagId: string): { id: string; name: string } => {
             const tag = dF.JournalEntryTag.get(searchState.contentType).list.find((item: any): boolean => String(item.id) === String(tagId));
-            return { id: tagId, tagNm: String(tag?.tagNm ?? tagId) };
+            return { id: tagId, name: String(tag?.name ?? tagId) };
         });
         renderDisplay();
         search();
@@ -155,10 +155,10 @@ function mountSearchBridge(searchState: SearchState): void {
             searchState.keywordList = searchState.keywordList.filter((keyword: string): boolean => keyword !== value);
             search();
         },
-        selectTag: function(tagId: string|number, tagNm: string): void {
+        selectTag: function(tagId: string|number, name: string): void {
             const normalizedTagId: string = String(tagId);
             if (searchState.tagList.some((tag): boolean => tag.id === normalizedTagId)) return;
-            searchState.tagList.push({ id: normalizedTagId, tagNm: String(tagNm ?? normalizedTagId) });
+            searchState.tagList.push({ id: normalizedTagId, name: String(name ?? normalizedTagId) });
             search();
         },
         removeTag: function(tagId: string|number): void {

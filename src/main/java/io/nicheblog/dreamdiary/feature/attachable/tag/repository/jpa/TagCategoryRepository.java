@@ -18,6 +18,6 @@ import java.util.Optional;
 public interface TagCategoryRepository
         extends BaseStreamRepository<TagCategoryEntity, Integer> {
 
-    Optional<TagCategoryEntity> findByCtgrNm(String ctgrNm);
+    Optional<TagCategoryEntity> findByName(String name);
 }
 

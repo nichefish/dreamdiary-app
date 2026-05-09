@@ -7,7 +7,7 @@
  *     본 컴포넌트로 흡수한다.
  *   - 호출 시그니처 보존:
  *     · 카드 헤더 클릭 → `dF.JournalAnnual.dtlView(yy)`
- *     · 태그 클릭 → 기존 partial 의 `module="dF.JournalDayTagService"` 결의 `select(tagId, tagNm)` 호출과 동일.
+ *     · 태그 클릭 → 기존 partial 의 `module="dF.JournalDayTagService"` 결의 `select(tagId, name)` 호출과 동일.
  *   - `markdownContent` 는 서버에서 마크업 변환된 HTML 이므로 `v-html` 사용(다른 entry/interpretation 컴포넌트와 동일 패턴).
  *   - 컨텍스트 메뉴는 `JournalAnnualContextMenu` 로 위임.
  *
@@ -18,7 +18,7 @@ import JournalAnnualContextMenu from "./JournalAnnualContextMenu.js";
 // 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단(window/globalThis.Message 우선 결의 + key 폴백).
 import { resolveMessage } from "../../../../common/messageHelper.js";
 
-type AnnualTag = { tagId: string | number; tagNm: string; ctgr?: string };
+type AnnualTag = { tagId: string | number; name: string; ctgr?: string };
 
 const JournalAnnualListItem = {
     name: "JournalAnnualListItem",
@@ -53,7 +53,7 @@ const JournalAnnualListItem = {
         /** 변경 전: HBS partial `tag_list_partial` 의 `module="dF.JournalDayTagService"` 결의 `select(...)` onclick. */
         selectTag(tag: AnnualTag): void {
             const svc = (window as any).dF?.JournalDayTagService;
-            svc?.select?.(tag.tagId, String(tag.tagNm ?? ""));
+            svc?.select?.(tag.tagId, String(tag.name ?? ""));
         },
     },
     template: `
@@ -108,7 +108,7 @@ const JournalAnnualListItem = {
                             <i class="bi bi-tag"></i>
                             <span
                                 v-for="tag in tagList()"
-                                :key="tag.tagId + ':' + tag.tagNm"
+                                :key="tag.tagId + ':' + tag.name"
                                 class="text-muted cursor-pointer pe-1"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                 :title="t('view.tag.content-list')"
@@ -117,7 +117,7 @@ const JournalAnnualListItem = {
                                 #
                                 <span class="border-bottom text-primary fw-lighter opacity-hover">
                                     <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                                    {{ tag.tagNm }}
+                                    {{ tag.name }}
                                 </span>
                             </span>
                         </div>

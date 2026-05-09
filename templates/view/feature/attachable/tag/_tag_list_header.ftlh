@@ -33,8 +33,8 @@
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-set'/>">
                     <span class="${tag.tagClass!} ${tag.textClass!}">
                         <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
-                        <span class="em_${tag.tagNm!} <#if isTagSelected!false>fw-bolder text-underline-dotted</#if>">
-                            ${tag.tagNm!}
+                        <span class="em_${tag.name!} <#if isTagSelected!false>fw-bolder text-underline-dotted</#if>">
+                            ${tag.name!}
                         </span>
                     </span>
                     <span class="fs-9 text-noti fw-normal" style="margin-left:-0.25em;">${tag.contentSize!0}</span>

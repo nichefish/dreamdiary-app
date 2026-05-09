@@ -92,7 +92,7 @@ public class TagContentService
                     final Integer tagId = entity.getTagId();
                     final TagSmpEntity tag = this.getSelf().getTagSmpDtlEntity(tagId);
                     entity.setTag(tag);
-                    entity.setTagNm(tag.getTagNm());
+                    entity.setName(tag.getName());
                     entity.setCtgr(tag.getCtgr());
                 })
                 .collect(Collectors.toList());
@@ -123,7 +123,7 @@ public class TagContentService
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
 
         return entityList.stream()
-                .map(tag -> new TagDto(tag.getTagId(), tag.getTagNm(), tag.getCtgr()))
+                .map(tag -> new TagDto(tag.getTagId(), tag.getName(), tag.getCtgr()))
                 .collect(Collectors.toList());
     }
 
@@ -140,7 +140,7 @@ public class TagContentService
             final TagContentParam param = TagContentParam.builder()
                     .refId(attachableKey.getId())
                     .refContentType(attachableKey.getContentType())
-                    .tagNm(tag.getTagNm())
+                    .name(tag.getName())
                     .ctgr(tag.getCtgr())
                     .createdBy(AuthUtils.getLoginUsername())
                     .build();

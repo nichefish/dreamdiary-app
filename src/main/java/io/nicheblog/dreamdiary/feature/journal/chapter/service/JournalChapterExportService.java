@@ -68,7 +68,7 @@ public class JournalChapterExportService {
                 final List<TagContentDto> tagDtoList = diary.getTag().getList();
                 for (final TagContentDto tagDto : tagDtoList) {
                     final String ctgr = StringUtils.isEmpty(tagDto.getCtgr()) ? "" : "[" + tagDto.getCtgr() + "] ";
-                    final String tagStr = ctgr + tagDto.getTagNm();
+                    final String tagStr = ctgr + tagDto.getName();
                     sb.append("#")
                       .append(tagStr)
                       .append(" ");

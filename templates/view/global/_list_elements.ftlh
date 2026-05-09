@@ -99,7 +99,7 @@
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                       title="<@spring.message 'view.tag.content-list'/>">
                     <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
-                    #<span class="border-bottom text-primary fw-lighter opacity-hover">${tag.tagNm!"-"}</span>
+                    #<span class="border-bottom text-primary fw-lighter opacity-hover">${tag.name!"-"}</span>
                 </span>
             </#list>
         </span>

@@ -20,7 +20,7 @@ public class TagContentEntityTestFactory {
      */
     public static TagContentEntity create() throws Exception {
         return TagContentEntity.builder()
-                .tagNm("태그")
+                .name("태그")
                 .build();
     }
 }

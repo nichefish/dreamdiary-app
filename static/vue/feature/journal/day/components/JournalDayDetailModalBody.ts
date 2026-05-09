@@ -59,7 +59,7 @@ const JournalDayDetailModalBody = {
             return states.some((state: Record<string, any>): boolean => state?.stateKey === targetState);
         },
         selectDayTag(tag: Record<string, any>): void {
-            journalDayUiBridgeService.selectDayTag(tag.tagId, String(tag.tagNm ?? ""));
+            journalDayUiBridgeService.selectDayTag(tag.tagId, String(tag.name ?? ""));
         },
         openCommentReg(entry: Record<string, any>, contentType: string): void {
             dF.Comment.modal.regModal(entry.id, contentType);
@@ -94,7 +94,7 @@ const JournalDayDetailModalBody = {
             <div class="mt-3" v-if="tagList.length > 0">
                 <span
                     v-for="tag in tagList"
-                    :key="String(tag.tagId) + ':' + String(tag.tagNm)"
+                    :key="String(tag.tagId) + ':' + String(tag.name)"
                     class="text-muted cursor-pointer pe-1"
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
@@ -105,7 +105,7 @@ const JournalDayDetailModalBody = {
                     #
                     <span class="border-bottom text-primary fw-lighter opacity-hover">
                         <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                        {{ tag.tagNm }}
+                        {{ tag.name }}
                     </span>
                 </span>
             </div>

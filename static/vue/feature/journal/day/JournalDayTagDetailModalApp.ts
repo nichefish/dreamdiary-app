@@ -14,7 +14,7 @@ type TagDetailYearOption = {
 
 type TagDetailPayload = {
     tagId: string | number;
-    tagNm: string;
+    name: string;
     yy: string;
     yearOptions: TagDetailYearOption[];
     list: Record<string, any>[];
@@ -29,7 +29,7 @@ type TagDetailBridge = {
 
 const state = Vue.reactive({
     tagId: "" as string | number,
-    tagNm: "",
+    name: "",
     yy: "",
     yearOptions: [] as TagDetailYearOption[],
     list: [] as Record<string, any>[],
@@ -53,7 +53,7 @@ function resolveNormalizedYy(payload: TagDetailPayload): string {
 
 function applyPayload(payload: TagDetailPayload): void {
     state.tagId = payload.tagId;
-    state.tagNm = String(payload.tagNm ?? "");
+    state.name = String(payload.name ?? "");
     state.yearOptions = Array.isArray(payload.yearOptions) ? payload.yearOptions : [];
     state.yy = resolveNormalizedYy(payload);
     state.list = Array.isArray(payload.list) ? payload.list : [];
@@ -79,12 +79,12 @@ const JournalDayTagDetailRootApp = {
             const target = evt.target as HTMLSelectElement | null;
             if (!target) return;
             const yy = target.value;
-            journalDayUiBridgeService.openDayTagDetail(state.tagId, state.tagNm, yy);
+            journalDayUiBridgeService.openDayTagDetail(state.tagId, state.name, yy);
         },
     },
     template: `
     <teleport to="#journal_day_tag_dtl_modal .header_tag_nm">
-        <span>{{ state.tagNm }}</span>
+        <span>{{ state.name }}</span>
     </teleport>
     <teleport to="#journal_day_tag_dtl_modal .header_tag_cnt">
         <span>{{ state.list.length }}</span>

@@ -14,7 +14,7 @@ import JournalAnnualReviewContextMenu from "./JournalAnnualReviewContextMenu.js"
 // 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단.
 import { resolveMessage } from "../../../../common/messageHelper.js";
 
-type TagItem = { tagId?: string | number; tagNm?: string; ctgr?: string };
+type TagItem = { tagId?: string | number; name?: string; ctgr?: string };
 type CommentItem = { id?: string | number; markdownContent?: string };
 
 /**
@@ -72,7 +72,7 @@ const JournalAnnualReviewRow = {
         /** 변경 전: `tag_list_partial` + module `dF.JournalEntryTag.get('JOURNAL_DIARY')`. */
         selectDiaryTag(tag: TagItem): void {
             const mod = (window as any).dF?.JournalEntryTag?.get?.("JOURNAL_DIARY");
-            mod?.select?.(tag.tagId, String(tag.tagNm ?? ""));
+            mod?.select?.(tag.tagId, String(tag.name ?? ""));
         },
         /** 변경 전: `comment_reg_btn_partial` onclick. */
         openCommentReg(): void {
@@ -102,7 +102,7 @@ const JournalAnnualReviewRow = {
                     <i class="bi bi-tag"></i>
                     <span
                         v-for="tag in tagList()"
-                        :key="String(tag.tagId) + ':' + String(tag.tagNm)"
+                        :key="String(tag.tagId) + ':' + String(tag.name)"
                         class="text-muted cursor-pointer pe-1"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                         :title="t('view.tag.content-list')"
@@ -111,7 +111,7 @@ const JournalAnnualReviewRow = {
                         #
                         <span class="border-bottom text-primary fw-lighter opacity-hover">
                             <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                            {{ tag.tagNm }}
+                            {{ tag.name }}
                         </span>
                     </span>
                 </div>

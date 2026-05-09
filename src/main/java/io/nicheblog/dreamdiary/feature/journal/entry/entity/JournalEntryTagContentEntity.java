@@ -50,7 +50,7 @@ public class JournalEntryTagContentEntity
     private TagSmpEntity tag;
 
     @Transient
-    private String tagNm;
+    private String name;
 
     @Transient
     private String ctgr;
