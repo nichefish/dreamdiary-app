@@ -272,7 +272,7 @@ interface Window {
         mounted?: boolean;
         open?: (payload: {
             tagId: string | number;
-            tagNm: string;
+            name: string;
             yy: string;
             yearOptions: Array<{ value: string; label: string; selected?: boolean }>;
             list: Record<string, any>[];
@@ -280,7 +280,7 @@ interface Window {
         }) => void;
         pendingPayload?: {
             tagId: string | number;
-            tagNm: string;
+            name: string;
             yy: string;
             yearOptions: Array<{ value: string; label: string; selected?: boolean }>;
             list: Record<string, any>[];

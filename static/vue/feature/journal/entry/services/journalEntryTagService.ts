@@ -97,12 +97,12 @@ function buildTagModuleFacades(): void {
                 tagGroupListAllAjax(contentType);
             },
 
-            openSearch: function(tagId: string|number, tagNm?: string): void {
-                openSearch(contentType, tagId, tagNm);
+            openSearch: function(tagId: string|number, name?: string): void {
+                openSearch(contentType, tagId, name);
             },
 
-            select: function(tagId: string|number, tagNm?: string, ctgr: string = ""): void {
-                select(contentType, tagId, tagNm, ctgr);
+            select: function(tagId: string|number, name?: string, ctgr: string = ""): void {
+                select(contentType, tagId, name, ctgr);
             },
         };
 
@@ -353,7 +353,7 @@ export function tagGroupListAllAjax(contentType: string): void {
  * 변경 전: module.openSearch — JournalEntrySearch 활성 시 select 위임,
  *          그 외에는 search URL + tagIds 파라미터로 popup open.
  */
-export function openSearch(contentType: string, tagId: string|number, tagNm?: string): void {
+export function openSearch(contentType: string, tagId: string|number, name?: string): void {
     const meta = getMeta(contentType);
     const module = getTagModule(contentType);
     if (!meta || !module) {
@@ -362,10 +362,10 @@ export function openSearch(contentType: string, tagId: string|number, tagNm?: st
     }
 
     if ((window as any).journalEntrySearchContentType === contentType) {
-        const resolvedTagNm: string = tagNm
-            ?? module.list?.find?.((tag: any): boolean => Number(tag.id) === Number(tagId))?.tagNm
+        const resolvedName: string = name
+            ?? module.list?.find?.((tag: any): boolean => Number(tag.id) === Number(tagId))?.name
             ?? String(tagId);
-        (window as any).dF?.JournalEntrySearch?.get?.(contentType)?.select?.(tagId, resolvedTagNm);
+        (window as any).dF?.JournalEntrySearch?.get?.(contentType)?.select?.(tagId, resolvedName);
         return;
     }
 
@@ -394,7 +394,7 @@ export function openSearch(contentType: string, tagId: string|number, tagNm?: st
 export function select(
     contentType: string,
     tagId: string|number,
-    tagNm?: string,
+    name?: string,
     ctgr: string = ""
 ): void {
     const dfNs = (window as any).dF;
@@ -402,16 +402,16 @@ export function select(
     if (menu?.openContextMenu) {
         menu.openContextMenu({
             tagId,
-            tagNm: tagNm ?? "",
+            name: name ?? "",
             ctgr,
             contentType,
             onSearch: function(): void {
-                openSearch(contentType, tagId, tagNm);
+                openSearch(contentType, tagId, name);
             },
             onConfigure: function(): void {
                 const openProfile = dfNs?.JournalDayTagService?.openProfileModal;
                 if (typeof openProfile === "function") {
-                    openProfile(tagId, contentType, tagNm ?? "", ctgr);
+                    openProfile(tagId, contentType, name ?? "", ctgr);
                     return;
                 }
                 console.error(
@@ -421,7 +421,7 @@ export function select(
         });
         return;
     }
-    openSearch(contentType, tagId, tagNm);
+    openSearch(contentType, tagId, name);
 }
 
 /**

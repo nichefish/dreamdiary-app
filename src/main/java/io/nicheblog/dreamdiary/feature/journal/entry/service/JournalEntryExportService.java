@@ -44,7 +44,7 @@ public class JournalEntryExportService {
 
         if (CollectionUtils.isNotEmpty(tagList)) {
             final String tagLine = tagList.stream()
-                    .map(tag -> "#" + tag.getTagNm())
+                    .map(tag -> "#" + tag.getName())
                     .collect(Collectors.joining(", "));
 
             sb.append("tags: ")
@@ -83,7 +83,7 @@ public class JournalEntryExportService {
             final List<TagContentDto> tagDtoList = entry.getTag().getList();
             for (final TagContentDto tagDto : tagDtoList) {
                 final String ctgr = StringUtils.isEmpty(tagDto.getCtgr()) ? "" : "[" + tagDto.getCtgr() + "] ";
-                final String tagStr = ctgr + tagDto.getTagNm();
+                final String tagStr = ctgr + tagDto.getName();
                 sb.append("#")
                   .append(tagStr)
                   .append(" ");

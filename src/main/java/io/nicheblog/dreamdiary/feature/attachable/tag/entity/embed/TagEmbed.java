@@ -65,7 +65,7 @@ public class TagEmbed
 
         sortedListCache = list.stream()
             .sorted(Comparator.comparing(
-                (TagContentEntity ct) -> ct.getTag().getTagNm(),
+                (TagContentEntity ct) -> ct.getTag().getName(),
                 Comparator.nullsLast(String::compareTo)
             ))
             .toList();

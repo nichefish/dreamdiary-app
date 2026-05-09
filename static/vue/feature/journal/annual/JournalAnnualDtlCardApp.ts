@@ -78,7 +78,7 @@ const JournalAnnualDtlRoot = {
         dreamCompleted(): boolean {
             return this.pageState.model?.dreamComptYn === "Y";
         },
-        tagList(): Array<{ tagId?: string | number; tagNm?: string; ctgr?: string }> {
+        tagList(): Array<{ tagId?: string | number; name?: string; ctgr?: string }> {
             const m = this.pageState.model;
             return Array.isArray(m?.tag?.list) ? m.tag.list : [];
         },
@@ -90,8 +90,8 @@ const JournalAnnualDtlRoot = {
             return Array.isArray(m?.journalAnnualReviewList) ? m.journalAnnualReviewList : [];
         },
         /** 변경 전: `tag_list_partial` + `module="dF.JournalDayTagService"` (상단 SUMMARY 태그). */
-        selectDayTag(tag: { tagId?: string | number; tagNm?: string; ctgr?: string }): void {
-            (window as any).dF?.JournalDayTagService?.select?.(tag.tagId, String(tag.tagNm ?? ""));
+        selectDayTag(tag: { tagId?: string | number; name?: string; ctgr?: string }): void {
+            (window as any).dF?.JournalDayTagService?.select?.(tag.tagId, String(tag.name ?? ""));
         },
         /** 변경 전: 리뷰 등록 버튼 onclick `dF.JournalAnnualReview.regModal({ journalAnnualId: {{id}} })`. */
         openReviewRegModal(): void {
@@ -142,7 +142,7 @@ const JournalAnnualDtlRoot = {
                         <i class="bi bi-tag"></i>
                         <span
                             v-for="tag in tagList()"
-                            :key="String(tag.tagId) + ':' + String(tag.tagNm)"
+                            :key="String(tag.tagId) + ':' + String(tag.name)"
                             class="text-muted cursor-pointer pe-1"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                             :title="t('view.tag.content-list')"
@@ -151,7 +151,7 @@ const JournalAnnualDtlRoot = {
                             #
                             <span class="border-bottom text-primary fw-lighter opacity-hover">
                                 <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                                {{ tag.tagNm }}
+                                {{ tag.name }}
                             </span>
                         </span>
                     </div>

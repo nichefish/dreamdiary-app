@@ -73,9 +73,9 @@ public class TagCmpstn
         return IntStream.range(0, jArray.length())
                 .mapToObj(jArray::getJSONObject)
                 .map(json -> {
-                    final String tagNm = json.getString("value").trim().replaceAll("\\s+", "_");
-                    if (!json.has("data") || json.optJSONObject("data") == null) return new TagDto(tagNm);
-                    return new TagDto(tagNm, json.getJSONObject("data").getString("ctgr"));
+                    final String parsedName = json.getString("value").trim().replaceAll("\\s+", "_");
+                    if (!json.has("data") || json.optJSONObject("data") == null) return new TagDto(parsedName);
+                    return new TagDto(parsedName, json.getJSONObject("data").getString("ctgr"));
                 })
                 .collect(Collectors.toList());
     }
@@ -90,7 +90,7 @@ public class TagCmpstn
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(tag -> tag.getTag().getTagNm())
+                .map(tag -> tag.getTag().getName())
                 .collect(Collectors.joining(","));
     }
 
@@ -102,7 +102,7 @@ public class TagCmpstn
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(tag -> "#" + tag.getTag().getTagNm())  // 각 태그 앞에 #을 붙임
+                .map(tag -> "#" + tag.getTag().getName())  // 각 태그 앞에 #을 붙임
                 .collect(Collectors.joining(" "));  // 태그들 사이에 띄어쓰기 추가
     }
 
@@ -118,7 +118,7 @@ public class TagCmpstn
                 .map(tag -> {
                     try {
                         final BaseTagifyDataDto data = BaseTagifyDataDto.builder().ctgr(tag.getCtgr()).build();
-                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(tag.getTagNm(), data);
+                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(tag.getName(), data);
                         return mapper.writeValueAsString(tagifyDto);
                     } catch (final JsonProcessingException e) {
                         throw new RuntimeException("Error processing JSON", e);
@@ -135,7 +135,7 @@ public class TagCmpstn
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(tag -> tag.getTag().getTagNm())
+                .map(tag -> tag.getTag().getName())
                 .collect(Collectors.toList());
     }
 }

@@ -31,12 +31,12 @@ public class JournalDayElasticRepositoryImpl
 
 
     @Override
-    public List<JournalDayEntity> findByTag_TagNm(final String tagNm) {
+    public List<JournalDayEntity> findByTag_Name(final String name) {
         NestedQueryBuilder nestedQuery = QueryBuilders.nestedQuery(
                 "tag.list",
                 QueryBuilders.nestedQuery(
                         "tag.list.tag",
-                        QueryBuilders.matchQuery("tag.list.tag.tagNm", tagNm),
+                        QueryBuilders.matchQuery("tag.list.tag.name", name),
                         ScoreMode.None
                 ),
                 ScoreMode.None

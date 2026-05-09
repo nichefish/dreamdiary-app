@@ -40,9 +40,9 @@ public class JournalEntryTagEntity
     @NotFound(action = NotFoundAction.IGNORE)
     private TagCategoryEntity tagCategory;
 
-    @Column(name = "tag_nm")
+    @Column(name = "name")
     @Comment("tag name")
-    private String tagNm;
+    private String name;
 
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
@@ -56,8 +56,8 @@ public class JournalEntryTagEntity
      * @return 카테고리명(없으면 빈 문자열)
      */
     public String getCtgr() {
-        if (this.tagCategory != null && this.tagCategory.getCtgrNm() != null) {
-            return this.tagCategory.getCtgrNm();
+        if (this.tagCategory != null && this.tagCategory.getName() != null) {
+            return this.tagCategory.getName();
         }
         return this.ctgr == null ? "" : this.ctgr;
     }

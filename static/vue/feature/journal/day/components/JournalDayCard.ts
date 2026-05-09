@@ -60,7 +60,7 @@ const JournalDayCard = {
             });
         },
         selectDayTag(tag: Record<string, any>): void {
-            journalDayUiBridgeService.selectDayTag(tag.tagId, String(tag.tagNm ?? ""));
+            journalDayUiBridgeService.selectDayTag(tag.tagId, String(tag.name ?? ""));
         },
         hiddenChapterCtgrList(): Record<string, any>[] {
             return Array.isArray(this.day?.hiddenChapterCtgrList) ? this.day.hiddenChapterCtgrList : [];
@@ -178,7 +178,7 @@ const JournalDayCard = {
                     <i class="bi bi-tag"></i>
                     <span
                         v-for="tag in tagList()"
-                        :key="tag.tagId + ':' + tag.tagNm"
+                        :key="tag.tagId + ':' + tag.name"
                         class="text-muted cursor-pointer pe-1"
                         data-bs-toggle="tooltip"
                         data-bs-placement="top"
@@ -189,7 +189,7 @@ const JournalDayCard = {
                         #
                         <span class="border-bottom text-primary fw-lighter opacity-hover">
                             <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                            {{ tag.tagNm }}
+                            {{ tag.name }}
                         </span>
                     </span>
                 </div>

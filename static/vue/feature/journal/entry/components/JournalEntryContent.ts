@@ -65,7 +65,7 @@ const JournalEntryContent = {
             journalDayUiBridgeService.expandJournalDayTaggedContent(event.currentTarget);
         },
         selectTag(tag: Record<string, any>): void {
-            dF.JournalEntryTag.get(this.contentType).select(tag.tagId, tag.tagNm);
+            dF.JournalEntryTag.get(this.contentType).select(tag.tagId, tag.name);
         },
         openRelatedTarget(relatedContent: Record<string, any>): void {
             dF.RelatedContent.openTarget(relatedContent.targetContentType, Number(relatedContent.targetPostNo));
@@ -107,7 +107,7 @@ const JournalEntryContent = {
                 #
                 <span class="border-bottom text-primary fw-lighter opacity-hover">
                     <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                    {{ tag.tagNm }}
+                    {{ tag.name }}
                 </span>
             </span>
         </div>

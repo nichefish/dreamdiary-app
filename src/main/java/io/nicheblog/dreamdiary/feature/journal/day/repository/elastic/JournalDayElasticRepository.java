@@ -19,8 +19,8 @@ import java.util.List;
 @Repository
 public interface JournalDayElasticRepository {
 
-    // @Query("{ \"nested\": { \"path\": \"tag.list\", \"query\": { \"bool\": { \"must\": [{ \"nested\": { \"path\": \"tag.list.tag\", \"query\": { \"match\": { \"tag.list.tag.tagNm\": \"달리기     \" } } } }] } } } }")
-    List<JournalDayEntity> findByTag_TagNm(final String tagNm);
+    // @Query("{ \"nested\": { \"path\": \"tag.list\", \"query\": { \"bool\": { \"must\": [{ \"nested\": { \"path\": \"tag.list.tag\", \"query\": { \"match\": { \"tag.list.tag.name\": \"달리기     \" } } } }] } } } }")
+    List<JournalDayEntity> findByTag_Name(final String name);
 }*/
 
 

@@ -219,7 +219,7 @@ dfNs.JournalDayTagContextMenu = (function(): Module {
         },
         openContextMenu: function(args: {
             tagId: string|number;
-            tagNm: string;
+            name: string;
             ctgr: string;
             contentType: string;
             onSearch: () => void;
@@ -232,7 +232,7 @@ dfNs.JournalDayTagContextMenu = (function(): Module {
             const menuEl: HTMLElement = ensureContextMenu();
             contextMenuState = {
                 tagId: args.tagId,
-                tagNm: args.tagNm,
+                name: args.name,
                 ctgr: args.ctgr,
                 contentType: args.contentType,
                 onSearch: args.onSearch,

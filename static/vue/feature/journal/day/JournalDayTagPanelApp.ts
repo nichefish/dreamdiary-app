@@ -109,7 +109,7 @@ const JournalDayTagPanelRootApp = {
             return toTagCategoryClass(tag);
         },
         openDayTagDetail(tag: TagItem): void {
-            journalDayUiBridgeService.selectDayTag(tag.id, String(tag.tagNm ?? ""), String(tag.ctgr ?? ""));
+            journalDayUiBridgeService.selectDayTag(tag.id, String(tag.name ?? ""), String(tag.ctgr ?? ""));
         },
         openDreamTagSearch(tag: TagItem): void {
             dF.JournalEntryTag.get("JOURNAL_DREAM").openSearch(tag.id);
@@ -148,7 +148,7 @@ const JournalDayTagPanelRootApp = {
             >
                 <span :class="String(tag.tagClass || '') + ' ' + String(tag.textClass || '')">
                     <span v-if="String(tag.ctgr || '').trim().length > 0" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                    <span :class="'em_' + String(tag.tagNm || '')">{{ tag.tagNm }}</span>
+                    <span :class="'em_' + String(tag.name || '')">{{ tag.name }}</span>
                 </span>
                 <span class="fs-9 text-noti fw-normal" style="margin-left:-0.25em;">{{ tag.contentSize }}</span>
             </span>
@@ -186,7 +186,7 @@ const JournalDayTagPanelRootApp = {
         >
             <span :class="String(tag.tagClass || '') + ' ' + String(tag.textClass || '')">
                 <span v-if="String(tag.ctgr || '').trim().length > 0" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                {{ tag.tagNm }}
+                {{ tag.name }}
             </span>
             <span class="fs-9 text-noti fw-normal" style="margin-left:-0.25em;">{{ tag.contentSize }}</span>
         </span>

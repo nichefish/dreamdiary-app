@@ -112,12 +112,12 @@ function expandJournalDayTaggedContent(trigger: HTMLElement): void {
     journalDayTagService.expandTaggedContent(trigger);
 }
 
-function selectDayTag(tagId: string | number, tagNm: string, ctgr?: string): void {
-    journalDayTagService.selectDayTag(tagId, tagNm, ctgr);
+function selectDayTag(tagId: string | number, name: string, ctgr?: string): void {
+    journalDayTagService.selectDayTag(tagId, name, ctgr);
 }
 
-function openDayTagDetail(tagId: string | number, tagNm: string, yy?: string): void {
-    void journalDayTagService.openDayTagDetail(tagId, tagNm, yy);
+function openDayTagDetail(tagId: string | number, name: string, yy?: string): void {
+    void journalDayTagService.openDayTagDetail(tagId, name, yy);
 }
 
 function selectMeta(metaId: string | number): void {

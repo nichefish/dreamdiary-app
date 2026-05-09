@@ -9,7 +9,7 @@
  *     단일 행 마크업은 `_journal_annual_entry_tag_list_template.hbs`·`tag_list_sized_partial.hbs` 와 동등(UI 변경 0).
  *   - 부트 순서: `journalAnnualService.js` 이후·`JournalAnnualDtlPageBoot.js` 이전에 적재하여 Ajax 콜백 전 브리지 확보.
  *
- * 태그 클릭: partial 과 동일하게 `module` 문자열 식(`dF.JournalDayTagService` 등)을 런타임 해석해 `select(id, tagNm, ctgr)` 호출.
+ * 태그 클릭: partial 과 동일하게 `module` 문자열 식(`dF.JournalDayTagService` 등)을 런타임 해석해 `select(id, name, ctgr)` 호출.
  *
  * 변경(D):
  *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단.
@@ -56,10 +56,10 @@ function runWhenDomReady(fn: () => void): void {
 }
 
 /**
- * 변경 전: Handlebars `tag_list_sized_partial` 의 `onclick="{{module}}.select({{id}}, '{{tagNm}}', '{{ctgr}}');"` 에 대응.
+ * 변경 전: Handlebars `tag_list_sized_partial` 의 `onclick="{{module}}.select({{id}}, '{{name}}', '{{ctgr}}');"` 에 대응.
  * module 문자열은 서버·메타에서 오는 표현식(`dF.JournalDayTagService`, `dF.JournalEntryTag.get('JOURNAL_DIARY')` 등)이다.
  */
-function resolveTagModuleForSelect(moduleExpr: string): { select?: (id: any, tagNm?: string, ctgr?: string) => void } | undefined {
+function resolveTagModuleForSelect(moduleExpr: string): { select?: (id: any, name?: string, ctgr?: string) => void } | undefined {
     if (cF.util.isEmpty(moduleExpr)) return undefined;
     try {
         const runner = new Function("return (" + moduleExpr + ");");
@@ -116,7 +116,7 @@ function createTagRowRoot(kind: TagRowKind): Record<string, unknown> {
             /** 변경 전: `tag_list_sized_partial` 의 module 결의 select. */
             selectSizedTag(tag: Record<string, any>): void {
                 const mod = resolveTagModuleForSelect(this.row.module);
-                mod?.select?.(tag.id, tag.tagNm, tag.ctgr);
+                mod?.select?.(tag.id, tag.name, tag.ctgr);
             },
         },
         template: `
@@ -128,7 +128,7 @@ function createTagRowRoot(kind: TagRowKind): Record<string, unknown> {
                 <template v-if="hasList">
                     <span
                         v-for="tag in row.list"
-                        :key="'tg-' + String(tag.id) + '-' + String(tag.tagNm)"
+                        :key="'tg-' + String(tag.id) + '-' + String(tag.name)"
                         class="py-2 me-3 cursor-pointer opacity-hover"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                         :title="t('view.tag.content-list')"
@@ -136,7 +136,7 @@ function createTagRowRoot(kind: TagRowKind): Record<string, unknown> {
                     >
                         <span :class="[tag.tagClass, tag.textClass]">
                             <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                            <span :class="'em_' + tag.tagNm">{{ tag.tagNm }}</span>
+                            <span :class="'em_' + tag.name">{{ tag.name }}</span>
                         </span>
                         <span class="fs-9 text-noti fw-normal" style="margin-left:-0.25em;">{{ tag.contentSize }}</span>
                     </span>

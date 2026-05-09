@@ -79,7 +79,7 @@ const JournalChapterItem = {
         deleteChapter(): void { journalChapterCrudService.delAjax(this.chapter.id); },
         entryList(): Record<string, any>[] { return Array.isArray(this.chapter?.journalEntryList) ? this.chapter.journalEntryList : []; },
         tagList(): Record<string, any>[] { return Array.isArray(this.chapter?.tag?.list) ? this.chapter.tag.list : []; },
-        selectTag(tag: Record<string, any>): void { dF.JournalEntryTag.get("JOURNAL_DIARY").select(tag.tagId, tag.tagNm); },
+        selectTag(tag: Record<string, any>): void { dF.JournalEntryTag.get("JOURNAL_DIARY").select(tag.tagId, tag.name); },
         tooltip(labelKey: string, actionKey: string): string { return [this.t(labelKey), this.t(actionKey)].join(" "); },
     },
     template: `
@@ -129,8 +129,8 @@ const JournalChapterItem = {
             </div>
             <div class="tags journal-chapter-tags ms-2 mt-3" :class="{ 'd-none': !hasState('COLLAPSED') }">
                 <i class="bi bi-tag"></i>
-                <span v-for="tag in tagList()" :key="'chapter-tag-' + tag.tagId + ':' + tag.tagNm" class="text-muted cursor-pointer pe-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('view.tag.content-list')" @click="selectTag(tag)">
-                    # <span class="border-bottom text-primary fw-lighter opacity-hover"><span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.tagNm }}</span>
+                <span v-for="tag in tagList()" :key="'chapter-tag-' + tag.tagId + ':' + tag.name" class="text-muted cursor-pointer pe-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('view.tag.content-list')" @click="selectTag(tag)">
+                    # <span class="border-bottom text-primary fw-lighter opacity-hover"><span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.name }}</span>
                 </span>
             </div>
         </div>
