@@ -67,11 +67,9 @@ public interface ApiUrl {
     String JOURNAL_TODOS = Prefix.API + "/journal/todos";
     String JOURNAL_TODO = Prefix.API + "/journal/todo/{id}";
 
-    /** 저널 주제 */
-    String JOURNAL_SBJCT_REG_AJAX = Prefix.API + "/journal/sbjct/reg";
-    String JOURNAL_SBJCT_DTL_AJAX = Prefix.API + "/journal/sbjct/dtl";
-    String JOURNAL_SBJCT_MDF_AJAX = Prefix.API + "/journal/sbjct/mdf";
-    String JOURNAL_SBJCT_DEL_AJAX = Prefix.API + "/journal/sbjct/del";
+    /** 저널 스레드 */
+    String JOURNAL_THREAD_API_LIST = Prefix.API + "/journal/threads";
+    String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
 
     /** 저널 연간 */
     String JOURNAL_ANNUALS = Prefix.API + "/journal/annuals";

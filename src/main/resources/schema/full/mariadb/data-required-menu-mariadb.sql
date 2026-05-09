@@ -33,7 +33,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'JOURNAL' AS upper_label )
-SELECT M.id, 'SUB', '저널 주제', '/app/journal/sbjct/list.do', NULL, 1, 'system', 'NO_SUB', 'JOURNAL_SBJCT', 'N', 'N', 'N', 'Y'
+SELECT M.id, 'SUB', '저널 스레드', '/app/journal/thread/list.do', NULL, 1, 'system', 'NO_SUB', 'JOURNAL_THREAD', 'N', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 

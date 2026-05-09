@@ -42,7 +42,7 @@ public enum SiteMenu {
     JOURNAL("저널"),
     JOURNAL_DAY("저널 일자"),
     JOURNAL_CAL("저널 달력"),
-    JOURNAL_SBJCT("저널 주제"),
+    JOURNAL_THREAD("저널 스레드"),
     JOURNAL_ANNUAL("저널 연간"),
 
     BOARD("일반게시판"),

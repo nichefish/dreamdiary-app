@@ -60,7 +60,7 @@ public interface Code {
     String POST_CTGR_CD = "POST_CTGR_CD";       // 게시판
     String JANDI_TOPIC_CD = "JANDI_TOPIC_CD";   // 잔디 토픽 코드
     String JOURNAL_CHAPTER_CTGR_CD = "JOURNAL_CHAPTER_CTGR_CD";   // 저널 챕터 글분류 코드
-    String JOURNAL_SBJCT_CTGR_CD = "JOURNAL_SBJCT_CTGR_CD";   // 저널 주제 글분류 코드
+    String JOURNAL_THREAD_CTGR_CD = "JOURNAL_THREAD_CTGR_CD";   // 저널 스레드 글분류 코드
 
     String YY_CD = "YY_CD";                 // 사용자 권한 코드
     String MNTH_CD = "MNTH_CD";                 // 사용자 권한 코드
