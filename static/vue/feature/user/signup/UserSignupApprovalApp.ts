@@ -1,8 +1,13 @@
 /**
  * 계정 신청 승인관리 Vue 앱
  *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../common/messageHelper.js";
+
 type SignupReqRow = {
     id: number;
     username: string;
@@ -65,7 +70,7 @@ function parseBootstrap(): SignupApprovalBootstrap {
 }
 
 function approvalAjax(id: number, isApprove: boolean, done: () => void): void {
-    const msg = isApprove ? Message.get("view.cnfm.cf") : Message.get("view.cnfm.uncf");
+    const msg = isApprove ? resolveMessage("view.cnfm.cf") : resolveMessage("view.cnfm.uncf");
     Swal.fire({
         text: msg,
         showCancelButton: true,

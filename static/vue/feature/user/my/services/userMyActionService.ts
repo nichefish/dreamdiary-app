@@ -1,3 +1,6 @@
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../../common/messageHelper.js";
+
 export default function createUserMyActions(t: (key: string) => string) {
     function uploadProflImg(): void {
         const $fileInput: JQuery<HTMLInputElement> = $("#fileGroup0");
@@ -26,7 +29,7 @@ export default function createUserMyActions(t: (key: string) => string) {
 
     function removeProflImg(): void {
         Swal.fire({
-            text: Message.get("view.cnfm.del"),
+            text: resolveMessage("view.cnfm.del"),
             showCancelButton: true,
         }).then(function(result: SwalResult): void {
             if (!result.value) return;
@@ -71,7 +74,7 @@ export default function createUserMyActions(t: (key: string) => string) {
 
     function submitPwChangeHandler(): void {
         Swal.fire({
-            text: Message.get("view.cnfm.chg-pw"),
+            text: resolveMessage("view.cnfm.chg-pw"),
             showCancelButton: true,
         }).then(function(result: SwalResult): void {
             if (!result.value) return;

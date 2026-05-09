@@ -4,6 +4,10 @@
  */
 
 import journalDayUiBridgeService from "./services/journalDayUiBridgeService.js";
+// 변경(D): template/computed 에서 매 렌더마다 `Message.get(...)` 을 직접 호출하던 race 위험 경로를 제거.
+// `data()` 에서 한 번 결의 후 캐시하는 패턴으로 통일하고, 결의 자체는 글로벌 결의 race 를 차단하는
+// `resolveMessage` 헬퍼에 위임한다(window/globalThis.Message 우선 결의 + 미정의 폴백).
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type TagItem = Record<string, any>;
 type TagCategoryFilter = { key: string; label: string };
@@ -62,10 +66,27 @@ function openModal(): void {
     (window as any).bootstrap.Modal.getOrCreateInstance(modalEl).show();
 }
 
+type I18nLabels = {
+    noCategory: string;
+    contentList: string;
+    total: string;
+    filterByTag: string;
+};
+
 const JournalDayTagPanelRootApp = {
     name: "JournalDayTagPanelRootApp",
-    data(): { state: typeof state } {
-        return { state };
+    data(): { state: typeof state; i18n: I18nLabels } {
+        // 변경(D): i18n 라벨을 마운트 시점에 한 번 결의해 캐시 — template/computed 매 평가마다 글로벌 `Message` 를
+        // 재결의하던 race 경로 제거. `Message`/`Message.get` 미정의 시 `resolveMessage` 가 key 자체를 폴백으로 반환.
+        return {
+            state,
+            i18n: {
+                noCategory: resolveMessage("txt.journal.tag.no-category"),
+                contentList: resolveMessage("view.tag.content-list"),
+                total: resolveMessage("txt.total"),
+                filterByTag: resolveMessage("bs.tooltip.journal.tag.filter-by-tag"),
+            },
+        };
     },
     computed: {
         modalCategories(): TagCategoryFilter[] {
@@ -77,7 +98,7 @@ const JournalDayTagPanelRootApp = {
             const categoryItems: TagCategoryFilter[] = keys
                 .filter((key: string): boolean => key !== "defaultCtgr")
                 .map((key: string): TagCategoryFilter => ({ key, label: key }));
-            return [{ key: "defaultCtgr", label: Message.get("txt.journal.tag.no-category") }, ...categoryItems];
+            return [{ key: "defaultCtgr", label: this.i18n.noCategory }, ...categoryItems];
         },
         visibleModalTagList(): TagItem[] {
             return this.state.modalTagList.filter((tag: TagItem): boolean => !this.state.hiddenCategories.has(toTagCategoryClass(tag)));
@@ -122,7 +143,7 @@ const JournalDayTagPanelRootApp = {
                 data-bs-toggle="tooltip"
                 data-bs-placement="top"
                 data-bs-dismiss="click"
-                :title="Message.get('view.tag.content-list')"
+                :title="i18n.contentList"
                 @click="openDayTagDetail(tag)"
             >
                 <span :class="String(tag.tagClass || '') + ' ' + String(tag.textClass || '')">
@@ -140,7 +161,7 @@ const JournalDayTagPanelRootApp = {
             data-ctgr="__ALL__"
             @click="toggleAllCategories"
         >
-            {{ Message.get('txt.total') }} <i class="bi bi-check ctgr"></i>
+            {{ i18n.total }} <i class="bi bi-check ctgr"></i>
         </div>
         <div
             v-for="item in modalCategories"
@@ -160,7 +181,7 @@ const JournalDayTagPanelRootApp = {
             data-bs-toggle="tooltip"
             data-bs-placement="top"
             data-bs-dismiss="click"
-            :title="Message.get('bs.tooltip.journal.tag.filter-by-tag')"
+            :title="i18n.filterByTag"
             @click="openDreamTagSearch(tag)"
         >
             <span :class="String(tag.tagClass || '') + ' ' + String(tag.textClass || '')">

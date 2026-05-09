@@ -15,8 +15,14 @@
  *   - `renderEntryList` 의 Handlebars 컴파일 경로 제거 — `JournalAnnualEntryListVueApp.setList(kind, list, config)`
  *     브리지로 Vue 반영. 내부 helper `renderToTarget` 도 함께 삭제(본 서비스에서 Handlebars 직호출 0 건).
  *
+ * 변경(D):
+ *   - `tagListConfigsCache` 빌드 시점의 `Message.get(...)` 직호출을 `resolveMessage` 헬퍼로 통일.
+ *     함수 호출 시점이라 module top-level 보다는 race 위험이 낮으나, 글로벌 `Message` 결의 일관성을 위해 통일.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 function getDfNs(): Record<string, any> {
     return (window as any).dF ?? {};
@@ -70,20 +76,20 @@ function buildEntryAndTagListConfigs(): void {
     tagListConfigsCache = {
         DAY: {
             targetId: "journal_annual_day_tag_list_div",
-            label: Message.get("txt.day.tag"),
+            label: resolveMessage("txt.day.tag"),
             /* 변경 후: 결산 목록 렌더는 <code>dF.JournalDayTagService</code> 문자열을 사용한다. */
             module: "dF.JournalDayTagService",
             tagListDivId: "journal_day_tag_list_div",
         },
         DIARY: {
             targetId: "journal_annual_diary_tag_list_div",
-            label: Message.get("txt.diary.tag"),
+            label: resolveMessage("txt.diary.tag"),
             module: je.getMeta("JOURNAL_DIARY").tagModuleExpr,
             tagListDivId: je.getMeta("JOURNAL_DIARY").tagListTargetId,
         },
         DREAM: {
             targetId: "journal_annual_dream_tag_list_div",
-            label: Message.get("txt.dream.tag"),
+            label: resolveMessage("txt.dream.tag"),
             module: je.getMeta("JOURNAL_DREAM").tagModuleExpr,
             tagListDivId: je.getMeta("JOURNAL_DREAM").tagListTargetId,
         },

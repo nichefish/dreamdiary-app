@@ -4,7 +4,11 @@
  *
  * 변경(P7): <code>static/js/view/feature/journal/day/tag/journal_day_tag_profile_service.ts</code> 본문을 Vue 축으로 이전.
  * 로드: <code>registerJournalDayShellServices</code> side-effect import.
+ *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
  */
+import { resolveMessage } from "../../../../common/messageHelper.js";
+
 const __journalDayGlobal: any = typeof globalThis !== "undefined" ? globalThis : (window as any);
 if (__journalDayGlobal.dF == null) {
     __journalDayGlobal.dF = {};
@@ -26,7 +30,7 @@ dfNs.JournalDayTagProfileService = (function(): Module {
             if (isNaN(Number(ajaxData.tagId)) || cF.util.isEmpty(ajaxData.contentType)) return;
 
             Swal.fire({
-                text: Message.get(cF.util.isEmpty(ajaxData.id) ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: resolveMessage(cF.util.isEmpty(ajaxData.id) ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
@@ -49,7 +53,7 @@ dfNs.JournalDayTagProfileService = (function(): Module {
             if (isNaN(Number(tagId)) || cF.util.isEmpty(contentType)) return;
 
             Swal.fire({
-                text: Message.get("view.cnfm.del"),
+                text: resolveMessage("view.cnfm.del"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

@@ -8,6 +8,8 @@
  */
 
 import { getJournalDayListBridge } from "../journalDayListBridge.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 type RegVueBridge = {
     mounted?: boolean;
@@ -133,7 +135,7 @@ export function delAjax(id: string | number): void {
     if (isNaN(Number(id))) return;
 
     Swal.fire({
-        text: Message.get("view.cnfm.del"),
+        text: resolveMessage("view.cnfm.del"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

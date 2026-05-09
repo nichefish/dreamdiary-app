@@ -11,6 +11,8 @@
  */
 
 import JournalAnnualReviewContextMenu from "./JournalAnnualReviewContextMenu.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단.
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 type TagItem = { tagId?: string | number; tagNm?: string; ctgr?: string };
 type CommentItem = { id?: string | number; markdownContent?: string };
@@ -34,7 +36,7 @@ const JournalAnnualReviewRow = {
     },
     methods: {
         t(key: string): string {
-            return Message.get(key);
+            return resolveMessage(key);
         },
         tooltip(labelKey: string, actionKey: string): string {
             const label = this.t(labelKey);

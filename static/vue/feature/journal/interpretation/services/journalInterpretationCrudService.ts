@@ -12,8 +12,13 @@
  *   - dtlModal 본체와 service 등록 항목 제거. 호출 그래프상 외부 호출자 없음(자체 thin wrapper 만 호출하던 dead 경로).
  *     · 이전 표기는 "별도 정리 전까지 변경 없음"이었으나 본 phase 에서 정식 제거한다(가시 dead 자체가 사라짐).
  *
+ * 변경(D):
+ *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 /** @keepInSync static/vue/feature/journal/day/journalDayListBridge.ts */
 function journalDayResolveListBridge(): JournalDayListAppBridge | undefined {
@@ -75,7 +80,7 @@ export function regAjax(): void {
     const id: string = cF.util.getInputValue("#journalInterpretationRegForm [name='id']");
     const isMdf: boolean = cF.util.isNotEmpty(id);
     Swal.fire({
-        text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+        text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
@@ -147,7 +152,7 @@ export function delAjax(id: string|number): void {
 
     const dfNs = (window as any).dF;
     Swal.fire({
-        text: Message.get("view.cnfm.del"),
+        text: resolveMessage("view.cnfm.del"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

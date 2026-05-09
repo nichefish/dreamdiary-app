@@ -8,6 +8,9 @@
  * @see JournalDayAsideWeekNavigatorApp — <code>#journalAsideWeekDays</code> Teleport 대상은 본 앱이 유지한다.
  */
 
+// 변경(D): 글로벌 `Message` 결의를 `resolveMessage` 헬퍼로 위임 — typeof guard 분기 통일(window/globalThis.Message 우선 결의 + key 폴백).
+import { resolveMessage } from "../../../common/messageHelper.js";
+
 type YyOption = { value: string; label: string };
 /** @keepInSync static/js/view/feature/journal/day/journal_day_aside_module.ts */
 const journalDayResolveListBridge = (): JournalDayListAppBridge | undefined =>
@@ -23,7 +26,7 @@ function runWhenDomReady(fn: () => void): void {
 
 /** 툴팁 title — 서버 Message 번들과 동일 키 사용. */
 function asideTooltip(key: string): string {
-    return typeof Message !== "undefined" && typeof Message.get === "function" ? Message.get(key) : key;
+    return resolveMessage(key);
 }
 
 function readYyOptions(): YyOption[] {

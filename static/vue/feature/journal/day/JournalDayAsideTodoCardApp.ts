@@ -8,6 +8,8 @@
  */
 
 import journalTodoCrudService from "../todo/services/journalTodoCrudService.js";
+// 변경(D): 글로벌 `Message` 결의를 `resolveMessage` 헬퍼로 위임 — typeof guard 분기 통일.
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type TodoRow = { id: string | number; title: string };
 
@@ -26,7 +28,7 @@ function runWhenDomReady(fn: () => void): void {
 }
 
 function asideMsg(key: string): string {
-    return typeof Message !== "undefined" && typeof Message.get === "function" ? Message.get(key) : key;
+    return resolveMessage(key);
 }
 
 function coerceTodoRows(raw: unknown): TodoRow[] {

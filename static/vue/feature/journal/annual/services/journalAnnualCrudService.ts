@@ -9,8 +9,13 @@
  *   - initForm 은 Vue 브리지 진입(JournalAnnualRegVueApp) 으로 모듈 표면에 그대로 남긴다(I-3 패턴 동일).
  *   - 외부 호출 시그니처는 변경 없음. 내부 동작도 변경 없음.
  *
+ * 변경(D):
+ *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — ESM 스코프 식별자 결의 race 차단.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 function getAnnualNs(): Record<string, any> | undefined {
     return (window as any).dF?.JournalAnnual as Record<string, any> | undefined;
@@ -200,7 +205,7 @@ export function mdfModal(yy: string|number): void {
  */
 export function regAjax(): void {
     Swal.fire({
-        text: Message.get("view.cnfm.save"),
+        text: resolveMessage("view.cnfm.save"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

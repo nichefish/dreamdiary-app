@@ -1,7 +1,11 @@
 /**
  * BoardPostDetailApp.ts
  * 일반게시판 상세 화면 Vue 엔트리 (액션 브리지)
+ *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
  */
+import { resolveMessage } from "../../../common/messageHelper.js";
+
 export {};
 
 function runWhenDomReady(fn: () => void): void {
@@ -29,7 +33,7 @@ function createActions(): {
         deleteAjax(id: string | number): void {
             if (isNaN(Number(id))) return;
             Swal.fire({
-                text: Message.get("view.cnfm.del"),
+                text: resolveMessage("view.cnfm.del"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

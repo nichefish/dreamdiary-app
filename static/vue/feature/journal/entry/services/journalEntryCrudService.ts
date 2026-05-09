@@ -16,8 +16,13 @@
  *     서비스는 `dF.JournalEntry.get(ct)` 조회로 접근한다.
  *   - 본 서비스는 글로벌(`dF.JournalEntryCrudService`) 로도 노출되어 classic 모듈에서 호출 가능하다.
  *
+ * 변경(D):
+ *   - `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+ *
  * @author nichefish
  */
+
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 import { openJournalEntryRegForm, resolveJournalEntryChapterList } from "./journalEntryShellService.js";
 
@@ -95,7 +100,7 @@ export function openRegModalWithDayContext(
             if (meta.autoCreateChapterUrl) {
                 createDreamChapterAndOpenModal(contentType, journalDayId, stdrdDt, journalDateWeekDay, onReady);
             } else if (meta.noteChapterOnlyMessageKey) {
-                Swal.fire({ text: Message.get(meta.noteChapterOnlyMessageKey) });
+                Swal.fire({ text: resolveMessage(meta.noteChapterOnlyMessageKey) });
             }
             return;
         }
@@ -212,7 +217,7 @@ export function regAjax(contentType: string): void {
     const id: string = cF.util.getInputValue(`${meta.formSelector} [name='id']`);
     const isMdf: boolean = cF.util.isNotEmpty(id);
     Swal.fire({
-        text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+        text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
@@ -252,7 +257,7 @@ export function delAjax(contentType: string, id: string|number): void {
     if (!meta || !module) return;
 
     Swal.fire({
-        text: Message.get("view.cnfm.del"),
+        text: resolveMessage("view.cnfm.del"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

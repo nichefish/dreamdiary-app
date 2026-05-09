@@ -7,6 +7,9 @@
  *         사용자 인터랙션은 Vue @click 으로만 위임 동작 재현(외부 레이아웃·토글 없음).
  */
 
+// 변경(D): 글로벌 `Message` 결의를 `resolveMessage` 헬퍼로 위임 — typeof guard 분기 통일.
+import { resolveMessage } from "../../../common/messageHelper.js";
+
 function runWhenDomReady(fn: () => void): void {
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", fn);
@@ -16,7 +19,7 @@ function runWhenDomReady(fn: () => void): void {
 }
 
 function asideMsg(key: string): string {
-    return typeof Message !== "undefined" && typeof Message.get === "function" ? Message.get(key) : key;
+    return resolveMessage(key);
 }
 /** @keepInSync static/js/view/feature/journal/day/journalDayListBridge.ts */
 const journalDayResolveListBridge = (): JournalDayListAppBridge | undefined =>

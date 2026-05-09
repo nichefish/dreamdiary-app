@@ -1,7 +1,11 @@
 /**
  * boardPostListActionService.ts
  * 일반게시판 목록 화면 액션 서비스
+ *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — ESM 스코프 식별자 결의 race 차단.
  */
+import { resolveMessage } from "../../../../common/messageHelper.js";
+
 export type BoardPostListActions = {
     init: () => void;
     search: () => void;
@@ -32,7 +36,7 @@ export default function createBoardPostListActions(): BoardPostListActions {
         },
         xlsxDownload(): void {
             Swal.fire({
-                text: Message.get("view.cnfm.download"),
+                text: resolveMessage("view.cnfm.download"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
@@ -68,7 +72,7 @@ export default function createBoardPostListActions(): BoardPostListActions {
         deleteAjax(id: string | number): void {
             if (isNaN(Number(id))) return;
             Swal.fire({
-                text: Message.get("view.cnfm.del"),
+                text: resolveMessage("view.cnfm.del"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

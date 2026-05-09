@@ -4,7 +4,11 @@
  *
  * 변경(P7): <code>static/js/view/feature/journal/day/tag/journal_day_tag_context_menu_service.ts</code> 본문을 Vue 축으로 이전.
  * 로드: <code>registerJournalDayShellServices</code> side-effect import.
+ *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
  */
+import { resolveMessage } from "../../../../common/messageHelper.js";
+
 const __journalDayGlobal: any = typeof globalThis !== "undefined" ? globalThis : (window as any);
 if (__journalDayGlobal.dF == null) {
     __journalDayGlobal.dF = {};
@@ -66,7 +70,7 @@ dfNs.JournalDayTagContextMenu = (function(): Module {
     }
 
     function applyTooltipText(targetEl: HTMLElement, messageKey: string): void {
-        const message: string = Message.get(messageKey);
+        const message: string = resolveMessage(messageKey);
         targetEl.setAttribute("title", message);
         targetEl.setAttribute("data-bs-original-title", message);
         targetEl.setAttribute("aria-label", message);

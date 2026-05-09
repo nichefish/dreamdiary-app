@@ -1,7 +1,10 @@
 /**
  * JournalDayTagProfileModalApp.ts
  * 태그 프로필 모달 폼 패치 브리지.
+ *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
  */
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type TagProfilePayload = Record<string, any>;
 type TagProfileBridge = {
@@ -123,8 +126,8 @@ function applyPayload(model: TagProfilePayload): boolean {
     const tagTextClassDefaultOptEl: HTMLOptionElement | null = document.querySelector("#tagTextClassDefaultOption");
     if (tagTextClassDefaultOptEl) {
         tagTextClassDefaultOptEl.textContent = hasTagCategory
-            ? Message.get("txt.attachable.tag.profile.same-as-category")
-            : Message.get("txt.attachable.tag.profile.default-no-category");
+            ? resolveMessage("txt.attachable.tag.profile.same-as-category")
+            : resolveMessage("txt.attachable.tag.profile.default-no-category");
     }
     if (tagTextClassSelectEl) tagTextClassSelectEl.value = String(model.textClassCd ?? "");
 

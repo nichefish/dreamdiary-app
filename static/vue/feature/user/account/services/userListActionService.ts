@@ -1,4 +1,6 @@
 import { UserListActions } from "../types.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 export default function createUserListActions(): UserListActions {
     function setListFormPaging(pageNo: number, pageSize?: number): void {
@@ -26,7 +28,7 @@ export default function createUserListActions(): UserListActions {
          */
         xlsxDownload(): void {
             Swal.fire({
-                text: Message.get("view.cnfm.download"),
+                text: resolveMessage("view.cnfm.download"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

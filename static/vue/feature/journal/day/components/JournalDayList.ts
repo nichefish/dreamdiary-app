@@ -4,6 +4,8 @@
  */
 
 import JournalDayCard from "./JournalDayCard.js";
+// 변경(D): 글로벌 `Message` 결의를 `resolveMessage` 헬퍼로 위임 — typeof guard 분기 통일(미정의 시 "" 폴백 유지를 위해 fallback="" 명시).
+import { resolveMessage } from "../../../../common/messageHelper.js";
 
 const JournalDayList = {
     name: "JournalDayList",
@@ -24,9 +26,8 @@ const JournalDayList = {
             return this.model?.showDreams !== false;
         },
         emptyText(): string {
-            return typeof Message !== "undefined" && typeof Message.get === "function"
-                ? Message.get("msg.rslt.empty")
-                : "";
+            // 변경 전 폴백("")을 보존하기 위해 fallback="" 명시.
+            return resolveMessage("msg.rslt.empty", "");
         },
     },
     template: `

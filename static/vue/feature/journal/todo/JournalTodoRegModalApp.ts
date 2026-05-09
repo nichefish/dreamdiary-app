@@ -22,6 +22,8 @@ import { createScopedI18n } from "../../../global/services/scopedI18nService.js"
 import JournalTodoRegModalHeader from "./components/JournalTodoRegModalHeader.js";
 import JournalTodoRegModalBody from "./components/JournalTodoRegModalBody.js";
 import journalTodoCrudService from "./services/journalTodoCrudService.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type JournalTodoRegVueBridge = {
     mounted?: boolean;
@@ -138,7 +140,7 @@ function regAjax(): void {
     const id: string = cF.util.getInputValue("#journalTodoRegForm [name='id']");
     const isMdf: boolean = cF.util.isNotEmpty(id);
     Swal.fire({
-        text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+        text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;

@@ -16,6 +16,8 @@
  */
 
 import JournalAnnualListItem from "./components/JournalAnnualListItem.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단.
+import { resolveMessage } from "../../../common/messageHelper.js";
 
 type JournalAnnualListVueBridge = {
     mounted?: boolean;
@@ -75,7 +77,7 @@ function createRootComponent(): Record<string, unknown> {
         `,
         methods: {
             messageGet(key: string): string {
-                return Message.get(key);
+                return resolveMessage(key);
             },
         },
     };
