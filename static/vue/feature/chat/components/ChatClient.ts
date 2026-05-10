@@ -9,6 +9,7 @@ export default {
             stompClient: null,  // STOMP 클라이언트
             chatMessages: [],       // 채팅 메시지 배열
             message: '',        // 사용자 입력 메시지
+            isWaitingResponse: false,
             serverInfo: {       // 서버에서 가져올 프로필 정보
                 domain: '',
                 port: ''
@@ -60,7 +61,7 @@ export default {
                 if (!message.body) return;
                 try {
                     const messageObject = JSON.parse(message.body); // 메시지를 JSON 객체로 파싱
-                    this.$emit('new-message', messageObject.rsltObj);  // 메시지 로딩 완료 후 상위에 전달
+                    this.$emit('new-message', messageObject.rsltObj);
                 } catch (e) {
                     console.error('Error parsing message:', e);
                 }
@@ -119,4 +120,6 @@ export default {
     beforeDestroy(): void {
         this.disconnectWebSocket();  // 컴포넌트가 파괴될 때 WebSocket 연결 종료
     },
+
+    template: `<div style="display:none;"></div>`
 };

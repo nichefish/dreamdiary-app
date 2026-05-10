@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
 CREATE TABLE IF NOT EXISTS chat_message (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(50) DEFAULT 'CHAT_MESSAGE' COMMENT '컨텐츠 타입',
+    role VARCHAR(20) DEFAULT 'USER' COMMENT '메시지 역할',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',

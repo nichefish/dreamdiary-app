@@ -20,7 +20,7 @@ export default {
     },
     template: `
         <div class="app-chat-engage">
-            <a href="javascript:void(0);" class="app-chat-engage-btn hover-success" @click="toggleChat">
+            <a href="javascript:void(0);" class="app-chat-engage-btn" @click="toggleChat">
                 <i class="ki-duotone ki-messages fs-1 pt-1 mb-2">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -29,7 +29,7 @@ export default {
                     <span class="path5"></span>
                 </i>
                 <span class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle animation-blink"></span>
-                Chat
+                AI Chat
             </a>
         </div>
     `,

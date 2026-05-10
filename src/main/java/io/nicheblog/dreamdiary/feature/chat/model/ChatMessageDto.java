@@ -49,6 +49,10 @@ public class ChatMessageDto
     /** 글 분류 코드 */
     private String categoryCode;
 
+    /** 메시지 역할 */
+    @Builder.Default
+    private String role = "USER";
+
     /* ----- */
 
     @Override

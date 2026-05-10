@@ -1,5 +1,5 @@
 /**
- * App.ts
+ * ChatApp.ts
  *
  * @author nichefish
  */
@@ -16,46 +16,49 @@ document.addEventListener("DOMContentLoaded", function(): void {
         },
         data() {
             return {
-                authInfo: null,      // 사용자 인증 정보
-                isChatOpen: false,   // 채팅 창의 상태 관리
-                chatMessages: []     // 채팅 메시지 배열
+                authInfo: null,
+                isChatOpen: false,
+                chatMessages: [],
+                isWaitingResponse: false
             };
         },
         methods: {
-            // 채팅 창 열기/닫기
             toggleChat(): void {
                 this.isChatOpen = !this.isChatOpen;
                 if (this.isChatOpen) {
-                    this.$refs.chatWindow.scrollToBottom(); // 채팅 창 열릴 때 스크롤 이동
+                    this.$refs.chatWindow.scrollToBottom();
                 }
             },
-            // 채팅 창 닫기
             closeChat(): void {
-                this.isChatOpen = false;  // 채팅 창 닫기
+                this.isChatOpen = false;
             },
-            // 메시지 로딩 후 완료 처리
             handleMessagesLoaded(messages: any): void {
                 this.chatMessages = messages;
             },
-            // 새 메시지 처리 (ChatClient에서 새 메시지를 받음)
+            isAssistantMessage(message: any): boolean {
+                const role = (message?.role || '').toString().toUpperCase();
+                return role === 'ASSISTANT' || role === 'AI' || role === 'SYSTEM';
+            },
             handleNewMessage(message: any): void {
-                console.log("message:", message);
                 this.chatMessages.push(message);
+                if (this.isAssistantMessage(message) || message?.isCreatedBy === false) {
+                    this.isWaitingResponse = false;
+                }
                 this.$refs.chatWindow.scrollToBottom();
             },
-            // ChatWindow :: 메시지 전송
             handleSendMessage(message: any): void {
+                if (this.isWaitingResponse) return;
+                this.isWaitingResponse = true;
                 this.$refs.chatClient.sendMessage(message);
             },
         },
         created(): void {
-            // 앱 시작 시 authInfo 로드 (FreeMarker 전역객체 할당)
             this.authInfo = AuthInfo;
         },
         template: `
             <EngageBtn :isChatOpen="isChatOpen" @toggle-chat="toggleChat" />
             <ChatClient ref="chatClient" @new-message="handleNewMessage" @messages-loaded="handleMessagesLoaded" />
-            <ChatWindow ref="chatWindow" :authInfo="authInfo" :isChatOpen="isChatOpen" :chatMessages="chatMessages" @send-message="handleSendMessage" @close-chat="closeChat" />
+            <ChatWindow ref="chatWindow" :authInfo="authInfo" :isChatOpen="isChatOpen" :chatMessages="chatMessages" :isWaitingResponse="isWaitingResponse" @send-message="handleSendMessage" @close-chat="closeChat" />
         `
     });
 

@@ -33,6 +33,7 @@ public interface ChatMessageMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
+    @Mapping(target = "isCreatedBy", expression = "java(!\"ASSISTANT\".equalsIgnoreCase(entity.getRole()) && entity.isCreatedBy())")
     ChatMessageDto toDto(final ChatMessageEntity entity) throws Exception;
 
     /**

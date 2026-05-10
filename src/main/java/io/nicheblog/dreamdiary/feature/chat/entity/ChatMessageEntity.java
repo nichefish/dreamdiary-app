@@ -47,6 +47,12 @@ public class ChatMessageEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
+    /** 메시지 역할 */
+    @Builder.Default
+    @Column(name = "role", length = 20)
+    @Comment("메시지 역할")
+    private String role = "USER";
+
     /** 제목 */
     @Column(name = "title")
     private String title;

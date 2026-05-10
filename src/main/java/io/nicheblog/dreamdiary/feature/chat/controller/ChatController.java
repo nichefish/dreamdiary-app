@@ -3,8 +3,8 @@ package io.nicheblog.dreamdiary.feature.chat.controller;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageSearchParam;
+import io.nicheblog.dreamdiary.feature.chat.service.ChatAIService;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatMessageService;
-import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -36,6 +35,7 @@ import java.util.Objects;
 public class ChatController {
 
     private final ChatMessageService chatMessageService;
+    private final ChatAIService chatAIService;
 
     /**
      * 기존 채팅 메시지를 DB에서 가져온다.
@@ -60,11 +60,9 @@ public class ChatController {
      * 클라이언트로부터 메시지를 받아서 처리하고, 결과를 반환합니다.
      *
      * @param message 클라이언트로부터 받은 메시지
-     * @return AjaxResponse 객체를 포함한 결과
      */
     @MessageMapping("/chat/send")
-    @SendTo("/topic/chat")
-    public ResponseEntity<AjaxResponse> sendMessage(
+    public void sendMessage(
             final @Payload String message,
             final StompHeaderAccessor stompHeaderAccessor
     ) throws Exception {
@@ -79,14 +77,6 @@ public class ChatController {
         final Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
         AuthUtils.setAuthentication(authentication);
 
-        final ChatMessageDto chatMessage = ChatMessageDto.builder()
-                .content(message)
-                .build();
-
-        final ServiceResponse result = chatMessageService.regist(chatMessage);  // 채팅 메시지 등록
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+        chatAIService.processChat(message);
     }
 }
