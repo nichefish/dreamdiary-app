@@ -12,7 +12,7 @@
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="cache_list_div">
-            <#--Handlebars template goes in here-->
+            <#-- Vue(CacheAdminApp)가 캐시 목록을 렌더링 -->
         </div>
     </div>
     <#--begin::Modal Footer-->
@@ -24,6 +24,3 @@
         </div>
     </div>
 </@modal.layout>
-
-<#--include:: Handlebars template-->
-<#include "_cache_list_modal_template.hbs">
