@@ -15,8 +15,8 @@
 /src/main/resources/static/metronic/*
 !/src/main/resources/static/metronic/.metronic_v*
 # 경로: 로그
-/log/*
-!/log/.logfile_path.md
+/logs/*
+!/logs/.logfile_path.md
 # 경로: 파일 (파일 업로드, 파일시스템)
 /file/*
 !/file/content
