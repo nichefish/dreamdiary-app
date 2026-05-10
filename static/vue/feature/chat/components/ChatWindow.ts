@@ -7,7 +7,8 @@ export default {
     name: 'ChatWindow',
     data() {
         return {
-            message: ''
+            message: '',
+            memoryOptions: [10, 20, 40, 80]
         };
     },
     props: {
@@ -27,6 +28,10 @@ export default {
             type: Object,
             default: null
         },
+        chatSetting: {
+            type: Object,
+            default: () => ({ recentMessageLimit: 20 })
+        },
         isChatOpen: {
             type: Boolean,
             required: true
@@ -36,6 +41,10 @@ export default {
             default: false
         },
         isSessionLoading: {
+            type: Boolean,
+            default: false
+        },
+        isSettingSaving: {
             type: Boolean,
             default: false
         }
@@ -83,6 +92,17 @@ export default {
         },
         isActiveSession(session: any): boolean {
             return session?.id === this.activeSessionId;
+        },
+        currentMemoryLimit(): number {
+            return Number(this.chatSetting?.recentMessageLimit || 20);
+        },
+        updateMemoryLimit(event: Event): void {
+            const target = event.target as HTMLSelectElement;
+            const recentMessageLimit = Number(target.value || 20);
+            this.$emit('update-setting', {
+                ...this.chatSetting,
+                recentMessageLimit
+            });
         },
         scrollToBottom(): void {
             this.$nextTick(() => {
@@ -254,11 +274,21 @@ export default {
                 </div>
 
                 <div class="chat-composer">
-                    <textarea class="chat-composer__input"
-                              rows="2"
-                              v-model="message"
-                              @keydown.enter.exact.prevent="sendMessage"
-                              placeholder="메시지를 입력하세요"></textarea>
+                    <div class="chat-composer__main">
+                        <textarea class="chat-composer__input"
+                                  rows="2"
+                                  v-model="message"
+                                  @keydown.enter.exact.prevent="sendMessage"
+                                  placeholder="메시지를 입력하세요"></textarea>
+                        <div class="chat-composer__settings">
+                            <label class="chat-memory-select">
+                                <span>기억</span>
+                                <select :value="currentMemoryLimit()" :disabled="isSettingSaving" @change="updateMemoryLimit">
+                                    <option v-for="option in memoryOptions" :key="option" :value="option">최근 {{ option }}개</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
                     <button :class="['chat-send-btn', { 'chat-send-btn--waiting': isWaitingResponse }]"
                             type="button"
                             @click="sendMessage"

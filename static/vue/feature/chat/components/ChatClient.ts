@@ -76,6 +76,32 @@ export default {
             this.$emit('sessions-loaded', sessions);
             return sessions;
         },
+        async loadSetting(): Promise<any> {
+            const response = await fetch('/chat/settings');
+            const data = await response.json();
+            if (!data.rslt) {
+                cF.ui.swalOrAlert('error', 'Error loading chat setting:', data.msg);
+                return null;
+            }
+            this.$emit('setting-loaded', data.rsltObj);
+            return data.rsltObj;
+        },
+        async updateSetting(setting: any): Promise<any> {
+            const response = await fetch('/chat/settings', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(setting || {})
+            });
+            const data = await response.json();
+            if (!data.rslt) {
+                cF.ui.swalOrAlert('error', 'Error saving chat setting:', data.msg);
+                return null;
+            }
+            this.$emit('setting-updated', data.rsltObj);
+            return data.rsltObj;
+        },
         async createSession(): Promise<any> {
             const response = await fetch('/chat/sessions', {
                 method: 'POST',
@@ -144,6 +170,7 @@ export default {
     },
     mounted(): void {
         this.connectWebSocket();
+        this.loadSetting();
         this.loadSessions();
     },
     beforeDestroy(): void {
