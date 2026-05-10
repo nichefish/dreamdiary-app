@@ -184,7 +184,6 @@ dependencies {
 
     /* ↓ Swagger: springdoc */
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-javadoc', version: '1.7.0'
     /* ↓ RestDocs*/
     implementation 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 }

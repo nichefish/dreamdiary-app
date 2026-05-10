@@ -9,7 +9,6 @@
     <#include "/layout/header/navbar/_navbar_btn_notion.ftlh">
 
     <#include "/layout/header/navbar/_navbar_btn_swagger.ftlh">
-    <#include "/layout/header/navbar/_navbar_btn_javadoc.ftlh">
 
     <#--include::태그클라우드 -->
     <#include "/layout/header/navbar/_navbar_btn_tag_cloud.ftlh">
