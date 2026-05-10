@@ -101,7 +101,7 @@
 
     <!-- ?? ?? -->
     <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalTodoDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalTodoDetailDtoByUser" uses-template="defaultTemplate" />
 
     <!-- ?? ?? -->
     <cache alias="journalAnnualTotalListByUser" uses-template="defaultTemplate" />

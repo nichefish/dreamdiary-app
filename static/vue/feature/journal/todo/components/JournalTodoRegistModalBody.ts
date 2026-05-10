@@ -1,17 +1,17 @@
 /**
- * JournalTodoRegModalBody.ts
- * 저널 할일 등록/수정 모달 본문(Handlebars `journal_todo_reg_modal_template`) Vue 이전.
+ * JournalTodoRegistModalBody.ts
+ * 저널 할일 등록/수정 모달 본문(Handlebars `journal_todo_regist_modal_template`) Vue 이전.
  *
  * 변경(T-2-α):
- *   - _journal_todo_reg_modal_template.hbs 본문은 단순 `_tag_tagify_partial.hbs` 인용이었다.
+ *   - _journal_todo_regist_modal_template.hbs 본문은 단순 `_tag_tagify_partial.hbs` 인용이었다.
  *     해당 partial 의 마크업을 동일 DOM/클래스로 그대로 옮긴다.
  *   - 카테고리 매핑(dF.JournalTodoTag.ctgrMap) 은 기존부터 dead 상태였으므로 동작 변경 없이 보존한다.
  *
  * @author nichefish
  */
 
-const JournalTodoRegModalBody = {
-    name: "JournalTodoRegModalBody",
+const JournalTodoRegistModalBody = {
+    name: "JournalTodoRegistModalBody",
     props: {
         model: { type: Object, required: true },
     },
@@ -31,7 +31,7 @@ const JournalTodoRegModalBody = {
         },
     },
     template: `
-    <div class="journal-todo-reg-body-vue-root">
+    <div class="journal-todo-regist-body-vue-root">
         <div class="row">
             <div>
                 <label for="tagListStr" class="mb-2">
@@ -77,4 +77,4 @@ const JournalTodoRegModalBody = {
     `,
 };
 
-export default JournalTodoRegModalBody;
+export default JournalTodoRegistModalBody;

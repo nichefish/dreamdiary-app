@@ -453,8 +453,8 @@ interface Window {
         toggle: (id: string | number, trigger: HTMLElement) => void;
         initCollapseState: () => void;
     };
-    /** 저널 할일 등록 모달(`journal_todo_reg`) Vue 본문 브리지. */
-    JournalTodoRegVueApp?: {
+    /** 저널 할일 등록 모달(`journal_todo_regist`) Vue 본문 브리지. */
+    JournalTodoRegistVueApp?: {
         mounted?: boolean;
         open?: (model: Record<string, any>) => void;
         submit?: () => void;

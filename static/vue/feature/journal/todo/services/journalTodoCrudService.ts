@@ -3,7 +3,7 @@
  * 저널 할일 CRUD/표시 액션 서비스 (Vue 소유).
  *
  * 변경(T-2-β):
- *   - 레거시 dF.JournalTodo 의 yyMnthListAjax / delAjax 메서드를 이 서비스로 이전한다.
+ *   - 레거시 dF.JournalTodo 의 yyMnthListAjax / deleteAjax 메서드를 이 서비스로 이전한다.
  *   - dF.JournalTodo.init() 의 외부 호출자 3곳(JournalDayMetaPageApp / JournalDayCalApp /
  *     journalDayListAppMount)은 이 서비스의 yyMnthListAjax 호출로 직접 교체된다(기존 init 의
  *     `initialized` 플래그는 페이지 진입 시점 1회 호출 보장으로 자연 소멸).
@@ -79,10 +79,10 @@ export function yyMnthListAjax(): void {
 
 /**
  * 삭제 (Ajax).
- * 변경 전: dF.JournalTodo.delAjax — POST + 성공 시 yyMnthListAjax + ModalHistory.reset.
+ * 변경 전: dF.JournalTodo.deleteAjax — POST + 성공 시 yyMnthListAjax + ModalHistory.reset.
  * 변경 후(T-2-β): 동일 분기 흐름을 service 로 이전한다(HTTP 메서드는 기존 POST 보존).
  */
-export function delAjax(id: string | number): void {
+export function deleteAjax(id: string | number): void {
     if (isNaN(Number(id))) return;
 
     Swal.fire({
@@ -107,7 +107,7 @@ export function delAjax(id: string | number): void {
 
 const journalTodoCrudService = {
     yyMnthListAjax,
-    delAjax,
+    deleteAjax,
 };
 
 export default journalTodoCrudService;

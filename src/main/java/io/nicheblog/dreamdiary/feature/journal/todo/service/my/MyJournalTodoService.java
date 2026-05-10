@@ -42,8 +42,8 @@ public class MyJournalTodoService {
      * @param key 일련번호
      * @return {@link JournalTodoDto} -- 조회된 객체
      */
-    public JournalTodoDto getMyDtlDtoWithCache(final Integer key) throws Exception {
+    public JournalTodoDto getMyDetailDtoWithCache(final Integer key) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
-        return journalTodoService.getDtlDtoWithCacheByUser(username, key);
+        return journalTodoService.getDetailDtoWithCacheByUser(username, key);
     }
 }
