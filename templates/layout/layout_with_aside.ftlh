@@ -105,7 +105,6 @@
 
         <!--begin::Modals (include modals here)-->
         <#if false>
-            <#include "/component/notice/popup/_notice_popup_modal.ftlh">
             <#include "/layout/topbar/_topbar_sitemap_modal.ftlh">
         </#if>
 

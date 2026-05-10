@@ -50,13 +50,6 @@ public interface AppUrl {
     String JOURNAL_ANNUAL_LIST = Prefix.APP + "/journal/annual/list.do";
     String JOURNAL_ANNUAL_VIEW = Prefix.APP + "/journal/annual/{yy}.do";
 
-    /** 공지사항 */
-    String NOTICE_LIST = Prefix.APP + "/notice/list.do";
-    String NOTICE_REGIST_FORM = Prefix.APP + "/notice/regist-form.do";
-    String NOTICE_DETAIL = Prefix.APP + "/notice/detail.do";
-    String NOTICE_MODIFY_FORM = Prefix.APP + "/notice/modify-form.do";
-    String NOTICE_REGIST_PREVIEW_POP = Prefix.APP + "/notice/preview-pop.do";
-
     /** 게시판 */
     String BOARD_POST_LIST = Prefix.APP + "/board/post/list.do";
     String BOARD_POST_REGIST_FORM = Prefix.APP + "/board/post/regist-form.do";

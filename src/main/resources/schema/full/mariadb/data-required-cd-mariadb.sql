@@ -44,14 +44,6 @@ INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_ord
 
 -- -----------------------
 
--- 공지사항 분류 코드 추가
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('NOTICE_CTGR_CD', '공지사항 분류 코드', '공지사항 분류 코드');
--- (구) 필수 :: 공지사항 분류 상세 코드 추가
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('NOTICE_CTGR_CD', 'NOTICE', '공지', '공지', '1');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('NOTICE_CTGR_CD', 'SCHEDULE', '일정', '일정', '2');
-
--- -----------------------
-
 -- text class code group
 INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('TEXT_CLASS_CD', 'Text Class', 'text semantic code');
 -- text class detail codes
@@ -68,4 +60,3 @@ INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_ord
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('TEXT_CLASS_CD', 'NOTI', 'NOTI', 'text-noti', '11');
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('TEXT_CLASS_CD', 'BURNT', 'BURNT', 'text-burnt', '12');
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('TEXT_CLASS_CD', 'EMOTION', 'EMOTION', 'text-emotion', '13');
-

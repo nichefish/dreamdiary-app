@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ReservedStructuralBoard {
 
-    NOTICE(ContentType.NOTICE),
     BOARD(ContentType.BOARD),
 
     JOURNAL_DAY(ContentType.JOURNAL_DAY),

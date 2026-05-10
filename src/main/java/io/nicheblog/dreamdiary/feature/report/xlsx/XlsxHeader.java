@@ -15,13 +15,6 @@ import java.util.List;
  */
 public interface XlsxHeader {
 
-    /** 공지사항 */
-    List<XlsxCell> NOTICE = List.of(
-        new XlsxCell("제목", 10),
-        new XlsxCell("등록자", 10),
-        new XlsxCell("등록일자", 10)
-    );
-
     /** 게시판 */
     List<XlsxCell> BOARD = List.of(
             new XlsxCell("제목", 10),
@@ -85,4 +78,3 @@ public interface XlsxHeader {
             new XlsxCell("작업결과", 10)
     );
 }
-

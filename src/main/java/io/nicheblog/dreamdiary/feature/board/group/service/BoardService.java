@@ -157,7 +157,7 @@ public class BoardService
     }
 
     /**
-     * 게시판 관리 목록: 페이징 Dto 에 게시글 건수({@link BoardDto#setPostCount})를 채운다.
+     * 게시판 관리 목록: 페이징 Dto 에 게시글 건수를 채운다.
      *
      * @param searchParam 검색 파라미터
      * @param pageable    페이징

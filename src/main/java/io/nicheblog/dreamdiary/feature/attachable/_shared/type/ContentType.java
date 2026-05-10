@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 public enum ContentType {
 
     DEFAULT("DEFAULT", "기본"),
-    NOTICE("NOTICE", "공지사항"),
     BOARD("BOARD", "일반게시판"),
 
     JOURNAL_DAY("JOURNAL_DAY", "저널 일자", "calendar3"),
