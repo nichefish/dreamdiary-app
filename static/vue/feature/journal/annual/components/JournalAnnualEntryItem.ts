@@ -119,7 +119,7 @@ const JournalAnnualEntryItem = {
         /**
          * 변경 전: `comment_reg_btn_partial` onclick="dF.Comment.modal.regModal({{id}}, '{{contentType}}');".
          */
-        openCommentRegModal(): void {
+        openCommentRegistModal(): void {
             const ns: any = (window as any).dF?.Comment?.modal;
             if (!ns?.regModal) {
                 console.error("[JournalAnnualEntryItem] dF.Comment.modal.regModal 미등록.");
@@ -174,7 +174,7 @@ const JournalAnnualEntryItem = {
             <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                     :title="tooltip('txt.comment', 'bs.tooltip.modal.reg')"
-                    @click="openCommentRegModal">
+                    @click="openCommentRegistModal">
                 <i class="bi bi-chat-left-dots p-0"></i>
             </button>
             <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer"

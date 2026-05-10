@@ -94,7 +94,7 @@ public class JournalAnnualPageController
         // 코드 데이터 모델에 추가
         codeLookupService.setCdListToModel(Code.JOURNAL_ANNUAL_TY_CD, model);
 
-        return "/view/feature/journal/annual/journal_annual_dtl";
+        return "/view/feature/journal/annual/journal_annual_detail";
     }
 }
 

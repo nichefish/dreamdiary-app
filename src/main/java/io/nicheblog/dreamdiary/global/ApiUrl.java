@@ -81,8 +81,6 @@ public interface ApiUrl {
     String JOURNAL_ANNUAL_MAKE_AJAX = Prefix.API + "/journal/annual/make";
     String JOURNAL_ANNUAL_MAKE_TOTAL_AJAX = Prefix.API + "/journal/annual/make-total";
     String JOURNAL_ANNUAL_DREAM_COMPT_AJAX = Prefix.API + "/journal/annual/dream-compt";
-    String JOURNAL_ANNUAL_REG_AJAX = Prefix.API + "/journal/annual/reg";
-
     /** 저널 연간 리뷰 */
     String JOURNAL_ANNUAL_REVIEWS = Prefix.API + "/journal/annual/reviews";
     String JOURNAL_ANNUAL_REVIEW = Prefix.API + "/journal/annual/review/{id}";

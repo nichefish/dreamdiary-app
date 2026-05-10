@@ -3,10 +3,10 @@
  * 저널 결산 CRUD/모달/Ajax 서비스 (Vue 소유, dF 글로벌 등록).
  *
  * 변경(A-4-α):
- *   - journal_annual_module.ts 의 CRUD/Ajax 계열 메서드(listAjax/dtlView/dtlViewWithSection/dtlAjax/
- *     list/makeYyAnnualAjax/makeTotalAnnualAjax/comptAjax/submit/mdfModal/regAjax) 를 본 service 로 추출한다.
+ *   - journal_annual_module.ts 의 CRUD/Ajax 계열 메서드(listAjax/detailView/detailViewWithSection/detailAjax/
+ *     list/makeYyAnnualAjax/makeTotalAnnualAjax/comptAjax/submit/modifyModal/registAjax) 를 본 service 로 추출한다.
  *   - 모듈은 동일 시그니처의 thin wrapper 만 유지한다.
- *   - initForm 은 Vue 브리지 진입(JournalAnnualRegVueApp) 으로 모듈 표면에 그대로 남긴다(I-3 패턴 동일).
+ *   - initForm 은 Vue 브리지 진입(JournalAnnualRegistVueApp) 으로 모듈 표면에 그대로 남긴다(I-3 패턴 동일).
  *   - 외부 호출 시그니처는 변경 없음. 내부 동작도 변경 없음.
  *
  * 변경(D):
@@ -59,9 +59,9 @@ export function listAjax(): void {
 
 /**
  * 상세 화면으로 이동 (년도로 조회)
- * 변경 전: journal_annual_module.dtlView.
+ * 변경 전: journal_annual_module.detailView.
  */
-export function dtlView(yy: string|number): void {
+export function detailView(yy: string|number): void {
     if (isNaN(Number(yy))) return;
 
     location.href = cF.util.bindUrl(Url.JOURNAL_ANNUAL_VIEW, {yy}) + "?section=DIARY";
@@ -69,9 +69,9 @@ export function dtlView(yy: string|number): void {
 
 /**
  * 섹션 전환 이동 (년도로 조회)
- * 변경 전: journal_annual_module.dtlViewWithSection.
+ * 변경 전: journal_annual_module.detailViewWithSection.
  */
-export function dtlViewWithSection(section: "DIARY"|"DREAM"): void {
+export function detailViewWithSection(section: "DIARY"|"DREAM"): void {
     const yy: string = cF.util.getPathVariableFromUrl(/\/annual\/(\d{4})(?:\.do)?$/);
     if (!yy) return console.warn("invalid yy.");
 
@@ -80,9 +80,9 @@ export function dtlViewWithSection(section: "DIARY"|"DREAM"): void {
 
 /**
  * 상세 조회 (Ajax) (년도로 조회)
- * 변경 전: journal_annual_module.dtlAjax.
+ * 변경 전: journal_annual_module.detailAjax.
  */
-export function dtlAjax(yy: string|number): void {
+export function detailAjax(yy: string|number): void {
     const url: string = cF.util.bindUrl(Url.JOURNAL_ANNUAL, { yy });
     cF.ajax.get(url, null, function(res: AjaxResponse): void {
         if (!res.rslt) {
@@ -90,9 +90,9 @@ export function dtlAjax(yy: string|number): void {
             return;
         }
         const rsltObj: Record<string, any> = res.rsltObj;
-        /* 변경(A-7-β): 변경 전 `cF.handlebars.template(rsltObj, "journal_annual_dtl")` 가 `#journal_annual_dtl_div` 에 HBS 카드 주입.
-         * 변경 후: Vue `JournalAnnualDtlCardApp` 브리지 `setModel` 로 동일 페이로드를 반영한다(UI 마크업은 Vue 템플릿이 1:1 재현). */
-        const bridge = (window as any).JournalAnnualDtlVueApp as {
+        /* 변경(A-7-β): 변경 전 `cF.handlebars.template(rsltObj, "journal_annual_detail")` 가 `#journal_annual_detail_div` 에 HBS 카드 주입.
+         * 변경 후: Vue `JournalAnnualDetailCardApp` 브리지 `setModel` 로 동일 페이로드를 반영한다(UI 마크업은 Vue 템플릿이 1:1 재현). */
+        const bridge = (window as any).JournalAnnualDetailVueApp as {
             mounted?: boolean;
             setModel?: (obj: Record<string, any>) => void;
             pendingModel?: Record<string, any> | null;
@@ -103,10 +103,10 @@ export function dtlAjax(yy: string|number): void {
         }
         if (bridge) {
             bridge.pendingModel = rsltObj;
-            console.log("[journalAnnualCrudService.dtlAjax] JournalAnnualDtlVueApp pending model queued.");
+            console.log("[journalAnnualCrudService.detailAjax] JournalAnnualDetailVueApp pending model queued.");
             return;
         }
-        console.error("[journalAnnualCrudService.dtlAjax] JournalAnnualDtlVueApp unavailable (#journal_annual_dtl_div 또는 적재 순서 확인).");
+        console.error("[journalAnnualCrudService.detailAjax] JournalAnnualDetailVueApp unavailable (#journal_annual_detail_div 또는 적재 순서 확인).");
     });
 }
 
@@ -176,15 +176,15 @@ export function comptAjax(id: string|number): void {
  */
 export function submit(): void {
     tinymce.get("tinymce_journalAnnualCn").save();
-    $("#journalAnnualRegForm").submit();
+    $("#journalAnnualRegistForm").submit();
 }
 
 /**
  * 등록(수정) 모달 호출
- * 변경 전: journal_annual_module.mdfModal.
+ * 변경 전: journal_annual_module.modifyModal.
  *   - initForm 은 모듈 표면(`dF.JournalAnnual.initForm`) 을 호출한다(Vue 브리지 진입).
  */
-export function mdfModal(yy: string|number): void {
+export function modifyModal(yy: string|number): void {
     if (isNaN(Number(yy))) return;
 
     const url: string = cF.util.bindUrl(Url.JOURNAL_ANNUAL, { yy });
@@ -201,17 +201,20 @@ export function mdfModal(yy: string|number): void {
 
 /**
  * 등록 (Ajax)
- * 변경 전: journal_annual_module.regAjax.
+ * 변경 전: journal_annual_module.registAjax.
  */
-export function regAjax(): void {
+export function registAjax(): void {
     Swal.fire({
         text: resolveMessage("view.cnfm.save"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
 
-        const url: string = Url.JOURNAL_ANNUAL_REG_AJAX;
-        const ajaxData: FormData = new FormData(document.getElementById("journalAnnualRegForm") as HTMLFormElement);
+        const yy: string = cF.util.getInputValue("#journalAnnualRegistForm [name='yy']");
+        if (cF.util.isEmpty(yy)) return;
+
+        const url: string = cF.util.bindUrl(Url.JOURNAL_ANNUAL, { yy });
+        const ajaxData: FormData = new FormData(document.getElementById("journalAnnualRegistForm") as HTMLFormElement);
         cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
             Swal.fire({ text: res.message })
                 .then(function(): void {
@@ -229,16 +232,16 @@ export function regAjax(): void {
  */
 const journalAnnualCrudService = {
     listAjax,
-    dtlView,
-    dtlViewWithSection,
-    dtlAjax,
+    detailView,
+    detailViewWithSection,
+    detailAjax,
     list,
     makeYyAnnualAjax,
     makeTotalAnnualAjax,
     comptAjax,
     submit,
-    mdfModal,
-    regAjax,
+    modifyModal,
+    registAjax,
 };
 
 (function registerOnDf(): void {

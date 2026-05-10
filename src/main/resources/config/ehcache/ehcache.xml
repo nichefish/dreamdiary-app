@@ -1,4 +1,4 @@
-<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+﻿<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
         xmlns='http://www.ehcache.org/v3'
         xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
         xsi:schemaLocation="http://www.ehcache.org/v3
@@ -7,18 +7,18 @@
                             http://www.ehcache.org/schema/ehcache-107-ext-3.7.xsd">
 
     <cache-template name="defaultTemplate">
-        <!-- 캐시 만료기간 설정 -->
+        <!-- 罹먯떆 留뚮즺湲곌컙 ?ㅼ젙 -->
         <expiry>
             <!-- unit : nanos, micros, millis, seconds, minutes, hours, days -->
             <ttl unit="days">1</ttl>
         </expiry>
         <resources>
-            <!-- 캐시에 최대 몇 개까지 저장할지 설정 -->
+            <!-- 罹먯떆??理쒕? 紐?媛쒓퉴吏 ??ν븷吏 ?ㅼ젙 -->
             <heap unit="entries">9999</heap>
         </resources>
     </cache-template>
 
-    <!-- alias는 @Cacheable(value = "codes", key="#codeGrp")에서 value 값으로 사용 -->
+    <!-- alias??@Cacheable(value = "codes", key="#codeGrp")?먯꽌 value 媛믪쑝濡??ъ슜 -->
 
     <cache alias="defaultCache">
         <expiry>
@@ -38,7 +38,7 @@
     <cache alias="authPolicy" uses-template="defaultTemplate" />
     <cache alias="authPolicyEntity" uses-template="defaultTemplate" />
 
-    <!-- 메뉴 -->
+    <!-- 硫붾돱 -->
     <cache alias="userMenuList" uses-template="defaultTemplate" />
     <cache alias="mngrMenuList" uses-template="defaultTemplate" />
     <cache alias="menuByLabel" uses-template="defaultTemplate" />
@@ -106,8 +106,8 @@
     <!-- ?? ?? -->
     <cache alias="journalAnnualTotalListByUser" uses-template="defaultTemplate" />
     <cache alias="journalAnnualListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalAnnualDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalAnnualYyDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalAnnualDetailDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalAnnualYyDetailDtoByUser" uses-template="defaultTemplate" />
 
     <!-- ?? -->
     <cache alias="tagContentEntityListByRef" uses-template="defaultTemplate" />

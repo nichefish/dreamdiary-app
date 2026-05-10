@@ -53,9 +53,9 @@ public class MyJournalAnnualService {
      * @param key 식별자
      * @return {@link JournalAnnualDto} -- 조회된 결산 정보가 담긴 Dto 객체
      */
-    public JournalAnnualDto getMyAnnualDtl(final Integer key) throws Exception {
+    public JournalAnnualDto getMyAnnualDetail(final Integer key) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
-        return journalAnnualService.getAnnualDtlByUser(username, key);
+        return journalAnnualService.getAnnualDetailByUser(username, key);
     }
 
     /**
@@ -64,9 +64,9 @@ public class MyJournalAnnualService {
      * @param yy 조회할 년도
      * @return {@link JournalAnnualDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      */
-    public JournalAnnualDto getMyDtlDtoByYy(final Integer yy) throws Exception {
+    public JournalAnnualDto getMyDetailDtoByYy(final Integer yy) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
-        return journalAnnualService.getDtlDtoByYyByUser(username, yy);
+        return journalAnnualService.getDetailDtoByYyByUser(username, yy);
     }
 
     /**
@@ -87,8 +87,8 @@ public class MyJournalAnnualService {
     public Boolean makeMyTotalYyAnnual() throws Exception {
         final String username = AuthUtils.requireLoginUsername();
         final Boolean result = journalAnnualService.makeTotalYyAnnualByUser(username);
-        EhCacheUtils.clearMyCache("journalAnnualDtlDtoByUser");
-        EhCacheUtils.clearMyCache("journalAnnualYyDtlDtoByUser");
+        EhCacheUtils.clearMyCache("journalAnnualDetailDtoByUser");
+        EhCacheUtils.clearMyCache("journalAnnualYyDetailDtoByUser");
         return result;
     }
 

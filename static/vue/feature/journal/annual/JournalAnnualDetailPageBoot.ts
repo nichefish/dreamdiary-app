@@ -1,15 +1,15 @@
 /**
- * JournalAnnualDtlPageBoot.ts
+ * JournalAnnualDetailPageBoot.ts
  * 저널 결산(annual) 상세 페이지 부트 (ESM 단일 진입).
  *
  * 변경(A-7-α):
- *   - 변경 전: classic page IIFE `static/js/view/feature/journal/annual/journal_annual_dtl.ts`
- *     가 `Page.init()` 으로 dF.JournalAnnual.init / dF.JournalAnnualReview.init / dtlAjax(yy) /
+ *   - 변경 전: classic page IIFE `static/js/view/feature/journal/annual/journal_annual_detail.ts`
+ *     가 `Page.init()` 으로 dF.JournalAnnual.init / dF.JournalAnnualReview.init / detailAjax(yy) /
  *     섹션별 list/tag ajax 진입을 수행했다(Page IIFE + DOMContentLoaded).
  *   - 변경 후: 본 ES module 이 동일한 부트 시퀀스를 ESM 진입으로 수행한다.
- *     IIFE Page 객체는 폐기, classic page script(`journal_annual_dtl.js`) 적재 라인은 제거한다.
- *   - 적재 순서(`journal_annual_dtl.ftlh`):
- *     · `_journal_annual_review_reg_modal.ftlh` 가드(review 묶음 ES module 단일 수렴)
+ *     IIFE Page 객체는 폐기, classic page script(`journal_annual_detail.js`) 적재 라인은 제거한다.
+ *   - 적재 순서(`journal_annual_detail.ftlh`):
+ *     · `_journal_annual_review_regist_modal.ftlh` 가드(review 묶음 ES module 단일 수렴)
  *     · `journalAnnualCrudService.js` → `journalAnnualStateService.js` → `journalAnnualService.js` (dF.JournalAnnual 표면)
  *     · 본 모듈 (페이지 부트 진입)
  *   - 모든 ES module 은 `defer` 의미를 가지며 적재 순서대로 실행된다 — 본 모듈 진입 시점에는
@@ -31,18 +31,18 @@ function runWhenDomReady(fn: () => void): void {
 
 /**
  * 부트 진입.
- * 변경 전: classic `journal_annual_dtl.ts` 의 `Page.init`.
+ * 변경 전: classic `journal_annual_detail.ts` 의 `Page.init`.
  *   호출 순서·분기·인자(yy/section)는 동일하게 유지한다.
  */
-function bootJournalAnnualDtlPage(): void {
+function bootJournalAnnualDetailPage(): void {
     const annual: any = (window as any).dF?.JournalAnnual;
     const review: any = (window as any).dF?.JournalAnnualReview;
     if (annual == null || typeof annual.init !== "function") {
-        console.error("[JournalAnnualDtlPageBoot] dF.JournalAnnual 미등록 — service ES module 적재 순서 확인.");
+        console.error("[JournalAnnualDetailPageBoot] dF.JournalAnnual 미등록 — service ES module 적재 순서 확인.");
         return;
     }
     if (review == null || typeof review.init !== "function") {
-        console.error("[JournalAnnualDtlPageBoot] dF.JournalAnnualReview 미등록 — review modal ES module 가드 적재 순서 확인.");
+        console.error("[JournalAnnualDetailPageBoot] dF.JournalAnnualReview 미등록 — review modal ES module 가드 적재 순서 확인.");
         return;
     }
 
@@ -51,7 +51,7 @@ function bootJournalAnnualDtlPage(): void {
     review.init();
 
     const yy: string = cF.util.getPathVariableFromUrl(/\/annual\/(\d{4})(?:\.do)?$/);
-    if (yy) annual.dtlAjax(yy);
+    if (yy) annual.detailAjax(yy);
 
     const section: string = cF.util.getUrlParam("section");
     switch (section) {
@@ -67,6 +67,6 @@ function bootJournalAnnualDtlPage(): void {
     }
 }
 
-runWhenDomReady(bootJournalAnnualDtlPage);
+runWhenDomReady(bootJournalAnnualDetailPage);
 
 export {};

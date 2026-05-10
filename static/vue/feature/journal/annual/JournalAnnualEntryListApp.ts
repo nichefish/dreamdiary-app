@@ -11,7 +11,7 @@
  *     `<JournalAnnualEntryItem>` 로 1행씩 렌더한다.
  *   - DOM/CSS/onclick 시그니처는 레거시 partial 1:1 (`JournalAnnualEntryItem` 내부 보존).
  *   - 빈 목록일 때 표시: `view.list.empty` 안내(레거시 each else 블록과 동등).
- *   - 부트 순서: `journalAnnualService.js` 이후·`JournalAnnualDtlPageBoot.js` 이전 — Ajax 콜백 전 브리지 확보.
+ *   - 부트 순서: `journalAnnualService.js` 이후·`JournalAnnualDetailPageBoot.js` 이전 — Ajax 콜백 전 브리지 확보.
  *
  * @author nichefish
  */

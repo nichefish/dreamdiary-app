@@ -1,6 +1,6 @@
 /**
- * JournalAnnualRegModalBody.ts
- * 저널 결산 등록/수정 모달 본문(Handlebars `journal_annual_reg_modal_template`) Vue 이전.
+ * JournalAnnualRegistModalBody.ts
+ * 저널 결산 등록/수정 모달 본문(Handlebars `journal_annual_regist_modal_template`) Vue 이전.
  *
  * 변경(A-3):
  *   - 원본 hbs body 는 `<#include "/view/feature/attachable/tag/_tag_tagify_partial.hbs">` 한 줄로 tagify partial 만 들고 있었다.
@@ -16,8 +16,8 @@
 
 import { resolveMessage } from "../../../../common/messageHelper.js";
 
-const JournalAnnualRegModalBody = {
-    name: "JournalAnnualRegModalBody",
+const JournalAnnualRegistModalBody = {
+    name: "JournalAnnualRegistModalBody",
     props: {
         model: { type: Object, required: true },
     },
@@ -70,4 +70,4 @@ const JournalAnnualRegModalBody = {
     `,
 };
 
-export default JournalAnnualRegModalBody;
+export default JournalAnnualRegistModalBody;
