@@ -1,4 +1,4 @@
-<#--
+﻿<#--
  * 저널 일자(journal_day) : 일간(daily).
  * 목록 레이아웃(aside)을 쓰는 월간·주간과 달리, 본 페이지는 팝업 전용 레이아웃(`layout_popup.ftlh`)을 사용한다.
  * 마이그레이션 과정에서 범용 `journal_day_view.ftlh` 진입 대신 일간 전용 `journal_day_daily.ftlh` 로 분리·고정되었다(`docs/DEV_NOTES.md` 참고).
@@ -84,7 +84,7 @@
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
 
 <#--include::journal_interpretation_module-->
-<#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_reg_modal.ftlh">
+<#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_regist_modal.ftlh">
 
 
 <#--include::journal_day_tag_module-->

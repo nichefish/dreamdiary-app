@@ -314,8 +314,8 @@ interface Window {
         preview?: (contentType: string) => void;
         pendingPayloads?: Record<string, Record<string, any> | null | undefined>;
     };
-    /** 저널 해석 등록 모달(`journal_interpretation_reg`) Vue 헤더/본문 브리지. */
-    JournalInterpretationRegVueApp?: {
+    /** 저널 해석 등록 모달(`journal_interpretation_regist`) Vue 헤더/본문 브리지. */
+    JournalInterpretationRegistVueApp?: {
         mounted?: boolean;
         open?: (model: Record<string, any>) => void;
         submit?: () => void;
@@ -429,10 +429,10 @@ interface Window {
     };
     /**
      * 저널 해석 CRUD/모달 액션(I-3 Vue 서비스 글로벌).
-     * 변경 이력: I-5 — dtlModal 제거(미존재 HBS 호출 dead 경로 정리).
+     * 변경 이력: I-5 — detailModal 제거(미존재 HBS 호출 dead 경로 정리).
      */
     JournalInterpretationCrudService?: {
-        regModal: (params: {
+        registModal: (params: {
             journalDayId: string | number;
             refId: string | number;
             refContentType: string;
@@ -440,9 +440,9 @@ interface Window {
             journalDateWeekDay: string;
         }) => void;
         submit: () => void;
-        regAjax: () => void;
-        mdfModal: (id: string | number) => void;
-        delAjax: (id: string | number) => void;
+        registAjax: () => void;
+        modifyModal: (id: string | number) => void;
+        deleteAjax: (id: string | number) => void;
         copy: (id: string | number) => void;
     };
     /** 저널 해석 상태/라이프사이클(I-3 Vue 서비스 글로벌). */

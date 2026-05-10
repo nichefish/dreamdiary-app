@@ -45,7 +45,7 @@ public class JournalInterpretationHistoryStrategy implements HistoryStrategy<Jou
      */
     @Override
     public JournalInterpretationDto getOwnedDto(final String username, final Integer key) throws Exception {
-        return journalInterpretationService.getDtlDtoWithCacheByUser(username, key);
+        return journalInterpretationService.getDetailDtoWithCacheByUser(username, key);
     }
 
     /**

@@ -1,17 +1,17 @@
 /**
- * JournalInterpretationRegModalHeader.ts
- * 저널 해석 등록/수정 모달 헤더(Handlebars `journal_interpretation_reg_modal_header`) Vue 이전.
+ * JournalInterpretationRegistModalHeader.ts
+ * 저널 해석 등록/수정 모달 헤더(Handlebars `journal_interpretation_regist_modal_header`) Vue 이전.
  *
  * 변경(I-2):
- *   - _journal_interpretation_reg_modal_header_template.hbs 의 헤더 마크업을 동일 DOM/클래스로 옮긴다.
+ *   - _journal_interpretation_regist_modal_header_template.hbs 의 헤더 마크업을 동일 DOM/클래스로 옮긴다.
  *   - 단일 contentType (JOURNAL_INTERPRETATION) — entry 와 달리 분기 없음.
  *   - 카테고리(ctgrCd) <option> 정적 자리 표시는 hbs 동등으로 보존(외부 채움 흐름 유지).
  *
  * @author nichefish
  */
 
-const JournalInterpretationRegModalHeader = {
-    name: "JournalInterpretationRegModalHeader",
+const JournalInterpretationRegistModalHeader = {
+    name: "JournalInterpretationRegistModalHeader",
     props: {
         model: { type: Object, required: true },
     },
@@ -80,4 +80,4 @@ const JournalInterpretationRegModalHeader = {
     `,
 };
 
-export default JournalInterpretationRegModalHeader;
+export default JournalInterpretationRegistModalHeader;

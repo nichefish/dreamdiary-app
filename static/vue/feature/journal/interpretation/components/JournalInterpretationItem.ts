@@ -35,15 +35,15 @@ const JournalInterpretationItem = {
             /* 변경 전: <code>dF.JournalDayTag.expand</code>. 변경 후: UI 브리지 → 태그 서비스 단일 로직. */
             journalDayUiBridgeService.expandJournalDayTaggedContent(event.currentTarget);
         },
-        openCommentRegModal(): void { dF.Comment.modal.regModal(this.interpretation.id, "JOURNAL_INTERPRETATION"); },
-        openCommentMdfModal(comment: Record<string, any>): void { dF.Comment.modal.mdfModal(comment.id); },
+        openCommentRegistModal(): void { dF.Comment.modal.regModal(this.interpretation.id, "JOURNAL_INTERPRETATION"); },
+        openCommentModifyModal(comment: Record<string, any>): void { dF.Comment.modal.mdfModal(comment.id); },
         deleteComment(comment: Record<string, any>): void { dF.Comment.modal.delAjax(comment.id); },
         copyInterpretation(): void { dF.JournalInterpretation.copy(this.interpretation.id); },
-        openMdfModal(): void { dF.JournalInterpretation.mdfModal(this.interpretation.id); },
+        openModifyModal(): void { dF.JournalInterpretation.modifyModal(this.interpretation.id); },
         openHistoryModal(): void { if (this.hasHistory) dF.History.modal.open("JOURNAL_INTERPRETATION", this.interpretation.id); },
         setLifecycle(lifecycleKey: string): void { dF.JournalInterpretation.setLifecycleAjax(this.interpretation.id, lifecycleKey); },
         toggleCollapsedState(): void { dF.JournalInterpretation.collapse(this.interpretation.id, this.hasState("COLLAPSED") ? "N" : "Y"); },
-        deleteInterpretation(): void { dF.JournalInterpretation.delAjax(this.interpretation.id); },
+        deleteInterpretation(): void { dF.JournalInterpretation.deleteAjax(this.interpretation.id); },
         tooltip(labelKey: string, actionKey: string): string { return [this.t(labelKey), this.t(actionKey)].join(" "); },
     },
     template: `
@@ -63,20 +63,20 @@ const JournalInterpretationItem = {
             <div v-for="(comment, index) in commentList" :key="'interpretation-comment-' + comment.id" :class="['row d-flex-align-center', { 'mt-2': index === 0, 'mb-1': index === commentList.length - 1 }]">
                 <div class="col d-flex-align-center position-relative ms-4"><div class="li text-comment" v-html="comment.markdownContent"></div></div>
                 <div class="col-1">
-                    <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-1 px-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip('txt.comment', 'bs.tooltip.modal.mdf')" @click="openCommentMdfModal(comment)"><i class="bi bi-pencil-square p-0"></i></button>
+                    <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-1 px-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip('txt.comment', 'bs.tooltip.modal.modify')" @click="openCommentModifyModal(comment)"><i class="bi bi-pencil-square p-0"></i></button>
                     <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-1 px-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip('txt.comment', 'bs.tooltip.del')" @click="deleteComment(comment)"><i class="bi bi-trash p-0"></i></button>
                 </div>
             </div>
         </div>
         <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
         <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-            <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip('txt.comment', 'bs.tooltip.modal.reg')" @click="openCommentRegModal"><i class="bi bi-chat-left-dots p-0"></i></button>
+            <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip('txt.comment', 'bs.tooltip.modal.reg')" @click="openCommentRegistModal"><i class="bi bi-chat-left-dots p-0"></i></button>
             <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('bs.tooltip.copy')" @click="copyInterpretation"><i class="bi bi-copy p-0"></i></button>
             <div class="me-0 d-flex align-items-center">
                 <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="t('bs.tooltip.context.menu.show')"><i class="ki-solid ki-dots-horizontal fs-2x"></i></button>
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
                     <div class="menu-item px-3"><div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t("txt.journal.interpretation") }}</div></div>
-                    <div class="menu-item px-3 my-1 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip('txt.journal.interpretation', 'bs.tooltip.modal.mdf')"><div class="menu-link flex-stack px-3" @click="openMdfModal">{{ t("txt.comm.edit") }}<i class="bi bi-pencil-square fs-8"></i></div></div>
+                    <div class="menu-item px-3 my-1 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip('txt.journal.interpretation', 'bs.tooltip.modal.modify')"><div class="menu-link flex-stack px-3" @click="openModifyModal">{{ t("txt.comm.edit") }}<i class="bi bi-pencil-square fs-8"></i></div></div>
                     <div class="menu-item px-3 my-1 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="hasHistory ? t('txt.history') : t('txt.history.empty')"><div class="menu-link flex-stack px-3" :class="{ 'disabled text-muted': !hasHistory }" @click="openHistoryModal">{{ t("txt.history") }}<i class="bi bi-clock-history fs-8"></i></div></div>
                     <div class="separator my-2"></div>
                     <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">

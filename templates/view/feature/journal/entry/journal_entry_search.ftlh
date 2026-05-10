@@ -1,4 +1,4 @@
-<#--
+﻿<#--
  * journal_entry : search
  -->
 
@@ -62,7 +62,7 @@
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
 
 <#--include::journal_interpretation_module-->
-<#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_reg_modal.ftlh">
+<#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_regist_modal.ftlh">
 
 
 <#--include::journal_entry_tag_module — E-4-γ: journalEntryTagService.js 가 _journal_entry_reg_modal.ftlh 에서 적재됨(journal_entry_tag_module 제거).-->
