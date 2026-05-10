@@ -1,4 +1,4 @@
-﻿<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
         xmlns='http://www.ehcache.org/v3'
         xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
         xsi:schemaLocation="http://www.ehcache.org/v3
@@ -72,7 +72,7 @@
     <cache alias="journalDayTagCountMapByUser" uses-template="defaultTemplate" />
 
     <!-- ?? ?? -->
-    <cache alias="journalChapterDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalChapterDetailDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalChapterStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalChapterWeeklyStateMapByUser" uses-template="defaultTemplate" />
 

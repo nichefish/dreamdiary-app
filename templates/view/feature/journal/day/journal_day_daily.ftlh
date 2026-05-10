@@ -1,4 +1,4 @@
-﻿<#--
+<#--
  * 저널 일자(journal_day) : 일간(daily).
  * 목록 레이아웃(aside)을 쓰는 월간·주간과 달리, 본 페이지는 팝업 전용 레이아웃(`layout_popup.ftlh`)을 사용한다.
  * 마이그레이션 과정에서 범용 `journal_day_view.ftlh` 진입 대신 일간 전용 `journal_day_daily.ftlh` 로 분리·고정되었다(`docs/DEV_NOTES.md` 참고).
@@ -62,7 +62,7 @@
      include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건이라 dead partial 로 확정. partial 파일 자체도 삭제. -->
 <script type="module" src="/vue/feature/journal/day/registerJournalDayShellServices.js?${releaseDate!}"></script>
 
-<#include "/view/feature/journal/chapter/_modal/_journal_chapter_reg_modal.ftlh">
+<#include "/view/feature/journal/chapter/_modal/_journal_chapter_regist_modal.ftlh">
 
 
 <#--include::journal_diary_module-->

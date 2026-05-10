@@ -1,32 +1,32 @@
 /**
- * JournalChapterRegModalBody.ts
- * 저널 챕터 등록/수정 모달 본문(Handlebars `journal_chapter_reg_modal_template`) Vue 이전.
+ * JournalChapterRegistModalBody.ts
+ * 저널 챕터 등록/수정 모달 본문(Handlebars `journal_chapter_regist_modal_template`) Vue 이전.
  *
  * 변경(Phase B):
- *   - 기존 _journal_chapter_reg_modal_template.hbs 의 본문 마크업을 동일 DOM/클래스로 옮긴다.
- *   - JOURNAL_CHAPTER_CTGR_CD 옵션은 부모 `JournalChapterRegModalApp` 가 `model.categoryOptions` 로 주입한다.
- *   - dF.JournalChapter.initForm 에서 수행하던 `cF.handlebars.modal(obj, "journal_chapter_reg")` 호출 진입은
- *     `window.JournalChapterRegVueApp.open(model)` 단일 진입으로 수렴한다.
+ *   - 기존 _journal_chapter_regist_modal_template.hbs 의 본문 마크업을 동일 DOM/클래스로 옮긴다.
+ *   - JOURNAL_CHAPTER_CTGR_CD 옵션은 부모 `JournalChapterRegistModalApp` 가 `model.categoryOptions` 로 주입한다.
+ *   - dF.JournalChapter.initForm 에서 수행하던 `cF.handlebars.modal(obj, "journal_chapter_regist")` 호출 진입은
+ *     `window.JournalChapterRegistVueApp.open(model)` 단일 진입으로 수렴한다.
  *
  * @author nichefish
  */
 
-const JournalChapterRegModalBody = {
-    name: "JournalChapterRegModalBody",
+const JournalChapterRegistModalBody = {
+    name: "JournalChapterRegistModalBody",
     props: {
         model: { type: Object, required: true },
     },
     computed: {
         /** 수정 모드(서버에서 받은 기존 챕터) 여부. HBS `(exists id)` 와 동일. */
-        isMdf(): boolean {
+        isModify(): boolean {
             return this.model?.id != null && String(this.model.id).length > 0;
         },
         /** 수정 모드의 DREAM 챕터: 타입 변경 불가(자동 라벨 안내) — HBS와 동일 분기. */
-        isMdfDream(): boolean {
-            return this.isMdf && this.model?.chapterType === "DREAM";
+        isModifyDream(): boolean {
+            return this.isModify && this.model?.chapterType === "DREAM";
         },
         /**
-         * 카테고리 옵션. JournalChapterRegModalApp 가 `__journalChapterRegBootstrap.categoryOptions`
+         * 카테고리 옵션. JournalChapterRegistModalApp 가 `__journalChapterRegistBootstrap.categoryOptions`
          * 를 주입한다. 서버 모델 `JOURNAL_CHAPTER_CTGR_CD` 와 동일한 (code, codeName) 쌍.
          */
         categoryOptions(): Array<{ code: string; codeName: string }> {
@@ -35,7 +35,7 @@ const JournalChapterRegModalBody = {
         },
         /** 수정 모드일 때 입력 칸 col 폭 분기 (HBS 의 `{{#if (exists id)}}7{{else}}8{{/if}}` 동일). */
         titleColClass(): string {
-            return this.isMdf ? "col-lg-7" : "col-lg-8";
+            return this.isModify ? "col-lg-7" : "col-lg-8";
         },
     },
     methods: {
@@ -69,7 +69,7 @@ const JournalChapterRegModalBody = {
                 </label>
             </div>
             <div class="col-lg-2">
-                <template v-if="isMdfDream">
+                <template v-if="isModifyDream">
                     <input type="hidden" name="chapterType" value="DREAM" />
                     <div class="form-control form-control-solid form-control-sm d-flex align-items-center min-h-40px">
                         <span class="fw-bolder">{{ t('txt.dream') }}</span>
@@ -106,7 +106,7 @@ const JournalChapterRegModalBody = {
                 />
                 <div id="title_validate_span"></div>
             </div>
-            <div v-if="isMdf" class="col-1 d-flex ps-0">
+            <div v-if="isModify" class="col-1 d-flex ps-0">
                 <div class="d-flex-center p-2 fw-bold fs-5 text-gray-600">#</div>
                 <input
                     type="number"
@@ -128,4 +128,4 @@ const JournalChapterRegModalBody = {
     `,
 };
 
-export default JournalChapterRegModalBody;
+export default JournalChapterRegistModalBody;

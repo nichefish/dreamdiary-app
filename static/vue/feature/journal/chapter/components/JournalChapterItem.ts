@@ -36,7 +36,7 @@ const JournalChapterItem = {
         entryContentType(): "JOURNAL_DIARY" | "JOURNAL_DREAM" {
             return this.chapter?.chapterType === "DREAM" ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
         },
-        openEntryRegModal(): void {
+        openEntryRegistModal(): void {
             dF.JournalEntry.get(this.entryContentType()).regModal({
                 journalDayId: this.chapter.journalDayId,
                 journalChapterId: this.chapter.id,
@@ -49,8 +49,8 @@ const JournalChapterItem = {
         exportChapter(): void { journalChapterCrudService.exportTxt(this.chapter.id); },
         /**
          * 수정 모달 진입.
-         * 변경 전: dF.JournalChapter.mdfModal(id, stdrdDt) — 내부에서 ajax get + cF.handlebars.modal 진입.
-         * 변경 후(Phase B): ajax get 후 window.JournalChapterRegVueApp.open(rsltObj) 단일 큐 진입.
+         * 변경 전: dF.JournalChapter.modifyModal(id, stdrdDt) — 내부에서 ajax get + cF.handlebars.modal 진입.
+         * 변경 후(Phase B): ajax get 후 window.JournalChapterRegistVueApp.open(rsltObj) 단일 큐 진입.
          */
         editChapter(): void {
             if (isNaN(Number(this.chapter.id))) return;
@@ -63,9 +63,9 @@ const JournalChapterItem = {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                const bridge = window.JournalChapterRegVueApp;
+                const bridge = window.JournalChapterRegistVueApp;
                 if (!bridge) {
-                    console.error("[JournalChapterItem] window.JournalChapterRegVueApp not available.");
+                    console.error("[JournalChapterItem] window.JournalChapterRegistVueApp not available.");
                     return;
                 }
                 if (bridge.mounted === true && typeof bridge.open === "function") {
@@ -76,7 +76,7 @@ const JournalChapterItem = {
             });
         },
         toggleCollapsedState(): void { journalChapterCrudService.collapseAjax(this.chapter.id); },
-        deleteChapter(): void { journalChapterCrudService.delAjax(this.chapter.id); },
+        deleteChapter(): void { journalChapterCrudService.deleteAjax(this.chapter.id); },
         entryList(): Record<string, any>[] { return Array.isArray(this.chapter?.journalEntryList) ? this.chapter.journalEntryList : []; },
         tagList(): Record<string, any>[] { return Array.isArray(this.chapter?.tag?.list) ? this.chapter.tag.list : []; },
         selectTag(tag: Record<string, any>): void { dF.JournalEntryTag.get("JOURNAL_DIARY").select(tag.tagId, tag.name); },
@@ -97,7 +97,7 @@ const JournalChapterItem = {
                 <i class="bi fs-4" :class="chapterIconClass()"></i>
             </div>
             <div class="col-3 d-none d-md-flex align-items-center gap-2">
-                <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip(entryContentType() === 'JOURNAL_DREAM' ? 'txt.journal.dream' : 'txt.journal.diary', 'bs.tooltip.modal.reg')" @click="openEntryRegModal">
+                <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" :title="tooltip(entryContentType() === 'JOURNAL_DREAM' ? 'txt.journal.dream' : 'txt.journal.diary', 'bs.tooltip.modal.reg')" @click="openEntryRegistModal">
                     <i class="bi fs-4 pe-1" :class="entryContentType() === 'JOURNAL_DREAM' ? 'bi-moon-stars' : 'bi-book'"></i>
                     {{ entryContentType() === 'JOURNAL_DREAM' ? t('txt.journal.dream.reg') : t('txt.journal.diary.reg') }}
                 </button>

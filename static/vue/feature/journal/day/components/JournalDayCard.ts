@@ -32,7 +32,7 @@ const JournalDayCard = {
         /**
          * 챕터 등록 모달 진입.
          * 변경 전: dF.JournalChapter.regModal({...}) — 내부에서 cF.handlebars.modal 로 본문 렌더 후 모달 표시.
-         * 변경 후(Phase B): window.JournalChapterRegVueApp.open(initialModel) 큐로 단일 진입.
+         * 변경 후(Phase B): window.JournalChapterRegistVueApp.open(initialModel) 큐로 단일 진입.
          */
         openChapterRegModal(): void {
             const initialModel: Record<string, any> = {
@@ -41,9 +41,9 @@ const JournalDayCard = {
                 journalDateWeekDay: this.day.journalDateWeekDay,
                 chapterType: "DIARY",
             };
-            const bridge = window.JournalChapterRegVueApp;
+            const bridge = window.JournalChapterRegistVueApp;
             if (!bridge) {
-                console.error("[JournalDayCard] window.JournalChapterRegVueApp not available.");
+                console.error("[JournalDayCard] window.JournalChapterRegistVueApp not available.");
                 return;
             }
             if (bridge.mounted === true && typeof bridge.open === "function") {
