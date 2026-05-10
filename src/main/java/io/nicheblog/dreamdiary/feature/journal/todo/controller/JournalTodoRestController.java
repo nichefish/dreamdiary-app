@@ -77,14 +77,14 @@ public class JournalTodoRestController
     @PostMapping(value = {Url.JOURNAL_TODOS, Url.JOURNAL_TODO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalTodoRegAjax(
+    public ResponseEntity<AjaxResponse> journalTodoRegistAjax(
             final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JournalTodoDto journalTodo
     ) throws Exception {
 
-        final boolean isMdf = (id != null);
-        if (isMdf) journalTodo.setId(id);
-        final ServiceResponse result = isMdf ? journalTodoService.modify(journalTodo) : journalTodoService.regist(journalTodo);
+        final boolean isModify = (id != null);
+        if (isModify) journalTodo.setId(id);
+        final ServiceResponse result = isModify ? journalTodoService.modify(journalTodo) : journalTodoService.regist(journalTodo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -101,11 +101,11 @@ public class JournalTodoRestController
     @GetMapping(value = {Url.JOURNAL_TODO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalTodoDtlAjax(
+    public ResponseEntity<AjaxResponse> journalTodoDetailAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JournalTodoDto retrievedDto = myJournalTodoService.getMyDtlDtoWithCache(id);
+        final JournalTodoDto retrievedDto = myJournalTodoService.getMyDetailDtoWithCache(id);
         final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -122,7 +122,7 @@ public class JournalTodoRestController
     @DeleteMapping(value = {Url.JOURNAL_TODO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalTodoDelAjax(
+    public ResponseEntity<AjaxResponse> journalTodoDeleteAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 
@@ -133,4 +133,3 @@ public class JournalTodoRestController
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 }
-

@@ -99,9 +99,9 @@ const JournalDayAsideTodoCardRoot = {
         tooltipEmpty(): string {
             return asideMsg("txt.journal.todo.empty");
         },
-        tooltipDelBtn(): string {
+        tooltipDeleteBtn(): string {
             /* 변경 없음 — 기존 HBS 의 삭제 버튼 title 과 동일(문구 혼합은 서버 레이블 키 그대로). */
-            return asideMsg("txt.journal.day") + " " + asideMsg("bs.tooltip.modal.mdf");
+            return asideMsg("txt.journal.day") + " " + asideMsg("bs.tooltip.modal.modify");
         },
         applyTodoRows(raw: unknown): void {
             this.todos = coerceTodoRows(raw);
@@ -112,9 +112,9 @@ const JournalDayAsideTodoCardRoot = {
             const hdr = document.getElementById("journal_todo_aside_header") as HTMLElement | null;
             if (hdr) initTodoCardTooltips(hdr);
         },
-        regModal(): void {
-            /* 변경(T-2-α): dF.JournalTodo.regModal 진입 → window.JournalTodoRegVueApp.open 단일 진입.
-             * yy/mnth 파생은 기존 dF.JournalTodo.regModal 안의 로직과 동일하게 #journal_aside #yy /
+        registModal(): void {
+            /* 변경(T-2-α): dF.JournalTodo.registModal 진입 → window.JournalTodoRegistVueApp.open 단일 진입.
+             * yy/mnth 파생은 기존 dF.JournalTodo.registModal 안의 로직과 동일하게 #journal_aside #yy /
              * #journal_aside #mnth 셀렉트에서 가져온다. dF.JournalTodo 모듈은 β 단계에서 제거된다. */
             const yyElmt: HTMLSelectElement | null = document.querySelector("#journal_aside #yy");
             const mnthElmt: HTMLSelectElement | null = document.querySelector("#journal_aside #mnth");
@@ -123,28 +123,28 @@ const JournalDayAsideTodoCardRoot = {
             if (cF.util.isEmpty(yy) || cF.util.isEmpty(mnth)) return;
 
             const win = window as Window & {
-                JournalTodoRegVueApp?: {
+                JournalTodoRegistVueApp?: {
                     mounted?: boolean;
                     pendingPayload?: Record<string, any> | null;
                     open?: (model: Record<string, any>) => void;
                 };
             };
-            const bridge = win.JournalTodoRegVueApp;
+            const bridge = win.JournalTodoRegistVueApp;
             if (bridge && bridge.mounted === true && typeof bridge.open === "function") {
                 bridge.open({ yy, mnth });
                 return;
             }
-            /* mounted 전 진입 시 pendingPayload 로 큐잉 — RegModalApp.runWhenDomReady 후속에서 소비. */
+            /* mounted 전 진입 시 pendingPayload 로 큐잉 — RegistModalApp.runWhenDomReady 후속에서 소비. */
             if (bridge) {
                 bridge.pendingPayload = { yy, mnth };
                 return;
             }
-            console.error("[JournalDayAsideTodoCardApp] regModal 불가 — JournalTodoRegVueApp bridge 미정의");
+            console.error("[JournalDayAsideTodoCardApp] registModal 불가 — JournalTodoRegistVueApp bridge 미정의");
         },
-        delTodo(id: string | number): void {
-            /* 변경(T-2-β): dF.JournalTodo.delAjax 진입 → journalTodoCrudService.delAjax 단일 진입.
+        deleteTodo(id: string | number): void {
+            /* 변경(T-2-β): dF.JournalTodo.deleteAjax 진입 → journalTodoCrudService.deleteAjax 단일 진입.
              * dF.JournalTodo 모듈은 본 단계에서 통째 제거된다(외부 호출자 0). */
-            journalTodoCrudService.delAjax(id);
+            journalTodoCrudService.deleteAjax(id);
         },
     },
     template: `
@@ -157,8 +157,8 @@ const JournalDayAsideTodoCardRoot = {
                 <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-primary"
                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                    :title="tooltipAdd()"
-                   @click.prevent="regModal">
-                    <i class="bi bi-plus fs-2 pe-0" id="journalTodoAsideRegIcon"></i>
+                   @click.prevent="registModal">
+                    <i class="bi bi-plus fs-2 pe-0" id="journalTodoAsideRegistIcon"></i>
                 </a>
             </div>
         </div>
@@ -174,8 +174,8 @@ const JournalDayAsideTodoCardRoot = {
                     <div class="col-3 d-flex justify-content-end">
                         <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-2 px-3 cursor-pointer"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                :title="tooltipDelBtn()"
-                                @click.prevent="delTodo(item.id)">
+                                :title="tooltipDeleteBtn()"
+                                @click.prevent="deleteTodo(item.id)">
                             <i class="bi bi-trash p-0"></i>
                         </button>
                     </div>

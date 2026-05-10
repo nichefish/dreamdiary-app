@@ -3,25 +3,25 @@
  * @included_in : journal_day_page.ftlh
  *
  * 변경(T-2-α):
- *   - Handlebars 템플릿(_journal_todo_reg_modal_header_template.hbs / _journal_todo_reg_modal_template.hbs) 본문을
- *     Vue JournalTodoRegModalApp + JournalTodoRegModalHeader + JournalTodoRegModalBody 로 이전했다.
- *   - dF.JournalTodo.regModal/mdfModal/initForm/submit/regAjax 진입은 모두 제거되고
- *     window.JournalTodoRegVueApp.open(model) / .submit() 큐 단일 진입으로 수렴한다.
+ *   - Handlebars 템플릿(_journal_todo_regist_modal_header_template.hbs / _journal_todo_regist_modal_template.hbs) 본문을
+ *     Vue JournalTodoRegistModalApp + JournalTodoRegistModalHeader + JournalTodoRegistModalBody 로 이전했다.
+ *   - dF.JournalTodo.registModal/modifyModal/initForm/submit/registAjax 진입은 모두 제거되고
+ *     window.JournalTodoRegistVueApp.open(model) / .submit() 큐 단일 진입으로 수렴한다.
  *   - tinymce textarea 영역(#tinymce_journalTodoCn)은 기존 위치/구조 그대로 보존한다.
  -->
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
 <#assign modal_title = springMacroRequestContext.getMessage("txt.journal.diary.save") />
-<@modal.layout id="journal_todo_reg" size="xl">
+<@modal.layout id="journal_todo_regist" size="xl">
     <#--begin::Modal Header-->
     <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->
-        <form name="journalTodoRegForm" id="journalTodoRegForm" class="form" enctype="multipart/form-data">
-            <div id="journal_todo_reg_modal_header_div">
-                <#-- Vue JournalTodoRegModalHeader 가 teleport 로 헤더를 채운다. -->
+        <form name="journalTodoRegistForm" id="journalTodoRegistForm" class="form" enctype="multipart/form-data">
+            <div id="journal_todo_regist_modal_header_div">
+                <#-- Vue JournalTodoRegistModalHeader 가 teleport 로 헤더를 채운다. -->
             </div>
             <#--begin::Row-->
             <div class="row mb-4">
@@ -35,10 +35,10 @@
                     <div id="tinymce_journalTodoCn_validate_span"></div>
                 </div>
             </div>
-            <div id="journal_todo_reg_div">
-                <#-- Vue JournalTodoRegModalBody 가 teleport 로 본문을 채운다. -->
+            <div id="journal_todo_regist_div">
+                <#-- Vue JournalTodoRegistModalBody 가 teleport 로 본문을 채운다. -->
             </div>
-            <div id="journal_todo_reg_vue_app" class="d-none"></div>
+            <div id="journal_todo_regist_vue_app" class="d-none"></div>
         </form>
     </div>
     <#--begin::Modal Footer-->
@@ -46,7 +46,7 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--모달:: 버튼: 저장하기 (Vue 모달 큐의 submit 진입)-->
-            <@component.modal_btn_save "window.JournalTodoRegVueApp && window.JournalTodoRegVueApp.submit && window.JournalTodoRegVueApp.submit();" />
+            <@component.modal_btn_save "window.JournalTodoRegistVueApp && window.JournalTodoRegistVueApp.submit && window.JournalTodoRegistVueApp.submit();" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close_safe "" />
         </div>
@@ -54,10 +54,10 @@
 </@modal.layout>
 
 <script>
-    /* 변경(T-2-α): Vue 측 진입 큐 stub. JournalTodoRegModalApp 가 마운트되면 mounted=true 로 갱신된다. */
-    window.JournalTodoRegVueApp = window.JournalTodoRegVueApp || {
+    /* 변경(T-2-α): Vue 측 진입 큐 stub. JournalTodoRegistModalApp 가 마운트되면 mounted=true 로 갱신된다. */
+    window.JournalTodoRegistVueApp = window.JournalTodoRegistVueApp || {
         mounted: false,
         pendingPayload: null
     };
 </script>
-<script type="module" src="/vue/feature/journal/todo/JournalTodoRegModalApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/journal/todo/JournalTodoRegistModalApp.js?${releaseDate!}"></script>

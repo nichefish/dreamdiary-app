@@ -1,13 +1,13 @@
 /**
- * JournalTodoRegModalApp.ts
- * 저널 할일 등록/수정 모달(`journal_todo_reg`) 진입 — Handlebars 템플릿 대체.
+ * JournalTodoRegistModalApp.ts
+ * 저널 할일 등록/수정 모달(`journal_todo_regist`) 진입 — Handlebars 템플릿 대체.
  *
  * 변경(T-2-α):
- *   - _journal_todo_reg_modal_header_template.hbs / _journal_todo_reg_modal_template.hbs 본문 렌더와
- *     dF.JournalTodo 의 regModal/mdfModal/initForm/submit/regAjax 진입을 이 모듈로 단일 수렴한다.
- *   - 외부 호출(`dF.JournalTodo.regModal()` / `dF.JournalTodo.mdfModal(id)`) 은
- *     `window.JournalTodoRegVueApp.open(model)` / `window.JournalTodoRegVueApp.submit()` 큐로 대체된다.
- *   - regAjax 후속 처리(저장 후 aside todo 목록 갱신) 는 기존 dF.JournalTodo.regAjax 의 분기를 그대로 옮긴다.
+ *   - _journal_todo_regist_modal_header_template.hbs / _journal_todo_regist_modal_template.hbs 본문 렌더와
+ *     dF.JournalTodo 의 registModal/modifyModal/initForm/submit/registAjax 진입을 이 모듈로 단일 수렴한다.
+ *   - 외부 호출(`dF.JournalTodo.registModal()` / `dF.JournalTodo.modifyModal(id)`) 은
+ *     `window.JournalTodoRegistVueApp.open(model)` / `window.JournalTodoRegistVueApp.submit()` 큐로 대체된다.
+ *   - registAjax 후속 처리(저장 후 aside todo 목록 갱신) 는 기존 dF.JournalTodo.registAjax 의 분기를 그대로 옮긴다.
  *     α 시점에서는 list 갱신을 dF.JournalTodo.yyMnthListAjax 로 그대로 호출하고, β 단계에서
  *     journalTodoCrudService 로 교체된다.
  *   - tinymce / tagify / jquery validator 는 기존 initForm 동작을 유지하되, Vue 모달 재오픈 시
@@ -19,13 +19,13 @@
  */
 
 import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
-import JournalTodoRegModalHeader from "./components/JournalTodoRegModalHeader.js";
-import JournalTodoRegModalBody from "./components/JournalTodoRegModalBody.js";
+import JournalTodoRegistModalHeader from "./components/JournalTodoRegistModalHeader.js";
+import JournalTodoRegistModalBody from "./components/JournalTodoRegistModalBody.js";
 import journalTodoCrudService from "./services/journalTodoCrudService.js";
 // 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
 import { resolveMessage } from "../../../common/messageHelper.js";
 
-type JournalTodoRegVueBridge = {
+type JournalTodoRegistVueBridge = {
     mounted?: boolean;
     open?: (model: Record<string, any>) => void;
     submit?: () => void;
@@ -52,7 +52,7 @@ function resolveLocale(): string {
 /**
  * 서버 응답(JournalTodoDto) 또는 등록 진입 객체를 폼 모델로 정규화한다.
  */
-function normalizeRegModel(obj: Record<string, any>): Record<string, any> {
+function normalizeRegistModel(obj: Record<string, any>): Record<string, any> {
     const tagSrc = (obj as any).tag;
     return {
         ...obj,
@@ -69,10 +69,10 @@ function normalizeRegModel(obj: Record<string, any>): Record<string, any> {
     };
 }
 
-function showRegModal(): void {
-    const modalEl = document.querySelector("#journal_todo_reg_modal") as HTMLElement | null;
+function showRegistModal(): void {
+    const modalEl = document.querySelector("#journal_todo_regist_modal") as HTMLElement | null;
     if (!modalEl) {
-        console.error("[JournalTodoRegModalApp] Modal root #journal_todo_reg_modal not found.");
+        console.error("[JournalTodoRegistModalApp] Modal root #journal_todo_regist_modal not found.");
         return;
     }
     const bs = (window as unknown as { bootstrap?: { Modal: { getOrCreateInstance: (el: HTMLElement) => { show: () => void } } } }).bootstrap;
@@ -86,33 +86,33 @@ function showRegModal(): void {
  * 변경 후(T-2-α): Vue 모달 재오픈 시 안전하게 검증기를 정리한다(누적 방지).
  */
 function destroyPreviousValidator(): void {
-    const $form = $("#journalTodoRegForm");
+    const $form = $("#journalTodoRegistForm");
     const validator = $form.data("validator") as { destroy?: () => void } | undefined;
     if (validator && typeof validator.destroy === "function") {
         try {
             validator.destroy();
         } catch (e) {
-            console.warn("[JournalTodoRegModalApp] jQuery validate destroy failed", e);
+            console.warn("[JournalTodoRegistModalApp] jQuery validate destroy failed", e);
         }
     }
     $form.removeData("validator");
 }
 
-let regTagify: any = null;
+let registTagify: any = null;
 /**
  * 이전 모달 오픈에서 init 된 tagify 를 정리한다.
  * 변경 전: cF.handlebars.modal 은 모달 body 를 새로 렌더 → 입력 DOM 자체가 교체되어 누적이 가시화되지 않았다.
  * 변경 후(T-2-α): Vue 모달은 mount 점이 유지되므로 동일 input 위에 누적되는 것을 막는다.
  */
 function destroyPreviousTagify(): void {
-    if (regTagify && typeof regTagify.destroy === "function") {
+    if (registTagify && typeof registTagify.destroy === "function") {
         try {
-            regTagify.destroy();
+            registTagify.destroy();
         } catch (e) {
-            console.warn("[JournalTodoRegModalApp] tagify destroy failed", e);
+            console.warn("[JournalTodoRegistModalApp] tagify destroy failed", e);
         }
     }
-    regTagify = null;
+    registTagify = null;
 }
 
 /**
@@ -126,27 +126,27 @@ function destroyPreviousTinymce(): void {
         const editor: any = (tinymce as any).get("tinymce_journalTodoCn");
         if (editor && typeof editor.destroy === "function") editor.destroy();
     } catch (e) {
-        console.warn("[JournalTodoRegModalApp] tinymce destroy failed", e);
+        console.warn("[JournalTodoRegistModalApp] tinymce destroy failed", e);
     }
 }
 
 /**
- * 등록/수정 처리 (Ajax). 변경 전: dF.JournalTodo.regAjax — 성공 시 yyMnthListAjax + ModalHistory.reset.
+ * 등록/수정 처리 (Ajax). 변경 전: dF.JournalTodo.registAjax — 성공 시 yyMnthListAjax + ModalHistory.reset.
  * 변경 후(T-2-α): 동일 분기 흐름을 Vue 모달 모듈 내부로 그대로 이전한다.
  *   목록 갱신 호출은 α 시점에는 dF.JournalTodo.yyMnthListAjax 그대로 호출하고,
  *   β 단계에서 journalTodoCrudService.yyMnthListAjax 로 교체된다.
  */
-function regAjax(): void {
-    const id: string = cF.util.getInputValue("#journalTodoRegForm [name='id']");
-    const isMdf: boolean = cF.util.isNotEmpty(id);
+function registAjax(): void {
+    const id: string = cF.util.getInputValue("#journalTodoRegistForm [name='id']");
+    const isModify: boolean = cF.util.isNotEmpty(id);
     Swal.fire({
-        text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+        text: resolveMessage(isModify ? "view.cnfm.mdf" : "view.cnfm.reg"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
 
-        const url: string = isMdf ? cF.util.bindUrl(Url.JOURNAL_TODO, { id }) : Url.JOURNAL_TODOS;
-        const ajaxData: FormData = new FormData(document.getElementById("journalTodoRegForm") as HTMLFormElement);
+        const url: string = isModify ? cF.util.bindUrl(Url.JOURNAL_TODO, { id }) : Url.JOURNAL_TODOS;
+        const ajaxData: FormData = new FormData(document.getElementById("journalTodoRegistForm") as HTMLFormElement);
         cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
             Swal.fire({ text: res.message })
                 .then(function(): void {
@@ -167,9 +167,9 @@ function regAjax(): void {
  * 변경 전: dF.JournalTodo.initForm — cF.handlebars.modal + validateForm + tinymce.init/setContent + tagify.initWithCtgr.
  * 변경 후(T-2-α): handlebars.modal 진입은 사라지고, 검증/플러그인 init 만 Vue 측에서 동일 호출 한다.
  */
-function attachRegFormControls(model: Record<string, any>): void {
+function attachRegistFormControls(model: Record<string, any>): void {
     destroyPreviousValidator();
-    cF.validate.validateForm("#journalTodoRegForm", regAjax);
+    cF.validate.validateForm("#journalTodoRegistForm", registAjax);
 
     destroyPreviousTinymce();
     cF.tinymce.init('#tinymce_journalTodoCn');
@@ -182,7 +182,7 @@ function attachRegFormControls(model: Record<string, any>): void {
         && ((dF as any).JournalTodoTag)
         && ((dF as any).JournalTodoTag.ctgrMap)
     ) ? ((dF as any).JournalTodoTag.ctgrMap as Record<string, unknown>) : {};
-    regTagify = cF.tagify.initWithCtgr("#journalTodoRegForm #tagListStr", ctgrMap);
+    registTagify = cF.tagify.initWithCtgr("#journalTodoRegistForm #tagListStr", ctgrMap);
 }
 
 /**
@@ -196,38 +196,38 @@ function submit(): void {
             if (editor && typeof editor.save === "function") editor.save();
         }
     } catch (e) {
-        console.warn("[JournalTodoRegModalApp] tinymce save failed", e);
+        console.warn("[JournalTodoRegistModalApp] tinymce save failed", e);
     }
-    $("#journalTodoRegForm").submit();
+    $("#journalTodoRegistForm").submit();
 }
 
 /**
- * 모달 오픈 — 외부에서 `window.JournalTodoRegVueApp.open(model)` 단일 진입.
+ * 모달 오픈 — 외부에서 `window.JournalTodoRegistVueApp.open(model)` 단일 진입.
  * model 은 등록 진입 시 `{ yy, mnth }`, 수정 진입 시 서버 응답 JournalTodoDto 객체.
  */
-function openReg(model: Record<string, any>): void {
-    state.model = normalizeRegModel(model);
+function openRegist(model: Record<string, any>): void {
+    state.model = normalizeRegistModel(model);
     Vue.nextTick(function(): void {
-        attachRegFormControls(state.model as Record<string, any>);
-        showRegModal();
+        attachRegistFormControls(state.model as Record<string, any>);
+        showRegistModal();
     });
 }
 
-const JournalTodoRegRootApp = {
-    name: "JournalTodoRegRootApp",
+const JournalTodoRegistRootApp = {
+    name: "JournalTodoRegistRootApp",
     components: {
-        JournalTodoRegModalHeader,
-        JournalTodoRegModalBody,
+        JournalTodoRegistModalHeader,
+        JournalTodoRegistModalBody,
     },
     data(): { state: typeof state } {
         return { state };
     },
     template: `
-    <teleport to="#journal_todo_reg_modal_header_div">
-        <JournalTodoRegModalHeader v-if="state.model" :model="state.model" />
+    <teleport to="#journal_todo_regist_modal_header_div">
+        <JournalTodoRegistModalHeader v-if="state.model" :model="state.model" />
     </teleport>
-    <teleport to="#journal_todo_reg_div">
-        <JournalTodoRegModalBody v-if="state.model" :model="state.model" />
+    <teleport to="#journal_todo_regist_div">
+        <JournalTodoRegistModalBody v-if="state.model" :model="state.model" />
     </teleport>
     `,
 };
@@ -241,30 +241,30 @@ function runWhenDomReady(fn: () => void): void {
 }
 
 runWhenDomReady(async function(): Promise<void> {
-    const mountEl = document.querySelector("#journal_todo_reg_vue_app") as HTMLElement | null;
+    const mountEl = document.querySelector("#journal_todo_regist_vue_app") as HTMLElement | null;
     if (!mountEl) {
-        console.error("[JournalTodoRegModalApp] Mount root #journal_todo_reg_vue_app not found.");
+        console.error("[JournalTodoRegistModalApp] Mount root #journal_todo_regist_vue_app not found.");
         return;
     }
 
     await i18n.load(resolveLocale());
 
-    const priorBridge = (window.JournalTodoRegVueApp ?? {}) as JournalTodoRegVueBridge;
+    const priorBridge = (window.JournalTodoRegistVueApp ?? {}) as JournalTodoRegistVueBridge;
     const pendingPayload: Record<string, any> | null | undefined = priorBridge.pendingPayload;
 
-    const app = Vue.createApp(JournalTodoRegRootApp);
+    const app = Vue.createApp(JournalTodoRegistRootApp);
     app.config.globalProperties.$t = (key: string): string => t(key);
-    app.mount("#journal_todo_reg_vue_app");
+    app.mount("#journal_todo_regist_vue_app");
 
-    window.JournalTodoRegVueApp = {
+    window.JournalTodoRegistVueApp = {
         mounted: true,
         pendingPayload: null,
-        open: openReg,
+        open: openRegist,
         submit: submit,
     };
 
     if (pendingPayload && typeof pendingPayload === "object") {
-        openReg(pendingPayload);
+        openRegist(pendingPayload);
     }
 });
 

@@ -82,4 +82,4 @@
 </script>
 <script type="module" src="/vue/feature/journal/day/JournalDayAsideWeekNavigatorApp.js?${releaseDate!}"></script>
 
-<#include "/view/feature/journal/todo/_modal/_journal_todo_reg_modal.ftlh">
+<#include "/view/feature/journal/todo/_modal/_journal_todo_regist_modal.ftlh">
