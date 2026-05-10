@@ -48,7 +48,7 @@ public class JournalAnnualReviewRestController
     @GetMapping(value = {Url.JOURNAL_ANNUAL_REVIEW})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalAnnualDtlAjax(
+    public ResponseEntity<AjaxResponse> journalAnnualDetailAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 
@@ -70,15 +70,15 @@ public class JournalAnnualReviewRestController
     @PostMapping(value = {Url.JOURNAL_ANNUAL_REVIEWS, Url.JOURNAL_ANNUAL_REVIEW})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalAnnualReviewRegAjax(
+    public ResponseEntity<AjaxResponse> journalAnnualReviewRegistAjax(
             final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JournalAnnualReviewDto journalAnnualReview,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isMdf = id != null;
-        if (isMdf) journalAnnualReview.setId(id);
-        final ServiceResponse result = isMdf ? journalAnnualReviewService.modify(journalAnnualReview, request) : journalAnnualReviewService.regist(journalAnnualReview, request);
+        final boolean isModify = id != null;
+        if (isModify) journalAnnualReview.setId(id);
+        final ServiceResponse result = isModify ? journalAnnualReviewService.modify(journalAnnualReview, request) : journalAnnualReviewService.regist(journalAnnualReview, request);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
@@ -94,7 +94,7 @@ public class JournalAnnualReviewRestController
     @DeleteMapping(value = {Url.JOURNAL_ANNUAL_REVIEW})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalAnnualReviewAjax(
+    public ResponseEntity<AjaxResponse> journalAnnualReviewDeleteAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 

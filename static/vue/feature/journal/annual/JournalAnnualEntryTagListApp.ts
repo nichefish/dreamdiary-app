@@ -7,7 +7,7 @@
  *     `journal_annual_entry_tag_list_template` + `tag_list_sized_partial` 을 `#journal_annual_*_tag_list_div` 에 주입.
  *   - 변경 후: 동일 페이로드를 `window.JournalAnnualEntryTagListVueApp.applyTagRow(kind, payload)` 브리지로 반영한다.
  *     단일 행 마크업은 `_journal_annual_entry_tag_list_template.hbs`·`tag_list_sized_partial.hbs` 와 동등(UI 변경 0).
- *   - 부트 순서: `journalAnnualService.js` 이후·`JournalAnnualDtlPageBoot.js` 이전에 적재하여 Ajax 콜백 전 브리지 확보.
+ *   - 부트 순서: `journalAnnualService.js` 이후·`JournalAnnualDetailPageBoot.js` 이전에 적재하여 Ajax 콜백 전 브리지 확보.
  *
  * 태그 클릭: partial 과 동일하게 `module` 문자열 식(`dF.JournalDayTagService` 등)을 런타임 해석해 `select(id, name, ctgr)` 호출.
  *

@@ -5,7 +5,7 @@
  * 변경(A-5-α):
  *   - `_partial/_journal_annual_context_btn_partial.hbs` (id `journal_annual_context_btn_partial`) 의
  *     마크업/이벤트(상세 보기 / 등록(수정) 모달)를 본 컴포넌트로 흡수한다.
- *   - 호출 시그니처 보존: `dF.JournalAnnual.dtlView(yy)` / `dF.JournalAnnual.mdfModal(yy)`.
+ *   - 호출 시그니처 보존: `dF.JournalAnnual.detailView(yy)` / `dF.JournalAnnual.modifyModal(yy)`.
  *   - 메시지 키는 기존 partial 의 `<@spring.message ... />` 출력값을 보존하기 위해 `Message.get(...)` 으로 옮긴다.
  *
  * 변경(D):
@@ -30,13 +30,13 @@ const JournalAnnualContextMenu = {
             const action = this.t(actionKey);
             return [label, action].filter((value: string): boolean => value.length > 0).join(" ");
         },
-        /** 상세 보기 (새 창 이동 — `dF.JournalAnnual.dtlView(yy)` 가 location.href 처리). */
+        /** 상세 보기 (새 창 이동 — `dF.JournalAnnual.detailView(yy)` 가 location.href 처리). */
         openDetached(): void {
-            (window as any).dF?.JournalAnnual?.dtlView?.(this.annual.yy);
+            (window as any).dF?.JournalAnnual?.detailView?.(this.annual.yy);
         },
         /** 등록(수정) 모달 호출. */
         openModifyModal(): void {
-            (window as any).dF?.JournalAnnual?.mdfModal?.(this.annual.yy);
+            (window as any).dF?.JournalAnnual?.modifyModal?.(this.annual.yy);
         },
     },
     template: `

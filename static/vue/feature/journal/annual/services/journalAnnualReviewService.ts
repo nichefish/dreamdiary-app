@@ -4,11 +4,11 @@
  *
  * 변경(A-4-β):
  *   - classic `static/js/view/feature/journal/annual/journal_annual_review_module.ts` 를 본 ES module 로 이전한다.
- *   - 외부 호출 시그니처 보존: `dF.JournalAnnualReview.<method>` (init / initForm / submit / regModal / mdfModal / regAjax / delAjax).
- *   - 인스턴스 필드 `tagify` 는 모듈 표면에 유지(JournalAnnualReviewRegModalApp 이 직접 set).
+ *   - 외부 호출 시그니처 보존: `dF.JournalAnnualReview.<method>` (init / initForm / submit / registModal / modifyModal / registAjax / deleteAjax).
+ *   - 인스턴스 필드 `tagify` 는 모듈 표면에 유지(JournalAnnualReviewRegistModalApp 이 직접 set).
  *   - 적재 순서:
- *     · `_journal_annual_review_reg_modal.ftlh` 의 `journalAnnualReviewRegVueScriptDone` 가드 안에서
- *       `journalAnnualReviewCrudService` → 본 ES module → `JournalAnnualReviewRegModalApp` 순으로 적재한다.
+ *     · `_journal_annual_review_regist_modal.ftlh` 의 `journalAnnualReviewRegistVueScriptDone` 가드 안에서
+ *       `journalAnnualReviewCrudService` → 본 ES module → `JournalAnnualReviewRegistModalApp` 순으로 적재한다.
  *
  * @author nichefish
  */
@@ -38,19 +38,19 @@ const journalAnnualReviewModule: dfModule = {
      * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
      *
      * 변경(A-3): cF.handlebars.modal + jQuery validate + tagify(이중 호출 보존) + tinymce 부착은
-     *   Vue JournalAnnualReviewRegModalApp(teleport) 가 attachRegFormControls 경로로 동일 수행한다.
-     *   본 메서드는 그 브리지(`window.JournalAnnualReviewRegVueApp`) 진입만 담당한다.
-     *   원본의 `dfNs.JournalAnnualReview.tagify = cF.tagify.init(...)` 인스턴스 보관은 Vue 측 attachRegFormControls 에서 동일 시점에 수행(행위 보존).
+     *   Vue JournalAnnualReviewRegistModalApp(teleport) 가 attachRegistFormControls 경로로 동일 수행한다.
+     *   본 메서드는 그 브리지(`window.JournalAnnualReviewRegistVueApp`) 진입만 담당한다.
+     *   원본의 `dfNs.JournalAnnualReview.tagify = cF.tagify.init(...)` 인스턴스 보관은 Vue 측 attachRegistFormControls 에서 동일 시점에 수행(행위 보존).
      */
     initForm: function(obj: Record<string, any> = {}): void {
         const bridge = (typeof window !== "undefined"
             ? (window as unknown as {
-                JournalAnnualReviewRegVueApp?: {
+                JournalAnnualReviewRegistVueApp?: {
                     mounted?: boolean;
                     pendingPayload?: Record<string, any> | null;
                     open?: (model: Record<string, any>) => void;
                 };
-            }).JournalAnnualReviewRegVueApp
+            }).JournalAnnualReviewRegistVueApp
             : undefined);
 
         if (bridge?.mounted === true && typeof bridge.open === "function") {
@@ -59,10 +59,10 @@ const journalAnnualReviewModule: dfModule = {
         }
         if (bridge && bridge.mounted !== true) {
             bridge.pendingPayload = obj;
-            console.log("[JournalAnnualReview.initForm] JournalAnnualReviewRegVueApp pending payload queued.");
+            console.log("[JournalAnnualReview.initForm] JournalAnnualReviewRegistVueApp pending payload queued.");
             return;
         }
-        console.error("[JournalAnnualReview.initForm] JournalAnnualReviewRegVueApp unavailable (모달 스텁 없음 또는 로드 순서 확인).");
+        console.error("[JournalAnnualReview.initForm] JournalAnnualReviewRegistVueApp unavailable (모달 스텁 없음 또는 로드 순서 확인).");
     },
 
     /**
@@ -78,39 +78,39 @@ const journalAnnualReviewModule: dfModule = {
      * 등록(수정) 모달 호출
      * @param {string|number} journalAnnualId - 저널 결산 번호
      *
-     * 변경(A-4-α): JournalAnnualReviewCrudService.regModal 위임.
+     * 변경(A-4-α): JournalAnnualReviewCrudService.registModal 위임.
      */
-    regModal: function({ journalAnnualId }: { journalAnnualId: string|number }): void {
-        dfNs.JournalAnnualReviewCrudService?.regModal?.({ journalAnnualId });
+    registModal: function({ journalAnnualId }: { journalAnnualId: string|number }): void {
+        dfNs.JournalAnnualReviewCrudService?.registModal?.({ journalAnnualId });
     },
 
     /**
      * 등록(수정) 모달 호출
      * @param {string|number} id - 년도.
      *
-     * 변경(A-4-α): JournalAnnualReviewCrudService.mdfModal 위임.
+     * 변경(A-4-α): JournalAnnualReviewCrudService.modifyModal 위임.
      */
-    mdfModal: function(id: string|number): void {
-        dfNs.JournalAnnualReviewCrudService?.mdfModal?.(id);
+    modifyModal: function(id: string|number): void {
+        dfNs.JournalAnnualReviewCrudService?.modifyModal?.(id);
     },
 
     /**
      * 등록 (Ajax)
      *
-     * 변경(A-4-α): JournalAnnualReviewCrudService.regAjax 위임.
+     * 변경(A-4-α): JournalAnnualReviewCrudService.registAjax 위임.
      */
-    regAjax: function(): void {
-        dfNs.JournalAnnualReviewCrudService?.regAjax?.();
+    registAjax: function(): void {
+        dfNs.JournalAnnualReviewCrudService?.registAjax?.();
     },
 
     /**
      * 삭제 (Ajax)
      * @param {string|number} id - 글 번호.
      *
-     * 변경(A-4-α): JournalAnnualReviewCrudService.delAjax 위임.
+     * 변경(A-4-α): JournalAnnualReviewCrudService.deleteAjax 위임.
      */
-    delAjax: function(id: string|number): void {
-        dfNs.JournalAnnualReviewCrudService?.delAjax?.(id);
+    deleteAjax: function(id: string|number): void {
+        dfNs.JournalAnnualReviewCrudService?.deleteAjax?.(id);
     },
 };
 

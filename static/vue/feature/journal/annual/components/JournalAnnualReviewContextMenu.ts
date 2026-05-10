@@ -4,7 +4,7 @@
  *
  * 변경(A-7-β):
  *   - 변경 전: Handlebars partial `journal_annual_review_context_btn_partial` 의 KTMenu 마크업 +
- *     `dF.JournalAnnualReview.mdfModal(id)` / `delAjax(id)` onclick.
+ *     `dF.JournalAnnualReview.modifyModal(id)` / `deleteAjax(id)` onclick.
  *   - 변경 후: 동일 class/data-kt-* 속성·레이아웃 보존(UI 변경 0).
  *
  * 변경(D):
@@ -30,10 +30,10 @@ const JournalAnnualReviewContextMenu = {
             return [label, action].filter((value: string): boolean => value.length > 0).join(" ");
         },
         openMdf(): void {
-            (window as any).dF?.JournalAnnualReview?.mdfModal?.(this.reviewId);
+            (window as any).dF?.JournalAnnualReview?.modifyModal?.(this.reviewId);
         },
         openDel(): void {
-            (window as any).dF?.JournalAnnualReview?.delAjax?.(this.reviewId);
+            (window as any).dF?.JournalAnnualReview?.deleteAjax?.(this.reviewId);
         },
     },
     template: `

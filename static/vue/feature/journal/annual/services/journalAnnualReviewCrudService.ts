@@ -3,10 +3,10 @@
  * 저널 결산 리뷰 CRUD/모달 서비스 (Vue 소유, dF 글로벌 등록).
  *
  * 변경(A-4-α):
- *   - journal_annual_review_module.ts 의 CRUD/Ajax 메서드(submit/regModal/mdfModal/regAjax/delAjax)
+ *   - journal_annual_review_module.ts 의 CRUD/Ajax 메서드(submit/registModal/modifyModal/registAjax/deleteAjax)
  *     를 본 service 로 추출한다. 모듈은 동일 시그니처의 thin wrapper 만 유지한다.
- *   - initForm 은 Vue 브리지 진입(JournalAnnualReviewRegVueApp) 으로 모듈 표면에 그대로 남긴다(I-3 패턴 동일).
- *   - 인스턴스 필드 `tagify` 는 `JournalAnnualReviewRegModalApp.attachRegFormControls` 가 모듈 표면에
+ *   - initForm 은 Vue 브리지 진입(JournalAnnualReviewRegistVueApp) 으로 모듈 표면에 그대로 남긴다(I-3 패턴 동일).
+ *   - 인스턴스 필드 `tagify` 는 `JournalAnnualReviewRegistModalApp.attachRegistFormControls` 가 모듈 표면에
  *     `module.tagify = cF.tagify.init(...)` 로 직접 set 한다. 외부 read 사이트는 0 이지만 행위 보존.
  *
  * 변경(D):
@@ -27,14 +27,14 @@ function getReviewNs(): Record<string, any> | undefined {
  */
 export function submit(): void {
     tinymce.get("tinymce_journalAnnualReviewCn").save();
-    $("#journalAnnualReviewRegForm").submit();
+    $("#journalAnnualReviewRegistForm").submit();
 }
 
 /**
  * 등록 모달 호출 — initForm 위임(Vue 브리지 진입).
- * 변경 전: journal_annual_review_module.regModal.
+ * 변경 전: journal_annual_review_module.registModal.
  */
-export function regModal({ journalAnnualId }: { journalAnnualId: string|number }): void {
+export function registModal({ journalAnnualId }: { journalAnnualId: string|number }): void {
     if (isNaN(Number(journalAnnualId))) return;
 
     const obj: Record<string, any> = { journalAnnualId };
@@ -44,9 +44,9 @@ export function regModal({ journalAnnualId }: { journalAnnualId: string|number }
 
 /**
  * 수정 모달 호출
- * 변경 전: journal_annual_review_module.mdfModal.
+ * 변경 전: journal_annual_review_module.modifyModal.
  */
-export function mdfModal(id: string|number): void {
+export function modifyModal(id: string|number): void {
     if (isNaN(Number(id))) return;
 
     const url: string = cF.util.bindUrl(Url.JOURNAL_ANNUAL_REVIEW, { id });
@@ -63,19 +63,19 @@ export function mdfModal(id: string|number): void {
 
 /**
  * 등록 (Ajax)
- * 변경 전: journal_annual_review_module.regAjax.
+ * 변경 전: journal_annual_review_module.registAjax.
  */
-export function regAjax(): void {
-    const id: string = cF.util.getInputValue("#journalAnnualReviewRegForm [name='id']");
-    const isMdf: boolean = cF.util.isNotEmpty(id);
+export function registAjax(): void {
+    const id: string = cF.util.getInputValue("#journalAnnualReviewRegistForm [name='id']");
+    const isModify: boolean = cF.util.isNotEmpty(id);
     Swal.fire({
-        text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+        text: resolveMessage(isModify ? "view.cnfm.mdf" : "view.cnfm.reg"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
 
-        const url: string = isMdf ? cF.util.bindUrl(Url.JOURNAL_ANNUAL_REVIEW, { id }) : Url.JOURNAL_ANNUAL_REVIEWS;
-        const ajaxData: FormData = new FormData(document.getElementById("journalAnnualReviewRegForm") as HTMLFormElement);
+        const url: string = isModify ? cF.util.bindUrl(Url.JOURNAL_ANNUAL_REVIEW, { id }) : Url.JOURNAL_ANNUAL_REVIEWS;
+        const ajaxData: FormData = new FormData(document.getElementById("journalAnnualReviewRegistForm") as HTMLFormElement);
         cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
             Swal.fire({ text: res.message })
                 .then(function(): void {
@@ -89,9 +89,9 @@ export function regAjax(): void {
 
 /**
  * 삭제 (Ajax)
- * 변경 전: journal_annual_review_module.delAjax.
+ * 변경 전: journal_annual_review_module.deleteAjax.
  */
-export function delAjax(id: string|number): void {
+export function deleteAjax(id: string|number): void {
     if (isNaN(Number(id))) return;
 
     Swal.fire({
@@ -118,10 +118,10 @@ export function delAjax(id: string|number): void {
  */
 const journalAnnualReviewCrudService = {
     submit,
-    regModal,
-    mdfModal,
-    regAjax,
-    delAjax,
+    registModal,
+    modifyModal,
+    registAjax,
+    deleteAjax,
 };
 
 (function registerOnDf(): void {

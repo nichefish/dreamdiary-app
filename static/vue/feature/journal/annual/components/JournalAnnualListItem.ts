@@ -6,7 +6,7 @@
  *   - `_journal_annual_list_template.hbs` (id `journal_annual_list_template`) 안의 카드 본문 마크업을
  *     본 컴포넌트로 흡수한다.
  *   - 호출 시그니처 보존:
- *     · 카드 헤더 클릭 → `dF.JournalAnnual.dtlView(yy)`
+ *     · 카드 헤더 클릭 → `dF.JournalAnnual.detailView(yy)`
  *     · 태그 클릭 → 기존 partial 의 `module="dF.JournalDayTagService"` 결의 `select(tagId, name)` 호출과 동일.
  *   - `markdownContent` 는 서버에서 마크업 변환된 HTML 이므로 `v-html` 사용(다른 entry/interpretation 컴포넌트와 동일 패턴).
  *   - 컨텍스트 메뉴는 `JournalAnnualContextMenu` 로 위임.
@@ -47,8 +47,8 @@ const JournalAnnualListItem = {
         isDreamCompleted(): boolean {
             return this.annual?.dreamComptYn === "Y";
         },
-        gotoDtlView(): void {
-            (window as any).dF?.JournalAnnual?.dtlView?.(this.annual.yy);
+        gotoDetailView(): void {
+            (window as any).dF?.JournalAnnual?.detailView?.(this.annual.yy);
         },
         /** 변경 전: HBS partial `tag_list_partial` 의 `module="dF.JournalDayTagService"` 결의 `select(...)` onclick. */
         selectTag(tag: AnnualTag): void {
@@ -66,7 +66,7 @@ const JournalAnnualListItem = {
                         class="cursor-pointer text-underline-dotted text-dark"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                         :title="tooltip('txt.sumry', 'bs.tooltip.page.dtl')"
-                        @click="gotoDtlView"
+                        @click="gotoDetailView"
                     >
                         <template v-if="hasTitle()">
                             <span class="fs-5 me-1">{{ annual.title }}</span>

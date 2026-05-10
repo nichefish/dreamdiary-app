@@ -1,14 +1,14 @@
 /**
- * JournalAnnualDtlCardApp.ts
- * 저널 결산 상세 카드 영역 Vue 엔트리 (`#journal_annual_dtl_div`).
+ * JournalAnnualDetailCardApp.ts
+ * 저널 결산 상세 카드 영역 Vue 엔트리 (`#journal_annual_detail_div`).
  *
  * 변경(A-7-β):
- *   - 변경 전: `journalAnnualCrudService.dtlAjax` 가 `cF.handlebars.template(rsltObj, "journal_annual_dtl")` 로
- *     `_journal_annual_dtl_template.hbs` + 리뷰 partial 3종을 컴파일해 주입했다.
- *   - 변경 후: 동일 데이터를 `window.JournalAnnualDtlVueApp.setModel(rsltObj)` 브리지로 Vue 가 렌더한다.
- *     마크업·class·인라인 동작(`dF.JournalAnnualReview.regModal` 등)은 기존 HBS 와 동등(UI 변경 0).
+ *   - 변경 전: `journalAnnualCrudService.detailAjax` 가 `cF.handlebars.template(rsltObj, "journal_annual_detail")` 로
+ *     `_journal_annual_detail_template.hbs` + 리뷰 partial 3종을 컴파일해 주입했다.
+ *   - 변경 후: 동일 데이터를 `window.JournalAnnualDetailVueApp.setModel(rsltObj)` 브리지로 Vue 가 렌더한다.
+ *     마크업·class·인라인 동작(`dF.JournalAnnualReview.registModal` 등)은 기존 HBS 와 동등(UI 변경 0).
  *   - 부트 순서: 본 ES module 은 `journalAnnualService.js`(dF.JournalAnnual 표면) 이후,
- *     `JournalAnnualDtlPageBoot.js` 이전에 적재되어 Ajax 완료 전 브리지가 존재하도록 한다.
+ *     `JournalAnnualDetailPageBoot.js` 이전에 적재되어 Ajax 완료 전 브리지가 존재하도록 한다.
  *
  * @author nichefish
  */
@@ -17,7 +17,7 @@ import JournalAnnualReviewRow from "./components/JournalAnnualReviewRow.js";
 // 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — 글로벌 결의 race 차단.
 import { resolveMessage } from "../../../common/messageHelper.js";
 
-type DtlVueBridge = {
+type DetailVueBridge = {
     mounted?: boolean;
     pendingModel?: Record<string, any> | null;
     setModel?: (obj: Record<string, any>) => void;
@@ -39,7 +39,7 @@ function runWhenDomReady(fn: () => void): void {
  */
 function reinitDomDecorations(): void {
     Vue.nextTick(function(): void {
-        const target = document.getElementById("journal_annual_dtl_div");
+        const target = document.getElementById("journal_annual_detail_div");
         if (!target) return;
 
         const bsTooltip = (window as any).bootstrap?.Tooltip;
@@ -56,8 +56,8 @@ function reinitDomDecorations(): void {
     });
 }
 
-const JournalAnnualDtlRoot = {
-    name: "JournalAnnualDtlRoot",
+const JournalAnnualDetailRoot = {
+    name: "JournalAnnualDetailRoot",
     components: { JournalAnnualReviewRow },
     data(): { pageState: typeof pageState } {
         return { pageState };
@@ -93,10 +93,10 @@ const JournalAnnualDtlRoot = {
         selectDayTag(tag: { tagId?: string | number; name?: string; ctgr?: string }): void {
             (window as any).dF?.JournalDayTagService?.select?.(tag.tagId, String(tag.name ?? ""));
         },
-        /** 변경 전: 리뷰 등록 버튼 onclick `dF.JournalAnnualReview.regModal({ journalAnnualId: {{id}} })`. */
-        openReviewRegModal(): void {
+        /** 변경 전: 리뷰 등록 버튼 onclick `dF.JournalAnnualReview.registModal({ journalAnnualId: {{id}} })`. */
+        openReviewRegistModal(): void {
             const journalAnnualId = this.pageState.model?.id;
-            (window as any).dF?.JournalAnnualReview?.regModal?.({ journalAnnualId });
+            (window as any).dF?.JournalAnnualReview?.registModal?.({ journalAnnualId });
         },
     },
     template: `
@@ -163,7 +163,7 @@ const JournalAnnualDtlRoot = {
                     <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-2 pe-3 py-1 cursor-pointer"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                             :title="tooltip('txt.journal.diary', 'bs.tooltip.modal.reg')"
-                            @click="openReviewRegModal"
+                            @click="openReviewRegistModal"
                     >
                         <i class="bi bi-plus fs-4 pe-0"></i>
                         {{ t('txt.journal.annual.review.reg') }}
@@ -183,13 +183,13 @@ const JournalAnnualDtlRoot = {
 let setModelHandler: ((obj: Record<string, any>) => void) | null = null;
 
 runWhenDomReady(function(): void {
-    const mountEl = document.getElementById("journal_annual_dtl_div") as HTMLElement | null;
+    const mountEl = document.getElementById("journal_annual_detail_div") as HTMLElement | null;
     if (!mountEl) {
-        console.error("[JournalAnnualDtlCardApp] mount root #journal_annual_dtl_div 없음.");
+        console.error("[JournalAnnualDetailCardApp] mount root #journal_annual_detail_div 없음.");
         return;
     }
 
-    const priorBridge = ((window as any).JournalAnnualDtlVueApp ?? {}) as DtlVueBridge;
+    const priorBridge = ((window as any).JournalAnnualDetailVueApp ?? {}) as DetailVueBridge;
     const pending = priorBridge.pendingModel ?? null;
 
     pageState.model = null;
@@ -199,10 +199,10 @@ runWhenDomReady(function(): void {
         reinitDomDecorations();
     };
 
-    const app = Vue.createApp(JournalAnnualDtlRoot);
+    const app = Vue.createApp(JournalAnnualDetailRoot);
     app.mount(mountEl);
 
-    (window as any).JournalAnnualDtlVueApp = {
+    (window as any).JournalAnnualDetailVueApp = {
         mounted: true,
         pendingModel: null,
         setModel: function(obj: Record<string, any>): void {
@@ -210,9 +210,9 @@ runWhenDomReady(function(): void {
                 setModelHandler(obj);
                 return;
             }
-            const b = (window as any).JournalAnnualDtlVueApp as DtlVueBridge;
+            const b = (window as any).JournalAnnualDetailVueApp as DetailVueBridge;
             b.pendingModel = obj;
-            console.log("[JournalAnnualDtlCardApp] pending model queued.");
+            console.log("[JournalAnnualDetailCardApp] pending model queued.");
         },
     };
 

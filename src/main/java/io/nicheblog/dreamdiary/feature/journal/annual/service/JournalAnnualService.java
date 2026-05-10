@@ -77,7 +77,7 @@ public class JournalAnnualService
     @Caching(evict = {
             @CacheEvict(value="journalAnnualTotalListByUser", key="#username"),
             @CacheEvict(value="journalAnnualListByUser", key="#username"),
-            @CacheEvict(value="journalAnnualYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy)")
+            @CacheEvict(value="journalAnnualYyDetailDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy)")
     })
     public Boolean makeYyAnnualByUser(final String username, final Integer yy) throws Exception {
         // 해당 년도 저널 결산 정보 조회
@@ -164,8 +164,8 @@ public class JournalAnnualService
      * @param key 식별자
      * @return {@link JournalAnnualDto} -- 조회된 결산 정보가 담긴 Dto 객체
      */
-    @Cacheable(value="journalAnnualDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
-    public JournalAnnualDto getAnnualDtlByUser(final String username, final Integer key) throws Exception {
+    @Cacheable(value="journalAnnualDetailDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JournalAnnualDto getAnnualDetailByUser(final String username, final Integer key) throws Exception {
         final JournalAnnualDto retrieved = this.getSelf().getDtlDto(key);
         if (retrieved != null && !retrieved.getIsCreatedBy(username)) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
@@ -179,8 +179,8 @@ public class JournalAnnualService
      * @param yy 조회할 년도
      * @return {@link JournalAnnualDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      */
-    @Cacheable(value="journalAnnualYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy)")
-    public JournalAnnualDto getDtlDtoByYyByUser(final String username, final Integer yy) throws Exception {
+    @Cacheable(value="journalAnnualYyDetailDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy)")
+    public JournalAnnualDto getDetailDtoByYyByUser(final String username, final Integer yy) throws Exception {
         final Optional<JournalAnnualEntity> retrievedWrapper = repository.findByYyAndCreatedBy(yy, AuthUtils.requireUsername(username));
         if (retrievedWrapper.isEmpty()) return null;
 

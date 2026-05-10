@@ -4,13 +4,13 @@
  *
  * 변경(A-4-β):
  *   - classic `static/js/view/feature/journal/annual/journal_annual_module.ts` 를 본 ES module 로 이전한다.
- *   - 외부 호출 시그니처 보존: `dF.JournalAnnual.<method>` (init / initForm / listAjax / dtlView / … / regAjax).
+ *   - 외부 호출 시그니처 보존: `dF.JournalAnnual.<method>` (init / initForm / listAjax / detailView / … / registAjax).
  *   - thin 위임은 `JournalAnnualCrudService` / `JournalAnnualStateService` 유지(A-4-α).
  *   - 적재 순서:
- *     · `_journal_annual_reg_modal.ftlh` 의 `journalAnnualRegVueScriptDone` 가드 안에서
- *       `journalAnnualCrudService` → `journalAnnualStateService` → 본 ES module → `JournalAnnualRegModalApp`
+ *     · `_journal_annual_regist_modal.ftlh` 의 `journalAnnualRegistVueScriptDone` 가드 안에서
+ *       `journalAnnualCrudService` → `journalAnnualStateService` → 본 ES module → `JournalAnnualRegistModalApp`
  *       순으로 적재한다(list 페이지는 결산 등록 모달 include 가 단일 진입점).
- *     · `journal_annual_dtl.ftlh` 는 결산 등록 모달을 포함하지 않으므로 페이지 하단에서 동일 의존 순으로 적재한다.
+ *     · `journal_annual_detail.ftlh` 는 결산 등록 모달을 포함하지 않으므로 페이지 하단에서 동일 의존 순으로 적재한다.
  *   - ES module 은 `defer` 와 동등 평가이므로 페이지의 `Url` / `Message` / `cF` 등 글로벌 등록 이후 평가된다.
  *
  * 호출 그래프 비고:
@@ -43,18 +43,18 @@ const journalAnnualModule: dfModule = {
      * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
      *
      * 변경(A-3): cF.handlebars.modal + jQuery validate + tagify + tinymce 부착은
-     *   Vue JournalAnnualRegModalApp(teleport) 가 attachRegFormControls 경로로 동일 수행한다.
-     *   본 메서드는 그 브리지(`window.JournalAnnualRegVueApp`) 진입만 담당한다.
+     *   Vue JournalAnnualRegistModalApp(teleport) 가 attachRegistFormControls 경로로 동일 수행한다.
+     *   본 메서드는 그 브리지(`window.JournalAnnualRegistVueApp`) 진입만 담당한다.
      */
     initForm: function(obj: Record<string, any> = {}): void {
         const bridge = (typeof window !== "undefined"
             ? (window as unknown as {
-                JournalAnnualRegVueApp?: {
+                JournalAnnualRegistVueApp?: {
                     mounted?: boolean;
                     pendingPayload?: Record<string, any> | null;
                     open?: (model: Record<string, any>) => void;
                 };
-            }).JournalAnnualRegVueApp
+            }).JournalAnnualRegistVueApp
             : undefined);
 
         if (bridge?.mounted === true && typeof bridge.open === "function") {
@@ -63,10 +63,10 @@ const journalAnnualModule: dfModule = {
         }
         if (bridge && bridge.mounted !== true) {
             bridge.pendingPayload = obj;
-            console.log("[JournalAnnual.initForm] JournalAnnualRegVueApp pending payload queued.");
+            console.log("[JournalAnnual.initForm] JournalAnnualRegistVueApp pending payload queued.");
             return;
         }
-        console.error("[JournalAnnual.initForm] JournalAnnualRegVueApp unavailable (모달 스텁 없음 또는 로드 순서 확인).");
+        console.error("[JournalAnnual.initForm] JournalAnnualRegistVueApp unavailable (모달 스텁 없음 또는 로드 순서 확인).");
     },
 
     /**
@@ -82,30 +82,30 @@ const journalAnnualModule: dfModule = {
      * 상세 화면으로 이동 (년도로 조회)
      * @param {string|number} yy - 조회할 년도.
      *
-     * 변경(A-4-α): JournalAnnualCrudService.dtlView 위임.
+     * 변경(A-4-α): JournalAnnualCrudService.detailView 위임.
      */
-    dtlView: function(yy: string|number): void {
-        dfNs.JournalAnnualCrudService?.dtlView?.(yy);
+    detailView: function(yy: string|number): void {
+        dfNs.JournalAnnualCrudService?.detailView?.(yy);
     },
 
     /**
      * 섹션 전환 이동 (년도로 조회)
      * @param {"DIARY"|"DREAM"} section - 조회 섹션
      *
-     * 변경(A-4-α): JournalAnnualCrudService.dtlViewWithSection 위임.
+     * 변경(A-4-α): JournalAnnualCrudService.detailViewWithSection 위임.
      */
-    dtlViewWithSection: function(section: "DIARY"|"DREAM"): void {
-        dfNs.JournalAnnualCrudService?.dtlViewWithSection?.(section);
+    detailViewWithSection: function(section: "DIARY"|"DREAM"): void {
+        dfNs.JournalAnnualCrudService?.detailViewWithSection?.(section);
     },
 
     /**
      * 상세 조회 (Ajax) (년도로 조회)
      * @param {string|number} yy - 조회할 년도.
      *
-     * 변경(A-4-α): JournalAnnualCrudService.dtlAjax 위임.
+     * 변경(A-4-α): JournalAnnualCrudService.detailAjax 위임.
      */
-    dtlAjax: function(yy: string|number): void {
-        dfNs.JournalAnnualCrudService?.dtlAjax?.(yy);
+    detailAjax: function(yy: string|number): void {
+        dfNs.JournalAnnualCrudService?.detailAjax?.(yy);
     },
 
     /**
@@ -221,19 +221,19 @@ const journalAnnualModule: dfModule = {
      * 등록(수정) 모달 호출
      * @param {string|number} yy - 년도.
      *
-     * 변경(A-4-α): JournalAnnualCrudService.mdfModal 위임.
+     * 변경(A-4-α): JournalAnnualCrudService.modifyModal 위임.
      */
-    mdfModal: function(yy: string|number): void {
-        dfNs.JournalAnnualCrudService?.mdfModal?.(yy);
+    modifyModal: function(yy: string|number): void {
+        dfNs.JournalAnnualCrudService?.modifyModal?.(yy);
     },
 
     /**
      * 등록 (Ajax)
      *
-     * 변경(A-4-α): JournalAnnualCrudService.regAjax 위임.
+     * 변경(A-4-α): JournalAnnualCrudService.registAjax 위임.
      */
-    regAjax: function(): void {
-        dfNs.JournalAnnualCrudService?.regAjax?.();
+    registAjax: function(): void {
+        dfNs.JournalAnnualCrudService?.registAjax?.();
     },
 };
 

@@ -124,7 +124,7 @@ runWhenDomReady(function(): void {
     };
 
     /* 변경(A-5-α): 페이지 부트 진입 — 레거시 `journal_annual_list.ts` Page IIFE 동등 동작.
-     * dF.JournalAnnual 표면은 동일 가드의 ES module 묶음(_journal_annual_reg_modal.ftlh) 에서 등록된다. */
+     * dF.JournalAnnual 표면은 동일 가드의 ES module 묶음(_journal_annual_regist_modal.ftlh) 에서 등록된다. */
     const ns = (window as any).dF?.JournalAnnual;
     if (ns?.init) ns.init();
     if (ns?.listAjax) ns.listAjax();

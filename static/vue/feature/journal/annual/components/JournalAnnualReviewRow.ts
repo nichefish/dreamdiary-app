@@ -75,7 +75,7 @@ const JournalAnnualReviewRow = {
             mod?.select?.(tag.tagId, String(tag.name ?? ""));
         },
         /** 변경 전: `comment_reg_btn_partial` onclick. */
-        openCommentReg(): void {
+        openCommentRegist(): void {
             const id = (this.item as Record<string, any>).id;
             (window as any).dF?.Comment?.modal?.regModal?.(id, "JOURNAL_ANNUAL_REVIEW");
         },
@@ -149,7 +149,7 @@ const JournalAnnualReviewRow = {
             <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                     :title="tooltip('txt.comment', 'bs.tooltip.modal.reg')"
-                    @click="openCommentReg"
+                    @click="openCommentRegist"
             >
                 <i class="bi bi-chat-left-dots p-0"></i>
             </button>

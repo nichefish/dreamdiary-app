@@ -9,7 +9,7 @@
 <link rel="stylesheet" type="text/css" href="/css/journal.css?${releaseDate!}" />
 
 <!--begin::Card-->
-<div id="journal_annual_dtl_div" class="card post">
+<div id="journal_annual_detail_div" class="card post">
     <!-- handlebars template goes in here-->
 </div>
 
@@ -19,7 +19,7 @@
     <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
         <li class="nav-item">
             <a class="nav-link px-6 ${(section == 'DIARY')?then('active','')}" data-bs-toggle="tab" href="#kt_tab_pane_1"
-               onclick="dF.JournalAnnual.dtlViewWithSection('DIARY');">
+               onclick="dF.JournalAnnual.detailViewWithSection('DIARY');">
                 <span class="nav-icon pe-1">
                     <i class="bi bi-book"></i>
                 </span>
@@ -28,7 +28,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link px-6 ${(section == 'DREAM')?then('active','')}" data-bs-toggle="tab" href="#kt_tab_pane_2"
-               onclick="dF.JournalAnnual.dtlViewWithSection('DREAM');">
+               onclick="dF.JournalAnnual.detailViewWithSection('DREAM');">
                 <span class="nav-icon pe-1">
                     <i class="bi bi-moon-stars"></i>
                 </span>
@@ -39,7 +39,7 @@
 </div>
 
 <!-- 태그 헤더 :: 파일 분리 -->
-<#include "/view/feature/journal/annual/tag/_journal_annual_dtl_tag_header.ftlh">
+<#include "/view/feature/journal/annual/tag/_journal_annual_detail_tag_header.ftlh">
 <hr class="my-6 text-muted" />
 
 <div class="d-flex align-items-end justify-content-end mb-2">
@@ -117,7 +117,7 @@
 <#--include::tags-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
 <#-- 변경(A-9): `_tag_list_partial.hbs` include 제거 — `{{> tag_list_partial}}` 호출 0건(A-5-α 에서
-     `_journal_annual_list_template.hbs`/`JournalAnnualListItem`, `JournalAnnualDtlCardApp`, `JournalAnnualReviewRow` 가 Vue 흡수),
+     `_journal_annual_list_template.hbs`/`JournalAnnualListItem`, `JournalAnnualDetailCardApp`, `JournalAnnualReviewRow` 가 Vue 흡수),
      JS/TS 문자열 참조 0건이라 dead partial 로 확정. -->
 <#-- 변경(A-7-δ): `tag_list_sized_partial` 는 본 페이지 태그 헤더 전용이었음(Vue 흡수) — sized partial 스크립트 등록 생략. -->
 
@@ -136,29 +136,29 @@
 
 <#--include::journal_annual_modules-->
 <#-- 변경(A-5-α): `_journal_annual_context_btn_partial.hbs` include 제거 — 본 partial 의 유일 호출자(`_journal_annual_list_template.hbs`)가 Vue 로 흡수되어 dtl 페이지에서는 dead include. -->
-<#-- 변경(A-7-β): `_journal_annual_dtl_template.hbs` 및 리뷰 partial 3종(`journal_annual_review_*`) include 제거 —
-     상세 카드 본문은 `JournalAnnualDtlCardApp` Vue 가 1:1 재현한다. -->
-<#include "/view/feature/journal/annual/_modal/_journal_annual_review_reg_modal.ftlh">
+<#-- 변경(A-7-β): `_journal_annual_detail_template.hbs` 및 리뷰 partial 3종(`journal_annual_review_*`) include 제거 —
+     상세 카드 본문은 `JournalAnnualDetailCardApp` Vue 가 1:1 재현한다. -->
+<#include "/view/feature/journal/annual/_modal/_journal_annual_review_regist_modal.ftlh">
 <#-- 변경(A-7-δ): `_journal_annual_entry_tag_list_template.hbs` 제거 — `JournalAnnualEntryTagListApp` Vue 가 태그 헤더 3행을 렌더한다. -->
 <#-- 변경(A-7-γ): `_journal_annual_entry_list_template.hbs` include 제거 —
      DIARY/DREAM 엔트리 리스트는 `JournalAnnualEntryListApp` Vue (`JournalAnnualEntryItem` 행 컴포넌트) 가 렌더한다. -->
 <#-- 변경(A-4-β): 결산 상세는 결산 등록 모달을 포함하지 않으므로 `dF.JournalAnnual` 표면은 페이지 하단에서 적재한다.
-     Review 묶음(ReviewCrud + journalAnnualReviewService + ReviewRegModalApp)은 `_journal_annual_review_reg_modal.ftlh` 가드로 단일 수렴.
+     Review 묶음(ReviewCrud + journalAnnualReviewService + ReviewRegModalApp)은 `_journal_annual_review_regist_modal.ftlh` 가드로 단일 수렴.
      classic journal_annual_module.js / journal_annual_review_module.js 제거. -->
 <script type="module" src="/vue/feature/journal/annual/services/journalAnnualCrudService.js?${releaseDate!}"></script>
 <script type="module" src="/vue/feature/journal/annual/services/journalAnnualStateService.js?${releaseDate!}"></script>
 <script type="module" src="/vue/feature/journal/annual/services/journalAnnualService.js?${releaseDate!}"></script>
-<#-- 변경(A-7-β): 상세 카드 Vue — `JournalAnnualDtlPageBoot` 보다 선행 적재하여 `dtlAjax` 완료 전 `JournalAnnualDtlVueApp` 브리지가 존재한다. -->
-<script type="module" src="/vue/feature/journal/annual/JournalAnnualDtlCardApp.js?${releaseDate!}"></script>
-<#-- 변경(A-7-δ): 태그 헤더 Vue — `JournalAnnualDtlPageBoot` 보다 선행 적재하여 `getTagListAjax` 콜백 전 `JournalAnnualEntryTagListVueApp` 브리지가 존재한다. -->
+<#-- 변경(A-7-β): 상세 카드 Vue — `JournalAnnualDetailPageBoot` 보다 선행 적재하여 `detailAjax` 완료 전 `JournalAnnualDetailVueApp` 브리지가 존재한다. -->
+<script type="module" src="/vue/feature/journal/annual/JournalAnnualDetailCardApp.js?${releaseDate!}"></script>
+<#-- 변경(A-7-δ): 태그 헤더 Vue — `JournalAnnualDetailPageBoot` 보다 선행 적재하여 `getTagListAjax` 콜백 전 `JournalAnnualEntryTagListVueApp` 브리지가 존재한다. -->
 <script type="module" src="/vue/feature/journal/annual/JournalAnnualEntryTagListApp.js?${releaseDate!}"></script>
-<#-- 변경(A-7-γ): 엔트리 리스트 Vue — `JournalAnnualDtlPageBoot` 보다 선행 적재하여 `getAnnualDiaryListAjax` /
+<#-- 변경(A-7-γ): 엔트리 리스트 Vue — `JournalAnnualDetailPageBoot` 보다 선행 적재하여 `getAnnualDiaryListAjax` /
      `getAnnualDreamListAjax` 콜백 전 `JournalAnnualEntryListVueApp` 브리지가 존재한다. -->
 <script type="module" src="/vue/feature/journal/annual/JournalAnnualEntryListApp.js?${releaseDate!}"></script>
 
 <#--include::page scripts-->
-<#-- 변경(A-7-α): classic page IIFE `journal_annual_dtl.js` 제거 — `JournalAnnualDtlPageBoot` ES module 단일 수렴.
+<#-- 변경(A-7-α): classic page IIFE `journal_annual_detail.js` 제거 — `JournalAnnualDetailPageBoot` ES module 단일 수렴.
      dF.JournalAnnual / dF.JournalAnnualReview 표면이 위 묶음에서 등록된 뒤 본 ES module 이 동등 부트 시퀀스를 수행한다. -->
-<script type="module" src="/vue/feature/journal/annual/JournalAnnualDtlPageBoot.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/journal/annual/JournalAnnualDetailPageBoot.js?${releaseDate!}"></script>
 
 </@layout.layout>
