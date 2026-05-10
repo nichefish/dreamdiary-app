@@ -53,6 +53,15 @@ public class ChatMessageDto
     @Builder.Default
     private String role = "USER";
 
+    /** 채팅 세션 ID */
+    private Integer sessionId;
+
+    /** 세션 내 메시지 순번 */
+    private Integer seq;
+
+    /** 메시지 메타데이터 */
+    private String metadataJson;
+
     /* ----- */
 
     @Override

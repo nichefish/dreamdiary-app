@@ -153,6 +153,133 @@
     }
 }
 
+.chat-session-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.08);
+    background: #ffffff;
+}
+
+.chat-session-add-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 10px;
+    background: #1596a6;
+    color: #ffffff;
+    transition: background 0.16s ease, opacity 0.16s ease;
+
+    &:hover:not(:disabled) {
+        background: #0b7280;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
+
+.chat-session-list {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.chat-session-chip {
+    flex: 0 0 154px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #334155;
+    text-align: left;
+    transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+
+    &:hover {
+        border-color: rgba(21, 150, 166, 0.35);
+        background: #f0fbfc;
+    }
+}
+
+.chat-session-chip__body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.chat-session-chip--active {
+    border-color: rgba(21, 150, 166, 0.58);
+    background: #e8f7f8;
+    color: #0b7280;
+}
+
+.chat-session-chip__title,
+.chat-session-chip__time {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-session-chip__title {
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.chat-session-chip__time {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.chat-session-chip__delete {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    color: #94a3b8;
+    opacity: 0;
+    transition: background 0.16s ease, color 0.16s ease, opacity 0.16s ease;
+}
+
+.chat-session-chip:hover .chat-session-chip__delete,
+.chat-session-chip--active .chat-session-chip__delete {
+    opacity: 1;
+}
+
+.chat-session-chip__delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.chat-session-empty {
+    display: flex;
+    align-items: center;
+    height: 34px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+}
+
 .chat-message-list {
     flex: 1 1 auto;
     display: flex;

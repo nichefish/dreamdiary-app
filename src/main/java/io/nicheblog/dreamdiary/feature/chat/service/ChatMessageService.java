@@ -10,6 +10,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ChatMessageService
@@ -38,5 +43,25 @@ public class ChatMessageService
 
     public ChatMessageMapstruct getWriteMapstruct() {
         return this.mapstruct;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatMessageDto> getSessionMessages(final Integer sessionId) throws Exception {
+        return this.listEntityToDto(repository.findAllBySessionIdOrderBySeqAscCreatedAtAsc(sessionId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatMessageDto> getRecentContextMessages(final Integer sessionId) throws Exception {
+        final List<ChatMessageEntity> entityList = repository.findTop20BySessionIdOrderBySeqDescCreatedAtDesc(sessionId);
+        Collections.reverse(entityList);
+
+        return this.listEntityToDto(entityList).stream()
+                .filter(message -> message.getContent() != null && !message.getContent().trim().isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getNextSeq(final Integer sessionId) {
+        return repository.findMaxSeqBySessionId(sessionId) + 1;
     }
 }

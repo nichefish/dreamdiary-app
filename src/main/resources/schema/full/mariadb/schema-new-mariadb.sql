@@ -92,14 +92,34 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
 
 -- 채팅 메세지
 -- @extends: BasePostEntity
+CREATE TABLE IF NOT EXISTS chat_session (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '세션 ID',
+    title VARCHAR(200) COMMENT '제목',
+    status VARCHAR(20) DEFAULT 'ACTIVE' COMMENT '상태',
+    model VARCHAR(100) COMMENT 'AI 모델',
+    system_prompt LONGTEXT COMMENT '시스템 프롬프트',
+    last_message_at DATETIME COMMENT '마지막 메시지 일시',
+    -- AUDIT
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    INDEX idx_chat_session_created_by (created_by),
+    INDEX idx_chat_session_last_message_at (last_message_at)
+);
+
 CREATE TABLE IF NOT EXISTS chat_message (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(50) DEFAULT 'CHAT_MESSAGE' COMMENT '컨텐츠 타입',
     role VARCHAR(20) DEFAULT 'USER' COMMENT '메시지 역할',
+    session_id INT COMMENT '채팅 세션 ID',
+    seq INT COMMENT '세션 내 메시지 순번',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
     category_code VARCHAR(50) COMMENT '글 분류 코드',
+    metadata_json LONGTEXT COMMENT '메시지 메타데이터',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -107,7 +127,8 @@ CREATE TABLE IF NOT EXISTS chat_message (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
-    deleted_at DATETIME COMMENT '삭제일시'
+    deleted_at DATETIME COMMENT '삭제일시',
+    INDEX idx_chat_message_session_seq (session_id, seq)
 );
 
 -- 팝업 (PopupEntity)
