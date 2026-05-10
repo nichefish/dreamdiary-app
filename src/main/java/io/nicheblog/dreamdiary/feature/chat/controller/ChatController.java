@@ -3,9 +3,11 @@ package io.nicheblog.dreamdiary.feature.chat.controller;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageSearchParam;
+import io.nicheblog.dreamdiary.feature.chat.model.ChatSettingDto;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatSessionDto;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatAIService;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatMessageService;
+import io.nicheblog.dreamdiary.feature.chat.service.ChatSettingService;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatSessionService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
@@ -38,7 +40,56 @@ public class ChatController {
 
     private final ChatMessageService chatMessageService;
     private final ChatSessionService chatSessionService;
+    private final ChatSettingService chatSettingService;
     private final ChatAIService chatAIService;
+
+    /**
+     * 내 채팅 설정을 조회한다.
+     */
+    @GetMapping("/chat/settings")
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> getChatSettings() {
+        final ChatSettingDto setting = chatSettingService.getMySetting();
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+    }
+
+    /**
+     * 내 채팅 설정을 수정한다.
+     */
+    @PatchMapping("/chat/settings")
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> modifyChatSettings(
+            final @RequestBody ChatSettingDto settingDto
+    ) {
+        final ChatSettingDto setting = chatSettingService.modifyMySetting(settingDto);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+    }
+
+    /**
+     * 관리자 채팅 기본 설정을 조회한다.
+     */
+    @GetMapping("/admin/chat/settings")
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> getAdminChatSettings() {
+        final ChatSettingDto setting = chatSettingService.getAdminSetting();
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+    }
+
+    /**
+     * 관리자 채팅 기본 설정을 수정한다.
+     */
+    @PatchMapping("/admin/chat/settings")
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> modifyAdminChatSettings(
+            final @RequestBody ChatSettingDto settingDto
+    ) {
+        final ChatSettingDto setting = chatSettingService.modifyAdminSetting(settingDto);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+    }
 
     /**
      * 내 채팅 세션 목록을 조회한다.

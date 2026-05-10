@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.chat.spec.ChatMessageSpec;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,8 +52,9 @@ public class ChatMessageService
     }
 
     @Transactional(readOnly = true)
-    public List<ChatMessageDto> getRecentContextMessages(final Integer sessionId) throws Exception {
-        final List<ChatMessageEntity> entityList = repository.findTop20BySessionIdOrderBySeqDescCreatedAtDesc(sessionId);
+    public List<ChatMessageDto> getRecentContextMessages(final Integer sessionId, final Integer recentMessageLimit) throws Exception {
+        final int limit = normalizeRecentMessageLimit(recentMessageLimit);
+        final List<ChatMessageEntity> entityList = repository.findAllBySessionIdOrderBySeqDescCreatedAtDesc(sessionId, PageRequest.of(0, limit));
         Collections.reverse(entityList);
 
         return this.listEntityToDto(entityList).stream()
@@ -63,5 +65,10 @@ public class ChatMessageService
     @Transactional(readOnly = true)
     public Integer getNextSeq(final Integer sessionId) {
         return repository.findMaxSeqBySessionId(sessionId) + 1;
+    }
+
+    private int normalizeRecentMessageLimit(final Integer recentMessageLimit) {
+        if (recentMessageLimit == null) return 20;
+        return Math.max(2, Math.min(100, recentMessageLimit));
     }
 }

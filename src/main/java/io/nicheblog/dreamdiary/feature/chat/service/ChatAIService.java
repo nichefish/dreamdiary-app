@@ -27,6 +27,7 @@ public class ChatAIService {
 
     private final ChatMessageService chatMessageService;
     private final ChatSessionService chatSessionService;
+    private final ChatSettingService chatSettingService;
     private final OllamaClient ollamaClient;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -53,9 +54,10 @@ public class ChatAIService {
         );
 
         // 3. AI 응답 생성
+        final int recentMessageLimit = chatSettingService.getMyRecentMessageLimit();
         final String aiResponse = ollamaClient.chat(
                         StringUtils.defaultIfBlank(session.getSystemPrompt(), chatSessionService.getDefaultSystemPrompt()),
-                        chatMessageService.getRecentContextMessages(sessionId)
+                        chatMessageService.getRecentContextMessages(sessionId, recentMessageLimit)
                 );
 
         // 4. AI 메시지 저장

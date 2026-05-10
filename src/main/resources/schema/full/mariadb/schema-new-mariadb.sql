@@ -109,6 +109,21 @@ CREATE TABLE IF NOT EXISTS chat_session (
     INDEX idx_chat_session_last_message_at (last_message_at)
 );
 
+CREATE TABLE IF NOT EXISTS chat_setting (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '설정 ID',
+    scope VARCHAR(20) DEFAULT 'USER' COMMENT '설정 범위',
+    scope_key VARCHAR(100) COMMENT '설정 범위 키',
+    recent_message_limit INT DEFAULT 20 COMMENT '최근 대화 기억 메시지 수',
+    -- AUDIT
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    INDEX idx_chat_setting_scope (scope, scope_key),
+    INDEX idx_chat_setting_created_by (created_by)
+);
+
 CREATE TABLE IF NOT EXISTS chat_message (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(50) DEFAULT 'CHAT_MESSAGE' COMMENT '컨텐츠 타입',

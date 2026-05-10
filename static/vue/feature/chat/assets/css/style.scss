@@ -457,8 +457,16 @@
     background: #ffffff;
 }
 
-.chat-composer__input {
+.chat-composer__main {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 8px;
+}
+
+.chat-composer__input {
+    width: 100%;
     min-width: 0;
     max-height: 116px;
     padding: 12px 14px;
@@ -478,6 +486,40 @@
         background: #ffffff;
         box-shadow: 0 0 0 4px rgba(21, 150, 166, 0.1);
     }
+}
+
+.chat-composer__settings {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+}
+
+.chat-memory-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.chat-memory-select select {
+    height: 28px;
+    max-width: 132px;
+    padding: 0 26px 0 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 800;
+    outline: none;
+}
+
+.chat-memory-select select:focus {
+    border-color: rgba(21, 150, 166, 0.55);
+    box-shadow: 0 0 0 3px rgba(21, 150, 166, 0.1);
 }
 
 .chat-send-btn {
@@ -554,6 +596,10 @@
 
     .chat-composer {
         padding: 12px;
+    }
+
+    .chat-memory-select span {
+        display: none;
     }
 
     .chat-send-btn {

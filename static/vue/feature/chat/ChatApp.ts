@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", function(): void {
                 isChatOpen: false,
                 isWaitingResponse: false,
                 isSessionLoading: false,
+                isSettingSaving: false,
+                chatSetting: {
+                    recentMessageLimit: 20
+                },
                 sessions: [],
                 activeSessionId: null,
                 chatMessages: []
@@ -101,6 +105,25 @@ document.addEventListener("DOMContentLoaded", function(): void {
                     this.isSessionLoading = false;
                 }
             },
+            handleSettingLoaded(setting: any): void {
+                if (!setting) return;
+                this.chatSetting = setting;
+            },
+            handleSettingUpdated(setting: any): void {
+                if (!setting) return;
+                this.chatSetting = setting;
+            },
+            async updateChatSetting(setting: any): Promise<void> {
+                if (!setting || this.isSettingSaving) return;
+
+                this.isSettingSaving = true;
+                try {
+                    const updated = await this.$refs.chatClient.updateSetting(setting);
+                    if (updated) this.chatSetting = updated;
+                } finally {
+                    this.isSettingSaving = false;
+                }
+            },
             handleMessagesLoaded(messages: any[]): void {
                 this.chatMessages = messages || [];
                 this.$refs.chatWindow.scrollToBottom();
@@ -150,18 +173,23 @@ document.addEventListener("DOMContentLoaded", function(): void {
                         @messages-loaded="handleMessagesLoaded"
                         @sessions-loaded="handleSessionsLoaded"
                         @session-created="handleSessionCreated"
-                        @session-deleted="handleSessionDeleted" />
+                        @session-deleted="handleSessionDeleted"
+                        @setting-loaded="handleSettingLoaded"
+                        @setting-updated="handleSettingUpdated" />
             <ChatWindow ref="chatWindow"
                         :authInfo="authInfo"
                         :isChatOpen="isChatOpen"
                         :sessions="sessions"
                         :activeSessionId="activeSessionId"
                         :isSessionLoading="isSessionLoading"
+                        :isSettingSaving="isSettingSaving"
+                        :chatSetting="chatSetting"
                         :chatMessages="chatMessages"
                         :isWaitingResponse="isWaitingResponse"
                         @new-session="createSession"
                         @select-session="selectSession"
                         @delete-session="deleteSession"
+                        @update-setting="updateChatSetting"
                         @send-message="handleSendMessage"
                         @close-chat="closeChat" />
         `
