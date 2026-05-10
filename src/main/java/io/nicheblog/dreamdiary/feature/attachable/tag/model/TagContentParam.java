@@ -30,7 +30,7 @@ public class TagContentParam
     private String refContentType;
 
     /** 태그 이름 */
-    private String tagNm;
+    private String name;
 
     /** 카테고리 */
     private String ctgr;

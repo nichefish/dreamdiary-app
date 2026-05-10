@@ -87,10 +87,10 @@ public class WebSecurityAdapter {
                 // 비밀번호 만료시 비밀번호 변경 화면
                 .antMatchers(Url.API_AUTH_LGN_PW_CHG)
                 // 신규계정 신청 화면/기능 전체 접근 (+아이디 중복 체크)
-                .antMatchers(Url.USER_REQST_REG_FORM)
-                .antMatchers(Url.USER_REQST_REG_AJAX)
-                .antMatchers(Url.USERNAME_DUP_CHK_AJAX)
-                .antMatchers(Url.USER_EMAIL_DUP_CHK_AJAX);
+                .antMatchers(Url.USER_SIGNUP_PAGE)
+                .antMatchers(Url.USER_SIGNUP_REQUESTS)
+                .antMatchers(Url.USERS_DUPLICATE_USERNAME_CHECK)
+                .antMatchers(Url.USERS_DUPLICATE_EMAIL_CHECK);
     }
 
     /**

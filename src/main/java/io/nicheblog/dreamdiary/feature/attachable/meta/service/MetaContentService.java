@@ -93,9 +93,8 @@ public class MetaContentService
                     final Integer metaId = entity.getMetaId();
                     final MetaSmpEntity meta = this.getSelf().getMetaSmpDtlEntity(metaId);
                     entity.setMeta(meta);
-                    entity.setMetaNm(meta.getMetaNm());
+                    entity.setName(meta.getName());
                     entity.setCtgr(meta.getCtgr());
-                    entity.setLabel(meta.getLabel());
                 })
                 .collect(Collectors.toList());
     }
@@ -127,7 +126,7 @@ public class MetaContentService
         return entityList.stream()
                 .map(meta -> MetaDto.builder()
                         .id(meta.getMetaId())
-                        .metaNm(meta.getMetaNm())
+                        .name(meta.getName())
                         .ctgr(meta.getCtgr())
                         .value(meta.getValue())
                         .unit(meta.getUnit())
@@ -147,9 +146,8 @@ public class MetaContentService
             final MetaContentParam param = MetaContentParam.builder()
                     .refId(attachableKey.getId())
                     .refContentType(attachableKey.getContentType())
-                    .metaNm(meta.getMetaNm())
+                    .name(meta.getName())
                     .ctgr(meta.getCtgr())
-                    .label(meta.getLabel())
                     .createdBy(AuthUtils.getLoginUsername())
                     .build();
             repository.deleteObsoleteMetaContents(param);
@@ -177,4 +175,3 @@ public class MetaContentService
         return this.getSelf().getListDto(MetaSearchParam.builder().metaId(metaId).loginUsername(loginUsername).build());
     }
 }
-

@@ -19,19 +19,38 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+/**
+ * BoardRestController
+ * <pre>
+ *  게시판 관리(그룹) REST API 컨트롤러.
+ *  관리자 화면에서 게시판 그룹의 등록/조회/수정/삭제/사용여부/정렬을 처리한다.
+ * </pre>
+ *
+ * @author nichefish
+ */
 @RestController
 @RequiredArgsConstructor
 @Log4j2
 public class BoardRestController extends BaseControllerImpl {
 
+    /** 기본 URL */
     @Getter
-    private final String baseUrl = Url.BOARD_GROUP_LIST;
+    private final String baseUrl = Url.BOARD_ADMIN_PAGE;
+    /** 활동 카테고리 (로그 적재용) */
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.BOARD_GROUP;
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.BOARD;
 
+    /** 게시판 서비스 */
     private final BoardService boardService;
 
-    @PostMapping(Url.BOARD_GROUP_REG_AJAX)
+    /**
+     * 게시판 그룹 등록.
+     *
+     * @param board 등록할 게시판 DTO
+     * @return 처리 결과 응답
+     * @throws Exception 처리 중 예외
+     */
+    @PostMapping(Url.BOARD_GROUPS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardRegAjax(final @Valid BoardDto board) throws Exception {
@@ -42,14 +61,28 @@ public class BoardRestController extends BaseControllerImpl {
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
-    @GetMapping(Url.BOARD_GROUP_DTL_AJAX)
+    /**
+     * 게시판 그룹 상세 조회.
+     *
+     * @param id 게시판 식별자
+     * @return 조회 결과 응답
+     * @throws Exception 처리 중 예외
+     */
+    @GetMapping(Url.BOARD_GROUP)
     @Secured({Constant.ROLE_MNGR})
-    public ResponseEntity<AjaxResponse> boardDtlAjax(final @RequestParam("id") Integer id) throws Exception {
+    public ResponseEntity<AjaxResponse> boardDtlAjax(final @PathVariable Integer id) throws Exception {
         final BoardDto board = boardService.getDtlDto(id);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(board));
     }
 
-    @PostMapping(Url.BOARD_GROUP_MDF_ITEM_AJAX)
+    /**
+     * 게시판 그룹 수정.
+     *
+     * @param board 수정할 게시판 DTO
+     * @return 처리 결과 응답
+     * @throws Exception 처리 중 예외
+     */
+    @PostMapping(Url.BOARD_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardMdfItemAjax(final @Valid BoardDto board) throws Exception {
@@ -60,31 +93,59 @@ public class BoardRestController extends BaseControllerImpl {
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
-    @PostMapping(Url.BOARD_GROUP_DEL_AJAX)
+    /**
+     * 게시판 그룹 삭제.
+     *
+     * @param id 삭제할 게시판 식별자
+     * @return 처리 결과 응답
+     * @throws Exception 처리 중 예외
+     */
+    @DeleteMapping(Url.BOARD_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> boardDelAjax(final @RequestParam("id") Integer id) throws Exception {
+    public ResponseEntity<AjaxResponse> boardDelAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.delete(id);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.RSLT_SUCCESS));
     }
 
-    @PostMapping(Url.BOARD_GROUP_USE_AJAX)
+    /**
+     * 게시판 그룹 사용 처리.
+     *
+     * @param id 사용 처리할 게시판 식별자
+     * @return 처리 결과 응답
+     * @throws Exception 처리 중 예외
+     */
+    @PostMapping(Url.BOARD_GROUP_USE)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> boardUseAjax(final @RequestParam("id") Integer id) throws Exception {
+    public ResponseEntity<AjaxResponse> boardUseAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.setUse(id, "Y");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.RSLT_SUCCESS));
     }
 
-    @PostMapping(Url.BOARD_GROUP_UNUSE_AJAX)
+    /**
+     * 게시판 그룹 미사용 처리.
+     *
+     * @param id 미사용 처리할 게시판 식별자
+     * @return 처리 결과 응답
+     * @throws Exception 처리 중 예외
+     */
+    @PostMapping(Url.BOARD_GROUP_UNUSE)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> boardUnuseAjax(final @RequestParam("id") Integer id) throws Exception {
+    public ResponseEntity<AjaxResponse> boardUnuseAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.setUse(id, "N");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.RSLT_SUCCESS));
     }
 
-    @PutMapping(Url.BOARD_GROUP_SORT_ORDR_AJAX)
+    /**
+     * 게시판 그룹 정렬 순서 저장.
+     *
+     * @param boardParam 정렬 순서 목록을 포함한 요청 객체
+     * @return 처리 결과 응답
+     * @throws Exception 처리 중 예외
+     */
+    @PutMapping(Url.BOARD_GROUPS_SORT_ORDERS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardSortOrderAjax(final @RequestBody BoardParam boardParam) throws Exception {

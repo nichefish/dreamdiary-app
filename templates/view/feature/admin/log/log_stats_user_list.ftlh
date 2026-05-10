@@ -1,143 +1,90 @@
 <#--
-  -- 활동 로그 목록 화면
-  -->
+ * 로그 > 사용자별 통계 placeholder 화면
+ * 아직 서버 기능이 완성되지 않은 화면이므로, 전달된 데이터가 있으면 Vue가 그대로 표시한다.
+ -->
 
 <#import "/layout/layout_default.ftlh" as layout >
 
-<#--toolbar::버튼 추가-->
 <#assign toolbar>
-    <#include "/view/feature/admin/log/stats/_log_stats_user_list_header.ftlh">
+    <#include "/view/feature/admin/log/_log_stats_user_list_header.ftlh">
 </#assign>
 
 <@layout.layout toolbar=toolbar!"">
 
+<script id="log_stats_user_list_data" type="application/json">
+[
+<#list logStatsUserList![] as user>
+    {
+        "rnum": ${user.rnum!0},
+        "userNm": "${(user.userNm!'-')?js_string}",
+        "username": "${(user.username!'-')?js_string}",
+        "userProflYn": "${(user.userProflYn!'Y')?js_string}",
+        "retireYn": "${(user.retireYn!'N')?js_string}",
+        "roleKey": "${(user.roleKey!'')?js_string}",
+        "roleName": "${(user.roleName!'-')?js_string}",
+        "actvtyCnt": ${user.actvtyCnt!0},
+        "url": "${(user.url!'-')?js_string}",
+        "param": "${(user.param!'-')?js_string}",
+        "content": "${(user.content!'-')?js_string}",
+        "rslt": "${(user.rslt!'false')?js_string}"
+    }<#if user_has_next>,</#if>
+</#list>
+]
+</script>
+
+<script id="log_stats_not_user_list_data" type="application/json">
+[
+<#list logStatsNotUserList![] as user>
+    {
+        "rnum": ${user.rnum!0},
+        "userNm": "${(user.userNm!'-')?js_string}",
+        "username": "${(user.username!'-')?js_string}",
+        "userProflYn": "${(user.userProflYn!'Y')?js_string}",
+        "retireYn": "${(user.retireYn!'N')?js_string}",
+        "roleKey": "${(user.roleKey!'')?js_string}",
+        "roleName": "${(user.roleName!'-')?js_string}",
+        "actvtyCnt": ${user.actvtyCnt!0},
+        "url": "${(user.url!'-')?js_string}",
+        "param": "${(user.param!'-')?js_string}",
+        "content": "${(user.content!'-')?js_string}",
+        "rslt": "${(user.rslt!'false')?js_string}"
+    }<#if user_has_next>,</#if>
+</#list>
+]
+</script>
+
 <div class="card post">
-    <#--begin::Card body-->
     <div class="card-body">
-        <#--begin::Table-->
+        <div class="alert alert-secondary py-4 mb-6">
+            사용자별 로그 통계는 아직 구현 중입니다. 현재 서버에서 내려오는 데이터만 임시 표로 표시합니다.
+        </div>
         <table class="table table-hover align-middle table-row-dashed fs-small gy-5 table-fixed hoverTable mb-3">
-            <#--begin::Table head-->
             <thead>
                 <tr class="text-start text-muted fs-7 text-uppercase gs-0">
                     <th class="col-xl-1 col-4 text-center wb-keepall w-10 hidden-table">번호</th>
                     <th class="col-3 min-w-125px text-center wb-keepall hidden-table">작업자</th>
                     <th class="col-xl-2 col-5 min-w-80px text-center wb-keepall">권한</th>
-                    <th class="col-xl-2 col-1 text-center wb-keepall hidden-table">기간내 작업 건수</th>
-                    <th class="col-xl-4 col-5 min-w-80px text-center wb-keepall">작업URL</th>
-                    <th class="col-xl-4 col-5 min-w-80px text-center wb-keepall">작업내용</th>
-                    <th class="col-xl-1 text-center wb-keepall hidden-table">작업결과</th>
+                    <th class="col-xl-2 col-1 text-center wb-keepall hidden-table">작업 건수</th>
+                    <th class="col-xl-4 col-5 min-w-80px text-center wb-keepall">작업 URL</th>
+                    <th class="col-xl-4 col-5 min-w-80px text-center wb-keepall">작업 내용</th>
+                    <th class="col-xl-1 text-center wb-keepall hidden-table">작업 결과</th>
                 </tr>
             </thead>
-            <#--begin::Table body-->
-            <tbody class="text-gray-600">
-                <#list logStatsUserList![] as user>
-                    <tr >
-                        <td class="text-center hidden-table">${user.rnum!}</td>
-                        <td class="text-start ps-10 hidden-table">
-                            <span class="fw-bold">${user.userNm!"-"}</span>
-                            <span class="ms-1">(${user.username!})</span>
-                            <#if (user.userProflYn!"Y") == "N">
-                                <i class="bi bi-person-dash vertical-middle text-muted"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원정보가 없습니다."></i>
-                            <#elseif (user.retireYn!"N") == "Y">
-                                <i class="bi bi-person-dash vertical-middle text-danger"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="퇴사한 인원입니다."></i>
-                            <#else>
-                                <i class="bi bi-person-check vertical-middle text-success"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="소속된 직원입니다."></i>
-                            </#if>
-                        </td>
-                        <td class="text-center">
-                            ${user.roleName!"-"}
-                            <#if (user.roleKey! == Code.AUTH_MNGR)>
-                                <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"></i>   <!-- 관리자 -->
-                            <#elseif (user.roleKey! == Code.AUTH_USER)>
-                                <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
-                            </#if>
-                        </td>
-                        <td class="text-center hidden-table">
-                            총 ${user.actvtyCnt!0?string.number}건
-                        </td>
-                        <td class="text-center">
-                            ${user.url!}
-                        </td>
-                        <td class="text-center">
-                            ${user.content!"-"}
-                        </td>
-                        <!--begin::actionTyCd=-->
-                        <td class="text-center text-end hidden-table">
-                            <#if (user.rslt!"false") == "true">
-                                <span class="text-success">
-                                    성공<i class="bi bi-check text-success fs-8"></i>
-                                </span>
-                            <#else>
-                                <span class="text-danger">
-                                    실패<i class="bi bi-x text-danger fs-8"></i>
-                                </span>
-                            </#if>
-                        </td>
-                        <!--end::actionTyCd=-->
-                    </tr>
-                <#else>
-                    <tr>
-                        <td colspan="7" class="text-center"><@spring.message 'view.list.empty'/></td>
-                    </tr>
-                </#list>
-                <#if logStatsNotUserList?has_content>
-                    <tr class="border-top-5"></tr>
-                </#if>
-                <#list logStatsNotUserList![] as user>
-                    <tr >
-                        <td class="text-center hidden-table">${user.rnum!}</td>
-                        <td class="text-start ps-10 hidden-table">
-                            <span class="fw-bold">${user.userNm!"-"}</span>
-                            <span class="ms-1">(${user.username!"-"})</span>
-                        </td>
-                        <td class="text-center hidden-table">
-                            총 ${user.actvtyCnt!0?string.number}건
-                        </td>
-                        <td class="text-center">
-                            ${user.url!}
-                        </td>
-                        <td class="text-center">
-                            ${user.param!"-"}
-                        </td>
-                        <td class="text-center">
-                            ${user.content!"-"}
-                        </td>
-                        <!--begin::actionTyCd=-->
-                        <td class="text-center text-end hidden-table">
-                            <#if (user.rslt!"false") == "true">
-                                <span class="text-success">
-                                    성공<i class="bi bi-check text-success fs-8"></i>
-                                </span>
-                            <#else>
-                                <span class="text-danger">
-                                    실패<i class="bi bi-x text-danger fs-8"></i>
-                                </span>
-                            </#if>
-                        </td>
-                        <!--end::actionTyCd=-->
-                    </tr>
-                </#list>
+            <tbody id="log_stats_user_list_body" class="text-gray-600">
+                <#-- Vue(LogStatsUserPlaceholderApp)가 placeholder 행을 렌더링 -->
             </tbody>
-            <!--end::Table body-->
         </table>
     </div>
-    <#--begin::Card footer-->
     <div class="card-footer">
-        <#--pagination::begin-->
         <#include "/view/global/_pagination.ftlh">
-        <#--pagination::end-->
     </div>
 </div>
-<!--end::Card-->
 
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="logActvtyId" id="logActvtyId" />
 </form>
 
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/admin/log/stats/log_stats_user_list.js?${releaseDate!}"></script>
+<div id="log_stats_user_app" class="d-none"></div>
+<script type="module" src="/vue/feature/admin/log/LogStatsUserPlaceholderApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

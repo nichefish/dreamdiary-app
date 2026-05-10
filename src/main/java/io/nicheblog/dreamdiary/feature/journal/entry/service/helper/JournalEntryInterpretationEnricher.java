@@ -24,7 +24,6 @@ public class JournalEntryInterpretationEnricher {
      * @param contentType 콘텐츠 타입
      * @param username 사용자 아이디
      * @param listDto 대상 목록
-     * @param <Dto> DTO 타입
      * @throws Exception 병합 중 예외
      */
     public void enrich(

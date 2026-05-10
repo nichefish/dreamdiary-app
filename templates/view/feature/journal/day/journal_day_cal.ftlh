@@ -1,10 +1,10 @@
 <#--
- * 저널 일자(journal_day) : 페이지 (달력)
+ * 저널 일자(journal_day) : 달력(캘린더).
  -->
 
 <#import "/layout/layout_with_aside.ftlh" as layout >
 
-<#--toolbar::버튼 추가-->
+<#--toolbar::저널 일자 페이지 공통 헤더-->
 <#assign toolbar>
     <#include "/view/feature/journal/day/_journal_day_page_header.ftlh">
 </#assign>
@@ -14,19 +14,19 @@
 <#--include::script modules-->
 <style>
     .tooltip {
-        min-width: 900px !important;      /* 툴팁의 최소 너비 설정 */
-        max-width: 1200px !important;     /* 최대 너비 설정 */
-        width: auto !important;           /* 툴팁의 너비 자동으로 설정 */
+        min-width: 900px !important;      /* ??? ?? ??? */
+        max-width: 1200px !important;     /* ??? ??? ??? */
+        width: auto !important;           /* ??????? ??? ?? */
     }
     .tooltip-inner {
         text-align: left;
-        min-width: 900px !important;      /* 툴팁의 최소 너비 설정 */
-        max-width: 1200px !important;     /* 최대 너비 설정 */
-        max-height: 900px !important;     /* 툴팁 최대 높이 설정 */
-        overflow-y: auto !important;      /* 세로 스크롤 추가 */
-        word-break: break-word !important; /* 긴 단어가 줄 바꿈되도록 */
-        white-space: normal !important;    /* 툴팁 내에서 텍스트가 여러 줄로 나올 수 있도록 설정 */
-        word-wrap: break-word !important;  /* 긴 단어가 화면을 넘지 않도록 */
+        min-width: 900px !important;      /* ??? ?? ?? ??? */
+        max-width: 1200px !important;     /* ??? ?? ??? ??? */
+        max-height: 900px !important;     /* ??? ?? ??? ??? */
+        overflow-y: auto !important;      /* ??????? ??? ?????*/
+        word-break: break-word !important; /* ????? ????*/
+        white-space: normal !important;    /* ??? ??????? */
+        word-wrap: break-word !important;  /* ????? ?????? */
     }
 </style>
 <link rel="stylesheet" type="text/css" href="/css/journal.css?${releaseDate!}" />
@@ -36,35 +36,35 @@
 <div class="collapse px-10 py-4 bg-light w-100" id="schedule_advanced_search_div">
     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-end text-muted">
         <div class="mx-3"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내 일정 정보만 조회합니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schedule_chk_myPaprChk" class="me-2 text-muted cursor-help">내 일정만 보기</label>
-            <input type="checkbox" name="myPaprChk" id="schedule_chk_myPaprChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="????? ????????????&#10;(??? ??????????? ????#10;????????.)">
+            <label for="schedule_chk_myPaprChk" class="me-2 text-muted cursor-help">?????????</label>
+            <input type="checkbox" name="myPaprChk" id="schedule_chk_myPaprChk" class="form-check-input cursor-pointer" value="Y" onclick="window.JournalDayCalVueApp?.chkbxProp?.(this);">
         </div>
 
         <div class="mx-3"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="휴가 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schedule_chk_vcatnChk" class="me-2 text-muted cursor-help">휴가</label>
-            <input type="checkbox" name="vcatnChk" id="schedule_chk_vcatnChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="???? ??? ?????????#10;?? ?????&#10;(??? ??????????? ????#10;????????.)">
+            <label for="schedule_chk_vcatnChk" class="me-2 text-muted cursor-help">????</label>
+            <input type="checkbox" name="vcatnChk" id="schedule_chk_vcatnChk" class="form-check-input cursor-pointer" value="Y" onclick="window.JournalDayCalVueApp?.chkbxProp?.(this);">
         </div>
         <div class="mx-3"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내부일정 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schedule_chk_indtChk" class="me-2 text-muted cursor-help">내부일정</label>
-            <input type="checkbox" name="indtChk" id="schedule_chk_indtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="??????? ??? ?????????#10;?? ?????&#10;(??? ??????????? ????#10;????????.)">
+            <label for="schedule_chk_indtChk" class="me-2 text-muted cursor-help">???????</label>
+            <input type="checkbox" name="indtChk" id="schedule_chk_indtChk" class="form-check-input cursor-pointer" value="Y" onclick="window.JournalDayCalVueApp?.chkbxProp?.(this);">
         </div>
         <div class="mx-3"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="외근 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schedule_chk_outdtChk" class="me-2 text-muted cursor-help">외근</label>
-            <input type="checkbox" name="outdtChk" id="schedule_chk_outdtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="??? ??? ?????????#10;?? ?????&#10;(??? ??????????? ????#10;????????.)">
+            <label for="schedule_chk_outdtChk" class="me-2 text-muted cursor-help">???</label>
+            <input type="checkbox" name="outdtChk" id="schedule_chk_outdtChk" class="form-check-input cursor-pointer" value="Y" onclick="window.JournalDayCalVueApp?.chkbxProp?.(this);">
         </div>
         <div class="mx-3"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="재택근무 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schedule_chk_tlcmmtChk" class="me-2 text-muted cursor-help">재택근무</label>
-            <input type="checkbox" name="tlcmmtChk" id="schedule_chk_tlcmmtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="????? ??? ?????????#10;?? ?????&#10;(??? ??????????? ????#10;????????.)">
+            <label for="schedule_chk_tlcmmtChk" class="me-2 text-muted cursor-help">?????</label>
+            <input type="checkbox" name="tlcmmtChk" id="schedule_chk_tlcmmtChk" class="form-check-input cursor-pointer" value="Y" onclick="window.JournalDayCalVueApp?.chkbxProp?.(this);">
         </div>
         <div class="mx-3"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="개인용 일정 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schedule_chk_prvtChk" class="me-2 text-muted cursor-help">개인용 일정</label>
-            <input type="checkbox" name="prvtChk" id="schedule_chk_prvtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="??????? ?????????#10;?? ?????&#10;(??? ??????????? ????#10;????????.)">
+            <label for="schedule_chk_prvtChk" class="me-2 text-muted cursor-help">???????</label>
+            <input type="checkbox" name="prvtChk" id="schedule_chk_prvtChk" class="form-check-input cursor-pointer" value="Y" onclick="window.JournalDayCalVueApp?.chkbxProp?.(this);">
         </div>
     </div>
 </div>
@@ -76,7 +76,7 @@
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JOURNAL_DAY_WEEKLY);">
+                   onclick="dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_WEEKLY);">
                     <span class="nav-icon">
                         <i class="bi bi-calendar-week"></i>
                     </span>
@@ -85,7 +85,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JOURNAL_DAY_MONTHLY);">
+                   onclick="dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_MONTHLY);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
@@ -94,7 +94,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JOURNAL_DAY_CAL);">
+                   onclick="dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_CAL);">
                     <span class="nav-icon">
                         <i class="bi bi-sort-down-alt"></i>
                     </span>
@@ -103,7 +103,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JOURNAL_DAY_META_VIEW);">
+                   onclick="dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_META_VIEW);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
@@ -118,7 +118,7 @@
     <div class="card post" style="margin-top: 0 !important;">
         <#--begin::Card header-->
         <div class="card-header min-h-auto mb-7">
-            <!-- 태그 헤더 :: 파일 분리 -->
+            <!-- ??? ??? :: ??? ?? -->
             <#include "/view/feature/journal/day/tag/_journal_day_tag_header.ftlh">
         </div>
 
@@ -151,59 +151,55 @@
 <#--include::journal_day_module-->
 <#include "/view/feature/journal/day/_modal/_journal_day_reg_modal.ftlh">
 <#include "/view/feature/journal/day/_modal/_journal_day_dtl_modal.ftlh">
-<#include "/view/feature/journal/day/_journal_day_list_template.hbs">
-<#include "/view/feature/journal/day/_partial/_journal_day_context_btn_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/day/journal_day_module.js?${releaseDate!}"></script>
+<#-- 변경(A-8): `_journal_day_context_btn_partial` include 제거 — 전체 코드베이스에서 `{{> journal_day_context_btn_partial}}`
+     호출 0건, JS 문자열 참조도 0건이라 dead partial 로 확정. partial 파일 자체도 삭제. -->
+<script type="module" src="/vue/feature/journal/day/registerJournalDayShellServices.js?${releaseDate!}"></script>
 
 <#--include::journal_diary_module-->
 <#assign journalEntryRegType = "DIARY">
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_item_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_context_btn_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_copy_btn_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_toggle_btn_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_states_partial.hbs">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_content_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/entry/journal_entry_module.js?${releaseDate!}"></script>
+<#-- 변경(A-8): `_journal_entry_context_btn_partial` / `_journal_entry_copy_btn_partial` / `_journal_entry_content_partial`
+     include 제거 — `{{>}}` 호출 0건(자기 자신 `_by_type` 래퍼도 호출자 0건), JS 문자열 참조 0건이라 dead partial 로 확정. -->
+<#-- 변경(A-10): `_journal_entry_toggle_btn_partial` / `_journal_entry_states_partial` include 제거 —
+     `{{>}}` 호출 0건, JS 문자열 참조 0건. 토글 버튼/상태 뱃지 마크업은
+     Vue 컴포넌트(`JournalDayCard` / `JournalEntryItem` / `JournalChapterItem` / `JournalEntrySearchItem` / `JournalInterpretationItem`)에 흡수됨. -->
+<#-- 변경(E-4-δ-3): journalEntryService 적재는 _journal_entry_reg_modal.ftlh 의 ES module 묶음으로 단일 수렴. -->
 
 <#--include::journal_note_module-->
 <#assign journalEntryRegType = "NOTE">
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
-<#include "/view/feature/journal/entry/_partial/_journal_entry_reg_btn_partial.hbs">
+<#-- 변경(A-10): `_journal_entry_reg_btn_partial` include 제거 — `{{>}}` 호출 0건(자기 자신 `_by_type` 래퍼 포함),
+     JS 문자열 참조 0건. 등록 버튼 마크업은 Vue 컴포넌트(`JournalDayCard` 등)에 흡수됨. -->
 
 <#--include::journal_dream_module-->
 <#assign journalEntryRegType = "DREAM">
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
 
-<#--include::journal_todo_module-->
-<#include "/view/feature/journal/todo/_journal_todo_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/todo/journal_todo_module.js?${releaseDate!}"></script>
 
-<#--include::journal_entry_tag_module-->
-<#include "/view/feature/journal/entry/tag/_journal_entry_tag_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/entry/tag/journal_entry_tag_module.js?${releaseDate!}"></script>
+<#-- journal_entry_tag_module 제거(E-4-γ): journalEntryTagService가 등록 모달에 포함됨. -->
+<#-- 변경(A-9): `_journal_entry_tag_list_template` include 제거 — 일기/꿈 태그 헤더 Vue 흡수(JournalDayEntryTagListApp).
+     journalEntryTagService.renderList 가 본 앱의 setList 브리지로 수렴(Handlebars 컴파일 비경유). -->
 
 <#--include::journal_day_tag_module-->
 <#include "/view/feature/journal/day/tag/_modal/_journal_day_tag_dtl_modal.ftlh">
-<#include "/view/feature/journal/day/tag/_journal_day_tag_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/day/tag/journal_day_tag_module.js?${releaseDate!}"></script>
 
 <#--include::journal_day_meta_module-->
-<script type="text/javascript" src="/js/view/feature/journal/day/meta/journal_day_meta_module.js?${releaseDate!}"></script>
 
 <#--include::tags-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
 <#include "/view/feature/attachable/tag/_modal/_tag_profile_modal.ftlh">
-<#include "/view/feature/attachable/tag/_partial/_tag_list_partial.hbs">
-<#include "/view/feature/attachable/tag/_partial/_tag_list_sized_partial.hbs">
+<#-- 변경(A-9): `_tag_list_partial` / `_tag_list_sized_partial` include 제거 — `{{>}}` 호출 0건(이전 유일 호출자
+     `_journal_entry_tag_list_template` 도 함께 제거), JS 문자열 참조 0건이라 dead partial 로 확정. -->
 
-<#include "/view/feature/attachable/meta/_partial/_meta_list_partial.hbs">
+<#-- 변경(A-10): `_meta_list_partial` include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건. 메타 sized 행 마크업은
+     `JournalDayMetaHeaderList` Vue 컴포넌트에 흡수됨. -->
 
 <#--include::comment-->
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/feature/attachable/history/_history_modal.ftlh">
-<#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">
-<#include "/view/feature/attachable/comment/_partial/_comment_reg_btn_partial.hbs">
+<#-- 변경(A-10): `_comment_list_partial` include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건. id `comment_list_partial` 자체는
+     호출자 없음(별개의 id `comment_list` 모달은 `_comment_list_modal.ftlh` 가 보유, 본 정리 범위 밖). -->
+<#-- 변경(A-8): `_comment_reg_btn_partial` include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건이라 dead partial 로 확정. -->
 <script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/attachable/related/related_content_module.js?${releaseDate!}"></script>
 
@@ -211,7 +207,34 @@
 <script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/attachable/lifecycle/lifecycle_module.js?${releaseDate!}"></script>
 
+<#-- 변경(A-9): 일기/꿈 태그 헤더 Vue 흡수. journalEntryTagService 적재(=_journal_entry_reg_modal.ftlh ESM 묶음) 이후
+     본 앱이 마운트되어 `JournalDayEntryTagListVueApp.setList` 브리지를 노출한다.
+     마운트 전 호출은 `pendingByType` 큐잉으로 흡수 — 적재 경합 방지. -->
+<script type="module" src="/vue/feature/journal/day/JournalDayEntryTagListApp.js?${releaseDate!}"></script>
+
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/journal/day/journal_day_cal.js?${releaseDate!}"></script>
+<script>
+    window.JournalDayCalVueApp = window.JournalDayCalVueApp || {
+        mounted: false
+    };
+    window.JournalDayTagDetailVueApp = window.JournalDayTagDetailVueApp || {
+        mounted: false,
+        pendingPayload: null
+    };
+    window.JournalDayTagPanelVueApp = window.JournalDayTagPanelVueApp || {
+        mounted: false,
+        pendingDayTagList: null,
+        pendingModalTagList: null
+    };
+    window.JournalDayTagProfileVueApp = window.JournalDayTagProfileVueApp || {
+        mounted: false,
+        pendingPayload: null
+    };
+</script>
+<div id="journal_day_cal_app" class="d-none" data-view-type="cal"></div>
+<script type="module" src="/vue/feature/journal/day/JournalDayTagDetailModalApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/journal/day/JournalDayTagPanelApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/journal/day/JournalDayTagProfileModalApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/journal/day/JournalDayCalApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

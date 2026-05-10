@@ -36,7 +36,7 @@ public class MenuRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.MENU_PAGE;             // 기본 URL
+    private final String baseUrl = Url.MENU_ADMIN_PAGE;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.MENU;        // 작업 카테고리 (로그 적재용)
 
@@ -75,14 +75,14 @@ public class MenuRestController
     @PostMapping(value = {Url.MENUS, Url.MENU})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> menuRegAjax(
+    public ResponseEntity<AjaxResponse> menuRegistAjax(
             final @PathVariable(value = "id", required = false) Integer id,
             final @Valid MenuPostDto menu
     ) throws Exception {
 
-        final boolean isMdf = id != null;
-        if (isMdf) menu.setId(id);
-        final ServiceResponse result = isMdf ? menuService.modify(menu) : menuService.regist(menu);
+        final boolean isModify = id != null;
+        if (isModify) menu.setId(id);
+        final ServiceResponse result = isModify ? menuService.modify(menu) : menuService.regist(menu);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -99,7 +99,7 @@ public class MenuRestController
     @GetMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> menuDtlAjax(
+    public ResponseEntity<AjaxResponse> menuDetailAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 
@@ -184,7 +184,7 @@ public class MenuRestController
     @DeleteMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> menuDelAjax(
+    public ResponseEntity<AjaxResponse> menuDeleteAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 

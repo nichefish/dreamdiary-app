@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 public enum ContentType {
 
     DEFAULT("DEFAULT", "기본"),
-    NOTICE("NOTICE", "공지사항"),
     BOARD("BOARD", "일반게시판"),
 
     JOURNAL_DAY("JOURNAL_DAY", "저널 일자", "calendar3"),
@@ -27,7 +26,7 @@ public enum ContentType {
     JOURNAL_NOTE("JOURNAL_NOTE", "저널 노트", "book"),
     JOURNAL_DREAM("JOURNAL_DREAM", "저널 꿈", "moon-stars"),
     JOURNAL_INTERPRETATION("JOURNAL_INTERPRETATION", "저널 해석", "book"),
-    JOURNAL_SBJCT("JOURNAL_SBJCT", "저널 주제"),
+    JOURNAL_THREAD("JOURNAL_THREAD", "저널 스레드"),
     JOURNAL_ANNUAL("JOURNAL_ANNUAL", "저널 연간"),
     JOURNAL_ANNUAL_REVIEW("JOURNAL_ANNUAL_REVIEW", "저널 연간 리뷰"),
     JOURNAL_TODO("JOURNAL_TODO", "저널 투두", "book"),

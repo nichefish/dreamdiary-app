@@ -20,7 +20,7 @@ export default {
         "submit-login",
         "popup-google",
         "popup-naver",
-        "request-user",
+        "open-user-signup",
         "update:username",
         "update:password",
         "update:rememberMe",
@@ -142,9 +142,9 @@ export default {
                 </div>
                 <div class="d-flex justify-content-end mb-5">
                     <button type="button" class="badge btn btn-sm btn-light-primary badge-outlined btn-outlined fw-light opacity-75 blink"
-                            @click="$emit('request-user')"
+                            @click="$emit('open-user-signup')"
                             data-bs-toggle="tooltip" data-bs-placement="bottom" :title="$t('bs.tooltip.auth.login.request-user')">
-                        <i class="bi bi-person-plus-fill blink"></i>{{ $t("txt.user.reqst") }}
+                        <i class="bi bi-person-plus-fill blink"></i>{{ $t("txt.user.signup") }}
                     </button>
                 </div>
                 <div class="text-end mb-5">

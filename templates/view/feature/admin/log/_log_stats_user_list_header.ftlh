@@ -34,11 +34,10 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
-        <@component.header_btn_search "Page.search();" />
+        <@component.header_btn_search "window.LogStatsUserBridge && window.LogStatsUserBridge.search();" />
     </div>
     <div>
         <#--헤더:: 버튼: 엑셀 다운로드하기-->
-        <@component.header_btn_xlsx_download "Page.xlsxDownload();" />
+        <@component.header_btn_xlsx_download "window.LogStatsUserBridge && window.LogStatsUserBridge.downloadLogsAsExcel();" />
     </div>
 </form>
-

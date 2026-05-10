@@ -26,9 +26,6 @@ public class JournalEntryStateViewHelper {
      *
      * @param listDto 병합 대상 entry DTO 목록
      * @param stateMap entry ID 기준 state map
-     * @param lifecycleMap 일기 ID 기준 라이프사이클 맵
-     * @param interpretationMap 하위 해석 state map
-     * @param interpretationLifecycleMap 하위 해석 라이프사이클 맵
      */
     public static void applyStates(
             final List<JournalEntryDto> listDto,
@@ -52,7 +49,6 @@ public class JournalEntryStateViewHelper {
      * @param listDto 대상 목록
      * @param stateMap 상태 맵
      * @param interpretationMap 해석 상태 맵
-     * @param <Dto> 해석 포함 상태 DTO 타입
      */
     public static void applyStates(
             final List<JournalEntryDto> listDto,
@@ -107,9 +103,7 @@ public class JournalEntryStateViewHelper {
      *
      * @param listDto 병합 대상 dream entry DTO 목록
      * @param stateMap dream entry ID 기준 state map
-     * @param lifecycleMap 꿈 일기 ID 기준 라이프사이클 맵
      * @param interpretationMap 하위 해석 state map
-     * @param interpretationLifecycleMap 하위 해석 라이프사이클 맵
      */
     public static void applyDreamStates(
             final List<JournalEntryDto> listDto,

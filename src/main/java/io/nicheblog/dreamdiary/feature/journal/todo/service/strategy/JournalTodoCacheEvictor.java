@@ -39,7 +39,7 @@ public class JournalTodoCacheEvictor
             final Integer mnth = param.getMnth();
             // journal_todo
             this.evictMyYyMnthCache(username, "journalTodoListByUser", yy, mnth);
-            EhCacheUtils.evictUserCacheByKey("journalTodoDtlDtoByUser", username, id);
+            EhCacheUtils.evictUserCacheByKey("journalTodoDetailDtoByUser", username, id);
             // 태그 캐시 처리
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JOURNAL_TODO");
         } catch (final Exception e) {

@@ -203,13 +203,13 @@ CREATE TABLE IF NOT EXISTS journal_todo (
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 할일';
 
--- 저널 주제 (journal_sbjct)
+-- 저널 스레드 (journal_thread)
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed
-CREATE TABLE IF NOT EXISTS journal_sbjct(
+CREATE TABLE IF NOT EXISTS journal_thread(
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
-    content_type VARCHAR(30) DEFAULT 'JOURNAL_SBJCT' COMMENT '게시판 코드 (PK)',
+    content_type VARCHAR(30) DEFAULT 'JOURNAL_THREAD' COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS journal_sbjct(
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
-) COMMENT = '저널 주제';
+) COMMENT = '저널 스레드';
 
 -- 저널 연간 (journal_annual)
 -- @extends: BaseAttachableEntity

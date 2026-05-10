@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -61,10 +62,13 @@ public class AuthUtils {
      * 현재 로그인 중인 사용자 정보를 세션에서 조회해서 반환한다.
      *
      * @return {@link AuthInfo} -- 현재 로그인 중인 사용자 인증정보 객체
+     * 변경 전: {@code Principal} 이 {@link AuthInfo} 가 아니면({@literal @}WithMockUser 등 테스트용 {@link UserDetails} 포함) {@link ClassCastException} 발생 가능.
+     * 변경 후: {@link AuthInfo} 일 때만 반환하고, 그 외 타입은 {@code null} 로 처리한다.
      */
     public static AuthInfo getAuthenticatedUser() {
         if (!isAuthenticated()) return null;
-        return (AuthInfo) getAuthentication().getPrincipal();
+        final Object principal = getAuthentication().getPrincipal();
+        return principal instanceof AuthInfo ? (AuthInfo) principal : null;
     }
 
     /**
@@ -94,11 +98,18 @@ public class AuthUtils {
      * 현재 로그인 중인 사용자 어이디를 반환한다.
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디
+     * 변경 전: {@link #getAuthenticatedUser()} 제약과 동일하게 비-{@link AuthInfo} 시 예외 또는 미처리.
+     * 변경 후: 세션형 {@link AuthInfo} 우선, 없으면 인증된 {@link UserDetails#getUsername()} 를 사용한다.
      */
     public static String getLoginUsername() {
         final AuthInfo authInfo = getAuthenticatedUser();
-        if (authInfo == null) return null;
-        return authInfo.getUsername();
+        if (authInfo != null) return authInfo.getUsername();
+        if (!isAuthenticated()) return null;
+        final Object principal = getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        return null;
     }
 
     /**

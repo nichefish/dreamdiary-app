@@ -27,20 +27,20 @@ public interface TagRepository
     /**
      * 태그명 + 카테고리명으로 조회
      *
-     * @param tagNm 조회할 태그명
+     * @param name 조회할 태그명
      * @param ctgr 조회할 카테고리명
      * @return 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
     @Query(value = "SELECT t.* " +
         "FROM tag t " +
         "LEFT JOIN tag_category tc ON tc.id = t.tag_category_id AND tc.deleted_at IS NULL " +
-        "WHERE t.tag_nm = :tagNm " +
+        "WHERE t.name = :name " +
         "  AND t.deleted_at IS NULL " +
         "  AND ( " +
         "       ((:ctgr IS NULL OR :ctgr = '') AND t.tag_category_id IS NULL) " +
-        "       OR tc.ctgr_nm = :ctgr " +
+        "       OR tc.name = :ctgr " +
         "  )", nativeQuery = true)
-    Optional<TagEntity> findByTagNmAndCtgr(final String tagNm, final String ctgr);
+    Optional<TagEntity> findByNameAndCtgr(final String name, final String ctgr);
 
     /**
      * 태그 ID로 조회

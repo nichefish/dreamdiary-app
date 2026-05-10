@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -58,7 +58,7 @@ public class JournalDayPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         // URL 파라미터가 전부 존재한다면 그대로 페이지 렌더링
         if (searchParam.getYy() != null && searchParam.getMnth() != null) {
@@ -89,7 +89,7 @@ public class JournalDayPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         if (StringUtils.isNotBlank(searchParam.getStdrdDt())) {
             model.addAttribute("stdrdDt", searchParam.getStdrdDt());
@@ -133,12 +133,13 @@ public class JournalDayPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
-        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("pageName", PageName.DTL);
         model.addAttribute("stdrdDt", stdrdDt);
         codeLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
         codeLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
 
-        return "/view/feature/journal/day/journal_day_view";
+        /* 변경: 일간 FTL 경로 journal_day_view → journal_day_daily (이름만, URL 상수는 유지). */
+        return "/view/feature/journal/day/journal_day_daily";
     }
 }
 

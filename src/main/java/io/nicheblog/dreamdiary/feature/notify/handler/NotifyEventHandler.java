@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.notify.handler;
 
-import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
@@ -41,36 +40,6 @@ public class NotifyEventHandler {
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
-     * 공지사항 등록 잔디 알림 메시지 발송
-     *
-     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
-     */
-    public String notifyNoticeReg(
-            final JandiTopic trgetTopic,
-            final NoticeDto result,
-            final LogParam logParam
-    ) throws Exception {
-        String jandiRsltMsg;
-        try {
-            // title
-            final String title = result.getFullTitle();
-            // msg
-            final String msg = "새로운 공지사항이 등록되었습니다.";
-            // url
-            final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
-            final String fullUrl = Url.DOMAIN + Url.NOTICE_DTL + "?" + param;
-            // 메세지 발송
-            jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
-        } catch (final Exception e) {
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
-            logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishAsyncEvent(new LogEvent(this, logParam));
-        }
-        return jandiRsltMsg;
-    }
-
-    /**
      * 게시판 등록 잔디 알림 메시지 발송
      *
      * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
@@ -88,7 +57,7 @@ public class NotifyEventHandler {
             final String msg = "새로운 글이 등록되었습니다.";
             // url
             final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
-            final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DTL + "?" + param;
+            final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DETAIL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);

@@ -70,3 +70,4 @@
         </div>
     </div>
 </div>
+<div id="journal_day_tag_panel_app" class="d-none"></div>

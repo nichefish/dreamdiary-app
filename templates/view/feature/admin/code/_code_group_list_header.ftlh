@@ -1,6 +1,6 @@
-﻿<#--
+<#--
  * 코드 그룹 목록 툴바 Header
- * @included_in : code_group_list.ftlh
+ * @included_in : code_admin_page.ftlh
  -->
 
 <form name="listForm" id="listForm" class="d-none d-md-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get">
@@ -18,9 +18,10 @@
         <@component.header_input_searchKeyword searchParam />
     </div>
     <div>
-        <@component.header_btn_search "window.dispatchEvent(new CustomEvent("code-admin:request-search"));" />
+        <#-- 매크로 인자가 FTL 큰따옴표 문자열이면 JS 문자열은 작은따옴표로(내부 "로 문자열이 끊기지 않게). -->
+        <@component.header_btn_search "window.dispatchEvent(new CustomEvent('code-admin:request-search'));" />
     </div>
     <div>
-        <@component.header_btn_reg_modal "window.dispatchEvent(new CustomEvent("code-admin:request-open-group-regist"));" />
+        <@component.header_btn_reg_modal "window.dispatchEvent(new CustomEvent('code-admin:request-open-group-regist'));" />
     </div>
 </form>

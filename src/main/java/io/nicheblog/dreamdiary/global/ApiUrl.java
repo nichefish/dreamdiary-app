@@ -67,11 +67,9 @@ public interface ApiUrl {
     String JOURNAL_TODOS = Prefix.API + "/journal/todos";
     String JOURNAL_TODO = Prefix.API + "/journal/todo/{id}";
 
-    /** 저널 주제 */
-    String JOURNAL_SBJCT_REG_AJAX = Prefix.API + "/journal/sbjct/reg";
-    String JOURNAL_SBJCT_DTL_AJAX = Prefix.API + "/journal/sbjct/dtl";
-    String JOURNAL_SBJCT_MDF_AJAX = Prefix.API + "/journal/sbjct/mdf";
-    String JOURNAL_SBJCT_DEL_AJAX = Prefix.API + "/journal/sbjct/del";
+    /** 저널 스레드 */
+    String JOURNAL_THREAD_API_LIST = Prefix.API + "/journal/threads";
+    String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
 
     /** 저널 연간 */
     String JOURNAL_ANNUALS = Prefix.API + "/journal/annuals";
@@ -83,33 +81,21 @@ public interface ApiUrl {
     String JOURNAL_ANNUAL_MAKE_AJAX = Prefix.API + "/journal/annual/make";
     String JOURNAL_ANNUAL_MAKE_TOTAL_AJAX = Prefix.API + "/journal/annual/make-total";
     String JOURNAL_ANNUAL_DREAM_COMPT_AJAX = Prefix.API + "/journal/annual/dream-compt";
-    String JOURNAL_ANNUAL_REG_AJAX = Prefix.API + "/journal/annual/reg";
-
     /** 저널 연간 리뷰 */
     String JOURNAL_ANNUAL_REVIEWS = Prefix.API + "/journal/annual/reviews";
     String JOURNAL_ANNUAL_REVIEW = Prefix.API + "/journal/annual/review/{id}";
 
-    /** 공지사항 */
-    String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";
-    String NOTICE = Prefix.API + "/notice/{id}";
-    String NOTICE_MDF_AJAX = Prefix.API + "/notice/mdf";
-    String NOTICE_POPUP_LIST_AJAX = Prefix.API + "/notice/popup-list";
-    String NOTICE_LIST_XLSX_DOWNLOAD = Prefix.API + "/notice/list-xlsx-download.do";
-
     /** 게시판 */
-    String BOARD_POST_REG_AJAX = Prefix.API + "/board/post/reg";
-    String BOARD_POST_DTL_AJAX = Prefix.API + "/board/post/dtl";
-    String BOARD_POST_MDF_AJAX = Prefix.API + "/board/post/mdf";
-    String BOARD_POST_DEL_AJAX = Prefix.API + "/board/post/del";
+    String BOARD_POSTS = Prefix.API + "/board/posts";
+    String BOARD_POST = Prefix.API + "/board/posts/{id}";
 
     /** 사용자 관리 */
-    String USER_REG_AJAX = Prefix.API + "/user/reg";
-    String USER_MDF_AJAX = Prefix.API + "/user/mdf";
-    String USER_PW_RESET_AJAX = Prefix.API + "/user/password-reset";
-    String USER_DEL_AJAX = Prefix.API + "/user/del";
-    String USER_LIST_XLSX_DOWNLOAD = Prefix.API + "/user/list-xlsx-download.do";
-    String USERNAME_DUP_CHK_AJAX = Prefix.API + "/user/id-dup-chk";
-    String USER_EMAIL_DUP_CHK_AJAX = Prefix.API + "/user/email-dup-chk";
+    String USERS = Prefix.API + "/users";
+    String USER = Prefix.API + "/users/{id}";
+    String USER_PASSWORD_RESET = Prefix.API + "/users/{id}/password-reset";
+    String USERS_XLSX_DOWNLOAD = Prefix.API + "/users/xlsx-download";
+    String USERS_DUPLICATE_USERNAME_CHECK = Prefix.API + "/users/duplicate-check/username";
+    String USERS_DUPLICATE_EMAIL_CHECK = Prefix.API + "/users/duplicate-check/email";
 
     /** 내 정보 관리 */
     String USER_MY_UPLOAD_PROFL_IMG_AJAX = Prefix.API + "/user/my/upload-profl-img";
@@ -141,8 +127,8 @@ public interface ApiUrl {
     String TAG = Prefix.API + "/tags/{id}";
     String TAG_PROFILE = Prefix.API + "/tags/{tagId}/profile";
 
-    /** 인증 정책 관리 */
-    String AUTH_POLICY_REG_AJAX = Prefix.API + "/auth/policy/reg";
+    /** 인증 정책 (싱글톤 리소스: GET 조회, PUT 갱신) */
+    String AUTH_POLICY = Prefix.API + "/auth/policy";
 
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
@@ -152,13 +138,11 @@ public interface ApiUrl {
     String MENU = Prefix.API + "/menu/{id}";
 
     /** 게시판 관리 */
-    String BOARD_GROUP_REG_AJAX = Prefix.API + "/board/group/board-reg";
-    String BOARD_GROUP_DTL_AJAX = Prefix.API + "/board/group/board-dtl";
-    String BOARD_GROUP_MDF_ITEM_AJAX = Prefix.API + "/board/group/board-mdf-item";
-    String BOARD_GROUP_DEL_AJAX = Prefix.API + "/board/group/board-del";
-    String BOARD_GROUP_USE_AJAX = Prefix.API + "/board/group/board-use";
-    String BOARD_GROUP_UNUSE_AJAX = Prefix.API + "/board/group/board-unuse";
-    String BOARD_GROUP_SORT_ORDR_AJAX = Prefix.API + "/board/group/board-sort-ordr";
+    String BOARD_GROUPS = Prefix.API + "/board/groups";
+    String BOARD_GROUP = Prefix.API + "/board/groups/{id}";
+    String BOARD_GROUP_USE = Prefix.API + "/board/groups/{id}/use";
+    String BOARD_GROUP_UNUSE = Prefix.API + "/board/groups/{id}/unuse";
+    String BOARD_GROUPS_SORT_ORDERS = Prefix.API + "/board/groups/sort-orders";
 
     /** 템플릿 관리 (TODO) */
     String TMPLAT_DEF_REG_AJAX = Prefix.API + "/tmplat/tmplat-def-reg";
@@ -182,7 +166,7 @@ public interface ApiUrl {
     String CODE_ITEM_UNUSE = Prefix.API + "/code/item/unuse";
 
     /** 로그 조회 */
-    String LOG_DTL_AJAX = Prefix.API + "/log/dtl";
+    String LOG = Prefix.API + "/logs/{id}";
     String LOG_LIST_XLSX_DOWNLOAD = Prefix.API + "/log/list-xlsx-download.do";
 
     /** (공통) 파일 */
@@ -206,9 +190,14 @@ public interface ApiUrl {
     String SCHEDULE_MDF_AJAX = Prefix.API + "/schedule/cal-mdf";
     String SCHEDULE_DEL_AJAX = Prefix.API + "/schedule/cal-del";
 
-    String USER_REQST_REG_AJAX = Prefix.API + "/user/reqst/reqst-reg";
-    String USER_REQST_CF_AJAX = Prefix.API + "/user/reqst/reqst-cf";
-    String USER_REQST_UNCF_AJAX = Prefix.API + "/user/reqst/reqst-uncf";
+    /**
+     * 사용자 계정 신청(가입 요청) API.
+     * 변경 전: `/user/signup/signup-reg` 등 동사형·중복 접두.
+     * 변경 후: 컬렉션 `signup-requests` 및 하위 명사 리소스 (`approval` / `rejection`).
+     */
+    String USER_SIGNUP_REQUESTS = Prefix.API + "/user/signup-requests";
+    String USER_SIGNUP_REQUEST_APPROVAL = Prefix.API + "/user/signup-requests/{id}/approval";
+    String USER_SIGNUP_REQUEST_REJECTION = Prefix.API + "/user/signup-requests/{id}/rejection";
 
     String JANDI_CONNECT_WH = "https://wh.jandi.com/connect-api/webhook";
 

@@ -41,7 +41,7 @@ public class JournalChapterCacheEvictor
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             if (id != null) {
-                EhCacheUtils.evictUserCacheByKey("journalChapterDtlDtoByUser", username, id);
+                EhCacheUtils.evictUserCacheByKey("journalChapterDetailDtoByUser", username, id);
             }
             // journal_day
             if (journalDayId != null) {

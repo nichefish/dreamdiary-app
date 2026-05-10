@@ -1,12 +1,11 @@
  package io.nicheblog.dreamdiary.feature.user.account.controller;
 
  import io.nicheblog.dreamdiary.auth.security.service.RoleService;
- import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+ import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
  import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
  import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
  import io.nicheblog.dreamdiary.feature.user.account.model.UserSearchParam;
  import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
- import io.nicheblog.dreamdiary.feature.user.reqst.repository.jpa.UserSignupRequestRepository;
  import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
  import io.nicheblog.dreamdiary.infrastructure.code.Code;
@@ -51,7 +50,6 @@ public class UserPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER;      // 작업 카테고리 (로그 적재용)
 
     private final UserService userService;
-    private final UserSignupRequestRepository userSignupRequestRepository;
     private final RoleService roleService;
     private final CodeLookupService codeLookupService;
 
@@ -71,8 +69,8 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
+        model.addAttribute("pageName", PageName.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (UserSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
@@ -83,7 +81,6 @@ public class UserPageController
         // 목록 조회
         final Page<UserDto> userList = userService.getPageDto(searchParam, pageRequest);
         model.addAttribute("userList", userList.getContent());
-        model.addAttribute("pendingSignupReqList", userSignupRequestRepository.findByStatusOrderByCreatedAtDesc("PENDING"));
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.AUTH_CD, model);
@@ -93,7 +90,7 @@ public class UserPageController
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
-        return "/view/feature/user/user_list";
+        return "/view/feature/user/account/user_list";
     }
 
     /**
@@ -102,15 +99,15 @@ public class UserPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.USER_REG_FORM)
+    @GetMapping(Url.USER_REGIST_FORM)
     @Secured(Constant.ROLE_MNGR)
-    public String userRegForm(
+    public String userRegistForm(
             final ModelMap model
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.REG);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
+        model.addAttribute("pageName", PageName.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("user", new UserDto());
@@ -127,7 +124,7 @@ public class UserPageController
         codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
         codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
-        return "/view/feature/user/user_reg_form";
+        return "/view/feature/user/account/user_regist_form";
     }
 
     /**
@@ -138,22 +135,22 @@ public class UserPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.USER_DTL)
+    @GetMapping(Url.USER_DETAIL)
     @Secured(Constant.ROLE_MNGR)
-    public String userDtl(
+    public String userDetail(
             final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
+        model.addAttribute("pageName", PageName.DTL);
 
         // 상세 조회 및 모델에 추가
         final UserDto retrievedDto = userService.getDtlDto(key);
         model.addAttribute("user", retrievedDto);
 
-        return "/view/feature/user/user_dtl";
+        return "/view/feature/user/account/user_detail";
     }
 
     /**
@@ -164,16 +161,16 @@ public class UserPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.USER_MDF_FORM)
+    @GetMapping(Url.USER_MODIFY_FORM)
     @Secured(Constant.ROLE_MNGR)
-    public String userMdfForm(
+    public String userModifyForm(
             final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
-        model.addAttribute("pageNm", PageNm.MDF);
+        model.addAttribute("menuLabel", SiteMenu.USER_ACCOUNT);
+        model.addAttribute("pageName", PageName.MDF);
 
         // 상세 조회 및 모델에 추가
         final UserDto rsDto = userService.getDtlDto(key);
@@ -191,6 +188,6 @@ public class UserPageController
         codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
         codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
-        return "/view/feature/user/user_reg_form";
+        return "/view/feature/user/account/user_regist_form";
     }
 }

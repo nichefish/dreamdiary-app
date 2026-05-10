@@ -30,13 +30,10 @@ public class MetaContentParam
     private String refContentType;
 
     /** 메타 이름 */
-    private String metaNm;
+    private String name;
 
     /** 카테고리 */
     private String ctgr;
-
-    /** 라벨 */
-    private String label;
 
     /** 등록자 ID */
     private String createdBy;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.post.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagService;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
@@ -53,7 +53,7 @@ public class BoardPostPageController extends BaseControllerImpl {
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         searchParam = (BoardPostSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "createdAt", model);
@@ -69,15 +69,15 @@ public class BoardPostPageController extends BaseControllerImpl {
         return "/view/feature/board/post/board_post_list";
     }
 
-    @GetMapping(Url.BOARD_POST_REG_FORM)
+    @GetMapping(Url.BOARD_POST_REGIST_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostRegForm(
+    public String boardPostRegistForm(
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.REG);
+        model.addAttribute("pageName", PageName.REG);
         model.addAttribute("post", new BoardPostDto());
         model.addAttribute(Constant.FORM_MODE, "regist");
 
@@ -85,19 +85,19 @@ public class BoardPostPageController extends BaseControllerImpl {
         codeLookupService.setCdListToModel(board.getCategoryGroupCode(), model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
-        return "/view/feature/board/post/board_post_reg_form";
+        return "/view/feature/board/post/board_post_regist_form";
     }
 
-    @PostMapping(Url.BOARD_POST_REG_PREVIEW_POP)
+    @PostMapping(Url.BOARD_POST_REGIST_PREVIEW_POP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostRegPreviewPop(
+    public String boardPostRegistPreviewPop(
             final BoardPostDto boardPost,
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
     ) {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.PREVIEW);
+        model.addAttribute("pageName", PageName.PREVIEW);
         model.addAttribute("contentType", contentType);
 
         boardPost.setMarkdownContent(MarkdownUtils.markdown(boardPost.getContent()));
@@ -106,34 +106,34 @@ public class BoardPostPageController extends BaseControllerImpl {
         return "/view/board/post/board_post_preview_pop";
     }
 
-    @GetMapping(value = Url.BOARD_POST_DTL)
+    @GetMapping(value = Url.BOARD_POST_DETAIL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostDtl(
+    public String boardPostDetail(
             final Integer id,
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("pageName", PageName.DTL);
         model.addAttribute("contentType", contentType);
 
         final BoardPostDto rsDto = boardPostService.viewDtlPage(id);
         model.addAttribute("post", rsDto);
 
-        return "/view/feature/board/post/board_post_dtl";
+        return "/view/feature/board/post/board_post_detail";
     }
 
-    @GetMapping(value = Url.BOARD_POST_MDF_FORM)
+    @GetMapping(value = Url.BOARD_POST_MODIFY_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String boardPostMdfForm(
+    public String boardPostModifyForm(
             final Integer id,
             final @ModelAttribute("contentType") String contentType,
             final ModelMap model
     ) throws Exception {
 
         model.addAttribute("menuLabel", SiteMenu.BOARD);
-        model.addAttribute("pageNm", PageNm.MDF);
+        model.addAttribute("pageName", PageName.MDF);
         model.addAttribute("contentType", contentType);
 
         final BoardPostDto rsDto = boardPostService.getDtlDto(id);
@@ -144,6 +144,6 @@ public class BoardPostPageController extends BaseControllerImpl {
         codeLookupService.setCdListToModel(board.getCategoryGroupCode(), model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
-        return "/view/feature/board/post/board_post_reg_form";
+        return "/view/feature/board/post/board_post_regist_form";
     }
 }

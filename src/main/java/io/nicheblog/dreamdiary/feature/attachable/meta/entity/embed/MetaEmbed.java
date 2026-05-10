@@ -65,7 +65,7 @@ public class MetaEmbed
 
         sortedListCache = list.stream()
             .sorted(Comparator.comparing(
-                (MetaContentEntity ct) -> ct.getMeta().getMetaNm(),
+                (MetaContentEntity ct) -> ct.getMeta().getName(),
                 Comparator.nullsLast(String::compareTo)
             ))
             .toList();

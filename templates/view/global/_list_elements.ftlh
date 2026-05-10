@@ -33,7 +33,11 @@
  * 목록 모달 팝업 열기 버튼 표시
  -->
 <#macro list_dtl_modal post func>
-    <#assign fullFunc = (func + "(" + post.id?c + ")") />
+    <#if func?contains("__ID__")>
+        <#assign fullFunc = func?replace("__ID__", post.id?c) />
+    <#else>
+        <#assign fullFunc = (func + "(" + post.id?c + ")") />
+    </#if>
     <a class="badge badge-secondary p-2 btn-white bg-hover-white blank blink-slow float-end"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="모달로 보기">
         <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="${fullFunc!}"></i>
@@ -95,7 +99,7 @@
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                       title="<@spring.message 'view.tag.content-list'/>">
                     <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
-                    #<span class="border-bottom text-primary fw-lighter opacity-hover">${tag.tagNm!"-"}</span>
+                    #<span class="border-bottom text-primary fw-lighter opacity-hover">${tag.name!"-"}</span>
                 </span>
             </#list>
         </span>

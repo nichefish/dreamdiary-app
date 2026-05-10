@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.feature.admin.menu.entity;
 import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
-import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -43,25 +42,25 @@ public class MenuEntity
     private Integer id;
 
     /** 상위메뉴 ID */
-    @Column(name = "upper_menu_id")
+    @Column(name = "parent_menu_id")
     @Comment("상위 메뉴 번호")
-    private Integer upperMenuId;
+    private Integer parentMenuId;
 
     /** 메뉴 구분 코드 */
-    @Column(name = "menu_ty_cd")
+    @Column(name = "menu_type")
     @Comment("메뉴 구분 코드")
-    private String menuTyCd;
+    private String menuType;
 
     /** 관리자 메뉴 여부 (Y/N) */
     @Builder.Default
-    @Column(name = "mngr_yn")
+    @Column(name = "admin_yn")
     @Comment("관리자 메뉴 여부 (Y/N)")
-    private String mngrYn = "N";
+    private String adminYn = "N";
 
     /** 메뉴명 */
-    @Column(name = "menu_nm")
+    @Column(name = "menu_name")
     @Comment("메뉴명")
-    private String menuNm;
+    private String menuName;
 
     /** 메뉴 라벨 */
     @Column(name = "menu_label")
@@ -95,25 +94,14 @@ public class MenuEntity
     @Comment("필수 여부 (Y/N)")
     private String requiredYn = "N";
 
-    /** 하위메뉴 확장유형 코드 */
-    @Column(name = "menu_sub_extend_ty_cd")
-    @Comment("하위메뉴 확장유형 코드")
-    private String menuSubExtendTyCd;
-
-    /** 메뉴 구분 코드 정보 (복합키 조인) */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'MENU_SUB_EXTEND_TY_CD\'", referencedColumnName = "group_code")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "menu_sub_extend_ty_cd", referencedColumnName = "code", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("메뉴 구분 코드 정보")
-    private CodeItemEntity menuSubExtendTyCdInfo;
+    /** 하위메뉴 확장유형 */
+    @Column(name = "submenu_expand_type")
+    @Comment("하위메뉴 확장유형")
+    private String submenuExpandType;
 
     /** 하위메뉴 확장유형 이름 */
     @Transient
-    private String menuSubExtendTyNm;
+    private String submenuExpandTypeName;
 
     /** 정렬 순서 */
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 0")
@@ -126,7 +114,7 @@ public class MenuEntity
 
     /** 셀프 참조 :: 상위메뉴 조회 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "upper_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("상위메뉴 조회")
@@ -134,7 +122,7 @@ public class MenuEntity
 
     /** 셀프 참조 :: 하위메뉴 목록 조회 */
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "upper_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
     @OrderBy("sortOrder ASC")

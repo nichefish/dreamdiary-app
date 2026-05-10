@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.ReleaseInfo;
@@ -71,6 +72,16 @@ public class FreemarkerInterceptor
 
         final Boolean isMobile = DeviceUtils.getCurrentDevice(request).isMobile();
         request.setAttribute(Constant.IS_MBL, isMobile);
+
+        // 변경 전: 아래 에서 로그인한 경우만 FreemarkerModelContributor 를 돌림 → 비로그인 permitAll 페이지(예: 계정 신청)는 siteAcsInfo 등이 빠져 템플릿 InvalidReference 발생 가능.
+        // 변경 후: Contributor 가 아직 채우지 않은 상태에서 레이아웃·Vue 부트스트랩이 참조할 최소 siteAcsInfo 만 선제 등록하고, 로그인 시에는 후속 Contributor 가 덮어쓴다.
+        if (mav.getModel().get("siteAcsInfo") == null) {
+            final SiteAcsInfo siteAcsFallback = new SiteAcsInfo();
+            siteAcsFallback.setUpperMenuNm("");
+            siteAcsFallback.setMenuName("");
+            siteAcsFallback.setPageName("");
+            mav.addObject("siteAcsInfo", siteAcsFallback);
+        }
 
         if (!AuthUtils.isAuthenticated()) return;
 

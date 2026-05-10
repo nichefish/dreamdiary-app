@@ -216,7 +216,7 @@ public class TagService
         final List<TagEntity> tagEntityList = tagList.stream()
                 .distinct() // 중복된 태그 문자열 제거
                 .map(tag -> {
-                    Optional<TagEntity> existingTag = repository.findByTagNmAndCtgr(tag.getTagNm(), tag.getCtgr());
+                    Optional<TagEntity> existingTag = repository.findByNameAndCtgr(tag.getName(), tag.getCtgr());
                     if (existingTag.isPresent()) {
                         TagEntity tagEntity = existingTag.get();
                         tagEntity.setDeletedAt(null);
@@ -224,7 +224,7 @@ public class TagService
                         return tagEntity;
                     }
                     // 기존 데이터가 없으면 새 객체 생성
-                    final TagEntity tagEntity = new TagEntity(tag.getTagNm(), tag.getCtgr());
+                    final TagEntity tagEntity = new TagEntity(tag.getName(), tag.getCtgr());
                     this.syncCategory(tagEntity);
                     return tagEntity;
                 })
@@ -270,7 +270,7 @@ public class TagService
             return;
         }
 
-        final TagCategoryEntity tagCategory = tagCategoryRepository.findByCtgrNm(ctgr)
+        final TagCategoryEntity tagCategory = tagCategoryRepository.findByName(ctgr)
                 .orElseGet(() -> tagCategoryRepository.saveAndFlush(new TagCategoryEntity(ctgr)));
 
         tagEntity.setCtgr(ctgr);

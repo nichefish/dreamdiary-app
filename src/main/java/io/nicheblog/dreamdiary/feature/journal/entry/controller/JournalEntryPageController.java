@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.entry.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.type.JournalEntryType;
@@ -64,7 +64,7 @@ public class JournalEntryPageController
     ) {
 
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
-        model.addAttribute("pageNm", PageNm.PREVIEW);
+        model.addAttribute("pageName", PageName.PREVIEW);
 
         final JournalEntryType entryType = JournalEntryType.from(type);
         model.addAttribute("entry", journalEntry);

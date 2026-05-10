@@ -27,7 +27,7 @@ import java.util.List;
 @Log4j2
 public class CodeItemRestController extends BaseControllerImpl {
     @Getter
-    private final String baseUrl = Url.CODE_GROUP_LIST;
+    private final String baseUrl = Url.CODE_ADMIN_PAGE;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CODE;
 

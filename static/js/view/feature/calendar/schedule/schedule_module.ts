@@ -1,4 +1,4 @@
-﻿/**
+/**
  * schedule_module.ts
  * 일정 스크립트 모듈
  *

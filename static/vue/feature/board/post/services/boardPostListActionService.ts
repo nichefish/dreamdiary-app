@@ -1,0 +1,92 @@
+/**
+ * boardPostListActionService.ts
+ * 일반게시판 목록 화면 액션 서비스
+ *
+ * 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임 — ESM 스코프 식별자 결의 race 차단.
+ */
+import { resolveMessage } from "../../../../common/messageHelper.js";
+
+export type BoardPostListActions = {
+    init: () => void;
+    search: () => void;
+    myPaprList: () => void;
+    xlsxDownload: () => void;
+    registForm: () => void;
+    detail: (id: string | number) => void;
+    detailModal: (id: string | number) => void;
+    modifyForm: () => void;
+    deleteAjax: (id: string | number) => void;
+    list: () => void;
+};
+
+export default function createBoardPostListActions(): BoardPostListActions {
+    return {
+        init(): void {},
+        search(): void {
+            $("#listForm #pageNo").val(1);
+            cF.form.blockUISubmit("#listForm", Url.BOARD_POST_LIST + "?actionTyCd=SEARCH");
+        },
+        myPaprList(): void {
+            const contentTypeElement: HTMLInputElement | null = document.querySelector("#contentType");
+            if (!contentTypeElement) return;
+
+            const contentType: string = contentTypeElement.value;
+            const param: string = `?contentType=${contentType}&searchType=nickname&searchKeyword=${AuthInfo.nickname!}&createdBy=${AuthInfo.username!}&pageSize=50&actionTyCd=MY_PAPR`;
+            cF.ui.blockUIReplace(Url.BOARD_POST_LIST + param);
+        },
+        xlsxDownload(): void {
+            Swal.fire({
+                text: resolveMessage("view.cnfm.download"),
+                showCancelButton: true,
+            }).then(function(result: SwalResult): void {
+                if (!result.value) return;
+                cF.util.blockUIFileDownload();
+                $("#listForm").attr("action", Url.BOARD_POST_LIST).submit();
+            });
+        },
+        registForm(): void {
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_REGIST_FORM);
+        },
+        detail(id: string | number): void {
+            if (isNaN(Number(id))) return;
+            $("#procForm #id").val(id);
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_DETAIL);
+        },
+        detailModal(id: string | number): void {
+            if (isNaN(Number(id))) return;
+            const e = window.event as Event | undefined;
+            if (e?.stopPropagation) e.stopPropagation();
+
+            const ajaxData: Record<string, any> = { id, contentType: $("#contentType").val() };
+            cF.ajax.get(cF.util.bindUrl(Url.BOARD_POST, { id }), ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                cF.handlebars.modal(res.rsltObj, "board_post_detail");
+            });
+        },
+        modifyForm(): void {
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_MODIFY_FORM);
+        },
+        deleteAjax(id: string | number): void {
+            if (isNaN(Number(id))) return;
+            Swal.fire({
+                text: resolveMessage("view.cnfm.del"),
+                showCancelButton: true,
+            }).then(function(result: SwalResult): void {
+                if (!result.value) return;
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
+                cF.$ajax.post(cF.util.bindUrl(Url.BOARD_POST, { id }), ajaxData, function(res: AjaxResponse): void {
+                    Swal.fire({ text: res.message }).then(function(): void {
+                        if (res.rslt) cF.ui.blockUIReplace(Url.BOARD_POST_LIST);
+                    });
+                }, "block");
+            });
+        },
+        list(): void {
+            const contentType: string = $("#contentType").val() as string;
+            cF.ui.blockUIReplace(`${Url.BOARD_POST_LIST}?contentType=${contentType}`);
+        },
+    };
+}

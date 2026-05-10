@@ -1,6 +1,6 @@
 <#--
  * 내 정보(user_my) > 내 비밀번호 변경 Modal
- * @included_in : user_my_dtl
+ * @included_in : user_my_page
  -->
 
 <#import "/layout/modal_layout.ftlh" as modal>
@@ -14,21 +14,17 @@
         <#--begin::Form-->
         <form name="myPwChgForm" id="myPwChgForm" class="form">
             <div id="user_my_pw_chg_div">
-                <#--handlebars template goes in here-->
+                <#-- Vue(UserMyPageApp)가 비밀번호 변경 폼을 렌더링 -->
             </div>
         </form>
     </div>
     <#--begin::Modal Footer-->
     <div class="modal-footer">
-        <#--버튼 영역-->
-        <div class="d-flex justify-content-end">
-            <#--모달:: 버튼: 저장하기-->
-            <@component.modal_btn_save "dF.UserMyPwChg.submit();" />
-            <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close />
+        <div id="user_my_pw_chg_footer_div">
+            <#-- Vue(UserMyPageApp)가 비밀번호 변경 footer 버튼을 렌더링 -->
         </div>
     </div>
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "_user_my_pw_chg_modal_template.hbs">
+<#-- Vue(UserMyPageApp)가 기존 _user_my_pw_chg_modal_template.hbs를 대체 -->

@@ -1,4 +1,4 @@
-﻿-- 코드 데이터 쿼리 정보를 입력한다.
+-- 코드 데이터 쿼리 정보를 입력한다.
 -- 쿼리 줄바꿈 안됨. 무조건 한 줄에 한 쿼리 단위로 실행된다.
 -- @database : mariadb
 -- @author : nichefish
@@ -44,24 +44,6 @@ INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_ord
 
 -- -----------------------
 
--- 공지사항 분류 코드 추가
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('NOTICE_CTGR_CD', '공지사항 분류 코드', '공지사항 분류 코드');
--- (구) 필수 :: 공지사항 분류 상세 코드 추가
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('NOTICE_CTGR_CD', 'NOTICE', '공지', '공지', '1');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('NOTICE_CTGR_CD', 'SCHEDULE', '일정', '일정', '2');
-
--- -----------------------
-
--- 하위메뉴 확장 유형 분류 코드 추가
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('MENU_SUB_EXTEND_TY_CD', '하위메뉴 확장 유형 코드', '하위메뉴 확장 유형 코드');
--- 하위메뉴 확장 유형 상세 코드 추가
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'NO_SUB', '하위메뉴 없음', '하위메뉴 없음 (대메뉴가 링크로 기능함)', '0');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'LIST', '아래로 목록 표시', '아래로 목록 표시', '1');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'EXTEND', '우측으로 확장', '우측으로 확장', '2');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'COLLAPSE', '글접기', '글접기', '3');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('MENU_SUB_EXTEND_TY_CD', 'BOARD', '일반게시판', '일반게시판', '4');
--- -----------------------
-
 -- text class code group
 INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('TEXT_CLASS_CD', 'Text Class', 'text semantic code');
 -- text class detail codes
@@ -77,4 +59,4 @@ INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_ord
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('TEXT_CLASS_CD', 'DIALOG', 'DIALOG', 'text-dialog', '10');
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('TEXT_CLASS_CD', 'NOTI', 'NOTI', 'text-noti', '11');
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('TEXT_CLASS_CD', 'BURNT', 'BURNT', 'text-burnt', '12');
-
+INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('TEXT_CLASS_CD', 'EMOTION', 'EMOTION', 'text-emotion', '13');

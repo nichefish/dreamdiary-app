@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
@@ -32,19 +33,20 @@ public class MenuPostDto
 
     /** 상위 메뉴 번호 */
     @Positive
-    private Integer upperMenuId;
+    private Integer parentMenuId;
 
     /** 메뉴 구분 코드 (루트"ROOT", 대메뉴"MAIN", 중-소메뉴"SUB") */
     @Size(max = 50)
-    private String menuTyCd;
+    @Pattern(regexp = "^(MAIN|SUB)$")
+    private String menuType;
 
     /** 메뉴 구분 코드명 (루트"ROOT", 대메뉴"MAIN", 중-소메뉴"SUB") */
     @Size(max = 50)
-    private String menuTyNm;
+    private String menuTypeName;
 
     /** 메뉴 이름 */
     @Size(max = 200)
-    private String menuNm;
+    private String menuName;
 
     /** 메뉴 라벨 */
     @Size(max = 100)
@@ -63,11 +65,12 @@ public class MenuPostDto
 
     /** 하위메뉴 확장유형 코드 */
     @Size(max = 50)
-    private String menuSubExtendTyCd;
+    @Pattern(regexp = "^(NO_SUB|LIST|EXTEND|COLLAPSE|BOARD)$")
+    private String submenuExpandType;
 
     /** 하위메뉴 확장유형 이름 */
     @Size(max = 50)
-    private String menuSubExtendTyNm;
+    private String submenuExpandTypeName;
 
     /* ----- */
 

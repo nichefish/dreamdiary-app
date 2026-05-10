@@ -60,7 +60,7 @@
     </div>
     <div>
         <#--헤더:: 버튼: 등록 화면 이동하기-->
-        <@component.header_btn_reg_form "dF.User.regForm();" />
+        <@component.header_btn_reg_form "dF.User.registForm();" />
     </div>
     <div>
         <#--헤더:: 버튼: 엑셀 다운로드하기-->

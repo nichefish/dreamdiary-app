@@ -1,26 +1,28 @@
 <#--
- * 寃뚯떆??board_post) > 紐⑸줉 ?붾㈃
- -->
+ * 게시판(board_post) > 목록 화면
+-->
 
 <#import "/layout/layout_default.ftlh" as layout >
 
-<#--toolbar::踰꾪듉 異붽?-->
+<#--toolbar::버튼 추가-->
 <#assign toolbar>
     <#include "/view/feature/board/post/_board_post_list_header.ftlh">
 </#assign>
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--#include:: component:: ?쒓렇 ?대┃ ?꾪꽣留?->
+<#--#include:: component:: 태그 클릭 필터바-->
 <#include "/view/feature/attachable/tag/_tag_list_header.ftlh">
 
-<#if board == "cmpyLife">
+<#if (board!"") == "cmpyLife">
     <button type="button" class="btn btn-sm btn-light btn-active-secondary mx-1"
             onclick="$('#cmpy_life_modal').modal('show');"
             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="?ш린濡쒖슫 ?뚯궗?앺솢 ?덈궡 ?앹뾽???몄텧?⑸땲??">
         <span class="blink"><i class="bi bi-lightbulb-fill text-noti"></i></span>?ш린濡쒖슫 ?뚯궗?앺솢
     </button>
 </#if>
+
+<div id="board_post_list_app" class="d-none"></div>
 
 <div class="card post">
     <#--begin::Card body-->
@@ -46,7 +48,7 @@
                             <div class="row d-flex align-items-center justify-content-between align-items-center">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.BOARD_POST_DTL!}?board=${post.board!}&id=${post.id!}&notionPageId=${post.notionPageId!}"
+                                        <a href="${Url.BOARD_POST_DETAIL!}?board=${post.board!}&id=${post.id!}&notionPageId=${post.notionPageId!}"
                                            class="text-dark vertical-middle text-underline-dotted"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -54,26 +56,26 @@
                                             </#if>
                                             ${post.title!}
                                         </a>
-                                        <#--紐⑸줉:: ?볤? ?쒖떆-->
+                                        <#--목록:: 댓글 표시-->
                                         <@component.list_comment post />
-                                        <#--紐⑸줉:: ??湲?대㈃ 'N' ?쒖떆-->
+                                        <#--목록:: 신규 글이면 'N' 표시-->
                                         <#if post.isNew>
                                             <div class="badge border-0 text-white bg-noti blink fs-8 ms-2">N</div>
                                         </#if>
                                     </div>
                                     <div class="ms-1">
-                                        <#--紐⑸줉:: ?쒓렇 ?쒖떆-->
+                                        <#--목록:: 태그 표시-->
                                         <@component.list_tag post />
                                     </div>
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
-                                    <#--紐⑸줉:: 紐⑤떖 ?앹뾽 ?닿린 踰꾪듉 ?쒖떆-->
-                                    <@component.list_dtl_modal post "dF.BoardPost.dtlModal" />
+                                    <#--목록:: 모달 팝업 열기 버튼 표시-->
+                                    <@component.list_dtl_modal post "window.dispatchEvent(new CustomEvent('board-post:open-detail-modal', { detail: { id: __ID__ } }));" />
                                 </div>
                             </div>
                         </td>
                         <td class="text-center col-form-label hidden-table">
-                            <#--紐⑸줉:: 泥⑤??뚯씪 紐⑤떖 ?닿린 踰꾪듉 ?쒖떆-->
+                            <#--목록:: 첨부파일 모달 열기 버튼 표시-->
                             <@component.list_file_group post />
                         </td>
                     </tr>
@@ -100,13 +102,12 @@
 
 <#--include::modals-->
 <#include "/view/feature/attachable/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
+<#include "/view/feature/file/_modal/_file_list_modal.ftlh">
 
-<#--include::board_post_module-->
-<#include "/view/feature/board/post/_modal/_board_post_dtl_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/board/post/board_post_module.js?${releaseDate!}"></script>
+<#--include::board_post_detail_modal-->
+<#include "/view/feature/board/post/_modal/_board_post_detail_modal.ftlh">
 
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/board/post/board_post_list.js?${releaseDate!}"></script>
+<#--include::vue module-->
+<script type="module" src="/vue/feature/board/post/BoardPostListApp.js?${releaseDate!}"></script>
 
 </@layout.layout>

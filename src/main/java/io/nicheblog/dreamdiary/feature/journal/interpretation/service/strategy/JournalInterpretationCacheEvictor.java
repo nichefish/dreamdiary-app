@@ -42,12 +42,12 @@ public class JournalInterpretationCacheEvictor
             final String weekStartDt = param.getWeekStartDt();
             // journal_day
             if (journalDayId != null) {
-                EhCacheUtils.evictUserCacheByKey("journalDayDtlDtoByUser", username, journalDayId);
+                EhCacheUtils.evictUserCacheByKey("journalDayDetailDtoByUser", username, journalDayId);
             }
             this.evictMyJournalDayYyMnthCaches(username, yy, mnth);
             this.evictMyJournalDayWeeklyCaches(username, weekStartDt);
             // journal_interpretation
-            EhCacheUtils.evictUserCacheByKey("journalInterpretationDtlDtoByUser", username, id);
+            EhCacheUtils.evictUserCacheByKey("journalInterpretationDetailDtoByUser", username, id);
             // 태그 캐시 처리
             if (id != null) {
                 EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JOURNAL_INTERPRETATION");
