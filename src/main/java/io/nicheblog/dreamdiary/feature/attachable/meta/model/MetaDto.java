@@ -24,7 +24,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = { "ctgr", "metaNm", "value", "unit" }, callSuper = false)
+@EqualsAndHashCode(of = { "ctgr", "name", "value", "unit" }, callSuper = false)
 public class MetaDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<MetaDto> {
@@ -40,12 +40,7 @@ public class MetaDto
 
     /** 메타 */
     @Size(max = 50)
-    private String metaNm;
-
-    /** 메타 라벨 */
-    @Builder.Default
-    @Size(max = 50)
-    private String label = "";
+    private String name;
 
     /** 메타 값 */
     @Builder.Default
@@ -75,32 +70,32 @@ public class MetaDto
     /**
      * 생성자.
      *
-     * @param metaNm - 생성할 메타의 이름
+     * @param name - 생성할 메타의 이름
      */
-    public MetaDto(final String metaNm) {
-        this.metaNm = metaNm;
+    public MetaDto(final String name) {
+        this.name = name;
         this.value = "";
     }
 
     /**
      * 생성자.
      *
-     * @param metaNm - 생성할 메타의 이름
+     * @param name - 생성할 메타의 이름
      * @param value - 생성할 메타의 값
      */
-    public MetaDto(final String metaNm, final String value) {
-        this.metaNm = metaNm;
+    public MetaDto(final String name, final String value) {
+        this.name = name;
         this.value =  StringUtils.isEmpty(value) ? "" : value;
     }
 
     /**
      * 생성자.
 
-     * @param metaNm - 생성할 메타 번호
+     * @param name - 생성할 메타 번호
      * @param value - 생성할 메타의 값
      */
-    public MetaDto(final Integer id, final String metaNm, final String value) {
-        this(metaNm, value);
+    public MetaDto(final Integer id, final String name, final String value) {
+        this(name, value);
         this.id = id;
     }
 
@@ -113,9 +108,9 @@ public class MetaDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull MetaDto other) {
-        String thisMetaNm = this.getMetaNm();
-        String otherMetaNm = other.getMetaNm();
-        return thisMetaNm.compareTo(otherMetaNm);
+        String thisName = this.getName();
+        String otherName = other.getName();
+        return thisName.compareTo(otherName);
     }
 
     @Override

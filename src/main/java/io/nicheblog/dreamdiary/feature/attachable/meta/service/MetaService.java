@@ -206,7 +206,7 @@ public class MetaService
         final List<MetaEntity> metaEntityList = metaList.stream()
                 .distinct() // 중복된 메타 문자열 제거
                 .map(meta -> {
-                    Optional<MetaEntity> existingMeta = repository.findByMetaNmAndCtgrAndLabel(meta.getMetaNm(), meta.getCtgr(), meta.getLabel());
+                    Optional<MetaEntity> existingMeta = repository.findByNameAndCtgr(meta.getName(), meta.getCtgr());
                     if (existingMeta.isPresent()) {
                         MetaEntity metaEntity = existingMeta.get();
                         metaEntity.setDeletedAt(null);
@@ -215,7 +215,7 @@ public class MetaService
                         return metaEntity;
                     }
                     // 기존 데이터가 없으면 새 객체 생성 (content에 전달하기 위해 value 값 전달)
-                    return MetaEntity.builder().metaNm(meta.getMetaNm()).ctgr(meta.getCtgr()).label(meta.getLabel()).value(meta.getValue()).build();
+                    return MetaEntity.builder().name(meta.getName()).ctgr(meta.getCtgr()).value(meta.getValue()).build();
                 })
                 .collect(Collectors.toList());
 
@@ -231,4 +231,3 @@ public class MetaService
         repository.deleteAll(entity);
     }
 }
-

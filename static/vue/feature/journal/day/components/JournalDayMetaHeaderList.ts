@@ -36,7 +36,7 @@ const JournalDayMetaHeaderList = {
                 #
                 <span class="border-bottom text-primary fw-lighter opacity-hover">
                     <span v-if="item.ctgr" class="fs-7 text-noti">[{{ item.ctgr }}]</span>
-                    {{ item.metaNm }}
+                    {{ item.name }}
                 </span>
             </span>
         </template>

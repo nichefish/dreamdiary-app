@@ -26,12 +26,12 @@ public interface MetaRepository
     /**
      * 메타명 + 카테고리명으로 테이블 조회
      *
-     * @param tagNm 조회할 태그명
+     * @param name 조회할 메타명
      * @param ctgr 조회할 카테고리명
-     * @return 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
+     * @return 메타명과 카테고리명에 해당하는 MetaEntity를 포함하는 Optional 객체
      */
-    @Query(value = "SELECT * FROM meta m WHERE m.meta_nm = :tagNm AND m.ctgr = :ctgr AND m.label = :label AND m.deleted_at IS NULL", nativeQuery = true)
-    Optional<MetaEntity> findByMetaNmAndCtgrAndLabel(final String tagNm, final String ctgr, final String label);
+    @Query(value = "SELECT * FROM meta m WHERE m.name = :name AND m.ctgr = :ctgr AND m.deleted_at IS NULL", nativeQuery = true)
+    Optional<MetaEntity> findByNameAndCtgr(final @Param("name") String name, final @Param("ctgr") String ctgr);
 
     /**
      * 컨텐츠 타입별 메타 개수 조회
@@ -50,4 +50,3 @@ public interface MetaRepository
             " AND (ct.createdBy = :createdBy)")
     Integer countMetaSize(final @Param("metaId") Integer metaId, final @Param("refContentType") String refContentType, final String createdBy);
 }
-
