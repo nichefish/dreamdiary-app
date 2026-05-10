@@ -1,6 +1,6 @@
 <#--
  * 템플릿 관리(tmplat) > 목록 툴바 Header
- * @included_in : notice_list
+ * @included_in : tmplat_def_list
  -->
 
 <form name="listForm" id="listForm" class="d-none d-md-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get">

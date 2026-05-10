@@ -11,13 +11,6 @@ VALUES
 (NULL, 'MAIN', '사용자', 0, 'LIST', 'MAIN', 'N','Y','Y','Y','SYSTEM'),
 (NULL, 'MAIN', '관리자', 0, 'LIST', 'ADMIN_MAIN', 'Y','Y','Y','Y','SYSTEM');
 
--- 공지사항
-INSERT INTO menu ( parent_menu_id, menu_type, menu_label, menu_name, url, sort_order, submenu_expand_type, admin_yn, protected_yn, required_yn, use_yn, created_by )
-WITH T AS ( SELECT 'MAIN' AS upper_label )
-SELECT M.id, 'SUB', 'NOTICE', '공지사항', '/app/notice/list.do', 0, 'NO_SUB', 'N', 'N', 'N', 'Y', 'SYSTEM'
-FROM T
-INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
-
 -- 저널
 INSERT INTO menu ( parent_menu_id, menu_type, menu_label, menu_name, url, sort_order, submenu_expand_type, admin_yn, protected_yn, required_yn, use_yn, created_by )
 WITH T AS ( SELECT 'MAIN' AS upper_label )

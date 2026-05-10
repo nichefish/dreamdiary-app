@@ -29,9 +29,6 @@ public enum ActvtyCtgr {
     ADMIN("관리"),
     CACHE("캐시"),
 
-    // NOTICE
-    NOTICE("공지사항"),
-
     // JOURNAL
     JOURNAL("꿈 관리"),
     BOARD_POST("게시판"),

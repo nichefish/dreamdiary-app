@@ -85,12 +85,6 @@ public interface ApiUrl {
     String JOURNAL_ANNUAL_REVIEWS = Prefix.API + "/journal/annual/reviews";
     String JOURNAL_ANNUAL_REVIEW = Prefix.API + "/journal/annual/review/{id}";
 
-    /** 공지사항 */
-    String NOTICES = Prefix.API + "/notices";
-    String NOTICE = Prefix.API + "/notices/{id}";
-    String NOTICES_POPUP_LIST = Prefix.API + "/notices/popup-list";
-    String NOTICES_XLSX_DOWNLOAD = Prefix.API + "/notices/xlsx-download";
-
     /** 게시판 */
     String BOARD_POSTS = Prefix.API + "/board/posts";
     String BOARD_POST = Prefix.API + "/board/posts/{id}";

@@ -37,8 +37,6 @@ public enum SiteMenu {
     USER_SIGNUP("신규계정 신청"),
     USER_MY("내 정보"),
 
-    NOTICE("공지사항"),
-
     JOURNAL("저널"),
     JOURNAL_DAY("저널 일자"),
     JOURNAL_CAL("저널 달력"),

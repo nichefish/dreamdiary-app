@@ -56,7 +56,6 @@ public interface Code {
     String RANK_CD = "JOB_TITLE_CD";       // 직급 코드
     String RANK_STAFF = Rank.STAFF.name();           // 직급:사원
 
-    String NOTICE_CTGR_CD = "NOTICE_CTGR_CD";   // 공지사항 글분류 코드
     String POST_CTGR_CD = "POST_CTGR_CD";       // 게시판
     String JANDI_TOPIC_CD = "JANDI_TOPIC_CD";   // 잔디 토픽 코드
     String JOURNAL_CHAPTER_CTGR_CD = "JOURNAL_CHAPTER_CTGR_CD";   // 저널 챕터 글분류 코드
@@ -101,4 +100,3 @@ public interface Code {
     /* 소속(회사) 코드 */
     String CMPY_CD = "CMPY_CD";
 }
-

@@ -1,6 +1,6 @@
 <#--
  * 템플릿 정의(tmplat) > 상세 Modal
- * @included_in : notice_list
+ * @included_in : tmplat_def_list
  -->
 
 <#import "/layout/modal_layout.ftlh" as modal>

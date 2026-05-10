@@ -49,7 +49,7 @@ public class JournalThreadPageController
     @Getter
     private final String baseUrl = Url.JOURNAL_THREAD_LIST;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.NOTICE;      // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;      // 작업 카테고리 (로그 적재용)
 
     private final JournalThreadService journalThreadService;
     private final CodeLookupService codeLookupService;
