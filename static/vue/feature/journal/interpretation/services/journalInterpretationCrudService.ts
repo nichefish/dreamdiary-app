@@ -3,13 +3,13 @@
  * 저널 해석 CRUD/모달 액션 서비스 (Vue 소유, dF 글로벌 등록).
  *
  * 변경(I-3):
- *   - journal_interpretation_module.ts 의 CRUD 계열 메서드(regModal/regAjax/dtlModal/mdfModal/delAjax/copy/submit)
+ *   - journal_interpretation_module.ts 의 CRUD 계열 메서드(registModal/registAjax/detailModal/modifyModal/deleteAjax/copy/submit)
  *     를 본 서비스로 추출한다. 모듈은 동일 시그니처의 thin wrapper 만 유지한다.
- *   - initForm 은 Vue 브리지 전용으로 모듈에 남긴다(JournalInterpretationRegVueApp 경로).
- *   - dtlModal 의 Handlebars 템플릿 호출(`journal_interpretation_dtl`)은 미존재 템플릿 호출 그대로 유지(가시 dead — 별도 정리 전까지 변경 없음).
+ *   - initForm 은 Vue 브리지 전용으로 모듈에 남긴다(JournalInterpretationRegistVueApp 경로).
+ *   - detailModal 의 Handlebars 템플릿 호출(`journal_interpretation_detail`)은 미존재 템플릿 호출 그대로 유지(가시 dead — 별도 정리 전까지 변경 없음).
  *
  * 변경(I-5):
- *   - dtlModal 본체와 service 등록 항목 제거. 호출 그래프상 외부 호출자 없음(자체 thin wrapper 만 호출하던 dead 경로).
+ *   - detailModal 본체와 service 등록 항목 제거. 호출 그래프상 외부 호출자 없음(자체 thin wrapper 만 호출하던 dead 경로).
  *     · 이전 표기는 "별도 정리 전까지 변경 없음"이었으나 본 phase 에서 정식 제거한다(가시 dead 자체가 사라짐).
  *
  * 변경(D):
@@ -37,10 +37,10 @@ function closeOpenModals(): void {
 
 /**
  * 등록 모달 호출
- * 변경 전: journal_interpretation_module.regModal — 검증 후 initForm.
+ * 변경 전: journal_interpretation_module.registModal — 검증 후 initForm.
  * 변경 후(I-3): 동일 흐름. initForm 은 모듈 표면(`dF.JournalInterpretation.initForm`) 을 호출한다.
  */
-export function regModal(params: {
+export function registModal(params: {
     journalDayId: string | number;
     refId: string | number;
     refContentType: string;
@@ -68,25 +68,25 @@ export function regModal(params: {
  */
 export function submit(): void {
     tinymce.get("tinymce_journalInterpretationCn").save();
-    $("#journalInterpretationRegForm").submit();
+    $("#journalInterpretationRegistForm").submit();
 }
 
 /**
  * 등록 (Ajax)
- * 변경 전: journal_interpretation_module.regAjax.
+ * 변경 전: journal_interpretation_module.registAjax.
  */
-export function regAjax(): void {
+export function registAjax(): void {
     const dfNs = (window as any).dF;
-    const id: string = cF.util.getInputValue("#journalInterpretationRegForm [name='id']");
-    const isMdf: boolean = cF.util.isNotEmpty(id);
+    const id: string = cF.util.getInputValue("#journalInterpretationRegistForm [name='id']");
+    const isModify: boolean = cF.util.isNotEmpty(id);
     Swal.fire({
-        text: resolveMessage(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+        text: resolveMessage(isModify ? "view.cnfm.mdf" : "view.cnfm.reg"),
         showCancelButton: true,
     }).then(function(result: SwalResult): void {
         if (!result.value) return;
 
-        const url: string = isMdf ? cF.util.bindUrl(Url.JOURNAL_INTERPRETATION, { id }) : Url.JOURNAL_INTERPRETATIONS;
-        const ajaxData: FormData = new FormData(document.getElementById("journalInterpretationRegForm") as HTMLFormElement);
+        const url: string = isModify ? cF.util.bindUrl(Url.JOURNAL_INTERPRETATION, { id }) : Url.JOURNAL_INTERPRETATIONS;
+        const ajaxData: FormData = new FormData(document.getElementById("journalInterpretationRegistForm") as HTMLFormElement);
         cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
             Swal.fire({ text: res.message })
                 .then(function(): void {
@@ -109,23 +109,23 @@ export function regAjax(): void {
 }
 
 /**
- * (변경 I-5) 상세 모달 호출 dtlModal 제거됨.
- *   - 변경 전: journal_interpretation_module.dtlModal — Ajax get 후 cF.handlebars.modal(`journal_interpretation_dtl`).
+ * (변경 I-5) 상세 모달 호출 detailModal 제거됨.
+ *   - 변경 전: journal_interpretation_module.detailModal — Ajax get 후 cF.handlebars.modal(`journal_interpretation_detail`).
  *     해당 Handlebars 템플릿이 저장소에 부재하여 dead 호출이었고, I-1~I-4 단계에서 외부 호출자도 0 으로 확인됨.
  *   - 본 phase 에서 본체와 thin wrapper, 타입 선언을 모두 제거(가시 dead 정리).
  */
 
 /**
  * 수정 모달 호출
- * 변경 전: journal_interpretation_module.mdfModal.
+ * 변경 전: journal_interpretation_module.modifyModal.
  */
-export function mdfModal(id: string|number): void {
+export function modifyModal(id: string|number): void {
     if (isNaN(Number(id))) return;
 
     closeOpenModals();
 
     const self = getInterpretationNs();
-    const funcName = "mdfModal";
+    const funcName = "modifyModal";
     const histArgs: unknown[] = [id];
 
     const url: string = cF.util.bindUrl(Url.JOURNAL_INTERPRETATION, { id });
@@ -145,9 +145,9 @@ export function mdfModal(id: string|number): void {
 
 /**
  * 삭제 (Ajax)
- * 변경 전: journal_interpretation_module.delAjax.
+ * 변경 전: journal_interpretation_module.deleteAjax.
  */
-export function delAjax(id: string|number): void {
+export function deleteAjax(id: string|number): void {
     if (isNaN(Number(id))) return;
 
     const dfNs = (window as any).dF;
@@ -228,11 +228,11 @@ export function copy(id: string|number): void {
  * `(window as any).dF.JournalInterpretationCrudService.<method>(...)` 로 호출한다.
  */
 const journalInterpretationCrudService = {
-    regModal,
+    registModal,
     submit,
-    regAjax,
-    mdfModal,
-    delAjax,
+    registAjax,
+    modifyModal,
+    deleteAjax,
     copy,
 };
 

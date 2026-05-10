@@ -5,20 +5,20 @@
  * 변경(I-4):
  *   - classic `static/js/view/feature/journal/interpretation/journal_interpretation_module.ts` 를 본 service 로 이전한다.
  *   - 외부 호출 시그니처 보존:
- *     · `dF.JournalInterpretation.<method>` (init / initForm / regModal / submit / regAjax /
- *        mdfModal / delAjax / resolveAjax / setLifecycleAjax / collapse /
+ *     · `dF.JournalInterpretation.<method>` (init / initForm / registModal / submit / registAjax /
+ *        modifyModal / deleteAjax / resolveAjax / setLifecycleAjax / collapse /
  *        toggle / initCollapseState / copy)
  *     · 인스턴스 필드(`STORAGE_KEY` / `initialized` / `inKeywordSearchMode`) 직접 read/write 도 동일 유지.
  *
  *   변경 이력 비고:
- *     · 변경 전(I-4): dtlModal 도 표면에 포함되어 있었으나 미존재 HBS 템플릿 호출(가시 dead)이었고,
+ *     · 변경 전(I-4): detailModal 도 표면에 포함되어 있었으나 미존재 HBS 템플릿 호출(가시 dead)이었고,
  *       I-5 에서 service 본체·thin wrapper·타입까지 정식 제거되었다.
  *   - I-3 thin wrapper 그대로 유지(상태/CRUD 위임은 `JournalInterpretationStateService` /
  *     `JournalInterpretationCrudService`). `initForm` 은 Vue 브리지 진입.
  *   - 적재 순서:
  *     · 변경(I-4): 5개 ftlh 의 classic `<script type="text/javascript">` 적재 라인을 제거하고,
- *       `_journal_interpretation_reg_modal.ftlh` 의 `journalInterpretationRegVueScriptDone` 가드 안에서
- *       본 ES module 을 *최우선* 적재한다(Service 표면 등록 → 의존 service → RegModalApp).
+ *       `_journal_interpretation_regist_modal.ftlh` 의 `journalInterpretationRegistVueScriptDone` 가드 안에서
+ *       본 ES module 을 *최우선* 적재한다(Service 표면 등록 → 의존 service → RegistModalApp).
  *     · ES module 은 `defer` 와 동등 평가이므로 페이지의 `Url` / `Message` / `cF` 등 글로벌 등록 이후 평가된다.
  *
  * 호출 그래프 비고:
@@ -59,30 +59,30 @@ const journalInterpretationModule: dfModule = {
      *
      * 변경(I-2):
      *   - 변경 전: cF.handlebars.modal + cF.validate.validateForm + cF.ui.chckboxLabel + cF.tinymce.init/setContentWhenReady 직접 호출.
-     *   - 변경 후: window.JournalInterpretationRegVueApp.open(obj) 단일 진입. Vue 진입 함수가 동일 호출 순서를 attachRegFormControls 안에서 수행.
+     *   - 변경 후: window.JournalInterpretationRegistVueApp.open(obj) 단일 진입. Vue 진입 함수가 동일 호출 순서를 attachRegistFormControls 안에서 수행.
      *     모달 표시(Bootstrap show) 도 Vue 가 담당. classic 은 thin bridge 만 남긴다.
      *   - mounted=false 인 경우(스크립트 로드 전) pendingPayload 큐로 폴백.
      */
     initForm: function(obj: Record<string, any> = {}): void {
-        const bridge = (window as unknown as { JournalInterpretationRegVueApp?: { mounted?: boolean; pendingPayload?: Record<string, any> | null; open?: (model: Record<string, any>) => void; }; }).JournalInterpretationRegVueApp;
+        const bridge = (window as unknown as { JournalInterpretationRegistVueApp?: { mounted?: boolean; pendingPayload?: Record<string, any> | null; open?: (model: Record<string, any>) => void; }; }).JournalInterpretationRegistVueApp;
         if (bridge?.mounted === true && typeof bridge.open === "function") {
             bridge.open(obj);
             return;
         }
         if (bridge && bridge.mounted !== true) {
             bridge.pendingPayload = obj;
-            console.log("[JournalInterpretation.initForm] JournalInterpretationRegVueApp pending payload.");
+            console.log("[JournalInterpretation.initForm] JournalInterpretationRegistVueApp pending payload.");
             return;
         }
-        console.error("[JournalInterpretation.initForm] JournalInterpretationRegVueApp unavailable (모달 스텁 없음 또는 로드 순서 확인).");
+        console.error("[JournalInterpretation.initForm] JournalInterpretationRegistVueApp unavailable (모달 스텁 없음 또는 로드 순서 확인).");
     },
 
     /**
      * 등록 모달 호출
      *
-     * 변경(I-3): JournalInterpretationCrudService.regModal 위임.
+     * 변경(I-3): JournalInterpretationCrudService.registModal 위임.
      */
-    regModal: function({
+    registModal: function({
         journalDayId,
         refId,
         refContentType,
@@ -95,7 +95,7 @@ const journalInterpretationModule: dfModule = {
         stdrdDt: string;
         journalDateWeekDay: string;
     }): void {
-        dfNs.JournalInterpretationCrudService?.regModal?.({
+        dfNs.JournalInterpretationCrudService?.registModal?.({
             journalDayId,
             refId,
             refContentType,
@@ -116,34 +116,34 @@ const journalInterpretationModule: dfModule = {
     /**
      * 등록 (Ajax)
      *
-     * 변경(I-3): JournalInterpretationCrudService.regAjax 위임.
+     * 변경(I-3): JournalInterpretationCrudService.registAjax 위임.
      */
-    regAjax: function(): void {
-        dfNs.JournalInterpretationCrudService?.regAjax?.();
+    registAjax: function(): void {
+        dfNs.JournalInterpretationCrudService?.registAjax?.();
     },
 
     /**
-     * (변경 I-5) 상세 모달 호출 dtlModal thin wrapper 제거됨.
-     *   - 변경 전(I-3): JournalInterpretationCrudService.dtlModal 로 위임하던 thin wrapper.
+     * (변경 I-5) 상세 모달 호출 detailModal thin wrapper 제거됨.
+     *   - 변경 전(I-3): JournalInterpretationCrudService.detailModal 로 위임하던 thin wrapper.
      *   - 본체가 가시 dead(미존재 HBS) 였고 외부 호출자가 0 이라 본 phase 에서 정식 제거.
      */
 
     /**
      * 수정 모달 호출
      *
-     * 변경(I-3): JournalInterpretationCrudService.mdfModal 위임.
+     * 변경(I-3): JournalInterpretationCrudService.modifyModal 위임.
      */
-    mdfModal: function(id: string|number): void {
-        dfNs.JournalInterpretationCrudService?.mdfModal?.(id);
+    modifyModal: function(id: string|number): void {
+        dfNs.JournalInterpretationCrudService?.modifyModal?.(id);
     },
 
     /**
      * 삭제 (Ajax)
      *
-     * 변경(I-3): JournalInterpretationCrudService.delAjax 위임.
+     * 변경(I-3): JournalInterpretationCrudService.deleteAjax 위임.
      */
-    delAjax: function(id: string|number): void {
-        dfNs.JournalInterpretationCrudService?.delAjax?.(id);
+    deleteAjax: function(id: string|number): void {
+        dfNs.JournalInterpretationCrudService?.deleteAjax?.(id);
     },
 
     /**

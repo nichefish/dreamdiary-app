@@ -1,4 +1,4 @@
-<#--
+﻿<#--
  * 저널 일자(journal_day) : 월간.
  -->
 
@@ -126,7 +126,7 @@
 <#include "/view/feature/journal/entry/_modal/_journal_entry_reg_modal.ftlh">
 
 <#--include::journal_interpretation_module-->
-<#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_reg_modal.ftlh">
+<#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_regist_modal.ftlh">
 
 
 <#--include::journal_day_tag_module-->

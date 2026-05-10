@@ -141,8 +141,8 @@ public class JournalInterpretationService
      * @param key interpretation id
      * @return detail dto
      */
-    @Cacheable(value = "journalInterpretationDtlDtoByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
-    public JournalInterpretationDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
+    @Cacheable(value = "journalInterpretationDetailDtoByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JournalInterpretationDto getDetailDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JournalInterpretationEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalInterpretationDto retrieved = mapstruct.toDto(retrievedEntity);
         if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) {
@@ -204,7 +204,7 @@ public class JournalInterpretationService
      * @return deleted dto
      */
     @Transactional(readOnly = true)
-    public JournalInterpretationDto getDeletedDtlDto(final Integer key) throws Exception {
+    public JournalInterpretationDto getDeletedDetailDto(final Integer key) throws Exception {
         final JournalInterpretationDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
@@ -227,7 +227,7 @@ public class JournalInterpretationService
         int sortOrder = 1;
         for (final JournalInterpretationDto e : list) {
             e.setSortOrder(sortOrder++);
-            EhCacheUtils.evictUserCacheByKey("journalInterpretationDtlDtoByUser", e.getCreatedBy(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("journalInterpretationDetailDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -263,7 +263,7 @@ public class JournalInterpretationService
         int sortOrder = 1;
         for (final JournalInterpretationDto e : list) {
             e.setSortOrder(sortOrder++);
-            EhCacheUtils.evictUserCacheByKey("journalInterpretationDtlDtoByUser", e.getCreatedBy(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("journalInterpretationDetailDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
