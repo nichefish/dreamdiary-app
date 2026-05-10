@@ -54,7 +54,8 @@
 <#include "/view/feature/admin/cache/_modal/_cache_list_modal.ftlh">
 <#include "/view/feature/admin/cache/_modal/_cache_detail_modal.ftlh">
 
-<script type="text/javascript" src="/js/view/feature/admin/cache/_cache.js?${releaseDate!}"></script>
+<div id="cache_admin_app" class="d-none"></div>
+<script type="module" src="/vue/feature/admin/cache/CacheAdminApp.js?${releaseDate!}"></script>
 
 <script type="module" src="/vue/feature/admin/site/AdminPageApp.js?${releaseDate!}"></script>
 

@@ -1,7 +1,7 @@
 /**
  * 사이트 관리 화면 액션 (API·캐시 모듈 브리지)
  *
- * 동작: 휴일/노션 API Ajax, 캐시 모달(`dF.Cache` + `_cache.js`) 연동.
+ * 동작: 휴일/노션 API Ajax, 캐시 모달(CacheAdminApp의 `dF.Cache` 브리지) 연동.
  */
 
 export type AdminPageActions = {
@@ -46,7 +46,7 @@ export default function createAdminPageActions(): AdminPageActions {
                 cache.activeListModal();
                 return;
             }
-            console.warn("[AdminPageApp] dF.Cache.activeListModal unavailable (load _cache.js?)");
+            console.warn("[AdminPageApp] dF.Cache.activeListModal unavailable (load CacheAdminApp.js?)");
         },
 
         cacheClearAllAjax(): void {
@@ -56,7 +56,7 @@ export default function createAdminPageActions(): AdminPageActions {
                 cache.clearAllAjax();
                 return;
             }
-            console.warn("[AdminPageApp] dF.Cache.clearAllAjax unavailable (load _cache.js?)");
+            console.warn("[AdminPageApp] dF.Cache.clearAllAjax unavailable (load CacheAdminApp.js?)");
         },
 
         initCacheModule(): void {
