@@ -1,6 +1,7 @@
 type LogAdminBridgeActions = {
     searchLogs: () => void;
     downloadLogsAsExcel: () => void;
+    openLogDetailModal: (logId: number) => void;
 };
 
 declare global {
@@ -8,6 +9,7 @@ declare global {
         LogAdminBridge?: {
             searchLogs: () => void;
             downloadLogsAsExcel: () => void;
+            openLogDetailModal: (logId: number) => void;
         };
     }
 }
@@ -19,6 +21,9 @@ export default function bindLogAdminEventBridge(actions: LogAdminBridgeActions):
         },
         downloadLogsAsExcel(): void {
             actions.downloadLogsAsExcel();
+        },
+        openLogDetailModal(logId: number): void {
+            actions.openLogDetailModal(logId);
         },
     };
 }
