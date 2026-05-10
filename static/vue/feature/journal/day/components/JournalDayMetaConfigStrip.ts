@@ -27,7 +27,7 @@ const JournalDayMetaConfigStrip = {
                 #
                 <span class="text-dark fw-bold opacity-hover">
                     <span v-if="meta.ctgr" class="fs-7 text-noti">[{{ meta.ctgr }}]</span>
-                    {{ meta.metaNm }}
+                    {{ meta.name }}
                 </span>
             </span>
             <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 me-3 w-10px">&nbsp;</div>

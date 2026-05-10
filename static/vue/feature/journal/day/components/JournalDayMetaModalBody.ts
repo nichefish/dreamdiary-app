@@ -85,10 +85,7 @@ const JournalDayMetaModalBody = {
                     <template v-for="(metaRow, mIdx) in matchingMetaRows(day)" :key="'mm-' + index + '-' + mIdx + '-' + metaRow.metaId">
                         <div>
                             <span v-if="metaRow.ctgr" class="text-noti pe-1">[{{ metaRow.ctgr }}]</span>
-                            {{ metaRow.metaNm }}
-                            <template v-if="metaRow.label">
-                                - <span>{{ metaRow.label }}</span>
-                            </template>
+                            {{ metaRow.name }}
                             <span class="text-dialog">: {{ metaRow.value }}{{ metaRow.unit }}</span>
                         </div>
                         <div class="separator separator-dashed my-2"></div>

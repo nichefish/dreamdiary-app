@@ -104,12 +104,9 @@ const JournalDayCard = {
                 const category = cF.util.isNotEmpty(meta.ctgr)
                     ? `<span class='text-noti pe-1'>[${this.escapeHtml(meta.ctgr)}]</span>`
                     : "";
-                const label = cF.util.isNotEmpty(meta.label)
-                    ? ` - <span>${this.escapeHtml(meta.label)}</span>`
-                    : "";
                 const value = `${this.escapeHtml(meta.value)}${this.escapeHtml(meta.unit)}`;
                 return `<div id='meta-id-${metaId}' class='cursor-pointer btn btn-sm btn-bg-light btn-active-color-primary meta-item' data-meta-id='${metaId}'>`
-                    + `${category} ${this.escapeHtml(meta.metaNm)}${label}: <span class='text-dialog'>${value}</span>`
+                    + `${category} ${this.escapeHtml(meta.name)}: <span class='text-dialog'>${value}</span>`
                     + `</div>`;
             }).join("");
         },

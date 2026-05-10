@@ -46,14 +46,9 @@ public class MetaEntity
     private String ctgr;
 
     /** 메타 이름 */
-    @Column(name = "meta_nm")
+    @Column(name = "name")
     @Comment("메타 이름")
-    private String metaNm;
-
-    /** 메타 라벨 */
-    @Column(name = "label")
-    @Comment("메타 라벨")
-    private String label;
+    private String name;
 
     /** 메타-컨텐츠 */
     @OneToMany(mappedBy = "meta", fetch = FetchType.LAZY)

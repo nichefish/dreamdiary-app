@@ -46,9 +46,9 @@ public class JournalDayMetaEntity
     private String ctgr;
 
     /** 메타 */
-    @Column(name = "meta_nm")
+    @Column(name = "name")
     @Comment("메타")
-    private String metaNm;
+    private String name;
 
     /** 저널 일기 메타 */
     @OneToMany(mappedBy = "meta", fetch = FetchType.LAZY)

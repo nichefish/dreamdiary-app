@@ -73,16 +73,11 @@ public class MetaContentEntity
 
     /** 메타 */
     @Transient
-    private String metaNm;
+    private String name;
 
     /** 메타 카테고리 */
     @Transient
     private String ctgr;
-
-    /** 메타 라벨 */
-    @Transient
-    private String label;
-
     /* ----- */
 
     /**

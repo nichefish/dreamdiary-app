@@ -126,15 +126,14 @@ CREATE TABLE IF NOT EXISTS tag_category_profile (
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS meta (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타 ID',
-    meta_nm VARCHAR(64) COMMENT '메타명',
+    name VARCHAR(64) COMMENT '메타명',
     ctgr VARCHAR(100) COMMENT '카테고리',
-    label VARCHAR(100) COMMENT '라벨',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE (meta_nm, ctgr, label),
-    INDEX (meta_nm),
-    INDEX (meta_nm, ctgr, label)
+    UNIQUE (name, ctgr),
+    INDEX (name),
+    INDEX (name, ctgr)
 ) COMMENT = '메타';
 
 -- 메타-컨텐츠(meta_content)
