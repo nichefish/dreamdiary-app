@@ -53,6 +53,16 @@ public class ChatMessageEntity
     @Comment("메시지 역할")
     private String role = "USER";
 
+    /** 채팅 세션 ID */
+    @Column(name = "session_id")
+    @Comment("채팅 세션 ID")
+    private Integer sessionId;
+
+    /** 세션 내 메시지 순번 */
+    @Column(name = "seq")
+    @Comment("세션 내 메시지 순번")
+    private Integer seq;
+
     /** 제목 */
     @Column(name = "title")
     private String title;
@@ -65,6 +75,11 @@ public class ChatMessageEntity
     @Column(name = "category_code", length = 50)
     @Comment("글 분류 코드")
     private String categoryCode;
+
+    /** 메시지 메타데이터 */
+    @Column(name = "metadata_json", columnDefinition = "LONGTEXT")
+    @Comment("메시지 메타데이터")
+    private String metadataJson;
 
     /* ----- */
 }

@@ -38,4 +38,7 @@ public class ChatMessageSearchParam
 
     /** 시작일자 */
     private Date managtStartDt;
+
+    /** 채팅 세션 ID */
+    private Integer sessionId;
 }

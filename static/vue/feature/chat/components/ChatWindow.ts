@@ -15,6 +15,14 @@ export default {
             type: Array,
             default: () => []
         },
+        sessions: {
+            type: Array,
+            default: () => []
+        },
+        activeSessionId: {
+            type: Number,
+            default: null
+        },
         authInfo: {
             type: Object,
             default: null
@@ -24,6 +32,10 @@ export default {
             required: true
         },
         isWaitingResponse: {
+            type: Boolean,
+            default: false
+        },
+        isSessionLoading: {
             type: Boolean,
             default: false
         }
@@ -49,6 +61,28 @@ export default {
         },
         closeChat(): void {
             this.$emit('close-chat');
+        },
+        newSession(): void {
+            if (this.isSessionLoading) return;
+            this.$emit('new-session');
+        },
+        selectSession(session: any): void {
+            if (!session?.id) return;
+            this.$emit('select-session', session.id);
+        },
+        deleteSession(session: any, event: Event): void {
+            event.stopPropagation();
+            if (!session?.id) return;
+            this.$emit('delete-session', session.id);
+        },
+        sessionTitle(session: any): string {
+            return session?.title || '새 대화';
+        },
+        sessionTime(session: any): string {
+            return session?.lastMessageAt || session?.createdAt || '';
+        },
+        isActiveSession(session: any): boolean {
+            return session?.id === this.activeSessionId;
         },
         scrollToBottom(): void {
             this.$nextTick(() => {
@@ -117,6 +151,42 @@ export default {
                             <span class="path2"></span>
                         </i>
                     </button>
+                </div>
+
+                <div class="chat-session-bar">
+                    <button class="chat-session-add-btn"
+                            type="button"
+                            title="새 대화"
+                            :disabled="isSessionLoading"
+                            @click="newSession">
+                        <i class="ki-duotone ki-plus fs-2"></i>
+                    </button>
+                    <div class="chat-session-list">
+                        <button v-for="session in sessions"
+                                :key="session.id"
+                                :class="['chat-session-chip', { 'chat-session-chip--active': isActiveSession(session) }]"
+                                type="button"
+                                @click="selectSession(session)">
+                            <span class="chat-session-chip__body">
+                                <span class="chat-session-chip__title">{{ sessionTitle(session) }}</span>
+                                <span v-if="sessionTime(session)" class="chat-session-chip__time">{{ sessionTime(session) }}</span>
+                            </span>
+                            <span class="chat-session-chip__delete"
+                                  title="삭제"
+                                  @click="deleteSession(session, $event)">
+                                <i class="ki-duotone ki-trash fs-5">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    <span class="path5"></span>
+                                </i>
+                            </span>
+                        </button>
+                        <div v-if="sessions.length === 0" class="chat-session-empty">
+                            {{ isSessionLoading ? '대화 준비 중' : '새 대화' }}
+                        </div>
+                    </div>
                 </div>
 
                 <div ref="messageList" class="chat-message-list" id="chat_messenger_window">

@@ -1,12 +1,15 @@
 package io.nicheblog.dreamdiary.feature.chat.client;
 
+import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Component
 @RequiredArgsConstructor
@@ -23,16 +26,25 @@ public class OllamaClient {
     }
 
     public String chat(final String systemPrompt, final String userMessage) {
+        return this.chat(systemPrompt, List.of(ChatMessageDto.builder()
+                .role("USER")
+                .content(userMessage)
+                .build()));
+    }
+
+    public String chat(final String systemPrompt, final List<ChatMessageDto> contextMessages) {
 
         final OllamaChatRequest request = new OllamaChatRequest();
 
         request.setModel(MODEL);
         request.setStream(false);
 
-        request.setMessages(List.of(
-                new OllamaChatRequest.Message("system", systemPrompt),
-                new OllamaChatRequest.Message("user", userMessage)
-        ));
+        final List<OllamaChatRequest.Message> messages = new ArrayList<>();
+        messages.add(new OllamaChatRequest.Message("system", systemPrompt));
+        contextMessages.stream()
+                .filter(message -> message.getContent() != null && !message.getContent().trim().isEmpty())
+                .forEach(message -> messages.add(new OllamaChatRequest.Message(toOllamaRole(message.getRole()), message.getContent())));
+        request.setMessages(messages);
 
         final HttpHeaders headers = new HttpHeaders();
 
@@ -58,5 +70,14 @@ public class OllamaClient {
         log.info("Ollama response: {}", content);
 
         return content;
+    }
+
+    private String toOllamaRole(final String role) {
+        if (role == null) return "user";
+
+        final String normalized = role.toUpperCase(Locale.ROOT);
+        if ("ASSISTANT".equals(normalized) || "AI".equals(normalized)) return "assistant";
+        if ("SYSTEM".equals(normalized)) return "system";
+        return "user";
     }
 }
