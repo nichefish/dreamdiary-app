@@ -20,5 +20,3 @@
         </div>
     </div>
 </@modal.layout>
-
-<#include "_log_detail_modal_template.hbs">

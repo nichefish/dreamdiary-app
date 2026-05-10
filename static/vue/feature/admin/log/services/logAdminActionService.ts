@@ -1,5 +1,6 @@
 // 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
 import { resolveMessage } from "../../../../common/messageHelper.js";
+import { LogDetail } from "../types.js";
 
 type LogAdminActions = {
     searchLogs: () => void;
@@ -7,7 +8,18 @@ type LogAdminActions = {
     openLogDetailModal: (logId: number) => void;
 };
 
-export default function createLogAdminActions(): LogAdminActions {
+function showLogDetailModal(): void {
+    const modalEl = document.getElementById("log_detail_modal");
+    if (!modalEl) return;
+    const bootstrapRef = (window as any).bootstrap;
+    if (bootstrapRef?.Modal?.getOrCreateInstance) {
+        bootstrapRef.Modal.getOrCreateInstance(modalEl).show();
+        return;
+    }
+    $("#log_detail_modal").modal("show");
+}
+
+export default function createLogAdminActions(onLogDetailLoaded?: (detail: LogDetail) => void): LogAdminActions {
     return {
         searchLogs(): void {
             const pageNoElement: HTMLInputElement | null = document.querySelector("#listForm #pageNo");
@@ -32,9 +44,9 @@ export default function createLogAdminActions(): LogAdminActions {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.modal(res.rsltObj, "log_detail");
+                if (onLogDetailLoaded) onLogDetailLoaded((res.rsltObj || {}) as LogDetail);
+                requestAnimationFrame(showLogDetailModal);
             });
         },
     };
 }
-

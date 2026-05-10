@@ -4,17 +4,22 @@
  * @author nichefish
  */
 import LogListTable from "./components/LogListTable.js";
+import LogDetailModalBody from "./components/LogDetailModalBody.js";
 import logAdminDataService from "./services/logAdminDataService.js";
 import createLogAdminActions from "./services/logAdminActionService.js";
 import bindLogAdminEventBridge from "./services/logAdminEventBridgeService.js";
-import { LogListRow } from "./types.js";
+import { LogDetail, LogListRow } from "./types.js";
 import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 
 const state = Vue.reactive({
     rows: [],
-}) as { rows: LogListRow[] };
+    detail: null,
+}) as { rows: LogListRow[]; detail: LogDetail | null };
 const i18n = createScopedI18n();
-const actions = createLogAdminActions();
+const actions = createLogAdminActions(function(detail: LogDetail): void {
+    state.detail = detail;
+});
+bindLogAdminEventBridge(actions);
 
 function t(key: string): string {
     return i18n.t(key);
@@ -39,8 +44,9 @@ const LogAdminRootApp = {
     name: "LogAdminRootApp",
     components: {
         LogListTable,
+        LogDetailModalBody,
     },
-    data(): { state: { rows: LogListRow[] } } {
+    data(): { state: { rows: LogListRow[]; detail: LogDetail | null } } {
         return { state };
     },
     methods: {
@@ -55,6 +61,9 @@ const LogAdminRootApp = {
             @open-detail="onOpenDetail"
         />
     </teleport>
+    <teleport to="#log_detail_div">
+        <LogDetailModalBody :detail="state.detail" />
+    </teleport>
     `,
 };
 
@@ -62,7 +71,7 @@ runWhenDomReady(async function(): Promise<void> {
     await i18n.load(resolveLogAdminPageLocale());
     state.rows = logAdminDataService.parseRowsFromPageData();
 
-    if (!document.getElementById("log_admin_app") || !document.getElementById("log_list_body")) {
+    if (!document.getElementById("log_admin_app") || !document.getElementById("log_list_body") || !document.getElementById("log_detail_div")) {
         console.error("[LogAdminApp] Vue mount root not found.");
         return;
     }
@@ -72,6 +81,5 @@ runWhenDomReady(async function(): Promise<void> {
     app.mount("#log_admin_app");
 
     cF.table.initSort();
-    bindLogAdminEventBridge(actions);
 });
 
