@@ -1,15 +1,18 @@
 import { UserFormActions } from "../types.js";
 
 export default function bindUserFormEventBridge(actions: UserFormActions): void {
-    if (typeof window.dF === "undefined") window.dF = {};
-    window.dF.User = {
+    const win = window as Window & { dF?: Record<string, any> };
+    if (typeof win.dF === "undefined") win.dF = {};
+    win.dF.User = {
         init: function(): void {},
         isMdf: actions.isMdf,
-        initForm: actions.initForm,
-        submitHandler: actions.submitHandler,
+        isModify: actions.isMdf,
+        initForm: actions.initForm.bind(actions),
+        submitHandler: actions.submitHandler.bind(actions),
         idDupChckAjax: actions.idDupChckAjax,
         emailDupChckAjax: actions.emailDupChckAjax,
-        regAjax: actions.regAjax,
-        list: actions.list,
+        regAjax: actions.regAjax.bind(actions),
+        registAjax: actions.regAjax.bind(actions),
+        list: actions.list.bind(actions),
     };
 }

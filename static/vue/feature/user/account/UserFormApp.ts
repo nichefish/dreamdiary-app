@@ -23,6 +23,7 @@ const state = Vue.reactive({
 const i18n = createScopedI18n();
 
 const actions = createUserFormActions();
+bindUserFormEventBridge(actions);
 
 function runWhenDomReady(fn: () => void): void {
     if (document.readyState === "loading") {
@@ -115,11 +116,10 @@ runWhenDomReady(async function(): Promise<void> {
         return;
     }
 
-    bindUserFormEventBridge(actions);
     const vm = Vue.createApp(UserFormRootApp).mount("#user_form_app") as any;
 
     requestAnimationFrame(function(): void {
-        dF.User.initForm();
+        actions.initForm();
         // 프로필 정보 / 인사정보 창 활성화
         if (state.form.hasProfile) vm.initProfilePlugins();
         if (state.form.hasEmplym) vm.initEmplymPlugins();

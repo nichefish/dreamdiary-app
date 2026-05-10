@@ -30,7 +30,7 @@ export default function createUserFormActions(): UserFormActions {
          */
         initForm(): void {
             /* jquery validation */
-            cF.validate.validateForm("#userRegForm", this.submitHandler, {
+            cF.validate.validateForm("#userRegForm", this.submitHandler.bind(this), {
                 rules: {
                     username: { minlength: 4, maxlength: 16 },
                     ipDupChckPassed: { dupChck: true },
@@ -85,12 +85,13 @@ export default function createUserFormActions(): UserFormActions {
                 Swal.fire("접속 IP는 최소 한 개 이상 입력해야 합니다.");
                 return false;
             }
+            const actions = this;
             Swal.fire({
                 text: isMdf() ? resolveMessage("view.cnfm.mdf") : resolveMessage("view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                window.dF.User.regAjax();
+                actions.regAjax();
             });
             return false;
         },
@@ -154,13 +155,14 @@ export default function createUserFormActions(): UserFormActions {
          * 등록/수정 처리(Ajax)
          */
         regAjax(): void {
+            const actions = this;
             const id: string = cF.util.getInputValue("#userRegForm #id");
             const url: string = isMdf() ? cF.util.bindUrl(Url.USER, { id }) : Url.USERS;
             const ajaxData: FormData = new FormData(document.getElementById("userRegForm") as HTMLFormElement);
             cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) window.dF.User.list();
+                        if (res.rslt) actions.list();
                     });
             }, "block");
         },

@@ -1,8 +1,9 @@
 import { UserListActions } from "../types.js";
 
 export default function bindUserListEventBridge(actions: UserListActions): void {
-    if (typeof window.dF === "undefined") window.dF = {};
-    window.dF.User = {
+    const win = window as Window & { dF?: Record<string, any> };
+    if (typeof win.dF === "undefined") win.dF = {};
+    win.dF.User = {
         init: function(): void {},
         search: actions.search,
         xlsxDownload: actions.xlsxDownload,

@@ -112,7 +112,7 @@
 
 <div id="user_detail_app" class="d-none"></div>
 <#--include::script modules-->
-<#-- Vue(UserDetailApp)가 기존 user_module.js의 상세 화면 동작을 대체 -->
+<#-- Vue(UserDetailApp)가 상세 화면 동작을 담당 -->
 <!--include::page scripts-->
 <script type="module" src="/vue/feature/user/account/UserDetailApp.js?${releaseDate!}"></script>
 

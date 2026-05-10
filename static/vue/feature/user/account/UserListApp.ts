@@ -27,6 +27,7 @@ const state = Vue.reactive({
 }) as UserListState;
 
 const actions = createUserListActions();
+bindUserListEventBridge(actions);
 
 function runWhenDomReady(fn: () => void): void {
     if (document.readyState === "loading") {
@@ -82,5 +83,4 @@ runWhenDomReady(function(): void {
 
     Vue.createApp(UserListRootApp).mount("#user_app");
     cF.table.initSort();
-    bindUserListEventBridge(actions);
 });
