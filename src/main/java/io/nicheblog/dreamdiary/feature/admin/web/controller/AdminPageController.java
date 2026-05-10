@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
 import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.auth.security.service.RoleService;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -55,31 +55,12 @@ public class AdminPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.ADMIN_PAGE);
-        model.addAttribute("pageNm", PageNm.DEFAULT);
+        model.addAttribute("pageName", PageName.DEFAULT);
 
         // 권한 정보 조회
         List<RoleDto> roleList = roleService.getListDto(new HashMap<>());
         model.addAttribute("roleList", roleList);
 
         return "/view/feature/admin/admin_page";
-    }
-
-    /**
-     * 사이트 관리 > 테스트 페이지
-     * (관리자MNGR만 접근 가능.)
-     *
-     * @param model 뷰에 전달할 데이터를 저장하는 ModelMap 객체
-     * @return {@link String} -- 뷰 이름을 나타내는 문자열
-     */
-    @GetMapping(Url.ADMIN_TEST)
-    @Secured(Constant.ROLE_MNGR)
-    public String testPage(
-            final ModelMap model
-    ) {
-
-        /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.ADMIN_PAGE);
-
-        return "/view/feature/admin/test_page";
     }
 }

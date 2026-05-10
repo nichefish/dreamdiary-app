@@ -40,10 +40,10 @@ public class JournalAnnualReviewCacheEvictor
 
             // Summary detail caches affected by review add/update/delete.
             if (journalAnnualId != null) {
-                EhCacheUtils.evictUserCacheByKey("journalAnnualDtlDtoByUser", username, journalAnnualId);
+                EhCacheUtils.evictUserCacheByKey("journalAnnualDetailDtoByUser", username, journalAnnualId);
             }
             if (yy != null) {
-                EhCacheUtils.evictUserCacheByKey("journalAnnualYyDtlDtoByUser", username, yy);
+                EhCacheUtils.evictUserCacheByKey("journalAnnualYyDetailDtoByUser", username, yy);
             }
 
             // Review tag cache.

@@ -1,7 +1,23 @@
 <#--
  * 저널 결산(journal_annual) : ASIDE (우측 사이드바)
  * @included_in : journal_annual_page.ftlh
+ *
+ * 변경(A-5-β-2):
+ *   - card-body#journal_aside 내부 컨텐츠를 Vue(JournalAnnualAsidePanelApp) 로 흡수한다.
+ *   - SSR 데이터(yyOptions / mnthOptions / labels) 는 window.__journalAnnualAsideBootstrap 으로 주입한다.
+ *   - dummy 영역(꿈 키워드 검색, Crated select) 과 dead 버튼(Default / View more, href="#") 은 기존 마크업과 동일하게 보존한다.
+ *   - 외부 wrapper(#kt_app_aside / #kt_app_aside_wrapper) 와 card-header(Filters + 검색 아이콘 a href="#") 는
+ *     KTDrawer/KTScroll 훅 보존 및 변경 범위 최소화를 위해 SSR 으로 그대로 둔다.
+ *   - card-body id="journal_aside" 는 외부 의존성(annual 컨텍스트에서 외부 참조 0 검증 후) 마운트 컨테이너로 보존한다.
  -->
+
+<#assign yyLabel><@spring.message 'txt.yy'/></#assign>
+<#assign mnthLabel><@spring.message 'txt.mnth'/></#assign>
+<#assign allYearsLabel><@spring.message 'txt.journal.annual.all-years'/></#assign>
+<#assign allMonthsLabel><@spring.message 'txt.journal.annual.all-months'/></#assign>
+<#assign yearSuffixLabel><@spring.message 'txt.date.suffix.year-after-number'/></#assign>
+<#assign currYy = DateUtils.getCurrYy()?number />
+<#assign startYy = 2010 />
 
 <#--begin::aside-->
 <div id="kt_app_aside" class="app-aside flex-column mt-7"
@@ -41,62 +57,8 @@
             <!--end::Header-->
             <#--begin::Body-->
             <div class="card-body" id="journal_aside">
-                <#--begin::Form-->
-                <div class="mb-7 d-flex-between gap-4">
-                    <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1"><@spring.message 'txt.yy'/></span>
-                        <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                onchange="dF.JournalAnnualAsideyyMnth(this);">
-                            <option value=""><@spring.message 'txt.journal.annual.all-years'/></option>
-                            <#assign currYy = DateUtils.getCurrYy()?number />
-                            <#assign startYy = 2010 />
-                            <#list currYy..startYy as year>
-                                <option value="${year}"><#if year == 2010>~</#if>${year}<@spring.message 'txt.date.suffix.year-after-number'/></option>
-                            </#list>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1"><@spring.message 'txt.mnth'/></span>
-                        <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                onchange="dF.JournalAnnualAsideyyMnth(this);">
-                            <option value=""><@spring.message 'txt.journal.annual.all-months'/></option>
-                            <#list 1..12 as mnth>
-                                <option value="${mnth}">${mnth}</option>
-                            </#list>
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-7">
-                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">꿈 키워드 검색</span>
-                    <select class="form-select" aria-label="Select example">
-                        <option>Any group</option>
-                        <option value="1">Grace Green</option>
-                        <option value="2">Nick LOgan</option>
-                        <option value="3">Carles Nilson</option>
-                        <option value="1">Alice Danchik</option>
-                        <option value="2">Harris Bold</option>
-                        <option value="3">Carles Nilson</option>
-                    </select>
-                </div>
-                <div class="mb-7">
-                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">Crated</span>
-                    <select class="form-select" aria-label="Select example">
-                        <option>Any Time</option>
-                        <option value="1">sumry ago</option>
-                        <option value="2">2 sumrys ago</option>
-                        <option value="3">April 15</option>
-                        <option value="1">April 10</option>
-                        <option value="2">March 30</option>
-                        <option value="3">March 25</option>
-                    </select>
-                </div>
-                <!--end::Form-->
-                <#--begin::Action-->
-                <div class="d-flex flex-column">
-                    <a href="#" class="btn btn-primary mb-4 p-3">Default</a>
-                    <a href="#" class="btn btn-secondary btn-color-gray-700 p-3">View more</a>
-                </div>
-                <!--end::Action-->
+                <#-- 변경(A-5-β-2): card-body 내부를 Vue 마운트 루트로 교체. 자식 마크업은 JournalAnnualAsidePanelApp 가 렌더한다. -->
+                <div id="journal_annual_aside_panel_mount" style="display:contents"></div>
                 <!--end::Body-->
             </div>
         </div>
@@ -106,4 +68,32 @@
 </div>
 <!--end::aside-->
 
-<script type="text/javascript" src="/js/view/feature/journal/annual/journal_annual_aside_module.js?${releaseDate!}"></script>
+<#-- 변경(A-5-β-2): SSR 데이터(yyOptions / mnthOptions / labels) 부트스트랩.
+     yy 옵션은 currYy ~ 2010 역순 + 2010 의 경우 "~" 접두사 + 연 접미사(@spring.message) 적용으로 기존 표시와 동등. -->
+<script>
+(function() {
+    var yyOptions = [];
+    <#list currYy..startYy as year>
+    yyOptions.push({
+        value: "${year}",
+        label: "<#if year == 2010>~</#if>${year}${yearSuffixLabel?js_string}"
+    });
+    </#list>
+    var mnthOptions = [];
+    for (var m = 1; m <= 12; m++) mnthOptions.push({ value: String(m), label: String(m) });
+    window.__journalAnnualAsideBootstrap = window.__journalAnnualAsideBootstrap || {
+        yyOptions: yyOptions,
+        mnthOptions: mnthOptions,
+        labels: {
+            yy: "${yyLabel?js_string}",
+            mnth: "${mnthLabel?js_string}",
+            allYears: "${allYearsLabel?js_string}",
+            allMonths: "${allMonthsLabel?js_string}"
+        }
+    };
+})();
+</script>
+<#-- 변경(A-4-β): classic journal_annual_aside_module.js 제거 — journalAnnualAsideService ES module 단일 수렴. -->
+<script type="module" src="/vue/feature/journal/annual/services/journalAnnualAsideService.js?${releaseDate!}"></script>
+<#-- 변경(A-5-β-2): card-body 내부를 흡수한 Vue 앱. service 가 등록한 dF.JournalAnnualAside.yyMnth 본체에 위임한다. -->
+<script type="module" src="/vue/feature/journal/annual/JournalAnnualAsidePanelApp.js?${releaseDate!}"></script>

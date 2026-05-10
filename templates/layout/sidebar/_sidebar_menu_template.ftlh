@@ -4,7 +4,7 @@
  * @included_in : aside/_aside_menu_admin
  -->
 
-<#macro noSubMenu upperMenuId menu>
+<#macro noSubMenu parentMenuId menu>
     <!-- 라벨 -->
     <#if (menu.menuLabel?? && menu.menuLabel! != "")>
         <div class="menu-item">
@@ -14,11 +14,11 @@
         </div>
     </#if>
     <!-- 메뉴 시작 -->
-    <#assign isNotTopMenu = (upperMenuId != menu.upperMenuId!?string) />
+    <#assign isNotTopMenu = (parentMenuId != menu.parentMenuId!?string) />
     <div class="menu-item" id="${menu.id!}">
         <a href="${menu.url!}" class="menu-link <#if isNotTopMenu>text-inverse-light</#if>">
             ${menu.icon!?no_esc}
-            <span class="menu-title">${menu.menuNm!}</span>
+            <span class="menu-title">${menu.menuName!}</span>
             <!-- TODO: 새 글 갯수 표시. 1개 이상이면 표시. 5개 이상이면 깜빡임. -->
             <#if menu.unreadCntNm?? && menu.unreadCntNm != ''>
                 <#assign unreadCount = (menu.unreadCntNm?eval)!0>
@@ -33,7 +33,7 @@
 </#macro>
 
 <!-- 하단에 하위메뉴 표시 -->
-<#macro listSubMenu upperMenuId menu>
+<#macro listSubMenu parentMenuId menu>
     <!-- 라벨 -->
     <#if (menu.menuLabel?? && menu.menuLabel! != "")>
         <div class="menu-item">
@@ -43,11 +43,11 @@
         </div>
     </#if>
     <!-- 메뉴 시작 -->
-    <#assign isNotTopMenu = (upperMenuId != menu.upperMenuId!?string) />
-    <div data-kt-menu-trigger="click" class="menu-item menu-accordion hover show" id="${menu.upperMenuId!}">
+    <#assign isNotTopMenu = (parentMenuId != menu.parentMenuId!?string) />
+    <div data-kt-menu-trigger="click" class="menu-item menu-accordion hover show" id="${menu.parentMenuId!}">
         <span class="menu-link <#if isNotTopMenu>text-inverse-light</#if> mb-1">
             ${menu.icon!?no_esc}
-            <span class="menu-title">${menu.menuNm!}</span>
+            <span class="menu-title">${menu.menuName!}</span>
             <span class="menu-arrow"></span>
         </span>
         <!-- TODO: 새 글 갯수 표시. 1개 이상이면 표시. 5개 이상이면 깜빡임. -->
@@ -66,7 +66,7 @@
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">${subMenu.menuNm!}</span>
+                        <span class="menu-title">${subMenu.menuName!}</span>
                     </a>
                 </div>
             </div>
@@ -75,7 +75,7 @@
 </#macro>
 
 <!-- 하위메뉴 접기 표시 -->
-<#macro collapseSubMenu upperMenuId menu>
+<#macro collapseSubMenu parentMenuId menu>
     <!-- 라벨 -->
     <#if (menu.menuLabel?? && menu.menuLabel! != "")>
         <div class="menu-item">
@@ -85,11 +85,11 @@
         </div>
     </#if>
     <!-- 메뉴 시작 -->
-    <#assign isNotTopMenu = (upperMenuId != menu.upperMenuId!?string) />
-    <div data-kt-menu-trigger="click" class="menu-item menu-accordion here hover show" id="${menu.upperMenuId!}">
+    <#assign isNotTopMenu = (parentMenuId != menu.parentMenuId!?string) />
+    <div data-kt-menu-trigger="click" class="menu-item menu-accordion here hover show" id="${menu.parentMenuId!}">
         <span class="menu-link <#if isNotTopMenu>text-inverse-light</#if> mb-1">
             ${menu.icon!?no_esc}
-            <span class="menu-title">${menu.menuNm!}</span>
+            <span class="menu-title">${menu.menuName!}</span>
             <span class="menu-arrow"></span>
         </span>
         <div class="menu-sub menu-sub-accordion">
@@ -103,7 +103,7 @@
                             <span class="menu-bullet">
                                 <span class="bullet bullet-dot"></span>
                             </span>
-                            <span class="menu-title">${subMenu.menuNm!}</span>
+                            <span class="menu-title">${subMenu.menuName!}</span>
                         </a>
                         <!--end:Menu link-->
                     </div>
@@ -135,7 +135,7 @@
 </#macro>
 
 <!-- 일반게시판 메뉴 -->
-<#macro boardMenu upperMenuId menu>
+<#macro boardMenu parentMenuId menu>
     <!-- 라벨 -->
     <div class="menu-item">
         <div class="menu-content mt-5 pb-2">
@@ -143,11 +143,11 @@
         </div>
     </div>
     <!-- 메뉴 시작 -->
-    <#assign isNotTopMenu = (upperMenuId != menu.upperMenuId!?string)!>
-    <div data-kt-menu-trigger="click" class="menu-item menu-accordion hover show" id="${menu.upperMenuId!}">
+    <#assign isNotTopMenu = (parentMenuId != menu.parentMenuId!?string)!>
+    <div data-kt-menu-trigger="click" class="menu-item menu-accordion hover show" id="${menu.parentMenuId!}">
         <span class="menu-link <#if isNotTopMenu>text-inverse-light</#if> mb-1">
             ${menu.icon!?no_esc}
-            <span class="menu-title">${menu.menuNm!}</span>
+            <span class="menu-title">${menu.menuName!}</span>
             <span class="menu-arrow"></span>
         </span>
         <#list boardMenuList![] as board>
@@ -156,24 +156,24 @@
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
-                    <span class="menu-title">${board.menuNm!}</span>
+                    <span class="menu-title">${board.menuName!}</span>
                 </a>
             </div>
         </#list>
     </div>
 </#macro>
 
-<#macro extendedSubMenu upperMenuId siteMenu>
+<#macro extendedSubMenu parentMenuId siteMenu>
     <div class="menu-item">
         <div class="menu-content mt-5 pb-2">
             <span class="menu-heading fw-bold text-uppercase fs-8 ls-1">${siteMenu.topMenuLabel!}</span>
         </div>
     </div>
     <!-- 메뉴 시작 -->
-    <#assign isNotTopMenu = (upperMenuId != siteMenu.upperMenuId!?string)! />
+    <#assign isNotTopMenu = (parentMenuId != siteMenu.parentMenuId!?string)! />
 
     <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
-         class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention" id="${siteMenu.upperMenuId}">
+         class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention" id="${siteMenu.parentMenuId}">
 
         <span class="menu-link <#if isNotTopMenu>text-inverse-light</#if>">
             <span class="menu-icon">
@@ -187,7 +187,7 @@
                 </span>
                 <#--end::Svg Icon-->
             </span>
-            <span class="menu-title">${siteMenu.menuNm!}</span>
+            <span class="menu-title">${siteMenu.menuName!}</span>
             <span class="menu-arrow"></span>
         </span>
         <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-2 py-4 w-200px mh-75 overflow-auto">
@@ -197,7 +197,7 @@
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">${subMenu.menuNm!}</span>
+                        <span class="menu-title">${subMenu.menuName!}</span>
                     </a>
                 </div>
             </#list>

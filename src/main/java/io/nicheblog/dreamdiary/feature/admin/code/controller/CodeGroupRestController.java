@@ -24,7 +24,7 @@ import javax.validation.Valid;
 @Log4j2
 public class CodeGroupRestController extends BaseControllerImpl {
     @Getter
-    private final String baseUrl = Url.CODE_GROUP_LIST;
+    private final String baseUrl = Url.CODE_ADMIN_PAGE;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CODE;
 

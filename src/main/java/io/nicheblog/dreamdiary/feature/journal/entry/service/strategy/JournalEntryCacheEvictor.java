@@ -52,10 +52,10 @@ public class JournalEntryCacheEvictor
                 EhCacheUtils.evictUserCacheByKey("journalDayDtlDtoByUser", username, journalDayId);
             }
             if (journalChapterId != null) {
-                EhCacheUtils.evictUserCacheByKey(JournalChapterService.DTL_CACHE_NAME, username, journalChapterId);
+                EhCacheUtils.evictUserCacheByKey(JournalChapterService.DETAIL_CACHE_NAME, username, journalChapterId);
             }
             if (prevJournalChapterId != null && !prevJournalChapterId.equals(journalChapterId)) {
-                EhCacheUtils.evictUserCacheByKey(JournalChapterService.DTL_CACHE_NAME, username, prevJournalChapterId);
+                EhCacheUtils.evictUserCacheByKey(JournalChapterService.DETAIL_CACHE_NAME, username, prevJournalChapterId);
             }
             this.evictMyJournalDayYyMnthCaches(username, yy, mnth);
             this.evictMyJournalDayWeeklyCaches(username, weekStartDt);

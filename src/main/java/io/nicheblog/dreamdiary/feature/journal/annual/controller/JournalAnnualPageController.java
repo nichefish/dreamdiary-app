@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.annual.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualDto;
 import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualSearchParam;
@@ -60,7 +60,7 @@ public class JournalAnnualPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_ANNUAL);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("pageName", PageName.LIST);
 
         // 전체 통계 조회
         final JournalAnnualDto totalAnnual = myJournalAnnualService.getMyTotalAnnual();
@@ -87,14 +87,14 @@ public class JournalAnnualPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_ANNUAL);
-        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("pageName", PageName.DTL);
 
         model.addAttribute("section", section);
 
         // 코드 데이터 모델에 추가
         codeLookupService.setCdListToModel(Code.JOURNAL_ANNUAL_TY_CD, model);
 
-        return "/view/feature/journal/annual/journal_annual_dtl";
+        return "/view/feature/journal/annual/journal_annual_detail";
     }
 }
 

@@ -79,16 +79,16 @@ public class JournalInterpretationRestController
     @PostMapping(value = {Url.JOURNAL_INTERPRETATIONS, Url.JOURNAL_INTERPRETATION})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalInterpretationRegAjax(
+    public ResponseEntity<AjaxResponse> journalInterpretationRegistAjax(
             final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JournalInterpretationDto journalInterpretation,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isMdf = id != null;
-        if (isMdf) journalInterpretation.setId(id);
+        final boolean isModify = id != null;
+        if (isModify) journalInterpretation.setId(id);
 
-        final ServiceResponse result = isMdf ? journalInterpretationService.modify(journalInterpretation, request) : journalInterpretationService.regist(journalInterpretation, request);
+        final ServiceResponse result = isModify ? journalInterpretationService.modify(journalInterpretation, request) : journalInterpretationService.regist(journalInterpretation, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -105,11 +105,11 @@ public class JournalInterpretationRestController
     @GetMapping(value = {Url.JOURNAL_INTERPRETATION})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalInterpretationDtlAjax(
+    public ResponseEntity<AjaxResponse> journalInterpretationDetailAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JournalInterpretationDto retrievedDto = myJournalInterpretationService.getMyDtlDtoWithCache(id);
+        final JournalInterpretationDto retrievedDto = myJournalInterpretationService.getMyDetailDtoWithCache(id);
         final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -126,7 +126,7 @@ public class JournalInterpretationRestController
     @DeleteMapping(value = {Url.JOURNAL_INTERPRETATION})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalInterpretationDelAjax(
+    public ResponseEntity<AjaxResponse> journalInterpretationDeleteAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 
@@ -137,4 +137,3 @@ public class JournalInterpretationRestController
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 }
-

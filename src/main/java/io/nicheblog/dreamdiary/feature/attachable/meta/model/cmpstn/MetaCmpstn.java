@@ -75,26 +75,19 @@ public class MetaCmpstn
         return IntStream.range(0, jArray.length())
                 .mapToObj(jArray::getJSONObject)
                 .map(json -> {
-                    final String metaNm = json.getString("value").trim().replaceAll("\\s+", "_");
-                    if (!json.has("data") || json.optJSONObject("data") == null) return new MetaDto(metaNm);
+                    final String name = json.getString("value").trim().replaceAll("\\s+", "_");
+                    if (!json.has("data") || json.optJSONObject("data") == null) return new MetaDto(name);
                     final String ctgr = json.getJSONObject("data").getString("ctgr");
                     final String rawValue = json.getJSONObject("data").getString("value");
-                    String label = null, valueWithUnit = null, value = null, unit = null;
-                    if (rawValue.contains(":")) {
-                        final String[] parts = rawValue.split(":", 2);
-                        label = parts[0].trim();      // 메신저
-                        valueWithUnit = parts[1].trim();
-                    } else {
-                        label = "";
-                        valueWithUnit = rawValue.trim();
-                    }
+                    String value = null, unit = null;
+                    final String valueWithUnit = rawValue.trim();
                     final Pattern p = Pattern.compile("^([+-]?\\d+(?:\\.\\d+)?)(.*)$");
                     final Matcher m = p.matcher(valueWithUnit.trim());
                     if (m.matches()) {
                         value = m.group(1).trim();  // "981" / "72.5"
                         unit = m.group(2).trim();   // "개" / "kg"
                     }
-                    return MetaDto.builder().metaNm(metaNm).ctgr(ctgr).label(label).value(value).unit(unit).build();
+                    return MetaDto.builder().name(name).ctgr(ctgr).value(value).unit(unit).build();
                 })
                 .collect(Collectors.toList());
     }
@@ -112,8 +105,8 @@ public class MetaCmpstn
                 .sorted()
                 .map(meta -> {
                     try {
-                        final BaseTagifyDataDto data = BaseTagifyDataDto.builder().ctgr(meta.getCtgr()).value(meta.getLabel() + ":" + meta.getValue() + meta.getUnit()).build();
-                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(meta.getMetaNm(), data);
+                        final BaseTagifyDataDto data = BaseTagifyDataDto.builder().ctgr(meta.getCtgr()).value(meta.getValue() + meta.getUnit()).build();
+                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(meta.getName(), data);
                         return mapper.writeValueAsString(tagifyDto);
                     } catch (final JsonProcessingException e) {
                         throw new RuntimeException("Error processing JSON", e);
@@ -130,7 +123,7 @@ public class MetaCmpstn
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(meta -> meta.getMeta().getMetaNm())
+                .map(meta -> meta.getMeta().getName())
                 .collect(Collectors.toList());
     }
 }

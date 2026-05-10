@@ -6,6 +6,10 @@
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.State = (function(): dfModule {
+    /** @keepInSync static/vue/feature/journal/day/journalDayListBridge.ts */
+    const journalDayResolveListBridge = (): JournalDayListAppBridge | undefined =>
+        window.JournalDayMonthlyApp ?? window.JournalDayWeeklyApp ?? window.JournalDayDailyApp;
+
     return {
         initialized: false,
         swappable: null,
@@ -39,8 +43,9 @@ dF.State = (function(): dfModule {
             const resolvedMnth: string = cF.util.isNotEmpty(itemMnth)
                 ? itemMnth
                 : (cF.util.isNotEmpty(stdrdDt) ? String(parseInt(stdrdDt.substring(5, 7), 10)) : (cF.util.getUrlParam("mnth") ?? ""));
-            const weekStartDt: string = cF.util.isNotEmpty((window as any).Page?.weekStartDt)
-                ? (window as any).Page.weekStartDt
+            const weekStartDtFromSearchParams: string = journalDayResolveListBridge()?.getSearchParams?.()?.weekStartDt ?? "";
+            const weekStartDt: string = cF.util.isNotEmpty(weekStartDtFromSearchParams)
+                ? weekStartDtFromSearchParams
                 : (cF.util.isNotEmpty(stdrdDt) ? (cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? "") : "");
 
             const cacheContext: Record<string, any> = {};
@@ -72,4 +77,3 @@ dF.State = (function(): dfModule {
         },
     }
 })();
-

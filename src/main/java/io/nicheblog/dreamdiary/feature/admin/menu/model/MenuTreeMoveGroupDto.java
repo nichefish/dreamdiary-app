@@ -20,7 +20,7 @@ import java.util.List;
 public class MenuTreeMoveGroupDto {
 
     /** 부모 메뉴 번호 */
-    private Integer upperMenuId;
+    private Integer parentMenuId;
 
     /** 부모 하위 형제 목록 */
     private List<MenuTreeMoveItemDto> items;

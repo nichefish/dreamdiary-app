@@ -1,6 +1,6 @@
 <#--
- * 寃뚯떆??board_post) > ?곸꽭 ?붾㈃
- -->
+ * 게시판(board_post) > 상세 화면(미리보기 팝업)
+-->
 
 <#import "/layout/layout_without_sidebar.ftlh" as layout >
 
@@ -11,9 +11,9 @@
     <div class="card-body">
         <#--begin::title-->
         <div class="mb-0">
-            <#--?섏씠吏:: ?ㅻ뜑: ?쒕ぉ ?곸뿭-->
+            <#--페이지:: 헤더: 제목 영역-->
             <@component.post_header_title post />
-            <#--?섏씠吏:: ?ㅻ뜑: 誘몃━蹂닿린 硫뷀? ?곸뿭-->
+            <#--페이지:: 헤더: 미리보기 메타 영역-->
             <@component.post_header_meta_preview post />
         </div>
 
@@ -26,9 +26,9 @@
     </div>
     <#--begin::Card footer-->
     <div class="card-footer">
-        <#--踰꾪듉 ?곸뿭-->
+        <#--버튼 영역-->
         <div class="d-flex justify-content-end">
-            <#--?앹뾽:: 踰꾪듉: ?앹뾽 ?リ린-->
+            <#--팝업:: 버튼: 팝업 닫기-->
             <@component.popup_btn_preview_close "Layout" />
         </div>
     </div>

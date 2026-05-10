@@ -6,9 +6,9 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./static/vue", // TypeScript 파일들이 있는 디렉토리
+    "rootDir": "./static/vue", // Vue TypeScript source directory
     "paths": {
     },
   },
-  "include": ["static/react/**/*"]      // Vue 관련 파일들만 포함
+  "include": ["static/vue/**/*"]      // Include Vue files only
 }

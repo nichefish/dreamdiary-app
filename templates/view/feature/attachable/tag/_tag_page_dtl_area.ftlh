@@ -16,7 +16,7 @@
                       title="<@spring.message 'view.tag.content-list'/>">
                     <span class="${tag.tagClass!} ${tag.textClass!}">
                         <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
-                        #<span class="fs-6 border-bottom text-primary fw-lighter opacity-hover em_${tag.tagNm!}">${tag.tagNm!}</span>
+                        #<span class="fs-6 border-bottom text-primary fw-lighter opacity-hover em_${tag.name!}">${tag.name!}</span>
                     </span>
                 </span>
             </#list>

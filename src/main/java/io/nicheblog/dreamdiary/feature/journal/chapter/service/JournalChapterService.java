@@ -52,7 +52,7 @@ import java.util.Objects;
 public class JournalChapterService
         implements BaseAttachableService<JournalChapterDto, JournalChapterDto, Integer, JournalChapterEntity> {
 
-    public static final String DTL_CACHE_NAME = "journalChapterDtlDtoByUser";
+    public static final String DETAIL_CACHE_NAME = "journalChapterDetailDtoByUser";
 
     /** 동일 일자 내 첫 항목 등록 시 기본 카테고리 코드 */
     private static final String FIRST_CHAPTER_CTGR_CD = "SUMMARY";
@@ -94,8 +94,8 @@ public class JournalChapterService
      * @param key 일련번호
      * @return {@link JournalChapterDto} -- 조회된 객체
      */
-    @Cacheable(value=DTL_CACHE_NAME, key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
-    public JournalChapterDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
+    @Cacheable(value=DETAIL_CACHE_NAME, key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JournalChapterDto getDetailDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JournalChapterEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalChapterDto retrieved = mapstruct.toDto(retrievedEntity);
         if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) {
@@ -316,7 +316,7 @@ public class JournalChapterService
      * @return {@link JournalChapterDto} -- 삭제된 데이터 Dto
      */
     @Transactional(readOnly = true)
-    public JournalChapterDto getDeletedDtlDto(final Integer key) throws Exception {
+    public JournalChapterDto getDeletedDetailDto(final Integer key) throws Exception {
         final JournalChapterDto deleted = journalChapterMapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {

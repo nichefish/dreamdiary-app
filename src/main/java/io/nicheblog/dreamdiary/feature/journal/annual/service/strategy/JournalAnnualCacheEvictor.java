@@ -39,8 +39,8 @@ public class JournalAnnualCacheEvictor
             EhCacheUtils.clearUserCache("journalAnnualListByUser", username);
             EhCacheUtils.clearUserCache("journalAnnualTotalListByUser", username);
             // 상세 캐시 초기화
-            EhCacheUtils.evictUserCacheByKey("journalAnnualDtlDtoByUser", username, id);
-            EhCacheUtils.evictUserCacheByKey("journalAnnualYyDtlDtoByUser", username, param.getYy());
+            EhCacheUtils.evictUserCacheByKey("journalAnnualDetailDtoByUser", username, id);
+            EhCacheUtils.evictUserCacheByKey("journalAnnualYyDetailDtoByUser", username, param.getYy());
             // 태그 캐시 처리
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JOURNAL_ANNUAL");
         } catch (final Exception e) {

@@ -44,8 +44,8 @@ public class MyJournalInterpretationService {
      * @return {@link JournalInterpretationDto} -- 조회된 객체
      * @throws Exception 조회 중 예외
      */
-    public JournalInterpretationDto getMyDtlDtoWithCache(final Integer key) throws Exception {
+    public JournalInterpretationDto getMyDetailDtoWithCache(final Integer key) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
-        return journalInterpretationService.getDtlDtoWithCacheByUser(username, key);
+        return journalInterpretationService.getDetailDtoWithCacheByUser(username, key);
     }
 }

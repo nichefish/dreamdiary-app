@@ -22,7 +22,6 @@ public interface AppUrl {
 
     String ADMIN_MAIN = Prefix.APP + "/admin/main.do";
     String ADMIN_PAGE = Prefix.APP + "/admin/admin-page.do";
-    String ADMIN_TEST = Prefix.APP + "/admin/test-page.do";
     String NOTION_HOME = Prefix.APP + "/notion-home.do";
 
     /** 저널 일자 (리스트) */
@@ -40,51 +39,45 @@ public interface AppUrl {
     /** 저널 일기/꿈 (미리보기 팝업) */
     String JOURNAL_ENTRY_PREVIEW_POP = Prefix.APP + "/journal/entry/preview-pop.do";
 
-    /** 저널 주제 */
-    String JOURNAL_SBJCT_LIST = Prefix.APP + "/journal/sbjct/list.do";
-    String JOURNAL_SBJCT_REG_FORM = Prefix.APP + "/journal/sbjct/reg-form.do";
-    String JOURNAL_SBJCT_REG_PREVIEW_POP = Prefix.APP + "/journal/sbjct/preview-pop.do";
-    String JOURNAL_SBJCT_DTL = Prefix.APP + "/journal/sbjct/dtl.do";
-    String JOURNAL_SBJCT_MDF_FORM = Prefix.APP + "/journal/sbjct/mdf-form.do";
+    /** 저널 스레드 */
+    String JOURNAL_THREAD_LIST = Prefix.APP + "/journal/thread/list.do";
+    String JOURNAL_THREAD_REGIST_FORM = Prefix.APP + "/journal/thread/regist-form.do";
+    String JOURNAL_THREAD_REGIST_PREVIEW_POP = Prefix.APP + "/journal/thread/preview-pop.do";
+    String JOURNAL_THREAD_DETAIL = Prefix.APP + "/journal/thread/detail.do";
+    String JOURNAL_THREAD_MODIFY_FORM = Prefix.APP + "/journal/thread/modify-form.do";
 
     /** 저널 연간 */
     String JOURNAL_ANNUAL_LIST = Prefix.APP + "/journal/annual/list.do";
     String JOURNAL_ANNUAL_VIEW = Prefix.APP + "/journal/annual/{yy}.do";
 
-    /** 공지사항 */
-    String NOTICE_LIST = Prefix.APP + "/notice/list.do";
-    String NOTICE_REG_FORM = Prefix.APP + "/notice/reg-form.do";
-    String NOTICE_DTL = Prefix.APP + "/notice/dtl.do";
-    String NOTICE_MDF_FORM = Prefix.APP + "/notice/mdf-form.do";
-    String NOTICE_REG_PREVIEW_POP = Prefix.APP + "/notice/preview-pop.do";
-
     /** 게시판 */
     String BOARD_POST_LIST = Prefix.APP + "/board/post/list.do";
-    String BOARD_POST_REG_FORM = Prefix.APP + "/board/post/reg-form.do";
-    String BOARD_POST_DTL = Prefix.APP + "/board/post/dtl.do";
-    String BOARD_POST_MDF_FORM = Prefix.APP + "/board/post/mdf-form.do";
-    String BOARD_POST_REG_PREVIEW_POP = Prefix.APP + "/board/post/preview-pop.do";
+    String BOARD_POST_REGIST_FORM = Prefix.APP + "/board/post/regist-form.do";
+    String BOARD_POST_DETAIL = Prefix.APP + "/board/post/detail.do";
+    String BOARD_POST_MODIFY_FORM = Prefix.APP + "/board/post/modify-form.do";
+    String BOARD_POST_REGIST_PREVIEW_POP = Prefix.APP + "/board/post/preview-pop.do";
 
     /** 사용자 관리 */
     String USER_LIST = Prefix.APP + "/user/list.do";
-    String USER_REG_FORM = Prefix.APP + "/user/reg-form.do";
-    String USER_DTL = Prefix.APP + "/user/dtl.do";
-    String USER_MDF_FORM = Prefix.APP + "/user/mdf-form.do";
+    String USER_SIGNUP_LIST = Prefix.APP + "/user/signup/list.do";
+    String USER_REGIST_FORM = Prefix.APP + "/user/regist-form.do";
+    String USER_DETAIL = Prefix.APP + "/user/detail.do";
+    String USER_MODIFY_FORM = Prefix.APP + "/user/modify-form.do";
 
     /** 내 정보 관리 */
-    String USER_MY_DTL = Prefix.APP + "/user/my/dtl.do";
+    String USER_MY_PAGE = Prefix.APP + "/user/my/page.do";
 
     /** 태그 */
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
 
-    /** 인증 정책 관리 */
-    String AUTH_POLICY_FORM = Prefix.APP + "/auth/policy/form.do";
+    /** 인증 정책 관리 화면 (싱글톤 설정 1건, MVC는 타 페이지와 동일하게 *.do) */
+    String AUTH_POLICY_PAGE = Prefix.APP + "/auth/policy/page.do";
 
     /** 메뉴 관리 */
-    String MENU_PAGE = Prefix.APP + "/menu/page.do";
+    String MENU_ADMIN_PAGE = Prefix.APP + "/admin/menu/page.do";
 
     /** 게시판 관리 */
-    String BOARD_GROUP_LIST = Prefix.APP + "/board/group/list.do";
+    String BOARD_ADMIN_PAGE = Prefix.APP + "/admin/board/page.do";
 
     /** 템플릿 관리 (TODO) */
     String TMPLAT_DEF_LIST = Prefix.APP + "/tmplat/list.do";
@@ -94,7 +87,7 @@ public interface AppUrl {
     String POPUP_LIST = "";
 
     /** 코드 관리 */
-    String CODE_GROUP_LIST = Prefix.APP + "/code/list.do";
+    String CODE_ADMIN_PAGE = Prefix.APP + "/admin/code/page.do";
 
     /** 로그 조회 */
     String LOG_LIST = Prefix.APP + "/log/list.do";
@@ -113,7 +106,7 @@ public interface AppUrl {
 
     String SCHEDULE_CAL = Prefix.APP + "/schedule/cal.do";
 
-    String USER_REQST_REG_FORM = Prefix.APP + "/user/reqst/form.do";
+    String USER_SIGNUP_PAGE = Prefix.APP + "/user/signup/page.do";
 
     /**
      * PREFIX 정의 정보

@@ -1,0 +1,108 @@
+/**
+ * UserDetailApp.ts
+ * 사용자 상세 화면 Vue 앱
+ *
+ * @author nichefish
+ */
+import UserDetailPanel from "./components/UserDetailPanel.js";
+import UserDetailProfileEmplymPanel from "./components/UserDetailProfileEmplymPanel.js";
+import UserDetailFooter from "./components/UserDetailFooter.js";
+import userDetailDataService from "./services/userDetailDataService.js";
+import createUserDetailActions from "./services/userDetailActionService.js";
+import bindUserDetailEventBridge from "./services/userDetailEventBridgeService.js";
+import { UserDetailState } from "./types.js";
+
+const state = Vue.reactive({
+    detail: userDetailDataService.parseDetailFromPageData(),
+    labels: {
+        noProfile: "",
+        retired: "",
+        activeEmployee: "",
+        probation: "",
+        locked: "잠김",
+        use: "사용",
+        emptyList: "",
+        totalPrefix: "Total",
+        unuse: "미사용",
+        modifyTooltip: "",
+        deleteTooltip: "",
+        listTooltip: "",
+        passwordResetTooltip: "",
+        profileAddress: "주소",
+        profileBirthDate: "생년월일",
+        profileLunar: "음력",
+        profileProfile: "사용자 프로필",
+        emplymUserName: "직원명",
+        emplymEmail: "업무용 이메일",
+        emplymPhoneNumber: "업무용 연락처",
+        emplymAffiliation: "소속",
+        emplymRank: "직급",
+        emplymJoinDate: "입사일",
+        emplymPayrollAccount: "급여 계좌 정보",
+        ...userDetailDataService.parseLabels(),
+    },
+}) as UserDetailState;
+
+const actions = createUserDetailActions();
+bindUserDetailEventBridge(actions);
+
+function runWhenDomReady(fn: () => void): void {
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", fn);
+        return;
+    }
+    fn();
+}
+
+const UserDetailRootApp = {
+    name: "UserDetailRootApp",
+    components: {
+        UserDetailPanel,
+        UserDetailProfileEmplymPanel,
+        UserDetailFooter,
+    },
+    data(): { state: UserDetailState } {
+        return { state };
+    },
+    methods: {
+        onPasswordReset(): void { actions.pwResetAjax(); },
+        onModify(): void { actions.modifyForm(); },
+        onDelete(): void { actions.deleteAjax(); },
+        onList(): void { actions.list(); },
+    },
+    template: `
+    <teleport to="#user_detail_div">
+        <UserDetailPanel
+            :detail="state.detail"
+            :labels="state.labels"
+            @password-reset="onPasswordReset"
+        />
+    </teleport>
+    <teleport to="#user_detail_profile_emplym_div">
+        <UserDetailProfileEmplymPanel
+            :detail="state.detail"
+            :labels="state.labels"
+        />
+    </teleport>
+    <teleport to="#user_detail_footer_div">
+        <UserDetailFooter
+            :labels="state.labels"
+            @modify="onModify"
+            @delete="onDelete"
+            @list="onList"
+        />
+    </teleport>
+    `,
+};
+
+runWhenDomReady(function(): void {
+    if (!document.getElementById("user_detail_app")
+        || !document.getElementById("user_detail_div")
+        || !document.getElementById("user_detail_profile_emplym_div")
+        || !document.getElementById("user_detail_footer_div")) {
+        console.error("[UserDetailApp] Vue mount root not found.");
+        return;
+    }
+
+    Vue.createApp(UserDetailRootApp).mount("#user_detail_app");
+});

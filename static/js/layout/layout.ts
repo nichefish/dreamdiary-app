@@ -284,8 +284,8 @@ const Layout: Page = (function(): Page {
         /**
          * 내 정보 상세 페이지 이동
          */
-        myInfoDtl: function(): void {
-            cF.ui.blockUIReplace(Url.USER_MY_DTL);
+        myInfoPage: function(): void {
+            cF.ui.blockUIReplace(Url.USER_MY_PAGE);
         },
 
         /**

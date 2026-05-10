@@ -14,8 +14,9 @@
         <#--begin::Form-->
         <form name="journalDayRegForm" id="journalDayRegForm" class="form" enctype="multipart/form-data">
             <div id="journal_day_reg_div">
-                <#--Handlebars template goes in here-->
+                <#-- Vue JournalDayRegModalBody 가 teleport 로 본문을 채운다. -->
             </div>
+            <div id="journal_day_reg_vue_app" class="d-none"></div>
         </form>
     </div>
     <#--begin::Modal Footer-->
@@ -23,12 +24,17 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--모달:: 버튼: 저장하기-->
-            <@component.modal_btn_save "dF.JournalDay.submit();" />
+            <@component.modal_btn_save "this.setAttribute('data-journal-day-action','submit-form'); dF.JournalDayRuntimeService.handleLegacyActionClick(event);" />
             <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close_safe "dF.JournalDay.closeModal();" />
+            <@component.modal_btn_close_safe "this.setAttribute('data-journal-day-action','close-modal'); dF.JournalDayRuntimeService.handleLegacyActionClick(event);" />
         </div>
     </div>
 </@modal.layout>
 
-<#--include:: Handlebars template-->
-<#include "_journal_day_reg_modal_template.hbs">
+<script>
+    window.JournalDayRegVueApp = window.JournalDayRegVueApp || {
+        mounted: false,
+        pendingPayload: null
+    };
+</script>
+<script type="module" src="/vue/feature/journal/day/JournalDayRegModalApp.js?${releaseDate!}"></script>

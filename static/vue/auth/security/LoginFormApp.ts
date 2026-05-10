@@ -6,12 +6,14 @@
  */
 import LoginPanel from "./components/LoginPanel.js";
 import PasswordChangeModal from "./components/PasswordChangeModal.js";
-import i18nCatalogService from "./services/i18nCatalogService.js";
+import i18nCatalogService from "../../global/services/i18nCatalogService.js";
 import loginAuthService from "./services/loginAuthService.js";
 import loginValidationService, {
     LoginErrors,
     PasswordChangeErrors,
 } from "./services/loginValidationService.js";
+// 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
+import { resolveMessage } from "../../common/messageHelper.js";
 
 type I18nState = {
     messages: Record<string, string>;
@@ -106,8 +108,8 @@ const LoginFormApp = {
         },
         confirmDuplicateLogin(): void {
             Swal.fire({
-                title: Message.get("view.auth.dupLogin"),
-                text: Message.get("view.cnfm.dupLogin"),
+                title: resolveMessage("view.auth.dupLogin"),
+                text: resolveMessage("view.cnfm.dupLogin"),
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: this.t("txt.auth.login.sign-in"),
@@ -128,8 +130,8 @@ const LoginFormApp = {
         t(key: string): string {
             return i18nCatalogService.t(i18nState.messages, key);
         },
-        reqstUser(): void {
-            loginAuthService.redirectUserRequest();
+        openUserSignup(): void {
+            loginAuthService.redirectUserSignup();
         },
         popupGoogle(): void {
             loginAuthService.openOAuthPopup(Url.OAUTH2_GOOGLE);
@@ -188,7 +190,7 @@ const LoginFormApp = {
                 @submit-login="submitLogin"
                 @popup-google="popupGoogle"
                 @popup-naver="popupNaver"
-                @request-user="reqstUser"
+                @open-user-signup="openUserSignup"
             />
             <PasswordChangeModal
                 ref="passwordChangeModal"

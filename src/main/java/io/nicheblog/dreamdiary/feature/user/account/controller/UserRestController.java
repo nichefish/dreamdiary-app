@@ -48,7 +48,7 @@ public class UserRestController
      * @param username 중복 체크를 할 사용자 아이디
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.USERNAME_DUP_CHK_AJAX)
+    @GetMapping(Url.USERS_DUPLICATE_USERNAME_CHECK)
     @ResponseBody
     public ResponseEntity<AjaxResponse> usernameDupChckAjax(
             final @RequestParam("username") String username
@@ -68,7 +68,7 @@ public class UserRestController
      * @param email 중복 체크를 할 사용자 아이디
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.USER_EMAIL_DUP_CHK_AJAX)
+    @GetMapping(Url.USERS_DUPLICATE_EMAIL_CHECK)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userEmailDupChckAjax(
             final @RequestParam("email") String email
@@ -88,15 +88,28 @@ public class UserRestController
      * @param user 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.USER_REG_AJAX, Url.USER_MDF_AJAX})
+    @PostMapping(Url.USERS)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
-    public ResponseEntity<AjaxResponse> userRegAjax(
+    public ResponseEntity<AjaxResponse> userRegistAjax(
             final @Valid UserDto user
     ) throws Exception {
+        final ServiceResponse result = userService.regist(user);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        final boolean isReg = (user.getKey() == null);
-        final ServiceResponse result = isReg ? userService.regist(user) : userService.modify(user);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    @PostMapping(Url.USER)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> userModifyAjax(
+            final @PathVariable("id") Integer id,
+            final @Valid UserDto user
+    ) throws Exception {
+        user.setId(id);
+        final ServiceResponse result = userService.modify(user);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -110,11 +123,11 @@ public class UserRestController
      * @param id 패스워드를 초기화할 사용자 아이디
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.USER_PW_RESET_AJAX)
+    @PostMapping(Url.USER_PASSWORD_RESET)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> passwordResetAjax(
-            final @RequestParam("id") Integer id
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
         final ServiceResponse result = userService.passwordReset(id);
@@ -131,11 +144,11 @@ public class UserRestController
      * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.USER_DEL_AJAX)
+    @DeleteMapping(Url.USER)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userDelAjax(
-            final @RequestParam("id") Integer id
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
         final UserDto user = userService.getDtlDto(id);
@@ -159,7 +172,7 @@ public class UserRestController
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * TODO: 더 일반화하기
      */
-    @GetMapping(Url.USER_LIST_XLSX_DOWNLOAD)
+    @GetMapping(Url.USERS_XLSX_DOWNLOAD)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userListXlsxDownload(

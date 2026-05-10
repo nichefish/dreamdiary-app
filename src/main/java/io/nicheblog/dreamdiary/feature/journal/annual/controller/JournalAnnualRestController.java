@@ -81,11 +81,11 @@ public class JournalAnnualRestController
     @GetMapping(value = {Url.JOURNAL_ANNUAL})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalAnnualDtlAjax(
+    public ResponseEntity<AjaxResponse> journalAnnualDetailAjax(
             final @PathVariable Integer yy
     ) throws Exception {
 
-        final JournalAnnualDto retrievedDto = myJournalAnnualService.getMyDtlDtoByYy(yy);
+        final JournalAnnualDto retrievedDto = myJournalAnnualService.getMyDetailDtoByYy(yy);
         final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -232,13 +232,15 @@ public class JournalAnnualRestController
      * @param journalAnnual 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.JOURNAL_ANNUAL_REG_AJAX})
+    @PostMapping(value = {Url.JOURNAL_ANNUAL})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalAnnualRegAjax(
+    public ResponseEntity<AjaxResponse> journalAnnualRegistAjax(
+            final @PathVariable Integer yy,
             final @Valid JournalAnnualDto journalAnnual
     ) throws Exception {
 
+        journalAnnual.setYy(yy);
         final ServiceResponse result = journalAnnualService.modify(journalAnnual);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

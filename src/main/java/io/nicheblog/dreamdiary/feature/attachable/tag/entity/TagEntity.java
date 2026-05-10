@@ -50,9 +50,9 @@ public class TagEntity extends BaseCrudEntity {
     @NotFound(action = NotFoundAction.IGNORE)
     private TagCategoryEntity tagCategory;
 
-    @Column(name = "tag_nm")
+    @Column(name = "name")
     @Comment("태그명")
-    private String tagNm;
+    private String name;
 
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SELECT)
@@ -60,18 +60,18 @@ public class TagEntity extends BaseCrudEntity {
     @NotFound(action = NotFoundAction.IGNORE)
     private List<TagContentEntity> tagContentList;
 
-    public TagEntity(final String tagNm) {
-        this.tagNm = tagNm;
+    public TagEntity(final String name) {
+        this.name = name;
     }
 
-    public TagEntity(final String tagNm, final String ctgr) {
-        this.tagNm = tagNm;
+    public TagEntity(final String name, final String ctgr) {
+        this.name = name;
         this.ctgr = ctgr;
     }
 
     public String getCtgr() {
-        if (this.tagCategory != null && this.tagCategory.getCtgrNm() != null) {
-            return this.tagCategory.getCtgrNm();
+        if (this.tagCategory != null && this.tagCategory.getName() != null) {
+            return this.tagCategory.getName();
         }
         return this.ctgr == null ? "" : this.ctgr;
     }

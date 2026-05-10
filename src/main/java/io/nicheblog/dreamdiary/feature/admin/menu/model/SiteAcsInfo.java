@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.model;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,29 +24,29 @@ public class SiteAcsInfo {
     private String id;
 
     /** 상위 메뉴 유형 코드 */
-    private String upperMenuTyCd;
+    private String parentMenuType;
     /** 상위 메뉴 번호 (메뉴 활성화용) */
-    private String upperMenuId;
+    private String parentMenuId;
     /** 상위 메뉴 이름 (툴바 표시용) */
     private String upperMenuNm;
 
     /** 게시판 키 */
     private String boardKey;
     /** 사이드바 메뉴 이름 (로깅 및 사이트 헤더 표시용) */
-    private String menuNm;
+    private String menuName;
 
     /** 접근 화면 이름 (로깅 및 사이트 헤더 표시용) */
-    private String pageNm;
+    private String pageName;
 
     /** 관리자 메뉴 여부 */
-    private Boolean isMngrMenu = false;
+    private Boolean isAdminMenu = false;
     /** 사이드메뉴 표시 여부 */
     private Boolean asideAt = true;
 
     /* ----- */
 
     /** 페이지명 세팅 (for breadcrumb) */
-    public void setAcsPageInfo(final PageNm pageNm) {
-        this.pageNm = pageNm.pageNm;
+    public void setAcsPageInfo(final PageName pageName) {
+        this.pageName = pageName.pageName;
     }
 }

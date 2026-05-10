@@ -68,15 +68,15 @@ CREATE TABLE IF NOT EXISTS code_item (
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS menu (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메뉴 ID',
-    upper_menu_id VARCHAR(10) COMMENT '상위 메뉴 번호',
-    menu_ty_cd VARCHAR(50) COMMENT '메뉴 구분코드',
-    mngr_yn CHAR(1) DEFAULT 'N' COMMENT '관리자 메뉴 여부 (Y/N)',
-    menu_nm VARCHAR(200) COMMENT '메뉴명',
+    parent_menu_id VARCHAR(10) COMMENT '부모 메뉴 번호',
+    menu_type VARCHAR(50) COMMENT '메뉴 유형',
+    admin_yn CHAR(1) DEFAULT 'N' COMMENT '관리자 메뉴 여부 (Y/N)',
+    menu_name VARCHAR(200) COMMENT '메뉴명',
     menu_label VARCHAR(200) COMMENT '메뉴 라벨 (약어표시)',
     url VARCHAR(500) COMMENT '연결 URL',
     icon VARCHAR(1000) COMMENT '아이콘',
     unread_cnt_nm VARCHAR(200) COMMENT '미열람 카운트 이름 (model)',
-    menu_sub_extend_ty_cd VARCHAR(50) COMMENT '하위메뉴 확장 유형 코드',
+    submenu_expand_type VARCHAR(50) COMMENT '하위메뉴 확장 유형',
     required_yn CHAR(1) DEFAULT 'N' COMMENT '필수 여부',
     protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부',
     -- STATE
@@ -87,7 +87,9 @@ CREATE TABLE IF NOT EXISTS menu (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
-    deleted_at DATETIME COMMENT '삭제일시'
+    deleted_at DATETIME COMMENT '삭제일시',
+    CONSTRAINT chk_menu_menu_type CHECK (menu_type IN ('MAIN', 'SUB')),
+    CONSTRAINT chk_menu_submenu_expand_type CHECK (submenu_expand_type IN ('NO_SUB', 'LIST', 'EXTEND', 'COLLAPSE', 'BOARD'))
 ) COMMENT = '메뉴';
 
 -- 인증 정책 (auth_policy)

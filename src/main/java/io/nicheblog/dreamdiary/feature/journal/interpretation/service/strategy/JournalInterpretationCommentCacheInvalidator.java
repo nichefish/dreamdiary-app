@@ -49,4 +49,3 @@ public class JournalInterpretationCommentCacheInvalidator
         journalCacheEvictWorker.evictAfterCommit(param, ContentType.JOURNAL_INTERPRETATION);
     }
 }
-

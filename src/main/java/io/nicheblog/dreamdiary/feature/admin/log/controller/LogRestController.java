@@ -14,7 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,17 +43,17 @@ public class LogRestController
      * 활동 로그 상세 조회 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.LOG_DTL_AJAX)
+    @GetMapping(Url.LOG)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
-    public ResponseEntity<AjaxResponse> logDtlAjax(
-            final @RequestParam("logId") Integer key
+    public ResponseEntity<AjaxResponse> getLog(
+            final @PathVariable Integer id
     ) throws Exception {
 
-        final LogQueryDto rsDto = logQueryService.getDtlDto(key);
+        final LogQueryDto rsDto = logQueryService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

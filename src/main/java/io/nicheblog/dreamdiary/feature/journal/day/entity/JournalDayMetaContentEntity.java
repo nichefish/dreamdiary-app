@@ -66,7 +66,7 @@ public class JournalDayMetaContentEntity
 
     /** 메타 이름 */
     @Transient
-    private String metaNm;
+    private String name;
 
     /** 메타 카테고리 */
     @Transient

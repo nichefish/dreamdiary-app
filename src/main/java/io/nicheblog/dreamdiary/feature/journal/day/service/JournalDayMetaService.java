@@ -82,7 +82,7 @@ public class JournalDayMetaService
         final List<JournalDayMetaEntity> metaList = this.getSelf().getListEntity(paramMap);
         return metaList.stream()
                 .collect(Collectors.groupingBy(
-                        JournalDayMetaEntity::getMetaNm,
+                        JournalDayMetaEntity::getName,
                         Collectors.mapping(tag -> {
                             if (StringUtils.isBlank(tag.getCtgr())) return "";
                             return tag.getCtgr();

@@ -25,7 +25,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = { "ctgr", "tagNm" }, callSuper = false)
+@EqualsAndHashCode(of = { "ctgr", "name" }, callSuper = false)
 public class TagDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<TagDto> {
@@ -44,7 +44,7 @@ public class TagDto
 
     /** 태그 이름 */
     @Size(max = 50)
-    private String tagNm;
+    private String name;
 
     /** 태그-컨텐츠 목록 */
     private List<TagContentDto> tagContentList;
@@ -71,30 +71,30 @@ public class TagDto
     @Builder.Default
     private String textClass = "";
 
-    public TagDto(final String tagNm) {
-        this.tagNm = tagNm;
+    public TagDto(final String name) {
+        this.name = name;
         this.ctgr = "";
     }
 
     /**
      * 생성자.
      *
-     * @param tagNm - 생성할 태그의 이름
+     * @param name - 생성할 태그의 이름
      * @param ctgr - 생성할 태그의 카테고리
      */
-    public TagDto(final String tagNm, final String ctgr) {
-        this.tagNm = tagNm;
+    public TagDto(final String name, final String ctgr) {
+        this.name = name;
         this.ctgr = StringUtils.isEmpty(ctgr) ? "" : ctgr;
     }
 
     /**
      * 생성자.
 
-     * @param tagNm - 생성할 태그 번호
+     * @param name - 생성할 태그 번호
      * @param ctgr - 생성할 태그의 카테고리
      */
-    public TagDto(final Integer tagId, final String tagNm, final String ctgr) {
-        this(tagNm, ctgr);
+    public TagDto(final Integer tagId, final String name, final String ctgr) {
+        this(name, ctgr);
         this.id = tagId;
     }
 
@@ -107,7 +107,7 @@ public class TagDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull TagDto other) {
-        return this.getTagNm().compareTo(other.getTagNm());
+        return this.getName().compareTo(other.getName());
     }
 
     @Override

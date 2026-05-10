@@ -22,7 +22,7 @@ public class TagEntityTestFactory {
      */
     public static TagEntity create() throws Exception {
         return TagEntity.builder()
-                .tagNm("태그")
+                .name("태그")
                 .tagContentList(new ArrayList<>())
                 .build();
     }

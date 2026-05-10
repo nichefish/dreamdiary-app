@@ -51,10 +51,7 @@ public class MetaContentDto
 
     /** 메타 이름 */
     @Size(max = 50)
-    private String metaNm;
-
-    /** 메타 값 */
-    private String label;
+    private String name;
 
     /** 메타 값 */
     private String value;
@@ -73,9 +70,9 @@ public class MetaContentDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull MetaContentDto compare) {
-        final String thisMetaNm = this.getMetaNm();
-        final String otherMetaNm = compare.getMetaNm();
-        return thisMetaNm.compareTo(otherMetaNm);
+        final String thisName = this.getName();
+        final String otherName = compare.getName();
+        return thisName.compareTo(otherName);
     }
 
     @Override

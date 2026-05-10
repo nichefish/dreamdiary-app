@@ -37,7 +37,7 @@ public class UserMyRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.USER_MY_DTL;
+    private final String baseUrl = Url.USER_MY_PAGE;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER_MY;     // 작업 카테고리 (로그 적재용)
 

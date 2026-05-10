@@ -34,10 +34,10 @@ public interface TagContentRepository
             "  AND EXISTS (SELECT 1 FROM TagEntity t " +
             "               LEFT JOIN t.tagCategory tc " +
             "               WHERE t.id = ct.tagId " +
-            "                 AND t.tagNm = :#{#param.tagNm} " +
+            "                 AND t.name = :#{#param.name} " +
             "                 AND ( " +
             "                      ((:#{#param.ctgr} IS NULL OR :#{#param.ctgr} = '') AND t.tagCategoryId IS NULL) " +
-            "                      OR tc.ctgrNm = :#{#param.ctgr} " +
+            "                      OR tc.name = :#{#param.ctgr} " +
             "                 ))")
     void deleteObsoleteTagContents(final @Param("param") TagContentParam param);
 }

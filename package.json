@@ -2,7 +2,8 @@
   "scripts": {
     "build:ts": "npx tsc",
     "build:scss": "sass src/main/resources/static/css:src/main/resources/static/css && sass static:static",
-    "build": "npm run build:ts && npm run build:scss"
+    "build": "npm run build:ts && npm run build:scss",
+    "check:encoding": "python scripts/check_encoding.py --check-mojibake"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",

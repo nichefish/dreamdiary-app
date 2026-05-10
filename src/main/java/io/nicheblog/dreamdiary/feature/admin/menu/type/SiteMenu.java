@@ -23,25 +23,24 @@ public enum SiteMenu {
     ERROR("에러"),
 
     AUTH_POLICY("인증 정책 관리"),
-    MENU("메뉴 관리"),
-    CD("코드 관리"),
+    MENU_ADMIN("메뉴 관리"),
+    CODE_ADMIN("코드 관리"),
 
     CONTENT("컨텐츠 관리"),
-    BOARD_GROUP("게시판 관리"),
+    BOARD_ADMIN("게시판 관리"),
     TMPLAT("템플릿 관리"),
     POPUP("팝업 관리"),
 
     USER("사용자 관리"),
-    USER_INFO("계정 관리"),
-    USER_REQST("신규계정 신청"),
+    USER_ACCOUNT("계정 관리"),
+    USER_SIGNUP_APPROVAL("계정 신청 승인관리"),
+    USER_SIGNUP("신규계정 신청"),
     USER_MY("내 정보"),
-
-    NOTICE("공지사항"),
 
     JOURNAL("저널"),
     JOURNAL_DAY("저널 일자"),
     JOURNAL_CAL("저널 달력"),
-    JOURNAL_SBJCT("저널 주제"),
+    JOURNAL_THREAD("저널 스레드"),
     JOURNAL_ANNUAL("저널 연간"),
 
     BOARD("일반게시판"),
@@ -53,5 +52,5 @@ public enum SiteMenu {
     LOG_LIST("로그 목록"),
     LOG_STATS("로그 통계");
 
-    private final String pageNm;
+    private final String pageName;
 }

@@ -31,9 +31,8 @@ public interface MetaContentMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "meta", expression = "java(MetaMapstruct.INSTANCE.toDto(entity.getMeta()))")
-    @Mapping(target = "metaNm", expression = "java(entity.getMeta().getMetaNm())")
+    @Mapping(target = "name", expression = "java(entity.getMeta().getName())")
     @Mapping(target = "ctgr", expression = "java(entity.getMeta().getCtgr())")
-    @Mapping(target = "label", expression = "java(entity.getMeta().getLabel())")
     MetaContentDto toDto(final MetaContentEntity entity) throws Exception;
 
     /**

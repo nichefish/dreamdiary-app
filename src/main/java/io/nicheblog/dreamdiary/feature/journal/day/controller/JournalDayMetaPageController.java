@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -54,7 +54,7 @@ public class JournalDayMetaPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
-        model.addAttribute("pageNm", PageNm.PAGE);
+        model.addAttribute("pageName", PageName.PAGE);
         codeLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
 
         return "/view/feature/journal/day/journal_day_meta";

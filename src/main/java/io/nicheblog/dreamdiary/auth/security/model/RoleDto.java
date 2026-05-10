@@ -39,6 +39,8 @@ public class RoleDto
     private Integer parentRoleId;
     /** 정렬 순서 */
     private Integer sortOrder;
+    /** 사용 여부 (목록 표시용; 엔티티 {@code useYn} 과 동일) */
+    private String useYn;
     /** 하위 역할 목록 */
     private List<RoleDto> subRoleList;
 

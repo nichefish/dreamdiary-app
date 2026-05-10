@@ -6,38 +6,6 @@
 
 -- -----------------------
 
--- 공지사항 (notice)
--- @extends: BasePostEntity
--- @implements: TagEmbed, CommentEmbed, ManagtEmbed, ViewerEmbed
-CREATE TABLE IF NOT EXISTS notice (
-    -- ATTACHABLE
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
-    content_type VARCHAR(50) DEFAULT 'NOTICE' COMMENT '컨텐츠 타입',
-    --
-    popup_yn CHAR(1) DEFAULT 'N' COMMENT '팝업 여부 (Y/N)',
-    -- POST
-    title VARCHAR(200) COMMENT '제목',
-    content LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- MANAGT (module)
-    managtr_id VARCHAR(20) COMMENT '작업자 ID',
-    managt_dt DATETIME COMMENT '작업일시',
-    -- FILE_GROUP
-    file_group_id INT COMMENT '첨부파일 번호',
-    -- AUDIT
-    created_by VARCHAR(20) COMMENT '등록자 ID',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    updated_by VARCHAR(20) COMMENT '수정자 ID',
-    updated_at DATETIME COMMENT '수정일시',
-    deleted_at DATETIME COMMENT '삭제일시'
-) COMMENT = '공지사항';
-
--- ---------- --
-
 -- 일정 (schedule)
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed
@@ -158,4 +126,3 @@ CREATE TABLE IF NOT EXISTS popup (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '팝업';
-

@@ -40,14 +40,14 @@ CREATE TABLE IF NOT EXISTS comment (
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS tag (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 ID',
-    tag_nm VARCHAR(64) COMMENT '태그명',
+    name VARCHAR(64) COMMENT '태그명',
     tag_category_id INT COMMENT '태그 카테고리 ID',
     tag_category_key INT AS (IFNULL(tag_category_id, 0)) PERSISTENT,
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE KEY uk_tag_tag_nm_category (tag_nm, tag_category_key),
-    INDEX idx_tag_tag_nm (tag_nm),
+    UNIQUE KEY uk_tag_name_category_key (name, tag_category_key),
+    INDEX idx_tag_name (name),
     INDEX idx_tag_tag_category_id (tag_category_id)
 ) COMMENT = '태그';
 
@@ -55,12 +55,12 @@ CREATE TABLE IF NOT EXISTS tag (
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS tag_category (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 카테고리 ID',
-    ctgr_nm VARCHAR(100) COMMENT '태그 카테고리명',
+    name VARCHAR(100) COMMENT '태그 카테고리명',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE KEY uk_tag_category_ctgr_nm (ctgr_nm),
-    INDEX idx_tag_category_ctgr_nm (ctgr_nm)
+    UNIQUE KEY uk_tag_category_name (name),
+    INDEX idx_tag_category_name (name)
 ) COMMENT = '태그 카테고리';
 
 ALTER TABLE tag
@@ -126,15 +126,14 @@ CREATE TABLE IF NOT EXISTS tag_category_profile (
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS meta (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타 ID',
-    meta_nm VARCHAR(64) COMMENT '메타명',
+    name VARCHAR(64) COMMENT '메타명',
     ctgr VARCHAR(100) COMMENT '카테고리',
-    label VARCHAR(100) COMMENT '라벨',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE (meta_nm, ctgr, label),
-    INDEX (meta_nm),
-    INDEX (meta_nm, ctgr, label)
+    UNIQUE (name, ctgr),
+    INDEX (name),
+    INDEX (name, ctgr)
 ) COMMENT = '메타';
 
 -- 메타-컨텐츠(meta_content)

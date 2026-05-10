@@ -41,19 +41,19 @@ public class MenuUpperEntity
     private Integer id;
 
     /** 상위메뉴 ID */
-    @Column(name = "upper_menu_id")
+    @Column(name = "parent_menu_id")
     @Comment("상위 메뉴 번호")
-    private Integer upperMenuId;
+    private Integer parentMenuId;
 
     /** 메뉴 구분 코드 */
-    @Column(name = "menu_ty_cd")
+    @Column(name = "menu_type")
     @Comment("메뉴 구분 코드")
-    private String menuTyCd;
+    private String menuType;
 
     /** 메뉴명 */
-    @Column(name = "menu_nm")
+    @Column(name = "menu_name")
     @Comment("메뉴명")
-    private String menuNm;
+    private String menuName;
 
     /** URL  */
     @Column(name = "url")
@@ -67,7 +67,7 @@ public class MenuUpperEntity
 
     /** 셀프 참조 :: 상위메뉴 조회 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "upper_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("상위메뉴 조회")

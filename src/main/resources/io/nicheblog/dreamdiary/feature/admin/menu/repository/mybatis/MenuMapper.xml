@@ -4,28 +4,28 @@
 <mapper namespace="io.nicheblog.dreamdiary.feature.admin.menu.repository.mybatis.MenuMapper">
 
     <!-- 최상위(MAIN) 메뉴의 관리자 메뉴 여부 (Y/N) 조회 -->
-    <select id="getMngrYn" resultType="String">
-        /* MenuMapper.getMngrYn */
+    <select id="getAdminYn" resultType="String">
+        /* MenuMapper.getAdminYn */
         WITH RECURSIVE menu_hierarchy AS (
             -- 가장 처음은 입력받은 메뉴
             SELECT
-                id, upper_menu_id, menu_ty_cd, mngr_yn
+                id, parent_menu_id, menu_type, admin_yn
             FROM menu
             WHERE id = #{id}
 
             UNION ALL
 
-            -- 부모 메뉴를 계속 타고 올라가면서 menu_ty_cd = 'MAIN'인 메뉴를 찾음
+            -- 부모 메뉴를 계속 타고 올라가면서 menu_type = 'MAIN'인 메뉴를 찾음
             SELECT
-                m.id, m.upper_menu_id, m.menu_ty_cd, m.mngr_yn
+                m.id, m.parent_menu_id, m.menu_type, m.admin_yn
             FROM menu m
             INNER JOIN menu_hierarchy mh
-                ON m.id = mh.upper_menu_id
+                ON m.id = mh.parent_menu_id
         )
-        -- 최상위 메뉴에서 menu_ty_cd = 'MAIN'인 메뉴를 찾고, 그 메뉴의 mngr_yn 값을 반환
-        SELECT mngr_yn
+        -- 최상위 메뉴에서 menu_type = 'MAIN'인 메뉴를 찾고, 그 메뉴의 admin_yn 값을 반환
+        SELECT admin_yn
         FROM menu_hierarchy
-        WHERE menu_ty_cd = 'MAIN'
+        WHERE menu_type = 'MAIN'
         LIMIT 1
     </select>
 </mapper>

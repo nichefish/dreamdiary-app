@@ -27,18 +27,22 @@
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="journal_day_tag_dtl_div">
-            <#--Handlebars template goes in here-->
+            <div class="d-flex flex-column mb-4">
+                <div class="d-flex justify-content-start align-items-center gap-3 mb-4">
+                    <label for="journal_day_tag_yy" class="form-label mb-0 fw-bold"><@spring.message 'txt.yy'/></label>
+                    <select id="journal_day_tag_yy" class="form-select form-select-sm w-auto"></select>
+                </div>
+                <div id="journal_day_tag_dtl_list" class="d-flex flex-column"></div>
+            </div>
         </div>
+        <div id="journal_day_tag_dtl_app" class="d-none"></div>
     </div>
     <#--begin::Modal Footer-->
     <div class="modal-footer">
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close_safe "dF.JournalDayTag.closeModal();" />
+            <@component.modal_btn_close_safe "this.setAttribute('data-journal-day-action','tag-close-modal'); dF.JournalDayRuntimeService.handleLegacyActionClick(event);" />
         </div>
     </div>
 </@modal.layout>
-
-<#--include:: Handlebars template-->
-<#include "_journal_day_tag_dtl_modal_template.hbs">

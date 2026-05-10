@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.auth.security.controller;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.exception.AlreadyAuthenticatedException;
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
-import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
+import io.nicheblog.dreamdiary.feature.user.signup.service.UserSignupService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
@@ -28,11 +28,11 @@ public class AuthPageController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.AUTH_POLICY_FORM;             // 기본 URL
+    private final String baseUrl = Url.USER_SIGNUP_PAGE;             // 기본 URL (신규계정 신청 폼 — 인증 메일 검증 흐름과 연관)
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.AUTH_POLICY;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER_SIGNUP;        // 작업 카테고리 (로그 적재용)
 
-    private final UserReqstService userReqstService;
+    private final UserSignupService userSignupService;
     private final JwtTokenProvider jwtTokenProvider;
 
     /**
@@ -54,7 +54,7 @@ public class AuthPageController
             
             final String username = jwtTokenProvider.getUsernameFromToken(token);
             // 계정 승인 처리
-            final boolean approved = userReqstService.cfByUsername(username).getRslt();
+            final boolean approved = userSignupService.cfByUsername(username).getRslt();
             if (!approved) throw new AlreadyAuthenticatedException("msg.auth.verify.request.not-approvable");
 
             return "/view/auth/security/verify_success";

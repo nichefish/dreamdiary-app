@@ -123,8 +123,8 @@ public class JournalTodoService
      * @param key 식별자
      * @return {@link JournalTodoDto} -- 조회된 객체
      */
-    @Cacheable(value="journalTodoDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
-    public JournalTodoDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
+    @Cacheable(value="journalTodoDetailDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JournalTodoDto getDetailDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JournalTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalTodoDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
@@ -155,5 +155,4 @@ public class JournalTodoService
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), ContentType.JOURNAL_TODO);
     }
 }
-
 

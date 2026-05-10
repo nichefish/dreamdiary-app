@@ -24,5 +24,5 @@ public class BoardXlsxDto {
 
     /** 컨텐츠 타입 */
     @Builder.Default
-    private String contentType = ContentType.NOTICE.key;
+    private String contentType = ContentType.BOARD.key;
 }

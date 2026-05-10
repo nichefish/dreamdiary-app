@@ -43,9 +43,6 @@ public interface Code {
     /** 분류 분류 코드 */
     String CL_CTGR_CD = "CL_CTGR_CD";
 
-    /** 하위메뉴 확장 유형 코드 */
-    String MENU_SUB_EXTEND_TY_CD = "MENU_SUB_EXTEND_TY_CD";
-
     /** 텍스트 클래스 코드 */
     String TEXT_CLASS_CD = "TEXT_CLASS_CD";
 
@@ -59,22 +56,16 @@ public interface Code {
     String RANK_CD = "JOB_TITLE_CD";       // 직급 코드
     String RANK_STAFF = Rank.STAFF.name();           // 직급:사원
 
-    String NOTICE_CTGR_CD = "NOTICE_CTGR_CD";   // 공지사항 글분류 코드
     String POST_CTGR_CD = "POST_CTGR_CD";       // 게시판
     String JANDI_TOPIC_CD = "JANDI_TOPIC_CD";   // 잔디 토픽 코드
     String JOURNAL_CHAPTER_CTGR_CD = "JOURNAL_CHAPTER_CTGR_CD";   // 저널 챕터 글분류 코드
-    String JOURNAL_SBJCT_CTGR_CD = "JOURNAL_SBJCT_CTGR_CD";   // 저널 주제 글분류 코드
+    String JOURNAL_THREAD_CTGR_CD = "JOURNAL_THREAD_CTGR_CD";   // 저널 스레드 글분류 코드
 
     String YY_CD = "YY_CD";                 // 사용자 권한 코드
     String MNTH_CD = "MNTH_CD";                 // 사용자 권한 코드
 
     String ACTVTY_CTGR_CD = "ACTVTY_CTGR_CD";     // 작업 카테고리 코드
     String ACTION_TY_CD = "ACTION_TY_CD";         // 액션 유형 코드
-
-    /* 메뉴 분류 코드 */
-    String MENU_TY_CD = "MENU_TY_CD";
-    String MENU_TY_MAIN = "MAIN";
-    String MENU_TY_SUB = "SUB";
 
     /** 꿈 결산 구분 코드 */
     String JOURNAL_ANNUAL_TY_CD = "JOURNAL_ANNUAL_TY_CD";
@@ -109,4 +100,3 @@ public interface Code {
     /* 소속(회사) 코드 */
     String CMPY_CD = "CMPY_CD";
 }
-

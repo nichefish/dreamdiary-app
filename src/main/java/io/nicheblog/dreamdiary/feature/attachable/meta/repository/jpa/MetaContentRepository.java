@@ -31,7 +31,7 @@ public interface MetaContentRepository
             "WHERE ct.refId = :#{#param.refId} " +
             "  AND ct.refContentType = :#{#param.refContentType} " +
             "  AND ct.createdBy = :#{#param.createdBy} " +
-            "  AND EXISTS (SELECT 1 FROM MetaEntity t WHERE t.id = ct.metaId AND t.metaNm = :#{#param.metaNm} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :#{#param.ctgr} IS NULL)))")
+            "  AND EXISTS (SELECT 1 FROM MetaEntity t WHERE t.id = ct.metaId AND t.name = :#{#param.name} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :#{#param.ctgr} IS NULL)))")
     void deleteObsoleteMetaContents(final @Param("param") MetaContentParam param);
 }
 

@@ -29,9 +29,6 @@ public enum ActvtyCtgr {
     ADMIN("관리"),
     CACHE("캐시"),
 
-    // NOTICE
-    NOTICE("공지사항"),
-
     // JOURNAL
     JOURNAL("꿈 관리"),
     BOARD_POST("게시판"),
@@ -43,12 +40,12 @@ public enum ActvtyCtgr {
     // USER
     USER("사용자 관리"),
     USER_MY("내 정보 관리"),
-    USER_REQST("신규계정 신청"),
+    USER_SIGNUP("신규계정 신청"),
 
     // MANAGE
     AUTH_POLICY("인증 정책 관리"),
     MENU("메뉴 관리"),
-    BOARD_GROUP("게시판 관리"),
+    BOARD("게시판 관리"),
     TMPLAT("템플릿 관리"),
     CODE("코드 관리"),
     // LOG

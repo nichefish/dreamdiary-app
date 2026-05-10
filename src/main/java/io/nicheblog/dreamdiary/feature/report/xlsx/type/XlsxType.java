@@ -17,11 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum XlsxType {
 
-    NOTICE(
-            "공지사항",
-            "공지사항 #1",
-            "공지사항",
-            XlsxHeader.NOTICE
+    BOARD(
+            "게시판",
+            "게시판 #1",
+            "게시판",
+            XlsxHeader.BOARD
     );
 
     public final String fileNm;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.calendar.schedule.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleSearchParam;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
@@ -62,7 +62,7 @@ public class ScheduleCalPageController
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.SCHEDULE_CAL);
-        model.addAttribute("pageNm", PageNm.CAL);
+        model.addAttribute("pageName", PageName.CAL);
 
         // 재직자 목록 조회 및 모델에 추가 :: (일정 등록 참가자용)
         final List<UserDto> crtdUserList = userService.getCrdtUserList(DateUtils.getCurrDateAddDayStr(-40), DateUtils.getCurrDateAddDayStr(40));

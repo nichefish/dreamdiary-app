@@ -4,8 +4,9 @@ import io.nicheblog.dreamdiary.feature.admin.menu.exception.MenuNotExistsExcepti
 import io.nicheblog.dreamdiary.feature.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SubmenuExpandType;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * FreemarkerMenuModelContributor
@@ -43,12 +46,12 @@ public class MenuFreemarkerModelContributor
     @Override
     public void contribute(final FreemarkerModelContext context) throws Exception {
         final Object menuLabel = context.getModelAttr("menuLabel");
-        final Object pageNm = context.getModelAttr("pageNm");
+        final Object pageName = context.getModelAttr("pageName");
         if (menuLabel instanceof SiteMenu menu) {
             try {
                 final MenuDto menuDto = menuService.getMenuByLabel(menu);
                 final SiteAcsInfo acsInfo = menuService.getSiteAceInfoFromMenu(menuDto);
-                if (pageNm instanceof PageNm page) {
+                if (pageName instanceof PageName page) {
                     acsInfo.setAcsPageInfo(page);
                 }
                 context.addObject("siteAcsInfo", acsInfo);

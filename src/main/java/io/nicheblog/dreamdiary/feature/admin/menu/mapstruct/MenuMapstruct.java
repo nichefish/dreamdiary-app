@@ -7,8 +7,14 @@ import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Builder;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -19,7 +25,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class}, builder = @Builder(disableBuilder = true))
 public interface MenuMapstruct
         extends BaseWriteMapstruct<MenuPostDto, MenuEntity>, BaseReadMapstruct<MenuDto, MenuEntity> {
 
@@ -34,8 +40,9 @@ public interface MenuMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "subMenuList", expression = "java(toDtoList(entity.getSubMenuList()))")
-    @Mapping(target = "upperMenuNm", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuNm() : null)")
-    @Mapping(target = "upperMenuTyCd", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuTyCd() : null)")
+    @Mapping(target = "upperMenuNm", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuName() : null)")
+    @Mapping(target = "parentMenuType", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuType() : null)")
+    @Mapping(target = "submenuExpandTypeName", ignore = true)
     MenuDto toDto(final MenuEntity entity) throws Exception;
 
     /**

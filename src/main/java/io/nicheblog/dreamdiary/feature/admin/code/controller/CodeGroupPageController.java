@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.admin.code.controller;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupDto;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.code.service.CodeGroupService;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageName;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -30,21 +30,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Log4j2
 public class CodeGroupPageController extends BaseControllerImpl {
     @Getter
-    private final String baseUrl = Url.CODE_GROUP_LIST;
+    private final String baseUrl = Url.CODE_ADMIN_PAGE;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CODE;
 
     private final CodeGroupService codeGroupService;
     private final CodeLookupService codeLookupService;
 
-    @GetMapping(Url.CODE_GROUP_LIST)
+    @GetMapping(Url.CODE_ADMIN_PAGE)
     @Secured({Constant.ROLE_MNGR})
     public String codeGroupList(
             @ModelAttribute("searchParam") CodeGroupSearchParam searchParam,
             final ModelMap model
     ) throws Exception {
-        model.addAttribute("menuLabel", SiteMenu.CD);
-        model.addAttribute("pageNm", PageNm.LIST);
+        model.addAttribute("menuLabel", SiteMenu.CODE_ADMIN);
+        model.addAttribute("pageName", PageName.LIST);
 
         searchParam = (CodeGroupSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
@@ -55,6 +55,6 @@ public class CodeGroupPageController extends BaseControllerImpl {
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
         codeLookupService.setCdListToModel(Code.CL_CTGR_CD, model);
 
-        return "/view/feature/admin/code/code_group_list";
+        return "/view/feature/admin/code/code_admin_page";
     }
 }
