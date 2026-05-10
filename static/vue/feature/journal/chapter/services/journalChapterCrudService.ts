@@ -3,7 +3,7 @@
  * 저널 챕터 CRUD/표시 액션 서비스 (Vue 소유).
  *
  * 변경(Phase C-1):
- *   - 레거시 dF.JournalChapter 의 toggle / copy / exportTxt / collapseAjax / delAjax 5개 메서드를
+ *   - 레거시 dF.JournalChapter 의 toggle / copy / exportTxt / collapseAjax / deleteAjax 5개 메서드를
  *     이 서비스로 이전한다 (journal_day 의 journalDayCrudService 와 동형 패턴).
  *   - toggleStateAjax 는 collapseAjax 만 사용하므로 module-private 헬퍼로 두고 외부 노출하지 않는다.
  *   - dF.State.* 는 전역 유틸이며 변경 없이 그대로 호출한다(외부 호출 그래프 보존).
@@ -210,11 +210,11 @@ export function exportTxt(id: string | number): void {
 
 /**
  * 삭제 (Ajax).
- * 변경 전: dF.JournalChapter.delAjax(id) — JournalDayCalVueApp.refresh / journalDayResolveListBridge().refresh 분기,
+ * 변경 전: dF.JournalChapter.deleteAjax(id) — JournalDayCalVueApp.refresh / journalDayResolveListBridge().refresh 분기,
  *   CAL 화면에서는 dF.JournalDayTagService.refreshDayTagList() 도 함께 호출.
  * 변경 후(Phase C-1): 동일 분기 흐름을 service 로 이전 (cF.ui.unblockUI / ModalHistory.reset 후처리 보존).
  */
-export function delAjax(id: string | number): void {
+export function deleteAjax(id: string | number): void {
     if (isNaN(Number(id))) return;
 
     Swal.fire({
@@ -247,7 +247,7 @@ const journalChapterCrudService = {
     collapseAjax,
     copyChapter,
     exportTxt,
-    delAjax,
+    deleteAjax,
 };
 
 export default journalChapterCrudService;

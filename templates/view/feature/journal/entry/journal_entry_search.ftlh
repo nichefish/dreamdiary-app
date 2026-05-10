@@ -1,4 +1,4 @@
-﻿<#--
+<#--
  * journal_entry : search
  -->
 
@@ -40,7 +40,7 @@
      include 제거 — `{{>}}` 호출 0건, JS 문자열 참조 0건이라 dead partial 로 확정. partial 파일 자체도 삭제. -->
 <script type="module" src="/vue/feature/journal/day/registerJournalDayShellServices.js?${releaseDate!}"></script>
 
-<#include "/view/feature/journal/chapter/_modal/_journal_chapter_reg_modal.ftlh">
+<#include "/view/feature/journal/chapter/_modal/_journal_chapter_regist_modal.ftlh">
 
 
 <#--include::journal_diary_module-->

@@ -85,15 +85,15 @@ public class JournalChapterRestController
     @PostMapping(value = {Url.JOURNAL_CHAPTERS, Url.JOURNAL_CHAPTER})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalChapterRegAjax(
+    public ResponseEntity<AjaxResponse> journalChapterRegistAjax(
             final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JournalChapterDto journalChapter
     ) throws Exception {
 
-        final boolean isMdf = id != null;
-        if (isMdf) journalChapter.setId(id);
+        final boolean isModify = id != null;
+        if (isModify) journalChapter.setId(id);
 
-        final ServiceResponse result = isMdf ? journalChapterService.modify(journalChapter) : journalChapterService.regist(journalChapter);
+        final ServiceResponse result = isModify ? journalChapterService.modify(journalChapter) : journalChapterService.regist(journalChapter);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -110,7 +110,7 @@ public class JournalChapterRestController
     @PostMapping(value = {Url.JOURNAL_CHAPTER_DREAM_AUTO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalChapterDreamAutoRegAjax(
+    public ResponseEntity<AjaxResponse> journalChapterDreamAutoRegistAjax(
             final @RequestParam("journalDayId") Integer journalDayId
     ) throws Exception {
 
@@ -131,11 +131,11 @@ public class JournalChapterRestController
     @GetMapping(value = {Url.JOURNAL_CHAPTER})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalChapterDtlAjax(
+    public ResponseEntity<AjaxResponse> journalChapterDetailAjax(
             final @PathVariable("id") Integer key
     ) throws Exception {
 
-        final JournalChapterDto retrievedDto = myJournalChapterService.getMyDtlDtoWithCache(key);
+        final JournalChapterDto retrievedDto = myJournalChapterService.getMyDetailDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -152,7 +152,7 @@ public class JournalChapterRestController
     @DeleteMapping(value = {Url.JOURNAL_CHAPTER})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalChapterDelAjax(
+    public ResponseEntity<AjaxResponse> journalChapterDeleteAjax(
             final @PathVariable("id") Integer id
     ) throws Exception {
 
@@ -177,7 +177,7 @@ public class JournalChapterRestController
             final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JournalChapterDto retrievedDto = myJournalChapterService.getMyDtlDtoWithCache(id);
+        final JournalChapterDto retrievedDto = myJournalChapterService.getMyDetailDtoWithCache(id);
         final String text = journalChapterExportService.buildTxt(retrievedDto);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "chapter_" + DateUtils.asStr(retrievedDto.getStdrdDt(), DatePtn.PDATE) + "_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";

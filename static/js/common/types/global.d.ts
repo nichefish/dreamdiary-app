@@ -204,7 +204,7 @@ interface Window {
     /** Aside ?쇨린 ?꾪꽣 梨뺥꽣 移댄뀒怨좊━ ?듭뀡(FTL ?곸옱 ??EntryFilters ?쒗뵆由?. */
     __journalAsideEntryFiltersBootstrap?: { chapterCtgrOptions: Array<{ code: string; codeName: string }> };
     /** 梨뺥꽣 ?깅줉 紐⑤떖 Vue 痢≪뿉 ?곸옱?섎뒗 移댄뀒怨좊━ ?듭뀡(FTL JOURNAL_CHAPTER_CTGR_CD ??JS ?⑥씪 SSOT). */
-    __journalChapterRegBootstrap?: { categoryOptions: Array<{ code: string; codeName: string }> };
+    __journalChapterRegistBootstrap?: { categoryOptions: Array<{ code: string; codeName: string }> };
     Page?: {
         [key: string]: any;
     };
@@ -299,8 +299,8 @@ interface Window {
         open?: (model: Record<string, any>) => void;
         pendingPayload?: Record<string, any> | null;
     };
-    /** ???梨뺥꽣 ?깅줉 紐⑤떖(`journal_chapter_reg`) Vue 蹂몃Ц 釉뚮━吏. */
-    JournalChapterRegVueApp?: {
+    /** ???梨뺥꽣 ?깅줉 紐⑤떖(`journal_chapter_regist`) Vue 蹂몃Ц 釉뚮━吏. */
+    JournalChapterRegistVueApp?: {
         mounted?: boolean;
         open?: (model: Record<string, any>) => void;
         submit?: () => void;
