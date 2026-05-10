@@ -44,6 +44,7 @@ const state = Vue.reactive({
 }) as UserDetailState;
 
 const actions = createUserDetailActions();
+bindUserDetailEventBridge(actions);
 
 function runWhenDomReady(fn: () => void): void {
     if (document.readyState === "loading") {
@@ -104,5 +105,4 @@ runWhenDomReady(function(): void {
     }
 
     Vue.createApp(UserDetailRootApp).mount("#user_detail_app");
-    bindUserDetailEventBridge(actions);
 });
