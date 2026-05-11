@@ -32,6 +32,7 @@ public class JournalEntryEmbeddingWorker {
     private static final Duration STALE_PROCESSING_AGE = Duration.ofMinutes(30);
 
     private final JournalEntryEmbeddingQueueService queueService;
+    private final JournalEntryEmbeddingSearchService searchService;
     private final OllamaClient ollamaClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AtomicBoolean running = new AtomicBoolean(false);
@@ -114,6 +115,7 @@ public class JournalEntryEmbeddingWorker {
             final List<Double> vector = ollamaClient.embed(entity.getEmbeddingText());
             final String vectorJson = objectMapper.writeValueAsString(vector);
             queueService.markEmbedded(entity.getId(), entity.getContentHash(), ollamaClient.getEmbeddingModel(), vectorJson);
+            searchService.refreshEntry(entity.getJournalEntryId());
             return true;
         } catch (final RestClientException e) {
             throw e;

@@ -48,6 +48,14 @@ public interface JournalEntryEmbeddingRepository
     );
 
     /**
+     * 지정한 처리 상태의 임베딩 작업 전체를 조회한다. 벡터 캐시 초기화에 사용한다.
+     *
+     * @param embeddingStatus 조회할 임베딩 처리 상태
+     * @return 해당 상태의 임베딩 작업 엔티티 전체 목록
+     */
+    List<JournalEntryEmbeddingEntity> findAllByEmbeddingStatus(String embeddingStatus);
+
+    /**
      * 지정한 처리 상태의 임베딩 작업 건수를 조회한다.
      *
      * @param embeddingStatus 집계할 임베딩 처리 상태
