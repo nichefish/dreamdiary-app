@@ -1,8 +1,18 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
+import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingStatsDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.repository.jpa.JournalEntryEmbeddingRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -11,8 +21,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 저널 엔트리 임베딩 작업 큐의 상태 전이를 담당하는 서비스입니다.
@@ -37,6 +53,102 @@ public class JournalEntryEmbeddingQueueService {
 
     @Getter
     private final JournalEntryEmbeddingRepository repository;
+    private final JournalEntryRepository journalEntryRepository;
+    private final JournalChapterRepository journalChapterRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    /**
+     * 원본 저널 엔트리 ID를 기준으로 임베딩 작업을 생성하거나 갱신한다.
+     *
+     * @param journalEntryId 원본 저널 엔트리 ID
+     * @throws Exception 임베딩 작업 구성 중 예외가 발생한 경우
+     */
+    @Transactional
+    public void queueForEntryId(final Integer journalEntryId) throws Exception {
+        if (journalEntryId == null) return;
+
+        final JournalEntryEntity entry = journalEntryRepository.findById(journalEntryId).orElse(null);
+        if (entry == null) {
+            removeByJournalEntryId(journalEntryId);
+            return;
+        }
+
+        queueForEntry(entry);
+    }
+
+    /**
+     * 원본 저널 엔트리 내용을 기반으로 임베딩 작업 row를 upsert한다.
+     *
+     * <p>본문 해시가 같고 이미 벡터가 있으면 벡터를 재생성하지 않고 메타데이터만 최신화한다.
+     * 본문이 바뀌었거나 아직 완료되지 않은 작업이면 {@code PENDING} 상태로 되돌린다.</p>
+     *
+     * @param entry 원본 저널 엔트리 엔티티
+     * @throws Exception payload JSON 또는 해시 생성 중 예외가 발생한 경우
+     */
+    @Transactional
+    public void queueForEntry(final JournalEntryEntity entry) throws Exception {
+        if (entry == null || entry.getId() == null) return;
+
+        final JournalChapterEntity chapter = entry.getJournalChapterId() == null
+                ? null
+                : journalChapterRepository.findById(entry.getJournalChapterId()).orElse(null);
+        final JournalDaySmpEntity journalDay = chapter == null ? null : chapter.getJournalDay();
+        final String contentKind = resolveContentKind(entry, chapter);
+        final BigDecimal retrievalWeight = resolveRetrievalWeight(contentKind);
+        final String embeddingText = buildEmbeddingText(entry, journalDay, contentKind);
+        final String contentHash = sha256Hex(embeddingText);
+        final String payloadJson = objectMapper.writeValueAsString(buildPayload(entry, chapter, journalDay, contentKind, retrievalWeight));
+        final boolean hasEmbeddableContent = hasEmbeddableContent(entry);
+
+        final JournalEntryEmbeddingEntity entity = repository.findFirstByJournalEntryId(entry.getId())
+                .orElseGet(() -> JournalEntryEmbeddingEntity.builder()
+                        .journalEntryId(entry.getId())
+                        .build());
+        final boolean hasReusableVector = Objects.equals(entity.getContentHash(), contentHash)
+                && STATUS_EMBEDDED.equals(entity.getEmbeddingStatus())
+                && StringUtils.isNotBlank(entity.getEmbeddingVectorJson());
+
+        entity.setJournalEntryId(entry.getId());
+        entity.setContentType(entry.getContentType());
+        entity.setContentKind(contentKind);
+        entity.setJournalDate(journalDay == null ? null : journalDay.getJournalDate());
+        entity.setJournalDatePrecision(journalDay == null || journalDay.getJournalDatePrecision() == null ? null : journalDay.getJournalDatePrecision().name());
+        entity.setRetrievalWeight(retrievalWeight);
+        entity.setEmbeddingText(embeddingText);
+        entity.setEmbeddingPayloadJson(payloadJson);
+        entity.setContentHash(contentHash);
+
+        if (!hasEmbeddableContent) {
+            entity.setEmbeddingStatus(STATUS_SKIPPED);
+            entity.setEmbeddingModel(null);
+            entity.setEmbeddingVectorJson(null);
+            entity.setEmbeddedAt(null);
+            entity.setErrorMessage("title and content are blank");
+        } else if (!hasReusableVector) {
+            entity.setEmbeddingStatus(STATUS_PENDING);
+            entity.setEmbeddingModel(null);
+            entity.setEmbeddingVectorJson(null);
+            entity.setEmbeddedAt(null);
+            entity.setErrorMessage(null);
+        } else {
+            entity.setErrorMessage(null);
+        }
+
+        repository.saveAndFlush(entity);
+    }
+
+    /**
+     * 원본 저널 엔트리가 삭제되었을 때 활성 임베딩 작업을 검색 대상에서 제거한다.
+     *
+     * @param journalEntryId 원본 저널 엔트리 ID
+     */
+    @Transactional
+    public void removeByJournalEntryId(final Integer journalEntryId) {
+        if (journalEntryId == null) return;
+
+        repository.findFirstByJournalEntryId(journalEntryId)
+                .ifPresent(repository::delete);
+    }
 
     /**
      * 대기 중인 작업을 배치 크기만큼 선점하고 처리 중 상태로 변경한다.
@@ -96,12 +208,17 @@ public class JournalEntryEmbeddingQueueService {
      * 임베딩 벡터 생성에 성공한 작업을 완료 상태로 마킹한다.
      *
      * @param id 임베딩 작업 ID
+     * @param expectedContentHash 워커가 벡터화한 시점의 본문 해시
      * @param embeddingModel 벡터 생성에 사용한 모델명
      * @param embeddingVectorJson 생성된 벡터 JSON 배열 문자열
      */
     @Transactional
-    public void markEmbedded(final Integer id, final String embeddingModel, final String embeddingVectorJson) {
+    public void markEmbedded(final Integer id, final String expectedContentHash, final String embeddingModel, final String embeddingVectorJson) {
         repository.findById(id).ifPresent(entity -> {
+            if (!Objects.equals(entity.getContentHash(), expectedContentHash)) {
+                log.info("Skip stale embedding result. id={}, expectedHash={}, currentHash={}", id, expectedContentHash, entity.getContentHash());
+                return;
+            }
             entity.setEmbeddingStatus(STATUS_EMBEDDED);
             entity.setEmbeddingModel(embeddingModel);
             entity.setEmbeddingVectorJson(embeddingVectorJson);
@@ -228,5 +345,144 @@ public class JournalEntryEmbeddingQueueService {
     private double toPercent(final long count, final long total) {
         if (total <= 0) return 0.0D;
         return Math.round(((double) count * 10000.0D) / (double) total) / 100.0D;
+    }
+
+    /**
+     * 컨텐츠 타입과 챕터 타입을 기준으로 검색 가중치 분류를 결정한다.
+     *
+     * @param entry 원본 저널 엔트리
+     * @param chapter 소속 저널 챕터
+     * @return 검색 가중치 분류
+     */
+    private String resolveContentKind(final JournalEntryEntity entry, final JournalChapterEntity chapter) {
+        if (chapter != null && chapter.getChapterType() == ChapterType.NOTE) return "NOTE";
+        if (ContentType.JOURNAL_DREAM.key.equals(entry.getContentType())) return "DREAM";
+        if (ContentType.JOURNAL_DIARY.key.equals(entry.getContentType())) return "DIARY";
+        if (ContentType.JOURNAL_NOTE.key.equals(entry.getContentType())) return "NOTE";
+        return "UNKNOWN";
+    }
+
+    /**
+     * 검색 가중치 분류별 기본 랭킹 가중치를 반환한다.
+     *
+     * @param contentKind 검색 가중치 분류
+     * @return 검색 랭킹 가중치
+     */
+    private BigDecimal resolveRetrievalWeight(final String contentKind) {
+        return switch (StringUtils.defaultString(contentKind)) {
+            case "DREAM" -> new BigDecimal("1.30");
+            case "NOTE" -> new BigDecimal("0.85");
+            case "DIARY" -> new BigDecimal("1.00");
+            default -> new BigDecimal("1.00");
+        };
+    }
+
+    /**
+     * 임베딩 모델에 전달할 정규화 텍스트를 구성한다.
+     *
+     * @param entry 원본 저널 엔트리
+     * @param journalDay 소속 저널 일자
+     * @param contentKind 검색 가중치 분류
+     * @return 임베딩 입력 텍스트
+     */
+    private String buildEmbeddingText(final JournalEntryEntity entry, final JournalDaySmpEntity journalDay, final String contentKind) {
+        final StringBuilder builder = new StringBuilder();
+        appendLine(builder, "유형", contentKind);
+        appendLine(builder, "날짜", formatDate(journalDay == null ? null : journalDay.getJournalDate()));
+        appendLine(builder, "제목", entry.getTitle());
+        appendLine(builder, "본문", entry.getContent());
+        appendLine(builder, "타인의 꿈 여부", entry.getElseDreamYn());
+        appendLine(builder, "꿈 제공자", entry.getElseDreamerNm());
+        return StringUtils.trim(builder.toString());
+    }
+
+    /**
+     * 실제 벡터화할 만한 제목 또는 본문이 있는지 확인한다.
+     *
+     * @param entry 원본 저널 엔트리
+     * @return 벡터화 가능한 본문 존재 여부
+     */
+    private boolean hasEmbeddableContent(final JournalEntryEntity entry) {
+        return StringUtils.isNotBlank(entry.getTitle()) || StringUtils.isNotBlank(entry.getContent());
+    }
+
+    /**
+     * 검색/디버깅에 사용할 구조화 payload를 구성한다.
+     *
+     * @param entry 원본 저널 엔트리
+     * @param chapter 소속 저널 챕터
+     * @param journalDay 소속 저널 일자
+     * @param contentKind 검색 가중치 분류
+     * @param retrievalWeight 검색 랭킹 가중치
+     * @return JSON 직렬화 대상 payload
+     */
+    private Map<String, Object> buildPayload(
+            final JournalEntryEntity entry,
+            final JournalChapterEntity chapter,
+            final JournalDaySmpEntity journalDay,
+            final String contentKind,
+            final BigDecimal retrievalWeight
+    ) {
+        final Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("source", "journal_entry");
+        payload.put("journalEntryId", entry.getId());
+        payload.put("contentType", entry.getContentType());
+        payload.put("contentKind", contentKind);
+        payload.put("retrievalWeight", retrievalWeight);
+        payload.put("title", entry.getTitle());
+        payload.put("journalChapterId", entry.getJournalChapterId());
+        payload.put("journalChapterType", chapter == null || chapter.getChapterType() == null ? null : chapter.getChapterType().name());
+        payload.put("journalDayId", chapter == null ? null : chapter.getJournalDayId());
+        payload.put("journalDate", formatDate(journalDay == null ? null : journalDay.getJournalDate()));
+        payload.put("journalDatePrecision", journalDay == null || journalDay.getJournalDatePrecision() == null ? null : journalDay.getJournalDatePrecision().name());
+        payload.put("yy", journalDay == null ? null : journalDay.getYy());
+        payload.put("mnth", journalDay == null ? null : journalDay.getMnth());
+        payload.put("sortOrder", entry.getSortOrder());
+        payload.put("elseDreamYn", entry.getElseDreamYn());
+        payload.put("elseDreamerNm", entry.getElseDreamerNm());
+        return payload;
+    }
+
+    /**
+     * 값이 비어 있지 않을 때만 라벨과 값을 한 줄로 추가한다.
+     *
+     * @param builder 텍스트 빌더
+     * @param label 라벨
+     * @param value 값
+     */
+    private void appendLine(final StringBuilder builder, final String label, final String value) {
+        if (StringUtils.isBlank(value)) return;
+        builder.append(label).append(": ").append(StringUtils.trim(value)).append('\n');
+    }
+
+    /**
+     * 날짜 값을 임베딩 payload용 문자열로 변환한다.
+     *
+     * @param date 날짜 값
+     * @return 날짜 문자열, 변환할 수 없으면 {@code null}
+     */
+    private String formatDate(final Date date) {
+        try {
+            return DateUtils.asStr(date, DatePtn.DATE);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 임베딩 입력 텍스트의 SHA-256 해시를 계산한다.
+     *
+     * @param text 해시를 계산할 텍스트
+     * @return 16진수 SHA-256 해시
+     * @throws Exception 해시 알고리즘을 사용할 수 없는 경우
+     */
+    private String sha256Hex(final String text) throws Exception {
+        final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        final byte[] hash = digest.digest(StringUtils.defaultString(text).getBytes(StandardCharsets.UTF_8));
+        final StringBuilder builder = new StringBuilder(hash.length * 2);
+        for (final byte b : hash) {
+            builder.append(String.format("%02x", b & 0xff));
+        }
+        return builder.toString();
     }
 }

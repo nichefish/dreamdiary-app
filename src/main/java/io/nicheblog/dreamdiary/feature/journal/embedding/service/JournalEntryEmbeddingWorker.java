@@ -113,7 +113,7 @@ public class JournalEntryEmbeddingWorker {
 
             final List<Double> vector = ollamaClient.embed(entity.getEmbeddingText());
             final String vectorJson = objectMapper.writeValueAsString(vector);
-            queueService.markEmbedded(entity.getId(), ollamaClient.getEmbeddingModel(), vectorJson);
+            queueService.markEmbedded(entity.getId(), entity.getContentHash(), ollamaClient.getEmbeddingModel(), vectorJson);
             return true;
         } catch (final RestClientException e) {
             throw e;
