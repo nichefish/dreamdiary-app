@@ -161,6 +161,11 @@ document.addEventListener("DOMContentLoaded", function(): void {
                 this.isWaitingResponse = true;
                 this.$refs.chatClient.sendMessage(this.activeSessionId, message);
             },
+            cancelMessage(): void {
+                if (!this.activeSessionId) return;
+                this.$refs.chatClient.cancelMessage(this.activeSessionId);
+                this.isWaitingResponse = false;
+            },
         },
         created(): void {
             this.authInfo = AuthInfo;
@@ -191,6 +196,7 @@ document.addEventListener("DOMContentLoaded", function(): void {
                         @delete-session="deleteSession"
                         @update-setting="updateChatSetting"
                         @send-message="handleSendMessage"
+                        @cancel-message="cancelMessage"
                         @close-chat="closeChat" />
         `
     });

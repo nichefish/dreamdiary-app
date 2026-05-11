@@ -212,4 +212,21 @@ public class ChatController {
 
         chatAIService.processChat(sessionId, message);
     }
+
+    /**
+     * 클라이언트로부터 응답 취소 요청을 받아 해당 세션의 AI 응답 생성을 중단한다.
+     *
+     * @param sessionId 취소할 채팅 세션 ID
+     * @param stompHeaderAccessor WebSocket 세션 인증 정보를 담은 STOMP 헤더 접근자
+     */
+    @MessageMapping("/chat/session/{sessionId}/cancel")
+    public void cancelMessage(
+            final @DestinationVariable("sessionId") Integer sessionId,
+            final StompHeaderAccessor stompHeaderAccessor
+    ) {
+        final Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
+        AuthUtils.setAuthentication(authentication);
+
+        chatAIService.cancelChat(sessionId);
+    }
 }

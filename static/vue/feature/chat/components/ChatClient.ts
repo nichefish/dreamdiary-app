@@ -156,6 +156,12 @@ export default {
 
             this.stompClient.send(`/app/chat/session/${sessionId}/send`, {}, message);
         },
+        cancelMessage(sessionId: number): void {
+            if (!this.stompClient || !this.stompClient.connected) return;
+            if (!sessionId) return;
+
+            this.stompClient.send(`/app/chat/session/${sessionId}/cancel`, {}, '');
+        },
         disconnectWebSocket(): void {
             if (this.chatSubscription) this.chatSubscription.unsubscribe();
             if (this.sessionInvalidSubscription) this.sessionInvalidSubscription.unsubscribe();
