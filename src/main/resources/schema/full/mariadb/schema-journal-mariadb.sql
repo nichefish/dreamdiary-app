@@ -269,3 +269,38 @@ CREATE TABLE IF NOT EXISTS journal_annual_review (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 연간 리뷰';
+
+-- Journal entry embedding work table
+-- @extends: BaseAuditEntity
+CREATE TABLE IF NOT EXISTS journal_entry_embedding (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'embedding id',
+    journal_entry_id INT NOT NULL COMMENT 'journal_entry.id',
+    content_type VARCHAR(50) NOT NULL COMMENT 'journal entry content type',
+    content_kind VARCHAR(20) NOT NULL COMMENT 'DIARY | DREAM | NOTE | UNKNOWN',
+    journal_date DATE COMMENT 'journal date',
+    journal_date_precision VARCHAR(20) COMMENT 'journal date precision',
+    retrieval_weight DECIMAL(5,2) DEFAULT 1.00 COMMENT 'retrieval score multiplier',
+    embedding_status VARCHAR(20) DEFAULT 'PENDING' COMMENT 'PENDING | PROCESSING | EMBEDDED | FAILED | SKIPPED',
+    embedding_model VARCHAR(100) COMMENT 'embedding model',
+    embedding_text LONGTEXT COMMENT 'actual text sent to embedding model',
+    embedding_payload_json LONGTEXT COMMENT 'structured embedding metadata JSON',
+    embedding_vector_json LONGTEXT COMMENT 'embedding vector JSON payload',
+    content_hash VARCHAR(64) COMMENT 'SHA-256 hash of embedding_text',
+    embedded_at DATETIME COMMENT 'embedded at',
+    error_message LONGTEXT COMMENT 'embedding error message',
+    -- AUDIT
+    created_by VARCHAR(20) COMMENT 'created by',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'semantic created at',
+    updated_by VARCHAR(20) COMMENT 'updated by',
+    updated_at DATETIME COMMENT 'updated at',
+    deleted_at DATETIME COMMENT 'deleted at',
+    -- CONSTRAINT
+    UNIQUE KEY uk_journal_entry_embedding_entry (journal_entry_id),
+    INDEX idx_journal_entry_embedding_status (embedding_status),
+    INDEX idx_journal_entry_embedding_kind (content_kind),
+    INDEX idx_journal_entry_embedding_journal_date (journal_date),
+    INDEX idx_journal_entry_embedding_created_at (created_at),
+    INDEX idx_journal_entry_embedding_created_by (created_by),
+    INDEX idx_journal_entry_embedding_content_hash (content_hash),
+    INDEX idx_journal_entry_embedding_deleted_at (deleted_at)
+) COMMENT = 'journal entry embedding work table';
