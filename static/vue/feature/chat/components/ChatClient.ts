@@ -6,17 +6,16 @@
 export default {
     data() {
         return {
-            stompClient: null,  // STOMP 클라이언트
-            chatMessages: [],       // 채팅 메시지 배열
-            message: '',        // 사용자 입력 메시지
-            serverInfo: {       // 서버에서 가져올 프로필 정보
+            stompClient: null,
+            chatSubscription: null,
+            sessionInvalidSubscription: null,
+            serverInfo: {
                 domain: '',
                 port: ''
             },
         };
     },
     methods: {
-        // 서버 정보 조회
         async fetchServerInfo(): Promise<void> {
             try {
                 const response: Response = await fetch('/cmm/get-server-info.do');
@@ -28,69 +27,116 @@ export default {
                 console.error('Error fetching profile:', error);
             }
         },
-        
-        // WebSocket 연결 설정
         async connectWebSocket(): Promise<void> {
-            await this.fetchServerInfo();  // 서버에서 도메인 & 포트 정보 가져오기
+            await this.fetchServerInfo();
 
-            // @ts-ignore  // STOMP 클라이언트 생성
+            // @ts-ignore
             const brokerUrl: string = `http://${this.serverInfo.domain}:${this.serverInfo.port}/chat`;
             // @ts-ignore
             this.stompClient = Stomp.client(brokerUrl);
             const successCallback = (): void => {
-                // 메세지 구독
-                this.subscribeToMessages();
-                // 세션 만료 구독
                 this.subscribeToSessionInvalid();
+                this.$emit('connected');
             };
             const errorCallback = (error: any): void => {
                 console.error('WebSocket Error:', error);
             };
-            // 연결 생성
+
             this.stompClient.connect({}, successCallback, errorCallback);
         },
+        subscribeToSession(sessionId: number): void {
+            if (!this.stompClient || !this.stompClient.connected || !sessionId) return;
+            if (this.chatSubscription) this.chatSubscription.unsubscribe();
 
-        // 메시지 구독
-        subscribeToMessages(): void {
-            if (!this.stompClient || !this.stompClient.connected) return;
-
-            // "/topic/chat"을 구독하여 메시지를 수신
-            this.stompClient.subscribe('/topic/chat', (message: any): void => {
-                console.log('Received Message:', message.body);
+            this.chatSubscription = this.stompClient.subscribe(`/topic/chat/session/${sessionId}`, (message: any): void => {
                 if (!message.body) return;
                 try {
-                    const messageObject = JSON.parse(message.body); // 메시지를 JSON 객체로 파싱
-                    this.$emit('new-message', messageObject.rsltObj);  // 메시지 로딩 완료 후 상위에 전달
+                    const messageObject = JSON.parse(message.body);
+                    this.$emit('new-message', messageObject.rsltObj);
                 } catch (e) {
                     console.error('Error parsing message:', e);
                 }
             });
         },
-
-        // 로그아웃 감지
         subscribeToSessionInvalid(): void {
-            if (!this.stompClient || !this.stompClient.connected) return;
+            if (!this.stompClient || !this.stompClient.connected || this.sessionInvalidSubscription) return;
 
-            // 세션 만료 구독
-            this.stompClient.subscribe('/topic/session-invalid', function(message: any): void {
-                console.log(message.body); // "Your session has expired, please log in again."
-                // 쿠키에서 JWT 토큰 삭제
+            this.sessionInvalidSubscription = this.stompClient.subscribe('/topic/session-invalid', function(): void {
                 document.cookie = "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             });
         },
-
-        // 메시지 전송
-        sendMessage(message: string): void {
-            if (!this.stompClient || !this.stompClient.connected) return;
-            if (!message) return;
-
-            this.stompClient.send('/app/chat/send', {}, message);
+        async loadSessions(): Promise<any[]> {
+            const response = await fetch('/chat/sessions');
+            const data = await response.json();
+            if (!data.rslt) {
+                cF.ui.swalOrAlert('error', 'Error loading chat sessions:', data.msg);
+                return [];
+            }
+            const sessions = data.rsltList || [];
+            this.$emit('sessions-loaded', sessions);
+            return sessions;
         },
+        async loadSetting(): Promise<any> {
+            const response = await fetch('/chat/settings');
+            const data = await response.json();
+            if (!data.rslt) {
+                cF.ui.swalOrAlert('error', 'Error loading chat setting:', data.msg);
+                return null;
+            }
+            this.$emit('setting-loaded', data.rsltObj);
+            return data.rsltObj;
+        },
+        async updateSetting(setting: any): Promise<any> {
+            const response = await fetch('/chat/settings', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(setting || {})
+            });
+            const data = await response.json();
+            if (!data.rslt) {
+                cF.ui.swalOrAlert('error', 'Error saving chat setting:', data.msg);
+                return null;
+            }
+            this.$emit('setting-updated', data.rsltObj);
+            return data.rsltObj;
+        },
+        async createSession(): Promise<any> {
+            const response = await fetch('/chat/sessions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+            const data = await response.json();
+            if (!data.rslt) {
+                cF.ui.swalOrAlert('error', 'Error creating chat session:', data.msg);
+                return null;
+            }
+            this.$emit('session-created', data.rsltObj);
+            return data.rsltObj;
+        },
+        async deleteSession(sessionId: number): Promise<boolean> {
+            const response = await fetch(`/chat/sessions/${sessionId}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            if (!data.rslt) {
+                cF.ui.swalOrAlert('error', 'Error deleting chat session:', data.msg);
+                return false;
+            }
+            this.$emit('session-deleted', sessionId);
+            return true;
+        },
+        async loadMessages(sessionId: number): Promise<void> {
+            if (!sessionId) {
+                this.$emit('messages-loaded', []);
+                return;
+            }
 
-        // DB에서 기존 메시지 로드 (페이지 로딩 시)
-        loadMessages(): void {
-            console.log("fetching messages...");
-            fetch('/chat/messages')  // 기존 메시지 요청
+            fetch(`/chat/sessions/${sessionId}/messages`)
                 .then(response => response.json())
                 .then(data => {
                     if (!data.rslt) {
@@ -98,25 +144,47 @@ export default {
                         cF.ui.swalOrAlert('error', 'Error loading messages:', data.msg);
                         return;
                     }
-                    if (data.rsltList) this.$emit('messages-loaded', data.rsltList);  // 메시지 로딩 완료 후 상위에 전달
+                    this.$emit('messages-loaded', data.rsltList || []);
                 })
                 .catch(error => {
                     console.error('Error loading messages:', error);
                 });
         },
+        sendMessage(sessionId: number, message: string): void {
+            if (!this.stompClient || !this.stompClient.connected) return;
+            if (!sessionId || !message) return;
 
-        // 연결 종료
+            this.stompClient.send(`/app/chat/session/${sessionId}/send`, {}, message);
+        },
+        cancelMessage(sessionId: number): void {
+            if (!this.stompClient || !this.stompClient.connected) return;
+            if (!sessionId) return;
+
+            this.stompClient.send(`/app/chat/session/${sessionId}/cancel`, {}, '');
+        },
         disconnectWebSocket(): void {
+            if (this.chatSubscription) this.chatSubscription.unsubscribe();
+            if (this.sessionInvalidSubscription) this.sessionInvalidSubscription.unsubscribe();
             if (!this.stompClient) return;
 
-            this.stompClient.deactivate();  // WebSocket 연결 종료
+            if (typeof this.stompClient.deactivate === 'function') {
+                this.stompClient.deactivate();
+            } else if (typeof this.stompClient.disconnect === 'function') {
+                this.stompClient.disconnect();
+            }
         },
     },
     mounted(): void {
-        this.connectWebSocket();  // 컴포넌트가 마운트되면 자동으로 WebSocket 연결
-        this.loadMessages();      // DB에서 메시지 로드. (이후에는 실시간 메세지 갱신)
+        this.connectWebSocket();
+        this.loadSetting();
+        this.loadSessions();
     },
     beforeDestroy(): void {
-        this.disconnectWebSocket();  // 컴포넌트가 파괴될 때 WebSocket 연결 종료
+        this.disconnectWebSocket();
     },
+    beforeUnmount(): void {
+        this.disconnectWebSocket();
+    },
+
+    template: `<div style="display:none;"></div>`
 };

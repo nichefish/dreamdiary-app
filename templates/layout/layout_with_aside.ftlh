@@ -117,7 +117,7 @@
 
         <!--scripts::chat-->
         <link rel="stylesheet" type="text/css" href="/vue/feature/chat/assets/css/style.css">
-        <script type="module" src="/vue/feature/chat/App.js?${releaseDate!}"></script>
+        <script type="module" src="/vue/feature/chat/ChatApp.js?${releaseDate!}"></script>
     </body>
     <!--end::Body-->
 </html>

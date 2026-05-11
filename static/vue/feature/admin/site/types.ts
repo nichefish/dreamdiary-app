@@ -19,3 +19,27 @@ export type RoleRow = {
     sortOrder: number | null;
     useYn: string;
 };
+
+export type EmbeddingStats = {
+    total: number;
+    pending: number;
+    processing: number;
+    embedded: number;
+    failed: number;
+    skipped: number;
+    remaining: number;
+    completed: number;
+    completionRate: number;
+    vectorizedRate: number;
+};
+
+export type EmbeddingSyncResult = {
+    activeEntryCount: number;
+    activeEmbeddingCountBefore: number;
+    created: number;
+    requeued: number;
+    unchanged: number;
+    skipped: number;
+    removed: number;
+    activeEmbeddingCountAfter: number;
+};

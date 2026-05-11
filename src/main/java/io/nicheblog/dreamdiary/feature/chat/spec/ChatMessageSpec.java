@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * ChatMessageSpec
  * <pre>
- *  채팅 메세지 목록 검색인자 세팅 Specification.
+ *  채팅 메시지 목록 검색 조건을 Criteria Predicate로 변환하는 Specification.
  * </pre>
  *
  * @author nichefish
@@ -49,7 +49,8 @@ public class ChatMessageSpec
      * @param root 검색할 엔티티의 Root 객체
      * @param query - CriteriaQuery 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
-     * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
+     * @return 설정된 검색 조건(Predicate) 리스트
+     * @throws Exception 날짜 변환 등 검색 조건 생성 중 예외가 발생한 경우
      */
     @Override
     public List<Predicate> getPredicateWithParams(
