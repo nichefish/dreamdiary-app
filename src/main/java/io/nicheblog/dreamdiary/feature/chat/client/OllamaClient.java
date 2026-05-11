@@ -16,8 +16,10 @@ import java.util.Locale;
 @Log4j2
 public class OllamaClient {
 
-    private static final String OLLAMA_URL = "http://localhost:11434/api/chat";
-    private static final String MODEL = "qwen2.5:7b";
+    private static final String OLLAMA_CHAT_URL = "http://localhost:11434/api/chat";
+    private static final String OLLAMA_EMBEDDING_URL = "http://localhost:11434/api/embeddings";
+    private static final String CHAT_MODEL = "qwen2.5:7b";
+    private static final String EMBEDDING_MODEL = "nomic-embed-text";
 
     private final RestTemplate restTemplate;
 
@@ -36,7 +38,7 @@ public class OllamaClient {
 
         final OllamaChatRequest request = new OllamaChatRequest();
 
-        request.setModel(MODEL);
+        request.setModel(CHAT_MODEL);
         request.setStream(false);
 
         final List<OllamaChatRequest.Message> messages = new ArrayList<>();
@@ -54,7 +56,7 @@ public class OllamaClient {
 
         final ResponseEntity<OllamaChatResponse> response =
                 restTemplate.exchange(
-                        OLLAMA_URL,
+                        OLLAMA_CHAT_URL,
                         HttpMethod.POST,
                         entity,
                         OllamaChatResponse.class
@@ -70,6 +72,37 @@ public class OllamaClient {
         log.info("Ollama response: {}", content);
 
         return content;
+    }
+
+    public List<Double> embed(final String text) {
+        final OllamaEmbeddingRequest request = new OllamaEmbeddingRequest();
+        request.setModel(EMBEDDING_MODEL);
+        request.setPrompt(text);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        final HttpEntity<OllamaEmbeddingRequest> entity = new HttpEntity<>(request, headers);
+
+        final ResponseEntity<OllamaEmbeddingResponse> response =
+                restTemplate.exchange(
+                        OLLAMA_EMBEDDING_URL,
+                        HttpMethod.POST,
+                        entity,
+                        OllamaEmbeddingResponse.class
+                );
+
+        final OllamaEmbeddingResponse body = response.getBody();
+
+        if (body == null || body.getEmbedding() == null || body.getEmbedding().isEmpty()) {
+            throw new IllegalStateException("Ollama embedding response is empty");
+        }
+
+        return body.getEmbedding();
+    }
+
+    public String getEmbeddingModel() {
+        return EMBEDDING_MODEL;
     }
 
     private String toOllamaRole(final String role) {
