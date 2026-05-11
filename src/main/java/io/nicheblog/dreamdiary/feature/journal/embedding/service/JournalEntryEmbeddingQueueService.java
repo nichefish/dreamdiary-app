@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingStatsDto;
+import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncResultDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.repository.jpa.JournalEntryEmbeddingRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
@@ -29,6 +30,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 저널 엔트리 임베딩 작업 큐의 상태 전이를 담당하는 서비스입니다.
@@ -56,6 +60,13 @@ public class JournalEntryEmbeddingQueueService {
     private final JournalEntryRepository journalEntryRepository;
     private final JournalChapterRepository journalChapterRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private enum SyncAction {
+        CREATED,
+        REQUEUED,
+        UNCHANGED,
+        SKIPPED
+    }
 
     /**
      * 원본 저널 엔트리 ID를 기준으로 임베딩 작업을 생성하거나 갱신한다.
@@ -85,9 +96,8 @@ public class JournalEntryEmbeddingQueueService {
      * @param entry 원본 저널 엔트리 엔티티
      * @throws Exception payload JSON 또는 해시 생성 중 예외가 발생한 경우
      */
-    @Transactional
-    public void queueForEntry(final JournalEntryEntity entry) throws Exception {
-        if (entry == null || entry.getId() == null) return;
+    private SyncAction queueForEntry(final JournalEntryEntity entry) throws Exception {
+        if (entry == null || entry.getId() == null) return SyncAction.UNCHANGED;
 
         final JournalChapterEntity chapter = entry.getJournalChapterId() == null
                 ? null
@@ -100,10 +110,11 @@ public class JournalEntryEmbeddingQueueService {
         final String payloadJson = objectMapper.writeValueAsString(buildPayload(entry, chapter, journalDay, contentKind, retrievalWeight));
         final boolean hasEmbeddableContent = hasEmbeddableContent(entry);
 
-        final JournalEntryEmbeddingEntity entity = repository.findFirstByJournalEntryId(entry.getId())
-                .orElseGet(() -> JournalEntryEmbeddingEntity.builder()
-                        .journalEntryId(entry.getId())
-                        .build());
+        final Optional<JournalEntryEmbeddingEntity> existing = repository.findFirstByJournalEntryId(entry.getId());
+        final boolean exists = existing.isPresent();
+        final JournalEntryEmbeddingEntity entity = existing.orElseGet(() -> JournalEntryEmbeddingEntity.builder()
+                .journalEntryId(entry.getId())
+                .build());
         final boolean hasReusableVector = Objects.equals(entity.getContentHash(), contentHash)
                 && STATUS_EMBEDDED.equals(entity.getEmbeddingStatus())
                 && StringUtils.isNotBlank(entity.getEmbeddingVectorJson());
@@ -124,17 +135,21 @@ public class JournalEntryEmbeddingQueueService {
             entity.setEmbeddingVectorJson(null);
             entity.setEmbeddedAt(null);
             entity.setErrorMessage("title and content are blank");
+            repository.saveAndFlush(entity);
+            return SyncAction.SKIPPED;
         } else if (!hasReusableVector) {
             entity.setEmbeddingStatus(STATUS_PENDING);
             entity.setEmbeddingModel(null);
             entity.setEmbeddingVectorJson(null);
             entity.setEmbeddedAt(null);
             entity.setErrorMessage(null);
+            repository.saveAndFlush(entity);
+            return exists ? SyncAction.REQUEUED : SyncAction.CREATED;
         } else {
             entity.setErrorMessage(null);
+            repository.saveAndFlush(entity);
+            return SyncAction.UNCHANGED;
         }
-
-        repository.saveAndFlush(entity);
     }
 
     /**
@@ -148,6 +163,60 @@ public class JournalEntryEmbeddingQueueService {
 
         repository.findFirstByJournalEntryId(journalEntryId)
                 .ifPresent(repository::delete);
+    }
+
+    /**
+     * 현재 활성 저널 엔트리를 기준으로 임베딩 작업 테이블을 재동기화한다.
+     *
+     * <p>누락된 임베딩 작업은 생성하고, 원본이 사라진 활성 임베딩 작업은 제거하며,
+     * 본문 해시가 달라진 작업은 다시 {@code PENDING} 상태로 돌린다.</p>
+     *
+     * @return 동기화 처리 결과
+     * @throws Exception 임베딩 작업 구성 중 예외가 발생한 경우
+     */
+    @Transactional
+    public JournalEntryEmbeddingSyncResultDto syncWithJournalEntries() throws Exception {
+        final List<JournalEntryEntity> entryList = journalEntryRepository.findAll();
+        final List<JournalEntryEmbeddingEntity> embeddingListBefore = repository.findAll();
+        final Set<Integer> activeEntryIdSet = entryList.stream()
+                .map(JournalEntryEntity::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        long removed = 0L;
+        for (final JournalEntryEmbeddingEntity embedding : embeddingListBefore) {
+            if (!activeEntryIdSet.contains(embedding.getJournalEntryId())) {
+                repository.delete(embedding);
+                removed++;
+            }
+        }
+        repository.flush();
+
+        long created = 0L;
+        long requeued = 0L;
+        long unchanged = 0L;
+        long skipped = 0L;
+        for (final JournalEntryEntity entry : entryList) {
+            final SyncAction action = queueForEntry(entry);
+            switch (action) {
+                case CREATED -> created++;
+                case REQUEUED -> requeued++;
+                case SKIPPED -> skipped++;
+                case UNCHANGED -> unchanged++;
+                default -> unchanged++;
+            }
+        }
+
+        return JournalEntryEmbeddingSyncResultDto.builder()
+                .activeEntryCount(entryList.size())
+                .activeEmbeddingCountBefore(embeddingListBefore.size())
+                .created(created)
+                .requeued(requeued)
+                .unchanged(unchanged)
+                .skipped(skipped)
+                .removed(removed)
+                .activeEmbeddingCountAfter(repository.count())
+                .build();
     }
 
     /**
