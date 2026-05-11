@@ -61,6 +61,9 @@ export default {
         }
     },
     methods: {
+        cancelMessage(): void {
+            this.$emit('cancel-message');
+        },
         sendMessage(): void {
             if (this.isWaitingResponse) return;
             if (!this.message.trim()) return;
@@ -291,13 +294,13 @@ export default {
                     </div>
                     <button :class="['chat-send-btn', { 'chat-send-btn--waiting': isWaitingResponse }]"
                             type="button"
-                            @click="sendMessage"
-                            :disabled="isWaitingResponse || !message.trim()">
+                            @click="isWaitingResponse ? cancelMessage() : sendMessage()"
+                            :disabled="!isWaitingResponse && !message.trim()">
                         <i class="ki-duotone ki-send fs-2">
                             <span class="path1"></span>
                             <span class="path2"></span>
                         </i>
-                        <span>{{ isWaitingResponse ? '응답 중' : '전송' }}</span>
+                        <span>{{ isWaitingResponse ? '중단' : '전송' }}</span>
                     </button>
                 </div>
             </div>

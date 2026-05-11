@@ -15,6 +15,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ChatAIService
@@ -41,6 +44,9 @@ public class ChatAIService {
     private final JournalEntryEmbeddingSearchService embeddingSearchService;
     private final SimpMessagingTemplate messagingTemplate;
 
+    /** 세션별 응답 취소 플래그 */
+    private final Map<Integer, AtomicBoolean> cancelFlags = new ConcurrentHashMap<>();
+
     /**
      * 사용자 메시지를 저장한 뒤 최근 대화 맥락을 포함해 AI 응답을 생성하고 세션 구독자에게 전송한다.
      *
@@ -49,6 +55,8 @@ public class ChatAIService {
      * @throws Exception 세션 검증, 메시지 저장, AI 호출 중 예외가 발생한 경우
      */
     public void processChat(final Integer sessionId, final String message) throws Exception {
+        cancelFlags.computeIfAbsent(sessionId, k -> new AtomicBoolean(false)).set(false);
+
         final ChatSessionEntity session = chatSessionService.getMySessionEntity(sessionId);
 
         // 1. 사용자 메시지 저장
@@ -77,10 +85,19 @@ public class ChatAIService {
                 StringUtils.defaultIfBlank(session.getSystemPrompt(), chatSessionService.getDefaultSystemPrompt()),
                 ragContext
         );
-        final String aiResponse = ollamaClient.chat(
+        final String rawResponse = ollamaClient.chat(
                         systemPrompt,
                         chatMessageService.getRecentContextMessages(sessionId, recentMessageLimit)
                 );
+
+        // 취소 요청이 들어왔으면 저장/broadcast 없이 종료
+        if (isCancelled(sessionId)) {
+            log.info("AI response cancelled. sessionId={}", sessionId);
+            cancelFlags.remove(sessionId);
+            return;
+        }
+
+        final String aiResponse = stripMarkdownBold(rawResponse);
 
         // 4. AI 메시지 저장
         final ChatMessageDto aiMessage = ChatMessageDto.builder()
@@ -101,6 +118,30 @@ public class ChatAIService {
                         MessageUtils.RSLT_SUCCESS
                 )
         );
+
+        cancelFlags.remove(sessionId);
+    }
+
+    /**
+     * 세션의 AI 응답 생성을 취소 요청한다.
+     *
+     * <p>Ollama 호출이 완료되기 전에 플래그를 세팅하면,
+     * 응답이 도착해도 저장과 broadcast를 건너뛴다.</p>
+     *
+     * @param sessionId 취소할 채팅 세션 ID
+     */
+    public void cancelChat(final Integer sessionId) {
+        if (sessionId == null) return;
+        cancelFlags.computeIfAbsent(sessionId, k -> new AtomicBoolean(false)).set(true);
+        log.info("AI response cancel requested. sessionId={}", sessionId);
+    }
+
+    /**
+     * 취소 플래그가 세팅되어 있는지 확인한다.
+     */
+    private boolean isCancelled(final Integer sessionId) {
+        final AtomicBoolean flag = cancelFlags.get(sessionId);
+        return flag != null && flag.get();
     }
 
     /**
@@ -142,5 +183,17 @@ public class ChatAIService {
                 + "\n\n## 참고할 저널 기록\n"
                 + "아래는 현재 질문과 관련성이 높은 나의 저널 기록입니다. 답변 시 참고하세요.\n\n"
                 + ragContext;
+    }
+
+    /**
+     * AI 응답에서 마크다운 굵은글씨 기호(**text**, __text__)를 제거합니다.
+     *
+     * @param text 원본 AI 응답 텍스트
+     * @return 굵은글씨 기호가 제거된 텍스트
+     */
+    private String stripMarkdownBold(final String text) {
+        if (text == null) return null;
+        return text.replaceAll("\\*\\*(.+?)\\*\\*", "$1")
+                   .replaceAll("__(.+?)__", "$1");
     }
 }
