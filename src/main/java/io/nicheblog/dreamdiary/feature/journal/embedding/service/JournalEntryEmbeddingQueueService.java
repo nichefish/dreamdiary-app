@@ -230,10 +230,7 @@ public class JournalEntryEmbeddingQueueService {
     @Transactional
     public List<JournalEntryEmbeddingEntity> claimPendingBatch(final Integer batchSize) {
         final int normalizedBatchSize = normalizeBatchSize(batchSize);
-        final List<JournalEntryEmbeddingEntity> entityList = repository.findAllByEmbeddingStatusOrderByCreatedAtAscIdAsc(
-                STATUS_PENDING,
-                PageRequest.of(0, normalizedBatchSize)
-        );
+        final List<JournalEntryEmbeddingEntity> entityList = repository.findAndLockPendingBatch(normalizedBatchSize);
 
         entityList.forEach(entity -> {
             entity.setEmbeddingStatus(STATUS_PROCESSING);
