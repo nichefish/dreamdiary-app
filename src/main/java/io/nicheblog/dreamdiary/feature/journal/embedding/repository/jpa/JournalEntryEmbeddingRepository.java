@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 저널 엔트리 임베딩 작업 큐를 조회하고 저장하는 JPA Repository 인터페이스입니다.
@@ -14,6 +15,14 @@ import java.util.List;
 @Repository
 public interface JournalEntryEmbeddingRepository
         extends BaseStreamRepository<JournalEntryEmbeddingEntity, Integer> {
+
+    /**
+     * 원본 저널 엔트리 ID에 해당하는 활성 임베딩 작업을 조회한다.
+     *
+     * @param journalEntryId 원본 저널 엔트리 ID
+     * @return 활성 임베딩 작업 엔티티
+     */
+    Optional<JournalEntryEmbeddingEntity> findFirstByJournalEntryId(Integer journalEntryId);
 
     /**
      * 지정한 처리 상태의 임베딩 작업을 생성 순서대로 조회한다.
