@@ -32,3 +32,14 @@ export type EmbeddingStats = {
     completionRate: number;
     vectorizedRate: number;
 };
+
+export type EmbeddingSyncResult = {
+    activeEntryCount: number;
+    activeEmbeddingCountBefore: number;
+    created: number;
+    requeued: number;
+    unchanged: number;
+    skipped: number;
+    removed: number;
+    activeEmbeddingCountAfter: number;
+};

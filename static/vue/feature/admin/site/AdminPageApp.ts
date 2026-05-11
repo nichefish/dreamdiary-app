@@ -6,7 +6,7 @@
 import AdminRoleTable from "./components/AdminRoleTable.js";
 import adminPageDataService, { createEmptyEmbeddingStats } from "./services/adminPageDataService.js";
 import createAdminPageActions from "./services/adminPageActionService.js";
-import { AdminPageMeta, EmbeddingStats, RoleRow } from "./types.js";
+import { AdminPageMeta, EmbeddingStats, EmbeddingSyncResult, RoleRow } from "./types.js";
 import codeAdminUiService from "../code/services/codeAdminUiService.js";
 import { createScopedI18n } from "../../../global/services/scopedI18nService.js";
 
@@ -20,6 +20,9 @@ type AdminPageState = {
     embeddingStatsLoading: boolean;
     embeddingStatsError: string;
     embeddingStatsTimer: number | null;
+    embeddingSyncRunning: boolean;
+    embeddingSyncMessage: string;
+    embeddingSyncResult: EmbeddingSyncResult | null;
 };
 
 const state = Vue.reactive({
@@ -37,6 +40,9 @@ const state = Vue.reactive({
     embeddingStatsLoading: false,
     embeddingStatsError: "",
     embeddingStatsTimer: null,
+    embeddingSyncRunning: false,
+    embeddingSyncMessage: "",
+    embeddingSyncResult: null,
 }) as AdminPageState;
 const i18n = createScopedI18n();
 
@@ -94,6 +100,31 @@ const AdminPageRoot = {
                 this.state.embeddingStatsError = e instanceof Error ? e.message : "Embedding stats request failed";
             } finally {
                 this.state.embeddingStatsLoading = false;
+            }
+        },
+        formatEmbeddingSyncResult(result: EmbeddingSyncResult): string {
+            return [
+                `entries ${this.formatNumber(result.activeEntryCount)}`,
+                `created ${this.formatNumber(result.created)}`,
+                `requeued ${this.formatNumber(result.requeued)}`,
+                `unchanged ${this.formatNumber(result.unchanged)}`,
+                `skipped ${this.formatNumber(result.skipped)}`,
+                `removed ${this.formatNumber(result.removed)}`,
+            ].join(" · ");
+        },
+        async syncEmbeddingQueue(): Promise<void> {
+            this.state.embeddingSyncRunning = true;
+            this.state.embeddingStatsError = "";
+            this.state.embeddingSyncMessage = "";
+            try {
+                const result = await adminPageDataService.syncEmbeddingQueue();
+                this.state.embeddingSyncResult = result;
+                this.state.embeddingSyncMessage = this.formatEmbeddingSyncResult(result);
+                await this.refreshEmbeddingStats();
+            } catch (e) {
+                this.state.embeddingStatsError = e instanceof Error ? e.message : "Embedding sync request failed";
+            } finally {
+                this.state.embeddingSyncRunning = false;
             }
         },
         onHolydayRun(): void {
@@ -203,14 +234,25 @@ const AdminPageRoot = {
                                 <div class="fs-6 fw-bold">AI Embedding Backfill</div>
                                 <div class="text-muted fs-8">Auto refresh every 30 seconds</div>
                             </div>
-                            <button type="button" class="btn btn-sm btn-light-primary"
-                                    :disabled="state.embeddingStatsLoading"
-                                    @click="refreshEmbeddingStats">
-                                Refresh
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-light-primary"
+                                        :disabled="state.embeddingStatsLoading || state.embeddingSyncRunning"
+                                        @click="refreshEmbeddingStats">
+                                    Refresh
+                                </button>
+                                <button type="button" class="btn btn-sm btn-primary"
+                                        :disabled="state.embeddingStatsLoading || state.embeddingSyncRunning"
+                                        @click="syncEmbeddingQueue">
+                                    <span v-if="state.embeddingSyncRunning" class="spinner-border spinner-border-sm me-1"></span>
+                                    Sync Entries
+                                </button>
+                            </div>
                         </div>
                         <div v-if="state.embeddingStatsError" class="alert alert-warning py-2 mb-3">
                             {{ state.embeddingStatsError }}
+                        </div>
+                        <div v-if="state.embeddingSyncMessage" class="alert alert-success py-2 mb-3">
+                            {{ state.embeddingSyncMessage }}
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-6 col-md-3">

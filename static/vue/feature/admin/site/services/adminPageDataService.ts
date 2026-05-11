@@ -1,4 +1,4 @@
-import { AdminPageMeta, EmbeddingStats, RoleRow } from "../types.js";
+import { AdminPageMeta, EmbeddingStats, EmbeddingSyncResult, RoleRow } from "../types.js";
 
 const DEFAULT_META: AdminPageMeta = {
     authMngrKey: "MNGR",
@@ -49,6 +49,24 @@ export default {
 
         return normalizeEmbeddingStats(payload.rsltObj as Partial<EmbeddingStats>);
     },
+
+    async syncEmbeddingQueue(): Promise<EmbeddingSyncResult> {
+        const urlMap = globalThis as { Url?: { ADMIN_JOURNAL_ENTRY_EMBEDDING_SYNC?: string } };
+        const url = urlMap.Url?.ADMIN_JOURNAL_ENTRY_EMBEDDING_SYNC || "/api/admin/journal-entry-embeddings/sync";
+        const response = await fetch(url, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Accept": "application/json",
+            },
+        });
+        if (!response.ok) throw new Error(`Embedding sync request failed: ${response.status}`);
+
+        const payload = await response.json() as AjaxResponse;
+        if (!payload.rslt) throw new Error(payload.message || "Embedding sync request failed");
+
+        return normalizeEmbeddingSyncResult(payload.rsltObj as Partial<EmbeddingSyncResult>);
+    },
 };
 
 export function createEmptyEmbeddingStats(): EmbeddingStats {
@@ -67,5 +85,18 @@ function normalizeEmbeddingStats(stats: Partial<EmbeddingStats> | null | undefin
         completed: Number(stats?.completed || 0),
         completionRate: Number(stats?.completionRate || 0),
         vectorizedRate: Number(stats?.vectorizedRate || 0),
+    };
+}
+
+function normalizeEmbeddingSyncResult(result: Partial<EmbeddingSyncResult> | null | undefined): EmbeddingSyncResult {
+    return {
+        activeEntryCount: Number(result?.activeEntryCount || 0),
+        activeEmbeddingCountBefore: Number(result?.activeEmbeddingCountBefore || 0),
+        created: Number(result?.created || 0),
+        requeued: Number(result?.requeued || 0),
+        unchanged: Number(result?.unchanged || 0),
+        skipped: Number(result?.skipped || 0),
+        removed: Number(result?.removed || 0),
+        activeEmbeddingCountAfter: Number(result?.activeEmbeddingCountAfter || 0),
     };
 }
