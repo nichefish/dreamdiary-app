@@ -270,30 +270,31 @@ CREATE TABLE IF NOT EXISTS journal_annual_review (
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 연간 리뷰';
 
--- Journal entry embedding work table
+-- 저널 엔트리 임베딩 작업 테이블
+-- journal_entry 기준으로 임베딩 대상 텍스트, 검색용 메타데이터, 생성된 벡터를 보관한다.
 -- @extends: BaseAuditEntity
 CREATE TABLE IF NOT EXISTS journal_entry_embedding (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'embedding id',
-    journal_entry_id INT NOT NULL COMMENT 'journal_entry.id',
-    content_type VARCHAR(50) NOT NULL COMMENT 'journal entry content type',
-    content_kind VARCHAR(20) NOT NULL COMMENT 'DIARY | DREAM | NOTE | UNKNOWN',
-    journal_date DATE COMMENT 'journal date',
-    journal_date_precision VARCHAR(20) COMMENT 'journal date precision',
-    retrieval_weight DECIMAL(5,2) DEFAULT 1.00 COMMENT 'retrieval score multiplier',
-    embedding_status VARCHAR(20) DEFAULT 'PENDING' COMMENT 'PENDING | PROCESSING | EMBEDDED | FAILED | SKIPPED',
-    embedding_model VARCHAR(100) COMMENT 'embedding model',
-    embedding_text LONGTEXT COMMENT 'actual text sent to embedding model',
-    embedding_payload_json LONGTEXT COMMENT 'structured embedding metadata JSON',
-    embedding_vector_json LONGTEXT COMMENT 'embedding vector JSON payload',
-    content_hash VARCHAR(64) COMMENT 'SHA-256 hash of embedding_text',
-    embedded_at DATETIME COMMENT 'embedded at',
-    error_message LONGTEXT COMMENT 'embedding error message',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '임베딩 작업 ID',
+    journal_entry_id INT NOT NULL COMMENT '원본 journal_entry ID',
+    content_type VARCHAR(50) NOT NULL COMMENT '원본 컨텐츠 타입. JOURNAL_DIARY, JOURNAL_DREAM, JOURNAL_NOTE 등',
+    content_kind VARCHAR(20) NOT NULL COMMENT '검색 가중치 분류. DIARY, DREAM, NOTE, UNKNOWN',
+    journal_date DATE COMMENT '저널 기준 일자. 검색에서 의미상 시점으로 사용',
+    journal_date_precision VARCHAR(20) COMMENT '저널 일자 정밀도. DAY, MONTH, YEAR, UNKNOWN 등',
+    retrieval_weight DECIMAL(5,2) DEFAULT 1.00 COMMENT '검색 결과 랭킹에 곱할 타입별 가중치',
+    embedding_status VARCHAR(20) DEFAULT 'PENDING' COMMENT '임베딩 처리 상태. PENDING, PROCESSING, EMBEDDED, FAILED, SKIPPED',
+    embedding_model VARCHAR(100) COMMENT '벡터를 생성한 임베딩 모델명',
+    embedding_text LONGTEXT COMMENT '임베딩 모델에 실제로 전달하는 정규화된 텍스트',
+    embedding_payload_json LONGTEXT COMMENT '검색/스코어링/디버깅에 사용하는 구조화 메타데이터 JSON',
+    embedding_vector_json LONGTEXT COMMENT '임베딩 모델이 생성한 벡터 JSON 배열',
+    content_hash VARCHAR(64) COMMENT 'embedding_text 기준 SHA-256 해시. 변경 감지 및 재임베딩 판단용',
+    embedded_at DATETIME COMMENT '벡터 생성 완료 일시',
+    error_message LONGTEXT COMMENT '임베딩 실패 또는 스킵 사유',
     -- AUDIT
-    created_by VARCHAR(20) COMMENT 'created by',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'semantic created at',
-    updated_by VARCHAR(20) COMMENT 'updated by',
-    updated_at DATETIME COMMENT 'updated at',
-    deleted_at DATETIME COMMENT 'deleted at',
+    created_by VARCHAR(20) COMMENT '원본 작성자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '의미상 생성 일시. journal_date 를 우선 반영',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정 일시',
+    deleted_at DATETIME COMMENT '삭제 일시. NULL이면 활성 데이터',
     -- CONSTRAINT
     UNIQUE KEY uk_journal_entry_embedding_entry (journal_entry_id),
     INDEX idx_journal_entry_embedding_status (embedding_status),
@@ -303,4 +304,4 @@ CREATE TABLE IF NOT EXISTS journal_entry_embedding (
     INDEX idx_journal_entry_embedding_created_by (created_by),
     INDEX idx_journal_entry_embedding_content_hash (content_hash),
     INDEX idx_journal_entry_embedding_deleted_at (deleted_at)
-) COMMENT = 'journal entry embedding work table';
+) COMMENT = '저널 엔트리 임베딩 작업 테이블';

@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * 로컬 Ollama 서버와 통신하는 채팅/임베딩 클라이언트입니다.
+ *
+ * <p>애플리케이션 내부의 채팅 메시지 표현을 Ollama API payload로 변환하고,
+ * 채팅 응답과 임베딩 벡터를 호출자에게 단순한 값으로 돌려줍니다.</p>
+ */
 @Component
 @RequiredArgsConstructor
 @Log4j2
@@ -23,10 +29,20 @@ public class OllamaClient {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * 기본 {@link RestTemplate} 인스턴스로 Ollama 클라이언트를 생성합니다.
+     */
     public OllamaClient() {
         this.restTemplate = new RestTemplate();
     }
 
+    /**
+     * 시스템 프롬프트와 단일 사용자 메시지로 AI 응답을 생성합니다.
+     *
+     * @param systemPrompt AI에게 적용할 시스템 지시문
+     * @param userMessage 사용자 입력 메시지
+     * @return Ollama가 생성한 assistant 응답 본문
+     */
     public String chat(final String systemPrompt, final String userMessage) {
         return this.chat(systemPrompt, List.of(ChatMessageDto.builder()
                 .role("USER")
@@ -34,6 +50,14 @@ public class OllamaClient {
                 .build()));
     }
 
+    /**
+     * 시스템 프롬프트와 대화 맥락을 Ollama chat API에 전달해 AI 응답을 생성합니다.
+     *
+     * @param systemPrompt AI에게 적용할 시스템 지시문
+     * @param contextMessages 최근 대화 맥락과 현재 사용자 메시지 목록
+     * @return Ollama가 생성한 assistant 응답 본문
+     * @throws IllegalStateException Ollama 응답 본문이 비어 있을 때
+     */
     public String chat(final String systemPrompt, final List<ChatMessageDto> contextMessages) {
 
         final OllamaChatRequest request = new OllamaChatRequest();
@@ -74,6 +98,13 @@ public class OllamaClient {
         return content;
     }
 
+    /**
+     * 입력 텍스트를 임베딩 모델로 벡터화합니다.
+     *
+     * @param text 벡터로 변환할 텍스트
+     * @return Ollama가 반환한 임베딩 벡터
+     * @throws IllegalStateException Ollama 임베딩 응답이 비어 있을 때
+     */
     public List<Double> embed(final String text) {
         final OllamaEmbeddingRequest request = new OllamaEmbeddingRequest();
         request.setModel(EMBEDDING_MODEL);
@@ -101,10 +132,21 @@ public class OllamaClient {
         return body.getEmbedding();
     }
 
+    /**
+     * 현재 임베딩 생성에 사용하는 Ollama 모델명을 반환합니다.
+     *
+     * @return 임베딩 모델명
+     */
     public String getEmbeddingModel() {
         return EMBEDDING_MODEL;
     }
 
+    /**
+     * 애플리케이션 내부 역할명을 Ollama chat API 역할명으로 정규화합니다.
+     *
+     * @param role 애플리케이션 내부 메시지 역할명
+     * @return Ollama API가 인식하는 역할명
+     */
     private String toOllamaRole(final String role) {
         if (role == null) return "user";
 

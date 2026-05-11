@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 /**
  * ChatSessionDto
  * <pre>
- *  AI 채팅 세션 Dto.
+ *  AI 채팅 세션 목록과 상세 응답에 사용하는 DTO.
  * </pre>
  *
  * @author nichefish
@@ -43,6 +43,11 @@ public class ChatSessionDto
 
     /* ----- */
 
+    /**
+     * 공통 식별자 인터페이스에서 사용할 세션 ID를 반환한다.
+     *
+     * @return 채팅 세션 ID
+     */
     @Override
     public Integer getKey() {
         return this.id;

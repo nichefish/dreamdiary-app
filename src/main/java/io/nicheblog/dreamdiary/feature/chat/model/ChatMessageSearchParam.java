@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * ChatMessageSearchParam
  * <pre>
- *  채팅 메세지 목록 검색 파라미터.
+ *  채팅 메시지 목록 조회 조건을 담는 검색 파라미터.
  * </pre>
  *
  * @author nichefish

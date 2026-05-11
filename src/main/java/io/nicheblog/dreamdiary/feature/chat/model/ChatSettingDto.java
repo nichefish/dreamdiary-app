@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 /**
  * ChatSettingDto
  * <pre>
- *  AI 채팅 설정 Dto.
+ *  사용자별 또는 관리자 기본 채팅 설정 응답에 사용하는 DTO.
  * </pre>
  *
  * @author nichefish
@@ -38,6 +38,11 @@ public class ChatSettingDto
 
     /* ----- */
 
+    /**
+     * 공통 식별자 인터페이스에서 사용할 설정 ID를 반환한다.
+     *
+     * @return 채팅 설정 ID
+     */
     @Override
     public Integer getKey() {
         return this.id;

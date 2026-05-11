@@ -28,7 +28,7 @@ import java.util.Objects;
 /**
  * ChatController
  * <pre>
- *  채팅 관련 컨트롤러.
+ *  채팅 설정, 세션, 메시지 조회와 WebSocket 메시지 전송을 담당하는 컨트롤러.
  * </pre>
  *
  * @author nichefish
@@ -45,6 +45,8 @@ public class ChatController {
 
     /**
      * 내 채팅 설정을 조회한다.
+     *
+     * @return 로그인 사용자의 채팅 설정을 담은 Ajax 응답
      */
     @GetMapping("/chat/settings")
     @ResponseBody
@@ -56,6 +58,9 @@ public class ChatController {
 
     /**
      * 내 채팅 설정을 수정한다.
+     *
+     * @param settingDto 변경할 사용자 채팅 설정
+     * @return 저장된 사용자 채팅 설정을 담은 Ajax 응답
      */
     @PatchMapping("/chat/settings")
     @ResponseBody
@@ -69,6 +74,8 @@ public class ChatController {
 
     /**
      * 관리자 채팅 기본 설정을 조회한다.
+     *
+     * @return 전역 기본 채팅 설정을 담은 Ajax 응답
      */
     @GetMapping("/admin/chat/settings")
     @ResponseBody
@@ -80,6 +87,9 @@ public class ChatController {
 
     /**
      * 관리자 채팅 기본 설정을 수정한다.
+     *
+     * @param settingDto 변경할 전역 기본 채팅 설정
+     * @return 저장된 전역 기본 채팅 설정을 담은 Ajax 응답
      */
     @PatchMapping("/admin/chat/settings")
     @ResponseBody
@@ -93,6 +103,8 @@ public class ChatController {
 
     /**
      * 내 채팅 세션 목록을 조회한다.
+     *
+     * @return 로그인 사용자의 채팅 세션 목록을 담은 Ajax 응답
      */
     @GetMapping("/chat/sessions")
     @ResponseBody
@@ -104,6 +116,9 @@ public class ChatController {
 
     /**
      * 새 채팅 세션을 생성한다.
+     *
+     * @param sessionDto 생성 시 적용할 세션 제목, 모델, 시스템 프롬프트
+     * @return 생성된 채팅 세션을 담은 Ajax 응답
      */
     @PostMapping("/chat/sessions")
     @ResponseBody
@@ -117,6 +132,9 @@ public class ChatController {
 
     /**
      * 채팅 세션을 삭제한다.
+     *
+     * @param sessionId 삭제할 채팅 세션 ID
+     * @return 삭제 처리 결과 Ajax 응답
      */
     @DeleteMapping("/chat/sessions/{sessionId}")
     @ResponseBody
@@ -133,6 +151,7 @@ public class ChatController {
      *
      * @param searchParam 검색 파라미터
      * @return AjaxResponse를 포함한 ResponseEntity 객체
+     * @throws Exception 메시지 조회 중 예외가 발생한 경우
      */
     @GetMapping("/chat/messages")
     @ResponseBody
@@ -152,6 +171,7 @@ public class ChatController {
      *
      * @param sessionId 채팅 세션 ID
      * @return AjaxResponse를 포함한 ResponseEntity 객체
+     * @throws Exception 메시지 조회 중 예외가 발생한 경우
      */
     @GetMapping("/chat/sessions/{sessionId}/messages")
     @ResponseBody
@@ -166,9 +186,12 @@ public class ChatController {
     }
 
     /**
-     * 클라이언트로부터 메시지를 받아서 처리하고, 결과를 반환합니다.
+     * 클라이언트로부터 WebSocket 메시지를 받아 사용자/AI 메시지 저장과 브로드캐스트를 처리한다.
      *
+     * @param sessionId 메시지를 보낼 채팅 세션 ID
      * @param message 클라이언트로부터 받은 메시지
+     * @param stompHeaderAccessor WebSocket 세션 인증 정보를 담은 STOMP 헤더 접근자
+     * @throws Exception 메시지 저장 또는 AI 응답 생성 중 예외가 발생한 경우
      */
     @MessageMapping("/chat/session/{sessionId}/send")
     public void sendMessage(

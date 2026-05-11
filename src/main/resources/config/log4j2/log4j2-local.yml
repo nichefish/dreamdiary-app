@@ -11,7 +11,7 @@ Configuration:
     Properties:
         Property:
             - name: log-path
-              value: "log"
+              value: "logs"
             - name: log-format
               value: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %X{traceId} %X{reqMethod} %X{reqUri} %c{1}.%M(%L) - %msg%n"
 
