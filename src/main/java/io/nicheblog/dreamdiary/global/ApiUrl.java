@@ -169,6 +169,10 @@ public interface ApiUrl {
     String LOG = Prefix.API + "/logs/{id}";
     String LOG_LIST_XLSX_DOWNLOAD = Prefix.API + "/log/list-xlsx-download.do";
 
+    /** AI 임베딩 관리 */
+    String ADMIN_JOURNAL_ENTRY_EMBEDDING_STATS = Prefix.API + "/admin/journal-entry-embeddings/stats";
+    String ADMIN_JOURNAL_ENTRY_EMBEDDING_SYNC = Prefix.API + "/admin/journal-entry-embeddings/sync";
+
     /** (공통) 파일 */
     String FILE_DOWNLOAD_CHK_AJAX = Prefix.API + "/file/file-download-chk";
     String FILE_INFO_LIST_AJAX = Prefix.API + "/file/file-account-list";

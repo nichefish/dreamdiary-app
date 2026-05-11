@@ -1,5 +1,28 @@
 # CHANGELOG
 
+### 2026-05-12 | v0.20.0
+- 신규 기능
+  - 채팅(`chat`) 기능에 로컬 LLM(Ollama) 연동.
+    - 채팅 세션(`chat-session`) 추가. 세션별 독립 대화 맥락 유지.
+    - 채팅 설정(`chat-settings`) 추가. 사용자/관리자별 모델·시스템 프롬프트·컨텍스트 메시지 수 설정.
+    - WebSocket(STOMP) 기반 실시간 메시지 수신.
+    - AI 응답 중단(취소) 버튼 추가. WebSocket 취소 신호 → 서버 `AtomicBoolean` 플래그 처리.
+  - 저널 임베딩(`journal-entry-embedding`) 파이프라인 추가.
+    - 저널 엔트리 등록·수정·삭제·히스토리 복원 시 임베딩 작업 큐 자동 등록.
+    - Ollama `nomic-embed-text` 모델로 768차원 벡터 생성, DB(`LONGTEXT`) 저장.
+    - 서버 기동 시 `@PostConstruct`로 전체 EMBEDDED 벡터를 인메모리 캐시(`ConcurrentHashMap`)에 로드.
+    - 엔트리 임베딩 완료 후 캐시 실시간 갱신(`refreshEntry`), 삭제 시 캐시 제거(`removeEntry`).
+  - RAG(Retrieval-Augmented Generation) 구현.
+    - 사용자 질문을 임베딩 → 코사인 유사도 계산 → 상위 K개 저널 기록을 시스템 프롬프트에 주입.
+    - 컨텐츠 종류별 검색 가중치 적용 (DREAM 1.3 / DIARY 1.0 / NOTE 0.85).
+- 개선 사항
+  - AI 응답 마크다운 제거.
+    - 기본 시스템 프롬프트에 마크다운 사용 금지 지시 추가.
+    - 서버사이드 `stripMarkdown()` 처리: 코드블록·인라인코드·제목(`##`)·굵은글씨·기울임·목록 기호·인용문·수평선 제거.
+  - 임베딩 다중 인스턴스 중복 처리 방지.
+    - `claimPendingBatch()`에 `FOR UPDATE SKIP LOCKED` 네이티브 쿼리 적용(MariaDB 10.6+).
+    - 인스턴스가 여러 개 뜨더라도 각 행은 정확히 한 번만 처리됨.
+
 ### 2026-05-10 | v0.19.0
 - 개선 사항
   - journal-sbjct → journal-thread 명칭 변경.

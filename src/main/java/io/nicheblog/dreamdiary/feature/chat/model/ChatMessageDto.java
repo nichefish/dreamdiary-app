@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 /**
  * ChatMessageDto
  * <pre>
- *  채팅 메세지 Dto.
+ *  화면과 WebSocket 응답에서 사용하는 채팅 메시지 DTO.
  * </pre>
  *
  * @author nichefish
@@ -34,7 +34,7 @@ public class ChatMessageDto
     @Builder.Default
     private String contentType = CONTENT_TYPE.key;
 
-    /** 내 메세지(등록자) 여부 */
+    /** 내 메시지(등록자) 여부 */
     private Boolean isCreatedBy;
 
     /** 제목 */
@@ -49,8 +49,26 @@ public class ChatMessageDto
     /** 글 분류 코드 */
     private String categoryCode;
 
+    /** 메시지 역할 */
+    @Builder.Default
+    private String role = "USER";
+
+    /** 채팅 세션 ID */
+    private Integer sessionId;
+
+    /** 세션 내 메시지 순번 */
+    private Integer seq;
+
+    /** 메시지 메타데이터 */
+    private String metadataJson;
+
     /* ----- */
 
+    /**
+     * 공통 식별자 인터페이스에서 사용할 메시지 ID를 반환한다.
+     *
+     * @return 채팅 메시지 ID
+     */
     @Override
     public Integer getKey() {
         return this.id;

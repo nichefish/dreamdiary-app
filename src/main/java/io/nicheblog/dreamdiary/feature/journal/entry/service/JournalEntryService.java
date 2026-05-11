@@ -28,6 +28,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypeResolver;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.feature.journal.entry.spec.JournalEntrySpec;
+import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -66,6 +67,7 @@ public class JournalEntryService
     private final JournalEntryOrderService journalEntryOrderService;
     private final JournalEntryPolicyResolver policyResolver;
     private final JournalEntryTypeResolver typeResolver;
+    private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
 
     /**
      * ref(id + contentType) 기반으로 엔트리를 안전 조회한다.
@@ -345,6 +347,7 @@ public class JournalEntryService
     @Override
     public void postRegist(final JournalEntryDto updatedDto) throws Exception {
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), policyResolver.resolve(updatedDto).contentType);
+        journalEntryEmbeddingQueueService.queueForEntryId(updatedDto.getKey());
     }
 
     /**
@@ -397,6 +400,7 @@ public class JournalEntryService
         journalEntryOrderService.normalizeSortOrder(deletedDto.getJournalChapterId(), policy.contentType, DTL_CACHE_NAME);
         relatedContentService.deleteAllByRef(new BaseAttachableKey(deletedDto.getKey(), policy.contentType), deletedDto.getCreatedBy());
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), policy.contentType);
+        journalEntryEmbeddingQueueService.removeByJournalEntryId(deletedDto.getKey());
     }
 
     /**
@@ -466,6 +470,7 @@ public class JournalEntryService
             );
         }
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(postDto, updatedDto), contentType);
+        journalEntryEmbeddingQueueService.queueForEntryId(updatedDto.getKey());
     }
 
     /**
@@ -502,6 +507,7 @@ public class JournalEntryService
 
         final JournalEntryDto updatedDto = mapstruct.toDto(updatedEntity);
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), policy.contentType);
+        journalEntryEmbeddingQueueService.queueForEntryId(updatedDto.getKey());
         return updatedDto;
     }
 
