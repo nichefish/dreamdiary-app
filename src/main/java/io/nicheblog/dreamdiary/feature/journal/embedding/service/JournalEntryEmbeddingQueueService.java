@@ -57,6 +57,7 @@ public class JournalEntryEmbeddingQueueService {
 
     @Getter
     private final JournalEntryEmbeddingRepository repository;
+    private final JournalEntryEmbeddingSearchService searchService;
     private final JournalEntryRepository journalEntryRepository;
     private final JournalChapterRepository journalChapterRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -163,6 +164,7 @@ public class JournalEntryEmbeddingQueueService {
 
         repository.findFirstByJournalEntryId(journalEntryId)
                 .ifPresent(repository::delete);
+        searchService.removeEntry(journalEntryId);
     }
 
     /**
