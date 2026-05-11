@@ -33,7 +33,7 @@ public class ChatSessionService {
 
     private static final String DEFAULT_TITLE = "새 대화";
     private static final String DEFAULT_MODEL = "qwen2.5:7b";
-    private static final String DEFAULT_SYSTEM_PROMPT = "너는 Dreamdiary assistant다. 사용자의 기록과 생각 정리를 돕는다.";
+    private static final String DEFAULT_SYSTEM_PROMPT = "너는 Dreamdiary assistant다. 사용자의 기록과 생각 정리를 돕는다. 답변 시 마크다운 형식(#, **, -, ``` 등)을 사용하지 말고 일반 텍스트로만 답변하라.";
 
     private final ChatSessionRepository repository;
     private final ChatMessageRepository chatMessageRepository;

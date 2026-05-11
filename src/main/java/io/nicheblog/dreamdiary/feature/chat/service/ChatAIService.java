@@ -97,7 +97,7 @@ public class ChatAIService {
             return;
         }
 
-        final String aiResponse = stripMarkdownBold(rawResponse);
+        final String aiResponse = stripMarkdown(rawResponse);
 
         // 4. AI 메시지 저장
         final ChatMessageDto aiMessage = ChatMessageDto.builder()
@@ -186,14 +186,41 @@ public class ChatAIService {
     }
 
     /**
-     * AI 응답에서 마크다운 굵은글씨 기호(**text**, __text__)를 제거합니다.
+     * AI 응답에서 마크다운 기호를 제거하고 일반 텍스트로 변환합니다.
+     *
+     * <p>채팅 버블이 플레인텍스트 렌더이므로 마크다운 기호가 그대로 노출되는 것을 방지합니다.
+     * 처리 순서: 코드블록 → 인라인코드 → 제목 → 굵은글씨/기울임 → 목록 기호</p>
      *
      * @param text 원본 AI 응답 텍스트
-     * @return 굵은글씨 기호가 제거된 텍스트
+     * @return 마크다운 기호가 제거된 일반 텍스트
      */
-    private String stripMarkdownBold(final String text) {
+    private String stripMarkdown(final String text) {
         if (text == null) return null;
-        return text.replaceAll("\\*\\*(.+?)\\*\\*", "$1")
-                   .replaceAll("__(.+?)__", "$1");
+        return text
+                // 코드블록 (```lang\n...\n```) → 내용만 추출
+                .replaceAll("(?s)```[^\\n]*\\n?(.*?)```", "$1")
+                // 인라인 코드 (`code`) → 내용만 추출
+                .replaceAll("`([^`]+)`", "$1")
+                // ATX 제목 (## 제목) → 제목 텍스트만
+                .replaceAll("(?m)^#{1,6}\\s+", "")
+                // 굵은글씨+기울임 (***text***) → 텍스트만
+                .replaceAll("\\*{3}(.+?)\\*{3}", "$1")
+                // 굵은글씨 (**text**, __text__) → 텍스트만
+                .replaceAll("\\*\\*(.+?)\\*\\*", "$1")
+                .replaceAll("__(.+?)__", "$1")
+                // 기울임 (*text*, _text_) → 텍스트만
+                .replaceAll("(?<![\\*_])\\*([^\\*\\n]+)\\*(?![\\*])", "$1")
+                .replaceAll("(?<![_])_([^_\\n]+)_(?![_])", "$1")
+                // 순서 없는 목록 기호 (- / * / + 행 시작) → 기호 제거
+                .replaceAll("(?m)^[\\-\\*\\+]\\s+", "")
+                // 순서 있는 목록 기호 (1. 행 시작) → 기호 제거
+                .replaceAll("(?m)^\\d+\\.\\s+", "")
+                // 인용문 (> 행 시작) → 기호 제거
+                .replaceAll("(?m)^>\\s?", "")
+                // 수평선 (---, ***, ___) → 빈 줄
+                .replaceAll("(?m)^([-\\*_]){3,}\\s*$", "")
+                // 3개 이상 연속 빈 줄 → 2줄로 정리
+                .replaceAll("\\n{3,}", "\n\n")
+                .trim();
     }
 }
