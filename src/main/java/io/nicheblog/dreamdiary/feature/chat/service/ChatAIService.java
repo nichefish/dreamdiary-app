@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 /**
  * ChatAIService
  * <pre>
- *  채팅 메세지 서비스 모듈.
+ *  사용자 메시지 저장, 대화 맥락 구성, AI 응답 생성, WebSocket 브로드캐스트를 묶어 처리하는 서비스.
  * </pre>
  *
  * @author nichefish
@@ -31,6 +31,13 @@ public class ChatAIService {
     private final OllamaClient ollamaClient;
     private final SimpMessagingTemplate messagingTemplate;
 
+    /**
+     * 사용자 메시지를 저장한 뒤 최근 대화 맥락을 포함해 AI 응답을 생성하고 세션 구독자에게 전송한다.
+     *
+     * @param sessionId 메시지가 속한 채팅 세션 ID
+     * @param message 사용자 입력 메시지
+     * @throws Exception 세션 검증, 메시지 저장, AI 호출 중 예외가 발생한 경우
+     */
     public void processChat(final Integer sessionId, final String message) throws Exception {
         final ChatSessionEntity session = chatSessionService.getMySessionEntity(sessionId);
 

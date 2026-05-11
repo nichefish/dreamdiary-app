@@ -29,27 +29,27 @@ import javax.persistence.*;
 public class ChatSettingEntity
         extends BaseAuditEntity {
 
-    /** 설정 ID */
+    /** 채팅 설정 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @Comment("설정 ID")
+    @Comment("채팅 설정 ID")
     private Integer id;
 
-    /** 설정 범위 */
+    /** 설정 범위. USER, ADMIN 등으로 구분한다. */
     @Builder.Default
     @Column(name = "scope", length = 20)
-    @Comment("설정 범위")
+    @Comment("설정 범위. USER, ADMIN 등")
     private String scope = "USER";
 
-    /** 설정 범위 키 */
+    /** 설정 범위 키. USER 범위에서는 사용자 ID를 저장한다. */
     @Column(name = "scope_key", length = 100)
-    @Comment("설정 범위 키")
+    @Comment("설정 범위 키. USER 범위에서는 사용자 ID")
     private String scopeKey;
 
-    /** 최근 대화 기억 메시지 수 */
+    /** AI 응답 생성 시 함께 전달할 최근 대화 메시지 수 */
     @Builder.Default
     @Column(name = "recent_message_limit")
-    @Comment("최근 대화 기억 메시지 수")
+    @Comment("AI 응답 생성 시 함께 전달할 최근 대화 메시지 수")
     private Integer recentMessageLimit = 20;
 }

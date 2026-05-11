@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 저널 엔트리 임베딩 작업 현황을 관리자 화면에 제공하는 REST 컨트롤러입니다.
+ */
 @RestController
 @RequiredArgsConstructor
 @Log4j2
@@ -21,6 +24,11 @@ public class JournalEntryEmbeddingAdminRestController {
 
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
 
+    /**
+     * 임베딩 큐의 전체/대기/처리/완료 건수와 진행률을 조회한다.
+     *
+     * @return 임베딩 작업 통계 DTO를 담은 Ajax 응답
+     */
     @GetMapping(Url.ADMIN_JOURNAL_ENTRY_EMBEDDING_STATS)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody

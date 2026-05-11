@@ -8,7 +8,7 @@
 APP_DIR="/home/dreamdiary/app/dreamdiary"
 JAR_FILE="$APP_DIR/dreamdiary.jar"
 PID_FILE="$APP_DIR/dreamdiary.pid"
-LOG_FILE="$APP_DIR/log/dreamdiary.log"
+LOG_FILE="$APP_DIR/logs/dreamdiary.log"
 
 # JVM 옵션 설정 (AWS 프리티어 메모리가 1GB이므로 그 이하로 설정)
 JAVA_OPTS="-Xms256m -Xmx512m -server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_DIR/heapdump.hprof"
