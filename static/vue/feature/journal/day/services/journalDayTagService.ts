@@ -3,7 +3,6 @@
  * Vue 소유 저널 일자 태그 조율 서비스.
  */
 
-import journalDaySearchStateService from "./journalDaySearchStateService.js";
 import { getJournalDayListBridge } from "../journalDayListBridge.js";
 // 변경(D): `Message.get` 직호출을 `resolveMessage` 헬퍼로 위임.
 import { resolveMessage } from "../../../../common/messageHelper.js";
@@ -445,7 +444,7 @@ function deleteTagProfileAjax(): void {
  * @returns {Record<string, any>|null}
  */
 function resolveTagListParams(): Record<string, any> | null {
-    if (journalDaySearchStateService.getSearchParams().viewType === "weekly") {
+    if (getJournalDayListBridge()?.viewType === "weekly") {
         const weekStartDt: string = getCurrentWeekStartDt();
         if (cF.util.isEmpty(weekStartDt)) return null;
         return { weekStartDt };
@@ -519,7 +518,7 @@ async function openDayTagDetail(tagId: string | number, name: string, yy?: strin
     ModalHistory.reset();
 
     const args: any[] = Array.from(arguments);
-    if (journalDaySearchStateService.getSearchParams().viewType === "weekly") {
+    if (getJournalDayListBridge()?.viewType === "weekly") {
         const weekStartDt: string = getCurrentWeekStartDt();
         const list = await getTagDetail(tagId, { weekStartDt });
         const openedByVue: boolean = openTagDetailByVueBridge({

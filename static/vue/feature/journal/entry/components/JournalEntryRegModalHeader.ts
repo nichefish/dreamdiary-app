@@ -102,7 +102,7 @@ const JournalEntryRegModalHeader = {
             <template v-if="isDiary">
                 <div class="col-lg-2">
                     <select name="journalChapterId" id="journalChapterId" class="form-select form-select-solid"
-                            :value="model.journalChapterId ?? ''">
+                            v-model="model.journalChapterId">
                         <option
                             v-for="ch in chapterList"
                             :key="'ch-' + ch.id"
@@ -111,7 +111,7 @@ const JournalEntryRegModalHeader = {
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid" :value="model.ctgrCd ?? ''">
+                    <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid" v-model="model.ctgrCd">
                         <option value="">{{ t('txt.journal.select.post-ctgr') }}</option>
                     </select>
                 </div>
@@ -136,7 +136,7 @@ const JournalEntryRegModalHeader = {
             <template v-else-if="isNote">
                 <div class="col-lg-1">
                     <select name="journalChapterId" id="journalChapterId" class="form-select form-select-solid"
-                            :value="model.journalChapterId ?? ''">
+                            v-model="model.journalChapterId">
                         <option
                             v-for="ch in chapterList"
                             :key="'ch-' + ch.id"

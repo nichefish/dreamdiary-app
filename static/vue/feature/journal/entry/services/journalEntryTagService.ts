@@ -271,7 +271,7 @@ export function listAjax(contentType: string): void {
     const ajaxData: Record<string, any> = {};
     ajaxData.type = meta.entryType;
     /* 변경(Phase 13): dF.JournalDayPageStateService.getViewType() 제거 → Vue SSOT 직접 조회. */
-    if (journalDayResolveListBridge()?.getSearchParams?.()?.viewType === "weekly") {
+    if (journalDayResolveListBridge()?.viewType === "weekly") {
         const weekStartDt: string = getCurrentWeekStartDt();
         if (cF.util.isEmpty(weekStartDt)) return;
         ajaxData.weekStartDt = weekStartDt;
@@ -372,7 +372,7 @@ export function openSearch(contentType: string, tagId: string|number, name?: str
     const baseSearchUrl: string = resolveSearchUrl(contentType);
     let url: string = `${baseSearchUrl}?tagIds=${tagId}`;
     /* 변경(Phase 13): dF.JournalDayPageStateService.getViewType() 제거 → Vue SSOT 직접 조회. */
-    if (journalDayResolveListBridge()?.getSearchParams?.()?.viewType === "weekly") {
+    if (journalDayResolveListBridge()?.viewType === "weekly") {
         const weekStartDt: string = getCurrentWeekStartDt();
         if (cF.util.isNotEmpty(weekStartDt)) url += `&weekStartDt=${encodeURIComponent(weekStartDt)}`;
     }
