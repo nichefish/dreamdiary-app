@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable.lifecycle.service;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.AttachableCacheContext;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.LifecycleKey;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.adapter.LifecycleCacheUpdater;
@@ -9,8 +10,10 @@ import io.nicheblog.dreamdiary.feature.attachable.lifecycle.policy.AttachableCon
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.repository.jpa.LifecycleRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.CacheContext;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
+import io.nicheblog.dreamdiary.feature.attachable.state.service.StateService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
@@ -37,6 +40,7 @@ public class LifecycleService {
 
     private final LifecycleRepository repository;
     private final StateRepository stateRepository;
+    private final StateService stateService;
     private final List<LifecycleCacheUpdater> cacheUpdaters;
 
     /**
@@ -85,8 +89,13 @@ public class LifecycleService {
             repository.save(lifecycle);
         }
 
-        this.applyDerivedStates(lifecycleSet);
-        this.scheduleCacheUpdateAfterCommit(lifecycleSet, previousKey, lifecycleSet.getLifecycleKey());
+        final StateToggleDto derivedCollapsedToggle = this.applyDerivedStates(lifecycleSet);
+        this.scheduleCacheUpdateAfterCommit(
+                lifecycleSet,
+                previousKey,
+                lifecycleSet.getLifecycleKey(),
+                derivedCollapsedToggle
+        );
 
         final Map<String, String> rsltObj = new LinkedHashMap<>();
         rsltObj.put("previousLifecycleKey", previousKey == null ? null : previousKey.key);
@@ -107,13 +116,14 @@ public class LifecycleService {
      *
      * @param lifecycleSet 현재 라이프사이클 설정 요청
      */
-    private void applyDerivedStates(final LifecycleSetDto lifecycleSet) {
-        if (!LifecycleKey.RESOLVED.equals(lifecycleSet.getLifecycleKey())) return;
+    private StateToggleDto applyDerivedStates(final LifecycleSetDto lifecycleSet) {
+        if (!LifecycleKey.RESOLVED.equals(lifecycleSet.getLifecycleKey())) return null;
 
         final StateToggleDto collapsedToggle = StateToggleDto.builder()
                 .id(lifecycleSet.getId())
                 .contentType(lifecycleSet.getContentType())
                 .stateKey(StateKey.COLLAPSED)
+                .cacheContext(toStateCacheContext(lifecycleSet.getCacheContext()))
                 .build();
 
         final StateEntity collapsed = stateRepository.findByRefIdAndRefContentTypeAndStateKey(
@@ -124,6 +134,19 @@ public class LifecycleService {
         if (collapsed == null) {
             stateRepository.save(StateEntity.of(collapsedToggle));
         }
+        return collapsedToggle;
+    }
+
+    /**
+     * lifecycle 요청에서 전달된 저널 캐시 컨텍스트를 state 캐시 updater 형식으로 옮긴다.
+     */
+    private CacheContext toStateCacheContext(final AttachableCacheContext cacheContext) {
+        if (cacheContext == null) return null;
+        return CacheContext.builder()
+                .yy(cacheContext.getYy())
+                .mnth(cacheContext.getMnth())
+                .weekStartDt(cacheContext.getWeekStartDt())
+                .build();
     }
 
     /**
@@ -137,12 +160,18 @@ public class LifecycleService {
     private void scheduleCacheUpdateAfterCommit(
             final LifecycleSetDto lifecycleSet,
             final LifecycleKey previousKey,
-            final LifecycleKey currentKey
+            final LifecycleKey currentKey,
+            final StateToggleDto derivedCollapsedToggle
     ) throws Exception {
         if (lifecycleSet.getCacheContext() == null) return;
 
         TransactionHookUtils.runAfterCommitOrNow(
-                () -> doCache(lifecycleSet, previousKey, currentKey),
+                () -> {
+                    doCache(lifecycleSet, previousKey, currentKey);
+                    if (derivedCollapsedToggle != null) {
+                        stateService.doCache(derivedCollapsedToggle, true);
+                    }
+                },
                 e -> log.error(
                         "Lifecycle cache update failed [{}:{}:{}]: {}",
                         lifecycleSet.getContentType(),

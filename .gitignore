@@ -10,10 +10,10 @@
 /.codex
 /*.log
 # 테스트 리소스 제외
-/src/test/resources/*
+/app/backend/src/test/resources/*
 # Metronic 제외
-/src/main/resources/static/metronic/*
-!/src/main/resources/static/metronic/.metronic_v*
+/app/backend/src/main/resources/static/metronic/*
+!/app/backend/src/main/resources/static/metronic/.metronic_v*
 # 경로: 로그
 /logs/*
 !/logs/.logfile_path.md
@@ -28,4 +28,4 @@
 # TypeScript, SCSS 컴파일 결과물 제외
 /static/**/*.js
 /static/**/*.css*
-/src/main/resources/static/css/*.css*
+/app/backend/src/main/resources/static/css/*.css*

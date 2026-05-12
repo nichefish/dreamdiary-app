@@ -52,10 +52,10 @@ node {
 sourceSets {
 	main {
         java {
-            srcDirs = ["$projectDir/src/main/java"]
+            srcDirs = ["$projectDir/app/backend/src/main/java"]
         }
 		resources {
-            srcDirs = ["$projectDir/src/main/resources"]
+            srcDirs = ["$projectDir/app/backend/src/main/resources"]
 		}
 	}
 }
@@ -132,7 +132,7 @@ def generateI18nCatalogs = tasks.register('generateI18nCatalogs', GenerateI18nCa
     group = 'build'
     description = 'Spring 메시지 번들을 Vue용 JSON catalog로 변환합니다.'
 
-    messagesDir = layout.projectDirectory.dir('src/main/resources/messages')
+    messagesDir = layout.projectDirectory.dir('app/backend/src/main/resources/messages')
     outputDir = i18nCatalogRoot.map { it.dir('static/i18n') }
 }
 

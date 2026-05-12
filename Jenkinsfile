@@ -34,9 +34,9 @@ pipeline {
         stage('Prepare Assets') {
             steps {
                 sh '''
-                    if [ ! -d "$WORKSPACE/src/main/resources/static/metronic/assets" ]; then
+                    if [ ! -d "$WORKSPACE/app/backend/src/main/resources/static/metronic/assets" ]; then
                         echo "Assets 폴더가 없으므로 Metronic 템플릿을 복사합니다."
-                        cp -R $JENKINS_HOME/static/metronic/. $WORKSPACE/src/main/resources/static/metronic
+                        cp -R $JENKINS_HOME/static/metronic/. $WORKSPACE/app/backend/src/main/resources/static/metronic
                         if [ $? -ne 0 ]; then exit 1; fi
                     else
                         echo "Bypassing copying Metronic assets because they already exist."

@@ -19,10 +19,8 @@
     <#--begin::Card body-->
     <div class="card-body">
         <#--begin::Table body-->
-        <div id="journal_entry_search_div">
-            <#--handlebars template goes in here-->
-        </div>
-    <div id="journal_entry_search_app" class="d-none" data-content-type="${entrySearchContentType}"></div>
+        <#-- 변경(Vue 마이그레이션 후): #journal_entry_search_app 으로 Vue 앱 마운트. d-none 제거해 렌더링 결과 표시. -->
+        <div id="journal_entry_search_app" data-content-type="${entrySearchContentType}"></div>
     </div>
 </div>
 <!--end::Card-->
