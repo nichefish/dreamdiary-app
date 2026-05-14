@@ -40,8 +40,11 @@
     <div class="modal-body py-10 px-lg-17">
         <#--begin::Form-->
         <form name="scheduleRegForm" id="scheduleRegForm">
-            <div id="schedule_reg_div">
-                <!-- handdlebars template goes in here -->
+            <#--Vue 컴포넌트 마운트 포인트 (ScheduleRegModal.ts)-->
+            <div id="schedule_reg_modal_app"></div>
+            <#--begin::잔디 알림 발송 영역 (공개 일정만 표시, ScheduleRegModal.ts 에서 show/hide 제어)-->
+            <div id="schedule_jandi_area" style="display:none;">
+                <@component.jandi_reg_area 2 "SCHEDULE" />
             </div>
         </form>
     </div>
@@ -50,13 +53,10 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end gap-2">
             <#--모달:: 버튼: 저장하기-->
-            <@component.modal_btn_save "dF.Schedule.submit();" />
+            <@component.modal_btn_save "window.dispatchEvent(new CustomEvent('schedule:submit-reg-form'));" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close_safe "" />
         </div>
     </div>
 </@modal.layout>
 
-<#--include:: Handlebars template-->
-<#include "_schedule_reg_modal_template.hbs">
-<#include "_schedule_reg_modal_prtcpnt_template.hbs">

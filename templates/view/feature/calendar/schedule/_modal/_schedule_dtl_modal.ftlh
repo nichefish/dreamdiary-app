@@ -37,22 +37,21 @@
         </div>
     </div>
     <#--begin::Modal Body-->
-    <div id="schedule_dtl_div" class="modal-body pt-0 pb-20 px-lg-17">
-        <#--handlebars template goes in here-->
+    <div class="modal-body pt-0 pb-20 px-lg-17">
+        <#--Vue 컴포넌트 마운트 포인트 (ScheduleDtlModal.ts)-->
+        <div id="schedule_dtl_modal_app"></div>
     </div>
     <#--begin::Modal Footer-->
     <div class="modal-footer">
         <#--버튼 영역-->
         <div class="d-flex justify-content-end gap-2">
             <#--모달:: 버튼: 수정 모달 호출-->
-            <@component.modal_btn_modify "dF.Schedule.mdfModal(dF.Schedule.key);" />
+            <@component.modal_btn_modify "window.dispatchEvent(new CustomEvent('schedule:dtl-mdf-click'));" />
             <#--모달:: 버튼: 삭제-->
-            <@component.modal_btn_delete "dF.Schedule.delAjax(dF.Schedule.key);" />
+            <@component.modal_btn_delete "window.dispatchEvent(new CustomEvent('schedule:dtl-del-click'));" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close />
         </div>
     </div>
 </@modal.layout>
 
-<#--include:: Handlebars template-->
-<#include "_schedule_dtl_modal_template.hbs">

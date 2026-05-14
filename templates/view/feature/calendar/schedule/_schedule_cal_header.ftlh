@@ -1,6 +1,7 @@
 <#--
  * 일정 > 전체 일정 화면 (달력) 헤더
  * @included_in : schedule_cal
+ * 변경(D): dF.Schedule.regModal / dF.Schedule.prvtRegModal → window CustomEvent 로 전환.
  -->
 
 <style>
@@ -50,15 +51,14 @@
         </a>
     </div>
     <a href="javascript:void(0);" class="btn btn-sm btn-primary"
-       onclick="dF.Schedule.regModal();"
+       onclick="window.dispatchEvent(new CustomEvent('schedule:open-reg-modal'));"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일정 등록 모달을 호출합니다.">
         <i class="fas fa-plus"></i>일정 등록
     </a>
     <a href="javascript:void(0);" class="btn btn-sm btn-light-primary btn-outlined"
-       onclick="dF.Schedule.prvtRegModal();"
+       onclick="window.dispatchEvent(new CustomEvent('schedule:open-prvt-reg-modal'));"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="개인용 일정 등록 모달을&#10;호출합니다.&#10;(다른 사람에겐 보이지 않는&#10;일정입니다.)">
         <i class="fas fa-plus"></i>개인용 일정<span class="d-none d-lg-inline"> 등록</span>
     </a>
 </div>
 <!--end::Card header-->
-
