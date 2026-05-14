@@ -130,7 +130,6 @@
 <#include "/view/feature/attachable/related/_related_content_add_modal.ftlh">
 
 <#--include::state-->
-<script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
 
 <#--include::journal_annual_modules-->
 <#-- 변경(A-5-α): `_journal_annual_context_btn_partial.hbs` include 제거 — 본 partial 의 유일 호출자(`_journal_annual_list_template.hbs`)가 Vue 로 흡수되어 dtl 페이지에서는 dead include. -->

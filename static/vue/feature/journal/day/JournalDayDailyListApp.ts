@@ -42,7 +42,6 @@ function initDailyPageShell(): void {
             ?? cF.date.getCurrDateStr(cF.date.ptnDate));
         requestDailyReload(stdrdDt);
     });
-    dF.State.init();
 
     const stdrdDt: string = window.JOURNAL?.stdrdDt;
     const pattern: string = cF.date.ptnDate.toUpperCase();

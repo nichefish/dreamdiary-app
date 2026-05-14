@@ -198,7 +198,6 @@ function init(): void {
     journalTodoCrudService.yyMnthListAjax();
     window.addEventListener("comment:modal-refresh", function(): void { refreshEventList(); });
     window.addEventListener("related-content:refresh", function(): void { refreshEventList(); });
-    dF.State.init();
 
     dF.JournalDayRuntimeService.initJournalDayAsideShell();
     journalDayUiBridgeService.syncTagCloud(true, true, true);

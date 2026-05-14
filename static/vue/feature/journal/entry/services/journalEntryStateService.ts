@@ -16,6 +16,7 @@
  */
 
 import * as lifecycleService from "../../../attachable/lifecycle/lifecycleService.js";
+import * as stateService from "../../../attachable/state/stateService.js";
 
 type EntryMeta = Record<string, any>;
 type EntryModule = Record<string, any>;
@@ -27,10 +28,6 @@ function getMeta(contentType: string): EntryMeta | undefined {
 
 function getModule(contentType: string): EntryModule | undefined {
     return ((window as any).dF?.JournalEntry?.get?.(contentType)) as EntryModule | undefined;
-}
-
-function getStateNs(): Record<string, any> | undefined {
-    return ((window as any).dF?.State) as Record<string, any> | undefined;
 }
 
 
@@ -56,16 +53,15 @@ export function toggleStateAjax(
     if (isNaN(Number(id))) return;
 
     const meta = getMeta(contentType);
-    const stateNs = getStateNs();
-    if (!meta || !stateNs) {
-        console.error("[journalEntryStateService] meta/State namespace missing:", contentType);
+    if (!meta) {
+        console.error("[journalEntryStateService] meta missing:", contentType);
         return;
     }
 
     const item = document.querySelector(`.${meta.itemClass}[data-id='${id}']`) as HTMLElement;
-    const cacheContext = stateNs.resolveJournalCacheContext?.(item);
+    const cacheContext = stateService.resolveJournalCacheContext(item);
     const payload = { id, contentType, stateKey, cacheContext };
-    stateNs.toggleAjax(payload, function(res: AjaxResponse): void {
+    stateService.toggleAjax(payload, function(res: AjaxResponse): void {
         if (!item) return;
         const lowerStateKey: string = stateKey.toLowerCase();
         item.dataset[lowerStateKey] = res.rsltSts === "ON" ? "Y" : "N";

@@ -45,7 +45,6 @@ function initWeeklyPageShell(): void {
             ?? cF.date.getCurrDateStr(cF.date.ptnDate));
         requestWeeklyReload(stdrdDt);
     });
-    dF.State.init();
 
     const stdrdDt: string = window.JOURNAL?.stdrdDt ?? cF.date.getCurrDateStr(cF.date.ptnDate);
     const targetDt: string = cF.util.getUrlParam("target") ?? "";

@@ -8,6 +8,8 @@
  *
  * @author nichefish
  */
+import * as stateService from "../state/stateService.js";
+
 declare const cF: any;
 declare const Url: any;
 
@@ -21,7 +23,7 @@ declare const Url: any;
  * @returns {Record<string, any>} 백엔드 캐시 updater가 사용할 캐시 컨텍스트.
  */
 export function resolveJournalCacheContext(item?: HTMLElement | null): Record<string, any> {
-    return ((window as any).dF?.State?.resolveJournalCacheContext?.(item)) ?? {};
+    return stateService.resolveJournalCacheContext(item);
 }
 
 /**

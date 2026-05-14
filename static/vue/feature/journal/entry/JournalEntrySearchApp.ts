@@ -224,7 +224,6 @@ document.addEventListener("DOMContentLoaded", async function(): Promise<void> {
     window.addEventListener("related-content:refresh", function(): void {
         journalDayResolveListBridge()?.applySearchParamsAndReload?.({}, "MONTHLY");
     });
-    dF.State.init();
 
     const input: HTMLElement | null = document.getElementById("keywordInput");
     input?.addEventListener("keydown", (e: KeyboardEvent): void => {
