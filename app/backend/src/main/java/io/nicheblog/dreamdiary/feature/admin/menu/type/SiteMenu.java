@@ -28,7 +28,6 @@ public enum SiteMenu {
 
     CONTENT("컨텐츠 관리"),
     BOARD_ADMIN("게시판 관리"),
-    TMPLAT("템플릿 관리"),
     POPUP("팝업 관리"),
 
     USER("사용자 관리"),

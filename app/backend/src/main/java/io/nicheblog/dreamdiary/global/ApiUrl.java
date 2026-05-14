@@ -144,15 +144,6 @@ public interface ApiUrl {
     String BOARD_GROUP_UNUSE = Prefix.API + "/board/groups/{id}/unuse";
     String BOARD_GROUPS_SORT_ORDERS = Prefix.API + "/board/groups/sort-orders";
 
-    /** 템플릿 관리 (TODO) */
-    String TMPLAT_DEF_REG_AJAX = Prefix.API + "/tmplat/tmplat-def-reg";
-    String TMPLAT_DEF_DTL_AJAX = Prefix.API + "/tmplat/tmplat-def-dtl";
-    String TMPLAT_DEF_MDF_AJAX = Prefix.API + "/tmplat/tmplat-def-mdf";
-    String TMPLAT_DEF_DEL_AJAX = Prefix.API + "/tmplat/tmplat-def-del";
-
-    String TMPLAT_TXT_REG_AJAX = Prefix.API + "/tmplat/tmplat-txt-reg";
-    String TMPLAT_TXT_MDF_AJAX = Prefix.API + "/tmplat/tmplat-txt-mdf";
-
     /** 팝업 관리 (TODO) */
     String POPUP_LIST = "";
 
@@ -214,9 +205,6 @@ public interface ApiUrl {
     /** (API) JANDI : 메세지 송수신 */
     String API_JANDI_SND_MSG = Prefix.API + "/jandi/send-msg.do";
     String API_JANDI_RCV_MSG = Prefix.API + "/jandi/receive-msg.do";
-
-    /** (API) NOTION */
-    String API_NOTION_GET = Prefix.API + "/notion/notion.do";
 
     /**
      * PREFIX 정의 정보
