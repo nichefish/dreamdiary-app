@@ -18,6 +18,7 @@
  */
 
 import { resolveMessage } from "../../../common/messageHelper.js";
+import { hideSingleTag } from "../../attachable/tag/tagService.js";
 
 type TagRowKind = "DAY" | "DIARY" | "DREAM";
 
@@ -106,8 +107,9 @@ function createTagRowRoot(kind: TagRowKind): Record<string, unknown> {
                 return resolveMessage(key);
             },
             /** 변경 전: `onclick="dF.Tag.hideSingleTag('#{{tagListDivId}}');"` */
+            /** 변경 후: tagService.hideSingleTag 직접 호출. */
             hideSingleTag(): void {
-                (window as any).dF?.Tag?.hideSingleTag?.("#" + this.row.tagListDivId);
+                hideSingleTag("#" + this.row.tagListDivId);
             },
             /** 변경 전: `onclick="dF.JournalTag.listAllAjax();"` */
             listAllAjax(): void {
