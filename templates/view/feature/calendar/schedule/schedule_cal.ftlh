@@ -1,5 +1,6 @@
 <#--
  * 일정 > 전체 일정 화면 (달력)
+ * 변경(D): schedule_cal.ts(jQuery Page 객체) → ScheduleCalApp.ts 모듈로 전환.
  -->
 
 <#import "/layout/layout_default.ftlh" as layout >
@@ -89,16 +90,27 @@
 </div>
 <!--end::Card-->
 
+<#--inject::휴가·생일 코드값 (FullCalendar 이벤트 클릭 분기용)-->
+<script type="application/json" id="schedule_cal_code_data">
+{"vcatnCd":"${Code.SCHEDULE_VCATN!}","brthdyCd":"${Code.SCHEDULE_BRTHDY!}"}
+</script>
+
+<#--inject::등록/수정 폼 데이터 (ScheduleRegModal 초기화용)-->
+<script type="application/json" id="schedule_reg_form_data">
+{"holyDayCode":"${Code.SCHEDULE_HOLYDAY!?js_string}","codeOptions":[<#list SCHEDULE_CD![] as opt><#sep>,</#sep>{"code":"${opt.code!?js_string}","codeName":"${opt.codeName!?js_string}"}</#list>],"userOptions":[<#list crtdUserList![] as user><#sep>,</#sep>{"username":"${user.username!?js_string}","userNm":"${user.userNm!?js_string}"}</#list>]}
+</script>
+
 <#--include::fullcalendar-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
 
-<!--include::schedule_module-->
+<!--include::schedule modals (Bootstrap 모달 HTML 유지)-->
 <#include "/view/feature/calendar/schedule/_modal/_schedule_reg_modal.ftlh">
 <#include "/view/feature/calendar/schedule/_modal/_schedule_dtl_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/calendar/schedule/schedule_module.js?${releaseDate!}"></script>
 
-<!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/calendar/schedule/schedule_cal.js?${releaseDate!}"></script>
+<#--include::vue module-->
+<script type="module" src="/vue/feature/calendar/schedule/ScheduleCalApp.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/calendar/schedule/components/ScheduleRegModal.js?${releaseDate!}"></script>
+<script type="module" src="/vue/feature/calendar/schedule/components/ScheduleDtlModal.js?${releaseDate!}"></script>
 
 </@layout.layout>
