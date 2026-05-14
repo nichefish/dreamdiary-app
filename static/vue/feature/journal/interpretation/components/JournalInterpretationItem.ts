@@ -4,6 +4,7 @@
  */
 
 import journalDayUiBridgeService from "../../day/services/journalDayUiBridgeService.js";
+import commentActionService from "../../../attachable/comment/services/commentActionService.js";
 
 const LIFECYCLE_OPTIONS = [
     { key: "OPEN", labelKey: "txt.lifecycle.open", activeClass: "text-gray-800" },
@@ -35,9 +36,9 @@ const JournalInterpretationItem = {
             /* 변경 전: <code>dF.JournalDayTag.expand</code>. 변경 후: UI 브리지 → 태그 서비스 단일 로직. */
             journalDayUiBridgeService.expandJournalDayTaggedContent(event.currentTarget);
         },
-        openCommentRegistModal(): void { dF.Comment.modal.regModal(this.interpretation.id, "JOURNAL_INTERPRETATION"); },
-        openCommentModifyModal(comment: Record<string, any>): void { dF.Comment.modal.mdfModal(comment.id); },
-        deleteComment(comment: Record<string, any>): void { dF.Comment.modal.delAjax(comment.id); },
+        openCommentRegistModal(): void { window.dispatchEvent(new CustomEvent("comment:open-reg-modal", { detail: { refId: this.interpretation.id, refContentType: "JOURNAL_INTERPRETATION" } })); },
+        openCommentModifyModal(comment: Record<string, any>): void { window.dispatchEvent(new CustomEvent("comment:open-mdf-modal", { detail: { id: comment.id } })); },
+        deleteComment(comment: Record<string, any>): void { commentActionService.del(comment.id, {}, (): void => { window.dispatchEvent(new CustomEvent("comment:modal-refresh")); }); },
         copyInterpretation(): void { dF.JournalInterpretation.copy(this.interpretation.id); },
         openModifyModal(): void { dF.JournalInterpretation.modifyModal(this.interpretation.id); },
         openHistoryModal(): void { if (this.hasHistory) dF.History.modal.open("JOURNAL_INTERPRETATION", this.interpretation.id); },

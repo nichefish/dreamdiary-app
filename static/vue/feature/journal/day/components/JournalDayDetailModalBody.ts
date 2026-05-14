@@ -62,7 +62,9 @@ const JournalDayDetailModalBody = {
             journalDayUiBridgeService.selectDayTag(tag.tagId, String(tag.name ?? ""));
         },
         openCommentReg(entry: Record<string, any>, contentType: string): void {
-            dF.Comment.modal.regModal(entry.id, contentType);
+            window.dispatchEvent(new CustomEvent("comment:open-reg-modal", {
+                detail: { refId: entry.id, refContentType: contentType },
+            }));
         },
         copyEntry(entry: Record<string, any>, contentType: string): void {
             dF.JournalEntry.get(contentType).copy(entry.id);

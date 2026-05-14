@@ -3,37 +3,6 @@
  * @included_in : 댓글 미리보기 기능이 있는 페이지들
  -->
 
-<script>
-    const CommentList = (function() {
-        return {
-            /**
-             * 댓글 목록 모달 호출
-             * @param {string|number} refId - 참조할 게시물 번호.
-             * @param {string} refContentType - 참조할 콘텐츠 타입.
-             */
-            modal: function(refId, refContentType) {
-                event.stopPropagation();
-                if (isNaN(refId) || !refContentType) return;
-
-                document.querySelector(`#commentProcForm [name="refId"]`).value = refId;
-                if (cF.util.isNotEmpty(refContentType)) {
-                    document.querySelector(`#commentProcForm [name="refContentType"]`).value = refContentType;
-                }
-                const url = "${Url.COMMENTS!}";
-                const ajaxData = $("#commentProcForm").serializeArray();
-                cF.ajax.get(url, ajaxData, function(res) {
-                    if (!res.rslt) {
-                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                        return false;
-                    }
-                    const { rsltList = [] } = res;
-                    cF.handlebars.modal(rsltList, "comment_list");
-                });
-            },
-        }
-    })();
-</script>
-
 <#import "/layout/modal_layout.ftlh" as modal>
 
 <#assign modal_title = "댓글 목록 조회" />
@@ -42,9 +11,7 @@
     <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
-        <div class="row" id="comment_list_div">
-            <#--handlebars template goes in here-->
-        </div>
+        <div id="comment_list_modal_app"></div>
     </div>
     <#--begin::Modal Footer-->
     <div class="modal-footer">
@@ -56,11 +23,7 @@
     </div>
 </@modal.layout>
 
-<form name="procForm" id="commentProcForm" method="get">
-    <input type="hidden" name="refId" value="" />
-    <input type="hidden" name="refContentType" value="${contentType!}" />
-    <input type="hidden" name="actvtyCtgrCd" value="${actvtyCtgrCd!}" />
-</form>
+<#--begin::JSON injection-->
+<script type="application/json" id="comment_list_modal_data">{"actvtyCtgrCd":"${actvtyCtgrCd!?js_string}"}</script>
 
-<#--include:: Handlebars template-->
-<#include "_comment_list_modal_template.hbs">
+<script type="module" src="/vue/feature/attachable/comment/CommentListModal.js?${releaseDate!}"></script>
