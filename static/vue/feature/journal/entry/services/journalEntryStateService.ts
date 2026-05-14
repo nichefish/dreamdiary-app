@@ -15,6 +15,8 @@
  * @author nichefish
  */
 
+import * as lifecycleService from "../../../attachable/lifecycle/lifecycleService.js";
+
 type EntryMeta = Record<string, any>;
 type EntryModule = Record<string, any>;
 type StateOnOff = (res: AjaxResponse, item: HTMLElement) => void;
@@ -31,9 +33,6 @@ function getStateNs(): Record<string, any> | undefined {
     return ((window as any).dF?.State) as Record<string, any> | undefined;
 }
 
-function getLifecycleNs(): Record<string, any> | undefined {
-    return ((window as any).dF?.Lifecycle) as Record<string, any> | undefined;
-}
 
 /**
  * entry 가 특정 state(stateKey) 를 가지고 있는지 검사.
@@ -176,16 +175,15 @@ export function setLifecycleAjax(contentType: string, id: string|number, lifecyc
     if (isNaN(Number(id))) return;
 
     const meta = getMeta(contentType);
-    const lifecycleNs = getLifecycleNs();
-    if (!meta || !lifecycleNs) {
-        console.error("[journalEntryStateService] meta/Lifecycle namespace missing:", contentType);
+    if (!meta) {
+        console.error("[journalEntryStateService] meta missing:", contentType);
         return;
     }
 
     const item = document.querySelector(`.${meta.itemClass}[data-id='${id}']`) as HTMLElement;
-    const cacheContext = lifecycleNs.resolveJournalCacheContext?.(item);
+    const cacheContext = lifecycleService.resolveJournalCacheContext(item);
     const payload = { id, contentType, lifecycleKey, cacheContext };
-    lifecycleNs.setAjax(payload, function(_res: AjaxResponse): void {
+    lifecycleService.setAjax(payload, function(_res: AjaxResponse): void {
         if (!item) return;
 
         item.dataset.lifecycle = lifecycleKey;

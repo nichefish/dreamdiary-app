@@ -10,6 +10,8 @@
  * @author nichefish
  */
 
+import * as lifecycleService from "../../../attachable/lifecycle/lifecycleService.js";
+
 function getDfNs(): Record<string, any> {
     return (window as any).dF ?? {};
 }
@@ -19,9 +21,6 @@ function getStorageKey(): string {
     return typeof k === "string" ? k : "collapsedJournalInterpretationIds";
 }
 
-function getLifecycleNs(): Record<string, any> | undefined {
-    return getDfNs()?.Lifecycle as Record<string, any> | undefined;
-}
 
 /**
  * 컨텍스트 메뉴 스위치 값에 따라 해석 라이프사이클을 RESOLVED 또는 OPEN으로 설정한다.
@@ -52,14 +51,10 @@ export function setLifecycleAjax(id: string|number, lifecycleKey: string): void 
 
     const content = document.querySelector(`.journal-interpretation-content[data-id='${id}']`) as HTMLElement;
     const item = content?.closest(".journal-interpretation-item") as HTMLElement;
-    const lifecycleNs = getLifecycleNs();
-    if (!lifecycleNs) {
-        console.error("[journalInterpretationStateService] dF.Lifecycle missing.");
-        return;
-    }
-    const cacheContext = lifecycleNs.resolveJournalCacheContext?.(content);
+
+    const cacheContext = lifecycleService.resolveJournalCacheContext(content);
     const payload = { id, contentType: "JOURNAL_INTERPRETATION", lifecycleKey, cacheContext };
-    lifecycleNs.setAjax(payload, function(_res: AjaxResponse): void {
+    lifecycleService.setAjax(payload, function(_res: AjaxResponse): void {
         if (!content) return;
 
         content.dataset.lifecycle = lifecycleKey;

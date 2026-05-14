@@ -204,7 +204,6 @@
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/feature/attachable/lifecycle/lifecycle_module.js?${releaseDate!}"></script>
 
 <#-- 변경(A-9): 일기/꿈 태그 헤더 Vue 흡수. journalEntryTagService 적재(=_journal_entry_reg_modal.ftlh ESM 묶음) 이후
      본 앱이 마운트되어 `JournalDayEntryTagListVueApp.setList` 브리지를 노출한다.
