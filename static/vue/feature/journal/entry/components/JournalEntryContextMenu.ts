@@ -94,7 +94,9 @@ const JournalEntryContextMenu = {
         },
         openHistoryModal(): void {
             if (!this.hasHistory) return;
-            dF.History.modal.open(this.contentType, this.entry.id);
+            window.dispatchEvent(new CustomEvent("history:open-modal", {
+                detail: { contentType: this.contentType, id: this.entry.id },
+            }));
         },
         openRelatedAddModal(): void {
             dF.RelatedContent.openAddModalBySource(this.contentType, this.entry.id);

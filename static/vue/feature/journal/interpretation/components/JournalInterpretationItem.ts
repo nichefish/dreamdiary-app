@@ -41,7 +41,7 @@ const JournalInterpretationItem = {
         deleteComment(comment: Record<string, any>): void { commentActionService.del(comment.id, {}, (): void => { window.dispatchEvent(new CustomEvent("comment:modal-refresh")); }); },
         copyInterpretation(): void { dF.JournalInterpretation.copy(this.interpretation.id); },
         openModifyModal(): void { dF.JournalInterpretation.modifyModal(this.interpretation.id); },
-        openHistoryModal(): void { if (this.hasHistory) dF.History.modal.open("JOURNAL_INTERPRETATION", this.interpretation.id); },
+        openHistoryModal(): void { if (this.hasHistory) window.dispatchEvent(new CustomEvent("history:open-modal", { detail: { contentType: "JOURNAL_INTERPRETATION", id: this.interpretation.id } })); },
         setLifecycle(lifecycleKey: string): void { dF.JournalInterpretation.setLifecycleAjax(this.interpretation.id, lifecycleKey); },
         toggleCollapsedState(): void { dF.JournalInterpretation.collapse(this.interpretation.id, this.hasState("COLLAPSED") ? "N" : "Y"); },
         deleteInterpretation(): void { dF.JournalInterpretation.deleteAjax(this.interpretation.id); },
