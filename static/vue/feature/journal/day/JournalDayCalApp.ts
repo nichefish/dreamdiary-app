@@ -197,6 +197,7 @@ function init(): void {
      * 기존 init 의 initialized 플래그는 페이지 진입 시점 1회 호출 보장으로 자연 소멸. */
     journalTodoCrudService.yyMnthListAjax();
     window.addEventListener("comment:modal-refresh", function(): void { refreshEventList(); });
+    window.addEventListener("related-content:refresh", function(): void { refreshEventList(); });
     dF.State.init();
 
     dF.JournalDayRuntimeService.initJournalDayAsideShell();

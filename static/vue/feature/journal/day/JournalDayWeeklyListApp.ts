@@ -39,6 +39,12 @@ function initWeeklyPageShell(): void {
             ?? cF.date.getCurrDateStr(cF.date.ptnDate));
         requestWeeklyReload(stdrdDt);
     });
+    window.addEventListener("related-content:refresh", function(): void {
+        const stdrdDt: string = String(window.JournalDayWeeklyApp?.getSearchParams?.()?.stdrdDt
+            ?? window.JOURNAL?.stdrdDt
+            ?? cF.date.getCurrDateStr(cF.date.ptnDate));
+        requestWeeklyReload(stdrdDt);
+    });
     dF.State.init();
 
     const stdrdDt: string = window.JOURNAL?.stdrdDt ?? cF.date.getCurrDateStr(cF.date.ptnDate);

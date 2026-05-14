@@ -5,6 +5,7 @@
 
 import journalDayUiBridgeService from "../../day/services/journalDayUiBridgeService.js";
 import commentActionService from "../../../attachable/comment/services/commentActionService.js";
+import * as relatedContentService from "../../../attachable/related/relatedContentService.js";
 
 const JournalEntryContent = {
     name: "JournalEntryContent",
@@ -69,10 +70,12 @@ const JournalEntryContent = {
             dF.JournalEntryTag.get(this.contentType).select(tag.tagId, tag.name);
         },
         openRelatedTarget(relatedContent: Record<string, any>): void {
-            dF.RelatedContent.openTarget(relatedContent.targetContentType, Number(relatedContent.targetPostNo));
+            relatedContentService.openTarget(relatedContent.targetContentType, Number(relatedContent.targetPostNo));
         },
-        deleteRelatedContent(relatedContent: Record<string, any>, event: MouseEvent): void {
-            dF.RelatedContent.deleteAjax(Number(relatedContent.id), event.currentTarget);
+        deleteRelatedContent(relatedContent: Record<string, any>): void {
+            relatedContentService.deleteRelated(Number(relatedContent.id), (): void => {
+                window.dispatchEvent(new CustomEvent("related-content:refresh"));
+            });
         },
         openCommentMdfModal(comment: Record<string, any>): void {
             window.dispatchEvent(new CustomEvent("comment:open-mdf-modal", {
@@ -159,7 +162,7 @@ const JournalEntryContent = {
                                 <button
                                     type="button"
                                     class="btn btn-xxs btn-light-danger btn-outlined"
-                                    @click="deleteRelatedContent(relatedContent, $event)"
+                                    @click="deleteRelatedContent(relatedContent)"
                                 >{{ t('txt.comm.del') }}</button>
                             </div>
                         </div>
