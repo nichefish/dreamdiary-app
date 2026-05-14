@@ -99,7 +99,9 @@ const JournalEntryContextMenu = {
             }));
         },
         openRelatedAddModal(): void {
-            dF.RelatedContent.openAddModalBySource(this.contentType, this.entry.id);
+            window.dispatchEvent(new CustomEvent("related-content:open-add-modal", {
+                detail: { contentType: this.contentType, id: this.entry.id },
+            }));
         },
         setLifecycle(lifecycleKey: string): void {
             this.module().setLifecycleAjax(this.entry.id, lifecycleKey);

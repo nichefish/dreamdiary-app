@@ -66,6 +66,9 @@ function initializeMetaPage(): void {
     window.addEventListener("comment:modal-refresh", function(): void {
         journalDayMetaService.listMetaHeaders();
     });
+    window.addEventListener("related-content:refresh", function(): void {
+        journalDayMetaService.listMetaHeaders();
+    });
     dF.State.init();
 
     dF.JournalDayRuntimeService.initJournalDayAsideShell();

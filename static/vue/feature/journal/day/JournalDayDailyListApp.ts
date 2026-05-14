@@ -36,6 +36,12 @@ function initDailyPageShell(): void {
             ?? cF.date.getCurrDateStr(cF.date.ptnDate));
         requestDailyReload(stdrdDt);
     });
+    window.addEventListener("related-content:refresh", function(): void {
+        const stdrdDt: string = String(window.JournalDayDailyApp?.getSearchParams?.()?.stdrdDt
+            ?? window.JOURNAL?.stdrdDt
+            ?? cF.date.getCurrDateStr(cF.date.ptnDate));
+        requestDailyReload(stdrdDt);
+    });
     dF.State.init();
 
     const stdrdDt: string = window.JOURNAL?.stdrdDt;

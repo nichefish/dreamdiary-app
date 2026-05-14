@@ -482,6 +482,9 @@ function initializeMonthlyPage(): void {
     window.addEventListener("comment:modal-refresh", function(): void {
         applySearchParamsAndReload({}, "MONTHLY");
     });
+    window.addEventListener("related-content:refresh", function(): void {
+        applySearchParamsAndReload({}, "MONTHLY");
+    });
     dF.State.init();
 
     dF.JournalEntry.bindSearchPopupEnterKeys();
