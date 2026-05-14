@@ -60,6 +60,14 @@ public class MenuPostDto
     @Size(max = 1000)
     private String url;
 
+    /** 관리자 메뉴 여부 (Y/N) */
+    @Pattern(regexp = "^[YN]$")
+    private String adminYn;
+
+    /** 사용 여부 (Y/N) */
+    @Pattern(regexp = "^[YN]$")
+    private String useYn;
+
     /** 아이콘 (bootstrap icon 또는 font-awesome) TODO: svg? */
     private String icon;
 

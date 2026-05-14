@@ -14,6 +14,9 @@ import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +43,38 @@ public class UserRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER;      // 작업 카테고리 (로그 적재용)
 
     private final UserService userService;
+
+    /**
+     * 사용자 목록 조회 (Ajax)
+     */
+    @GetMapping(Url.USERS)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> userListAjax(
+            @ModelAttribute final UserSearchParam searchParam,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) throws Exception {
+        final Sort sort = Sort.by(Sort.Direction.ASC, "acntStus.lockedYn")
+                .and(Sort.by(Sort.Direction.DESC, "createdAt"));
+        final PageRequest pageRequest = PageRequest.of(page, size, sort);
+        final Page<UserDto> pageResult = userService.getPageDto(searchParam, pageRequest);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+    }
+
+    /**
+     * 사용자 상세 조회 (Ajax)
+     */
+    @GetMapping(Url.USER)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> userDetailAjax(
+            final @PathVariable("id") Integer id
+    ) throws Exception {
+        final UserDto user = userService.getDtlDto(id);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(user != null, MessageUtils.RSLT_SUCCESS).withObj(user));
+    }
 
     /**
      * 사용자 아이디 중복 체크 (Ajax)
@@ -154,7 +189,7 @@ public class UserRestController
         final UserDto user = userService.getDtlDto(id);
         // 내 정보인지 비교 :: "내 정보는 삭제할 수 없습니다."
         final boolean isMyInfo = AuthUtils.isMyInfo(user.getUsername());
-        if (!isMyInfo) {
+        if (isMyInfo) {
             final String rsltMsg = MessageUtils.getMessage("msg.user.id.delete-own-denied");
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, rsltMsg));
         }

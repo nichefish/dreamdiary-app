@@ -1,0 +1,108 @@
+import { ref } from "vue";
+import { defineStore } from "pinia";
+import ApiService from "@metronic/core/services/ApiService";
+import type { AxiosError } from "axios";
+
+/**
+ * Vue SPA 인증 사용자 정보.
+ * Spring Boot AuthInfo와 대응.
+ */
+export interface AuthUser {
+  username: string;
+  nickname: string;
+  email: string;
+  profileImageUrl: string;
+  roles: { roleKey: string }[];
+  isMngr: boolean;
+  isDev: boolean;
+}
+
+/**
+ * useAuthStore
+ * Spring Boot JWT 쿠키 기반 인증 상태를 관리한다.
+ * - 로그인: POST /api/auth/login (JSON) → JWT HttpOnly 쿠키 발급
+ * - 인증 확인: GET /api/auth/get-auth-account → 현재 쿠키로 사용자 정보 조회
+ * - 로그아웃: POST /api/auth/logout-json → 쿠키 삭제
+ */
+export const useAuthStore = defineStore("auth", () => {
+  const user = ref<AuthUser | null>(null);
+  const isAuthenticated = ref(false);
+  const errors = ref<string[]>([]);
+
+  /** 인증 상태 세팅 */
+  function setAuth(authUser: AuthUser) {
+    isAuthenticated.value = true;
+    user.value = authUser;
+    errors.value = [];
+  }
+
+  /** 인증 상태 초기화 */
+  function purgeAuth() {
+    isAuthenticated.value = false;
+    user.value = null;
+    errors.value = [];
+  }
+
+  /**
+   * 로그인.
+   * POST /api/auth/login → DreamdiaryAuthenticationProvider가 인증 + JWT 쿠키 발급.
+   * 실패 시 서버가 HTTP 401을 반환하므로 Axios AxiosError로 잡아 message 추출.
+   * 성공 후 verifyAuth()로 사용자 정보 로드.
+   */
+  async function login(credentials: { username: string; password: string }) {
+    errors.value = [];
+    try {
+      const { data } = await ApiService.post("/api/auth/login", credentials);
+      if (data.rslt) {
+        await verifyAuth();
+      } else {
+        errors.value = [data.message ?? "로그인에 실패했습니다."];
+        throw new Error(data.message);
+      }
+    } catch (e) {
+      const axiosErr = e as AxiosError<{ message?: string }>;
+      const serverMsg = axiosErr.response?.data?.message;
+      errors.value = [serverMsg ?? "로그인에 실패했습니다."];
+      throw e;
+    }
+  }
+
+  /**
+   * 로그아웃.
+   * POST /api/auth/logout-json → 서버 쿠키 삭제 + 클라이언트 상태 초기화.
+   */
+  async function logout() {
+    try {
+      await ApiService.post("/api/auth/logout-json", {});
+    } finally {
+      purgeAuth();
+    }
+  }
+
+  /**
+   * 현재 JWT 쿠키로 인증 상태를 검증하고 사용자 정보를 로드한다.
+   * 라우터 beforeEach에서 매 페이지 진입 전 호출.
+   * 서버 응답: AjaxResponse.withObj() → JSON 필드명 rsltObj (ServiceResponse 기준)
+   */
+  async function verifyAuth() {
+    try {
+      const { data } = await ApiService.get("/api/auth/get-auth-account");
+      if (data.rslt && data.rsltObj) {
+        setAuth(data.rsltObj as AuthUser);
+      } else {
+        purgeAuth();
+      }
+    } catch {
+      purgeAuth();
+    }
+  }
+
+  return {
+    user,
+    isAuthenticated,
+    errors,
+    login,
+    logout,
+    verifyAuth,
+  };
+});

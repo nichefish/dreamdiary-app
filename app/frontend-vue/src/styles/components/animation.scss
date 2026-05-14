@@ -1,0 +1,41 @@
+/**
+ * animation.scss
+ *
+ * @auther nichefish
+ */
+
+/* 깜빡임 (빠름) */
+.blink {
+    animation: blink-effect 0.75s step-end infinite;
+    -webkit-animation: blink 0.75s linear infinite;
+}
+
+/* 깜빡임 (느림) */
+.blink-slow {
+    animation: blink-effect 1.5s step-end infinite;
+    -webkit-animation: blink 1.5s linear infinite;
+}
+
+/* 깜빡임 (빠름) */
+.blink-fast {
+    animation: blink-effect 0.4s step-end infinite;
+    -webkit-animation: blink 0.4s linear infinite;
+}
+
+@-webkit-keyframes blink {
+    0% {
+        opacity: 100%;
+    }
+    25% {
+        opacity: 90%;
+    }
+    50% {
+        opacity: 75%;
+    }
+    75% {
+        opacity: 60%;
+    }
+    100% {
+        opacity: 85%;
+    }
+}

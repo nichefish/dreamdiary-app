@@ -14,11 +14,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import io.nicheblog.dreamdiary.feature.user.signup.entity.UserSignupRequestEntity;
+import io.nicheblog.dreamdiary.feature.user.signup.repository.jpa.UserSignupRequestRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 
 /**
@@ -44,6 +53,7 @@ public class UserSignupRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER_SIGNUP;      // 작업 카테고리 (로그 적재용)
 
     private final UserSignupService userSignupService;
+    private final UserSignupRequestRepository userSignupRequestRepository;
 
     /**
      * 계정 정보 신청 (Ajax)
@@ -117,4 +127,59 @@ public class UserSignupRestController
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
+
+    /**
+     * 사용자 관리 > 계정 신청 승인관리 목록 조회 (Ajax)
+     * (관리자MNGR만 접근 가능.)
+     *
+     * 변경(signup-1): FTL SSR 데이터 주입 방식 → Vue SPA REST 조회로 전환.
+     * pendingList: PENDING 상태 전체, recentList: 최근 30건(생성일 역순).
+     *
+     * @return {@link ResponseEntity} -- pendingList / recentList
+     */
+    @GetMapping(Url.USER_SIGNUP_REQUESTS)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> userSignupApprovalListAjax() {
+
+        final DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        final List<UserSignupRequestEntity> pendingEntities =
+                userSignupRequestRepository.findByStatusOrderByCreatedAtDesc("PENDING");
+        final List<UserSignupRequestEntity> recentEntities =
+                userSignupRequestRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                        .stream().limit(30).toList();
+
+        final List<Map<String, Object>> pendingList = pendingEntities.stream()
+                .map(req -> toRow(req, fmt))
+                .toList();
+        final List<Map<String, Object>> recentList = recentEntities.stream()
+                .map(req -> toRow(req, fmt))
+                .toList();
+
+        final Map<String, Object> rsltObj = new HashMap<>();
+        rsltObj.put("pendingList", pendingList);
+        rsltObj.put("recentList", recentList);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(rsltObj));
+    }
+
+    /**
+     * 신청 레코드를 클라이언트 전송용 Map 으로 변환한다.
+     *
+     * @param req 신청 엔티티
+     * @param fmt 날짜 포맷터
+     * @return {@link Map}
+     */
+    private Map<String, Object> toRow(final UserSignupRequestEntity req, final DateFormat fmt) {
+        final Map<String, Object> row = new HashMap<>();
+        row.put("id", req.getId());
+        row.put("username", req.getUsername());
+        row.put("nickname", req.getNickname());
+        row.put("email", req.getEmail());
+        row.put("status", req.getStatus());
+        row.put("createdAt", req.getCreatedAt() != null ? fmt.format(req.getCreatedAt()) : "");
+        return row;
+    }
+
 }

@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
+import io.nicheblog.dreamdiary.global.Url;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -90,15 +91,14 @@ public class OAuth2AuthenticationSuccessHandler
             // 로그인 성공시 브라우저 캐시 초기화 처리
             HttpUtils.setInvalidateBrowserCacheHeader(response);
 
-            // 로그인 성공 스크립트 처리
+            // 세션에서 인증 관련 임시 속성 제거
+            clearAuthenticationAttributes(request);
+
+            // 로그인 성공 스크립트 처리 :: response 커밋 후 super 를 호출하지 않는다.
             this.setSuccessResponse(response);
 
             // 로그인 성공 로그 처리
             publisher.publishAsyncEvent(new LogEvent(this, new LogParam(true)));
-            
-            // 이전 페이지 :: 부재시 메인 페이지로 리다이렉트
-            // 상속받은 상위 SavedRequestAwareAuthenticationSuccessHandler의 메소드 call
-            super.onAuthenticationSuccess(request, response, authentication);
         } catch (Exception e) {
             // 로그인 실패 스크립트 처리
             final String errorMsg = e.getMessage();
@@ -117,24 +117,16 @@ public class OAuth2AuthenticationSuccessHandler
      */
     public void setSuccessResponse(final HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
-        final String msg = "로그인에 성공했습니다.";
+        // Vue SPA 팝업 인증 성공 :: opener 를 메인으로 이동시키고 팝업을 닫는다.
         final String url = "/";
         try (final PrintWriter out = response.getWriter()) {
-            out.println("<script language=\"JavaScript\" type=\"text/JavaScript\">");
-            out.println("const hasSwal = (typeof Swal !== \"undefined\");");
-            out.println("if (hasSwal) {");
-            out.println("   Swal.fire({\"text\": \"" + msg + "\"});");
-            out.println("} else {");
-            out.println("   alert(\"" + msg + "\");");
-            out.println("}");
-            out.println("if (window.opener) { ");
-            out.println("   window.opener.location.replace('" + url + "');");
-            out.println("}");
+            out.println("<script>");
+            out.println("if (window.opener) { window.opener.location.replace('" + url + "'); }");
             out.println("window.close();");
             out.println("</script>");
         } catch (final IOException e) {
             log.info(MessageUtils.getExceptionMsg(e));
-            response.sendRedirect("/");
+            response.sendRedirect(url);
         }
     }
 
@@ -145,20 +137,18 @@ public class OAuth2AuthenticationSuccessHandler
      */
     public void setFaiilureResponse(final HttpServletResponse response, final String errorMsg) throws IOException {
         response.setContentType("text/html; charset=utf-8");
-        final String url = "/";
+        // Vue SPA 팝업 인증 실패 :: 오류 메시지를 쿼리 파라미터로 Vue 로그인 화면에 전달하고 팝업을 닫는다.
+        final String loginUrl = Url.VUE_SIGN_IN;
+        final String safeMsg = (errorMsg != null) ? errorMsg.replace("'", "\\'") : "";
         try (final PrintWriter out = response.getWriter()) {
-            out.println("<script language=\"JavaScript\" type=\"text/JavaScript\">");
-            out.println("const hasSwal = (typeof Swal !== \"undefined\");");
-            out.println("if (hasSwal) {");
-            out.println("   Swal.fire({\"text\": `" + errorMsg + "`}).then(() => { window.close(); });");
-            out.println("} else {");
-            out.println("   alert(\"" + errorMsg + "\");");
-            out.println("   window.close();");
-            out.println("}");
+            out.println("<script>");
+            out.println("const errMsg = encodeURIComponent('" + safeMsg + "');");
+            out.println("if (window.opener) { window.opener.location.replace('" + loginUrl + "?oauthError=' + errMsg); }");
+            out.println("window.close();");
             out.println("</script>");
         } catch (final IOException e) {
             log.info(MessageUtils.getExceptionMsg(e));
-            response.sendRedirect("/");
+            response.sendRedirect(loginUrl);
         }
     }
 }

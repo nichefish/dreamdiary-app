@@ -1,0 +1,12 @@
+/**
+ * _colors.scss
+ * 정의된 색상 기반으로 css 자동 생성
+ *
+ * @auther nichefish
+ */
+@use "../abstracts/variables" as var;
+@use "../abstracts/mixins" as mixin;
+
+@each $name, $color in var.$color-map {
+    @include mixin.color-classes($name, $color);
+}

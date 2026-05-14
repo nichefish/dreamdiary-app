@@ -107,7 +107,7 @@ public class WebSecurityAdapter {
 
         // Form 로그인 설정
         http.formLogin()
-                .loginPage(Url.APP_AUTH_LGN_FORM)
+                .loginPage(Url.VUE_SIGN_IN)
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .loginProcessingUrl(Url.API_AUTH_LGN_PROC)
@@ -121,7 +121,7 @@ public class WebSecurityAdapter {
 
         // OAuth2 로그인 설정 (외부 인증 (구글 등) 이후 사용자 정보 로드)
         http.oauth2Login()
-                .loginPage(Url.APP_AUTH_LGN_FORM)
+                .loginPage(Url.VUE_SIGN_IN)
                 .userInfoEndpoint()
                     .userService(oauth2UserService)
                 .and()
@@ -173,14 +173,14 @@ public class WebSecurityAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(1)     // 최대 1개
                 .maxSessionsPreventsLogin(false)        // true:: 나중에 접속한 사용자 로그인 방지, false:: 먼저 접속한 사용자 로그아웃 처리
-                .expiredUrl(Url.APP_AUTH_LGN_FORM + "?dupLoginAt=Y")
+                .expiredUrl(Url.VUE_SIGN_IN + "?dupLoginAt=Y")
                 .sessionRegistry(sessionRegistry);
 
         // 로그아웃 설정
         http.logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher(Url.API_AUTH_LGOUT))
                 .logoutUrl(Url.API_AUTH_LGOUT)
-                .logoutSuccessUrl(Url.APP_AUTH_LGN_FORM)
+                .logoutSuccessUrl(Url.VUE_SIGN_IN)
                 .addLogoutHandler(logoutHandler)
                 .invalidateHttpSession(true);
 

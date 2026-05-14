@@ -80,12 +80,12 @@ pipeline {
                     sh "mv $lib/dreamdiary-*.jar $dist/dreamdiary.jar"  // 패턴에 매칭되는 파일이 한 개만 존재한다면 문제없이 동작합니다.
                     sh "cp -R config $dist"
 
-                    sh "mkdir -p ${dist}/file"  // `file` 폴더가 없으면 생성
-                    sh "cp -R file/upfile ${dist}/file/"
-                    sh "cp -R file/content ${dist}/file/"
-                    sh "mkdir -p ${dist}/file/report"
-                    sh "mkdir -p ${dist}/file/report/xlsx_template"
-                    sh "cp -R file/report/xlsx_template ${dist}/file/report/xlsx_template/"
+                    sh "mkdir -p ${dist}/files"  // `files` 폴더가 없으면 생성
+                    sh "cp -R files/upfiles ${dist}/files/"
+                    sh "cp -R files/contents ${dist}/files/"
+                    sh "mkdir -p ${dist}/files/reports"
+                    sh "mkdir -p ${dist}/files/reports/xlsx_template"
+                    sh "cp -R files/reports/xlsx_template ${dist}/files/reports/xlsx_template/"
 
                     sh "cp -R lib $dist"
                     sh "cp -R static $dist"
@@ -133,7 +133,7 @@ pipeline {
 
                                 # 기존 static, templates 폴더 삭제
                                 rm -rf static templates
-                                rm -rf file/content file/report/xlsx_template
+                                rm -rf files/contents files/reports/xlsx_template
 
                                 # 배포 패키지 압축 해제
                                 tar xzvf dist.tar.gz

@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.model.AuthUserDto;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
@@ -24,10 +25,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.nicheblog.dreamdiary.auth.security.provider.DreamdiaryAuthenticationProvider;
 import javax.annotation.security.PermitAll;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -57,6 +63,7 @@ public class AuthRestController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
+    private final DreamdiaryAuthenticationProvider authenticationProvider;
 
     /**
      * 인증 정보를 조회한다.
@@ -78,7 +85,7 @@ public class AuthRestController {
             final Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
             final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
 
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(authInfo));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
         } catch (final JwtException | AuthenticationException e) {
             return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
@@ -201,5 +208,67 @@ public class AuthRestController {
 
         final HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
+    }
+
+    /**
+     * Vue SPA용 JSON 로그인.
+     * DreamdiaryAuthenticationProvider 호출 → 인증 + JWT 쿠키 발급이 함께 처리된다.
+     *
+     * @param body JSON 바디 {@link LoginRequest}
+     * @return {@link ResponseEntity} 처리 결과와 메시지
+     */
+    @PostMapping(Url.API_AUTH_LOGIN)
+    @PermitAll
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> loginApiAjax(
+            final @RequestBody LoginRequest body
+    ) {
+        try {
+            final UsernamePasswordAuthenticationToken token =
+                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword());
+            final Authentication auth = authenticationProvider.authenticate(token);
+            final AuthInfo authInfo = (AuthInfo) auth.getPrincipal();
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
+        } catch (final AuthenticationException e) {
+            log.warn("Vue login failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AjaxResponse.withAjaxResult(false, e.getMessage()));
+        } catch (final Exception e) {
+            log.error("Vue login error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
+        }
+    }
+
+    /**
+     * Vue SPA용 JSON 로그아웃.
+     * JWT 쿠키 + 리프레시 토큰 쿠키를 삭제하고 세션을 무효화한다.
+     *
+     * @param request HTTP 요청 객체
+     * @return {@link ResponseEntity} 처리 결과와 메시지
+     */
+    @PostMapping(Url.API_AUTH_LGOUT_JSON)
+    @PermitAll
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> logoutApiAjax(
+            final HttpServletRequest request
+    ) {
+        SecurityContextHolder.clearContext();
+        CookieUtils.deleteJwtCookie();
+        CookieUtils.deleteRefreshTokenCookie();
+        final HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+    }
+
+    /**
+     * Vue SPA 로그인 요청 바디.
+     */
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginRequest {
+        private String username;
+        private String password;
     }
 }

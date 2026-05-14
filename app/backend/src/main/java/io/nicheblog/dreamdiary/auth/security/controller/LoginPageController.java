@@ -52,24 +52,14 @@ public class LoginPageController
     @RequestMapping(Url.APP_AUTH_LGN_FORM)
     @PermitAll
     public String loginForm(
-            final @RequestParam("dupLoginAt") @Nullable String dupLoginAt,
-            final ModelMap model
-    ) throws Exception {
-
-        /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.LGN_PAGE);
-        model.addAttribute("pageName", PageName.DEFAULT);
-
+            final @RequestParam("dupLoginAt") @Nullable String dupLoginAt
+    ) {
         // 로그인 상태일 경우:: 메인 화면으로 리다이렉트
         if (AuthUtils.isAuthenticated()) return "redirect:" + Url.MAIN;
 
-        // remember-me 관련 파라미터 세팅
-        model.addAttribute("REMEMBER_ME_PARAM", REMEMBER_ME_PARAM);
-
-        // 중복 로그인으로 인해 로그인 면으로 튕겨나왔을 경우 alert
-        if ("Y".equals(dupLoginAt)) MessageUtils.alertMessageByKey("msg.auth.dup-login.logged-out", Url.APP_AUTH_LGN_FORM);
-
-        return "/view/auth/security/login_form";
+        // 레거시 로그인 URL → Vue SPA 로그인 화면으로 리다이렉트
+        if ("Y".equals(dupLoginAt)) return "redirect:" + Url.VUE_SIGN_IN + "?dupLoginAt=Y";
+        return "redirect:" + Url.VUE_SIGN_IN;
     }
 
     /**
@@ -82,6 +72,6 @@ public class LoginPageController
 
         log.info("'GET' access in loginProc!");
 
-        return "redirect:" + Url.APP_AUTH_LGN_FORM;
+        return "redirect:" + Url.VUE_SIGN_IN;
     }
 }

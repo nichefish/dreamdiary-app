@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +38,11 @@ public class FreemarkerConfig
     /** 템플릿 경로 */
     private final String[] TEMPLATE_PATHS = {
             "classpath:/static/react",
-            "classpath:/react",
-            "file:templates"
+            "classpath:/react"
     };
 
-    @Value("${spring.freemarker.template-loader-path}")
-    private String TEMPLATE_PATH;
+    /** Email template root. Browser views are being migrated away from FreeMarker. */
+    private static final String EMAIL_TEMPLATE_PATH = "classpath:/templates/";
 
     /**
      * FreeMarkerConfigurer 빈의 초기화 후 처리를 담당합니다.
@@ -89,10 +87,6 @@ public class FreemarkerConfig
         configuration.setTimeFormat(DatePtn.TIME.pattern);
         // 숫자에 콤마 제거!!! (1000 넘어가는 ID(PK)에서 개꼬임...)
         configuration.setNumberFormat("computer");
-        // 템플릿 import
-        configuration.addAutoImport("spring", "lib/spring.ftl");
-        configuration.addAutoImport("fn", "lib/functions.ftl");
-        configuration.addAutoImport("component", "lib/components.ftl");
         // static 변수 임포트
         configuration.setSharedVariables(this.getSharedVariables(configuration));
     }
@@ -149,7 +143,7 @@ public class FreemarkerConfig
     @Primary
     public FreeMarkerConfigurationFactoryBean freemarkerEmailConfig() {
         final FreeMarkerConfigurationFactoryBean factoryBean = new FreeMarkerConfigurationFactoryBean();
-        factoryBean.setTemplateLoaderPath(TEMPLATE_PATH);
+        factoryBean.setTemplateLoaderPath(EMAIL_TEMPLATE_PATH);
         factoryBean.setDefaultEncoding(Constant.CHARSET_UTF_8);
         return factoryBean;
     }

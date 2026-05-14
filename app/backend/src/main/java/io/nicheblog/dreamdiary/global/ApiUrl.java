@@ -21,6 +21,12 @@ public interface ApiUrl {
     String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
     String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
     String API_AUTH_INFO = Prefix.API + "/auth/get-auth-account";
+    /** Vue SPA용 JSON 로그인/로그아웃 */
+    String API_AUTH_LOGIN = Prefix.API + "/auth/login";
+    String API_AUTH_LGOUT_JSON = Prefix.API + "/auth/logout-json";
+
+    /** 관리자 홈 */
+    String ADMIN_PAGE_BOOTSTRAP = Prefix.API + "/admin/page/bootstrap";
 
     /** 소셜 로그인 팝업 */
     String OAUTH2_GOOGLE = "/oauth2/authorization/google";
@@ -81,6 +87,8 @@ public interface ApiUrl {
     String JOURNAL_ANNUAL_MAKE_AJAX = Prefix.API + "/journal/annual/make";
     String JOURNAL_ANNUAL_MAKE_TOTAL_AJAX = Prefix.API + "/journal/annual/make-total";
     String JOURNAL_ANNUAL_DREAM_COMPT_AJAX = Prefix.API + "/journal/annual/dream-compt";
+    /** 저널 연간 총 집계 조회 */
+    String JOURNAL_ANNUAL_TOTAL = Prefix.API + "/journal/annual/total";
     /** 저널 연간 리뷰 */
     String JOURNAL_ANNUAL_REVIEWS = Prefix.API + "/journal/annual/reviews";
     String JOURNAL_ANNUAL_REVIEW = Prefix.API + "/journal/annual/review/{id}";
@@ -98,6 +106,7 @@ public interface ApiUrl {
     String USERS_DUPLICATE_EMAIL_CHECK = Prefix.API + "/users/duplicate-check/email";
 
     /** 내 정보 관리 */
+    String USER_MY_INFO = Prefix.API + "/user/my";
     String USER_MY_UPLOAD_PROFL_IMG_AJAX = Prefix.API + "/user/my/upload-profl-img";
     String USER_MY_REMOVE_PROFL_IMG_AJAX = Prefix.API + "/user/my/remove-profl-img";
     String USER_MY_PW_CF_AJAX = Prefix.API + "/user/my/pw-cf";
@@ -157,6 +166,7 @@ public interface ApiUrl {
     String CODE_ITEM_UNUSE = Prefix.API + "/code/item/unuse";
 
     /** 로그 조회 */
+    String LOGS = Prefix.API + "/logs";
     String LOG = Prefix.API + "/logs/{id}";
     String LOG_LIST_XLSX_DOWNLOAD = Prefix.API + "/log/list-xlsx-download.do";
 
@@ -180,6 +190,7 @@ public interface ApiUrl {
     /* ---------- */
 
     String SCHEDULE_CAL_LIST_AJAX = Prefix.API + "/schedule/cal-list";
+    String SCHEDULE_BOOTSTRAP = Prefix.API + "/schedule/bootstrap";
     String SCHEDULE_REG_AJAX = Prefix.API + "/schedule/cal-reg";
     String SCHEDULE_DTL_AJAX = Prefix.API + "/schedule/cal-dtl";
     String SCHEDULE_MDF_AJAX = Prefix.API + "/schedule/cal-mdf";

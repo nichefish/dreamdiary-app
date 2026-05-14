@@ -47,16 +47,16 @@ public class ErrorPageController
         final Object statusObj = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
         // 응답 코드에 따른 페이지 분기
-        if (statusObj == null) return "/view/global/common/error/error_page";
+        if (statusObj == null) return redirectToVueError("general");
 
         final int statusCode = Integer.parseInt(statusObj.toString());
         final HttpStatus status = HttpStatus.resolve(statusCode);
-        if (status == null) return "/view/global/common/error/error_page";
+        if (status == null) return redirectToVueError("general");
         return switch (status) {
-            case BAD_REQUEST -> "/view/global/common/error/error_bad_request";
-            case FORBIDDEN -> "/view/global/common/error/error_access_denied";
-            case NOT_FOUND -> "/view/global/common/error/error_not_found";
-            default -> "/view/global/common/error/error_page";
+            case BAD_REQUEST -> redirectToVueError("bad_request");
+            case FORBIDDEN -> redirectToVueError("access_denied");
+            case NOT_FOUND -> redirectToVueError("not_found");
+            default -> redirectToVueError("general");
         };
     }
 
@@ -76,8 +76,7 @@ public class ErrorPageController
         model.addAttribute("menuLabel", SiteMenu.ERROR);
         model.addAttribute("pageName", PageName.DEFAULT);
 
-        // 에러 화면 반환
-        return "/view/global/common/error/error_not_found";
+        return redirectToVueError("not_found");
     }
 
     /**
@@ -96,8 +95,7 @@ public class ErrorPageController
         model.addAttribute("menuLabel", SiteMenu.ERROR);
         model.addAttribute("pageName", PageName.DEFAULT);
 
-        // 에러 화면으로 리다이렉트 리다리렉트
-        return "/view/global/common/error/error_access_denied";
+        return redirectToVueError("access_denied");
     }
 
     /**
@@ -116,7 +114,10 @@ public class ErrorPageController
         model.addAttribute("menuLabel", SiteMenu.ERROR);
         model.addAttribute("pageName", PageName.DEFAULT);
 
-        // 에러 화면으로 리다이렉트 리다리렉트
-        return "/view/global/common/error/error_page";
+        return redirectToVueError("general");
+    }
+
+    private String redirectToVueError(final String errorType) {
+        return "redirect:/vue-app/error?type=" + errorType;
     }
 }
