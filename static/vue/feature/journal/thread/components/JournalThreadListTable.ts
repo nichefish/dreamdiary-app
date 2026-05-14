@@ -39,14 +39,11 @@ export default {
         },
 
         /**
-         * 태그 모달 진입(:: 전역 레거시 `dF.Tag.dtlModal`).
+         * 태그 모달 진입.
+         * 변경 전: 전역 레거시 `dF.Tag.dtlModal` 브리지 → `tag:open-dtl-modal` CustomEvent dispatch.
          */
         tagDetail(tagId: string): void {
-            const w = window as any;
-            const fn = w.dF?.Tag?.dtlModal;
-            if (typeof fn !== "function")
-                return;
-            fn(tagId);
+            window.dispatchEvent(new CustomEvent("tag:open-dtl-modal", { detail: { id: tagId } }));
         },
 
         /**

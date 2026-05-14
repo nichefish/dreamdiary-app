@@ -9,7 +9,7 @@
         <div class="col-1 ms-4 me-6 text-center fs-6">
             <b class="pe-3"><@spring.message 'txt.tag'/> : </b>
             <button type="button" class="btn btn-sm btn-secondary btn-outline btn-active-secondary w-30px h-30px p-0"
-                    onclick="dF.Tag.resetFilter();"
+                    onclick="dF.TagService.resetFilter();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-clear'/>">
                 <i class="bi bi-arrow-counterclockwise fs-5 pe-0"></i>
             </button>
@@ -29,7 +29,7 @@
                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-current-active'/>"></i>
                 </#if>
                 <span class="py-2 me-3 cursor-pointer opacity-hover"
-                      onclick="dF.Tag.filter('${tag.id!}');"
+                      onclick="dF.TagService.filter('${tag.id!}');"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-set'/>">
                     <span class="${tag.tagClass!} ${tag.textClass!}">
                         <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>

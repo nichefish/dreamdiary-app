@@ -26,6 +26,8 @@
  * @author nichefish
  */
 
+import * as tagService from "../../../attachable/tag/tagService.js";
+
 type EntryMeta = Record<string, any>;
 type TagModule = Record<string, any>;
 
@@ -328,18 +330,13 @@ export function tagGroupListAllAjax(contentType: string): void {
         console.error("[journalEntryTagService] meta missing:", contentType);
         return;
     }
-    const tagNs = (window as any).dF?.Tag;
-    if (!tagNs?.groupTagsByCategory) {
-        console.error("[journalEntryTagService] dF.Tag.groupTagsByCategory missing.");
-        return;
-    }
     const ajaxData: Record<string, any> = { yy: 9999, mnth: 99, type: meta.entryType };
     cF.ajax.get(meta.tagsUrl, ajaxData, function(res: AjaxResponse): void {
         if (!res.rslt) {
             if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
             return;
         }
-        const groupedList = tagNs.groupTagsByCategory(res.rsltList);
+        const groupedList = tagService.groupTagsByCategory(res.rsltList);
         for (const ctgr in groupedList) {
             if (!Object.prototype.hasOwnProperty.call(groupedList, ctgr)) continue;
             cF.handlebars.append({ ctgr, tagList: groupedList[ctgr] }, "journal_tag_list");

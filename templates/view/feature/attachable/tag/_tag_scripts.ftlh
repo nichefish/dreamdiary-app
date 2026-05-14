@@ -4,5 +4,4 @@
  -->
 
 <#include "/view/feature/attachable/tag/_modal/_tag_dtl_modal.ftlh">
-<#include "/view/feature/attachable/tag/_tag_dtl_post_list_template.hbs">
 <#include "/view/feature/attachable/tag/_modal/_tag_list_modal.ftlh">
