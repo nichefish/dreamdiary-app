@@ -33,13 +33,11 @@ function requestWeeklyReload(stdrdDt: string, targetDt?: string): void {
  */
 function initWeeklyPageShell(): void {
     void dF.JournalEntry.initAll("WEEKLY");
-    dF.Comment.modal.init({
-        refreshFunc: function(): void {
-            const stdrdDt: string = String(window.JournalDayWeeklyApp?.getSearchParams?.()?.stdrdDt
-                ?? window.JOURNAL?.stdrdDt
-                ?? cF.date.getCurrDateStr(cF.date.ptnDate));
-            requestWeeklyReload(stdrdDt);
-        }
+    window.addEventListener("comment:modal-refresh", function(): void {
+        const stdrdDt: string = String(window.JournalDayWeeklyApp?.getSearchParams?.()?.stdrdDt
+            ?? window.JOURNAL?.stdrdDt
+            ?? cF.date.getCurrDateStr(cF.date.ptnDate));
+        requestWeeklyReload(stdrdDt);
     });
     dF.State.init();
 

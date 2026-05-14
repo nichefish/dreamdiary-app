@@ -218,8 +218,8 @@ document.addEventListener("DOMContentLoaded", async function(): Promise<void> {
     /** @keepInSync static/vue/feature/journal/day/journalDayListBridge.ts */
     const journalDayResolveListBridge = (): JournalDayListAppBridge | undefined =>
         window.JournalDayMonthlyApp ?? window.JournalDayWeeklyApp ?? window.JournalDayDailyApp;
-    dF.Comment.modal.init({
-        "refreshFunc": function(): void { journalDayResolveListBridge()?.applySearchParamsAndReload?.({}, "MONTHLY"); }
+    window.addEventListener("comment:modal-refresh", function(): void {
+        journalDayResolveListBridge()?.applySearchParamsAndReload?.({}, "MONTHLY");
     });
     dF.State.init();
 

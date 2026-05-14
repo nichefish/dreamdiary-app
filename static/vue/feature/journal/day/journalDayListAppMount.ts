@@ -479,10 +479,8 @@ function applySearchParamsAndReload(patch: Record<string, any>, scope: JournalDa
 function initializeMonthlyPage(): void {
     /* 변경(3순위, 2026-05-09): bootstrapDfJournalDayShell 은 runWhenDomReady 동기 구간에서 이미 호출됨. */
     void dF.JournalEntry.initAll("LIST");
-    dF.Comment.modal.init({
-        refreshFunc: function(): void {
-            applySearchParamsAndReload({}, "MONTHLY");
-        }
+    window.addEventListener("comment:modal-refresh", function(): void {
+        applySearchParamsAndReload({}, "MONTHLY");
     });
     dF.State.init();
 

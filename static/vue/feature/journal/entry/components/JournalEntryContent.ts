@@ -4,6 +4,7 @@
  */
 
 import journalDayUiBridgeService from "../../day/services/journalDayUiBridgeService.js";
+import commentActionService from "../../../attachable/comment/services/commentActionService.js";
 
 const JournalEntryContent = {
     name: "JournalEntryContent",
@@ -74,10 +75,14 @@ const JournalEntryContent = {
             dF.RelatedContent.deleteAjax(Number(relatedContent.id), event.currentTarget);
         },
         openCommentMdfModal(comment: Record<string, any>): void {
-            dF.Comment.modal.mdfModal(comment.id);
+            window.dispatchEvent(new CustomEvent("comment:open-mdf-modal", {
+                detail: { id: comment.id },
+            }));
         },
         deleteComment(comment: Record<string, any>): void {
-            dF.Comment.modal.delAjax(comment.id);
+            commentActionService.del(comment.id, {}, (): void => {
+                window.dispatchEvent(new CustomEvent("comment:modal-refresh"));
+            });
         },
         tooltip(labelKey: string, actionKey: string): string {
             return [this.t(labelKey), this.t(actionKey)].join(" ");

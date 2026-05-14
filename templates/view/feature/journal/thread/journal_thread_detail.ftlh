@@ -56,7 +56,6 @@
 </form>
 
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <script type="module" src="/vue/feature/journal/thread/JournalThreadDetailApp.js?${releaseDate!}"></script>
 

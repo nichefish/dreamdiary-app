@@ -120,12 +120,9 @@ const JournalAnnualEntryItem = {
          * 변경 전: `comment_reg_btn_partial` onclick="dF.Comment.modal.regModal({{id}}, '{{contentType}}');".
          */
         openCommentRegistModal(): void {
-            const ns: any = (window as any).dF?.Comment?.modal;
-            if (!ns?.regModal) {
-                console.error("[JournalAnnualEntryItem] dF.Comment.modal.regModal 미등록.");
-                return;
-            }
-            ns.regModal(this.entry.id, this.contentType);
+            window.dispatchEvent(new CustomEvent("comment:open-reg-modal", {
+                detail: { refId: this.entry.id, refContentType: this.contentType },
+            }));
         },
         /**
          * 변경 전: `journal_entry_copy_btn_partial` onclick="{{module}}.copy({{id}});" — module 은 contentType 분기로 결정된 entry module.

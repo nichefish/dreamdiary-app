@@ -22,7 +22,7 @@
 <#macro list_comment post >
     <#if post.comment?? && post.comment.cnt gt 0>
         <span class="mx-1 text-noti btn-active-warning fs-x-small cursor-pointer opacity-hover"
-              onclick="CommentList.modal(${post.id!}, '${post.contentType}');"
+              onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('comment:open-list-modal', { detail: { refId: ${post.id!}, refContentType: '${post.contentType}' } }));"
               data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'txt.comment'/> 모달 호출">
         [${post.comment.cnt!0}]
         </span>

@@ -35,7 +35,9 @@ const JournalEntrySearchItem = {
             dF.JournalEntry.get(this.contentType).toggle(this.entry.id, event.currentTarget);
         },
         openCommentRegModal(): void {
-            dF.Comment.modal.regModal(this.entry.id, this.contentType);
+            window.dispatchEvent(new CustomEvent("comment:open-reg-modal", {
+                detail: { refId: this.entry.id, refContentType: this.contentType },
+            }));
         },
         copyEntry(): void {
             dF.JournalEntry.get(this.contentType).copy(this.entry.id);

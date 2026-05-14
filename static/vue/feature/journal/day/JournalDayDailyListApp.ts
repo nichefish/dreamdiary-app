@@ -30,13 +30,11 @@ function requestDailyReload(stdrdDt: string): void {
  */
 function initDailyPageShell(): void {
     void dF.JournalEntry.initAll("DAILY");
-    dF.Comment.modal.init({
-        refreshFunc: function(): void {
-            const stdrdDt: string = String(window.JournalDayDailyApp?.getSearchParams?.()?.stdrdDt
-                ?? window.JOURNAL?.stdrdDt
-                ?? cF.date.getCurrDateStr(cF.date.ptnDate));
-            requestDailyReload(stdrdDt);
-        }
+    window.addEventListener("comment:modal-refresh", function(): void {
+        const stdrdDt: string = String(window.JournalDayDailyApp?.getSearchParams?.()?.stdrdDt
+            ?? window.JOURNAL?.stdrdDt
+            ?? cF.date.getCurrDateStr(cF.date.ptnDate));
+        requestDailyReload(stdrdDt);
     });
     dF.State.init();
 

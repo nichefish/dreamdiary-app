@@ -127,7 +127,6 @@
      호출자 없음(별개의 id `comment_list` 모달은 `_comment_list_modal.ftlh` 가 보유, 본 정리 범위 밖). -->
 <#-- 변경(A-7-γ): `_comment_reg_btn_partial` include 제거 — `_journal_annual_entry_list_template.hbs` 가 유일 호출자였고
      본 phase 에서 Vue(`JournalAnnualEntryItem` 우열 인라인 댓글 등록 버튼) 로 흡수. -->
-<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/attachable/related/related_content_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
