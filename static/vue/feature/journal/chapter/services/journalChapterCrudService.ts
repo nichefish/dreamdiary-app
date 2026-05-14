@@ -19,20 +19,12 @@
 import { resolveMessage } from "../../../../common/messageHelper.js";
 
 import { getJournalDayListBridge } from "../../day/journalDayListBridge.js";
+import * as stateService from "../../../attachable/state/stateService.js";
 
 type ListVueBridge = {
     mounted?: boolean;
     refresh?: () => void;
 };
-
-type StateService = {
-    resolveJournalCacheContext?: (item: HTMLElement | null) => Record<string, any>;
-    toggleAjax?: (payload: Record<string, any>, callback: (res: AjaxResponse) => void) => void;
-};
-
-function getStateService(): StateService | undefined {
-    return ((window as any).dF as { State?: StateService } | undefined)?.State;
-}
 
 function getDayTagService(): { refreshDayTagList?: () => void } | undefined {
     return ((window as any).dF as { JournalDayTagService?: { refreshDayTagList?: () => void } } | undefined)?.JournalDayTagService;
@@ -101,11 +93,6 @@ function toggleStateAjax(
     if (isNaN(Number(id))) return;
 
     const item = document.querySelector(`.journal-chapter-item[data-id='${id}']`) as HTMLElement | null;
-    const stateService = getStateService();
-    if (!stateService?.resolveJournalCacheContext || !stateService.toggleAjax) {
-        console.error("[journalChapterCrudService] dF.State.* unavailable.");
-        return;
-    }
     const cacheContext = stateService.resolveJournalCacheContext(item);
     const payload = { id, contentType: "JOURNAL_CHAPTER", stateKey, cacheContext };
     stateService.toggleAjax(payload, function(res: AjaxResponse): void {

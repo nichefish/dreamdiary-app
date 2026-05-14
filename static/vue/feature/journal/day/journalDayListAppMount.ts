@@ -485,7 +485,6 @@ function initializeMonthlyPage(): void {
     window.addEventListener("related-content:refresh", function(): void {
         applySearchParamsAndReload({}, "MONTHLY");
     });
-    dF.State.init();
 
     dF.JournalEntry.bindSearchPopupEnterKeys();
 }
