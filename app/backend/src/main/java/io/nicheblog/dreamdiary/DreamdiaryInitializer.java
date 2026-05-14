@@ -76,9 +76,9 @@ public class DreamdiaryInitializer
         this.regAuthPolicyIfEmpty();
 
         // 파일 관련 기본 폴더 생성
-        FileUtils.ensureDirectory("file/");
-        FileUtils.ensureDirectory("file/upfile/");
-        FileUtils.ensureDirectory("file/report/");
+        FileUtils.ensureDirectory("files/");
+        FileUtils.ensureDirectory("files/upfiles/");
+        FileUtils.ensureDirectory("files/reports/");
 
         // 캐시 웜업:: 초기 로딩 속도를 희생하여 미리 캐싱 처리함으로써 실행속도 상승
         publisher.publishAsyncEvent(new CacheWarmupEvent(this));

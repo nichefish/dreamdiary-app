@@ -46,7 +46,6 @@ public enum ActvtyCtgr {
     AUTH_POLICY("인증 정책 관리"),
     MENU("메뉴 관리"),
     BOARD("게시판 관리"),
-    TMPLAT("템플릿 관리"),
     CODE("코드 관리"),
     // LOG
     LOG("로그"),
@@ -55,8 +54,7 @@ public enum ActvtyCtgr {
     FILE("파일"),
 
     // DEPRECATED
-    SCHEDULE("일정 관리"),
-    NOTION("노션");
+    SCHEDULE("일정 관리");
 
     public final String desc;
 }

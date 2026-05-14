@@ -1,0 +1,35 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "exclude": [
+    "src/assets/**",
+    "src/components/**",
+    "src/core/data/**",
+    "src/core/helpers/**",
+    "src/core/plugins/**",
+    "src/layouts/default/components/drawers/**",
+    "src/layouts/default/components/extras/**",
+    "src/layouts/default/components/modals/**",
+    "src/layouts/default/components/search/**",
+    "src/layouts/default/components/theme-mode/**",
+    "src/layouts/default/components/toolbar/**",
+    "src/vendor/metronic/components/**",
+    "src/views/crafted/**",
+    "src/views/LayoutBuilder.vue"
+  ],
+  "compilerOptions": {
+    "lib": ["es2017"],
+    "ignoreDeprecations": "5.0",
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@metronic/*": ["./src/vendor/metronic/*"]
+    }
+  },
+  "references": [
+    {
+      "path": "./tsconfig.config.json"
+    }
+  ]
+}

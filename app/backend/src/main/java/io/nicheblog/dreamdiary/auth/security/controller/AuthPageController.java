@@ -11,11 +11,12 @@ import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseController
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.util.UriUtils;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * AuthPageController
@@ -39,30 +40,27 @@ public class AuthPageController
      * 사용자 신청 인증코드 메일로부터 사용자를 인증합니다.
      *
      * @param token 사용자 신청시 생성된 jwt 토큰
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @return Vue SPA 인증 결과 화면 redirect 경로
      */
     @GetMapping(Url.API_AUTH_VERIFY)
     public String verifySecurityCode(
-            final @PathVariable("token") String token,
-            final ModelMap model
+            final @PathVariable("token") String token
     ) {
-
-        String rsltMsg = null;
         try {
             if (StringUtils.isEmpty(token)) throw new AuthenticationFailureException("msg.auth.verify.token.empty");
             if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("msg.auth.verify.token.expired");
-            
+
             final String username = jwtTokenProvider.getUsernameFromToken(token);
             // 계정 승인 처리
             final boolean approved = userSignupService.cfByUsername(username).getRslt();
             if (!approved) throw new AlreadyAuthenticatedException("msg.auth.verify.request.not-approvable");
 
-            return "/view/auth/security/verify_success";
+            return "redirect:/vue-app/auth/verify-result?status=success";
         } catch (final Exception e) {
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            model.addAttribute("errorMsg", rsltMsg);
+            final String rsltMsg = StringUtils.defaultIfBlank(MessageUtils.getExceptionMsg(e), "인증 링크를 다시 확인해주세요.");
+            final String encodedMessage = UriUtils.encodeQueryParam(rsltMsg, StandardCharsets.UTF_8);
 
-            return "/view/auth/security/verify_failure";
+            return "redirect:/vue-app/auth/verify-result?status=failure&message=" + encodedMessage;
         }
     }
 }

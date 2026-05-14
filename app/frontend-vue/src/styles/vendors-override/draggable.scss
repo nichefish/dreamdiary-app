@@ -1,0 +1,12 @@
+.dragging {
+    background-color: #a9d9a4 !important;
+    opacity: 75%;
+}
+
+.draggable-modified {
+    /*    border-color: #ed7000 !important;*/
+    /*    border-width: 1px !important;*/
+    background-color: rgba(237, 112, 0, 0.1);
+    animation: blink-effect 0.75s step-end infinite;
+    -webkit-animation: blink 0.75s linear infinite;
+}

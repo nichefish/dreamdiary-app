@@ -55,9 +55,9 @@ public class AjaxAwareAuthenticationEntryPoint
         // 일반 요청은 안내 후 로그인 페이지로 보낸다.
         response.setContentType("text/html; charset=utf-8");
         final String currentUrl = request.getRequestURI();
-        if (currentUrl.equals(Url.APP_AUTH_LGN_FORM)) return;
+        if (currentUrl.equals(Url.VUE_SIGN_IN)) return;
 
-        final String loginFormUrl = Url.APP_AUTH_LGN_FORM;
+        final String loginFormUrl = Url.VUE_SIGN_IN;
         try (PrintWriter out = response.getWriter()) {
             out.println("<script type=\"text/javascript\">");
             out.println("const isPopup = !!window.opener && window.opener !== window;");

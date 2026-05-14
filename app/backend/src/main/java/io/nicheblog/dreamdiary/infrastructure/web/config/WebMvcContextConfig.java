@@ -12,7 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -57,14 +60,14 @@ public class WebMvcContextConfig
 
         // 파일 업로드 경로
         final String upfileContextPath = "/upfile/**";
-        final String upfileResourcePath = "file:file/upfile/";
+        final String upfileResourcePath = "file:files/upfiles/";
         registry.addResourceHandler(upfileContextPath)
                 .addResourceLocations(upfileResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // 정적 컨텐츠 경로
         final String contentContextPath = "/content/**";
-        final String contentResourcePath = "file:file/content/";
+        final String contentResourcePath = "file:files/contents/";
         registry.addResourceHandler(contentContextPath)
                 .addResourceLocations(contentResourcePath)
                 .resourceChain(true)
@@ -76,13 +79,22 @@ public class WebMvcContextConfig
                 .addResourceLocations(reactResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
-        // vue 경로 = 기본경로에 추가로 동작하도록
-        final String vueContextPath = "/vue/**";
-        final String vueResourcePath = "file:static/vue/";
-        registry.addResourceHandler(vueContextPath)
-                .addResourceLocations(vueResourcePath)
-                .resourceChain(true)
-                .addResolver(new UTF8DecodeResourceResolver());
+        // vue-app 경로 = Vue SPA (index.html SPA 폴백 포함)
+        final String vueAppContextPath = "/vue-app/**";
+        final String vueAppResourcePath = "file:static/vue-app/";
+        registry.addResourceHandler(vueAppContextPath)
+                .addResourceLocations(vueAppResourcePath)
+                .resourceChain(false)
+                .addResolver(new PathResourceResolver() {
+                    @Override
+                    protected Resource getResource(final String resourcePath, final Resource location) throws java.io.IOException {
+                        final Resource requested = location.createRelative(resourcePath);
+                        // 실제 파일이 존재하면 그대로 서빙, 없으면 SPA index.html 폴백
+                        if (requested.exists() && requested.isReadable()) return requested;
+                        final Resource indexHtml = new FileSystemResource("static/vue-app/index.html");
+                        return indexHtml.exists() ? indexHtml : null;
+                    }
+                });
         // 기본 static 경로
         final String staticContextPath = "/static/**";
         final String orglStaticPath = "classpath:/static/";

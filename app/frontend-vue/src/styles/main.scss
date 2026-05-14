@@ -1,0 +1,17 @@
+/**
+ * main.scss
+ * "직접적으로 스타일을 정의하지 않고 단지 import만을 담당하는 파일이다."
+ *
+ * @auther nichefish
+ */
+
+@use "abstracts/_variables";
+@use "abstracts/_mixins";
+@use "abstracts/_utilities";
+
+@use "base/_base";
+@use "base/_colors";
+
+@use 'vendors-override/draggable';
+@use 'vendors-override/fullcalendar';
+@use 'vendors-override/tinymce';

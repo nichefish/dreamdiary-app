@@ -1,0 +1,51 @@
+/**
+ * markdown.scss
+ * 마크다운 관련 css 내용을 정의한다.
+ *
+ * @auther : nichefish
+ */
+
+@use "abstracts/_mixins" as mixin;
+
+$color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
+@include mixin.color-classes("dream", $color-dream);
+
+/** ----------------------- */
+
+.md-text-dialog {
+    color: #5c8fb0 !important;
+}
+.md-text-muted {
+    color: #6c757d !important;
+}
+.md-text-danger {
+    color: #dc3545 !important;
+}
+
+/* 강조글 하위 markdown */
+.md-text-noti {
+    color: #ed7000 !important;
+
+    .md-text-dialog {
+        color: #8b7f91 !important;
+    }
+    .md-text-muted {
+        color: #a67850 !important;
+    }
+    .md-text-danger {
+        color: #a04435 !important;
+    }
+}
+
+/* 댓글 하위 markdown */
+.text-comment {
+    .md-text-dialo32g {
+        color: #8b7f91 !important;
+    }
+    .md-text-muted {
+        color: #a67850 !important;
+    }
+    .md-text-dan2ger {
+        color: #a04435 !important;
+    }
+}

@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.thread.controller;
 
 import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadSearchParam;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -13,6 +14,9 @@ import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +44,33 @@ public class JournalThreadRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;      // 작업 카테고리 (로그 적재용)
 
     private final JournalThreadService journalThreadService;
+
+    /**
+     * 저널 스레드 목록 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     * 추가(thread-1): Vue SPA 목록 조회용 REST 엔드포인트.
+     *
+     * @param searchParam 검색 조건 (categoryCode, searchKeyword 등)
+     * @param page 페이지 번호 (0-based, 기본값: 0)
+     * @param size 페이지 크기 (기본값: 10)
+     * @return {@link ResponseEntity} -- Spring Page 직렬화 (content, totalElements, totalPages, number)
+     */
+    @GetMapping(Url.JOURNAL_THREAD_API_LIST)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalThreadListAjax(
+            @ModelAttribute final JournalThreadSearchParam searchParam,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) throws Exception {
+
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        final Page<JournalThreadDto> pageResult = journalThreadService.getPageDto(searchParam, pageRequest);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(pageResult));
+    }
 
     /**
      * 저널 스레드 등록/수정 (Ajax)

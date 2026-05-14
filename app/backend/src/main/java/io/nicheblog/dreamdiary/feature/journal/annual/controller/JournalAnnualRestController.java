@@ -93,6 +93,26 @@ public class JournalAnnualRestController
     }
 
     /**
+     * 저널 연간 총 집계 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(value = {Url.JOURNAL_ANNUAL_TOTAL})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalAnnualTotalAjax(
+            //
+    ) throws Exception {
+
+        final JournalAnnualDto totalAnnual = myJournalAnnualService.getMyTotalAnnual();
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(totalAnnual));
+    }
+
+    /**
      * 저널 연간 중요 일기 목록 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *

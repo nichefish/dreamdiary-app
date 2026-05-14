@@ -15,9 +15,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 /**
@@ -47,7 +47,7 @@ public class BaseExceptionHandler {
      * @return Ajax 요청의 경우 {@link ResponseEntity}, 페이지 요청의 경우 {@link ModelAndView} 객체
      */
     private Object handleException(final Exception e, final WebRequest request, final HttpStatus status) {
-        return handleException(e, request, status, "/view/global/common/error/error_page");
+        return handleException(e, request, status, "general");
     }
 
     /**
@@ -57,11 +57,11 @@ public class BaseExceptionHandler {
      * @param e 처리할 예외
      * @param request 발생한 웹 요청 정보
      * @param status 반환할 HTTP 상태 코드
-     * @param view 예외 발생 시 렌더링할 뷰 이름 (AJAX 요청이 아닐 때 사용)
+     * @param errorType Vue 에러 페이지에서 사용할 에러 타입
      * @return Ajax 요청의 경우 {@link ResponseEntity}, 페이지 요청의 경우 {@link ModelAndView} 객체
      * @see LogEventListener
      */
-    private Object handleException(final Exception e, final WebRequest request, final HttpStatus status, final String view) {
+    private Object handleException(final Exception e, final WebRequest request, final HttpStatus status, final String errorType) {
         final String errorMsg = MessageUtils.getExceptionMsg(e);
         log.warn("Exception handled: ", e);
 
@@ -77,7 +77,14 @@ public class BaseExceptionHandler {
                     .body(ajaxResponse);
         }
         // 페이지 요청인 경우
-        return new ModelAndView(view).addObject("errorMsg", errorMsg);
+        final String redirectUrl = UriComponentsBuilder
+                .fromPath("/vue-app/error")
+                .queryParam("type", errorType)
+                .queryParam("message", errorMsg)
+                .build()
+                .encode()
+                .toUriString();
+        return new ModelAndView("redirect:" + redirectUrl);
     }
 
     /**
@@ -92,7 +99,7 @@ public class BaseExceptionHandler {
             final NoHandlerFoundException e,
             final WebRequest request
     ) {
-        return handleException(e, request, HttpStatus.NOT_FOUND, "/view/global/common/error/error_not_found");
+        return handleException(e, request, HttpStatus.NOT_FOUND, "not_found");
     }
 
     /**
@@ -103,12 +110,11 @@ public class BaseExceptionHandler {
      * @return Ajax 요청의 경우 {@link ResponseEntity}, 페이지 요청의 경우 {@link ModelAndView} 객체
      */
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseBody
     public Object accessDenied(
             final AccessDeniedException e,
             final WebRequest request
     ) {
-        return handleException(e, request, HttpStatus.FORBIDDEN, "/view/global/common/error/error_access_denied");
+        return handleException(e, request, HttpStatus.FORBIDDEN, "access_denied");
     }
 
     /**
@@ -123,7 +129,7 @@ public class BaseExceptionHandler {
             final BindException e,
             final WebRequest request
     ) {
-        return handleException(e, request, HttpStatus.BAD_REQUEST);
+        return handleException(e, request, HttpStatus.BAD_REQUEST, "bad_request");
     }
 
     /**

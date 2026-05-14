@@ -66,10 +66,10 @@ public final class Constant {
     public static final String IS_MBL = "IS_MBL";
 
     /** 스태틱 자원 경로 (인증 불필요) */
-    public static final String[] STATIC_PATHS = { "/static/**", "/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/vue/**",  "/content/**", "/upfile/public/**" };
+    public static final String[] STATIC_PATHS = { "/static/**", "/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/vue-app/**",  "/content/**", "/upfile/public/**" };
 
     /** 파일업로드 기본 경로 */
-    public static final String UPFILE_PATH = "file/upfile/";
+    public static final String UPFILE_PATH = "files/upfiles/";
 
     /** IP 헤더 목록 */
     public static final String[] IP_HEADERS = { "X-FORWARDED-FOR", "Proxy-Client-IP",  "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR" };

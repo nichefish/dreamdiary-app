@@ -13,6 +13,8 @@ public interface AppUrl {
 
     /** 로그인 관련 */
     String APP_AUTH_LGN_FORM = Prefix.APP + "/auth/login-form.do";
+    /** Vue SPA 로그인 화면 URL */
+    String VUE_SIGN_IN = "/vue-app/sign-in";
 
     /** 메인 */
     String ROOT = "/";
@@ -22,8 +24,6 @@ public interface AppUrl {
 
     String ADMIN_MAIN = Prefix.APP + "/admin/main.do";
     String ADMIN_PAGE = Prefix.APP + "/admin/admin-page.do";
-    String NOTION_HOME = Prefix.APP + "/notion-home.do";
-
     /** 저널 일자 (리스트) */
     String JOURNAL_DAY_MONTHLY = Prefix.APP + "/journal/day/monthly.do";
     String JOURNAL_DAY_WEEKLY = Prefix.APP + "/journal/day/weekly.do";
@@ -32,12 +32,6 @@ public interface AppUrl {
     String JOURNAL_DAY_DAILY_VIEW = Prefix.APP + "/journal/day/{stdrdDt}.do";
     /** 저널 일자 (달력) */
     String JOURNAL_DAY_CAL = Prefix.APP + "/journal/day/cal.do";
-
-    /** 저널 일기 (검색) */
-    String JOURNAL_EMTRY_SEARCH = Prefix.APP + "/journal/{type}/search.do";
-
-    /** 저널 일기/꿈 (미리보기 팝업) */
-    String JOURNAL_ENTRY_PREVIEW_POP = Prefix.APP + "/journal/entry/preview-pop.do";
 
     /** 저널 스레드 */
     String JOURNAL_THREAD_LIST = Prefix.APP + "/journal/thread/list.do";
@@ -78,10 +72,6 @@ public interface AppUrl {
 
     /** 게시판 관리 */
     String BOARD_ADMIN_PAGE = Prefix.APP + "/admin/board/page.do";
-
-    /** 템플릿 관리 (TODO) */
-    String TMPLAT_DEF_LIST = Prefix.APP + "/tmplat/list.do";
-    String TMPLAT_DEF_DTL = Prefix.APP + "/tmplat/dtl.do";
 
     /** 팝업 관리 (TODO) */
     String POPUP_LIST = "";

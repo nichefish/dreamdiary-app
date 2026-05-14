@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.admin.code.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupDto;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupPatchDto;
+import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.code.service.CodeGroupService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -13,6 +14,9 @@ import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +33,19 @@ public class CodeGroupRestController extends BaseControllerImpl {
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CODE;
 
     private final CodeGroupService codeGroupService;
+
+    @GetMapping(value = {Url.CODE_GROUPS})
+    @Secured({Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> codeGroupListAjax(
+            @ModelAttribute final CodeGroupSearchParam searchParam,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) throws Exception {
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "sortOrder"));
+        final Page<CodeGroupDto> pageResult = codeGroupService.getPageDto(searchParam, pageRequest);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+    }
 
     @PostMapping(value = {Url.CODE_GROUPS})
     @Secured({Constant.ROLE_MNGR})

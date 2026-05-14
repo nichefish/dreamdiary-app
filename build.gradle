@@ -43,6 +43,7 @@ node {
     version = '20.11.1'
     npmVersion = '10.5.0'
     download = true
+    nodeProjectDir = file("$projectDir/app/frontend-vue")
 }
 
 /**
@@ -124,6 +125,7 @@ tasks.withType(JavaCompile).configureEach {
  */
 tasks.register('buildFrontend', NpmTask) {
     dependsOn npmInstall
+    workingDir = file("$projectDir/app/frontend-vue")
     args = ['run', 'build']
 }
 

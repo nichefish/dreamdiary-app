@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.board.group.controller;
 
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardParam;
+import io.nicheblog.dreamdiary.feature.board.group.model.BoardSearchParam;
 import io.nicheblog.dreamdiary.feature.board.group.service.BoardService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -13,6 +14,9 @@ import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +46,29 @@ public class BoardRestController extends BaseControllerImpl {
 
     /** 게시판 서비스 */
     private final BoardService boardService;
+
+    /**
+     * 게시판 그룹 목록 조회.
+     *
+     * @param searchParam 검색 조건
+     * @param page 페이지 번호 (0-based)
+     * @param size 페이지 크기
+     * @return Spring Page 형태의 목록 응답
+     * @throws Exception 처리 중 예외
+     */
+    @GetMapping(Url.BOARD_GROUPS)
+    @Secured({Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> boardListAjax(
+            @ModelAttribute final BoardSearchParam searchParam,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) throws Exception {
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "sortOrder"));
+        final Page<BoardDto> pageResult = boardService.getPageDto(searchParam, pageRequest);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+    }
 
     /**
      * 게시판 그룹 등록.

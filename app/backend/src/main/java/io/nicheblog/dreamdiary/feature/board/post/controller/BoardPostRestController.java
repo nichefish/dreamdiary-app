@@ -2,6 +2,10 @@ package io.nicheblog.dreamdiary.feature.board.post.controller;
 
 import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
+import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostSearchParam;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import io.nicheblog.dreamdiary.feature.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -16,6 +20,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
@@ -41,6 +47,33 @@ public class BoardPostRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.BOARD_POST;        // 작업 카테고리 (로그 적재용)
 
     private final BoardPostService boardPostService;
+
+    /**
+     * 게시판 게시물 목록 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     * 추가(board-1): Vue SPA 목록 조회용 REST 엔드포인트.
+     *
+     * @param searchParam 검색 조건 (contentType, categoryCode, searchKeyword 등)
+     * @param page 페이지 번호 (0-based, 기본값: 0)
+     * @param size 페이지 크기 (기본값: 10)
+     * @return {@link ResponseEntity} -- Spring Page 직렬화 (content, totalElements, totalPages, number)
+     */
+    @GetMapping(Url.BOARD_POSTS)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> boardPostListAjax(
+            @ModelAttribute final BoardPostSearchParam searchParam,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) throws Exception {
+
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        final Page<BoardPostDto> pageResult = boardPostService.getPageDto(searchParam, pageRequest);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(pageResult));
+    }
 
     /**
      * 게시판 게시물 등록/수정 (Ajax)

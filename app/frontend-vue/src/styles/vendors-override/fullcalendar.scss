@@ -1,0 +1,18 @@
+#full_calendar_app {
+    table {
+        table-layout: fixed;
+    }
+
+    .fc-daygrid-bg-harness {
+        .fc-bg-event {
+            padding-top: 0.25rem !important;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    #full_calendar_app {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}

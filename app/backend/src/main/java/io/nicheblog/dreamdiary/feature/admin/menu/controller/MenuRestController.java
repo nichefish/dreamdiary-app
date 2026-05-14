@@ -66,6 +66,23 @@ public class MenuRestController
     }
 
     /**
+     * 사이드바 메뉴 (사용자, useYn=Y) 목록 조회 (Ajax)
+     * Vue SPA 사이드바 메뉴 렌더링용. 비관리자 메뉴만 반환.
+     *
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(Url.MENUS)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> userMenuListAjax() throws Exception {
+
+        final List<MenuDto> menuList = menuService.getUserMenuList();
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(menuList));
+    }
+
+    /**
      * 메뉴 등록/수정 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *

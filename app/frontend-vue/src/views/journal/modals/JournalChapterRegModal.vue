@@ -1,0 +1,210 @@
+<template>
+  <!--begin::저널 챕터 등록/수정 모달-->
+  <div ref="modalEl" class="modal fade" id="journal_chapter_regist_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+
+        <!--begin::Modal Header-->
+        <div class="modal-header">
+          <h5 class="modal-title">저널 챕터 등록/수정</h5>
+          <button type="button" class="btn-close" @click="close"></button>
+        </div>
+        <!--end::Modal Header-->
+
+        <!--begin::Modal Body-->
+        <div class="modal-body modal-mbl-body my-5">
+          <form v-if="model" id="journalChapterRegistForm" class="form" @submit.prevent>
+            <input type="hidden" name="id" :value="model.id ?? ''" />
+            <input type="hidden" name="journalDayId" :value="model.journalDayId ?? ''" />
+
+            <!--begin::날짜-->
+            <div class="row d-flex mb-8">
+              <div class="col-2">
+                <label class="d-flex align-items-center mb-2">
+                  <span class="text-gray-700 fs-6 fw-bolder">날짜</span>
+                </label>
+              </div>
+              <div class="col-4 fs-6">
+                <i class="bi bi-calendar3"></i>
+                {{ model.stdrdDt }}
+                <span v-if="model.journalDateWeekDay" class="fs-8 text-gray-600">({{ model.journalDateWeekDay }})</span>
+              </div>
+            </div>
+            <!--end::날짜-->
+
+            <!--begin::챕터 유형 + 카테고리 + 제목-->
+            <div class="row d-flex mb-8">
+              <div class="col-12">
+                <label class="d-flex align-items-center mb-2">
+                  <span class="text-gray-700 fs-6 fw-bolder">제목</span>
+                  <span class="text-gray-500 fs-9 ms-2">(최대 100자)</span>
+                </label>
+              </div>
+              <div class="col-lg-2">
+                <!--begin::DREAM 수정 시 고정 표시-->
+                <template v-if="isModifyDream">
+                  <input type="hidden" name="chapterType" value="DREAM" />
+                  <div class="form-control form-control-solid form-control-sm d-flex align-items-center min-h-40px">
+                    <span class="fw-bolder">꿈</span>
+                    <span class="text-muted fs-8 ms-2">(자동)</span>
+                  </div>
+                </template>
+                <!--begin::일반 챕터 유형 선택-->
+                <template v-else>
+                  <select name="chapterType" id="chapterType" class="form-select form-select-solid" v-model="model.chapterType">
+                    <option value="DIARY">일기</option>
+                    <option value="NOTE">노트</option>
+                  </select>
+                </template>
+              </div>
+              <div class="col-lg-2">
+                <select name="categoryCode" id="categoryCode" class="form-select form-select-solid" v-model="model.categoryCode">
+                  <option value="">-- 카테고리 선택 --</option>
+                  <option
+                    v-for="ctgr in modalStore.chapterCategoryOptions"
+                    :key="ctgr.code"
+                    :value="ctgr.code"
+                  >[{{ ctgr.codeName }}]</option>
+                </select>
+              </div>
+              <div :class="isModify ? 'col-lg-7' : 'col-lg-8'">
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  class="form-control"
+                  v-model="model.title"
+                  placeholder="제목"
+                  maxlength="100"
+                />
+              </div>
+              <div v-if="isModify" class="col-1 d-flex ps-0">
+                <div class="d-flex-center p-2 fw-bold fs-5 text-gray-600">#</div>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  name="sortOrder"
+                  id="sortOrder"
+                  min="1"
+                  max="99"
+                  v-model="model.sortOrder"
+                  placeholder="순서"
+                  maxlength="3"
+                />
+              </div>
+            </div>
+            <!--end::챕터 유형 + 카테고리 + 제목-->
+
+          </form>
+        </div>
+        <!--end::Modal Body-->
+
+        <!--begin::Modal Footer-->
+        <div class="modal-footer">
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-sm btn-primary"
+              :disabled="submitting"
+              @click="submit"
+            >
+              <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              저장
+            </button>
+            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+          </div>
+        </div>
+        <!--end::Modal Footer-->
+
+      </div>
+    </div>
+  </div>
+  <!--end::저널 챕터 등록/수정 모달-->
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue";
+import { Modal } from "bootstrap";
+import axios from "axios";
+import { useJournalModalStore } from "@/stores/journalModal";
+import { useJournalStore } from "@/stores/journal";
+
+const modalStore = useJournalModalStore();
+const journalStore = useJournalStore();
+
+const modalEl = ref<HTMLElement | null>(null);
+const submitting = ref(false);
+let bsModal: InstanceType<typeof Modal> | null = null;
+
+const model = computed(() => modalStore.chapterRegModel);
+
+/** 수정 모드 여부 */
+const isModify = computed(() => !!model.value?.id);
+
+/** 수정 모드의 DREAM 챕터 여부 (타입 변경 불가) */
+const isModifyDream = computed(() => isModify.value && model.value?.chapterType === "DREAM");
+
+onMounted(() => {
+  if (modalEl.value) {
+    bsModal = new Modal(modalEl.value);
+    /* bootstrap 이벤트로 store와 상태를 동기화한다 */
+    modalEl.value.addEventListener("hidden.bs.modal", () => {
+      modalStore.closeChapterReg();
+    });
+  }
+});
+
+watch(
+  () => modalStore.chapterRegOpen,
+  (isOpen) => {
+    if (isOpen) bsModal?.show();
+    else bsModal?.hide();
+  }
+);
+
+function close() {
+  modalStore.closeChapterReg();
+}
+
+/** 등록/수정 처리 (axios multipart). 챕터 API는 등록/수정 모두 POST. */
+async function submit() {
+  if (!model.value) return;
+  if (!model.value.title) {
+    alert("제목을 입력해 주세요.");
+    return;
+  }
+
+  const confirmed = window.confirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  if (!confirmed) return;
+
+  submitting.value = true;
+  try {
+    const formData = new FormData();
+    if (model.value.id) formData.append("id", String(model.value.id));
+    formData.append("journalDayId", String(model.value.journalDayId ?? ""));
+    formData.append("chapterType", model.value.chapterType ?? "DIARY");
+    formData.append("categoryCode", model.value.categoryCode ?? "");
+    formData.append("title", model.value.title ?? "");
+    if (model.value.sortOrder != null) formData.append("sortOrder", String(model.value.sortOrder));
+
+    /* 챕터 등록/수정 API는 모두 POST (backend @PostMapping) */
+    const url = isModify.value
+      ? `/api/journal/chapter/${model.value.id}`
+      : "/api/journal/chapters";
+    const res = await axios.post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    if (res.data?.rslt) {
+      close();
+      void journalStore.fetchDays();
+    } else {
+      alert(res.data?.message ?? "처리에 실패했습니다.");
+    }
+  } catch {
+    alert("요청 처리 중 오류가 발생했습니다.");
+  } finally {
+    submitting.value = false;
+  }
+}
+</script>
