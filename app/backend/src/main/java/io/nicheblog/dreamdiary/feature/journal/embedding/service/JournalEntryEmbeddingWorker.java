@@ -8,10 +8,12 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,7 +31,9 @@ import java.util.stream.Collectors;
 public class JournalEntryEmbeddingWorker {
 
     private static final int DEFAULT_BATCH_SIZE = 20;
+    private static final int MAX_EMBEDDING_CHUNK_CHARS = 1600;
     private static final Duration STALE_PROCESSING_AGE = Duration.ofMinutes(30);
+    private static final String OLLAMA_CONTEXT_LENGTH_ERROR = "input length exceeds the context length";
 
     private final JournalEntryEmbeddingQueueService queueService;
     private final JournalEntryEmbeddingSearchService searchService;
@@ -112,18 +116,110 @@ public class JournalEntryEmbeddingWorker {
                 return false;
             }
 
-            final List<Double> vector = ollamaClient.embed(entity.getEmbeddingText());
+            final List<Double> vector = embedText(entity.getEmbeddingText());
             final String vectorJson = objectMapper.writeValueAsString(vector);
             queueService.markEmbedded(entity.getId(), entity.getContentHash(), ollamaClient.getEmbeddingModel(), vectorJson);
             searchService.refreshEntry(entity.getJournalEntryId());
             return true;
         } catch (final RestClientException e) {
+            if (isOllamaContextLengthExceeded(e)) {
+                final String message = "Ollama embedding input exceeds context length. textChars="
+                        + StringUtils.length(entity.getEmbeddingText());
+                log.warn("{}. id={}", message, entity.getId(), e);
+                queueService.markFailed(entity.getId(), new IllegalArgumentException(message, e));
+                return false;
+            }
             throw e;
         } catch (final Exception e) {
             log.warn("Failed to embed journal_entry_embedding id={}", entity.getId(), e);
             queueService.markFailed(entity.getId(), e);
             return false;
         }
+    }
+
+    /**
+     * 긴 저널 본문은 Ollama context 한계를 넘지 않도록 청크별로 임베딩한 뒤 평균 벡터로 합친다.
+     *
+     * @param text 임베딩할 원문
+     * @return 단일 검색 벡터
+     */
+    private List<Double> embedText(final String text) {
+        final List<String> chunkList = splitEmbeddingText(text);
+        if (chunkList.size() == 1) {
+            return ollamaClient.embed(chunkList.get(0));
+        }
+
+        log.info("Embedding long journal text as {} chunks. textChars={}", chunkList.size(), text.length());
+
+        List<Double> sumVector = null;
+        int vectorCount = 0;
+        for (final String chunk : chunkList) {
+            final List<Double> vector = ollamaClient.embed(chunk);
+            if (sumVector == null) {
+                sumVector = new ArrayList<>(vector);
+            } else {
+                if (sumVector.size() != vector.size()) {
+                    throw new IllegalStateException("Ollama embedding vector dimension changed while chunking.");
+                }
+                for (int i = 0; i < sumVector.size(); i++) {
+                    sumVector.set(i, sumVector.get(i) + vector.get(i));
+                }
+            }
+            vectorCount++;
+        }
+
+        if (sumVector == null || sumVector.isEmpty() || vectorCount == 0) {
+            throw new IllegalStateException("Ollama embedding response is empty");
+        }
+
+        final List<Double> averageVector = new ArrayList<>(sumVector.size());
+        for (final Double value : sumVector) {
+            averageVector.add(value / vectorCount);
+        }
+        return averageVector;
+    }
+
+    /**
+     * UTF-16 surrogate pair를 깨지 않는 선에서 고정 길이 청크로 분리한다.
+     *
+     * @param text 분리할 원문
+     * @return 비어 있지 않은 청크 목록
+     */
+    private List<String> splitEmbeddingText(final String text) {
+        final List<String> chunkList = new ArrayList<>();
+        int start = 0;
+        while (start < text.length()) {
+            int end = Math.min(start + MAX_EMBEDDING_CHUNK_CHARS, text.length());
+            if (end > start && end < text.length() && Character.isHighSurrogate(text.charAt(end - 1))) {
+                end--;
+            }
+            if (end <= start) {
+                end = Math.min(start + MAX_EMBEDDING_CHUNK_CHARS, text.length());
+            }
+
+            final String chunk = StringUtils.trim(text.substring(start, end));
+            if (StringUtils.isNotBlank(chunk)) {
+                chunkList.add(chunk);
+            }
+            start = end;
+        }
+        return chunkList;
+    }
+
+    /**
+     * Ollama가 영구적인 입력 길이 문제로 반환한 오류인지 판별한다.
+     *
+     * @param exception Ollama 호출 예외
+     * @return 입력 context 초과 오류 여부
+     */
+    private boolean isOllamaContextLengthExceeded(final RestClientException exception) {
+        if (StringUtils.containsIgnoreCase(exception.getMessage(), OLLAMA_CONTEXT_LENGTH_ERROR)) {
+            return true;
+        }
+        if (exception instanceof HttpStatusCodeException statusCodeException) {
+            return StringUtils.containsIgnoreCase(statusCodeException.getResponseBodyAsString(), OLLAMA_CONTEXT_LENGTH_ERROR);
+        }
+        return false;
     }
 
     /**
