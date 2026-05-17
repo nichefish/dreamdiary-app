@@ -1,13 +1,18 @@
 <template>
   <!--begin::관련 글 추가 모달-->
-  <div ref="modalEl" class="modal fade" id="related_content_add_modal" tabindex="-1" aria-hidden="true">
+  <div ref="modalEl" class="modal fade" id="related_content_add_modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
 
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title fw-bold">관련 글 추가</h5>
-          <button type="button" class="btn-close" @click="close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            @click="requestSafeClose"
+          ></button>
         </div>
         <!--end::Modal Header-->
 
@@ -159,7 +164,13 @@
               <span v-if="saving" class="spinner-border spinner-border-sm me-1" role="status"></span>
               저장
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="close">취소</button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
+              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '취소'"
+              @click="requestSafeClose"
+            >취소</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -171,6 +182,8 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
+import { useSafeModalClose } from "@/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/stores/attachableModal";
@@ -182,6 +195,9 @@ const journalStore = useJournalStore();
 const modalEl = ref<HTMLElement | null>(null);
 const saving = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
+const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
+  attachableStore.closeRelated();
+});
 
 /** 콘텐츠 타입 → 한글 레이블 */
 const CONTENT_TYPE_LABEL: Record<string, string> = {
@@ -226,9 +242,10 @@ async function search() {
 
 onMounted(() => {
   if (modalEl.value) {
-    bsModal = new Modal(modalEl.value);
+    bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     /* bootstrap 이벤트로 store 와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
+      resetSafeClose();
       attachableStore.closeRelated();
     });
   }
@@ -237,12 +254,15 @@ onMounted(() => {
 watch(
   () => attachableStore.relatedOpen,
   (isOpen) => {
-    if (isOpen) bsModal?.show();
-    else bsModal?.hide();
+    if (isOpen) {
+      resetSafeClose();
+      bsModal?.show();
+    } else bsModal?.hide();
   }
 );
 
 function close() {
+  resetSafeClose();
   attachableStore.closeRelated();
 }
 
@@ -255,7 +275,7 @@ async function save() {
       close();
       void journalStore.fetchDays();
     } else if (result.message) {
-      alert(result.message);
+      void swalAlert(result.message);
     }
   } finally {
     saving.value = false;

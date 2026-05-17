@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import type { JournalDayDto } from "@/stores/journal";
+import { formatLocalDateStr } from "@/utils/journalDate";
 
 // ---- 타입 정의 ----
 
@@ -123,10 +124,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
 
   /**
    * 일자 등록/수정 모달을 연다.
+   * 수정(id 있음) 시 Tagify 초기값(tagListStr/metaListStr)을 API 상세에서 채운다.
    * @param payload - 수정 시 기존 데이터, 신규 시 날짜 등 초기값
    */
-  function openDayReg(payload?: JournalDayRegModel) {
-    dayRegModel.value = {
+  async function openDayReg(payload?: JournalDayRegModel) {
+    let merged: JournalDayRegModel = {
       journalDatePrecision: "EXACT",
       diaryResolvedYn: "N",
       weather: "",
@@ -134,6 +136,31 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       meta: { metaListStr: "" },
       ...payload,
     };
+    if (!merged.journalDate?.trim()) {
+      merged.journalDate = formatLocalDateStr(new Date());
+    }
+    if (payload?.id) {
+      try {
+        const res = await axios.get(`/api/journal/day/${payload.id}`);
+        const dto = res.data?.rsltObj as JournalDayDto | undefined;
+        if (dto) {
+          const tagCmpstn = dto.tag as { tagListStrWithCtgr?: string; tagListStr?: string } | undefined;
+          const metaCmpstn = dto.meta as { metaListStr?: string } | undefined;
+          merged = {
+            ...merged,
+            journalDate: dto.journalDate ?? dto.stdrdDt ?? merged.journalDate,
+            journalDatePrecision: dto.journalDatePrecision ?? merged.journalDatePrecision,
+            weather: dto.weather ?? merged.weather,
+            diaryResolvedYn: (dto as { diaryResolvedYn?: string }).diaryResolvedYn ?? merged.diaryResolvedYn,
+            tag: { tagListStr: tagCmpstn?.tagListStrWithCtgr ?? tagCmpstn?.tagListStr ?? "" },
+            meta: { metaListStr: metaCmpstn?.metaListStr ?? "" },
+          };
+        }
+      } catch {
+        console.error("[journalModal] openDayReg 상세 조회 실패 id=", payload.id);
+      }
+    }
+    dayRegModel.value = merged;
     dayRegOpen.value = true;
   }
 
@@ -376,6 +403,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   const entryRegLoading = ref(false);
   /** 엔트리 등록/수정 폼 모델 */
   const entryRegModel = ref<JournalEntryRegModel | null>(null);
+  let dreamEntryRegOpening = false;
 
   /**
    * 엔트리 신규 등록 모달을 연다. (DIARY/NOTE: 챕터 목록을 caller 가 전달)
@@ -391,6 +419,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       ...payload,
     };
     entryRegOpen.value = true;
+    void hydrateEntryChapterOptions(entryRegModel.value);
   }
 
   /**
@@ -398,6 +427,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param params - journalDayId, stdrdDt, journalDateWeekDay
    */
   async function openDreamEntryReg(params: { journalDayId: number; stdrdDt: string; journalDateWeekDay?: string }) {
+    if (dreamEntryRegOpening) return;
+    dreamEntryRegOpening = true;
     entryRegOpen.value = true;
     entryRegLoading.value = true;
     entryRegModel.value = null;
@@ -424,6 +455,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       entryRegOpen.value = false;
     } finally {
       entryRegLoading.value = false;
+      dreamEntryRegOpening = false;
     }
   }
 
@@ -442,16 +474,72 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         entryRegOpen.value = false;
         return;
       }
-      entryRegModel.value = {
+      const merged: JournalEntryRegModel = {
         ...entry,
         tag: { tagListStrWithCtgr: entry.tag?.tagListStrWithCtgr ?? "" },
         chapterList: entry.chapterList ?? [],
       };
+      await hydrateEntryChapterOptions(merged);
+      entryRegModel.value = merged;
     } catch {
       entryRegModel.value = null;
       entryRegOpen.value = false;
     } finally {
       entryRegLoading.value = false;
+    }
+  }
+
+  function shouldLoadChapterOptions(model: JournalEntryRegModel | null): model is JournalEntryRegModel {
+    if (!model?.journalDayId) return false;
+    return isDiaryLikeEntry(model.contentType) || isNoteLikeEntry(model.contentType);
+  }
+
+  function isDiaryLikeEntry(contentType: string): boolean {
+    return contentType === "JOURNAL_DIARY" || contentType === "DIARY";
+  }
+
+  function isNoteLikeEntry(contentType: string): boolean {
+    return contentType === "JOURNAL_NOTE" || contentType === "NOTE";
+  }
+
+  function normalizeChapterOptions(rawList: unknown, contentType: string): JournalChapterOption[] {
+    if (!Array.isArray(rawList)) return [];
+    const expectedChapterType = isNoteLikeEntry(contentType) ? "NOTE" : "DIARY";
+    return rawList
+      .map((raw) => raw as Record<string, unknown>)
+      .filter((raw) => {
+        const chapterType = String(raw.chapterType ?? "");
+        return chapterType === "" || chapterType === expectedChapterType;
+      })
+      .map((raw) => ({
+        id: raw.id as number | string,
+        title: String(raw.title ?? ""),
+        sortOrder: raw.sortOrder as number | undefined,
+        categoryCode: String(raw.categoryCode ?? ""),
+        categoryName: String(raw.categoryName ?? ""),
+        chapterType: String(raw.chapterType ?? ""),
+      }))
+      .filter((chapter) => chapter.id !== undefined && chapter.id !== null && String(chapter.id) !== "");
+  }
+
+  async function hydrateEntryChapterOptions(model: JournalEntryRegModel | null): Promise<void> {
+    if (!shouldLoadChapterOptions(model)) return;
+    try {
+      const res = await axios.get(`/api/journal/day/${model.journalDayId}`);
+      const day = res.data?.rsltObj ?? {};
+      const options = normalizeChapterOptions(
+        Array.isArray(day.chapterList) && day.chapterList.length > 0
+          ? day.chapterList
+          : day.journalChapterList,
+        model.contentType
+      );
+      if (options.length === 0) return;
+      model.chapterList = options;
+      if (!model.journalChapterId || !options.some((chapter) => String(chapter.id) === String(model.journalChapterId))) {
+        model.journalChapterId = options[0].id;
+      }
+    } catch {
+      console.error("[journalModal] 엔트리 챕터 옵션 조회 실패", model.journalDayId);
     }
   }
 

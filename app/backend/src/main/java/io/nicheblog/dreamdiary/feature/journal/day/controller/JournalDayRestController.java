@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayCalSer
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayQueryService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayService;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
-import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -23,7 +22,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -96,15 +94,19 @@ public class JournalDayRestController
             final @Valid JournalDayDto journalDay
     ) throws Exception {
 
-        boolean isReg = id == null;
-        if (isReg) {
-            boolean isDup = myJournalDayService.dupChck(journalDay);
-            if (isDup) {
-                journalDay.setId(myJournalDayService.getDupKey(journalDay));
-                isReg = false;      // 등록 대신 기존 데이터 수정
-            }
+        final boolean isReg = id == null;
+        if (isReg && myJournalDayService.dupChck(journalDay)) {
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("msg.journal.day.duplicate")));
         }
-        final ServiceResponse result = isReg ? journalDayService.regist(journalDay) : journalDayService.modify(journalDay);
+        final ServiceResponse result;
+        try {
+            result = isReg ? journalDayService.regist(journalDay) : journalDayService.modify(journalDay);
+        } catch (final IllegalStateException e) {
+            if ("msg.journal.day.duplicate".equals(e.getMessage())) {
+                return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage(e.getMessage())));
+            }
+            throw e;
+        }
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -122,27 +124,10 @@ public class JournalDayRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalDayDtlAjax(
-            final @PathVariable Integer id,
-            final @RequestParam(name = "includeDreamChapter", defaultValue = "true") boolean includeDreamChapter
+            final @PathVariable Integer id
     ) throws Exception {
 
         final JournalDayDto retrievedDto = myJournalDayQueryService.getMyDtlDtoEnriched(id);
-        if (!includeDreamChapter) {
-            if (retrievedDto.getChapterList() != null) {
-                retrievedDto.setChapterList(
-                        new ArrayList<>(retrievedDto.getChapterList().stream()
-                                .filter(chapter -> chapter != null && chapter.getChapterType() != ChapterType.DREAM)
-                                .toList())
-                );
-            }
-            if (retrievedDto.getJournalChapterList() != null) {
-                retrievedDto.setJournalChapterList(
-                        new ArrayList<>(retrievedDto.getJournalChapterList().stream()
-                                .filter(chapter -> chapter != null && chapter.getChapterType() != ChapterType.DREAM)
-                                .toList())
-                );
-            }
-        }
         final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -169,4 +154,3 @@ public class JournalDayRestController
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 }
-

@@ -398,6 +398,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useUserAdminStore, type UserRow } from "@/stores/userAdmin";
@@ -460,7 +461,7 @@ async function openDetail(id: number) {
   try {
     await store.openDetail(id);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "계정 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "계정 상세를 불러오지 못했습니다.");
   }
 }
 
@@ -468,69 +469,69 @@ async function openEdit(id: number) {
   try {
     await store.openEdit(id);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "계정 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "계정 상세를 불러오지 못했습니다.");
   }
 }
 
 async function submit() {
   if (!store.form.username.trim() || !store.form.nickname.trim()) {
-    window.alert("아이디와 표시이름을 입력해주세요.");
+    void swalAlert("아이디와 표시이름을 입력해주세요.");
     return;
   }
   if (!store.isEdit && !store.form.password.trim()) {
-    window.alert("비밀번호를 입력해주세요.");
+    void swalAlert("비밀번호를 입력해주세요.");
     return;
   }
   if (!store.form.emailId.trim() || !store.form.emailDomain.trim()) {
-    window.alert("이메일을 입력해주세요.");
+    void swalAlert("이메일을 입력해주세요.");
     return;
   }
   if (!store.form.roleKeyList.length) {
-    window.alert("권한을 하나 이상 선택해주세요.");
+    void swalAlert("권한을 하나 이상 선택해주세요.");
     return;
   }
   try {
-    window.alert(await store.submit());
+    void swalAlert(await store.submit());
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "계정을 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "계정을 저장하지 못했습니다.");
   }
 }
 
 async function passwordReset(id: number) {
-  if (!window.confirm("비밀번호를 초기화할까요?")) return;
+  if (!await swalConfirm("비밀번호를 초기화할까요?")) return;
   try {
-    window.alert(await store.passwordReset(id));
+    void swalAlert(await store.passwordReset(id));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "비밀번호를 초기화하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "비밀번호를 초기화하지 못했습니다.");
   }
 }
 
 async function deleteUser(row: UserRow) {
-  if (!window.confirm(`${row.username} 계정을 삭제할까요?`)) return;
+  if (!await swalConfirm(`${row.username} 계정을 삭제할까요?`)) return;
   try {
-    window.alert(await store.deleteUser(row.id));
+    void swalAlert(await store.deleteUser(row.id));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "계정을 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "계정을 삭제하지 못했습니다.");
   }
 }
 
 async function checkUsername() {
   if (!store.form.username.trim()) {
-    window.alert("아이디를 입력해주세요.");
+    void swalAlert("아이디를 입력해주세요.");
     return;
   }
   const result = await store.usernameDuplicateCheck(store.form.username.trim());
-  window.alert(result.message || (result.ok ? "사용 가능한 아이디입니다." : "이미 사용 중인 아이디입니다."));
+  void swalAlert(result.message || (result.ok ? "사용 가능한 아이디입니다." : "이미 사용 중인 아이디입니다."));
 }
 
 async function checkEmail() {
   const email = `${store.form.emailId.trim()}@${store.form.emailDomain.trim()}`;
   if (!store.form.emailId.trim() || !store.form.emailDomain.trim()) {
-    window.alert("이메일을 입력해주세요.");
+    void swalAlert("이메일을 입력해주세요.");
     return;
   }
   const result = await store.emailDuplicateCheck(email);
-  window.alert(result.message || (result.ok ? "사용 가능한 이메일입니다." : "이미 사용 중인 이메일입니다."));
+  void swalAlert(result.message || (result.ok ? "사용 가능한 이메일입니다." : "이미 사용 중인 이메일입니다."));
 }
 
 onMounted(async () => {

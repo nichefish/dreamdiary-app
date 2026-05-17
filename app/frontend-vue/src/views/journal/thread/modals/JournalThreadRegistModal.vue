@@ -1,13 +1,18 @@
 <template>
   <!--begin::저널 스레드 등록/수정 모달-->
-  <div ref="modalEl" class="modal fade" id="journal_thread_regist_modal" tabindex="-1" aria-hidden="true">
+  <div ref="modalEl" class="modal fade" id="journal_thread_regist_modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
 
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title">{{ isModify ? '저널 스레드 수정' : '저널 스레드 등록' }}</h5>
-          <button type="button" class="btn-close" @click="close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            @click="requestSafeClose"
+          ></button>
         </div>
         <!--end::Modal Header-->
 
@@ -77,7 +82,12 @@
               <span v-if="store.submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
               저장
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              :class="closeArmed ? 'btn-warning' : 'btn-light'"
+              @click="requestSafeClose"
+            >{{ closeArmed ? '한 번 더 클릭해 닫기' : '닫기' }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -89,6 +99,8 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
+import { useSafeModalClose } from "@/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import RichEditor from "@/views/common/editor/RichEditor.vue";
 import TagifyEditor from "@/views/common/tag/TagifyEditor.vue";
@@ -99,6 +111,9 @@ const store = useJournalThreadStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
+const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
+  store.closeRegist();
+});
 
 const model = computed(() => store.registModel);
 const isModify = computed(() => !!model.value?.id);
@@ -114,8 +129,9 @@ const tagListStrWithCtgr = computed({
 
 onMounted(() => {
   if (modalEl.value) {
-    bsModal = new Modal(modalEl.value);
+    bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     modalEl.value.addEventListener("hidden.bs.modal", () => {
+      resetSafeClose();
       store.closeRegist();
     });
   }
@@ -124,17 +140,20 @@ onMounted(() => {
 watch(
   () => store.registOpen,
   (isOpen) => {
-    if (isOpen) bsModal?.show();
-    else bsModal?.hide();
+    if (isOpen) {
+      resetSafeClose();
+      bsModal?.show();
+    } else bsModal?.hide();
   }
 );
 
 function close() {
+  resetSafeClose();
   store.closeRegist();
 }
 
 async function submit() {
-  const confirmed = window.confirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;
   await store.submitRegist();
 }

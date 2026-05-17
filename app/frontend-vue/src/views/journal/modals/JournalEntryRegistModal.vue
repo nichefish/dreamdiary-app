@@ -1,25 +1,30 @@
 <template>
   <!--begin::저널 엔트리(일기/꿈/노트) 등록/수정 모달-->
-  <div ref="modalEl" class="modal fade" id="journal_entry_reg_modal" tabindex="-1" aria-hidden="true">
+  <div ref="modalEl" class="modal fade" id="journal_entry_reg_modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
 
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button type="button" class="btn-close" @click="close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            @click="requestSafeClose"
+          ></button>
         </div>
         <!--end::Modal Header-->
 
         <!--begin::Modal Body-->
-        <div class="modal-body modal-mbl-body my-5">
+        <div class="modal-body modal-mbl-body my-5 journal-entry-reg-modal__body">
           <!--begin::로딩-->
           <div v-if="modalStore.entryRegLoading" class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary" role="status"></span>
           </div>
           <!--end::로딩-->
 
-          <form v-else-if="model" id="journalEntryRegForm" class="form" @submit.prevent>
+          <form v-else-if="model" id="journalEntryRegForm" class="form journal-entry-reg-form" @submit.prevent>
             <input type="hidden" name="id" :value="model.id ?? ''" />
             <input type="hidden" name="contentType" :value="model.contentType" />
             <input type="hidden" name="journalDayId" :value="model.journalDayId ?? ''" />
@@ -150,7 +155,13 @@
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
               저장
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
+              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              @click="requestSafeClose"
+            >닫기</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -162,21 +173,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { swalConfirm, swalAlert } from "@/utils/swal";
+import { isAuthExpiredError } from "@/utils/authError";
+import { useSafeModalClose } from "@/utils/safeModalClose";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import RichEditor from "@/views/common/editor/RichEditor.vue";
 import TagifyEditor from "@/views/common/tag/TagifyEditor.vue";
 import { Modal } from "bootstrap";
 import axios from "axios";
+import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
 import type { JournalChapterOption } from "@/stores/journalModal";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const route = useRoute();
+const emit = defineEmits<{
+  (e: "success", payload: { entryId?: number | string; stdrdDt?: string }): void;
+}>();
 
 const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
+/** 모달 닫기 애니메이션(~300ms) 동안 body.overflow:hidden 으로 scrollIntoView 가 무시되므로
+ *  hidden.bs.modal 이후 실행할 스크롤 대상을 임시 보관한다. */
+let pendingScrollTarget: { entryId?: number | string; stdrdDt?: string } | null = null;
+const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
+  modalStore.closeEntryReg();
+});
 
 const model = computed(() => modalStore.entryRegModel);
 
@@ -237,10 +262,28 @@ const tagListStrWithCtgr = computed({
 
 onMounted(() => {
   if (modalEl.value) {
-    bsModal = new Modal(modalEl.value);
+    bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     /* bootstrap 이벤트로 store 와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
+      resetSafeClose();
       modalStore.closeEntryReg();
+      if (pendingScrollTarget) {
+        const target = pendingScrollTarget;
+        pendingScrollTarget = null;
+        void nextTick(() => {
+          const entryEl = target.entryId
+            ? document.getElementById(`journal-entry-${target.entryId}`)
+            : null;
+          if (entryEl) {
+            entryEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+          }
+          const dayEl = target.stdrdDt
+            ? document.getElementById(`journal-day-${target.stdrdDt}`)
+            : null;
+          if (dayEl) dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
     });
   }
 });
@@ -248,28 +291,106 @@ onMounted(() => {
 watch(
   () => modalStore.entryRegOpen,
   (isOpen) => {
-    if (isOpen) bsModal?.show();
-    else bsModal?.hide();
+    if (isOpen) {
+      resetSafeClose();
+      bsModal?.show();
+    } else bsModal?.hide();
   }
 );
 
 function close() {
+  resetSafeClose();
   modalStore.closeEntryReg();
+}
+
+/** 등록/수정 후 저장한 엔트리 위치로 돌아간다. 새 글 id를 모르면 해당 일자 카드로 복귀한다. */
+function scrollToSavedPosition(entryId?: number | string, stdrdDt?: string): void {
+  if (modalEl.value?.classList.contains("show")) {
+    /* 모달 닫기 애니메이션(Bootstrap ~300ms) 중에는 body.overflow:hidden 이므로
+     * scrollIntoView 가 무시된다. hidden.bs.modal 이후 실행되도록 미룬다. */
+    pendingScrollTarget = { entryId, stdrdDt };
+    return;
+  }
+  void nextTick(() => {
+    const entryEl = entryId ? document.getElementById(`journal-entry-${entryId}`) : null;
+    if (entryEl) {
+      entryEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    const dayEl = stdrdDt ? document.getElementById(`journal-day-${stdrdDt}`) : null;
+    if (dayEl) dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+function scrollToDayDetailPosition(entryId?: number | string): void {
+  void nextTick(() => {
+    const modal = document.getElementById("journal_day_dtl_modal");
+    if (!modal) return;
+    const entryEl = entryId
+      ? Array.from(modal.querySelectorAll<HTMLElement>("[data-id]"))
+          .find((el) => el.dataset.id === String(entryId))
+      : null;
+    if (entryEl) {
+      entryEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    modal.querySelector<HTMLElement>(".journal-day-header")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+function refreshOpenDayDetail(entryId?: number | string): boolean {
+  const dayId = modalStore.dayDtlData?.id;
+  if (!modalStore.dayDtlOpen || !dayId) return false;
+  void modalStore.openDayDtl(dayId).then(() => scrollToDayDetailPosition(entryId));
+  return true;
+}
+
+function refreshCurrentDayView(entryId?: number | string, stdrdDt?: string): void {
+  if (route.name === "journal-entry-search") {
+    return;
+  }
+
+  void journalStore.fetchTagCloud();
+  const detailRefreshed = refreshOpenDayDetail(entryId);
+  const afterFetch = () => {
+    if (!detailRefreshed) scrollToSavedPosition(entryId, stdrdDt);
+  };
+
+  if (route.name === "journal-weekly") {
+    journalStore.setViewType("WEEKLY");
+    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
+    return;
+  }
+
+  if (route.name === "journal-monthly") {
+    journalStore.setViewType("LIST");
+    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
+    return;
+  }
+
+  void journalStore.fetchDays().then(afterFetch);
+}
+
+function resolveSavedEntryId(responseData: Record<string, unknown>, fallbackId?: number): number | string | undefined {
+  const rsltObj = responseData.rsltObj as Record<string, unknown> | undefined;
+  const candidates = [
+    fallbackId,
+    responseData.id,
+    responseData.rsltId,
+    rsltObj?.id,
+  ];
+  return candidates.find((value) => value !== undefined && value !== null && String(value) !== "") as number | string | undefined;
 }
 
 /** 등록/수정 처리. API 는 등록/수정 모두 POST. */
 async function submit() {
+  if (submitting.value) return;
   if (!model.value) return;
-  if (!model.value.title) {
-    alert("제목을 입력해 주세요.");
-    return;
-  }
-
-  const confirmed = window.confirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
-  if (!confirmed) return;
-
   submitting.value = true;
   try {
+    const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+    if (!confirmed) return;
+
     const formData = new FormData();
     if (model.value.id) formData.append("id", String(model.value.id));
     formData.append("contentType", model.value.contentType ?? "");
@@ -294,13 +415,17 @@ async function submit() {
     });
 
     if (res.data?.rslt) {
+      const savedEntryId = resolveSavedEntryId(res.data ?? {}, model.value.id);
+      const savedDate = model.value.stdrdDt;
       close();
-      void journalStore.fetchDays();
+      refreshCurrentDayView(savedEntryId, savedDate);
+      emit("success", { entryId: savedEntryId, stdrdDt: savedDate });
     } else {
-      alert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
-  } catch {
-    alert("요청 처리 중 오류가 발생했습니다.");
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
   } finally {
     submitting.value = false;
   }

@@ -8,6 +8,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { swalConfirm, swalAlert } from "@/utils/swal";
 
 /** 계정 신청 행 DTO */
 export interface SignupRequestRow {
@@ -53,7 +54,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
    * @param id 신청 식별자
    */
   async function approve(id: number): Promise<boolean> {
-    const confirmed = window.confirm("승인하시겠습니까?");
+    const confirmed = await swalConfirm("승인하시겠습니까?");
     if (!confirmed) return false;
     try {
       const res = await axios.post(`/api/user/signup-requests/${id}/approval`);
@@ -63,7 +64,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
         if (target) target.status = "APPROVED";
         return true;
       }
-      alert(res.data?.message || "처리에 실패했습니다.");
+      void swalAlert(res.data?.message || "처리에 실패했습니다.");
       return false;
     } catch (e) {
       console.error("[userSignup] approve 실패", e);
@@ -77,7 +78,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
    * @param id 신청 식별자
    */
   async function reject(id: number): Promise<boolean> {
-    const confirmed = window.confirm("반려하시겠습니까?");
+    const confirmed = await swalConfirm("반려하시겠습니까?");
     if (!confirmed) return false;
     try {
       const res = await axios.post(`/api/user/signup-requests/${id}/rejection`);
@@ -87,7 +88,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
         if (target) target.status = "REJECTED";
         return true;
       }
-      alert(res.data?.message || "처리에 실패했습니다.");
+      void swalAlert(res.data?.message || "처리에 실패했습니다.");
       return false;
     } catch (e) {
       console.error("[userSignup] reject 실패", e);

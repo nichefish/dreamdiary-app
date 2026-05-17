@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { swalConfirm, swalAlert } from "@/utils/swal";
 
 export interface BoardGroupRow {
   rnum?: number;
@@ -118,7 +119,7 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
       form.value = normalizeForm(res.data?.rsltObj ?? {});
     } catch (e) {
       modalOpen.value = false;
-      window.alert(e instanceof Error ? e.message : "게시판 그룹을 불러오지 못했습니다.");
+      void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 불러오지 못했습니다.");
     } finally {
       detailLoading.value = false;
     }

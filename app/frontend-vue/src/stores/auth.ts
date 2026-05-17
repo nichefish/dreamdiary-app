@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import ApiService from "@metronic/core/services/ApiService";
 import type { AxiosError } from "axios";
+import { resolveProfileImageUrl } from "@/utils/profileImage";
 
 /**
  * Vue SPA 인증 사용자 정보.
@@ -32,7 +33,10 @@ export const useAuthStore = defineStore("auth", () => {
   /** 인증 상태 세팅 */
   function setAuth(authUser: AuthUser) {
     isAuthenticated.value = true;
-    user.value = authUser;
+    user.value = {
+      ...authUser,
+      profileImageUrl: resolveProfileImageUrl(authUser.profileImageUrl),
+    };
     errors.value = [];
   }
 

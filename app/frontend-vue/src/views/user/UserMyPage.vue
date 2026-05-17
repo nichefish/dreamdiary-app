@@ -173,6 +173,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted, reactive, ref } from "vue";
 import { Modal } from "bootstrap";
 import { useAuthStore } from "@/stores/auth";
@@ -250,27 +251,27 @@ async function uploadProfileImage(event: Event) {
 
   const extOk = /\.(png|jpe?g)$/i.test(file.name);
   if (!extOk || !file.type.startsWith("image/")) {
-    window.alert("PNG 또는 JPG 이미지만 업로드할 수 있습니다.");
+    void swalAlert("PNG 또는 JPG 이미지만 업로드할 수 있습니다.");
     return;
   }
 
   try {
     await store.uploadProfileImage(file);
     await Promise.all([reload(), authStore.verifyAuth()]);
-    window.alert("프로필 이미지가 변경되었습니다.");
+    void swalAlert("프로필 이미지가 변경되었습니다.");
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "프로필 이미지를 변경하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "프로필 이미지를 변경하지 못했습니다.");
   }
 }
 
 async function removeProfileImage() {
-  if (!window.confirm("프로필 이미지를 삭제할까요?")) return;
+  if (!await swalConfirm("프로필 이미지를 삭제할까요?")) return;
   try {
     await store.removeProfileImage();
     await Promise.all([reload(), authStore.verifyAuth()]);
-    window.alert("프로필 이미지가 삭제되었습니다.");
+    void swalAlert("프로필 이미지가 삭제되었습니다.");
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "프로필 이미지를 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "프로필 이미지를 삭제하지 못했습니다.");
   }
 }
 
@@ -309,7 +310,7 @@ function validatePasswordForm(): boolean {
 
 async function submitPasswordChange() {
   if (!validatePasswordForm()) return;
-  if (!window.confirm("비밀번호를 변경할까요?")) return;
+  if (!await swalConfirm("비밀번호를 변경할까요?")) return;
 
   submittingPassword.value = true;
   try {
@@ -319,7 +320,7 @@ async function submitPasswordChange() {
       newPw: passwordForm.newPw,
     });
     closePasswordModal();
-    window.alert("비밀번호가 변경되었습니다.");
+    void swalAlert("비밀번호가 변경되었습니다.");
   } catch (error) {
     passwordError.value = error instanceof Error ? error.message : "비밀번호를 변경하지 못했습니다.";
   } finally {

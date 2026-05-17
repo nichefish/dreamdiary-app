@@ -19,7 +19,6 @@ import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepo
 import io.nicheblog.dreamdiary.feature.journal.day.repository.mybatis.JournalDayMapper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayStateMapHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.spec.JournalDaySpec;
-import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -28,6 +27,7 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.ApplicationContext;
@@ -223,7 +223,7 @@ public class JournalDayService
      */
     @Transactional(readOnly = true)
     public boolean dupChckByUser(final String username, final JournalDayDto journalDay) throws Exception {
-        if (journalDay.getJournalDatePrecision() != JournalDatePrecision.EXACT) return false;
+        if (StringUtils.isBlank(journalDay.getJournalDate())) return false;
 
         final Date journalDate = DateUtils.asDate(journalDay.getJournalDate());
         final String createdBy = AuthUtils.requireUsername(username);
@@ -254,6 +254,10 @@ public class JournalDayService
      */
     @Override
     public void preRegist(final JournalDayDto registDto) throws Exception {
+        final String username = AuthUtils.getLoginUsername();
+        if (StringUtils.isNotBlank(username) && this.dupChckByUser(username, registDto)) {
+            throw new IllegalStateException("msg.journal.day.duplicate");
+        }
         // 기간 필드 세팅:: 메소드 분리
         this.setPeriodFields(registDto);
     }

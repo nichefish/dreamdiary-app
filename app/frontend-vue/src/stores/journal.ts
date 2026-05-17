@@ -1,6 +1,8 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { formatLocalDateStr, resolveWeekStartDt } from "@/utils/journalDate";
+import { reinitMetronicAfterDom } from "@/utils/metronicReinit";
 
 // ---- 타입 정의 ----
 
@@ -166,6 +168,7 @@ export interface JournalDayDto {
   hiddenChapterCtgrList?: JournalChapterCtgrHintDto[];
   tag?: TagCmpstn;
   meta?: MetaCmpstn;
+  state?: StateCmpstn;
 }
 
 /** 목록 조회 파라미터 */
@@ -181,8 +184,34 @@ export interface JournalDaySearchParam {
   diaryKeyword?: string;
   dreamKeyword?: string;
   chapterCtgrCds?: string[];
+  /** 정렬 (ASC/DESC) — 백엔드 JournalDaySearchParam.sort */
+  sort?: "ASC" | "DESC";
 }
 
+/** 태그 클라우드 항목 */
+export interface TagCloudItem {
+  /** 태그 ID */
+  id: number | string;
+  /** 태그명 */
+  name: string;
+  /** 태그 카테고리 */
+  ctgr?: string;
+  /** 연결된 컨텐츠 수 */
+  contentSize: number;
+  tagClass?: string;
+  /** 글자 크기 CSS 클래스 (ts-1~ts-9) */
+  textClass?: string;
+}
+
+/** 태그 클라우드 결과 — 일자/일기/꿈 태그 목록 */
+export interface JournalTagCloud {
+  /** 일자 태그 목록 */
+  dayTagList: TagCloudItem[];
+  /** 일기 태그 목록 */
+  diaryTagList: TagCloudItem[];
+  /** 꿈 태그 목록 */
+  dreamTagList: TagCloudItem[];
+}
 // ---- 스토어 ----
 
 export const useJournalStore = defineStore("journal", () => {
@@ -212,7 +241,12 @@ export const useJournalStore = defineStore("journal", () => {
   // 필터 상태
   const showDiaries = ref<boolean>(true);
   const showDreams = ref<boolean>(true);
-  const showTagCloud = ref<boolean>(false);
+  /** 레거시 기본: 태그 클라우드 표시 (aside TAGCLOUD 토글과 연동) */
+  const showTagCloud = ref<boolean>(true);
+  /** 일자 목록 정렬 — FILTER 헤더 SORT 버튼과 연동. 레거시 기본: DESC, localStorage("journal_day_sort") 로 복원 */
+  const sortOrder = ref<"ASC" | "DESC">(
+    (localStorage.getItem("journal_day_sort") as "ASC" | "DESC") || "DESC"
+  );
   const diaryKeyword = ref<string>("");
   const dreamKeyword = ref<string>("");
   const chapterCtgrCds = ref<string[]>([]);
@@ -225,6 +259,12 @@ export const useJournalStore = defineStore("journal", () => {
   const metaLoading = ref<boolean>(false);
   /** 메타 조회 에러 메시지 */
   const metaError = ref<string | null>(null);
+
+  /** 태그 클라우드 결과 */
+  const tagCloud = ref<JournalTagCloud>({ dayTagList: [], diaryTagList: [], dreamTagList: [] });
+  /** 태그 클라우드 로딩 상태 */
+  const tagCloudLoading = ref<boolean>(false);
+  let tagCloudRequestSeq = 0;
 
   /** 현재 "년-월" 표시 라벨 */
   const yyMnthLabel = computed(() =>
@@ -239,27 +279,51 @@ export const useJournalStore = defineStore("journal", () => {
     loading.value = true;
     error.value = null;
     try {
+      const resolvedViewType = params?.viewType ?? viewType.value;
+      const resolvedYy = params?.yy ?? yy.value;
+      const resolvedMnth = params?.mnth ?? mnth.value;
+
+      if (resolvedViewType === "WEEKLY") {
+        const resolvedWeekStart =
+          params?.weekStartDt?.trim() ||
+          weekStartDt.value ||
+          resolveWeekStartDt({
+            stdrdDt: params?.stdrdDt,
+            yy: resolvedYy,
+            mnth: resolvedMnth,
+          });
+        weekStartDt.value = resolvedWeekStart;
+      }
+
       const query: Record<string, unknown> = {
-        viewType: params?.viewType ?? viewType.value,
-        yy: params?.yy ?? yy.value,
-        mnth: params?.mnth ?? mnth.value,
+        viewType: resolvedViewType,
+        yy: resolvedYy,
+        mnth: resolvedMnth,
         showDiaries: params?.showDiaries ?? showDiaries.value,
         showDreams: params?.showDreams ?? showDreams.value,
         showTagCloud: params?.showTagCloud ?? showTagCloud.value,
         ...(diaryKeyword.value ? { diaryKeyword: diaryKeyword.value } : {}),
         ...(dreamKeyword.value ? { dreamKeyword: dreamKeyword.value } : {}),
         ...(chapterCtgrCds.value.length > 0 ? { chapterCtgrCds: chapterCtgrCds.value } : {}),
-        ...(params?.weekStartDt ? { weekStartDt: params.weekStartDt } : {}),
+        ...(resolvedViewType === "WEEKLY" && weekStartDt.value
+          ? { weekStartDt: weekStartDt.value }
+          : {}),
         ...(params?.stdrdDt ? { stdrdDt: params.stdrdDt } : {}),
+        sort: params?.sort ?? sortOrder.value,
       };
       const res = await axios.get("/api/journal/days", { params: query });
       // 변경: 백엔드 AjaxResponse.rsltList 필드명으로 수정 (기존: res.data?.list)
-      dayList.value = res.data?.rsltList ?? [];
+      // 레거시 동일: 백엔드는 항상 ASC 반환 → DESC 이면 프론트에서 reverse
+      const rslt: JournalDayDto[] = res.data?.rsltList ?? [];
+      dayList.value = (query.sort ?? sortOrder.value) !== "ASC" ? [...rslt].reverse() : rslt;
     } catch (e: unknown) {
+      const vt = params?.viewType ?? viewType.value;
+      console.error("[journal] fetchDays failed", { viewType: vt, weekStartDt: weekStartDt.value }, e);
       error.value = "저널 목록을 불러오지 못했습니다.";
       dayList.value = [];
     } finally {
       loading.value = false;
+      void reinitMetronicAfterDom();
     }
   }
 
@@ -289,6 +353,60 @@ export const useJournalStore = defineStore("journal", () => {
   }
 
   /**
+   * 태그 클라우드 조회.
+   */
+  async function fetchTagCloud() {
+    const requestSeq = ++tagCloudRequestSeq;
+    tagCloudLoading.value = true;
+    try {
+      const periodParams = getTagPeriodParams();
+      const [dayRes, diaryRes, dreamRes] = await Promise.all([
+        axios.get("/api/journal/day/tags", { params: periodParams }),
+        axios.get("/api/journal/entry/tags", { params: { ...periodParams, type: "DIARY" } }),
+        axios.get("/api/journal/entry/tags", { params: { ...periodParams, type: "DREAM" } }),
+      ]);
+      if (requestSeq !== tagCloudRequestSeq) return;
+      tagCloud.value = {
+        dayTagList: normalizeTagCloudList(dayRes.data?.rsltList),
+        diaryTagList: normalizeTagCloudList(diaryRes.data?.rsltList),
+        dreamTagList: normalizeTagCloudList(dreamRes.data?.rsltList),
+      };
+    } catch {
+      if (requestSeq === tagCloudRequestSeq) {
+        tagCloud.value = { dayTagList: [], diaryTagList: [], dreamTagList: [] };
+      }
+    } finally {
+      if (requestSeq === tagCloudRequestSeq) {
+        tagCloudLoading.value = false;
+      }
+    }
+  }
+
+  function getTagPeriodParams(): Record<string, string | number> {
+    if (viewType.value === "WEEKLY" && weekStartDt.value) {
+      return { weekStartDt: weekStartDt.value };
+    }
+    return { yy: yy.value, mnth: mnth.value };
+  }
+
+  function normalizeTagCloudList(rawList: unknown): TagCloudItem[] {
+    if (!Array.isArray(rawList)) return [];
+    return rawList
+      .map((raw) => {
+        const item = raw as Record<string, unknown>;
+        return {
+          id: (item.id as number | string | undefined) ?? "",
+          name: String(item.name ?? ""),
+          ctgr: String(item.ctgr ?? ""),
+          contentSize: Number(item.contentSize ?? 0),
+          tagClass: String(item.tagClass ?? ""),
+          textClass: String(item.textClass ?? ""),
+        };
+      })
+      .filter((item) => item.id !== "" && item.name !== "");
+  }
+
+  /**
    * 월 이동 (delta: -1 이전월, +1 다음월).
    * 연도 경계에서 자동으로 넘어간다.
    */
@@ -299,6 +417,9 @@ export const useJournalStore = defineStore("journal", () => {
     if (m > 12) { m = 1; y += 1; }
     yy.value = y;
     mnth.value = m;
+    if (viewType.value === "WEEKLY") {
+      weekStartDt.value = resolveWeekStartDt({ yy: y, mnth: m });
+    }
     fetchDays();
   }
 
@@ -309,6 +430,9 @@ export const useJournalStore = defineStore("journal", () => {
     const today = new Date();
     yy.value = today.getFullYear();
     mnth.value = today.getMonth() + 1;
+    if (viewType.value === "WEEKLY") {
+      weekStartDt.value = resolveWeekStartDt({ yy: yy.value, mnth: mnth.value });
+    }
     fetchDays();
   }
 
@@ -318,6 +442,24 @@ export const useJournalStore = defineStore("journal", () => {
   function gotoYyMnth(newYy: number, newMnth: number) {
     yy.value = newYy;
     mnth.value = newMnth;
+    if (viewType.value === "WEEKLY") {
+      weekStartDt.value = resolveWeekStartDt({ yy: newYy, mnth: newMnth });
+    }
+    fetchDays();
+  }
+
+  /**
+   * 주 이동 (delta: -1 이전주, +1 다음주).
+   * weekStartDt 기준으로 7일 단위로 이동하며 yy/mnth를 갱신한다.
+   */
+  function navigateWeek(delta: number) {
+    const base = new Date(
+      (weekStartDt.value || formatLocalDateStr(new Date())) + "T12:00:00"
+    );
+    base.setDate(base.getDate() + delta * 7);
+    weekStartDt.value = formatLocalDateStr(base);
+    yy.value = base.getFullYear();
+    mnth.value = base.getMonth() + 1;
     fetchDays();
   }
 
@@ -327,6 +469,15 @@ export const useJournalStore = defineStore("journal", () => {
    */
   function setViewType(vt: JournalViewType) {
     viewType.value = vt;
+  }
+
+  /**
+   * FILTER 헤더 SORT 토글. 정렬 방향 변경 후 목록 재조회.
+   */
+  function toggleSort() {
+    sortOrder.value = sortOrder.value === "ASC" ? "DESC" : "ASC";
+    localStorage.setItem("journal_day_sort", sortOrder.value);
+    void fetchDays();
   }
 
   return {
@@ -340,6 +491,7 @@ export const useJournalStore = defineStore("journal", () => {
     showDiaries,
     showDreams,
     showTagCloud,
+    sortOrder,
     diaryKeyword,
     dreamKeyword,
     chapterCtgrCds,
@@ -352,8 +504,13 @@ export const useJournalStore = defineStore("journal", () => {
     fetchMetas,
     selectMeta,
     navigateMonth,
+    navigateWeek,
     gotoToday,
     gotoYyMnth,
     setViewType,
+    toggleSort,
+    tagCloud,
+    tagCloudLoading,
+    fetchTagCloud,
   };
 });

@@ -2,8 +2,10 @@ package io.nicheblog.dreamdiary.feature.admin.menu.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.model.*;
 import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
@@ -72,10 +74,17 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENUS)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> userMenuListAjax() throws Exception {
+    public ResponseEntity<AjaxResponse> userMenuListAjax(
+            @RequestParam(value = "mode", defaultValue = "USER") final String mode
+    ) throws Exception {
 
-        final List<MenuDto> menuList = menuService.getUserMenuList();
+        final boolean mngrModeRequested = Code.AUTH_MNGR.equals(mode);
+        final boolean canUseMngrMode = AuthUtils.hasAuthority(Constant.ROLE_MNGR);
+        final List<MenuDto> menuList = mngrModeRequested && canUseMngrMode
+                ? menuService.getMngrMenuList()
+                : menuService.getUserMenuList();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

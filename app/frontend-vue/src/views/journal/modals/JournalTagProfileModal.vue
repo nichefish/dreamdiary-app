@@ -161,6 +161,8 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
+import { isAuthExpiredError } from "@/utils/authError";
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/stores/attachableModal";
@@ -234,7 +236,7 @@ function close() {
 
 /** 태그 프로필 저장 */
 async function onSave() {
-  const confirmed = window.confirm("저장하시겠습니까?");
+  const confirmed = await swalConfirm("저장하시겠습니까?");
   if (!confirmed) return;
   submitting.value = true;
   try {
@@ -243,10 +245,11 @@ async function onSave() {
       close();
       void journalStore.fetchDays();
     } else {
-      alert(result.message ?? "처리에 실패했습니다.");
+      void swalAlert(result.message ?? "처리에 실패했습니다.");
     }
-  } catch {
-    alert("요청 처리 중 오류가 발생했습니다.");
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
   } finally {
     submitting.value = false;
   }
@@ -254,7 +257,7 @@ async function onSave() {
 
 /** 태그 프로필 삭제 */
 async function onDelete() {
-  const confirmed = window.confirm("삭제하시겠습니까?");
+  const confirmed = await swalConfirm("삭제하시겠습니까?");
   if (!confirmed) return;
   submitting.value = true;
   try {
@@ -263,10 +266,11 @@ async function onDelete() {
       close();
       void journalStore.fetchDays();
     } else {
-      alert(result.message ?? "처리에 실패했습니다.");
+      void swalAlert(result.message ?? "처리에 실패했습니다.");
     }
-  } catch {
-    alert("요청 처리 중 오류가 발생했습니다.");
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
   } finally {
     submitting.value = false;
   }

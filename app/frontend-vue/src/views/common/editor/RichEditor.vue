@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { ref } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 /** TinyMCE 6 자체 호스팅 - 번들러(Vite)를 통해 직접 임포트 */
@@ -81,6 +82,8 @@ const editorInit = {
   skin: false,
   /** iframe 내부 content CSS 는 브라우저 기본값 사용 */
   content_css: false,
+  content_style:
+    "body { padding: 12px 16px; box-sizing: border-box; } p { margin: 0 0 0.75rem; }",
   default_link_target: "_blank",
   convert_urls: false,
   plugins:
@@ -142,7 +145,7 @@ async function handleImageUpload(event: Event): Promise<void> {
 
   const MAX_SIZE_BYTES = 10 * 1024 * 1024;
   if (file.size > MAX_SIZE_BYTES) {
-    alert("이미지 파일 크기는 10MB 이하여야 합니다.");
+    void swalAlert("이미지 파일 크기는 10MB 이하여야 합니다.");
     input.value = "";
     return;
   }
@@ -156,7 +159,7 @@ async function handleImageUpload(event: Event): Promise<void> {
     });
     const data = await res.json();
     if (!data.rslt) {
-      alert(data.message ?? "이미지 업로드에 실패했습니다.");
+      void swalAlert(data.message ?? "이미지 업로드에 실패했습니다.");
       return;
     }
     const fileInfo = data.rsltObj;
@@ -171,7 +174,7 @@ async function handleImageUpload(event: Event): Promise<void> {
       imgTag
     );
   } catch {
-    alert("이미지 업로드 중 오류가 발생했습니다.");
+    void swalAlert("이미지 업로드 중 오류가 발생했습니다.");
   } finally {
     input.value = "";
   }

@@ -332,6 +332,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted } from "vue";
 import { useCodeAdminStore, type CodeGroupRow, type CodeItemRow } from "@/stores/codeAdmin";
 
@@ -374,7 +375,7 @@ async function openDetail(id: number) {
   try {
     await store.openDetail(id);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "코드 그룹 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "코드 그룹 상세를 불러오지 못했습니다.");
   }
 }
 
@@ -382,41 +383,41 @@ async function openGroupEdit(id: number) {
   try {
     await store.openGroupEdit(id);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "코드 그룹을 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "코드 그룹을 불러오지 못했습니다.");
   }
 }
 
 async function submitGroup() {
   if (!store.groupForm.groupCode.trim() || !validateCode(store.groupForm.groupCode)) {
-    window.alert("그룹 코드는 영문, 숫자, 언더스코어만 사용할 수 있습니다.");
+    void swalAlert("그룹 코드는 영문, 숫자, 언더스코어만 사용할 수 있습니다.");
     return;
   }
   if (!store.groupForm.groupName.trim()) {
-    window.alert("그룹명을 입력해주세요.");
+    void swalAlert("그룹명을 입력해주세요.");
     return;
   }
   try {
-    window.alert(await store.submitGroup());
+    void swalAlert(await store.submitGroup());
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "코드 그룹을 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "코드 그룹을 저장하지 못했습니다.");
   }
 }
 
 async function toggleGroupUse(row: CodeGroupRow) {
-  if (!window.confirm(isUse(row.useYn) ? "분류 코드를 미사용 처리할까요?" : "분류 코드를 사용 처리할까요?")) return;
+  if (!await swalConfirm(isUse(row.useYn) ? "분류 코드를 미사용 처리할까요?" : "분류 코드를 사용 처리할까요?")) return;
   try {
-    window.alert(await store.toggleGroupUse(row));
+    void swalAlert(await store.toggleGroupUse(row));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "사용 여부를 변경하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "사용 여부를 변경하지 못했습니다.");
   }
 }
 
 async function deleteGroup(row: CodeGroupRow) {
-  if (!window.confirm(`${row.groupName} 분류 코드를 삭제할까요?`)) return;
+  if (!await swalConfirm(`${row.groupName} 분류 코드를 삭제할까요?`)) return;
   try {
-    window.alert(await store.deleteGroup(row.id));
+    void swalAlert(await store.deleteGroup(row.id));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "코드 그룹을 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "코드 그룹을 삭제하지 못했습니다.");
   }
 }
 
@@ -424,41 +425,41 @@ async function openItemEdit(id: number) {
   try {
     await store.openItemEdit(id);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "상세 코드를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "상세 코드를 불러오지 못했습니다.");
   }
 }
 
 async function submitItem() {
   if (!store.itemForm.code.trim() || !validateCode(store.itemForm.code)) {
-    window.alert("코드는 영문, 숫자, 언더스코어만 사용할 수 있습니다.");
+    void swalAlert("코드는 영문, 숫자, 언더스코어만 사용할 수 있습니다.");
     return;
   }
   if (!store.itemForm.codeName.trim()) {
-    window.alert("코드명을 입력해주세요.");
+    void swalAlert("코드명을 입력해주세요.");
     return;
   }
   try {
-    window.alert(await store.submitItem());
+    void swalAlert(await store.submitItem());
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "상세 코드를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "상세 코드를 저장하지 못했습니다.");
   }
 }
 
 async function deleteItem(item: CodeItemRow) {
-  if (!window.confirm(`${item.codeName} 상세 코드를 삭제할까요?`)) return;
+  if (!await swalConfirm(`${item.codeName} 상세 코드를 삭제할까요?`)) return;
   try {
-    window.alert(await store.deleteItem(item.id));
+    void swalAlert(await store.deleteItem(item.id));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "상세 코드를 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "상세 코드를 삭제하지 못했습니다.");
   }
 }
 
 async function saveItemSortOrders() {
   try {
     const message = await store.saveItemSortOrders();
-    if (message) window.alert(message);
+    if (message) void swalAlert(message);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "정렬 순서를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "정렬 순서를 저장하지 못했습니다.");
   }
 }
 

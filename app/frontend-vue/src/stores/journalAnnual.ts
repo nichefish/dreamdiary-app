@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { swalConfirm, swalAlert } from "@/utils/swal";
 
 // ---- 타입 정의 ----
 
@@ -282,10 +283,10 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
         void fetchList();
         return true;
       }
-      alert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
     } catch {
-      alert("요청 처리 중 오류가 발생했습니다.");
+      void swalAlert("요청 처리 중 오류가 발생했습니다.");
       return false;
     } finally {
       submitting.value = false;
@@ -466,10 +467,10 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
         if (model.yy) void fetchDetail(model.yy);
         return true;
       }
-      alert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
     } catch {
-      alert("요청 처리 중 오류가 발생했습니다.");
+      void swalAlert("요청 처리 중 오류가 발생했습니다.");
       return false;
     } finally {
       reviewSubmitting.value = false;
@@ -483,17 +484,17 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    * @param yy - 상세 재조회용 연도
    */
   async function deleteReview(id: number, yy?: number) {
-    const confirmed = window.confirm("리뷰를 삭제하시겠습니까?");
+    const confirmed = await swalConfirm("리뷰를 삭제하시겠습니까?");
     if (!confirmed) return;
     try {
       const res = await axios.delete(`/api/journal/annual/review/${id}`);
       if (res.data?.rslt) {
         if (yy) void fetchDetail(yy);
       } else {
-        alert(res.data?.message ?? "삭제에 실패했습니다.");
+        void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
       }
     } catch {
-      alert("요청 처리 중 오류가 발생했습니다.");
+      void swalAlert("요청 처리 중 오류가 발생했습니다.");
     }
   }
 

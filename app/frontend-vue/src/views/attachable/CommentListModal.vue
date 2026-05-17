@@ -24,7 +24,12 @@
                         v-if="comment.createdByInfo?.profileImageUrl"
                         class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1"
                       >
-                        <img :src="comment.createdByInfo.profileImageUrl" class="img-thumbnail p-0 w-100" alt="" />
+                        <img
+                          :src="resolveProfileImageUrl(comment.createdByInfo.profileImageUrl)"
+                          class="img-thumbnail p-0 w-100"
+                          alt=""
+                          @error="handleProfileImageError"
+                        />
                       </div>
                       {{ comment.createdByNm || '-' }}
                     </div>
@@ -53,6 +58,10 @@
 import { ref, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/stores/attachableModal";
+import {
+  handleProfileImageError,
+  resolveProfileImageUrl,
+} from "@/utils/profileImage";
 
 const attachableStore = useAttachableModalStore();
 

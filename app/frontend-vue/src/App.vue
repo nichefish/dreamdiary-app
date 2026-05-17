@@ -1,24 +1,22 @@
 <template>
   <RouterView />
-  <AppChat />
+  <AppChat v-if="authStore.isAuthenticated && !isPopup" />
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted } from "vue";
-import { RouterView } from "vue-router";
+<script setup lang="ts">
+import { computed, onMounted } from "vue";
+import { RouterView, useRoute } from "vue-router";
 import AppChat from "@/views/chat/AppChat.vue";
+import { useAuthStore } from "@/stores/auth";
 
-export default defineComponent({
-  name: "app",
-  components: {
-    AppChat,
-    RouterView,
-  },
-  setup() {
-    onMounted(() => {
-      document.body.classList.remove("page-loading");
-    });
-  },
+const authStore = useAuthStore();
+const route = useRoute();
+
+/** 팝업 전용 라우트(검색 팝업 등)에서는 AI 챗 숨김 */
+const isPopup = computed(() => route.name === "journal-entry-search");
+
+onMounted(() => {
+  document.body.classList.remove("page-loading");
 });
 </script>
 

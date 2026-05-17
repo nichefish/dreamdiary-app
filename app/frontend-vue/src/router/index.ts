@@ -26,6 +26,10 @@ const routes: Array<RouteRecordRaw> = [
         children: [
           {
             path: "",
+            redirect: { name: "journal-weekly" },
+          },
+          {
+            path: "monthly",
             name: "journal-monthly",
             component: () => import("@/views/journal/JournalMonthly.vue"),
             meta: { pageTitle: "월간 일기", breadcrumbs: ["일기"] },
@@ -191,6 +195,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     component: () => import("@/layouts/SystemLayout.vue"),
     children: [
+      {
+        path: "/journal/entry/search",
+        name: "journal-entry-search",
+        component: () => import("@/views/journal/entry/JournalEntrySearchPage.vue"),
+        meta: { pageTitle: "저널 엔트리 검색", middleware: "auth" },
+      },
       {
         path: "/error",
         name: "error",

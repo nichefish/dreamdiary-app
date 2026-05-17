@@ -71,7 +71,17 @@
                           </div>
                         </div>
                       </div>
-                      <div class="d-flex gap-2">
+                      <div class="d-flex gap-2 align-items-center">
+                        <!--begin::복사 버튼-->
+                        <button
+                          type="button"
+                          class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+                          title="복사"
+                          @click="copyHistory(item)"
+                        >
+                          <i class="bi bi-copy fs-8"></i>
+                        </button>
+                        <!--end::복사 버튼-->
                         <button
                           type="button"
                           class="btn btn-sm btn-light-primary"
@@ -147,6 +157,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { ref, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/stores/attachableModal";
@@ -183,37 +194,63 @@ function close() {
 
 /** 이력 복원 처리. 성공 시 상위 컴포넌트에 알린다. */
 async function onRestore(historyId: number | string) {
-  if (!window.confirm("선택한 히스토리 내용으로 복구하시겠습니까?")) return;
+  if (!await swalConfirm("선택한 히스토리 내용으로 복구하시겠습니까?")) return;
   const ok = await attachableStore.restoreHistory(historyId);
   if (ok) {
     close();
     emit("success");
   } else {
-    alert("복구에 실패했습니다.");
+    void swalAlert("복구에 실패했습니다.");
   }
 }
 
 /** 이력 단건 삭제 처리. 성공 시 상위 컴포넌트에 알린다. */
 async function onDelete(historyId: number | string) {
-  if (!window.confirm("선택한 히스토리를 삭제하시겠습니까?")) return;
+  if (!await swalConfirm("선택한 히스토리를 삭제하시겠습니까?")) return;
   const ok = await attachableStore.deleteHistory(historyId);
   if (ok) {
     close();
     emit("success");
   } else {
-    alert("삭제에 실패했습니다.");
+    void swalAlert("삭제에 실패했습니다.");
+  }
+}
+
+/** HTML 마크업을 제거하고 평문으로 변환한다 (복사 시 사용). */
+function htmlToPlainText(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<hr\s*\/?>/gi, "\n---\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, String.fromCharCode(34))
+    .trim();
+}
+
+/** 히스토리 내용을 클립보드에 복사한다. */
+async function copyHistory(item: { markdownContent?: string; previewContent?: string }): Promise<void> {
+  const plain = htmlToPlainText(item.markdownContent ?? item.previewContent ?? "");
+  try {
+    await navigator.clipboard.writeText(plain);
+    void swalAlert("클립보드에 복사되었습니다.");
+  } catch {
+    void swalAlert("복사에 실패했습니다.");
   }
 }
 
 /** 이력 전체 삭제 처리. 성공 시 상위 컴포넌트에 알린다. */
 async function onClear() {
-  if (!window.confirm("이력을 전체 삭제하시겠습니까?")) return;
+  if (!await swalConfirm("이력을 전체 삭제하시겠습니까?")) return;
   const ok = await attachableStore.clearHistory();
   if (ok) {
     close();
     emit("success");
   } else {
-    alert("전체 삭제에 실패했습니다.");
+    void swalAlert("전체 삭제에 실패했습니다.");
   }
 }
 </script>

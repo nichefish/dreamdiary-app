@@ -1,5 +1,4 @@
 <template>
-  <!--begin::저널 태그 목록 모달-->
   <div
     ref="modalEl"
     class="modal fade"
@@ -11,25 +10,9 @@
   >
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
-
-        <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 id="modal_title" class="modal-title">[저널 태그 전체 목록]</h5>
           <div class="d-flex gap-4">
-            <button
-              type="button"
-              :class="[
-                'btn btn-sm btn-outline px-4',
-                attachableStore.tagListHideSingles ? 'btn-light-warning' : 'btn-light-primary'
-              ]"
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              data-bs-dismiss="click"
-              title="1개짜리 태그를 숨기고 보입니다."
-              @click="hideSingleTag"
-            >
-              <i class="bi bi-tag pe-0"></i>
-            </button>
             <button
               type="button"
               class="btn btn-sm btn-icon btn-active-light-primary ms-2"
@@ -43,9 +26,7 @@
             </button>
           </div>
         </div>
-        <!--end::Modal Header-->
 
-        <!--begin::Modal Body-->
         <div class="modal-body modal-mbl-body my-5">
           <div v-if="attachableStore.tagListLoading" class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary" role="status"></span>
@@ -82,20 +63,15 @@
             </section>
           </div>
         </div>
-        <!--end::Modal Body-->
 
-        <!--begin::Modal Footer-->
         <div class="modal-footer">
           <div class="d-flex justify-content-end">
             <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
           </div>
         </div>
-        <!--end::Modal Footer-->
-
       </div>
     </div>
   </div>
-  <!--end::저널 태그 목록 모달-->
 </template>
 
 <script setup lang="ts">
@@ -112,12 +88,7 @@ let bsModal: InstanceType<typeof Modal> | null = null;
 
 const visibleTagGroups = computed(() =>
   Object.entries(attachableStore.tagGroupMap)
-    .map(([category, tags]) => ({
-      category,
-      tags: tags.filter((tag) =>
-        attachableStore.tagListHideSingles ? tag.contentSize !== 1 : true
-      ),
-    }))
+    .map(([category, tags]) => ({ category, tags }))
     .filter((group) => group.tags.length > 0)
 );
 
@@ -140,10 +111,6 @@ watch(
 
 function close() {
   attachableStore.closeTagList();
-}
-
-function hideSingleTag() {
-  attachableStore.toggleTagListSingles();
 }
 
 function openTagDtl(tag: TagListItem) {

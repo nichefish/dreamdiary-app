@@ -42,6 +42,16 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     margin-top: 0.25rem;
 }
 
+.journal-layout-vue__aside,
+.journal-annual-layout-vue__aside {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
 .journal-aside-week-days {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -184,7 +194,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     position: relative;
     border: 1px solid transparent;
     border-radius: 0 0.5rem 0.5rem 0;
-    padding-left: 0.75rem !important;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem !important;
     background: transparent;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 
@@ -604,4 +614,75 @@ $journal-paired-states: (
 .journal-sumry-review-item {
     border-left: 3px solid #f59e0b;
 }
- 
+
+/* 태그 컨텍스트 메뉴 (레거시 journalDayTagContextMenuShell 의 동적 DOM 방식 → Vue 컴포넌트로 대체) */
+.journal-tag-context-menu {
+    position: fixed;
+    min-width: 176px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(11, 99, 206, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    z-index: 2000;
+}
+
+.journal-tag-ctx-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    text-align: left;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.15s ease;
+
+    &--search {
+        background: #edf5ff;
+        color: #0b63ce;
+        font-weight: 600;
+
+        &:hover {
+            background: #dbeafe;
+        }
+    }
+
+    &--configure {
+        background: transparent;
+        color: #7c2d12;
+        margin-top: 4px;
+
+        &:hover {
+            background: #ffedd5;
+        }
+    }
+}
+
+.journal-entry-reg-modal__body {
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+.journal-entry-reg-form {
+    .tox-tinymce {
+        border-radius: 0.475rem;
+    }
+
+    .tagify-editor-wrapper,
+    .rich-editor-wrapper,
+    .form-control,
+    .form-select {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .journal-entry-reg-modal__body {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+}

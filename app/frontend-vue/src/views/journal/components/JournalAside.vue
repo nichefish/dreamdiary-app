@@ -1,7 +1,7 @@
 <template>
   <!--begin::저널 사이드 패널 (년월 이동 + 필터)-->
-  <div class="journal-aside card p-5" style="min-width:200px; max-width:220px;">
-    <div class="d-flex justify-content-end mb-3">
+  <div class="journal-aside card card-reset card-p-0 p-5" style="min-width:200px; max-width:220px;">
+    <div class="d-flex justify-content-end mb-2">
       <button
         type="button"
         class="btn btn-sm btn-icon btn-light"
@@ -12,9 +12,27 @@
       </button>
     </div>
 
-    <!--begin::년월 네비게이션-->
-    <div class="d-flex flex-column gap-3">
-      <!--begin::연도 선택-->
+    <!--begin::필터 카드 헤더 (레거시 journal_aside_header)-->
+    <div id="journal_aside_header" class="card-header min-h-auto mb-5 px-0 border-0">
+      <h3 class="card-title text-gray-900 fw-bold fs-3 mb-0">
+        <i class="bi bi-filter fs-2 me-1"></i> FILTER
+      </h3>
+      <div class="card-toolbar">
+        <button
+          type="button"
+          class="btn btn-sm btn-icon btn-color-gray-500 btn-light"
+          title="정렬 변경"
+          @click="store.toggleSort()"
+        >
+          <i :class="sortIconClass" id="sortIcon" class="fs-2 pe-0"></i>
+        </button>
+      </div>
+    </div>
+    <!--end::필터 카드 헤더-->
+
+    <!--begin::내비게이션 (월간/주간 분기)-->
+    <div class="card-body p-0 d-flex flex-column gap-3">
+      <!--begin::연도 선택 (공통)-->
       <select
         class="form-select form-select-sm"
         :value="store.yy"
@@ -24,37 +42,107 @@
       </select>
       <!--end::연도 선택-->
 
-      <!--begin::월 이동 컨트롤-->
-      <div class="d-flex align-items-center justify-content-between">
-        <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateMonth(-1)">
-          <i class="bi bi-chevron-left"></i>
-        </button>
-        <span class="fw-bold fs-6">{{ store.mnth }}월</span>
-        <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateMonth(1)">
-          <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
-      <!--end::월 이동 컨트롤-->
+      <!--begin::월 내비게이션 (MONTHLY)-->
+      <template v-if="store.viewType !== 'WEEKLY'">
+        <!--begin::월 이동 컨트롤-->
+        <div class="d-flex align-items-center justify-content-between">
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateMonth(-1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="fw-bold fs-6">{{ store.mnth }}월</span>
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateMonth(1)">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <!--end::월 이동 컨트롤-->
 
-      <!--begin::월 그리드-->
-      <div class="d-grid gap-1" style="grid-template-columns: repeat(3, 1fr);">
-        <button
-          v-for="m in 12"
-          :key="m"
-          type="button"
-          :class="['btn btn-sm', m === store.mnth ? 'btn-primary' : 'btn-light']"
-          @click="store.gotoYyMnth(store.yy, m)"
-        >
-          {{ m }}월
-        </button>
-      </div>
-      <!--end::월 그리드-->
+        <!--begin::월 그리드-->
+        <div class="d-grid gap-1" style="grid-template-columns: repeat(3, 1fr);">
+          <button
+            v-for="m in 12"
+            :key="m"
+            type="button"
+            :class="['btn btn-sm', m === store.mnth ? 'btn-primary' : 'btn-light']"
+            @click="store.gotoYyMnth(store.yy, m)"
+          >
+            {{ m }}월
+          </button>
+        </div>
+        <!--end::월 그리드-->
+      </template>
+      <!--end::월 내비게이션-->
+
+      <!--begin::주 내비게이션 (WEEKLY)-->
+      <template v-else>
+        <!--begin::주간 범위 + 이동-->
+        <div class="d-flex align-items-center justify-content-between">
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateWeek(-1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="fw-bold fs-7 text-center">{{ weekRangeLabel }}</span>
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateWeek(1)">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <!--end::주간 범위-->
+
+        <!--begin::요일 버튼 (is-active: 선택된 날짜만 파란색 / 항목 없음: 회색음영)-->
+        <div class="journal-aside-week-days">
+          <button
+            v-for="day in weekDays"
+            :key="day.dateStr"
+            type="button"
+            :class="['journal-aside-week-day', { 'is-active': day.isActive }]"
+            :title="day.dateStr"
+            :disabled="!day.hasDay"
+            @click="selectWeekDay(day)"
+          >
+            <span class="journal-aside-week-day__label">{{ day.label }}</span>
+            <span class="journal-aside-week-day__date">{{ day.dayNum }}</span>
+          </button>
+        </div>
+        <!--end::요일 버튼-->
+      </template>
+      <!--end::주 내비게이션-->
 
       <!--begin::TODAY 버튼-->
       <button type="button" class="btn btn-sm btn-light-primary w-100" @click="store.gotoToday()">
         TODAY
       </button>
       <!--end::TODAY 버튼-->
+
+      <!--begin::Pinpoint (현재 년월 고정 → 되돌리기)-->
+      <div>
+        <div class="text-gray-900 fs-6 fw-bold d-inline-block mb-2">Pinpoint</div>
+        <div class="d-flex align-items-center justify-content-between px-1 mb-2 gap-1">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
+            title="현재 년월 고정"
+            @click="pinpoint"
+          >
+            <i class="bi bi-bookmarks pe-0"></i>
+          </button>
+          <span class="mx-1">|</span>
+          <span class="px-1 text-center">
+            <span class="fs-6 text-muted">{{ pinnedYy != null ? String(pinnedYy) : '----' }}</span>
+            <span class="text-muted"> / </span>
+            <span class="fs-6 text-muted">{{ pinnedMnth != null ? String(pinnedMnth) : '--' }}</span>
+            <i class="bi bi-pin-map fs-7 ms-1 text-muted"></i>
+          </span>
+          <span class="mx-1">|</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
+            title="고정한 년월로 돌아가기"
+            :disabled="pinnedYy == null"
+            @click="turnback"
+          >
+            <i class="bi bi-reply-all pe-0"></i>
+          </button>
+        </div>
+      </div>
+      <!--end::Pinpoint-->
 
       <div class="separator"></div>
 
@@ -112,22 +200,42 @@
       </button>
       <!--end::태그 목록 버튼-->
 
-      <!--begin::키워드 필터-->
+      <!--begin::키워드 필터 (현재 목록 필터 — store 상태 직결)-->
       <div class="d-flex flex-column gap-2">
-        <input
-          v-model="store.diaryKeyword"
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="일기 키워드"
-          @keyup.enter="store.fetchDays()"
-        />
-        <input
-          v-model="store.dreamKeyword"
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="꿈 키워드"
-          @keyup.enter="store.fetchDays()"
-        />
+        <div class="input-group input-group-sm">
+          <input
+            v-model="store.diaryKeyword"
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="일기 키워드"
+            @keyup.enter="store.fetchDays()"
+          />
+          <button
+            type="button"
+            class="btn btn-sm btn-icon btn-light"
+            title="일기 키워드 필터 적용"
+            @click="store.fetchDays()"
+          >
+            <i class="bi bi-funnel fs-7"></i>
+          </button>
+        </div>
+        <div class="input-group input-group-sm">
+          <input
+            v-model="store.dreamKeyword"
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="꿈 키워드"
+            @keyup.enter="store.fetchDays()"
+          />
+          <button
+            type="button"
+            class="btn btn-sm btn-icon btn-light"
+            title="꿈 키워드 필터 적용"
+            @click="store.fetchDays()"
+          >
+            <i class="bi bi-funnel fs-7"></i>
+          </button>
+        </div>
       </div>
       <!--end::키워드 필터-->
     </div>
@@ -137,6 +245,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from "vue";
+import { formatLocalDateStr } from "@/utils/journalDate";
 import { useJournalStore } from "@/stores/journal";
 import { useJournalAsideStore } from "@/stores/journalAside";
 import { useJournalModalStore } from "@/stores/journalModal";
@@ -149,6 +259,65 @@ const attachableStore = useAttachableModalStore();
 
 const currentYear = new Date().getFullYear();
 const yyOptions = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);
+
+const sortIconClass = computed(() =>
+  store.sortOrder === "DESC"
+    ? "bi bi-sort-numeric-down-alt"
+    : "bi bi-sort-numeric-up-alt"
+);
+
+/** 주간 범위 레이블 (예: "05-12 ~ 05-18") */
+const weekRangeLabel = computed(() => {
+  if (!store.weekStartDt) return "----";
+  const start = store.weekStartDt.substring(5);
+  const d = new Date(store.weekStartDt + "T12:00:00");
+  d.setDate(d.getDate() + 6);
+  const end = formatLocalDateStr(d).substring(5);
+  return `${start} ~ ${end}`;
+});
+
+/** 요일 버튼에서 선택된 날짜 (기본: 오늘) */
+const selectedDt = ref<string>(formatLocalDateStr(new Date()));
+
+/** Pinpoint — 고정된 년/월 (null: 미고정) */
+const pinnedYy = ref<number | null>(null);
+const pinnedMnth = ref<number | null>(null);
+
+/** 주간 요일 버튼 목록 (월~일) */
+const weekDays = computed(() => {
+  if (!store.weekStartDt) return [];
+  const labels = ["월", "화", "수", "목", "금", "토", "일"];
+  return labels.map((label, i) => {
+    const d = new Date(store.weekStartDt! + "T12:00:00");
+    d.setDate(d.getDate() + i);
+    const dateStr = formatLocalDateStr(d);
+    return {
+      label,
+      dateStr,
+      dayNum: d.getDate(),
+      hasDay: store.dayList.some((day) => day.stdrdDt === dateStr),
+      isActive: dateStr === selectedDt.value,
+    };
+  });
+});
+
+/** 요일 버튼 클릭 → 해당 날짜를 선택 상태로 전환 */
+function selectWeekDay(day: { dateStr: string; hasDay: boolean }): void {
+  if (!day.hasDay) return;
+  selectedDt.value = day.dateStr;
+}
+
+/** 현재 년/월을 Pinpoint로 고정 */
+function pinpoint(): void {
+  pinnedYy.value = store.yy;
+  pinnedMnth.value = store.mnth;
+}
+
+/** 고정한 년/월로 되돌리기 */
+function turnback(): void {
+  if (pinnedYy.value == null || pinnedMnth.value == null) return;
+  store.gotoYyMnth(pinnedYy.value, pinnedMnth.value);
+}
 
 function onYyChange(e: Event) {
   const val = Number((e.target as HTMLSelectElement).value);
@@ -172,6 +341,10 @@ function openTodoReg() {
 
 function toggleTagCloud() {
   store.showTagCloud = !store.showTagCloud;
+  if (store.showTagCloud) {
+    void store.fetchTagCloud();
+  }
+  void store.fetchDays();
 }
 
 function openTagList() {

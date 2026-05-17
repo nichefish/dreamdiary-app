@@ -3,6 +3,11 @@
     z-index: 6002 !important;
 }
 
+/** flatpickr — Bootstrap 모달 위에 표시 (저널 일자 등록 날짜) */
+.flatpickr-calendar {
+    z-index: 6002 !important;
+}
+
 .tooltip-inner {
     white-space: pre-wrap;
 }

@@ -207,6 +207,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted, reactive, ref } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -323,7 +324,7 @@ async function onEventClick(arg: EventClickArg) {
     detail.value = await scheduleStore.fetchDetail(arg.event.id);
     detailModal?.show();
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "일정 정보를 조회하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "일정 정보를 조회하지 못했습니다.");
   }
 }
 
@@ -368,10 +369,10 @@ function onScheduleCodeChange() {
 
 async function submitReg() {
   if (!regForm.scheduleCd || !regForm.title || !regForm.bgnDt) {
-    window.alert("필수 값을 입력해 주세요.");
+    void swalAlert("필수 값을 입력해 주세요.");
     return;
   }
-  if (!window.confirm(regForm.id ? "일정을 수정하시겠습니까?" : "일정을 등록하시겠습니까?")) return;
+  if (!await swalConfirm(regForm.id ? "일정을 수정하시겠습니까?" : "일정을 등록하시겠습니까?")) return;
 
   submitting.value = true;
   try {
@@ -383,7 +384,7 @@ async function submitReg() {
     closeReg();
     await reload();
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "일정을 저장하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "일정을 저장하지 못했습니다.");
   } finally {
     submitting.value = false;
   }
@@ -398,18 +399,18 @@ function modifyDetail() {
 
 async function deleteDetail() {
   if (!detail.value?.id) return;
-  if (!window.confirm("일정을 삭제하시겠습니까?")) return;
+  if (!await swalConfirm("일정을 삭제하시겠습니까?")) return;
   try {
     await scheduleStore.deleteSchedule(detail.value.id);
     closeDetail();
     await reload();
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "일정을 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "일정을 삭제하지 못했습니다.");
   }
 }
 
 function showListNotice() {
-  window.alert("목록 VIEW는 아직 준비 중입니다.");
+  void swalAlert("목록 VIEW는 아직 준비 중입니다.");
 }
 
 onMounted(async () => {

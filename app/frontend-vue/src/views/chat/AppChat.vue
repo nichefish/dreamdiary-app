@@ -144,7 +144,7 @@
                 <img
                   :src="authStore.user.profileImageUrl"
                   alt=""
-                  @error="handleImageError"
+                  @error="handleProfileImageError"
                 />
               </template>
               <template v-else>
@@ -172,7 +172,7 @@
                 <img
                   :src="authStore.user.profileImageUrl"
                   alt=""
-                  @error="handleImageError"
+                  @error="handleProfileImageError"
                 />
               </template>
               <template v-else>
@@ -263,6 +263,7 @@ import {
   type ChatSession,
   useChatStore,
 } from "@/stores/chat";
+import { handleProfileImageError } from "@/utils/profileImage";
 
 const authStore = useAuthStore();
 const chat = useChatStore();
@@ -321,11 +322,6 @@ function updateMemoryLimit(event: Event): void {
     ...chat.setting,
     recentMessageLimit: Number(target.value || 20),
   });
-}
-
-function handleImageError(event: Event): void {
-  const target = event.target as HTMLImageElement;
-  target.src = "/metronic/assets/media/avatars/avatar_blank.png";
 }
 
 function sessionTitle(session: ChatSession): string {

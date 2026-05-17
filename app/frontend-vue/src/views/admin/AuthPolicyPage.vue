@@ -53,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { onMounted, reactive, watch } from "vue";
 import { useAuthPolicyStore, type AuthPolicy } from "@/stores/authPolicy";
 
@@ -135,7 +136,7 @@ function validate(): boolean {
   for (const field of fields) {
     const value = form[field.key];
     if (value == null || Number.isNaN(Number(value)) || Number(value) < 1 || Number(value) > field.max) {
-      window.alert(`${field.label} 값은 1부터 ${field.max} 사이여야 합니다.`);
+      void swalAlert(`${field.label} 값은 1부터 ${field.max} 사이여야 합니다.`);
       return false;
     }
   }
@@ -149,13 +150,13 @@ async function reload() {
 
 async function save() {
   if (!validate()) return;
-  if (!window.confirm("인증 정책을 저장할까요?")) return;
+  if (!await swalConfirm("인증 정책을 저장할까요?")) return;
 
   try {
     const message = await store.savePolicy({ ...form });
-    window.alert(message);
+    void swalAlert(message);
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "인증 정책을 저장하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "인증 정책을 저장하지 못했습니다.");
   }
 }
 

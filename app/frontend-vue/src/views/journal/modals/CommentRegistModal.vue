@@ -1,13 +1,18 @@
 <template>
   <!--begin::댓글 등록/수정 모달-->
-  <div ref="modalEl" class="modal fade" id="comment_reg_modal" tabindex="-1" aria-hidden="true">
+  <div ref="modalEl" class="modal fade" id="comment_reg_modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
 
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title">댓글 저장</h5>
-          <button type="button" class="btn-close" @click="close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            @click="requestSafeClose"
+          ></button>
         </div>
         <!--end::Modal Header-->
 
@@ -39,7 +44,13 @@
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
               저장
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
+              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              @click="requestSafeClose"
+            >닫기</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -51,6 +62,9 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
+import { isAuthExpiredError } from "@/utils/authError";
+import { useSafeModalClose } from "@/utils/safeModalClose";
 import { ref, watch, onMounted } from "vue";
 import RichEditor from "@/views/common/editor/RichEditor.vue";
 import { Modal } from "bootstrap";
@@ -64,12 +78,16 @@ const journalStore = useJournalStore();
 const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
+const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
+  attachableStore.closeCommentReg();
+});
 
 onMounted(() => {
   if (modalEl.value) {
-    bsModal = new Modal(modalEl.value);
+    bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     /* bootstrap 이벤트로 store 와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
+      resetSafeClose();
       attachableStore.closeCommentReg();
     });
   }
@@ -78,23 +96,26 @@ onMounted(() => {
 watch(
   () => attachableStore.commentRegOpen,
   (isOpen) => {
-    if (isOpen) bsModal?.show();
-    else bsModal?.hide();
+    if (isOpen) {
+      resetSafeClose();
+      bsModal?.show();
+    } else bsModal?.hide();
   }
 );
 
 function close() {
+  resetSafeClose();
   attachableStore.closeCommentReg();
 }
 
 /** 댓글 등록/수정 처리. 신규 시 /api/comments, 수정 시 /api/comment/{id} 로 multipart POST. */
 async function submit() {
   if (!attachableStore.commentContent.trim()) {
-    alert("내용을 입력해 주세요.");
+    void swalAlert("내용을 입력해 주세요.");
     return;
   }
   const isMdf = !!attachableStore.commentId;
-  const confirmed = window.confirm(isMdf ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isMdf ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;
 
   submitting.value = true;
@@ -113,10 +134,11 @@ async function submit() {
       close();
       void journalStore.fetchDays();
     } else {
-      alert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
-  } catch {
-    alert("요청 처리 중 오류가 발생했습니다.");
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
   } finally {
     submitting.value = false;
   }

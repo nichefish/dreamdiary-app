@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
+import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import lombok.experimental.UtilityClass;
@@ -100,32 +102,50 @@ public class JournalEntryViewProjectionHelper {
     }
 
     /**
-     * day DTO에 꿈/타인꿈 목록을 분리 적용한다.
+     * day DTO에 꿈/타인꿈 목록을 분리 적용하고, DREAM 챕터를 일반 챕터 목록에서 제거한다.
+     * <p>일기와 꿈은 항상 별도 목록으로 분리되므로, DREAM 챕터는 journalChapterList에 포함하지 않는다.</p>
      *
      * @param day 대상 day DTO
      */
-    public static void applyDayDreamEntries(final JournalDayDto day) {
+    public static void applyDayEntryProjections(final JournalDayDto day) {
         if (day == null) return;
 
         final List<JournalEntryDto> dreamEntries = new ArrayList<>();
         final List<JournalEntryDto> elseDreamEntries = new ArrayList<>();
+        final List<JournalChapterDto> visibleChapters = new ArrayList<>();
 
         final List<JournalChapterDto> chapterList = day.getJournalChapterList() != null
                 ? day.getJournalChapterList()
                 : List.of();
         for (final JournalChapterDto chapter : chapterList) {
-            for (final JournalEntryDto entry : getChapterEntries(chapter)) {
-                if (!isContentType(entry, ContentType.JOURNAL_DREAM)) continue;
-                if (Objects.equals(entry.getElseDreamYn(), "Y")) {
-                    elseDreamEntries.add(entry);
-                    continue;
+            if (chapter == null) continue;
+            if (chapter.getChapterType() == ChapterType.DREAM) {
+                for (final JournalEntryDto entry : getChapterEntries(chapter)) {
+                    if (!isContentType(entry, ContentType.JOURNAL_DREAM)) continue;
+                    if (Objects.equals(entry.getElseDreamYn(), "Y")) {
+                        elseDreamEntries.add(entry);
+                    } else {
+                        dreamEntries.add(entry);
+                    }
                 }
-                dreamEntries.add(entry);
+            } else {
+                visibleChapters.add(chapter);
             }
         }
 
         day.setJournalDreamList(emptyToNull(dreamEntries));
         day.setJournalElseDreamList(emptyToNull(elseDreamEntries));
+        day.setJournalChapterList(emptyToNull(visibleChapters));
+
+        if (CollectionUtils.isNotEmpty(day.getChapterList())) {
+            final List<JournalChapterSmpDto> visibleSmpChapters = new ArrayList<>();
+            for (final JournalChapterSmpDto chapter : day.getChapterList()) {
+                if (chapter == null) continue;
+                if (chapter.getChapterType() == ChapterType.DREAM) continue;
+                visibleSmpChapters.add(chapter);
+            }
+            day.setChapterList(emptyToNull(visibleSmpChapters));
+        }
     }
 
     /**
@@ -189,7 +209,7 @@ public class JournalEntryViewProjectionHelper {
      * @param entryList 엔트리 목록
      * @return 비어있지 않으면 원본, 비어있으면 null
      */
-    private static List<JournalEntryDto> emptyToNull(final List<JournalEntryDto> entryList) {
+    private static <T> List<T> emptyToNull(final List<T> entryList) {
         return CollectionUtils.isEmpty(entryList) ? null : entryList;
     }
 }

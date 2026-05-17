@@ -259,6 +259,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { useLogAdminStore } from "@/stores/logAdmin";
@@ -295,7 +296,7 @@ async function openDetail(id: number) {
   try {
     await store.openDetail(id);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "로그 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "로그 상세를 불러오지 못했습니다.");
   }
 }
 

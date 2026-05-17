@@ -1,13 +1,18 @@
 <template>
   <!--begin::저널 할일 등록/수정 모달-->
-  <div ref="modalEl" class="modal fade" id="journal_todo_regist_modal" tabindex="-1" aria-hidden="true">
+  <div ref="modalEl" class="modal fade" id="journal_todo_regist_modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
 
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title">{{ isModify ? '저널 할일 수정' : '저널 할일 등록' }}</h5>
-          <button type="button" class="btn-close" @click="close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            @click="requestSafeClose"
+          ></button>
         </div>
         <!--end::Modal Header-->
 
@@ -122,7 +127,13 @@
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
               저장
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
+              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              @click="requestSafeClose"
+            >닫기</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -134,6 +145,9 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
+import { isAuthExpiredError } from "@/utils/authError";
+import { useSafeModalClose } from "@/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import RichEditor from "@/views/common/editor/RichEditor.vue";
 import { Modal } from "bootstrap";
@@ -147,6 +161,9 @@ const journalStore = useJournalStore();
 const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
+const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
+  modalStore.closeTodoReg();
+});
 
 const model = computed(() => modalStore.todoRegModel);
 const isModify = computed(() => !!model.value?.id);
@@ -159,8 +176,9 @@ const tagListStrWithCtgr = computed({
 
 onMounted(() => {
   if (modalEl.value) {
-    bsModal = new Modal(modalEl.value);
+    bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     modalEl.value.addEventListener("hidden.bs.modal", () => {
+      resetSafeClose();
       modalStore.closeTodoReg();
     });
   }
@@ -169,12 +187,15 @@ onMounted(() => {
 watch(
   () => modalStore.todoRegOpen,
   (isOpen) => {
-    if (isOpen) bsModal?.show();
-    else bsModal?.hide();
+    if (isOpen) {
+      resetSafeClose();
+      bsModal?.show();
+    } else bsModal?.hide();
   }
 );
 
 function close() {
+  resetSafeClose();
   modalStore.closeTodoReg();
 }
 
@@ -182,11 +203,11 @@ function close() {
 async function submit() {
   if (!model.value) return;
   if (!model.value.title) {
-    alert("제목을 입력해 주세요.");
+    void swalAlert("제목을 입력해 주세요.");
     return;
   }
 
-  const confirmed = window.confirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;
 
   submitting.value = true;
@@ -212,10 +233,11 @@ async function submit() {
       close();
       void journalStore.fetchDays();
     } else {
-      alert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
-  } catch {
-    alert("요청 처리 중 오류가 발생했습니다.");
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
   } finally {
     submitting.value = false;
   }

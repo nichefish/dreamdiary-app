@@ -89,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { ref, computed, watch, onMounted } from "vue";
 import RichEditor from "@/views/common/editor/RichEditor.vue";
 import TagifyEditor from "@/views/common/tag/TagifyEditor.vue";
@@ -134,7 +135,7 @@ function close() {
 }
 
 async function submit() {
-  const confirmed = window.confirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;
   await store.submitRegist();
 }

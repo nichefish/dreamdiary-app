@@ -11,7 +11,7 @@ declare module "@yaireo/tagify" {
     removeTags(tag?: any): void;
     loadOriginalValues(value: string | any[]): void;
     destroy(): void;
-    dropdown: { show: (value?: string) => void };
+    dropdown: { show: (value?: string) => void; hide: () => void };
   }
   export default Tagify;
 }

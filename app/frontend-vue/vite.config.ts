@@ -31,6 +31,8 @@ export default defineConfig(({ mode }) => {
         "/login":  { target: apiTarget, changeOrigin: true },
         "/logout": { target: apiTarget, changeOrigin: true },
         "/oauth2": { target: apiTarget, changeOrigin: true },
+        "/css":    { target: apiTarget, changeOrigin: true },
+        "/font":   { target: apiTarget, changeOrigin: true },
       },
     },
     build: {
