@@ -267,6 +267,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted } from "vue";
 import { useBoardGroupStore, type BoardGroupRow } from "@/stores/boardGroup";
 
@@ -291,15 +292,15 @@ function isUse(row: BoardGroupRow): boolean {
 
 function validateForm(): boolean {
   if (!store.form.boardKey.trim()) {
-    window.alert("게시판 코드를 입력해주세요.");
+    void swalAlert("게시판 코드를 입력해주세요.");
     return false;
   }
   if (!/^[A-Za-z0-9_-]+$/.test(store.form.boardKey.trim())) {
-    window.alert("게시판 코드는 영문, 숫자, 하이픈, 언더스코어만 사용할 수 있습니다.");
+    void swalAlert("게시판 코드는 영문, 숫자, 하이픈, 언더스코어만 사용할 수 있습니다.");
     return false;
   }
   if (!store.form.boardName.trim()) {
-    window.alert("게시판명을 입력해주세요.");
+    void swalAlert("게시판명을 입력해주세요.");
     return false;
   }
   return true;
@@ -323,36 +324,36 @@ async function submitForm() {
   if (!validateForm()) return;
   try {
     const message = await store.submitForm();
-    window.alert(message);
+    void swalAlert(message);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "게시판 그룹을 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 저장하지 못했습니다.");
   }
 }
 
 async function toggleUse(row: BoardGroupRow) {
   const message = isUse(row) ? "게시판 그룹을 미사용 처리할까요?" : "게시판 그룹을 사용 처리할까요?";
-  if (!window.confirm(message)) return;
+  if (!await swalConfirm(message)) return;
   try {
-    window.alert(await store.toggleUse(row));
+    void swalAlert(await store.toggleUse(row));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "사용 여부를 변경하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "사용 여부를 변경하지 못했습니다.");
   }
 }
 
 async function deleteBoard(row: BoardGroupRow) {
-  if (!window.confirm(`${row.boardName} 게시판 그룹을 삭제할까요?`)) return;
+  if (!await swalConfirm(`${row.boardName} 게시판 그룹을 삭제할까요?`)) return;
   try {
-    window.alert(await store.deleteBoard(row.id));
+    void swalAlert(await store.deleteBoard(row.id));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "게시판 그룹을 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 삭제하지 못했습니다.");
   }
 }
 
 async function saveSortOrders() {
   try {
-    window.alert(await store.saveSortOrders());
+    void swalAlert(await store.saveSortOrders());
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "정렬 순서를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "정렬 순서를 저장하지 못했습니다.");
   }
 }
 

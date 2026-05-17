@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { swalConfirm, swalAlert } from "@/utils/swal";
 
 // ---- 타입 정의 ----
 
@@ -216,10 +217,10 @@ export const useBoardPostStore = defineStore("boardPost", () => {
         void fetchList(0);
         return true;
       }
-      alert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
     } catch {
-      alert("요청 처리 중 오류가 발생했습니다.");
+      void swalAlert("요청 처리 중 오류가 발생했습니다.");
       return false;
     } finally {
       submitting.value = false;
@@ -232,17 +233,17 @@ export const useBoardPostStore = defineStore("boardPost", () => {
    * @param id - 게시물 ID
    */
   async function deletePost(id: number) {
-    const confirmed = window.confirm("게시물을 삭제하시겠습니까?");
+    const confirmed = await swalConfirm("게시물을 삭제하시겠습니까?");
     if (!confirmed) return;
     try {
       const res = await axios.delete(`/api/board/posts/${id}`);
       if (res.data?.rslt) {
         void fetchList(0);
       } else {
-        alert(res.data?.message ?? "삭제에 실패했습니다.");
+        void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
       }
     } catch {
-      alert("요청 처리 중 오류가 발생했습니다.");
+      void swalAlert("요청 처리 중 오류가 발생했습니다.");
     }
   }
 

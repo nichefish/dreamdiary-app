@@ -10,7 +10,7 @@
 /** FreeMarker URL → Vue SPA 경로 매핑 */
 const URL_MAP: Record<string, string> = {
   // 저널
-  "/app/journal/day/monthly.do": "/journal",
+  "/app/journal/day/monthly.do": "/journal/monthly",
   "/app/journal/day/weekly.do": "/journal/weekly",
   "/app/journal/day/cal.do": "/journal/calendar",
   "/app/journal/day/meta.do": "/journal/meta",
@@ -32,6 +32,11 @@ const URL_MAP: Record<string, string> = {
   "/app/error/access-denied.do": "/403",
 };
 
+const mapBoardPostList = (searchParams: URLSearchParams): string | null => {
+  const boardKey = searchParams.get("contentType") ?? searchParams.get("boardKey");
+  return boardKey ? `/board/${encodeURIComponent(boardKey)}` : null;
+};
+
 /**
  * 백엔드 URL을 Vue Router 경로로 변환한다.
  * 매핑이 없으면 원본 URL을 반환한다.
@@ -41,5 +46,15 @@ const URL_MAP: Record<string, string> = {
  */
 export function toVuePath(url: string | undefined): string {
   if (!url) return "/";
-  return URL_MAP[url] ?? url;
+  const parsedUrl = new URL(url, window.location.origin);
+  const mappedBoardUrl =
+    parsedUrl.pathname === "/app/board/post/list.do"
+      ? mapBoardPostList(parsedUrl.searchParams)
+      : null;
+  if (mappedBoardUrl) return mappedBoardUrl;
+
+  const mappedPath = URL_MAP[parsedUrl.pathname];
+  if (mappedPath) return mappedPath;
+  if (url.startsWith("/")) return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+  return url;
 }

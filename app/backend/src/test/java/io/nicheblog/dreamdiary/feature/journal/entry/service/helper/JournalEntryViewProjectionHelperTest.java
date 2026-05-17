@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,5 +108,33 @@ class JournalEntryViewProjectionHelperTest {
         JournalEntryViewProjectionHelper.applyChapterEntries(chapter, List.of(diary));
 
         assertTrue(JournalEntryViewProjectionHelper.getEntriesByType(chapter, ContentType.DEFAULT).isEmpty());
+    }
+
+    @Test
+    void applyDayEntryProjections_buildsDreamListsAndRemovesDreamChapter() {
+        final JournalChapterDto diaryChapter = JournalChapterDto.builder()
+                .id(10)
+                .chapterType(ChapterType.DIARY)
+                .build();
+        JournalEntryViewProjectionHelper.applyChapterEntries(diaryChapter, List.of(diary));
+
+        final JournalChapterDto dreamChapter = JournalChapterDto.builder()
+                .id(20)
+                .chapterType(ChapterType.DREAM)
+                .build();
+        JournalEntryViewProjectionHelper.applyChapterEntries(dreamChapter, List.of(dream));
+
+        final JournalDayDto day = JournalDayDto.builder()
+                .journalChapterList(new java.util.ArrayList<>(List.of(diaryChapter, dreamChapter)))
+                .build();
+
+        JournalEntryViewProjectionHelper.applyDayEntryProjections(day);
+
+        // DREAM 챕터는 journalChapterList에서 제거되어야 한다
+        assertEquals(1, day.getJournalChapterList().size());
+        assertEquals(ChapterType.DIARY, day.getJournalChapterList().get(0).getChapterType());
+        // 꿈 엔트리는 journalDreamList로 분리되어야 한다
+        assertEquals(1, day.getJournalDreamList().size());
+        assertEquals(dream.getId(), day.getJournalDreamList().get(0).getId());
     }
 }

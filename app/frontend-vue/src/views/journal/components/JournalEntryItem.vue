@@ -1,19 +1,32 @@
 <template>
   <!--begin::엔트리 행-->
   <div
-    :class="['d-flex gap-2 py-2', isCollapsed ? 'is-collapsed' : '']"
+    :id="entry.id ? 'journal-entry-' + entry.id : undefined"
+    :class="[itemClass, { 'is-collapsed': isCollapsed }, 'd-flex gap-2 py-1']"
     :data-id="entry.id"
+    :data-imprtc="hasState('IMPRTC') ? 'Y' : 'N'"
+    :data-refrnc="hasState('REFRNC') ? 'Y' : 'N'"
+    :data-resolved="isResolved ? 'Y' : 'N'"
   >
-    <!--begin::순번 + 접힘 버튼-->
+    <!--begin::순번-->
     <div class="d-none d-md-flex flex-column align-items-center pt-1 ps-2" style="width:56px; min-width:56px;">
       <span :class="['fw-bold fs-7', isResolved ? 'text-success' : 'text-muted']">#{{ entry.sortOrder }}</span>
-      <span v-if="isResolved" class="badge badge-light-success fs-8 mt-1">DONE</span>
-      <span v-else-if="lcKey === 'PENDING'" class="badge badge-light-warning fs-8 mt-1">PEND</span>
+      <span v-if="lcKey === 'PENDING'" class="badge badge-light-warning fs-8 mt-1">PEND</span>
+      <!--begin::클라이언트 임시 접힘/펼침 버튼-->
+      <button
+        type="button"
+        :class="['btn btn-xs px-1 mt-1', { 'is-active': isCollapsed }]"
+        :title="isCollapsed ? '펼치기' : '접기'"
+        @click="toggleEntry"
+      >
+        <i :class="['bi pe-0 fs-8', isCollapsed ? 'bi-arrows-expand' : 'bi-arrows-collapse']"></i>
+      </button>
+      <!--end::클라이언트 임시 접힘/펼침 버튼-->
     </div>
-    <!--end::순번 + 접힘 버튼-->
+    <!--end::순번-->
 
     <!--begin::본문 영역-->
-    <div class="flex-grow-1">
+    <div :class="[contentClass, 'flex-grow-1']">
       <!--begin::꿈 상태 배지 (꿈 엔트리 전용)-->
       <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
         <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!악몽</span>
@@ -46,9 +59,12 @@
         <span
           v-for="tag in tagList"
           :key="tag.tagId"
-          class="text-muted fs-8 cursor-default"
+          class="text-muted cursor-pointer pe-1"
+          @click.stop="openTagContextMenu($event, tag)"
         >
-          #<span v-if="tag.ctgr" class="text-noti me-1 fs-8">[{{ tag.ctgr }}]</span>{{ tag.name }}
+          #<span class="border-bottom text-primary fw-lighter opacity-hover">
+            <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.name }}
+          </span>
         </span>
       </div>
       <!--end::엔트리 태그-->
@@ -79,24 +95,199 @@
         </div>
       </div>
       <!--end::댓글-->
-      <!--begin::엔트리 액션 버튼-->
-      <div v-if="entry.id" class="d-flex gap-2 mt-2 ps-2">
-        <button type="button" class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary" title="댓글 등록" @click="openCommentReg"><i class="bi bi-chat-dots fs-8"></i></button>
-        <button type="button" class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary" title="이력 보기" @click="openHistory"><i class="bi bi-clock-history fs-8"></i></button>
-        <button type="button" class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary" title="관련 글 추가" @click="openRelated"><i class="bi bi-link-45deg fs-8"></i></button>
-      </div>
-      <!--end::엔트리 액션 버튼-->
     </div>
     <!--end::본문 영역-->
+
+    <!--begin::우측 액션 영역-->
+    <div v-if="entry.id" class="d-flex flex-row align-items-start pt-1 gap-1" style="min-width:80px;">
+      <!--begin::댓글 등록 버튼-->
+      <button
+        type="button"
+        class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+        title="댓글 등록"
+        @click="openCommentReg"
+      >
+        <i class="bi bi-chat-dots fs-8"></i>
+      </button>
+      <!--end::댓글 등록 버튼-->
+
+      <!--begin::복사 버튼-->
+      <button
+        type="button"
+        class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+        title="복사"
+        @click="copyEntry"
+      >
+        <i class="bi bi-copy fs-8"></i>
+      </button>
+      <!--end::복사 버튼-->
+
+      <!--begin::컨텍스트 메뉴-->
+      <div class="me-0">
+        <button
+          type="button"
+          class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+          data-kt-menu-trigger="click"
+          data-kt-menu-placement="bottom-end"
+          title="메뉴"
+        >
+          <i class="ki-solid ki-dots-horizontal fs-6"></i>
+        </button>
+        <div
+          class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+          data-kt-menu="true"
+        >
+          <!--begin::메뉴 헤더-->
+          <div class="menu-item px-3">
+            <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ contentLabel }}</div>
+          </div>
+          <!--end::메뉴 헤더-->
+
+          <!--begin::수정-->
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="openMdf">
+              수정
+              <i class="bi bi-pencil-square fs-8"></i>
+            </div>
+          </div>
+          <!--end::수정-->
+
+          <!--begin::이력-->
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="openHistory">
+              이력
+              <i class="bi bi-clock-history fs-8"></i>
+            </div>
+          </div>
+          <!--end::이력-->
+
+          <!--begin::관련 글 추가 (다른 사람 꿈 제외)-->
+          <div v-if="entry.elseDreamYn !== 'Y'" class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="openRelated">
+              관련 글 추가
+              <i class="bi bi-link-45deg fs-8"></i>
+            </div>
+          </div>
+          <!--end::관련 글 추가-->
+
+          <div class="separator my-2"></div>
+
+          <!--begin::라이프사이클 서브메뉴-->
+          <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+            <a href="#" class="menu-link px-3" @click.prevent>
+              <span class="menu-title">라이프사이클</span>
+              <span class="menu-arrow"></span>
+            </a>
+            <div class="menu-sub menu-sub-dropdown w-175px py-4">
+              <div v-for="lc in lifecycleOptions" :key="'lc-' + lc.key" class="menu-item px-3">
+                <div class="menu-content px-3">
+                  <label class="form-check form-check-custom form-check-solid cursor-pointer">
+                    <input
+                      class="form-check-input w-18px h-18px cursor-pointer"
+                      type="radio"
+                      :name="'entry-lc-' + entry.id"
+                      :value="lc.key"
+                      :checked="lcKey === lc.key"
+                      @click="setLifecycle(lc.key)"
+                    />
+                    <span class="form-check-label fs-7" :class="lcKey === lc.key ? lc.activeClass : 'text-muted'">{{ lc.label }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end::라이프사이클 서브메뉴-->
+
+          <!--begin::상태 서브메뉴-->
+          <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+            <a href="#" class="menu-link px-3" @click.prevent>
+              <span class="menu-title">상태</span>
+              <span class="menu-arrow"></span>
+            </a>
+            <div class="menu-sub menu-sub-dropdown w-175px py-4">
+              <!--begin::중요/참조 토글-->
+              <div v-for="st in statusOptions" :key="'st-' + st.key" class="menu-item px-3">
+                <div class="menu-content px-3">
+                  <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                    <input
+                      class="form-check-input w-30px h-20px cursor-pointer"
+                      type="checkbox"
+                      :checked="hasState(st.key)"
+                      @click="toggleState(st.key)"
+                    />
+                    <span class="form-check-label fs-7" :class="hasState(st.key) ? st.activeClass : 'text-muted'">{{ st.label }}</span>
+                  </label>
+                </div>
+              </div>
+              <!--end::중요/참조 토글-->
+
+              <!--begin::악몽/환각 토글 (꿈 전용)-->
+              <template v-if="isDream">
+                <div v-for="st in dreamStatusOptions" :key="'dst-' + st.key" class="menu-item px-3">
+                  <div class="menu-content px-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                      <input
+                        class="form-check-input w-30px h-20px cursor-pointer"
+                        type="checkbox"
+                        :checked="hasState(st.key)"
+                        @click="toggleState(st.key)"
+                      />
+                      <span class="form-check-label fs-7" :class="hasState(st.key) ? st.activeClass : 'text-muted'">{{ st.label }}</span>
+                    </label>
+                  </div>
+                </div>
+              </template>
+              <!--end::악몽/환각 토글-->
+
+              <!--begin::접기 토글-->
+              <div class="menu-item px-3">
+                <div class="menu-content px-3">
+                  <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                    <input
+                      class="form-check-input w-30px h-20px cursor-pointer"
+                      type="checkbox"
+                      :checked="hasState('COLLAPSED')"
+                      @click="toggleState('COLLAPSED')"
+                    />
+                    <span class="form-check-label fs-7" :class="hasState('COLLAPSED') ? 'text-gray-700' : 'text-muted'">접기</span>
+                  </label>
+                </div>
+              </div>
+              <!--end::접기 토글-->
+            </div>
+          </div>
+          <!--end::상태 서브메뉴-->
+
+          <div class="separator my-2"></div>
+
+          <!--begin::삭제-->
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3 text-danger" @click="deleteEntry">
+              삭제
+              <i class="bi bi-trash text-danger p-0 fs-8"></i>
+            </div>
+          </div>
+          <!--end::삭제-->
+        </div>
+      </div>
+      <!--end::컨텍스트 메뉴-->
+    </div>
+    <!--end::우측 액션 영역-->
   </div>
   <!--end::엔트리 행-->
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { swalConfirm, swalAlert } from "@/utils/swal";
+import { isAuthExpiredError } from "@/utils/authError";
+import { ref, computed, nextTick } from "vue";
+import axios from "axios";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useAttachableModalStore } from "@/stores/attachableModal";
+import { useTagContextMenuStore } from "@/stores/tagContextMenu";
+import { useJournalStore } from "@/stores/journal";
 import type { JournalEntryDto } from "@/stores/journal";
+import { getWeekDayStr } from "@/utils/journalDate";
 
 const props = defineProps<{
   entry: JournalEntryDto;
@@ -105,10 +296,41 @@ const props = defineProps<{
 
 const modalStore = useJournalModalStore();
 const attachableStore = useAttachableModalStore();
+const tagContextMenuStore = useTagContextMenuStore();
+const journalStore = useJournalStore();
+
+/** 엔트리 타입별 외부 item 클래스 (journal.scss 의 data-* 셀렉터 연동) */
+const itemClass = computed(() => {
+  if (props.isDream || props.entry.contentType === 'JOURNAL_DREAM') return 'journal-dream-item';
+  if (props.entry.contentType === 'JOURNAL_NOTE') return 'journal-note-item';
+  return 'journal-diary-item';
+});
+
+/** 엔트리 타입별 내부 content 클래스 (텍스트 색상·left-border 스타일 연동) */
+const contentClass = computed(() => {
+  if (props.isDream || props.entry.contentType === 'JOURNAL_DREAM') return 'journal-dream-content';
+  if (props.entry.contentType === 'JOURNAL_NOTE') return 'journal-note-content';
+  return 'journal-diary-content';
+});
+
+/** 메뉴 헤더에 표시할 컨텐츠 유형 레이블 */
+const contentLabel = computed(() => {
+  if (props.isDream || props.entry.contentType === 'JOURNAL_DREAM') return '꿈';
+  return '일기';
+});
 
 const lcKey = computed(() => props.entry.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
-const isCollapsed = computed(() => hasState("COLLAPSED"));
+
+/** 클라이언트 임시 접힘 오버라이드. null=서버 상태 따름, true=강제 접힘, false=강제 펼침 */
+const localCollapsedOverride = ref<boolean | null>(null);
+
+/** 서버 상태(COLLAPSED) + 클라이언트 임시 오버라이드를 합산한 최종 접힘 여부. RESOLVED 시 자동 접힘. */
+const isCollapsed = computed(() => {
+  if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
+  if (isResolved.value) return true;
+  return hasState("COLLAPSED");
+});
 
 function hasState(key: string): boolean {
   return (props.entry.state?.list ?? []).some((s) => s.stateKey === key);
@@ -117,6 +339,73 @@ function hasState(key: string): boolean {
 const tagList = computed(() => props.entry.tag?.list ?? []);
 const relatedList = computed(() => props.entry.relatedContentList ?? []);
 const commentList = computed(() => props.entry.comment?.list ?? []);
+
+/** 라이프사이클 옵션 (OPEN/PENDING/RESOLVED) */
+const lifecycleOptions = [
+  { key: "OPEN", label: "진행 중", activeClass: "text-gray-800" },
+  { key: "PENDING", label: "보류", activeClass: "text-primary" },
+  { key: "RESOLVED", label: "완료", activeClass: "text-success" },
+];
+
+/** 상태 옵션 (중요/참조) */
+const statusOptions = [
+  { key: "IMPRTC", label: "중요", activeClass: "text-danger" },
+  { key: "REFRNC", label: "참조", activeClass: "text-warning" },
+];
+
+/** 꿈 전용 상태 옵션 (악몽/환각) */
+const dreamStatusOptions = [
+  { key: "NHTMR", label: "악몽", activeClass: "text-info" },
+  { key: "HALLUC", label: "환각/현시", activeClass: "text-gray-700" },
+];
+
+/** 태그 클릭 컨텍스트 메뉴 열기 */
+function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; name: string; ctgr?: string }): void {
+  tagContextMenuStore.open(event, {
+    tagId: tag.tagId,
+    name: tag.name,
+    ctgr: tag.ctgr ?? "",
+    contentType: props.entry.contentType ?? "",
+  });
+}
+
+/** 클라이언트 전용 임시 접힘/펼침 토글 (서버 상태 무변경) */
+function toggleEntry(): void {
+  localCollapsedOverride.value = !isCollapsed.value;
+}
+/** HTML 마크업을 제거하고 평문으로 변환한다 (복사 시 사용). */
+function htmlToPlainText(html: string): string {
+  return html
+    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
+    .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\s*\/?p[^>]*>/gi, "\n")   /* <p> 와 </p> 모두 줄바꿈으로 — 레거시 동일 */
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .split("\n").map((l) => l.trim()).join("\n")   /* 각 줄 앞뒤 공백 제거 */
+    .replace(/\n+/g, "\n")                         /* 연속 빈줄 → 단일 줄바꿈 */
+    .trim();
+}
+
+/** 엔트리 내용을 클립보드에 복사한다. 레거시 copy() 와 동일 형식: 날짜(요일)\n마크다운 원문 */
+async function copyEntry(): Promise<void> {
+  const weekDay = getWeekDayStr(props.entry.stdrdDt);
+  const dateLine = weekDay
+    ? `${props.entry.stdrdDt} (${weekDay})`
+    : (props.entry.stdrdDt ?? "");
+  /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
+  const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
+  const text = [dateLine, raw].filter(Boolean).join("\n");
+  try {
+    await navigator.clipboard.writeText(text);
+    void swalAlert("클립보드에 복사되었습니다.");
+  } catch {
+    void swalAlert("복사에 실패했습니다.");
+  }
+}
 
 /** 엔트리 수정 모달 열기 */
 function openMdf() {
@@ -139,5 +428,75 @@ function openHistory() {
 function openRelated() {
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openRelated(props.entry.contentType, props.entry.id);
+}
+
+/** fetchDays 완료 후 해당 일자로 스크롤 */
+function scrollAfterFetch(): void {
+  const dt = props.entry.stdrdDt;
+  if (!dt) return;
+  void journalStore.fetchDays().then(() => {
+    void nextTick(() => {
+      const el = document.getElementById(`journal-day-${dt}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+/** 라이프사이클 설정 (PUT /api/lifecycles) */
+async function setLifecycle(lifecycleKey: string): Promise<void> {
+  if (!props.entry.id || !props.entry.contentType) return;
+  try {
+    const res = await axios.put("/api/lifecycles", {
+      id: props.entry.id,
+      contentType: props.entry.contentType,
+      lifecycleKey,
+    });
+    if (res.data?.rslt) {
+      scrollAfterFetch();
+    } else {
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+    }
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+  }
+}
+
+/** 상태 토글 (POST /api/states) */
+async function toggleState(stateKey: string): Promise<void> {
+  if (!props.entry.id || !props.entry.contentType) return;
+  try {
+    const res = await axios.post("/api/states", {
+      id: props.entry.id,
+      contentType: props.entry.contentType,
+      stateKey,
+    });
+    if (res.data?.rslt) {
+      scrollAfterFetch();
+    } else {
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+    }
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+  }
+}
+
+/** 엔트리 삭제 (DELETE /api/journal/entry/{id}) */
+async function deleteEntry(): Promise<void> {
+  if (!props.entry.id) return;
+  const confirmed = await swalConfirm("삭제하시겠습니까?");
+  if (!confirmed) return;
+  try {
+    const res = await axios.delete(`/api/journal/entry/${props.entry.id}`);
+    if (res.data?.rslt) {
+      void journalStore.fetchDays();
+    } else {
+      void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+    }
+  } catch (e: unknown) {
+    if (isAuthExpiredError(e)) return;
+    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+  }
 }
 </script>

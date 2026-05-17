@@ -1,262 +1,276 @@
 <template>
   <!--begin::태그 입력 컴포넌트 (Tagify)-->
-  <div class="tagify-editor-wrapper">
-    <!--begin::tagify 기반 input (Tagify 가 이 엘리먼트에 마운트됨)-->
-    <input ref="inputRef" type="text" />
-    <!--end::tagify 기반 input-->
-
-    <!--begin::카테고리 선택 프롬프트 (ctgrMapUrl 사용 시, 태그 추가 후 표시)-->
-    <div v-if="draft" class="mt-2 p-3 rounded border bg-light-subtle">
-      <div class="mb-2 fs-8 text-muted">
-        태그 <strong class="text-gray-800">{{ draft.value }}</strong>의 카테고리를 선택하세요
+  <div ref="wrapperRef" class="tagify-editor-wrapper">
+    <input
+      ref="inputRef"
+      type="text"
+      class="form-control form-control-solid no-space"
+      autocomplete="off"
+    />
+    <div class="d-flex pt-2 gap-2">
+      <div
+        :id="idPrefix + '_ctgr_select_div'"
+        style="display: none; position: relative;"
+      >
+        <select
+          :id="idPrefix + '_ctgr_select'"
+          class="form-select form-select-solid py-2"
+        ></select>
       </div>
-      <!--begin::미리 정의된 카테고리 selectbox-->
-      <div v-if="!draft.showInput" class="mb-1">
-        <select class="form-select form-select-sm" @change="onSelectPredefined">
-          <option value="">-- 선택 --</option>
-          <option value="__custom__">직접입력</option>
-          <option v-for="c in draft.predefined" :key="c" :value="c">{{ c }}</option>
-        </select>
-        <button type="button" class="btn btn-sm btn-light mt-1" @click="cancelDraft">취소</button>
-      </div>
-      <!--end::미리 정의된 카테고리 selectbox-->
-      <!--begin::카테고리 직접 입력-->
-      <div v-else class="d-flex gap-1 align-items-center">
+      <div :id="idPrefix + '_ctgr_div'" style="display: none;">
         <input
-          ref="ctgrInputRef"
-          v-model="draft.ctgr"
+          :id="idPrefix + '_ctgr'"
           type="text"
-          class="form-control form-control-sm"
-          placeholder="카테고리를 입력하세요"
-          @keydown.enter.prevent="commitDraft"
-          @keydown.tab.prevent="commitDraft"
-          @keydown.esc.prevent="cancelDraft"
+          class="form-control form-control-sm form-control-solid text-noti w-100px"
+          :placeholder="ctgrPlaceholder"
+          maxlength="500"
         />
-        <button type="button" class="btn btn-sm btn-primary" @click="commitDraft">추가</button>
-        <button type="button" class="btn btn-sm btn-light" @click="cancelDraft">취소</button>
       </div>
-      <!--end::카테고리 직접 입력-->
+      <div :id="idPrefix + '_display_div'" style="display: none;">
+        <input
+          :id="idPrefix + '_display'"
+          type="text"
+          class="form-control form-control-sm form-control-solid text-dialog fw-bold fs-7 w-100px"
+          disabled
+        />
+      </div>
+      <div v-if="metaMode" :id="idPrefix + '_value_div'" style="display: none;">
+        <input
+          :id="idPrefix + '_value'"
+          type="text"
+          class="form-control form-control-sm form-control-solid w-200px"
+          placeholder="메타 값을 입력합니다"
+          maxlength="500"
+        />
+      </div>
     </div>
-    <!--end::카테고리 선택 프롬프트-->
   </div>
   <!--end::태그 입력 컴포넌트-->
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
 import Tagify from "@yaireo/tagify";
 import "@yaireo/tagify/dist/tagify.css";
 import axios from "axios";
+import {
+  baseTagifyOptions,
+  tagTemplate,
+  metaTemplate,
+  bindTagifyAutoComplete,
+  bindTagifyCtgrInputPrompt,
+  bindTagifyCtgrKeyListener,
+  bindTagifyValueKeyListener,
+  bindTagifyEscHandler,
+  serializeTagifyValue,
+  commitTagifyPendingDraft,
+  cancelTagifyInput,
+  type TagifyInstance,
+  type TagifyCtgrDom,
+} from "@/utils/tagifyHelper";
 
 interface Props {
-  /** 태그 JSON 문자열 (v-model). Tagify 직렬화 형식: [{"value":"tagname","data":{"ctgr":"cat"}},...] */
+  /** 태그 JSON 문자열 (v-model). Tagify 직렬화 형식 */
   modelValue?: string;
-  /** 카테고리 맵 API URL. 지정 시 카테고리 선택 UI 활성화. */
+  /** 카테고리 맵 API URL. 지정 시 initWithCtgr / initMeta 동작 */
   ctgrMapUrl?: string;
+  /** true 이면 initMeta (카테고리 + 메타 값 2단계 입력) */
+  metaMode?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
   ctgrMapUrl: "",
+  metaMode: false,
 });
 
 const emit = defineEmits<{
-  /** v-model 업데이트: Tagify 직렬화 JSON 문자열 */
   "update:modelValue": [value: string];
 }>();
 
+const wrapperRef = ref<HTMLElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
-const ctgrInputRef = ref<HTMLInputElement | null>(null);
 
-let tagifyInst: any = null;
-/** 태그명 → 허용 카테고리 목록 매핑 (서버 조회) */
+/** DOM id 접두사 (레거시 tag_* / meta_* 구분) */
+const idPrefix = computed(() => (props.metaMode ? "meta" : "tag"));
+
+const ctgrPlaceholder = computed(() =>
+  props.metaMode ? "메타 카테고리를 입력합니다" : "카테고리를 입력하세요",
+);
+
+let tagifyInst: TagifyInstance | null = null;
 let ctgrMap: Record<string, string[]> = {};
-/** 내부 변경 중 change 이벤트 무시 플래그 */
 let suppressChange = false;
 
-/** 카테고리 선택 임시 상태 */
-interface Draft {
-  /** 선택 중인 태그 이름 */
-  value: string;
-  /** 직접 입력 카테고리 값 */
-  ctgr: string;
-  /** 서버 정의 카테고리 목록 */
-  predefined: string[];
-  /** 직접 입력 UI 표시 여부 */
-  showInput: boolean;
-}
-const draft = ref<Draft | null>(null);
-
-/** 태그 표시 템플릿: 카테고리가 있으면 [카테고리] 형식으로 표시 */
-function tagTemplate(tagData: any): string {
-  const ctgr: string = tagData.data?.ctgr ?? "";
-  const ctgrSpan: string = ctgr
-    ? `<span class="tagify__tag-category text-noti me-1">[${ctgr}]</span>`
-    : "";
-  return `<tag title="${tagData.value}" contenteditable="false" spellcheck="false" tabindex="-1"
-               class="tagify__tag" value="${tagData.value}" data-ctgr="${ctgr}">
-            <x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x>
-            <div>
-              ${ctgrSpan}<span class="tagify__tag-text">${tagData.value}</span>
-            </div>
-          </tag>`;
+function loadOriginalValues(value: string): void {
+  if (!tagifyInst) return;
+  if (tagifyInst.draft?.value) cancelTagifyInput(tagifyInst);
+  suppressChange = true;
+  tagifyInst.loadingOriginalValues = true;
+  try {
+    tagifyInst.loadOriginalValues(value);
+  } finally {
+    tagifyInst.loadingOriginalValues = false;
+    suppressChange = false;
+  }
 }
 
-/** 카테고리 맵 서버 조회 */
+function resolveCtgrDom(): TagifyCtgrDom {
+  const scope = wrapperRef.value;
+  const p = idPrefix.value;
+  return {
+    selectContainer: scope?.querySelector(`#${p}_ctgr_select_div`) ?? null,
+    select: scope?.querySelector(`#${p}_ctgr_select`) as HTMLSelectElement | null,
+    displayContainer: scope?.querySelector(`#${p}_display_div`) ?? null,
+    display: scope?.querySelector(`#${p}_display`) as HTMLInputElement | null,
+    inputContainer: scope?.querySelector(`#${p}_ctgr_div`) ?? null,
+    input: scope?.querySelector(`#${p}_ctgr`) as HTMLInputElement | null,
+    metaInputContainer: props.metaMode
+      ? (scope?.querySelector(`#${p}_value_div`) ?? null)
+      : null,
+    metaInput: props.metaMode
+      ? (scope?.querySelector(`#${p}_value`) as HTMLInputElement | null)
+      : null,
+  };
+}
+
+function emitValue(): void {
+  if (!tagifyInst || suppressChange) return;
+  emit("update:modelValue", serializeTagifyValue(tagifyInst));
+}
+
+/** AjaxResponse.withMap → rsltMap (레거시 journalDayTagService.getCtgrMap 와 동일) */
+function normalizeCtgrMap(raw: unknown): Record<string, string[]> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const out: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
+    if (!Array.isArray(categories)) continue;
+    out[tagName] = categories.map((c) => String(c ?? "")).filter((c) => c.length > 0);
+  }
+  return out;
+}
+
 async function fetchCtgrMap(): Promise<void> {
-  if (!props.ctgrMapUrl) return;
+  if (!props.ctgrMapUrl) {
+    ctgrMap = {};
+    return;
+  }
   try {
     const res = await axios.get(props.ctgrMapUrl);
-    if (res.data?.rslt) ctgrMap = res.data.rsltObj ?? {};
+    if (!res.data?.rslt) {
+      ctgrMap = {};
+      console.error("[TagifyEditor] ctgrMap 조회 rslt=false:", props.ctgrMapUrl);
+      return;
+    }
+    /** 변경 전: rsltObj 만 읽어 맵이 항상 {} → ctgrMap 미스매치로 태그가 즉시 제거됨 */
+    const raw = res.data.rsltMap ?? res.data.rsltObj;
+    ctgrMap = normalizeCtgrMap(raw);
   } catch {
-    /** 조회 실패 시 빈 맵으로 진행 */
+    console.error("[TagifyEditor] ctgrMap 조회 실패:", props.ctgrMapUrl);
     ctgrMap = {};
   }
 }
 
-/** Tagify 현재 태그 목록을 직렬화 */
-function serializeValue(): string {
-  if (!tagifyInst) return "";
-  return JSON.stringify(
-    (tagifyInst.value as any[]).map((t: any) => ({
-      value: t.value,
-      ...(t.data ? { data: t.data } : {}),
-    }))
-  );
+function destroyTagify(): void {
+  tagifyInst?.destroy();
+  tagifyInst = null;
 }
 
-/** Tagify 초기화 */
 function initTagify(): void {
   if (!inputRef.value) return;
+  destroyTagify();
+
+  const useCtgr = !!props.ctgrMapUrl;
 
   tagifyInst = new Tagify(inputRef.value, {
-    whitelist: [],
-    maxTags: 21,
-    keepInvalidTags: false,
-    skipInvalid: true,
-    duplicates: false,
-    editTags: { clicks: 2, keepInvalid: false },
-    transformTag(tagData: any): void {
-      tagData.value = tagData.value.replace(/\s+/g, "_");
-    },
-    templates: { tag: tagTemplate },
-  });
+    ...baseTagifyOptions,
+    templates: { tag: props.metaMode ? metaTemplate : tagTemplate },
+    /* ctgr 모드: 어떤 태그명이든 add 이벤트까지 도달해야 ctgr 프롬프트가 열린다.
+       skipInvalid: true 이면 whitelist 에 없는 태그가 add 전에 차단되어 프롬프트가 열리지 않는다. */
+    ...(useCtgr ? { duplicates: true, skipInvalid: false } : {}),
+  }) as TagifyInstance;
 
-  if (props.ctgrMapUrl) {
-    /** 입력값 기반 자동완성: ctgrMap 키 목록 필터링 */
-    tagifyInst.on("input", (e: any) => {
-      const val: string = e.detail.value ?? "";
-      tagifyInst.settings.whitelist = Object.keys(ctgrMap).filter((t) => t.startsWith(val));
-      tagifyInst.dropdown.show(val);
+  tagifyInst.draft = { value: null, ctgr: null, meta: null };
+
+  if (useCtgr) {
+    tagifyInst.ctgr = resolveCtgrDom();
+    bindTagifyAutoComplete(tagifyInst, ctgrMap);
+    bindTagifyCtgrInputPrompt(tagifyInst, ctgrMap, {
+      hasValueInput: props.metaMode,
+      onCommitted: emitValue,
     });
-
-    /** 태그 추가 시 카테고리 선택 프롬프트 */
-    tagifyInst.on("add", (e: any) => {
-      if (suppressChange) return;
-      const tagVal: string = e.detail.data.value;
-      const predefined: string[] = (ctgrMap[tagVal] ?? []).filter(Boolean);
-
-      /** ctgrMap에 없는 태그 → 거부 */
-      if (predefined.length === 0) {
-        suppressChange = true;
-        tagifyInst.removeTags(e.detail.tag);
-        suppressChange = false;
-        return;
-      }
-
-      /** 임시 태그 제거 → 카테고리 선택 UI 표시 */
-      suppressChange = true;
-      tagifyInst.removeTags(e.detail.tag);
-      suppressChange = false;
-
-      draft.value = { value: tagVal, ctgr: "", predefined, showInput: false };
+    bindTagifyCtgrKeyListener(tagifyInst, {
+      hasValueInput: props.metaMode,
+      onCommitted: emitValue,
     });
+    if (props.metaMode) {
+      bindTagifyValueKeyListener(tagifyInst, { onCommitted: emitValue });
+    }
   }
 
-  /** change: 태그 목록 변경 시 v-model emit */
-  tagifyInst.on("change", () => {
-    if (suppressChange) return;
-    emit("update:modelValue", serializeValue());
-  });
+  /* pending(draft) 상태 및 일반 타이핑 중 ESC 클리어 */
+  bindTagifyEscHandler(tagifyInst);
 
-  /** 초기값 로드 */
-  if (props.modelValue) {
-    suppressChange = true;
-    tagifyInst.loadOriginalValues(props.modelValue);
-    suppressChange = false;
-  }
+  tagifyInst.on("change", () => emitValue());
+
+  if (props.modelValue) loadOriginalValues(props.modelValue);
 }
 
-/** 미리 정의된 카테고리 selectbox 선택 */
-function onSelectPredefined(e: Event): void {
-  const val = (e.target as HTMLSelectElement).value;
-  if (!val) return;
-  if (val === "__custom__") {
-    draft.value!.showInput = true;
-    nextTick(() => ctgrInputRef.value?.focus());
-  } else {
-    draft.value!.ctgr = val;
-    commitDraft();
-  }
+/** 저장 전 작성 중 draft 확정 (메타 모달 등) */
+function commitPendingDraft(): boolean {
+  if (!tagifyInst) return false;
+  const ok = commitTagifyPendingDraft(tagifyInst);
+  if (ok) emitValue();
+  return ok;
 }
 
-/** 카테고리 입력 확정 → 태그 최종 추가 */
-function commitDraft(): void {
-  if (!draft.value) return;
-  const ctgr = draft.value.ctgr.trim();
-  if (!ctgr) {
-    cancelDraft();
-    return;
-  }
-  const { value } = draft.value;
-  draft.value = null;
-
-  suppressChange = true;
-  tagifyInst.addTags([{ value, data: { ctgr } }]);
-  suppressChange = false;
-
-  emit("update:modelValue", serializeValue());
-  nextTick(() => (tagifyInst?.DOM?.input as HTMLElement)?.focus());
+function hasPendingDraft(): boolean {
+  return !!tagifyInst?.draft?.value;
 }
 
-/** 카테고리 입력 취소 → draft 초기화 */
 function cancelDraft(): void {
-  draft.value = null;
-  nextTick(() => (tagifyInst?.DOM?.input as HTMLElement)?.focus());
+  if (tagifyInst) cancelTagifyInput(tagifyInst);
 }
+
+defineExpose({ commitPendingDraft, hasPendingDraft, cancelDraft });
 
 onMounted(async () => {
   await fetchCtgrMap();
+  await nextTick();
   initTagify();
 });
 
 onBeforeUnmount(() => {
-  tagifyInst?.destroy();
-  tagifyInst = null;
+  destroyTagify();
 });
 
-/** 부모에서 modelValue 변경 시 Tagify 동기화 */
 watch(
   () => props.modelValue,
   (newVal) => {
     if (!tagifyInst) return;
-    const cur = serializeValue();
-    if (cur === newVal) return;
-    suppressChange = true;
-    tagifyInst.loadOriginalValues(newVal ?? "");
-    suppressChange = false;
-  }
+    /* ctgr 프롬프트 진행 중 외부 값 반영 차단: draft 가 살아있는 동안 loadOriginalValues 를 호출하면
+       cancelTagifyInput 이 호출되어 카테고리 입력 흐름이 끊긴다. */
+    if (tagifyInst.draft?.value) return;
+    const cur = serializeTagifyValue(tagifyInst);
+    if (cur === (newVal ?? "")) return;
+    loadOriginalValues(newVal ?? "");
+  },
 );
 
-/** ctgrMapUrl 변경 시 ctgrMap 재조회 */
 watch(
   () => props.ctgrMapUrl,
-  async (newUrl) => {
-    if (!newUrl) {
-      ctgrMap = {};
-      return;
-    }
+  async () => {
     await fetchCtgrMap();
-  }
+    await nextTick();
+    initTagify();
+  },
+);
+
+watch(
+  () => props.metaMode,
+  async () => {
+    await nextTick();
+    initTagify();
+  },
 );
 </script>

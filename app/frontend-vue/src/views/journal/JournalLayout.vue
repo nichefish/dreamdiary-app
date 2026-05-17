@@ -3,17 +3,17 @@
   <div class="journal-layout-vue">
     <!--begin::저널 본문 + aside 컨테이너-->
     <div class="d-flex align-items-start gap-6">
-      <div class="flex-grow-1 min-w-0">
-        <div v-if="!asideStore.visible" class="d-flex justify-content-end mb-3">
-          <button
-            type="button"
-            class="btn btn-sm btn-icon btn-light-primary"
-            title="필터 패널"
-            @click="asideStore.show()"
-          >
-            <i class="bi bi-layout-sidebar-inset-reverse"></i>
-          </button>
-        </div>
+      <div class="flex-grow-1 min-w-0 position-relative">
+        <button
+          v-if="!asideStore.visible"
+          type="button"
+          class="btn btn-sm btn-icon btn-light-primary position-absolute"
+          style="top: 0; right: 0; z-index: 1;"
+          title="필터 패널"
+          @click="asideStore.show()"
+        >
+          <i class="bi bi-layout-sidebar-inset-reverse"></i>
+        </button>
         <router-view />
       </div>
       <aside v-if="asideStore.visible" class="journal-layout-vue__aside flex-shrink-0">
@@ -23,21 +23,24 @@
     <!--end::저널 본문 + aside 컨테이너-->
 
     <!--begin::저널 모달 컨테이너-->
-    <JournalDayRegModal />
+    <JournalDayRegistModal />
     <JournalDayDtlModal />
-    <JournalChapterRegModal />
-    <JournalInterpretationRegModal />
-    <JournalEntryRegModal />
+    <JournalChapterRegistModal />
+    <JournalInterpretationRegistModal />
+    <JournalEntryRegistModal />
     <JournalDayTagDtlModal />
-    <JournalTodoRegModal />
+    <JournalTodoRegistModal />
     <JournalDayMetaModal />
-    <CommentRegModal />
+    <CommentRegistModal />
     <CommentListModal />
     <HistoryModal @success="onHistorySuccess" />
     <RelatedContentAddModal />
     <JournalTagListModal />
     <JournalTagProfileModal />
     <!--end::저널 모달 컨테이너-->
+    <!--begin::태그 컨텍스트 메뉴 (전역 단일 인스턴스)-->
+    <JournalTagContextMenu />
+    <!--end::태그 컨텍스트 메뉴-->
   </div>
   <!--end::저널 레이아웃-->
 </template>
@@ -46,20 +49,21 @@
 import { useJournalAsideStore } from "@/stores/journalAside";
 import { useJournalStore } from "@/stores/journal";
 import JournalAside from "./components/JournalAside.vue";
-import JournalDayRegModal from "./modals/JournalDayRegModal.vue";
+import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
 import JournalDayDtlModal from "./modals/JournalDayDtlModal.vue";
-import JournalChapterRegModal from "./modals/JournalChapterRegModal.vue";
-import JournalInterpretationRegModal from "./modals/JournalInterpretationRegModal.vue";
-import JournalEntryRegModal from "./modals/JournalEntryRegModal.vue";
+import JournalChapterRegistModal from "./modals/JournalChapterRegistModal.vue";
+import JournalInterpretationRegistModal from "./modals/JournalInterpretationRegistModal.vue";
+import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
 import JournalDayTagDtlModal from "./modals/JournalDayTagDtlModal.vue";
-import JournalTodoRegModal from "./modals/JournalTodoRegModal.vue";
+import JournalTodoRegistModal from "./modals/JournalTodoRegistModal.vue";
 import JournalDayMetaModal from "./modals/JournalDayMetaModal.vue";
-import CommentRegModal from "./modals/CommentRegModal.vue";
+import CommentRegistModal from "./modals/CommentRegistModal.vue";
 import CommentListModal from "@/views/attachable/CommentListModal.vue";
 import HistoryModal from "@/views/attachable/HistoryModal.vue";
 import RelatedContentAddModal from "./modals/RelatedContentAddModal.vue";
 import JournalTagListModal from "./modals/JournalTagListModal.vue";
 import JournalTagProfileModal from "./modals/JournalTagProfileModal.vue";
+import JournalTagContextMenu from "./components/JournalTagContextMenu.vue";
 
 const asideStore = useJournalAsideStore();
 const journalStore = useJournalStore();

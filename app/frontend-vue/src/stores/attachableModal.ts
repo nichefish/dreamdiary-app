@@ -489,13 +489,10 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   const tagListLoading = ref(false);
   /** 태그 목록 카테고리 그룹 */
   const tagGroupMap = ref<Record<string, TagListItem[]>>({});
-  /** 1개짜리 태그 숨김 여부 */
-  const tagListHideSingles = ref(false);
 
   /** 태그 목록 모달을 연다. */
   async function openTagList(params: TagListParams = {}): Promise<void> {
     tagListOpen.value = true;
-    tagListHideSingles.value = false;
     await loadTagList(params);
   }
 
@@ -522,11 +519,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     } finally {
       tagListLoading.value = false;
     }
-  }
-
-  /** 1개짜리 태그 숨김 상태를 토글한다. */
-  function toggleTagListSingles(): void {
-    tagListHideSingles.value = !tagListHideSingles.value;
   }
 
   /** 백엔드 태그 그룹 응답을 화면 모델로 정규화한다. */
@@ -740,11 +732,9 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     tagListOpen,
     tagListLoading,
     tagGroupMap,
-    tagListHideSingles,
     openTagList,
     closeTagList,
     loadTagList,
-    toggleTagListSingles,
     // 태그 프로필 모달
     tagProfileOpen,
     tagProfileLoading,

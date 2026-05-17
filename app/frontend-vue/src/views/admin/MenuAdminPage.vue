@@ -143,6 +143,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { onMounted } from "vue";
 import MenuAdminTreeNode from "@/views/admin/MenuAdminTreeNode.vue";
 import { useMenuAdminStore, type MenuNode } from "@/stores/menuAdmin";
@@ -153,27 +154,27 @@ async function openEdit(id: number) {
   try {
     await store.openEdit(id);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "메뉴 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "메뉴 상세를 불러오지 못했습니다.");
   }
 }
 
 async function submit() {
   if (!store.form.menuName.trim()) {
-    window.alert("메뉴명을 입력해주세요.");
+    void swalAlert("메뉴명을 입력해주세요.");
     return;
   }
   if (!store.form.submenuExpandType) {
-    window.alert("하위메뉴 표시 방식을 선택해주세요.");
+    void swalAlert("하위메뉴 표시 방식을 선택해주세요.");
     return;
   }
   if (store.form.menuType === "SUB" && store.form.parentMenuId == null) {
-    window.alert("상위 메뉴를 선택해주세요.");
+    void swalAlert("상위 메뉴를 선택해주세요.");
     return;
   }
   try {
-    window.alert(await store.submit());
+    void swalAlert(await store.submit());
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "메뉴를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "메뉴를 저장하지 못했습니다.");
   }
 }
 
@@ -186,29 +187,29 @@ function onUseYnChange(event: Event) {
 }
 
 async function toggleUse(row: MenuNode) {
-  if (!window.confirm(`${row.menuName ?? "메뉴"} 사용 여부를 변경할까요?`)) return;
+  if (!await swalConfirm(`${row.menuName ?? "메뉴"} 사용 여부를 변경할까요?`)) return;
   try {
-    window.alert(await store.toggleUse(row));
+    void swalAlert(await store.toggleUse(row));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "메뉴 상태를 변경하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "메뉴 상태를 변경하지 못했습니다.");
   }
 }
 
 async function deleteMenu(row: MenuNode) {
-  if (!window.confirm(`${row.menuName ?? "메뉴"}를 삭제할까요? 하위 메뉴도 함께 삭제됩니다.`)) return;
+  if (!await swalConfirm(`${row.menuName ?? "메뉴"}를 삭제할까요? 하위 메뉴도 함께 삭제됩니다.`)) return;
   try {
-    window.alert(await store.deleteMenu(row.id));
+    void swalAlert(await store.deleteMenu(row.id));
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "메뉴를 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "메뉴를 삭제하지 못했습니다.");
   }
 }
 
 async function moveMain(index: number, delta: -1 | 1) {
   try {
     const message = await store.moveMain(index, delta);
-    if (message) window.alert(message);
+    if (message) void swalAlert(message);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "메인 메뉴 순서를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "메인 메뉴 순서를 저장하지 못했습니다.");
     await store.fetchTree();
   }
 }
@@ -216,9 +217,9 @@ async function moveMain(index: number, delta: -1 | 1) {
 async function moveSub(parent: MenuNode, index: number, delta: -1 | 1) {
   try {
     const message = await store.moveSub(parent, index, delta);
-    if (message) window.alert(message);
+    if (message) void swalAlert(message);
   } catch (e) {
-    window.alert(e instanceof Error ? e.message : "하위 메뉴 순서를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : "하위 메뉴 순서를 저장하지 못했습니다.");
     await store.fetchTree();
   }
 }

@@ -1,55 +1,15 @@
 <template>
   <!--begin::저널 주간 페이지-->
   <div class="journal-day-weekly-page">
-    <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
-      <!--begin::보기 타입 탭-->
-      <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
-        <li class="nav-item">
-          <router-link
-            :to="{ name: 'journal-weekly' }"
-            class="nav-link px-6 cursor-pointer"
-            active-class="active"
-          >
-            <span class="nav-icon"><i class="bi bi-calendar-week"></i></span>
-            <span class="nav-text">위클리 VIEW</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            :to="{ name: 'journal-monthly' }"
-            class="nav-link px-6 cursor-pointer"
-            active-class="active"
-          >
-            <span class="nav-icon"><i class="bi bi-view-stacked"></i></span>
-            <span class="nav-text">목록 VIEW</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            :to="{ name: 'journal-calendar' }"
-            class="nav-link px-6 cursor-pointer"
-            active-class="active"
-          >
-            <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
-            <span class="nav-text">달력 VIEW</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            :to="{ name: 'journal-meta' }"
-            class="nav-link px-6 cursor-pointer"
-            active-class="active"
-          >
-            <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span>
-            <span class="nav-text">메타 VIEW</span>
-          </router-link>
-        </li>
-      </ul>
-      <!--end::보기 타입 탭-->
-    </div>
+    <JournalDayViewToolbar />
 
     <!--begin::카드-->
     <div class="card post" style="margin-top: 0 !important;">
+      <!--begin::태그 클라우드 헤더-->
+      <div v-if="store.showTagCloud" class="card-header">
+        <JournalTagCloudHeader />
+      </div>
+      <!--end::태그 클라우드 헤더-->
       <div class="card-body">
         <!--begin::로딩-->
         <div v-if="store.loading" class="d-flex justify-content-center py-10">
@@ -88,14 +48,32 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useJournalStore } from "@/stores/journal";
 import JournalDayCard from "./components/JournalDayCard.vue";
+import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
+import JournalTagCloudHeader from "./components/JournalTagCloudHeader.vue";
 
 const store = useJournalStore();
+const route = useRoute();
 
-onMounted(() => {
+function loadWeeklyView(): void {
   store.setViewType("WEEKLY");
   void store.fetchDays({ viewType: "WEEKLY" });
-});
+  if (store.showTagCloud) {
+    void store.fetchTagCloud();
+  }
+}
+
+onMounted(loadWeeklyView);
+
+watch(
+  () => route.name,
+  (name) => {
+    if (name === "journal-weekly") {
+      loadWeeklyView();
+    }
+  }
+);
 </script>

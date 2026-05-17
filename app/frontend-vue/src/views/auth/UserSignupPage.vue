@@ -275,6 +275,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -421,7 +422,7 @@ function validate(): string | null {
 async function submit(): Promise<void> {
   const errMsg = validate();
   if (errMsg) {
-    alert(errMsg);
+    void swalAlert(errMsg);
     return;
   }
   if (!confirm("계정을 신청하시겠습니까?")) return;
@@ -458,7 +459,7 @@ async function submit(): Promise<void> {
   }
 
   const result = await store.submitSignup(fd);
-  alert(result.message);
+  void swalAlert(result.message);
   if (result.ok) {
     void router.push("/sign-in");
   }

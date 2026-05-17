@@ -224,6 +224,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { Modal } from "bootstrap";
 import { useAdminPageStore, type RoleRow } from "@/stores/adminPage";
@@ -325,18 +326,18 @@ async function reload() {
 
 async function syncHolyday() {
   try {
-    window.alert(await store.syncHolyday(holydayYy.value));
+    void swalAlert(await store.syncHolyday(holydayYy.value));
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "휴일 정보를 동기화하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "휴일 정보를 동기화하지 못했습니다.");
   }
 }
 
 async function runNotion() {
   try {
     const res = await store.fetchNotion(notionDataType.value, notionDataId.value);
-    window.alert(JSON.stringify(res.rsltObj ?? res.rsltList ?? res, null, 2));
+    void swalAlert(JSON.stringify(res.rsltObj ?? res.rsltList ?? res, null, 2));
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "Notion 요청에 실패했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "Notion 요청에 실패했습니다.");
   }
 }
 
@@ -365,29 +366,29 @@ function backToCacheList() {
 }
 
 async function clearCache(cacheName: string) {
-  if (!window.confirm(`${cacheName} 캐시를 전체 삭제할까요?`)) return;
+  if (!await swalConfirm(`${cacheName} 캐시를 전체 삭제할까요?`)) return;
   try {
     await store.clearCacheByName(cacheName);
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "캐시를 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "캐시를 삭제하지 못했습니다.");
   }
 }
 
 async function evictCacheEntry(cacheName: string, cacheKey: string) {
-  if (!window.confirm("캐시 항목을 삭제할까요?")) return;
+  if (!await swalConfirm("캐시 항목을 삭제할까요?")) return;
   try {
     await store.evictCacheEntry(cacheName, cacheKey);
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "캐시 항목을 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "캐시 항목을 삭제하지 못했습니다.");
   }
 }
 
 async function clearAllCaches() {
-  if (!window.confirm("전체 캐시를 삭제할까요?")) return;
+  if (!await swalConfirm("전체 캐시를 삭제할까요?")) return;
   try {
-    window.alert(await store.clearAllCaches());
+    void swalAlert(await store.clearAllCaches());
   } catch (error) {
-    window.alert(error instanceof Error ? error.message : "전체 캐시를 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : "전체 캐시를 삭제하지 못했습니다.");
   }
 }
 

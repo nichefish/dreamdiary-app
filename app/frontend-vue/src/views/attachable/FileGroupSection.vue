@@ -89,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+import { swalConfirm, swalAlert } from "@/utils/swal";
 import { ref, computed, nextTick } from "vue";
 import type { FileRecord } from "@/stores/attachableModal";
 
@@ -129,7 +130,7 @@ function onFileChange(idx: number, input: HTMLInputElement): void {
   if (!input.value) { removeNewFile(idx); return; }
   const file = input.files?.[0];
   if (file && file.size > MAX_FILE_SIZE) {
-    alert("파일 크기는 50MB를 초과할 수 없습니다.");
+    void swalAlert("파일 크기는 50MB를 초과할 수 없습니다.");
     input.value = "";
     removeNewFile(idx);
     return;
@@ -145,14 +146,14 @@ function removeNewFile(idx: number): void {
 }
 
 /** 새로 추가된 파일 삭제 확인 후 제거 */
-function delNewFile(idx: number): void {
-  if (!window.confirm("파일을 삭제하시겠습니까?")) return;
+async function delNewFile(idx: number): Promise<void> {
+  if (!await swalConfirm("파일을 삭제하시겠습니까?")) return;
   removeNewFile(idx);
 }
 
 /** 기존 파일 삭제 플래그(atchCtrl=D) 세팅 */
-function delExistingFile(fileId: number): void {
-  if (!window.confirm("파일을 삭제하시겠습니까?")) return;
+async function delExistingFile(fileId: number): Promise<void> {
+  if (!await swalConfirm("파일을 삭제하시겠습니까?")) return;
   const file = existingList.value.find((f) => f.id === fileId);
   if (file) file.deleted = true;
 }

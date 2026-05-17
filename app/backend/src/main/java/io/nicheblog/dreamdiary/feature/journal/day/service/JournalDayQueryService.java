@@ -309,7 +309,13 @@ public class JournalDayQueryService {
         if (listDto == null || contentType == null || consumer == null) return;
 
         for (final JournalDayDto journalDay : listDto) {
-            if (journalDay == null || journalDay.getJournalChapterList() == null) continue;
+            if (journalDay == null) continue;
+            if (contentType == ContentType.JOURNAL_DREAM) {
+                forEachEntry(journalDay.getJournalDreamList(), consumer);
+                forEachEntry(journalDay.getJournalElseDreamList(), consumer);
+                continue;
+            }
+            if (journalDay.getJournalChapterList() == null) continue;
 
             for (final JournalChapterDto journalChapter : journalDay.getJournalChapterList()) {
                 if (journalChapter == null) continue;

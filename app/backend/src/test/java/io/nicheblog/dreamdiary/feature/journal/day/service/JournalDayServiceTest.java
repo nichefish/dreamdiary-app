@@ -12,6 +12,10 @@ import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -127,5 +131,31 @@ class JournalDayServiceTest {
                 "삭제된 엔티티를 조회하려고 했으나 예외가 발생하지 않았습니다."
         );
     }
-}
 
+    /**
+     * 같은 사용자의 같은 일자 중복 등록 방지
+     */
+    @Test
+    void regist_duplicateJournalDate_rejected() throws Exception {
+        // Given::
+        final UserDetails user = User.withUsername(TestConstant.TEST_AUDITOR)
+                .password("password")
+                .roles("USER")
+                .build();
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
+
+        try {
+            journalDayService.regist(journalDay);
+            final JournalDayDto duplicate = JournalDayDtoTestFactory.createWithJournalDt("2000-01-01");
+
+            // When & Then::
+            final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                    () -> journalDayService.regist(duplicate),
+                    "같은 사용자와 같은 일자의 저널 일자 중복 등록이 차단되지 않았습니다."
+            );
+            assertEquals("msg.journal.day.duplicate", exception.getMessage());
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
+    }
+}
