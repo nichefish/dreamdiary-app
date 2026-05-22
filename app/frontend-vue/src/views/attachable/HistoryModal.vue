@@ -204,16 +204,11 @@ async function onRestore(historyId: number | string) {
   }
 }
 
-/** 이력 단건 삭제 처리. 성공 시 상위 컴포넌트에 알린다. */
+/** 이력 단건 삭제 처리. store 에서 목록을 직접 갱신하므로 모달을 닫지 않는다. */
 async function onDelete(historyId: number | string) {
   if (!await swalConfirm("선택한 히스토리를 삭제하시겠습니까?")) return;
   const ok = await attachableStore.deleteHistory(historyId);
-  if (ok) {
-    close();
-    emit("success");
-  } else {
-    void swalAlert("삭제에 실패했습니다.");
-  }
+  if (!ok) void swalAlert("삭제에 실패했습니다.");
 }
 
 /** HTML 마크업을 제거하고 평문으로 변환한다 (복사 시 사용). */

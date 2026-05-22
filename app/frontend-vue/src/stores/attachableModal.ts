@@ -282,7 +282,9 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       const res = await axios.delete(
         `/api/history/${historyContentType.value}/${historyPostId.value}/${historyId}`
       );
-      return res.data?.rslt === true;
+      const ok = res.data?.rslt === true;
+      if (ok) historyList.value = historyList.value.filter((item) => item.id !== historyId);
+      return ok;
     } catch {
       return false;
     }
