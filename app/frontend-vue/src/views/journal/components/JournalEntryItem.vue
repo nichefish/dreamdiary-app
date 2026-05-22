@@ -152,9 +152,21 @@
           </div>
           <!--end::수정-->
 
-          <!--begin::이력-->
+          <!--begin::해석 등록-->
           <div class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openHistory">
+            <div class="menu-link flex-stack px-3" @click="openInterpretationReg">
+              해석 등록
+              <i class="bi bi-lightbulb fs-8"></i>
+            </div>
+          </div>
+          <!--end::해석 등록-->
+
+          <!--begin::이력 (historyTriggeredAt 없으면 disabled)-->
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div
+              :class="['menu-link flex-stack px-3', { 'disabled text-muted': !hasHistory }]"
+              @click="hasHistory ? openHistory() : undefined"
+            >
               이력
               <i class="bi bi-clock-history fs-8"></i>
             </div>
@@ -275,6 +287,14 @@
     <!--end::우측 액션 영역-->
   </div>
   <!--end::엔트리 행-->
+
+  <!--begin::해석 목록-->
+  <JournalInterpretationItem
+    v-for="interp in interpretationList"
+    :key="interp.id"
+    :interpretation="interp"
+  />
+  <!--end::해석 목록-->
 </template>
 
 <script setup lang="ts">
@@ -288,6 +308,7 @@ import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalStore } from "@/stores/journal";
 import type { JournalEntryDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
+import JournalInterpretationItem from "./JournalInterpretationItem.vue";
 
 const props = defineProps<{
   entry: JournalEntryDto;
@@ -321,6 +342,7 @@ const contentLabel = computed(() => {
 
 const lcKey = computed(() => props.entry.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
+const hasHistory = computed(() => !!props.entry.history?.historyTriggeredAt);
 
 /** 클라이언트 임시 접힘 오버라이드. null=서버 상태 따름, true=강제 접힘, false=강제 펼침 */
 const localCollapsedOverride = ref<boolean | null>(null);
@@ -339,6 +361,7 @@ function hasState(key: string): boolean {
 const tagList = computed(() => props.entry.tag?.list ?? []);
 const relatedList = computed(() => props.entry.relatedContentList ?? []);
 const commentList = computed(() => props.entry.comment?.list ?? []);
+const interpretationList = computed(() => props.entry.journalInterpretationList ?? []);
 
 /** 라이프사이클 옵션 (OPEN/PENDING/RESOLVED) */
 const lifecycleOptions = [
@@ -428,6 +451,16 @@ function openHistory() {
 function openRelated() {
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openRelated(props.entry.contentType, props.entry.id);
+}
+
+/** 해석 등록 모달 열기 */
+function openInterpretationReg() {
+  if (!props.entry.id || !props.entry.contentType) return;
+  modalStore.openInterpretationReg({
+    refId: props.entry.id,
+    refContentType: props.entry.contentType,
+    stdrdDt: props.entry.stdrdDt,
+  });
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */

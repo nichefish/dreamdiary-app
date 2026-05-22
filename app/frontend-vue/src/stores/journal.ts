@@ -61,10 +61,27 @@ export interface RelatedContentItem {
   relReason?: string;
 }
 
+/** 이력 컴포지션 — 백엔드 HistoryCmpstn 직렬화 구조 */
+export interface HistoryCmpstn {
+  historyTriggeredAt?: string;
+}
+
 /** 해석 항목 */
 export interface InterpretationItem {
   id: number;
+  contentType?: string;
+  refId?: number;
+  refContentType?: string;
+  journalDayId?: number;
+  title?: string;
   content?: string;
+  markdownContent?: string;
+  sortOrder?: number;
+  stdrdDt?: string;
+  state?: StateCmpstn;
+  lifecycle?: LifecycleCmpstn;
+  history?: HistoryCmpstn;
+  comment?: CommentCmpstn;
 }
 
 /** 저널 엔트리 (일기 / 꿈 / 노트) */
@@ -83,6 +100,7 @@ export interface JournalEntryDto {
   tag?: TagCmpstn;
   state?: StateCmpstn;
   lifecycle?: LifecycleCmpstn;
+  history?: HistoryCmpstn;
   comment?: CommentCmpstn;
   relatedContentList?: RelatedContentItem[];
   journalInterpretationList?: InterpretationItem[];
