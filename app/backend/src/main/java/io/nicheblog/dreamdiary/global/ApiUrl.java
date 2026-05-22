@@ -54,6 +54,8 @@ public interface ApiUrl {
     /** 꿈(DREAM) 챕터 자동 생성 전용 (수동 챕터 등록 API로는 DREAM 생성 불가) */
     String JOURNAL_CHAPTER_DREAM_AUTO = Prefix.API + "/journal/chapters/dream-auto";
     String JOURNAL_CHAPTER = Prefix.API + "/journal/chapter/{id}";
+    /** 챕터 일자 이동 */
+    String JOURNAL_CHAPTER_MOVE = Prefix.API + "/journal/chapter/{id}/move";
     String JOURNAL_CHAPTER_EXPORT = Prefix.API + "/journal/chapter/{id}/export";
 
     /** 저널 엔트리(통합) */
