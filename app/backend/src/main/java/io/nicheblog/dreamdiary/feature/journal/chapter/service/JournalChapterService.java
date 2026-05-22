@@ -17,13 +17,17 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.repository.mybatis.Journa
 import io.nicheblog.dreamdiary.feature.journal.chapter.spec.JournalChapterSpec;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
+import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayService;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,6 +79,7 @@ public class JournalChapterService
     private final JournalChapterMapper journalChapterMapper;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
     private final JournalDayRepository journalDayRepository;
+    private final JournalDayService journalDayService;
     private final JournalEntryService journalEntryService;
     private final JournalEntryRepository journalEntryRepository;
 
@@ -396,5 +402,110 @@ public class JournalChapterService
     public void reorderSortOrder(final JournalChapterDto updatedDto) throws Exception {
         // sort_order 재부여 (동순위는 id 순)
         normalizeSortOrder(updatedDto.getJournalDayId());
+    }
+
+    /**
+     * 챕터를 다른 일자로 이동한다. DREAM 챕터는 이동 불가.
+     * 대상 일자가 없으면 신규 일자를 생성하고 이동한다.
+     * 이동 후 구 일자/신 일자 모두 sortOrder 정규화 및 캐시 무효화를 수행한다.
+     *
+     * @param id 챕터 식별자
+     * @param targetStdrdDt 이동할 대상 일자 (yyyy-MM-dd)
+     * @return {@link ServiceResponse} -- 처리 결과
+     */
+    @Transactional
+    public ServiceResponse moveChapter(final Integer id, final String targetStdrdDt) throws Exception {
+        // 챕터 조회
+        final JournalChapterEntity chapterEntity = this.getDtlEntity(id);
+        // 권한 체크
+        if (!AuthUtils.isCreatedBy(chapterEntity.getCreatedBy())) {
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        }
+        // DREAM 챕터 이동 불가
+        if (chapterEntity.getChapterType() == ChapterType.DREAM) {
+            throw new BusinessException("msg.journal.chapter.dream-type-locked");
+        }
+
+        final Integer oldJournalDayId = chapterEntity.getJournalDayId();
+        final String username = AuthUtils.getLoginUsername();
+
+        // 대상 일자 찾기
+        final Date journalDate = DateUtils.asDate(targetStdrdDt);
+        JournalDayEntity targetDay = journalDayRepository.findByJournalDate(journalDate, username);
+        if (targetDay == null) {
+            // 대상 일자가 없으면 신규 등록
+            log.info("[moveChapter] 대상 일자 없음 → 신규 등록: targetStdrdDt={}", targetStdrdDt);
+            final JournalDayDto newDayDto = new JournalDayDto();
+            newDayDto.setJournalDate(targetStdrdDt);
+            journalDayService.regist(newDayDto);
+            targetDay = journalDayRepository.findByJournalDate(journalDate, username);
+            if (targetDay == null) {
+                throw new BusinessException("msg.journal.day.not-found");
+            }
+        }
+
+        final Integer newJournalDayId = targetDay.getId();
+        // 같은 일자면 no-op
+        if (Objects.equals(oldJournalDayId, newJournalDayId)) {
+            log.info("[moveChapter] 같은 일자로 이동 요청 → no-op: chapterId={}, dayId={}", id, newJournalDayId);
+            final ServiceResponse response = new ServiceResponse();
+            response.setRslt(true);
+            return response;
+        }
+
+        // 챕터를 신 일자 마지막 순서로 이동
+        final int lastSortOrder = repository.findLastIndexByJournalDay(newJournalDayId).orElse(0);
+        chapterEntity.setJournalDayId(newJournalDayId);
+        chapterEntity.setSortOrder(lastSortOrder + 1);
+        repository.saveAndFlush(chapterEntity);
+        log.info("[moveChapter] 챕터 이동: chapterId={}, oldDayId={} → newDayId={}", id, oldJournalDayId, newJournalDayId);
+
+        // 구 일자 정규화
+        this.getSelf().normalizeSortOrder(oldJournalDayId);
+        // 신 일자 정규화 (DREAM 마지막 규칙 포함)
+        this.getSelf().normalizeSortOrder(newJournalDayId);
+
+        // 구 일자 캐시 무효화
+        final JournalDayEntity oldDay = journalDayRepository.findById(oldJournalDayId).orElse(null);
+        if (oldDay != null) {
+            journalCacheEvictWorker.evictAfterCommit(
+                JournalCacheEvictParam.builder()
+                    .createdBy(username)
+                    .journalDayId(oldJournalDayId)
+                    .yy(oldDay.getYy())
+                    .mnth(oldDay.getMnth())
+                    .weekStartDt(DateUtils.asStr(oldDay.getWeekStartDt(), DatePtn.DATE))
+                    .build(),
+                ContentType.JOURNAL_CHAPTER
+            );
+        }
+        // 신 일자 캐시 무효화
+        journalCacheEvictWorker.evictAfterCommit(
+            JournalCacheEvictParam.builder()
+                .createdBy(username)
+                .journalDayId(newJournalDayId)
+                .yy(targetDay.getYy())
+                .mnth(targetDay.getMnth())
+                .weekStartDt(DateUtils.asStr(targetDay.getWeekStartDt(), DatePtn.DATE))
+                .build(),
+            ContentType.JOURNAL_CHAPTER
+        );
+        // 챕터 상세 캐시 무효화 (신 일자 기준으로 명시적으로 구성 — mapstruct 시 구 journalDay association이 잔류할 수 있어 직접 빌드)
+        journalCacheEvictWorker.evictAfterCommit(
+            JournalCacheEvictParam.builder()
+                .createdBy(chapterEntity.getCreatedBy())
+                .contentType(chapterEntity.getContentType())
+                .id(chapterEntity.getId())
+                .journalDayId(newJournalDayId)
+                .yy(targetDay.getYy())
+                .mnth(targetDay.getMnth())
+                .weekStartDt(DateUtils.asStr(targetDay.getWeekStartDt(), DatePtn.DATE))
+                .build(),
+            ContentType.JOURNAL_CHAPTER
+        );
+
+        final ServiceResponse response = new ServiceResponse();
+        response.setRslt(true);
+        return response;
     }
 }

@@ -25,6 +25,7 @@
 | 어사이드 키워드 필터 | `JournalDayViewToolbar.vue`에만 있음; `JournalAside.vue` 어사이드에는 키워드 입력 없음 | ⚠ 툴바만 |
 | 등록/수정 후 스크롤 | 일자 submit 성공 → `#journal-day-{stdrdDt}`, 엔트리 submit 성공 → `#journal-entry-{id}` 또는 일자 카드 scrollIntoView | ✓ |
 | 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정·삭제 등 모든 서버 반영 후 `fetchDays().then` → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
+| 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, `POST /api/journal/chapter/{id}/move` 호출 후 `fetchDays` + 신 일자 scrollIntoView | ✓ |
 | TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러 | ✓ |
 
 ---

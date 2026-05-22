@@ -164,6 +164,30 @@ public class JournalChapterRestController
     }
     
     /**
+     * 저널 챕터 일자 이동 (Ajax)
+     * DREAM 챕터는 이동 불가. 대상 일자가 없으면 신규 생성.
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param id 챕터 식별자
+     * @param targetStdrdDt 이동할 대상 일자 (yyyy-MM-dd)
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @PostMapping(value = {Url.JOURNAL_CHAPTER_MOVE})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalChapterMoveAjax(
+            final @PathVariable("id") Integer id,
+            final @RequestParam("targetStdrdDt") String targetStdrdDt
+    ) throws Exception {
+
+        final ServiceResponse result = journalChapterService.moveChapter(id, targetStdrdDt);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
+    }
+
+    /**
      * 저널 챕터 텍스트 내보내기
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
