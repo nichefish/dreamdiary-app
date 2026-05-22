@@ -1,6 +1,6 @@
 <template>
   <!--begin::챕터-->
-  <div>
+  <div class="journal-chapter-block">
     <!--begin::챕터 헤더-->
     <div class="d-flex align-items-center mt-2">
       <!--begin::챕터 타입·카테고리 라벨 + 아이콘-->
@@ -183,6 +183,8 @@ const localCollapsedOverride = ref<boolean | null>(null);
 
 const isCollapsed = computed(() => {
   if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
+  /* 하위 엔트리 전체 RESOLVED 시 자동 접힘 */
+  if (allEntriesResolved.value) return true;
   return serverCollapsed.value;
 });
 
@@ -215,6 +217,12 @@ const typeLabel = computed(() => {
 
 const entryList = computed(() => props.chapter.journalEntryList ?? []);
 const tagList = computed(() => props.chapter.tag?.list ?? []);
+
+/** 하위 엔트리가 1개 이상이고 전부 RESOLVED인지 여부 */
+const allEntriesResolved = computed(() => {
+  const list = entryList.value;
+  return list.length > 0 && list.every((e) => e.lifecycle?.lifecycleKey === 'RESOLVED');
+});
 
 /** 챕터 수정 모달 열기 */
 function openChapterMdf() {
