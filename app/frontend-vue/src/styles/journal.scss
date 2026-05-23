@@ -272,8 +272,8 @@ $journal-paired-states: (
     &:has(> .journal-chapter-content.collapsed) {
         --chapter-collapsed-bg: transparent;
         --chapter-collapsed-shadow: none;
-        --chapter-collapsed-indent: 90px;
-        --chapter-collapsed-padding-left: 0.85rem;
+        --chapter-collapsed-indent: 50;
+        --chapter-collapsed-padding-left: 0.25rem;
         box-sizing: border-box;
         width: calc(100% - var(--chapter-collapsed-indent));
         max-width: calc(100% - var(--chapter-collapsed-indent));
@@ -322,11 +322,11 @@ $journal-paired-states: (
 
     /* 챕터 접힘 하이라이트는 diary 전용 구조가 아니라 내부 항목의 상태를 공통으로 본다. */
     &:has(> .journal-chapter-content.collapsed):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]) {
-        @include chapter-highlight(#fff5f5, inset 2px 0 0 #ef4444, 0.85rem);
+        @include chapter-highlight(#fff5f5, inset 2px 0 0 #ef4444, 0.4rem);
     }
 
     &:has(> .journal-chapter-content.collapsed):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
-        @include chapter-highlight(#fffcec, inset 2px 0 0 #f59e0b, 0.85rem);
+        @include chapter-highlight(#fffcec, inset 2px 0 0 #f59e0b, 0.4rem);
     }
 
     &:has(> .journal-chapter-content.collapsed):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
