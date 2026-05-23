@@ -95,7 +95,10 @@ function toggle(el: HTMLElement | null | undefined, show: boolean): void {
 function showAndFocus(container: HTMLElement | null | undefined, el?: HTMLElement | null): void {
   if (!container) return;
   container.style.display = "block";
-  setTimeout(() => el?.focus?.(), 0);
+  setTimeout(() => {
+    el?.focus?.();
+    if (el instanceof HTMLInputElement) el.select();
+  }, 0);
 }
 
 function focusTagInput(tagify: TagifyInstance): void {
@@ -186,9 +189,9 @@ export function bindTagifyCtgrInputPrompt(
 
     if (filteredCtgr.length === 0) {
       /* ctgrMap에 없는 태그: 텍스트 입력으로 카테고리 직접 입력 */
+      tagify.removeTags(e.detail.tag);
       showAndFocus(tagify.ctgr?.inputContainer, tagify.ctgr?.input);
       if (hasValueInput) toggle(tagify.ctgr?.metaInputContainer, true);
-      tagify.removeTags(e.detail.tag);
       return;
     }
 
@@ -200,7 +203,7 @@ export function bindTagifyCtgrInputPrompt(
         filteredCtgr.map((item) => `<option value="${item}">${item}</option>`).join("");
       tagify.ctgr.select.size = filteredCtgr.length + 1;
     }
-    toggle(tagify.ctgr?.selectContainer, true);
+    showAndFocus(tagify.ctgr?.selectContainer, tagify.ctgr?.select);
 
     if (tagify.ctgr?.select) {
       tagify.ctgr.select.onchange = () => {
