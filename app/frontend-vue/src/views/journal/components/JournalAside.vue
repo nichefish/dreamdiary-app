@@ -75,11 +75,22 @@
       <!--begin::주 내비게이션 (WEEKLY)-->
       <template v-else>
         <!--begin::주간 범위 + 이동-->
-        <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center justify-content-between position-relative">
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateWeek(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
-          <span class="fw-bold fs-7 text-center">{{ weekRangeLabel }}</span>
+          <span
+            class="fw-bold fs-7 text-center text-hover-primary cursor-pointer"
+            title="날짜 선택"
+            @click="openWeekPicker"
+          >{{ weekRangeLabel }}</span>
+          <input
+            ref="weekPickerRef"
+            type="date"
+            style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+            tabindex="-1"
+            @change="onWeekPickerChange"
+          />
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateWeek(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
@@ -245,8 +256,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { formatLocalDateStr } from "@/utils/journalDate";
+import { ref, computed, nextTick } from "vue";
+import { formatLocalDateStr, getWeekStartDateStr } from "@/utils/journalDate";
 import { useJournalStore } from "@/stores/journal";
 import { useJournalAsideStore } from "@/stores/journalAside";
 import { useJournalModalStore } from "@/stores/journalModal";
@@ -276,6 +287,9 @@ const weekRangeLabel = computed(() => {
   return `${start} ~ ${end}`;
 });
 
+/** 주간 날짜 선택기 inputRef */
+const weekPickerRef = ref<HTMLInputElement | null>(null);
+
 /** 요일 버튼에서 선택된 날짜 (기본: 오늘) */
 const selectedDt = ref<string>(formatLocalDateStr(new Date()));
 
@@ -301,10 +315,34 @@ const weekDays = computed(() => {
   });
 });
 
-/** 요일 버튼 클릭 → 해당 날짜를 선택 상태로 전환 */
-function selectWeekDay(day: { dateStr: string; hasDay: boolean }): void {
+/** 요일 버튼 클릭 → 해당 날짜를 선택 상태로 전환 후 해당 일자 카드로 스크롤 */
+async function selectWeekDay(day: { dateStr: string; hasDay: boolean }): Promise<void> {
   if (!day.hasDay) return;
   selectedDt.value = day.dateStr;
+  await nextTick();
+  const el = document.getElementById(`journal-day-${day.dateStr}`);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/** 주간 범위 레이블 클릭 → 날짜 선택기 열기 */
+async function openWeekPicker(): Promise<void> {
+  await nextTick();
+  (weekPickerRef.value as HTMLInputElement & { showPicker?: () => void })?.showPicker?.();
+}
+
+/** 날짜 선택 → 해당 날짜가 포함된 주로 이동 후 해당 일자 카드로 스크롤 */
+async function onWeekPickerChange(e: Event): Promise<void> {
+  const val = (e.target as HTMLInputElement).value;
+  if (!val) return;
+  const newWeekStart = getWeekStartDateStr(val);
+  const d = new Date(newWeekStart + "T12:00:00");
+  store.weekStartDt = newWeekStart;
+  store.yy = d.getFullYear();
+  store.mnth = d.getMonth() + 1;
+  await store.fetchDays();
+  await nextTick();
+  const el = document.getElementById(`journal-day-${val}`);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /** 현재 년/월을 Pinpoint로 고정 */
