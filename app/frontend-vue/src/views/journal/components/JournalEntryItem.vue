@@ -313,6 +313,8 @@ import JournalInterpretationItem from "./JournalInterpretationItem.vue";
 const props = defineProps<{
   entry: JournalEntryDto;
   isDream?: boolean;
+  /** 챕터 토글이 전파하는 강제 접힘 여부. null=챕터 미개입, true/false=챕터 강제 */
+  forceCollapsed?: boolean | null;
 }>();
 
 const modalStore = useJournalModalStore();
@@ -347,9 +349,11 @@ const hasHistory = computed(() => !!props.entry.history?.historyTriggeredAt);
 /** 클라이언트 임시 접힘 오버라이드. null=서버 상태 따름, true=강제 접힘, false=강제 펼침 */
 const localCollapsedOverride = ref<boolean | null>(null);
 
-/** 서버 상태(COLLAPSED) + 클라이언트 임시 오버라이드를 합산한 최종 접힘 여부. RESOLVED 시 자동 접힘. */
+/** 서버 상태(COLLAPSED) + 클라이언트 임시 오버라이드를 합산한 최종 접힘 여부. RESOLVED 시 자동 접힘.
+ * 우선순위: 엔트리 자체 토글 > 챕터 강제(forceCollapsed) > RESOLVED 자동 접힘 > 서버 COLLAPSED */
 const isCollapsed = computed(() => {
   if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
+  if (props.forceCollapsed !== null && props.forceCollapsed !== undefined) return props.forceCollapsed;
   if (isResolved.value) return true;
   return hasState("COLLAPSED");
 });

@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `log` (
     duration_ms BIGINT NULL COMMENT '소요시간(ms)',
     exception_name VARCHAR(255) NULL COMMENT '예외 이름',
     exception_message LONGTEXT NULL COMMENT '예외 메시지',
-    created_at DATETIME NULL COMMENT '기록 일시',
+    created_at DATETIME NULL DEFAULT CURRENT_TIMESTAMP COMMENT '기록 일시',
     deleted_at DATETIME NULL COMMENT '삭제일시',
     INDEX idx_log_created (created_at),
     INDEX idx_log_user_dt (username, created_at),

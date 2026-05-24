@@ -215,7 +215,7 @@ CREATE TABLE history (
     from_history_id INT COMMENT '복구 원본 이력 번호',
     -- AUDIT
     reg_id VARCHAR(50) COMMENT '등록자 ID',
-    created_at DATETIME COMMENT '등록 일시',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
     deleted_at DATETIME COMMENT '삭제일시',
 
     PRIMARY KEY (id),

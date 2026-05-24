@@ -133,6 +133,7 @@
           :key="entry.id"
           :entry="entry"
           :is-dream="chapter.chapterType === 'DREAM'"
+          :force-collapsed="localCollapsedOverride"
         />
         <div v-if="entryList.length === 0 && !isCollapsed" class="text-muted fs-8 ps-5 py-2">등록된 항목이 없습니다.</div>
       </div>
