@@ -38,20 +38,13 @@
       </div>
       <!--end::꿈 상태 배지-->
 
-      <!--begin::상태 배지 (중요/참조)-->
-      <div v-if="hasState('IMPRTC') || hasState('REFRNC')" class="d-flex gap-1 mb-1">
-        <span v-if="hasState('IMPRTC')" class="badge badge-light-warning">중요</span>
-        <span v-if="hasState('REFRNC')" class="badge badge-light-info">참조</span>
-      </div>
-      <!--end::상태 배지-->
-
       <!--begin::마크다운 본문-->
       <div
         v-if="!isCollapsed && entry.markdownContent"
         class="journal-content fs-7 p-2"
         v-html="entry.markdownContent"
       ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">접힌 상태</div>
+      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">collapsed</div>
       <!--end::마크다운 본문-->
 
       <!--begin::엔트리 태그-->
