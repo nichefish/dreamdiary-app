@@ -348,10 +348,11 @@ const tagify = cF.tagify.initMeta(selector, ctgrMap, additionalOptions?)
 1. 사용자가 태그 입력 → Tagify `add` 이벤트 발생
 2. 임시 태그로 처리 (committing = false)
 3. ctgrMap에 해당 태그 없으면 → 즉시 제거 (무효 태그)
-4. ctgrMap에 있으면 → selectbox 표시 (카테고리 선택 또는 직접입력)
+4. ctgrMap에 있으면 → selectbox 표시 + **selectbox에 자동 포커스**
 5a. selectbox에서 카테고리 선택 → commitTag(value, ctgr, null)
-5b. "직접입력" 선택 → ctgr 입력 필드 표시 → Tab/Enter로 확정 → commitTag
-6. Escape → 입력 취소, draft 초기화
+5b. "직접입력" 선택 → ctgr 입력 필드 표시 + input에 자동 포커스 → Tab/Enter로 확정 → commitTag
+6. ctgrMap에 없는 태그 → ctgr 입력 필드 직접 표시 + input에 자동 포커스
+7. Escape → 입력 취소, draft 초기화
 ```
 
 관련 DOM 요소 (스코프 내 선택):
@@ -383,6 +384,11 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 | Escape | 입력 취소, draft 초기화, 기본 입력창으로 포커스 |
 | Tab | 현재 단계 확정 후 다음 단계로 이동 |
 | Enter | Tab과 동일 |
+
+**DRAFT 진입 시 자동 포커스**: 태그 추가로 DRAFT 상태에 진입하면 첫 입력 대상에 자동 포커스된다.
+- ctgrMap에 카테고리 목록이 있으면 → `select` 포커스
+- ctgrMap에 없거나 "직접입력" 선택 시 → `ctgr input` 포커스
+- 구현: `showAndFocus(container, el)` — `display:block` + `setTimeout(() => el.focus(), 0)`
 
 ### 적용 대상 화면
 

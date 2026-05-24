@@ -157,6 +157,18 @@ const weekRangeLabel = computed(() => {
 **오늘 주 이동** (`todayWeek`):
 - 오늘 날짜 기준 해당 주 월요일 계산 → `store.fetchDays({ weekStartDt: ... })`
 
+**주간 범위 레이블 클릭 → 날짜 선택기** (`openWeekPicker` / `onWeekPickerChange`):
+- 사이드바의 주간 범위 레이블(`MM-DD ~ MM-DD`)을 클릭하면 브라우저 네이티브 date picker 팝업.
+- 날짜 선택 시 `getWeekStartDateStr(selectedDate)`로 해당 주 월요일 계산.
+- `store.weekStartDt`, `store.yy`, `store.mnth` 갱신 후 `await store.fetchDays()` 호출.
+- 목록 렌더 완료 후 선택한 날짜(`val`)에 해당하는 `#journal-day-{val}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
+- 구현: 숨긴 `<input type="date">` (opacity:0, pointer-events:none) + `showPicker()` 호출.
+
+**요일 버튼 클릭 → 해당 일자 카드 스크롤** (`selectWeekDay`):
+- 현재 주 내 요일 버튼 클릭 시 `selectedDt`(활성 표시) 갱신.
+- `await nextTick()` 후 `#journal-day-{dateStr}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
+- `hasDay`가 false인 버튼(데이터 없는 날짜)은 비활성화(disabled).
+
 ---
 
 ### 연/월 SELECT 기반 내비게이션
@@ -325,9 +337,12 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **구현**:
 ```typescript
+// props.forceCollapsed: 챕터 토글이 전파하는 강제 접힘 여부 (null=챕터 미개입)
 const localCollapsedOverride = ref<boolean | null>(null);
 const isCollapsed = computed(() => {
   if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
+  if (props.forceCollapsed !== null && props.forceCollapsed !== undefined) return props.forceCollapsed;
+  if (isResolved.value) return true;  // RESOLVED 자동 접힘
   return hasState("COLLAPSED");
 });
 function toggleEntry(): void {
@@ -335,7 +350,28 @@ function toggleEntry(): void {
 }
 ```
 
+**접힘 우선순위**: 엔트리 자체 토글 > 챕터 강제(`forceCollapsed`) > RESOLVED 자동 접힘 > 서버 COLLAPSED 상태
+
 **토글 버튼 위치**: 왼쪽 열 (`#sortOrder` 아래) — `bi-arrows-expand` (접힘) / `bi-arrows-collapse` (펼침)
+
+---
+
+### 챕터 토글 → 하위 엔트리 전파 접힘/펼침 (Chapter Collapse Propagation)
+
+**구현 파일**: `JournalChapterItem.vue` → `JournalEntryItem.vue`
+
+**동작**: 챕터 우측 접힘 토글 버튼 클릭 시, 챕터 `localCollapsedOverride`가 하위 엔트리 전체에 `forceCollapsed` prop으로 전달된다.
+- 챕터 펼침(`false`) → 엔트리 전체 펼침 (RESOLVED 자동 접힘도 override)
+- 챕터 접힘(`true`) → 엔트리 전체 접힘
+- 챕터 override 없음(`null`) → 엔트리 각자의 접힘 로직으로 복귀
+
+**주요 동기**: RESOLVED 챕터는 모든 엔트리가 RESOLVED → 챕터·엔트리 모두 자동 접힘. 챕터를 펼치면 엔트리도 함께 펼쳐져야 하나, 엔트리는 각자 `isResolved → true`를 유지하므로 챕터 펼침만으로는 엔트리가 열리지 않던 문제를 해결.
+
+**구현**:
+```vue
+<!-- JournalChapterItem.vue -->
+<JournalEntryItem :force-collapsed="localCollapsedOverride" ... />
+```
 
 ---
 
