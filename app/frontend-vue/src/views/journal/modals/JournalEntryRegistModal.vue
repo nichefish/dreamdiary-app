@@ -135,7 +135,7 @@
                 <label class="d-flex align-items-center mb-2">
                   <span class="text-gray-700 fs-6 fw-bolder">태그</span>
                 </label>
-                <TagifyEditor v-model="tagListStrWithCtgr" :ctgr-map-url="ctgrMapUrl" />
+                <TagifyEditor v-model="tagListStrWithCtgr" :ctgr-map="modalStore.entryCtgrMap" />
               </div>
             </div>
             <!--end::태그-->
@@ -222,13 +222,6 @@ const modalTitle = computed(() => {
 
 /** 태그 입력 표시 여부 (DIARY/DREAM 전용) */
 const showTag = computed(() => isDiary.value || isDream.value);
-
-/** 카테고리 맵 API URL (DIARY/DREAM 전용; 엔트리 타입별 분기) */
-const ctgrMapUrl = computed<string>(() => {
-  if (isDiary.value) return "/api/journal/entry/tag/ctgr-map?type=DIARY";
-  if (isDream.value) return "/api/journal/entry/tag/ctgr-map?type=DREAM";
-  return "";
-});
 
 /** 순서 입력 표시 여부: 수정 모드, DREAM 은 대타꿈(elseDreamYn='Y') 제외 */
 const showSortCol = computed(() => {

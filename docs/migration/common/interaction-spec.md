@@ -390,6 +390,33 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 - ctgrMap에 없거나 "직접입력" 선택 시 → `ctgr input` 포커스
 - 구현: `showAndFocus(container, el)` — `display:block` + `setTimeout(() => el.focus(), 0)`
 
+### ctgrMap 로딩 아키텍처
+
+**변경 전 (legacy/초기 SPA):** `TagifyEditor.vue`가 `onMounted` 시 HTTP로 ctgrMap을 직접 조회 → 모달 열릴 때마다 추가 round-trip 발생.
+
+**변경 후 (현행):** 호출자(`journalModal.ts`)가 모달 오픈 직전에 ctgrMap을 조회해 세션 캐시 후 prop으로 주입. 첫 오픈 시 1회만 HTTP 발생, 이후 재오픈 시 캐시 반환.
+
+```
+모달 오픈 요청
+  └─ journalModal.ts openDayReg/openEntryReg/openEntryMdf/openDreamEntryReg
+       ├─ fetchCtgrMapCached(url)  ← 세션 캐시 (ctgrMapCache, 모듈 레벨)
+       │    ├─ 캐시 HIT  → 즉시 반환
+       │    └─ 캐시 MISS → axios.get(url) → 정규화 → 캐시 저장 → 반환
+       └─ dayTagCtgrMap / dayMetaCtgrMap / entryCtgrMap ref 에 할당
+            └─ <TagifyEditor :ctgr-map="modalStore.dayTagCtgrMap" />
+                 └─ initTagify() — 이미 준비된 prop 사용, 추가 HTTP 없음
+```
+
+ctgrMap URL 매핑:
+- 일자 태그: `/api/journal/day/tag/ctgr-map`
+- 일자 메타: `/api/journal/day/meta/ctgr-map`
+- 엔트리 DIARY 태그: `/api/journal/entry/tag/ctgr-map?type=DIARY`
+- 엔트리 DREAM 태그: `/api/journal/entry/tag/ctgr-map?type=DREAM`
+
+`TagifyEditor` Props:
+- `ctgrMap?: Record<string, string[]> | null` — null이면 ctgr 없는 단순 태그 모드
+- `metaMode?: boolean` — true이면 카테고리 + 값 2단계 입력 모드
+
 ### 적용 대상 화면
 
 - `_journal_entry_reg_modal.ftlh`에서 DIARY 타입 (`entryRegShowTagify = true`) 과 DREAM 타입에서 Tagify 초기화

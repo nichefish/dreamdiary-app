@@ -52,7 +52,6 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
 import Tagify from "@yaireo/tagify";
 import "@yaireo/tagify/dist/tagify.css";
-import axios from "axios";
 import {
   baseTagifyOptions,
   tagTemplate,
@@ -72,15 +71,15 @@ import {
 interface Props {
   /** 태그 JSON 문자열 (v-model). Tagify 직렬화 형식 */
   modelValue?: string;
-  /** 카테고리 맵 API URL. 지정 시 initWithCtgr / initMeta 동작 */
-  ctgrMapUrl?: string;
+  /** 카테고리 맵 데이터. 지정 시 initWithCtgr / initMeta 동작. 호출자가 세션 캐시 후 주입 */
+  ctgrMap?: Record<string, string[]> | null;
   /** true 이면 initMeta (카테고리 + 메타 값 2단계 입력) */
   metaMode?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
-  ctgrMapUrl: "",
+  ctgrMap: null,
   metaMode: false,
 });
 
@@ -99,7 +98,6 @@ const ctgrPlaceholder = computed(() =>
 );
 
 let tagifyInst: TagifyInstance | null = null;
-let ctgrMap: Record<string, string[]> = {};
 let suppressChange = false;
 
 function loadOriginalValues(value: string): void {
@@ -139,37 +137,6 @@ function emitValue(): void {
   emit("update:modelValue", serializeTagifyValue(tagifyInst));
 }
 
-/** AjaxResponse.withMap → rsltMap (레거시 journalDayTagService.getCtgrMap 와 동일) */
-function normalizeCtgrMap(raw: unknown): Record<string, string[]> {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-  const out: Record<string, string[]> = {};
-  for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
-    if (!Array.isArray(categories)) continue;
-    out[tagName] = categories.map((c) => String(c ?? "")).filter((c) => c.length > 0);
-  }
-  return out;
-}
-
-async function fetchCtgrMap(): Promise<void> {
-  if (!props.ctgrMapUrl) {
-    ctgrMap = {};
-    return;
-  }
-  try {
-    const res = await axios.get(props.ctgrMapUrl);
-    if (!res.data?.rslt) {
-      ctgrMap = {};
-      console.error("[TagifyEditor] ctgrMap 조회 rslt=false:", props.ctgrMapUrl);
-      return;
-    }
-    /** 변경 전: rsltObj 만 읽어 맵이 항상 {} → ctgrMap 미스매치로 태그가 즉시 제거됨 */
-    const raw = res.data.rsltMap ?? res.data.rsltObj;
-    ctgrMap = normalizeCtgrMap(raw);
-  } catch {
-    console.error("[TagifyEditor] ctgrMap 조회 실패:", props.ctgrMapUrl);
-    ctgrMap = {};
-  }
-}
 
 function destroyTagify(): void {
   tagifyInst?.destroy();
@@ -180,7 +147,8 @@ function initTagify(): void {
   if (!inputRef.value) return;
   destroyTagify();
 
-  const useCtgr = !!props.ctgrMapUrl;
+  const ctgrMapData = props.ctgrMap ?? {};
+  const useCtgr = props.ctgrMap != null;
 
   tagifyInst = new Tagify(inputRef.value, {
     ...baseTagifyOptions,
@@ -194,8 +162,8 @@ function initTagify(): void {
 
   if (useCtgr) {
     tagifyInst.ctgr = resolveCtgrDom();
-    bindTagifyAutoComplete(tagifyInst, ctgrMap);
-    bindTagifyCtgrInputPrompt(tagifyInst, ctgrMap, {
+    bindTagifyAutoComplete(tagifyInst, ctgrMapData);
+    bindTagifyCtgrInputPrompt(tagifyInst, ctgrMapData, {
       hasValueInput: props.metaMode,
       onCommitted: emitValue,
     });
@@ -235,7 +203,6 @@ function cancelDraft(): void {
 defineExpose({ commitPendingDraft, hasPendingDraft, cancelDraft });
 
 onMounted(async () => {
-  await fetchCtgrMap();
   await nextTick();
   initTagify();
 });
@@ -258,9 +225,8 @@ watch(
 );
 
 watch(
-  () => props.ctgrMapUrl,
+  () => props.ctgrMap,
   async () => {
-    await fetchCtgrMap();
     await nextTick();
     initTagify();
   },
