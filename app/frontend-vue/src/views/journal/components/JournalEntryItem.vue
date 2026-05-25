@@ -41,7 +41,7 @@
       <!--begin::마크다운 본문-->
       <div
         v-if="!isCollapsed && entry.markdownContent"
-        class="journal-content fs-7 p-2"
+        class="journal-content p-2"
         v-html="entry.markdownContent"
       ></div>
       <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">collapsed</div>

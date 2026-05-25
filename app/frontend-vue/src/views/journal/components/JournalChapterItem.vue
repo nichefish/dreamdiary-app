@@ -142,8 +142,9 @@
         <span
           v-for="tag in tagList"
           :key="tag.tagId"
-          class="text-muted fs-8"
-        >#<span v-if="tag.ctgr" class="text-noti fs-8">[{{ tag.ctgr }}]</span>{{ tag.name }}</span>
+          class="text-muted cursor-pointer pe-1"
+          @click.stop="openTagContextMenu($event, tag)"
+        >#<span class="border-bottom text-primary fw-lighter opacity-hover"><span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.name }}</span></span>
       </div>
       <!--end::접힘 시 태그 요약-->
     </div>
@@ -157,6 +158,7 @@ import { swalConfirm, swalAlert } from "@/utils/swal";
 import { isAuthExpiredError } from "@/utils/authError";
 import { computed, ref, watch, nextTick } from "vue";
 import axios from "axios";
+import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
 import type { JournalChapterDto } from "@/stores/journal";
@@ -169,6 +171,7 @@ const props = defineProps<{
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const tagContextMenuStore = useTagContextMenuStore();
 
 /** 서버 COLLAPSED 상태 (⋯ 메뉴 접힘 스위치·목록 재조회 반영) */
 const serverCollapsed = computed(() =>
@@ -224,6 +227,17 @@ const allEntriesResolved = computed(() => {
   const list = entryList.value;
   return list.length > 0 && list.every((e) => e.lifecycle?.lifecycleKey === 'RESOLVED');
 });
+
+/** 챕터 접힘 상태 태그 클릭 컨텍스트 메뉴 열기 */
+function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; name: string; ctgr?: string }): void {
+  const contentType = isDreamChapter.value ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
+  tagContextMenuStore.open(event, {
+    tagId: tag.tagId,
+    name: tag.name,
+    ctgr: tag.ctgr ?? "",
+    contentType,
+  });
+}
 
 /** 챕터 수정 모달 열기 */
 function openChapterMdf() {
