@@ -50,29 +50,32 @@ function onSearch(): void {
 function openEntrySearchPopup(payload: TagContextMenuPayload): void {
   const newType = payload.contentType === "JOURNAL_DREAM" ? "DREAM" : "DIARY";
   const newTagId = String(payload.tagId);
-  const newTagName = payload.name ?? "";
 
   if (route.name === "journal-entry-search") {
     /*
      * 팝업 내부: 기존 tagIds 에 추가 (AND 검색). 중복 무시.
-     * tagNames 는 검색 페이지가 캐시하므로 새 태그 이름만 전달한다.
-     * 페이지의 watch 가 tagNames 를 소비해 캐시에 저장 후 URL 에서 제거한다.
      */
     const existingIds = normalizeList(route.query.tagIds);
     if (existingIds.includes(newTagId)) return;
+    const nextQuery: Record<string, string | string[]> = {
+      type: String(route.query.type ?? newType).toUpperCase(),
+    };
+    const sortVal = String(route.query.sort ?? "").toLowerCase();
+    if (sortVal === "asc") nextQuery.sort = "asc";
+    const searchKeywords = normalizeList(route.query.searchKeywords);
+    if (searchKeywords.length > 0) nextQuery.searchKeywords = searchKeywords;
     void router.replace({
       name: "journal-entry-search",
       query: {
-        ...route.query,
+        ...nextQuery,
         tagIds: [...existingIds, newTagId],
-        tagNames: newTagName,
       },
     });
     return;
   }
 
   /* 외부: 새 팝업 창 열기 */
-  const params = new URLSearchParams({ type: newType, tagIds: newTagId, tagNames: newTagName });
+  const params = new URLSearchParams({ type: newType, tagIds: newTagId });
   const basePath = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/journal/entry/search`;
   const url = `${basePath}?${params.toString()}`;
   const popupName = payload.contentType === "JOURNAL_DREAM" ? "journal-entry-search-DREAM" : "journal-entry-search-DIARY";

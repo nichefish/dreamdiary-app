@@ -132,6 +132,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         final List<Integer> tagIds = rawTagList.stream()
                 .filter(Objects::nonNull)
                 .map(o -> (Integer) o)
+                .distinct()
                 .toList();
         if (tagIds.isEmpty()) return;
 
@@ -149,6 +150,8 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
 
         tagSubquery.select(tagRoot.get("refId"));
         tagSubquery.where(builder.and(subPredicates.toArray(new Predicate[0])));
+        tagSubquery.groupBy(tagRoot.get("refId"));
+        tagSubquery.having(builder.equal(builder.countDistinct(tagRoot.get("tagId")), (long) tagIds.size()));
         predicate.add(builder.exists(tagSubquery));
     }
 
