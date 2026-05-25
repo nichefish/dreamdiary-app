@@ -93,6 +93,11 @@ public class UserStateEntity {
     @Comment("패스워드 리셋 필요여부")
     private String needsPasswordReset = "N";
 
+    /** 패스워드 리셋 토큰 해시 */
+    @Column(name = "password_token", length = 64)
+    @Comment("패스워드 리셋 토큰 해시")
+    private String passwordToken;
+
     /** 패스워드 리셋 토큰 발급 시각 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "password_reset_token_issued_at")

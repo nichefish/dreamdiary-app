@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.auth.security.controller;
 import io.jsonwebtoken.JwtException;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
+import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthUserDto;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
@@ -38,7 +39,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -229,6 +232,13 @@ public class AuthRestController {
             final Authentication auth = authenticationProvider.authenticate(token);
             final AuthInfo authInfo = (AuthInfo) auth.getPrincipal();
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
+        } catch (final AccountNeedsPwResetException e) {
+            final Map<String, Object> resetMap = new HashMap<>();
+            resetMap.put("username", body.getUsername());
+            resetMap.put("needsPasswordReset", true);
+            resetMap.put("passwordToken", e.getPasswordToken());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage(e.getMessage())).withMap(resetMap));
         } catch (final AuthenticationException e) {
             log.warn("Vue login failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
