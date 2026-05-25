@@ -1,7 +1,7 @@
 <template>
   <!--begin::엔트리 행-->
   <div
-    :id="entry.id ? 'journal-entry-' + entry.id : undefined"
+    :id="domId ?? (entry.id ? 'journal-entry-' + entry.id : undefined)"
     :class="[itemClass, { 'is-collapsed': isCollapsed }, 'd-flex gap-2 py-1']"
     :data-id="entry.id"
     :data-imprtc="hasState('IMPRTC') ? 'Y' : 'N'"
@@ -308,6 +308,8 @@ const props = defineProps<{
   isDream?: boolean;
   /** 챕터 토글이 전파하는 강제 접힘 여부. null=챕터 미개입, true/false=챕터 강제 */
   forceCollapsed?: boolean | null;
+  /** Parent-provided DOM id, used by popup/search contexts that render the same entry component. */
+  domId?: string;
 }>();
 
 const modalStore = useJournalModalStore();

@@ -190,7 +190,7 @@ const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
 const route = useRoute();
 const emit = defineEmits<{
-  (e: "success", payload: { entryId?: number | string; stdrdDt?: string }): void;
+  (e: "success", payload: { entryId?: number | string; stdrdDt?: string; isModify?: boolean }): void;
 }>();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -379,9 +379,10 @@ function resolveSavedEntryId(responseData: Record<string, unknown>, fallbackId?:
 async function submit() {
   if (submitting.value) return;
   if (!model.value) return;
+  const wasModify = isModify.value;
   submitting.value = true;
   try {
-    const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+    const confirmed = await swalConfirm(wasModify ? "수정하시겠습니까?" : "등록하시겠습니까?");
     if (!confirmed) return;
 
     const formData = new FormData();
@@ -412,7 +413,7 @@ async function submit() {
       const savedDate = model.value.stdrdDt;
       close();
       refreshCurrentDayView(savedEntryId, savedDate);
-      emit("success", { entryId: savedEntryId, stdrdDt: savedDate });
+      emit("success", { entryId: savedEntryId, stdrdDt: savedDate, isModify: wasModify });
     } else {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }

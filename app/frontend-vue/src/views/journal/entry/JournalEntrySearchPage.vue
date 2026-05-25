@@ -65,7 +65,7 @@
           class="badge badge-light-primary fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary cursor-pointer"
           @click="removeTag(tagId)"
         >
-          #{{ tagNamesMap[tagId] ?? tagId }}
+          #{{ tagLabelMap[tagId] ?? tagId }}
           <i class="bi bi-x"></i>
         </span>
       </div>
@@ -139,7 +139,7 @@
         </div>
         <!--end::날짜 헤더-->
         <JournalEntryItem
-          :id="entry.id ? 'journal-entry-search-' + entry.id : undefined"
+          :dom-id="entry.id ? 'journal-entry-search-' + entry.id : undefined"
           :entry="entry"
           :is-dream="entry.contentType === 'JOURNAL_DREAM'"
         />
@@ -174,6 +174,7 @@ import { swalAlert } from "@/utils/swal";
 import { useJournalStore } from "@/stores/journal";
 import type { JournalEntryDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
+import { reinitMetronicAfterDom } from "@/utils/metronicReinit";
 import JournalEntryItem from "@/views/journal/components/JournalEntryItem.vue";
 import JournalEntryRegistModal from "@/views/journal/modals/JournalEntryRegistModal.vue";
 import CommentRegistModal from "@/views/journal/modals/CommentRegistModal.vue";
@@ -186,6 +187,13 @@ import JournalTagProfileModal from "@/views/journal/modals/JournalTagProfileModa
 interface JournalEntrySaveEvent {
   entryId?: number | string;
   stdrdDt?: string;
+  isModify?: boolean;
+}
+
+interface SearchTagDto {
+  id?: number | string;
+  tagId?: number | string;
+  name?: string;
 }
 
 const route = useRoute();
@@ -202,16 +210,12 @@ const sort = ref("desc");
 const tagIds = ref<string[]>([]);
 const searchKeywords = ref<string[]>([]);
 
-/**
- * tagId → tagName 로컬 캐시.
- * URL에는 tagIds 만 유지하고, tagNames 는 유입 시 한 번만 읽어 여기에 저장한다.
- * tagNames 파라미터가 URL에 있으면 캐시 후 즉시 URL에서 제거한다.
- */
-const tagNamesMap = ref<Record<string, string>>({});
+/** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
+const tagLabelMap = ref<Record<string, string>>({});
 
 const resultLabel = ref("0건");
 
-/** route query 를 파싱해 로컬 ref 에 반영 (tagNamesMap 은 건드리지 않음) */
+/** route query 를 파싱해 로컬 ref 에 반영한다. */
 function syncFromRoute(): void {
   type.value = String(route.query.type ?? "DIARY").toUpperCase();
   sort.value = String(route.query.sort ?? "desc").toLowerCase() === "asc" ? "asc" : "desc";
@@ -221,28 +225,6 @@ function syncFromRoute(): void {
 }
 
 watch(() => route.fullPath, () => {
-  /*
-   * tagNames 파라미터가 URL 에 있으면: 캐시에 저장 후 URL 에서 제거하고 종료.
-   * 제거된 URL 로 watch 가 다시 발화하면 그때 syncFromRoute + loadEntries 실행.
-   */
-  const incomingNames = normalizeQueryList(route.query.tagNames ?? route.query.tagName);
-  if (incomingNames.length > 0) {
-    const incomingIds = normalizeQueryList(route.query.tagIds);
-    incomingIds.forEach((id, idx) => {
-      if (incomingNames[idx]) tagNamesMap.value[id] = incomingNames[idx];
-    });
-    /* tagNames 를 제거한 채로 URL replace → watch 재발화 → loadEntries */
-    const cleanQuery: Record<string, string | string[]> = {};
-    cleanQuery.type = String(route.query.type ?? "DIARY").toUpperCase();
-    const sortVal = String(route.query.sort ?? "desc").toLowerCase();
-    if (sortVal === "asc") cleanQuery.sort = "asc";
-    if (incomingIds.length > 0) cleanQuery.tagIds = incomingIds;
-    const kws = normalizeQueryList(route.query.searchKeywords);
-    if (kws.length > 0) cleanQuery.searchKeywords = kws;
-    void router.replace({ name: "journal-entry-search", query: cleanQuery });
-    return;
-  }
-
   syncFromRoute();
   void loadEntries();
 }, { immediate: true });
@@ -258,16 +240,80 @@ async function loadEntries(): Promise<void> {
 
     const res = await axios.get("/api/journal/entries", { params });
     entries.value = res.data?.rsltList ?? [];
+    hydrateTagNamesFromEntries(entries.value);
+    void hydrateMissingTagNames();
     resultLabel.value = `${entries.value.length}건`;
   } catch {
     entries.value = [];
     resultLabel.value = "0건";
   } finally {
     loading.value = false;
+    void reinitMetronicAfterDom();
   }
 }
 
-/** 현재 로컬 ref 상태를 URL query 로 replace. tagNames 는 URL 에 포함하지 않는다. */
+function cacheTagName(tagId?: number | string, name?: string): void {
+  if (tagId === undefined || tagId === null || !name) return;
+  tagLabelMap.value[String(tagId)] = name;
+}
+
+function hydrateTagNamesFromEntries(entryList: JournalEntryDto[]): void {
+  entryList.forEach((entry) => {
+    (entry.tag?.list ?? []).forEach((tag) => cacheTagName(tag.tagId, tag.name));
+  });
+}
+
+async function hydrateMissingTagNames(): Promise<void> {
+  const missingIds = tagIds.value.filter((tagId) => !tagLabelMap.value[tagId]);
+  if (missingIds.length === 0) return;
+
+  const requestedType = type.value;
+  try {
+    const res = await axios.get("/api/journal/entry/tags", { params: { type: requestedType } });
+    if (requestedType !== type.value) return;
+    const list = (res.data?.rsltList ?? []) as SearchTagDto[];
+    list.forEach((tag) => cacheTagName(tag.id ?? tag.tagId, tag.name));
+  } catch {
+    // 태그명 표시에 실패해도 tagIds 검색 자체는 유지한다.
+  }
+}
+
+async function fetchEntryDetail(entryId: number | string): Promise<JournalEntryDto | null> {
+  try {
+    const res = await axios.get(`/api/journal/entry/${entryId}`);
+    return res.data?.rsltObj ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function findEntryIndex(entryId: number | string): number {
+  return entries.value.findIndex((entry) => String(entry.id) === String(entryId));
+}
+
+function hasStateList(entry: JournalEntryDto): boolean {
+  return Array.isArray(entry.state?.list);
+}
+
+function mergeSearchEntryReplacement(updatedEntry: JournalEntryDto, currentEntry: JournalEntryDto): JournalEntryDto {
+  return {
+    ...updatedEntry,
+    state: hasStateList(updatedEntry) ? updatedEntry.state : currentEntry.state,
+    comment: updatedEntry.comment ?? currentEntry.comment,
+  };
+}
+
+async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
+  await nextTick();
+  window.requestAnimationFrame(() => {
+    const el = entryId
+      ? document.getElementById(`journal-entry-search-${entryId}`)
+      : null;
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+}
+
+/** 현재 로컬 ref 상태를 URL query 로 replace한다. */
 function pushQuery(overrides: Partial<{ type: string; sort: string; tagIds: string[]; searchKeywords: string[] }> = {}): void {
   const t = overrides.type ?? type.value;
   const s = overrides.sort ?? sort.value;
@@ -297,7 +343,7 @@ function removeKeyword(kw: string): void {
 
 /** 태그 배지 X 클릭 → 캐시·URL 에서 제거 후 재검색 */
 function removeTag(tagId: string): void {
-  delete tagNamesMap.value[tagId];
+  delete tagLabelMap.value[tagId];
   pushQuery({ tagIds: tagIds.value.filter((id) => id !== tagId) });
 }
 
@@ -324,7 +370,7 @@ function changeType(newType: string): void {
 
 /** 초기화 */
 function resetSearch(): void {
-  tagNamesMap.value = {};
+  tagLabelMap.value = {};
   void router.replace({ name: "journal-entry-search", query: { type: type.value } });
 }
 
@@ -343,15 +389,29 @@ function exportTxt(): void {
 }
 
 async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void> {
-  await loadEntries();
-  await nextTick();
-  window.requestAnimationFrame(() => {
-    const entryId = payload?.entryId;
-    const el = entryId
-      ? document.getElementById(`journal-entry-search-${entryId}`)
-      : null;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-  });
+  const entryId = payload?.entryId;
+  if (!entryId) {
+    await loadEntries();
+    return;
+  }
+
+  const entryIndex = findEntryIndex(entryId);
+  if (entryIndex < 0) {
+    await loadEntries();
+    await scrollToSearchEntry(entryId);
+    return;
+  }
+
+  const updatedEntry = await fetchEntryDetail(entryId);
+  if (!updatedEntry) {
+    await loadEntries();
+    await scrollToSearchEntry(entryId);
+    return;
+  }
+
+  entries.value.splice(entryIndex, 1, mergeSearchEntryReplacement(updatedEntry, entries.value[entryIndex]));
+  await reinitMetronicAfterDom();
+  await scrollToSearchEntry(entryId);
 }
 
 /** 이력 복원/삭제 성공 시 목록 갱신 */
