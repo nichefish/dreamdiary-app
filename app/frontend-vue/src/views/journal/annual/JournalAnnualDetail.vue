@@ -116,7 +116,7 @@
               <div class="d-flex gap-1 mt-1">
                 <button
                   type="button"
-                  class="btn btn-sm btn-icon btn-light-primary"
+                  class="btn btn-sm btn-icon journal-annual-action-btn"
                   title="리뷰 수정"
                   @click="openReviewModify(rev.id!)"
                 >
@@ -124,7 +124,7 @@
                 </button>
                 <button
                   type="button"
-                  class="btn btn-sm btn-icon btn-light-danger"
+                  class="btn btn-sm btn-icon journal-annual-action-btn journal-annual-action-btn--danger"
                   title="리뷰 삭제"
                   @click="deleteReview(rev.id!)"
                 >
@@ -171,34 +171,38 @@
       <!--end::탭 네비게이션-->
 
       <!--begin::태그 헤더-->
-      <template v-if="store.activeSection === 'DIARY'">
-        <div v-if="store.tagRows.DAY.length" class="ms-3 mb-2">
-          <span class="text-gray-600 fs-7 fw-bold me-2">DAY</span>
-          <span
-            v-for="tag in store.tagRows.DAY"
-            :key="String(tag.tagId)"
-            class="badge badge-light-primary me-1 fs-8"
-          >{{ tag.name }}</span>
+      <div v-if="store.showTagCloud" class="card-header">
+        <div id="journal_tag_header" class="mb-6 ms-4 w-100">
+          <template v-for="row in tagCloudRows" :key="row.id">
+            <div class="row align-items-center mb-4 ms-4 min-h-42px">
+              <div class="col-auto d-none d-md-flex ms-4 me-6 text-center fs-6">
+                <b>{{ row.label }} :</b>
+              </div>
+              <div class="col flex-grow-1">
+                <span v-if="store.entriesLoading" class="text-muted fs-7">Loading...</span>
+                <span v-else-if="row.tags.length === 0" class="text-muted fs-7">-</span>
+                <span v-else class="d-flex flex-wrap align-items-center">
+                  <button
+                    v-for="tag in row.tags"
+                    :key="`${row.id}-${String(tag.id ?? tag.tagId)}-${tag.name}`"
+                    type="button"
+                    class="btn btn-link py-2 me-3 px-0 cursor-pointer opacity-hover text-decoration-none d-inline-flex align-items-center"
+                    title="Tag menu"
+                    @click.stop="openTagContextMenu($event, tag, row.contentType)"
+                  >
+                    <span :class="[tag.tagClass, tag.textClass]" class="d-inline-flex align-items-center">
+                      <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
+                      <span>{{ tag.name }}</span>
+                    </span>
+                    <span class="fs-9 text-noti fw-normal tag-count">{{ tag.contentSize ?? 0 }}</span>
+                  </button>
+                </span>
+              </div>
+            </div>
+            <div v-if="row.hasSeparator" class="separator"></div>
+          </template>
         </div>
-        <div v-if="store.tagRows.DIARY.length" class="ms-3 mb-2">
-          <span class="text-gray-600 fs-7 fw-bold me-2">DIARY</span>
-          <span
-            v-for="tag in store.tagRows.DIARY"
-            :key="String(tag.tagId)"
-            class="badge badge-light-info me-1 fs-8"
-          >{{ tag.name }}</span>
-        </div>
-      </template>
-      <template v-else>
-        <div v-if="store.tagRows.DREAM.length" class="ms-3 mb-2">
-          <span class="text-gray-600 fs-7 fw-bold me-2">DREAM</span>
-          <span
-            v-for="tag in store.tagRows.DREAM"
-            :key="String(tag.tagId)"
-            class="badge badge-light-warning me-1 fs-8"
-          >{{ tag.name }}</span>
-        </div>
-      </template>
+      </div>
       <!--end::태그 헤더-->
 
       <hr class="my-6 text-muted" />
@@ -337,13 +341,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useJournalAnnualStore } from "@/stores/journalAnnual";
-import type { AnnualSection, AnnualEntryDto, JournalAnnualReviewDto } from "@/stores/journalAnnual";
+import { useTagContextMenuStore } from "@/stores/tagContextMenu";
+import type { AnnualSection, AnnualEntryDto, AnnualTagItem, JournalAnnualReviewDto } from "@/stores/journalAnnual";
 
 const route = useRoute();
 const store = useJournalAnnualStore();
+const tagContextMenuStore = useTagContextMenuStore();
 
 const yy = computed(() => Number(route.params.yy));
 
@@ -357,7 +363,47 @@ const reviewList = computed<JournalAnnualReviewDto[]>(() =>
     : []
 );
 
+const tagCloudRows = computed(() =>
+  store.activeSection === "DIARY"
+    ? [
+        {
+          id: "journal_annual_day_tag_header",
+          label: "일자 태그",
+          tags: store.tagRows.DAY,
+          hasSeparator: true,
+          contentType: "JOURNAL_DAY",
+        },
+        {
+          id: "journal_annual_diary_tag_header",
+          label: "일기 태그",
+          tags: store.tagRows.DIARY,
+          hasSeparator: false,
+          contentType: "JOURNAL_DIARY",
+        },
+      ]
+    : [
+        {
+          id: "journal_annual_dream_tag_header",
+          label: "꿈 태그",
+          tags: store.tagRows.DREAM,
+          hasSeparator: false,
+          contentType: "JOURNAL_DREAM",
+        },
+      ]
+);
+
+async function loadAnnualDetail(targetYy: number) {
+  if (!Number.isFinite(targetYy) || targetYy <= 0) return;
+  store.filterYy = targetYy;
+  await store.fetchDetail(targetYy);
+  store.activeSection = "DIARY";
+  void store.fetchEntries(targetYy, "DIARY");
+  void store.fetchTagRows(targetYy, "DIARY");
+}
+
 onMounted(async () => {
+  await loadAnnualDetail(yy.value);
+  return;
   await store.fetchDetail(yy.value);
   /* 초기 탭: DIARY — 엔트리 + 태그 행 로드 */
   store.activeSection = "DIARY";
@@ -366,6 +412,11 @@ onMounted(async () => {
 });
 
 /** 탭 클릭 시 섹션 전환 + 엔트리/태그 재조회 */
+watch(yy, (nextYy, prevYy) => {
+  if (nextYy === prevYy) return;
+  void loadAnnualDetail(nextYy);
+});
+
 async function onTabClick(section: AnnualSection) {
   if (store.activeSection === section) return;
   await store.setSection(section, yy.value);
@@ -396,6 +447,15 @@ function openReviewModify(id: number) {
 /** 리뷰 삭제 */
 function deleteReview(id: number) {
   void store.deleteReview(id, yy.value);
+}
+
+function openTagContextMenu(event: MouseEvent, tag: AnnualTagItem, contentType: string) {
+  tagContextMenuStore.open(event, {
+    tagId: tag.id ?? tag.tagId,
+    name: tag.name,
+    ctgr: tag.ctgr ?? "",
+    contentType,
+  });
 }
 
 /** 리뷰 태그 보유 여부 */

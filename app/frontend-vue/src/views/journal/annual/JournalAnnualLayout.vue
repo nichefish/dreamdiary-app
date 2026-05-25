@@ -25,6 +25,7 @@
     <!--begin::결산 모달 컨테이너-->
     <JournalAnnualRegistModal />
     <JournalAnnualReviewRegistModal />
+    <JournalTagContextMenu />
     <!--end::결산 모달 컨테이너-->
   </div>
   <!--end::결산 레이아웃-->
@@ -35,6 +36,7 @@ import { ref } from "vue";
 import JournalAnnualAside from "./components/JournalAnnualAside.vue";
 import JournalAnnualRegistModal from "./modals/JournalAnnualRegistModal.vue";
 import JournalAnnualReviewRegistModal from "./modals/JournalAnnualReviewRegistModal.vue";
+import JournalTagContextMenu from "@/views/journal/components/JournalTagContextMenu.vue";
 
 const asideVisible = ref(true);
 </script>

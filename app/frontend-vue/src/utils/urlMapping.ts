@@ -14,6 +14,7 @@ const URL_MAP: Record<string, string> = {
   "/app/journal/day/weekly.do": "/journal/weekly",
   "/app/journal/day/cal.do": "/journal/calendar",
   "/app/journal/day/meta.do": "/journal/meta",
+  "/app/journal/annual/list.do": "/annual",
   "/app/schedule/cal.do": "/schedule",
   "/app/admin/admin-page.do": "/admin",
   "/app/auth/policy/page.do": "/admin/auth-policy",
@@ -37,6 +38,11 @@ const mapBoardPostList = (searchParams: URLSearchParams): string | null => {
   return boardKey ? `/board/${encodeURIComponent(boardKey)}` : null;
 };
 
+const mapJournalAnnualDetail = (pathname: string): string | null => {
+  const match = pathname.match(/^\/app\/journal\/annual\/(\d+)\.do$/);
+  return match ? `/annual/${match[1]}` : null;
+};
+
 /**
  * 백엔드 URL을 Vue Router 경로로 변환한다.
  * 매핑이 없으면 원본 URL을 반환한다.
@@ -52,6 +58,9 @@ export function toVuePath(url: string | undefined): string {
       ? mapBoardPostList(parsedUrl.searchParams)
       : null;
   if (mappedBoardUrl) return mappedBoardUrl;
+
+  const mappedAnnualDetailUrl = mapJournalAnnualDetail(parsedUrl.pathname);
+  if (mappedAnnualDetailUrl) return mappedAnnualDetailUrl;
 
   const mappedPath = URL_MAP[parsedUrl.pathname];
   if (mappedPath) return mappedPath;

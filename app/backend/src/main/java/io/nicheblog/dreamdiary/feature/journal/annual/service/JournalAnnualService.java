@@ -226,5 +226,3 @@ public class JournalAnnualService
         }
     }
 }
-
-

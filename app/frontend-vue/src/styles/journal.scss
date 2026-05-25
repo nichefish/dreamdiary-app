@@ -42,6 +42,12 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     margin-top: 0.25rem;
 }
 
+.journal-annual-aside {
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+}
+
 .journal-layout-vue__aside,
 .journal-annual-layout-vue__aside {
     position: sticky;
@@ -596,6 +602,70 @@ $journal-paired-states: (
             background: rgba(14, 165, 233, 0.1);
             border-color: rgba(14, 165, 233, 0.2);
             color: #0284c7;
+        }
+    }
+}
+
+.journal-entry-actions {
+    min-width: 80px;
+}
+
+.journal-entry-action-btn {
+    border: 1px solid rgba(27, 132, 255, 0.22) !important;
+    background: #f1f8ff !important;
+    color: #1b84ff !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    opacity: 0.92;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+
+    i {
+        color: inherit !important;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: rgba(27, 132, 255, 0.42) !important;
+        background: #e3f2ff !important;
+        color: #056ee9 !important;
+        box-shadow: 0 3px 8px rgba(27, 132, 255, 0.16);
+        opacity: 1;
+        transform: translateY(-1px);
+    }
+}
+
+.journal-annual-action-btn {
+    border: 1px solid rgba(27, 132, 255, 0.22) !important;
+    background: #f1f8ff !important;
+    color: #1b84ff !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    opacity: 0.92;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+
+    i {
+        color: inherit !important;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: rgba(27, 132, 255, 0.42) !important;
+        background: #e3f2ff !important;
+        color: #056ee9 !important;
+        box-shadow: 0 3px 8px rgba(27, 132, 255, 0.16);
+        opacity: 1;
+        transform: translateY(-1px);
+    }
+
+    &--danger {
+        border-color: rgba(241, 65, 108, 0.2) !important;
+        background: #fff0f4 !important;
+        color: #f1416c !important;
+
+        &:hover,
+        &:focus-visible {
+            border-color: rgba(241, 65, 108, 0.42) !important;
+            background: #ffe4eb !important;
+            color: #d9214e !important;
+            box-shadow: 0 3px 8px rgba(241, 65, 108, 0.16);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { swalConfirm, swalAlert } from "@/utils/swal";
@@ -7,9 +7,13 @@ import { swalConfirm, swalAlert } from "@/utils/swal";
 
 /** TagItem — 태그 항목 */
 export interface AnnualTagItem {
+  id?: number | string;
   tagId: number | string;
   name: string;
   ctgr?: string;
+  contentSize?: number;
+  tagClass?: string;
+  textClass?: string;
 }
 
 /** TagCmpstn — 태그 컴포지션 */
@@ -98,8 +102,18 @@ export type AnnualSection = "DIARY" | "DREAM";
 export const useJournalAnnualStore = defineStore("journalAnnual", () => {
   // ---- 목록 ----
 
+  /** 결산 목록 원본 */
+  const annualSourceList = ref<JournalAnnualDto[]>([]);
   /** 결산 목록 */
-  const annualList = ref<JournalAnnualDto[]>([]);
+  const annualList = computed(() => {
+    if (filterYy.value != null) {
+      return annualSourceList.value.filter((annual) => annual.yy === filterYy.value);
+    }
+
+    const keyword = normalizeListKeyword(listKeyword.value);
+    if (!keyword) return annualSourceList.value;
+    return annualSourceList.value.filter((annual) => annualMatchesKeyword(annual, keyword));
+  });
   /** 목록 로딩 상태 */
   const loading = ref(false);
   /** 목록 에러 */
@@ -112,6 +126,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
 
   /** 연도 필터 (null = 전체) */
   const filterYy = ref<number | null>(null);
+  const listKeyword = ref("");
 
   // ---- 결산 등록/수정 모달 ----
 
@@ -133,6 +148,9 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
 
   /** 현재 탭 섹션 */
   const activeSection = ref<AnnualSection>("DIARY");
+  const showTagCloud = ref(true);
+  const diaryKeyword = ref("");
+  const dreamKeyword = ref("");
 
   /** 중요 일기/꿈 토글 */
   const showImprtc = ref(true);
@@ -168,20 +186,17 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
 
   /**
    * 결산 목록 조회.
-   * GET /api/journal/annuals — 선택적 yy 필터 적용.
+   * GET /api/journal/annuals
    */
-  async function fetchList(yy?: number | null) {
+  async function fetchList() {
     loading.value = true;
     error.value = null;
     try {
-      const params: Record<string, unknown> = {};
-      const targetYy = yy !== undefined ? yy : filterYy.value;
-      if (targetYy != null) params.yy = targetYy;
-      const res = await axios.get("/api/journal/annuals", { params });
-      annualList.value = res.data?.rsltList ?? [];
+      const res = await axios.get("/api/journal/annuals");
+      annualSourceList.value = res.data?.rsltList ?? [];
     } catch {
       error.value = "결산 목록을 불러오지 못했습니다.";
-      annualList.value = [];
+      annualSourceList.value = [];
     } finally {
       loading.value = false;
     }
@@ -204,12 +219,37 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
   }
 
   /**
-   * 연도 필터를 변경하고 목록을 재조회한다.
+   * 연도 필터를 변경한다.
    * @param yy - 연도 (null = 전체)
    */
   function setFilterYy(yy: number | null) {
     filterYy.value = yy;
-    void fetchList(yy);
+  }
+
+  function applyListFilters() {
+    // 목록 필터는 클라이언트에서 즉시 반영된다.
+  }
+
+  function clearListFilters() {
+    filterYy.value = null;
+    listKeyword.value = "";
+  }
+
+  function normalizeListKeyword(value?: string) {
+    return (value ?? "").trim().toLowerCase();
+  }
+
+  function annualMatchesKeyword(annual: JournalAnnualDto, keyword: string) {
+    const tagText = annual.tag?.list
+      ?.map((tag) => `${tag.ctgr ?? ""} ${tag.name ?? ""}`)
+      .join(" ") ?? "";
+    const haystack = [
+      annual.title,
+      annual.content,
+      annual.markdownContent,
+      tagText,
+    ].join(" ").toLowerCase();
+    return haystack.includes(keyword);
   }
 
   // ---- 결산 등록/수정 액션 ----
@@ -337,7 +377,11 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
         ? `/api/journal/annual/${yy}/diaries`
         : `/api/journal/annual/${yy}/dreams`;
       const res = await axios.get(path, {
-        params: { showImprtc: showImprtc.value, showRefrnc: showRefrnc.value },
+        params: {
+          showImprtc: showImprtc.value,
+          showRefrnc: showRefrnc.value,
+          ...getEntryFilterParams(section),
+        },
       });
       if (section === "DIARY") diaryEntries.value = res.data?.rsltList ?? [];
       else dreamEntries.value = res.data?.rsltList ?? [];
@@ -347,6 +391,11 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     } finally {
       entriesLoading.value = false;
     }
+  }
+
+  function getEntryFilterParams(section: AnnualSection): Record<string, string> {
+    const keyword = section === "DIARY" ? diaryKeyword.value : dreamKeyword.value;
+    return keyword.trim() ? { searchKeywords: keyword.trim() } : {};
   }
 
   /**
@@ -384,6 +433,23 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
 
   async function toggleRefrnc(yy: number) {
     showRefrnc.value = !showRefrnc.value;
+    await fetchEntries(yy, activeSection.value);
+  }
+
+  async function toggleTagCloud(yy: number) {
+    showTagCloud.value = !showTagCloud.value;
+    if (showTagCloud.value) {
+      await fetchTagRows(yy, activeSection.value);
+    }
+  }
+
+  async function applyEntryFilters(yy: number) {
+    await fetchEntries(yy, activeSection.value);
+  }
+
+  async function clearEntryFilters(yy: number) {
+    diaryKeyword.value = "";
+    dreamKeyword.value = "";
     await fetchEntries(yy, activeSection.value);
   }
 
@@ -506,9 +572,12 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     totalAnnual,
     totalLoading,
     filterYy,
+    listKeyword,
     fetchList,
     fetchTotal,
     setFilterYy,
+    applyListFilters,
+    clearListFilters,
     // 결산 등록/수정
     registOpen,
     registLoading,
@@ -522,6 +591,9 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     annualDetail,
     detailLoading,
     activeSection,
+    showTagCloud,
+    diaryKeyword,
+    dreamKeyword,
     showImprtc,
     showRefrnc,
     tagRows,
@@ -534,6 +606,9 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     fetchTagRows,
     toggleImprtc,
     toggleRefrnc,
+    toggleTagCloud,
+    applyEntryFilters,
+    clearEntryFilters,
     // 리뷰 등록/수정
     reviewRegistOpen,
     reviewRegistLoading,
