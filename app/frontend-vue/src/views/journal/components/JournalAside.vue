@@ -1,6 +1,6 @@
 <template>
   <!--begin::저널 사이드 패널 (년월 이동 + 필터)-->
-  <div class="journal-aside card card-reset card-p-0 p-5" style="min-width:200px; max-width:220px;">
+  <div class="journal-aside card card-reset card-p-0 p-5" style="width:280px; min-width:280px; max-width:280px;">
     <div class="d-flex justify-content-end mb-2">
       <button
         type="button"
@@ -189,6 +189,74 @@
       </div>
       <!--end::보기 필터 토글-->
 
+      <!--begin::ENTRY 필터-->
+      <div class="d-flex flex-column gap-2">
+        <div class="text-gray-900 fs-6 fw-bold">ENTRY FILTER</div>
+
+        <div>
+          <div class="text-muted fs-8 fw-bold mb-1">- CHAPTER CATEGORIES</div>
+          <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">Loading...</div>
+          <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
+            <label
+              v-for="ctgr in chapterCategoryOptions"
+              :key="ctgr.code"
+              class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer"
+            >
+              <input
+                class="form-check-input w-16px h-16px"
+                type="checkbox"
+                :checked="isChapterCategorySelected(ctgr.code)"
+                @change="toggleChapterCategory(ctgr.code)"
+              />
+              <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
+          <div class="input-group input-group-sm">
+            <input
+              v-model="store.diaryKeyword"
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="일기 키워드"
+              @keyup.enter="store.fetchDays()"
+            />
+            <button
+              type="button"
+              class="btn btn-sm btn-icon btn-light"
+              title="일기 키워드 필터 적용"
+              @click="store.fetchDays()"
+            >
+              <i class="bi bi-funnel fs-7"></i>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-muted fs-8 fw-bold mb-1">- DREAM KEYWORDS</div>
+          <div class="input-group input-group-sm">
+            <input
+              v-model="store.dreamKeyword"
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="꿈 키워드"
+              @keyup.enter="store.fetchDays()"
+            />
+            <button
+              type="button"
+              class="btn btn-sm btn-icon btn-light"
+              title="꿈 키워드 필터 적용"
+              @click="store.fetchDays()"
+            >
+              <i class="bi bi-funnel fs-7"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!--end::ENTRY 필터-->
+
       <!--begin::할일 등록 버튼-->
       <button
         type="button"
@@ -200,55 +268,6 @@
       </button>
       <!--end::할일 등록 버튼-->
 
-      <!--begin::태그 목록 버튼-->
-      <button
-        type="button"
-        class="btn btn-sm btn-light-primary w-100"
-        @click="openTagList"
-      >
-        <i class="bi bi-tags me-1"></i>
-        태그 목록
-      </button>
-      <!--end::태그 목록 버튼-->
-
-      <!--begin::키워드 필터 (현재 목록 필터 — store 상태 직결)-->
-      <div class="d-flex flex-column gap-2">
-        <div class="input-group input-group-sm">
-          <input
-            v-model="store.diaryKeyword"
-            type="text"
-            class="form-control form-control-sm"
-            placeholder="일기 키워드"
-            @keyup.enter="store.fetchDays()"
-          />
-          <button
-            type="button"
-            class="btn btn-sm btn-icon btn-light"
-            title="일기 키워드 필터 적용"
-            @click="store.fetchDays()"
-          >
-            <i class="bi bi-funnel fs-7"></i>
-          </button>
-        </div>
-        <div class="input-group input-group-sm">
-          <input
-            v-model="store.dreamKeyword"
-            type="text"
-            class="form-control form-control-sm"
-            placeholder="꿈 키워드"
-            @keyup.enter="store.fetchDays()"
-          />
-          <button
-            type="button"
-            class="btn btn-sm btn-icon btn-light"
-            title="꿈 키워드 필터 적용"
-            @click="store.fetchDays()"
-          >
-            <i class="bi bi-funnel fs-7"></i>
-          </button>
-        </div>
-      </div>
-      <!--end::키워드 필터-->
     </div>
     <!--end::년월 네비게이션-->
   </div>
@@ -256,17 +275,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, onMounted } from "vue";
+import axios from "axios";
 import { formatLocalDateStr, getWeekStartDateStr } from "@/utils/journalDate";
 import { useJournalStore } from "@/stores/journal";
 import { useJournalAsideStore } from "@/stores/journalAside";
 import { useJournalModalStore } from "@/stores/journalModal";
-import { useAttachableModalStore } from "@/stores/attachableModal";
 
 const store = useJournalStore();
 const asideStore = useJournalAsideStore();
 const modalStore = useJournalModalStore();
-const attachableStore = useAttachableModalStore();
 
 const currentYear = new Date().getFullYear();
 const yyOptions = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);
@@ -296,6 +314,14 @@ const selectedDt = ref<string>(formatLocalDateStr(new Date()));
 /** Pinpoint — 고정된 년/월 (null: 미고정) */
 const pinnedYy = ref<number | null>(null);
 const pinnedMnth = ref<number | null>(null);
+
+interface ChapterCategoryOption {
+  code: string;
+  codeName: string;
+}
+
+const chapterCategoryOptions = ref<ChapterCategoryOption[]>([]);
+const chapterCategoryLoading = ref(false);
 
 /** 주간 요일 버튼 목록 (월~일) */
 const weekDays = computed(() => {
@@ -372,6 +398,39 @@ function toggleDreams() {
   store.fetchDays();
 }
 
+onMounted(() => {
+  void fetchChapterCategories();
+});
+
+async function fetchChapterCategories(): Promise<void> {
+  if (chapterCategoryOptions.value.length > 0) return;
+  chapterCategoryLoading.value = true;
+  try {
+    const res = await axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_CTGR_CD" } });
+    chapterCategoryOptions.value = (res.data?.rsltList ?? [])
+      .map((item: Record<string, string>) => ({
+        code: item.code ?? "",
+        codeName: item.codeName ?? item.code ?? "",
+      }))
+      .filter((item: ChapterCategoryOption) => item.code);
+  } catch {
+    chapterCategoryOptions.value = [];
+  } finally {
+    chapterCategoryLoading.value = false;
+  }
+}
+
+function isChapterCategorySelected(code: string): boolean {
+  return store.chapterCtgrCds.includes(code);
+}
+
+function toggleChapterCategory(code: string): void {
+  store.chapterCtgrCds = isChapterCategorySelected(code)
+    ? store.chapterCtgrCds.filter((item) => item !== code)
+    : [...store.chapterCtgrCds, code];
+  void store.fetchDays();
+}
+
 /** 할일 등록 모달 열기 */
 function openTodoReg() {
   modalStore.openTodoReg({ yy: store.yy, mnth: store.mnth });
@@ -385,11 +444,4 @@ function toggleTagCloud() {
   void store.fetchDays();
 }
 
-function openTagList() {
-  void attachableStore.openTagList({
-    yy: store.yy,
-    mnth: store.mnth,
-    weekStartDt: store.weekStartDt || undefined,
-  });
-}
 </script>

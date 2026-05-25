@@ -35,7 +35,6 @@
     <CommentListModal />
     <HistoryModal @success="onHistorySuccess" />
     <RelatedContentAddModal />
-    <JournalTagListModal />
     <JournalTagProfileModal />
     <!--end::저널 모달 컨테이너-->
     <!--begin::태그 컨텍스트 메뉴 (전역 단일 인스턴스)-->
@@ -61,7 +60,6 @@ import CommentRegistModal from "./modals/CommentRegistModal.vue";
 import CommentListModal from "@/views/attachable/CommentListModal.vue";
 import HistoryModal from "@/views/attachable/HistoryModal.vue";
 import RelatedContentAddModal from "./modals/RelatedContentAddModal.vue";
-import JournalTagListModal from "./modals/JournalTagListModal.vue";
 import JournalTagProfileModal from "./modals/JournalTagProfileModal.vue";
 import JournalTagContextMenu from "./components/JournalTagContextMenu.vue";
 
