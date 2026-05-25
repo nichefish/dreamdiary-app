@@ -1,0 +1,89 @@
+/**
+ * DreamDiary Mobile — Gradle tasks for IntelliJ (Gradle tool window > mobile).
+ * Android emulator: backend on PC localhost:8080, .env EXPO_PUBLIC_API_BASE_URL=http://10.0.2.2:8080
+ */
+
+def mobileDir = file("$projectDir/app/mobile-react-native")
+def runAndroidPs1 = file("$projectDir/app/mobile-react-native/run-android.ps1")
+
+tasks.register('mobileAndroid') {
+    group = 'mobile'
+    description = 'Expo on Android emulator (AVD + backend :8080, .env 10.0.2.2)'
+    doLast {
+        if (!mobileDir.exists()) {
+            throw new GradleException("Missing ${mobileDir}")
+        }
+        if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) {
+            exec {
+                workingDir mobileDir
+                commandLine 'powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', runAndroidPs1.absolutePath
+            }
+        } else {
+            throw new GradleException('mobileAndroid: Windows only (use npm run android in app/mobile-react-native on macOS/Linux)')
+        }
+    }
+}
+
+tasks.register('mobileInstall') {
+    group = 'mobile'
+    description = 'npm install in app/mobile-react-native (PATH npm or Gradle Node after npmSetup)'
+    doLast {
+        def nodeExe = resolveMobileNodeExecutable()
+        def npmCli = resolveMobileNpmCli(nodeExe)
+        exec {
+            workingDir mobileDir
+            if (nodeExe != null && npmCli != null) {
+                commandLine nodeExe, npmCli, 'install'
+            } else if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', 'npm install'
+            } else {
+                commandLine 'npm', 'install'
+            }
+        }
+    }
+}
+
+tasks.register('mobileTypeCheck') {
+    group = 'mobile'
+    description = 'tsc --noEmit in app/mobile-react-native'
+    dependsOn mobileInstall
+    doLast {
+        def nodeExe = resolveMobileNodeExecutable()
+        def npmCli = resolveMobileNpmCli(nodeExe)
+        exec {
+            workingDir mobileDir
+            if (nodeExe != null && npmCli != null) {
+                commandLine nodeExe, npmCli, 'run', 'type-check'
+            } else if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', 'npm run type-check'
+            } else {
+                commandLine 'npm', 'run', 'type-check'
+            }
+        }
+    }
+}
+
+/** .gradle/nodejs/node-v* (node-gradle plugin download) */
+String resolveMobileNodeExecutable() {
+    def nodejsRoot = file("$projectDir/.gradle/nodejs")
+    if (!nodejsRoot.exists()) {
+        return null
+    }
+    def dirs = nodejsRoot.listFiles()?.findAll { it.isDirectory() && it.name.startsWith('node-v') }?.sort { a, b -> b.name <=> a.name }
+    if (!dirs) {
+        return null
+    }
+    def nodeFile = org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)
+            ? new File(dirs[0], 'node.exe')
+            : new File(dirs[0], 'bin/node')
+    return nodeFile.exists() ? nodeFile.absolutePath : null
+}
+
+String resolveMobileNpmCli(String nodeExePath) {
+    if (nodeExePath == null) {
+        return null
+    }
+    def nodeDir = new File(nodeExePath).parentFile
+    def npmCli = new File(nodeDir, 'node_modules/npm/bin/npm-cli.js')
+    return npmCli.exists() ? npmCli.absolutePath : null
+}
