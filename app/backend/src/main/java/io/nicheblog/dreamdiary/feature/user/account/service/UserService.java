@@ -25,6 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -60,6 +64,10 @@ public class UserService
     private final AuthPolicyQueryService authPolicyQueryService;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final SecureRandom secureRandom = new SecureRandom();
+
+    private static final int PASSWORD_RESET_TOKEN_RANDOM_BYTES = 32;
+    private static final Base64.Encoder BASE64_URL = Base64.getUrlEncoder().withoutPadding();
 
     /** 관리자 '비밀번호 초기화' 시 적용할 임시 비밀번호(평문) — 초기 설치와 동일 설정 사용 */
     @Value("${system.init-temp-pw:}")
@@ -156,6 +164,7 @@ public class UserService
         }
         retrievedEntity.setPassword(passwordEncoder.encode(systemInitTempPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
+        retrievedEntity.acntStus.setPasswordToken(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
@@ -163,6 +172,23 @@ public class UserService
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getId() != null)
                 .build();
+    }
+
+    /**
+     * 패스워드 리셋 토큰 발급.
+     * 실제 토큰은 응답으로만 돌려주고 DB에는 SHA-256 해시만 저장한다.
+     */
+    @Transactional
+    public String issuePasswordResetToken(final String username) throws Exception {
+        final UserEntity user = this.getDtlEntity(username);
+        final String passwordToken = this.generatePasswordResetToken();
+
+        if (user.acntStus == null) user.acntStus = UserStateEntity.builder().build();
+        user.acntStus.setPasswordToken(this.hashPasswordResetToken(passwordToken));
+        user.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
+        repository.saveAndFlush(user);
+
+        return passwordToken;
     }
 
     /**
@@ -310,5 +336,29 @@ public class UserService
                 userRole.setRoleId(role.getId());
             }
         });
+    }
+
+    private String generatePasswordResetToken() {
+        final byte[] randomBytes = new byte[PASSWORD_RESET_TOKEN_RANDOM_BYTES];
+        secureRandom.nextBytes(randomBytes);
+        return BASE64_URL.encodeToString(randomBytes);
+    }
+
+    public String hashPasswordResetToken(final String passwordToken) {
+        return this.hashToken(passwordToken);
+    }
+
+    private String hashToken(final String token) {
+        try {
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final byte[] hashed = digest.digest(token.getBytes(StandardCharsets.UTF_8));
+            final StringBuilder sb = new StringBuilder(hashed.length * 2);
+            for (final byte b : hashed) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (final Exception e) {
+            throw new IllegalStateException("Failed to hash password reset token.", e);
+        }
     }
 }

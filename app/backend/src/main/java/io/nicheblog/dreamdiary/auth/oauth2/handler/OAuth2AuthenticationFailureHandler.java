@@ -90,6 +90,7 @@ public class OAuth2AuthenticationFailureHandler
         } else if (exception instanceof AccountNeedsPwResetException) {
             request.setAttribute("username", username);
             request.setAttribute("needsPasswordReset", true);
+            request.setAttribute("passwordToken", ((AccountNeedsPwResetException) exception).getPasswordToken());
         }
 
         log.info("login attempt failed.. username: {} errorMsg: {}", username, errorMsg);

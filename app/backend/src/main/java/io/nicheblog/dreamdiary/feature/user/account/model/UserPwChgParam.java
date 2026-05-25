@@ -30,6 +30,9 @@ public class UserPwChgParam {
     @NotEmpty
     private String currPw;
 
+    /** 비로그인 패스워드 리셋 토큰 */
+    private String passwordToken;
+
     /** 변경할 패스워드 */
     @NotEmpty
     @Size(min = 9, max = 15, message = "{msg.user.pw.size}")

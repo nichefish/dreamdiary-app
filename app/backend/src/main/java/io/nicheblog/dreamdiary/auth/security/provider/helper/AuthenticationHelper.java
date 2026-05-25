@@ -108,7 +108,8 @@ public class AuthenticationHelper {
             if (!this.isPwResetTokenValid(authInfo)) {
                 throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
             }
-            throw new AccountNeedsPwResetException("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException");
+            final String passwordToken = userService.issuePasswordResetToken(username);
+            throw new AccountNeedsPwResetException("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException", passwordToken);
         }
 
         // 중복 로그인 체크 :: 세션 attribute 훑어서 "loginId" 비교

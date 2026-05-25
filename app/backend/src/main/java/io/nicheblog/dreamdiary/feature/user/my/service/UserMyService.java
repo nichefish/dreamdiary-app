@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.my.service;
 
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.file.model.FileRecordDto;
@@ -12,11 +14,17 @@ import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Date;
 
 /**
  * UserMyService
@@ -34,6 +42,7 @@ public class UserMyService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
+    private final AuthPolicyQueryService authPolicyQueryService;
 
     /**
      * 비밀번호 만료시 비밀번호 변경 (미로그인 상태)
@@ -54,8 +63,10 @@ public class UserMyService {
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
             throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
         }
+        this.validatePasswordResetTokenIfNeeded(retrievedEntity, param.getPasswordToken());
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
+        retrievedEntity.acntStus.setPasswordToken(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
@@ -117,6 +128,7 @@ public class UserMyService {
         // 2. 맞으면 비밀번호 업데이트
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
+        retrievedEntity.acntStus.setPasswordToken(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
@@ -167,5 +179,36 @@ public class UserMyService {
         EhCacheUtils.evictCacheByKey("auditorInfo", loginUsername);
 
         return updatedEntity.getId() != null;
+    }
+
+    private void validatePasswordResetTokenIfNeeded(final UserEntity user, final String passwordToken) throws Exception {
+        if (user == null || user.acntStus == null) return;
+        if (!"Y".equals(user.acntStus.getNeedsPasswordReset())) return;
+
+        if (StringUtils.isBlank(passwordToken) || StringUtils.isBlank(user.acntStus.getPasswordToken())) {
+            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
+        }
+        if (!this.isPasswordResetTokenWindowValid(user.acntStus.getPasswordResetTokenIssuedAt())) {
+            throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
+        }
+
+        final String hashed = userService.hashPasswordResetToken(passwordToken);
+        if (!MessageDigest.isEqual(
+                hashed.getBytes(StandardCharsets.UTF_8),
+                user.acntStus.getPasswordToken().getBytes(StandardCharsets.UTF_8)
+        )) {
+            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
+        }
+    }
+
+    private boolean isPasswordResetTokenWindowValid(final Date issuedAt) throws Exception {
+        if (issuedAt == null) return false;
+
+        final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
+        final Integer expiryMinutes = (authPolicy == null || authPolicy.getPasswordResetTokenExpiryMinutes() == null)
+                ? 30
+                : authPolicy.getPasswordResetTokenExpiryMinutes();
+        final Date expiresAt = new Date(issuedAt.getTime() + (expiryMinutes.longValue() * 60L * 1000L));
+        return expiresAt.after(DateUtils.getCurrDate());
     }
 }

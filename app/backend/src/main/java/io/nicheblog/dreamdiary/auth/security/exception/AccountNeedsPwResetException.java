@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.exception;
 
-import lombok.experimental.StandardException;
+import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -11,7 +11,19 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author nichefish
  */
-@StandardException
+@Getter
 public class AccountNeedsPwResetException
         extends AuthenticationException {
+
+    private final String passwordToken;
+
+    public AccountNeedsPwResetException(final String msg, final String passwordToken) {
+        super(msg);
+        this.passwordToken = passwordToken;
+    }
+
+    public AccountNeedsPwResetException(final String msg, final Throwable cause) {
+        super(msg, cause);
+        this.passwordToken = null;
+    }
 }
