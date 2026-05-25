@@ -92,11 +92,11 @@
     <!--end::본문 영역-->
 
     <!--begin::우측 액션 영역-->
-    <div v-if="entry.id" class="d-flex flex-row align-items-start pt-1 gap-1" style="min-width:80px;">
+    <div v-if="entry.id" class="journal-entry-actions d-flex flex-row align-items-start pt-1 gap-1">
       <!--begin::댓글 등록 버튼-->
       <button
         type="button"
-        class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+        class="btn btn-xs btn-icon journal-entry-action-btn"
         title="댓글 등록"
         @click="openCommentReg"
       >
@@ -107,7 +107,7 @@
       <!--begin::복사 버튼-->
       <button
         type="button"
-        class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+        class="btn btn-xs btn-icon journal-entry-action-btn"
         title="복사"
         @click="copyEntry"
       >
@@ -119,7 +119,7 @@
       <div class="me-0">
         <button
           type="button"
-          class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+          class="btn btn-xs btn-icon journal-entry-action-btn"
           data-kt-menu-trigger="click"
           data-kt-menu-placement="bottom-end"
           title="메뉴"

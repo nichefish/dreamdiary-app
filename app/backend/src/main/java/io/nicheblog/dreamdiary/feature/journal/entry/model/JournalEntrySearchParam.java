@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -71,6 +72,16 @@ public class JournalEntrySearchParam extends BaseSearchParam {
      */
     public String toSummaryCacheKey() {
         final int keyYy = (yy != null) ? yy : 9999;
-        return keyYy + "_" + CmmUtils.normalizeStringList(states);
+        final String stateKey = CmmUtils.normalizeStringList(states);
+        final String keywordKey = CmmUtils.normalizeStringList(searchKeywords);
+        final String tagIdKey = tagId != null ? String.valueOf(tagId) : "";
+        final String tagIdsKey = CollectionUtils.isNotEmpty(tagIds)
+                ? tagIds.stream()
+                        .filter(Objects::nonNull)
+                        .map(String::valueOf)
+                        .sorted()
+                        .collect(Collectors.joining(","))
+                : "";
+        return keyYy + "_" + stateKey + "_" + keywordKey + "_" + tagIdKey + "_" + tagIdsKey;
     }
 }

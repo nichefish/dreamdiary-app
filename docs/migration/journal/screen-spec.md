@@ -221,6 +221,8 @@
 | 꿈 일수 | `<span>` | `.text-info.fw-bold.mx-1` | `totalAnnual.dreamDayCnt` | "(N일" 형식 |
 | 꿈 건수 | `<span>` | `.text-info.fw-bold.mx-1` | `totalAnnual.dreamCnt` | "/ N건)" 형식 |
 | 결산 카드 목록 | `<div>` | `#journal_annual_list_div` | Vue 렌더 | `JournalAnnualListItem` 컴포넌트 반복 |
+| 연도 필터 | `<select>` | annual aside | `store.filterYy` | 선택 시 해당 연도 결산만 표시 |
+| 목록 키워드 필터 | `<input>` | annual aside | `store.listKeyword` | 연도 필터 미선택 시 전체 목록을 축소 |
 
 ### Action Buttons & Interactions
 
@@ -229,6 +231,8 @@
 | 결산 등록 | 툴바 버튼 | `dF.JournalAnnual` 서비스 | 결산 등록 모달 오픈 |
 | 결산 카드 클릭 | 목록 카드 클릭 | `JournalAnnualListItem` Vue 내부 | 결산 상세 페이지 이동 |
 | 태그 클릭 | 태그 배지 클릭 | `dF.JournalDayTagService.select(...)` | 태그 상세 모달 |
+| 연도 필터 변경 | annual aside select 변경 | Vue store | 연도 필터가 키워드 필터보다 우선하며 AND 조건으로 결합하지 않음 |
+| 키워드 필터 입력 | annual aside input 입력/Enter/버튼 | Vue store | 전체 목록 상태에서 제목·본문·태그 기준으로 목록 축소 |
 
 ### Data Displayed
 
@@ -248,6 +252,11 @@
 - 결산 등록 후 목록 갱신: `JournalAnnualListApp.init() + listAjax()` (레거시 IIFE 동등)
 - `preloadJournalDayTagService.js` 별도 적재 (태그 클릭 시 `dF.JournalDayTagService.select` 호출 대비)
 - 꿈 아이콘: `bi bi-moon-stars fs-4`
+- Vue SPA 목록 필터 우선순위:
+  - 연도 필터가 선택되어 있으면 키워드 필터 값과 무관하게 해당 연도 결산만 표시한다.
+  - 연도 필터가 비어 있을 때만 키워드 필터가 전체 결산 목록을 축소한다.
+  - 따라서 연도 필터와 키워드 필터는 AND 조건이 아니다.
+- 키워드 필터 값이 있으면 목록 본문 렌더링 시 일치 텍스트를 `<mark class="journal-annual-list-vue__keyword-mark">`로 하이라이트한다. HTML 문자열 자체를 정규식 치환하지 않고 DOM 텍스트 노드만 감싸서 마크다운 HTML 구조를 보존한다.
 
 ---
 
