@@ -191,8 +191,18 @@ public class JwtTokenProvider {
      * @return {@link String} -- 추출된 JWT 토큰 문자열
      */
     public String resolveToken(final ServerHttpRequest request) {
-        // 헤더에서 JWT 토큰 추출
         final HttpHeaders headers = request.getHeaders();
+        // WebSocket 핸드셰이크: Cookie 헤더의 jwt (모바일 RN fetch credentials와 동일 쿠키 경로)
+        final String cookieHeader = headers.getFirst(HttpHeaders.COOKIE);
+        if (StringUtils.isNotEmpty(cookieHeader)) {
+            for (final String part : cookieHeader.split(";")) {
+                final String trimmed = part.trim();
+                if (trimmed.startsWith("jwt=")) {
+                    return trimmed.substring(4);
+                }
+            }
+        }
+        // 헤더에서 JWT 토큰 추출
         final String authTokenStr = headers.getFirst("Authorization");
         if (StringUtils.isNotEmpty(authTokenStr) && authTokenStr.startsWith("Bearer ")) {
             return authTokenStr.replace("Bearer ", "");
