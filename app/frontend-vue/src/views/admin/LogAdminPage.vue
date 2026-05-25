@@ -76,6 +76,7 @@
                 v-model.trim="store.keyword"
                 type="search"
                 class="form-control form-control-solid"
+                maxlength="200"
                 placeholder="URL 검색"
                 @keyup.enter="store.fetchLogs(0)"
               />

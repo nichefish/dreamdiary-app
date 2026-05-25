@@ -55,6 +55,7 @@
           type="text"
           class="form-control form-control-sm form-control-solid"
           placeholder="일기 키워드 검색"
+          maxlength="200"
           style="min-width: 130px;"
           @keyup.enter="openSearchTab('DIARY', localDiaryKw)"
         />
@@ -75,6 +76,7 @@
           type="text"
           class="form-control form-control-sm form-control-solid"
           placeholder="꿈 키워드 검색"
+          maxlength="200"
           style="min-width: 130px;"
           @keyup.enter="openSearchTab('DREAM', localDreamKw)"
         />

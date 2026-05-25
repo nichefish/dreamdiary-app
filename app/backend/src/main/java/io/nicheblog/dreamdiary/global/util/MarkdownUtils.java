@@ -11,6 +11,9 @@ import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,10 +30,120 @@ import java.util.regex.Pattern;
 @Log4j2
 public class MarkdownUtils {
 
+    private static String procTextWithGeneratedPlaceholders(final String text, final int maxGroupLength) {
+        final List<String> generatedHtmlList = new ArrayList<>();
+
+        String part = text;
+        part = replaceGeneratedPattern(part, Pattern.compile("(?m)^[ \\t]*-{3,}[ \\t]*$"), maxGroupLength, generatedHtmlList, matcher -> "<hr>");
+        part = replaceDialogPatternWithPlaceholders(part, Pattern.compile("\"(.*?)\""), "\u201c", "\u201d", maxGroupLength, generatedHtmlList);
+        part = replaceDialogPatternWithPlaceholders(part, Pattern.compile("\u201c(.*?)\u201d"), "\u201c", "\u201d", maxGroupLength, generatedHtmlList);
+        part = replaceDialogPatternWithPlaceholders(part, Pattern.compile("\u300e(.*?)\u300f"), "\u300e", "\u300f", maxGroupLength, generatedHtmlList);
+        part = replaceGeneratedPattern(part, Pattern.compile("--(.*?)(--)"), maxGroupLength, generatedHtmlList, matcher -> {
+            final String group = matcher.group(1);
+            return "<span class='md-text-muted'>-" + StringEscapeUtils.escapeHtml4(group) + "-</span>";
+        });
+        part = replaceGeneratedPattern(part, Pattern.compile("!!(.*?)!!"), maxGroupLength, generatedHtmlList, matcher -> {
+            final String group = matcher.group(1);
+            return "<span class='md-text-danger'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+        });
+        part = replaceGeneratedPattern(part, Pattern.compile("__(.*?)__"), maxGroupLength, generatedHtmlList, matcher -> {
+            final String group = matcher.group(1);
+            return "<u>" + StringEscapeUtils.escapeHtml4(group) + "</u>";
+        });
+        part = replaceGeneratedPattern(part, Pattern.compile("\\|\\|(.*?)\\|\\|"), maxGroupLength, generatedHtmlList, matcher -> {
+            final String group = matcher.group(1);
+            return "<span class='md-text-muted fw-bold border-end border-2 border-gray-400 pe-5 me-3'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+        });
+        part = replaceGeneratedPattern(part, Pattern.compile("\\(\\((.*?)\\)\\)"), maxGroupLength, generatedHtmlList, matcher -> {
+            final String group = matcher.group(1);
+            return "<span class='md-text-noti'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+        });
+        part = replaceGeneratedPattern(part, Pattern.compile("<@>(.*?\\.)"), maxGroupLength, generatedHtmlList, matcher -> {
+            final String group = matcher.group(1);
+            return "<span class='md-text-muted'>@" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+        });
+
+        return escapeTextAndRestoreGeneratedHtml(part, generatedHtmlList);
+    }
+
+    private static String escapeTextAndRestoreGeneratedHtml(final String text, final List<String> generatedHtmlList) {
+        String escaped = StringEscapeUtils.escapeHtml4(text);
+        for (int i = generatedHtmlList.size() - 1; i >= 0; i--) {
+            escaped = escaped.replace(getGeneratedHtmlPlaceholder(i), generatedHtmlList.get(i));
+        }
+        return escaped;
+    }
+
+    private static String putGeneratedHtml(final List<String> generatedHtmlList, final String html) {
+        final int idx = generatedHtmlList.size();
+        generatedHtmlList.add(html);
+        return getGeneratedHtmlPlaceholder(idx);
+    }
+
+    private static String getGeneratedHtmlPlaceholder(final int idx) {
+        return Character.toString((char) 0) + "MD_HTML_" + idx + Character.toString((char) 0);
+    }
+
+    private static String replaceGeneratedPattern(
+            final String source,
+            final Pattern pattern,
+            final int maxGroupLength,
+            final List<String> generatedHtmlList,
+            final Function<Matcher, String> replacementFactory
+    ) {
+        final Matcher matcher = pattern.matcher(source);
+        final StringBuilder buffer = new StringBuilder();
+        while (matcher.find()) {
+            if (matcher.groupCount() >= 1) {
+                final String group = matcher.group(1);
+                if (group == null || group.length() > maxGroupLength) {
+                    matcher.appendReplacement(buffer, Matcher.quoteReplacement(matcher.group(0)));
+                    continue;
+                }
+            }
+
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(putGeneratedHtml(generatedHtmlList, replacementFactory.apply(matcher))));
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    private static String replaceDialogPatternWithPlaceholders(
+            final String source,
+            final Pattern pattern,
+            final String openPrefix,
+            final String closeSuffix,
+            final int maxGroupLength,
+            final List<String> generatedHtmlList
+    ) {
+        final Matcher matcher = pattern.matcher(source);
+        final StringBuilder buffer = new StringBuilder();
+        while (matcher.find()) {
+            final String group = matcher.group(1);
+            if (group == null || group.length() > maxGroupLength) {
+                matcher.appendReplacement(buffer, Matcher.quoteReplacement(matcher.group(0)));
+                continue;
+            }
+
+            final String escaped = StringEscapeUtils.escapeHtml4(group);
+            final String replacement = "<span class='md-text-dialog'>" + openPrefix + escaped + closeSuffix + "</span>";
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(putGeneratedHtml(generatedHtmlList, replacement)));
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
     /**
      * 공통 > 마크다운 처리
      *
      * @param htmlContent Elements
+     */
+    /*
+     * Rendering-time contract:
+     * - Stored editor HTML may contain real TinyMCE tags such as p/table/span.
+     * - Text written by the user as literal HTML must remain text.
+     * - Custom inline markup may create wrapper tags, but the matched user text
+     *   inside those wrappers must be escaped before reinsertion.
      */
     public static String markdown(final String htmlContent) {
         final Document document = Jsoup.parseBodyFragment(htmlContent);
@@ -80,138 +193,33 @@ public class MarkdownUtils {
      * @param text String
      * @return String
      **/
-    public static String procText(final String text) {
-        final int MAX_GROUP_LENGTH = 3000;
-
-        // 텍스트를 <pre> 태그 기준으로 분할, <pre> </pre> 사이는 처리하지 않음
-        final String[] parts = text.split("(?i)(</?pre>)");
-        final StringBuilder result = new StringBuilder();
-        boolean insidePreTag = false;
-        for (String part : parts) {
-            if (part.equalsIgnoreCase("<pre>") || part.equalsIgnoreCase("</pre>")) {
-                result.append(part);
-                insidePreTag = !insidePreTag;
-            } else if (insidePreTag) {
-                result.append(part);
-            } else {
-                // 줄 전체가 대시 3개 이상인 경우 수평선(<hr>)으로 처리
-                part = part.replaceAll("(?m)^[ \\t]*-{3,}[ \\t]*$", "<hr>");
-
-                // " " 로 묶인 부분을 대사 스타일 처리 (HTML 이스케이프 포함)
-                part = replaceDialogPattern(part, Pattern.compile("\"(.*?)\""), "“", "”", MAX_GROUP_LENGTH);
-
-                // 『 』 로 묶인 부분도 대사 스타일 처리 (HTML 이스케이프 포함)
-                part = replaceDialogPattern(part, Pattern.compile("『(.*?)』"), "『", "』", MAX_GROUP_LENGTH);
-
-                // -- -- 로 묶인 부분을 회색으로 표시하되, - - 처리
-                final Pattern grayPattern = Pattern.compile("--(.*?)(--)");
-                final Matcher grayMatcher = grayPattern.matcher(part);
-                while (grayMatcher.find()) {
-                    final String group = grayMatcher.group(1);
-                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    part = part.replace("--" + group + "--", "<span class='md-text-muted'>-" + group + "-</span>");
-                }
-
-                // !! !! 로 묶인 부분을 빨간색으로 표시하되, !! !! 제거
-                final Pattern redPattern = Pattern.compile("!!(.*?)!!");
-                final Matcher redMatcher = redPattern.matcher(part);
-                while (redMatcher.find()) {
-                    final String group = redMatcher.group(1);
-                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    part = part.replace("!!" + group + "!!", "<span class='md-text-danger'>" + group + "</span>");
-                }
-
-                // __ __ 로 묶인 부분을 밑줄 처리하되, __ __ 제거
-                final Pattern underlinePattern = Pattern.compile("__(.*?)__");
-                final Matcher underlineMatcher = underlinePattern.matcher(part);
-                while (underlineMatcher.find()) {
-                    final String group = underlineMatcher.group(1);
-                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    part = part.replace("__" + group + "__", "<u>" + group + "</u>");
-                }
-
-                // || || 로 묶인 부분을 강조 처리하되, || || 제거 및 우측 구분바 추가
-                final Pattern pipelinePattern = Pattern.compile("\\|\\|(.*?)\\|\\|");
-                final Matcher pipelineMatcher = pipelinePattern.matcher(part);
-                while (pipelineMatcher.find()) {
-                    String group = pipelineMatcher.group(1);
-                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    part = part.replace("||" + group + "||", "<span class='md-text-muted fw-bold border-end border-2 border-gray-400 pe-5 me-3'>" + group + "</span>");
-                }
-
-                // (( )) 로 묶인 부분을 밑줄 처리하되, (( )) 제거
-                final Pattern parenthesisPattern = Pattern.compile("\\(\\((.*?)\\)\\)");
-                final Matcher parenthesisMatcher = parenthesisPattern.matcher(part);
-                while (parenthesisMatcher.find()) {
-                    final String group = parenthesisMatcher.group(1);
-                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    part = part.replace("((" + group + "))", "<span class='md-text-noti'>" + group + "</span>");
-                }
-
-                // <@> .로 묶인 부분을 강조 처리
-                final Pattern atPattern = Pattern.compile("<@>(.*?\\.)");
-                final Matcher atMatcher = atPattern.matcher(part);
-                final StringBuilder buffer = new StringBuilder();
-                while (atMatcher.find()) {
-                    final String group = atMatcher.group(1);
-                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    atMatcher.appendReplacement(buffer, "<span class='md-text-muted'>@" + group + "</span>");
-                }
-                atMatcher.appendTail(buffer); // 변환되지 않은 나머지 텍스트를 추가
-                part = buffer.toString(); // 변환된 부분을 전체 텍스트에 반영
-
-                result.append(part);
-            }
-        }
-
-        return result.toString();
-    }
-
-    /**
-     * 대사 패턴 치환
-     *
-     * @param source 원본 문자열
-     * @param pattern 치환할 정규식 (group(1)에 본문)
-     * @param openPrefix 출력시 앞에 붙일 문자
-     * @param closeSuffix 출력시 뒤에 붙일 문자
-     * @param maxGroupLength 허용 최대 길이
-     * @return 치환 결과 문자열
+    /*
+     * Do not decide safety by tag name. Text from the stored content is escaped
+     * as text; only HTML generated by this renderer survives via placeholders.
      */
-    private static String replaceDialogPattern(
-            final String source,
-            final Pattern pattern,
-            final String openPrefix,
-            final String closeSuffix,
-            final int maxGroupLength
-    ) {
-        final Matcher matcher = pattern.matcher(source);
-        final StringBuilder buffer = new StringBuilder();
-        while (matcher.find()) {
-            final String group = matcher.group(1);
-            if (group == null || group.length() > maxGroupLength) {
-                matcher.appendReplacement(buffer, Matcher.quoteReplacement(matcher.group(0)));
-                continue;
-            }
-
-            final String escaped = StringEscapeUtils.escapeHtml4(group);
-            final String replacement = "<span class='md-text-dialog'>" + openPrefix + escaped + closeSuffix + "</span>";
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
-        }
-        matcher.appendTail(buffer);
-        return buffer.toString();
+    public static String procText(final String text) {
+        if (text == null) return null;
+        final int MAX_GROUP_LENGTH = 3000;
+        return procTextWithGeneratedPlaceholders(text, MAX_GROUP_LENGTH);
     }
 
     /**
      * 텍스트에디터 컨텐츠 저장 전 정규화
-     *
      * @param originalText String
      * @return String
      **/
+    /*
+     * Save-time contract:
+     * - Preserve valid TinyMCE HTML structures.
+     * - Preserve escaped literal HTML text such as "&lt;table&gt;" as text.
+     * - Never call unescapeHtml4() on the full content string. It cannot tell
+     *   real editor markup from user-authored literal markup and can turn text
+     *   into active/broken HTML during save.
+     */
     public static String normalize(final String originalText) {
         if (StringUtils.isEmpty(originalText)) return null;
 
-        final String unescaped = StringEscapeUtils.unescapeHtml4(originalText);
-        final String replacedText = unescaped
+        final String replacedText = originalText
                 .replace("‘", "'")
                 .replace("’", "'")
                 .replace("“", "\"")

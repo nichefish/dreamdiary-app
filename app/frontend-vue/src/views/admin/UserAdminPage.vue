@@ -24,6 +24,7 @@
               v-model.trim="store.keyword"
               type="search"
               class="form-control form-control-solid"
+              maxlength="200"
               placeholder="아이디 검색"
               @keyup.enter="store.fetchUsers(0)"
             />

@@ -5,6 +5,7 @@
       ref="inputRef"
       type="text"
       class="form-control form-control-solid no-space"
+      maxlength="500"
       autocomplete="off"
     />
     <div class="d-flex pt-2 gap-2">
@@ -31,6 +32,7 @@
           :id="idPrefix + '_display'"
           type="text"
           class="form-control form-control-sm form-control-solid text-dialog fw-bold fs-7 w-100px"
+          maxlength="500"
           disabled
         />
       </div>

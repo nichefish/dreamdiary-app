@@ -24,6 +24,7 @@
               v-model.trim="store.keyword"
               type="search"
               class="form-control form-control-solid"
+              maxlength="200"
               placeholder="게시판명 또는 코드 검색"
               @keyup.enter="store.fetchList(0)"
             />
