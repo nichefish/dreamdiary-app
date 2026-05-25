@@ -221,6 +221,7 @@
               type="text"
               class="form-control form-control-sm"
               placeholder="일기 키워드"
+              maxlength="200"
               @keyup.enter="store.fetchDays()"
             />
             <button
@@ -242,6 +243,7 @@
               type="text"
               class="form-control form-control-sm"
               placeholder="꿈 키워드"
+              maxlength="200"
               @keyup.enter="store.fetchDays()"
             />
             <button

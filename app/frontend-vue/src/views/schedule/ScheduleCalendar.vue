@@ -18,6 +18,7 @@
           type="search"
           class="form-control form-control-solid"
           placeholder="검색어"
+          maxlength="200"
           @keyup.enter="reload"
         />
         <button type="button" class="btn btn-sm btn-light-primary" @click="reload">

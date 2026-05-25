@@ -34,6 +34,7 @@
                   v-model="model.title"
                   class="form-control form-control-solid"
                   placeholder="제목을 입력하세요."
+                  maxlength="100"
                   autocomplete="off"
                 />
               </div>

@@ -104,6 +104,7 @@
                   id="tagListStr"
                   class="form-control form-control-solid"
                   autocomplete="off"
+                  maxlength="500"
                   v-model="tagListStrWithCtgr"
                   placeholder="태그 입력"
                 />
