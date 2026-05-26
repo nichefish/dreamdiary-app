@@ -47,6 +47,24 @@ public class LogSpec
                     final Expression<Boolean> resultExp = root.get("result");
                     predicate.add("true".equals(value) ? builder.isTrue(resultExp) : builder.isFalse(resultExp));
                     continue;
+                case "minDurationMs":
+                    predicate.add(builder.greaterThanOrEqualTo(root.get("durationMs"), Long.valueOf(String.valueOf(value))));
+                    continue;
+                case "hasException":
+                    if (Boolean.parseBoolean(String.valueOf(value))) {
+                        predicate.add(builder.isNotNull(root.get("exceptionName")));
+                    }
+                    continue;
+                case "requestUri":
+                case "traceId":
+                case "username":
+                case "message":
+                case "signature":
+                    predicate.add(builder.like(
+                            builder.lower(root.get(key).as(String.class)),
+                            "%" + String.valueOf(value).toLowerCase() + "%"
+                    ));
+                    continue;
                 default:
                     try {
                         predicate.add(builder.equal(root.get(key), value));

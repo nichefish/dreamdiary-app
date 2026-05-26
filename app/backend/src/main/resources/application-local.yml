@@ -65,6 +65,5 @@ api:
 app:
     logging:
         service-entry:
-            enabled: true
-            log-finish: false
-
+            enabled: ${SERVICE_ENTRY_LOG_ENABLED:false}
+            log-finish: ${SERVICE_ENTRY_LOG_FINISH:false}
