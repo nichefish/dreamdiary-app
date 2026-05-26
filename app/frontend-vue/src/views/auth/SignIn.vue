@@ -51,6 +51,13 @@
       <!--end::비밀번호-->
 
       <!--begin::에러 메시지-->
+      <div v-if="sessionExpiredNotice" class="alert alert-warning d-flex align-items-start gap-3 py-3 mb-5">
+        <i class="bi bi-exclamation-triangle fs-3"></i>
+        <div>
+          <div class="fw-bold">로그인이 풀렸습니다.</div>
+          <div class="fs-7">{{ sessionExpiredNotice }}</div>
+        </div>
+      </div>
       <div class="text-left">
         <span id="errorMsgSpan" class="text-danger">
           <template v-for="(line, index) in errorMsgLines" :key="index">
@@ -158,6 +165,7 @@ const isLoading = ref(false);
 const passwordDisabled = ref(false);
 const fieldErrors = ref<{ username?: string; password?: string }>({});
 const errorMsgLines = ref<string[]>([]);
+const sessionExpiredNotice = ref("");
 
 /** OAuth2 소셜 로그인 팝업을 연다. */
 function openOAuthPopup(url: string): void {
@@ -174,6 +182,8 @@ function goUserSignup(): void {
 onMounted(() => {
   if (route.query.dupLoginAt === "Y") {
     errorMsgLines.value = ["중복 로그인으로 인해 로그아웃되었습니다."];
+  } else if (route.query.sessionExpired === "Y") {
+    sessionExpiredNotice.value = "세션이 만료되었거나 다른 곳에서 로그인되어 현재 로그인이 해제되었습니다. 다시 로그인해주세요.";
   } else if (route.query.oauthError) {
     errorMsgLines.value = [String(route.query.oauthError)];
   }
@@ -186,7 +196,8 @@ async function handleLogin(): Promise<void> {
   isLoading.value = true;
   try {
     await authStore.login({ username: form.value.username, password: form.value.password });
-    await router.push({ name: "dashboard" });
+    const redirect = typeof route.query.redirect === "string" ? route.query.redirect : "";
+    await router.push(redirect || { name: "dashboard" });
   } catch {
     const msgs = authStore.errors.length > 0 ? authStore.errors : ["로그인에 실패했습니다."];
     errorMsgLines.value = msgs;
