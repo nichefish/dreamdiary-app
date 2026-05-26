@@ -1,8 +1,23 @@
 <template>
-  <li class="menu-admin-node" :class="{ 'is-main': isMain, 'is-disabled': !useY }">
+  <li
+    class="menu-admin-node"
+    :class="{ 'is-main': isMain, 'is-disabled': !useY, 'is-dragging': dragging, 'is-drag-over': dragOver }"
+    @dragover.prevent.stop="handleDragOver"
+    @dragenter.prevent.stop="dragOver = true"
+    @dragleave.stop="dragOver = false"
+    @drop.prevent.stop="handleDrop"
+  >
     <div class="menu-admin-node-head">
       <div class="menu-admin-node-title">
-        <span class="menu-admin-node-icon" v-html="node.icon || fallbackIcon"></span>
+        <span
+          class="menu-admin-node-icon"
+          :class="{ 'is-drag-disabled': sortSaving }"
+          draggable="true"
+          title="끌어서 순서 변경"
+          @dragstart.stop="handleDragStart"
+          @dragend="handleDragEnd"
+          v-html="node.icon || fallbackIcon"
+        ></span>
         <div>
           <div class="menu-admin-node-name">
             <span>{{ node.menuName || "-" }}</span>
@@ -16,12 +31,6 @@
         </div>
       </div>
       <div class="menu-admin-node-actions">
-        <button type="button" class="btn btn-sm btn-icon btn-light" title="위로" :disabled="index <= 0 || sortSaving" @click="$emit('move', index, -1)">
-          <i class="bi bi-chevron-up"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-icon btn-light" title="아래로" :disabled="index >= siblingCount - 1 || sortSaving" @click="$emit('move', index, 1)">
-          <i class="bi bi-chevron-down"></i>
-        </button>
         <button v-if="canAddChild" type="button" class="btn btn-sm btn-icon btn-light-primary" title="하위 메뉴 추가" @click="$emit('add-child', node)">
           <i class="bi bi-plus-lg"></i>
         </button>
@@ -49,15 +58,17 @@
         @edit="$emit('edit', $event)"
         @toggle-use="$emit('toggle-use', $event)"
         @delete-node="$emit('delete-node', $event)"
-        @move="(idx, delta) => $emit('move-child', node, idx, delta)"
-        @move-child="(parent, idx, delta) => $emit('move-child', parent, idx, delta)"
+        @drag-start="(idx) => $emit('child-drag-start', node, idx)"
+        @drop-node="(idx) => $emit('child-drop', node, idx)"
+        @child-drag-start="(parent, idx) => $emit('child-drag-start', parent, idx)"
+        @child-drop="(parent, idx) => $emit('child-drop', parent, idx)"
       />
     </ol>
   </li>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import type { MenuNode } from "@/stores/menuAdmin";
 
 const props = defineProps<{
@@ -67,15 +78,19 @@ const props = defineProps<{
   sortSaving: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "add-child", node: MenuNode): void;
   (e: "edit", id: number): void;
   (e: "toggle-use", node: MenuNode): void;
   (e: "delete-node", node: MenuNode): void;
-  (e: "move", index: number, delta: -1 | 1): void;
-  (e: "move-child", parent: MenuNode, index: number, delta: -1 | 1): void;
+  (e: "drag-start", index: number): void;
+  (e: "drop-node", index: number): void;
+  (e: "child-drag-start", parent: MenuNode, index: number): void;
+  (e: "child-drop", parent: MenuNode, index: number): void;
 }>();
 
+const dragOver = ref(false);
+const dragging = ref(false);
 const children = computed(() => props.node.subMenuList ?? []);
 const isMain = computed(() => props.node.menuType === "MAIN");
 const useY = computed(() => yn(props.node.useYn));
@@ -86,6 +101,34 @@ const fallbackIcon = computed(() => (isMain.value ? '<i class="bi bi-folder2-ope
 
 function yn(value: string | undefined): boolean {
   return String(value ?? "N").toUpperCase() === "Y";
+}
+
+function handleDragStart(event: DragEvent): void {
+  if (props.sortSaving) {
+    event.preventDefault();
+    return;
+  }
+  event.dataTransfer?.setData("text/plain", String(props.node.id));
+  const dragImage = (event.currentTarget as HTMLElement).closest(".menu-admin-node-head") as HTMLElement | null;
+  if (dragImage) event.dataTransfer?.setDragImage?.(dragImage, 24, 22);
+  event.dataTransfer && (event.dataTransfer.effectAllowed = "move");
+  dragging.value = true;
+  emit("drag-start", props.index);
+}
+
+function handleDragOver(event: DragEvent): void {
+  if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+}
+
+function handleDragEnd(): void {
+  dragOver.value = false;
+  dragging.value = false;
+}
+
+function handleDrop(): void {
+  dragOver.value = false;
+  dragging.value = false;
+  if (!props.sortSaving) emit("drop-node", props.index);
 }
 </script>
 
@@ -98,14 +141,26 @@ function yn(value: string | undefined): boolean {
 }
 
 .menu-admin-node {
-  padding: 0.75rem;
-  border: 1px solid var(--bs-gray-200);
-  border-radius: 8px;
+  padding: 0.25rem 0;
+  border: 0;
+  border-radius: 6px;
   background: var(--bs-white);
+  transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
 .menu-admin-node.is-main {
-  border-color: var(--bs-gray-300);
+  background: transparent;
+}
+
+.menu-admin-node.is-dragging {
+  opacity: 0.58;
+  transform: scale(0.995);
+}
+
+.menu-admin-node.is-drag-over > .menu-admin-node-head {
+  background: var(--bs-primary-light);
+  box-shadow: inset 3px 0 0 var(--bs-primary), 0 6px 18px rgba(var(--bs-primary-rgb), 0.12);
+  transform: translateX(2px);
 }
 
 .menu-admin-node.is-disabled .menu-admin-node-name {
@@ -123,12 +178,36 @@ function yn(value: string | undefined): boolean {
 
 .menu-admin-node-head {
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  background: var(--bs-white);
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.menu-admin-node-head:hover {
+  background: var(--bs-gray-100);
+}
+
+.menu-admin-node-head:hover .menu-admin-node-icon {
+  border-color: rgba(var(--bs-primary-rgb), 0.36);
+  background: rgba(var(--bs-primary-rgb), 0.08);
+  box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.08);
+  transform: translateY(-1px);
 }
 
 .menu-admin-node-actions {
-  gap: 0.5rem;
+  gap: 0.25rem;
   flex-wrap: wrap;
+  opacity: 0.72;
+  transition: opacity 0.15s ease;
+}
+
+.menu-admin-node-head:hover .menu-admin-node-actions,
+.menu-admin-node.is-drag-over .menu-admin-node-actions {
+  opacity: 1;
 }
 
 .menu-admin-node-title {
@@ -136,16 +215,55 @@ function yn(value: string | undefined): boolean {
 }
 
 .menu-admin-node-icon {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   min-width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--bs-gray-200);
   background: var(--bs-light);
   color: var(--bs-primary);
+  cursor: grab;
   overflow: hidden;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.menu-admin-node-icon::after {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  color: var(--bs-gray-500);
+  content: "⋮";
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.menu-admin-node-head:hover .menu-admin-node-icon::after,
+.menu-admin-node.is-dragging .menu-admin-node-icon::after,
+.menu-admin-node.is-drag-over .menu-admin-node-icon::after {
+  opacity: 0.9;
+}
+
+.menu-admin-node-icon:active {
+  cursor: grabbing;
+  transform: scale(0.96);
+}
+
+.menu-admin-node.is-dragging .menu-admin-node-icon {
+  border-color: var(--bs-primary);
+  background: var(--bs-primary);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.14);
+}
+
+.menu-admin-node-icon.is-drag-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .menu-admin-node-name {
@@ -166,10 +284,11 @@ function yn(value: string | undefined): boolean {
 
 .menu-admin-children {
   display: grid;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--bs-gray-200);
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  margin-left: 1.35rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--bs-gray-300);
 }
 
 @media (max-width: 768px) {
