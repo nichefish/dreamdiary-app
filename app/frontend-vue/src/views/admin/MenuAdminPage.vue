@@ -16,31 +16,82 @@
       </div>
     </div>
 
-    <div class="card post">
-      <div class="card-body">
+    <div class="menu-admin-board">
+      <section class="menu-admin-column">
+        <div class="menu-admin-column-header">
+          <div>
+            <div class="menu-admin-column-title">
+              <i class="bi bi-people-fill"></i>
+              사용자 화면
+            </div>
+            <div class="text-muted fs-8">일반 사용자에게 노출되는 메뉴</div>
+          </div>
+          <span class="badge badge-light-primary">{{ userMenuRows.length }}</span>
+        </div>
+
         <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
         <div v-if="store.loading" class="menu-admin-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
           불러오는 중
         </div>
         <ol v-else class="menu-admin-tree">
-          <li v-if="!store.rows.length" class="text-center text-muted py-8">등록된 메뉴가 없습니다.</li>
+          <li v-if="!userMenuRows.length" class="menu-admin-empty">등록된 사용자 화면 메뉴가 없습니다.</li>
           <MenuAdminTreeNode
-            v-for="(row, index) in store.rows"
+            v-for="(row, index) in userMenuRows"
             :key="row.id"
             :node="row"
             :index="index"
-            :sibling-count="store.rows.length"
+            :sibling-count="userMenuRows.length"
             :sort-saving="store.sortSaving"
             @add-child="store.openSubCreate"
             @edit="openEdit"
             @toggle-use="toggleUse"
             @delete-node="deleteMenu"
-            @move="moveMain"
-            @move-child="moveSub"
+            @drag-start="(idx) => onMainDragStart('N', idx)"
+            @drop-node="(idx) => onMainDrop('N', idx)"
+            @child-drag-start="onChildDragStart"
+            @child-drop="onChildDrop"
           />
         </ol>
-      </div>
+      </section>
+
+      <section class="menu-admin-column">
+        <div class="menu-admin-column-header">
+          <div>
+            <div class="menu-admin-column-title">
+              <i class="bi bi-person-gear"></i>
+              관리자 화면
+            </div>
+            <div class="text-muted fs-8">관리자에게 노출되는 운영 메뉴</div>
+          </div>
+          <span class="badge badge-light-info">{{ adminMenuRows.length }}</span>
+        </div>
+
+        <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
+        <div v-if="store.loading" class="menu-admin-loading">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          불러오는 중
+        </div>
+        <ol v-else class="menu-admin-tree">
+          <li v-if="!adminMenuRows.length" class="menu-admin-empty">등록된 관리자 화면 메뉴가 없습니다.</li>
+          <MenuAdminTreeNode
+            v-for="(row, index) in adminMenuRows"
+            :key="row.id"
+            :node="row"
+            :index="index"
+            :sibling-count="adminMenuRows.length"
+            :sort-saving="store.sortSaving"
+            @add-child="store.openSubCreate"
+            @edit="openEdit"
+            @toggle-use="toggleUse"
+            @delete-node="deleteMenu"
+            @drag-start="(idx) => onMainDragStart('Y', idx)"
+            @drop-node="(idx) => onMainDrop('Y', idx)"
+            @child-drag-start="onChildDragStart"
+            @child-drop="onChildDrop"
+          />
+        </ol>
+      </section>
     </div>
 
     <template v-if="store.modalOpen">
@@ -126,12 +177,12 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-light" @click="store.closeModal">닫기</button>
                 <button type="submit" class="btn btn-sm btn-primary" :disabled="store.saving">
                   <span v-if="store.saving" class="spinner-border spinner-border-sm me-1"></span>
                   <i v-else class="bi bi-check-lg"></i>
                   저장
                 </button>
+                <button type="button" class="btn btn-sm btn-light" @click="store.closeModal">닫기</button>
               </div>
             </form>
           </div>
@@ -144,11 +195,15 @@
 
 <script setup lang="ts">
 import { swalConfirm, swalAlert } from "@/utils/swal";
-import { onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import MenuAdminTreeNode from "@/views/admin/MenuAdminTreeNode.vue";
 import { useMenuAdminStore, type MenuNode } from "@/stores/menuAdmin";
 
 const store = useMenuAdminStore();
+const userMenuRows = computed(() => store.rows.filter((row) => String(row.adminYn ?? "N").toUpperCase() !== "Y"));
+const adminMenuRows = computed(() => store.rows.filter((row) => String(row.adminYn ?? "N").toUpperCase() === "Y"));
+const mainDrag = ref<{ adminYn: "Y" | "N"; index: number } | null>(null);
+const childDrag = ref<{ parentId: number; index: number } | null>(null);
 
 async function openEdit(id: number) {
   try {
@@ -204,9 +259,12 @@ async function deleteMenu(row: MenuNode) {
   }
 }
 
-async function moveMain(index: number, delta: -1 | 1) {
+async function onMainDrop(adminYn: "Y" | "N", targetIndex: number) {
+  const drag = mainDrag.value;
+  mainDrag.value = null;
+  if (!drag || drag.adminYn !== adminYn) return;
   try {
-    const message = await store.moveMain(index, delta);
+    const message = await store.reorderMainWithinGroup(adminYn, drag.index, targetIndex);
     if (message) void swalAlert(message);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "메인 메뉴 순서를 저장하지 못했습니다.");
@@ -214,14 +272,27 @@ async function moveMain(index: number, delta: -1 | 1) {
   }
 }
 
-async function moveSub(parent: MenuNode, index: number, delta: -1 | 1) {
+function onMainDragStart(adminYn: "Y" | "N", index: number) {
+  mainDrag.value = { adminYn, index };
+  childDrag.value = null;
+}
+
+async function onChildDrop(parent: MenuNode, targetIndex: number) {
+  const drag = childDrag.value;
+  childDrag.value = null;
+  if (!drag || drag.parentId !== parent.id) return;
   try {
-    const message = await store.moveSub(parent, index, delta);
+    const message = await store.reorderSub(parent, drag.index, targetIndex);
     if (message) void swalAlert(message);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "하위 메뉴 순서를 저장하지 못했습니다.");
     await store.fetchTree();
   }
+}
+
+function onChildDragStart(parent: MenuNode, index: number) {
+  childDrag.value = { parentId: parent.id, index };
+  mainDrag.value = null;
 }
 
 onMounted(async () => {
@@ -262,15 +333,61 @@ onMounted(async () => {
   color: var(--bs-gray-600);
 }
 
+.menu-admin-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.menu-admin-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--bs-gray-200);
+  border-radius: 8px;
+  background: var(--bs-gray-100);
+}
+
+.menu-admin-column-header,
+.menu-admin-column-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.menu-admin-column-header {
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 0 0.25rem;
+}
+
+.menu-admin-column-title {
+  color: var(--bs-gray-900);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.menu-admin-column-title > i {
+  color: var(--bs-primary);
+}
+
+.menu-admin-empty {
+  padding: 1.5rem 1rem;
+  border: 1px dashed var(--bs-gray-300);
+  border-radius: 8px;
+  color: var(--bs-gray-600);
+  text-align: center;
+}
+
 .menu-admin-tree {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.menu-admin-tree {
   display: grid;
-  gap: 1rem;
+  gap: 0.35rem;
 }
 
 .menu-admin-form {
@@ -308,6 +425,10 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
+  .menu-admin-board {
+    grid-template-columns: 1fr;
+  }
+
   .menu-admin-toolbar {
     align-items: stretch;
     width: 100%;

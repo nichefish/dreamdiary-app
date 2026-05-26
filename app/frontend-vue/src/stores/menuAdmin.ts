@@ -115,6 +115,10 @@ function containsNode(root: MenuNode, id: number): boolean {
   return (root.subMenuList ?? []).some((child) => containsNode(child, id));
 }
 
+function isAdminMenu(row: MenuNode): boolean {
+  return yn(row.adminYn) === "Y";
+}
+
 export const useMenuAdminStore = defineStore("menuAdmin", () => {
   const rows = ref<MenuNode[]>([]);
   const loading = ref(false);
@@ -215,13 +219,19 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     return res.data?.message ?? "삭제되었습니다.";
   }
 
-  async function moveMain(index: number, delta: -1 | 1) {
-    const targetIndex = index + delta;
-    if (targetIndex < 0 || targetIndex >= rows.value.length) return "";
-    const nextRows = [...rows.value];
-    const [moved] = nextRows.splice(index, 1);
-    nextRows.splice(targetIndex, 0, moved);
-    rows.value = nextRows;
+  async function reorderMainWithinGroup(adminYn: "Y" | "N", sourceIndex: number, targetIndex: number) {
+    const groupAdmin = adminYn === "Y";
+    const groupRows = rows.value.filter((row) => isAdminMenu(row) === groupAdmin);
+    if (sourceIndex === targetIndex) return "";
+    if (sourceIndex < 0 || sourceIndex >= groupRows.length) return "";
+    if (targetIndex < 0 || targetIndex >= groupRows.length) return "";
+
+    const nextGroupRows = [...groupRows];
+    const [moved] = nextGroupRows.splice(sourceIndex, 1);
+    nextGroupRows.splice(targetIndex, 0, moved);
+
+    const groupQueue = [...nextGroupRows];
+    rows.value = rows.value.map((row) => (isAdminMenu(row) === groupAdmin ? groupQueue.shift() ?? row : row));
     return saveMainSortOrders();
   }
 
@@ -242,27 +252,27 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     }
   }
 
-  async function moveSub(parent: MenuNode, index: number, delta: -1 | 1) {
+  async function reorderSub(parent: MenuNode, sourceIndex: number, targetIndex: number) {
     const children = parent.subMenuList ?? [];
-    const targetIndex = index + delta;
+    if (sourceIndex === targetIndex) return "";
+    if (sourceIndex < 0 || sourceIndex >= children.length) return "";
     if (targetIndex < 0 || targetIndex >= children.length) return "";
     const nextChildren = [...children];
-    const [moved] = nextChildren.splice(index, 1);
+    const [moved] = nextChildren.splice(sourceIndex, 1);
     nextChildren.splice(targetIndex, 0, moved);
     parent.subMenuList = nextChildren;
-    return saveSubTreeOrder(moved.id, parent.id, nextChildren);
+    return saveSubSortOrders(nextChildren);
   }
 
-  async function saveSubTreeOrder(movedId: number, parentMenuId: number, siblings: MenuNode[]) {
+  async function saveSubSortOrders(siblings: MenuNode[]) {
     sortSaving.value = true;
     try {
-      const items = siblings.map((row, idx) => ({ id: row.id, sortOrder: idx }));
-      const res = await axios.put("/api/menus/tree", {
-        movedId,
-        sourceParentMenuId: parentMenuId,
-        targetParentMenuId: parentMenuId,
-        groups: [{ parentMenuId, items }],
-      });
+      const sortOrders = siblings.map((row, idx) => ({
+        id: row.id,
+        parentMenuId: row.parentMenuId ?? null,
+        sortOrder: idx,
+      }));
+      const res = await axios.put("/api/menus/sort-orders", { sortOrders });
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "하위 메뉴 순서를 저장하지 못했습니다.");
       await fetchTree();
       return res.data?.message ?? "정렬 순서가 저장되었습니다.";
@@ -291,7 +301,7 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     submit,
     toggleUse,
     deleteMenu,
-    moveMain,
-    moveSub,
+    reorderMainWithinGroup,
+    reorderSub,
   };
 });
