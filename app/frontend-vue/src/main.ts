@@ -10,14 +10,16 @@ TIP: To get started with clean router change path to @/router/clean.ts.
  */
 import router from "./router";
 import { AuthExpiredError } from "@/utils/authError";
+import { useAuthStore } from "@/stores/auth";
 
 /**
- * 전역 Axios 인터셉터: 401(세션 만료/비로그인) 응답 시 로그인 이동 여부를 사용자에게 확인.
+ * 전역 Axios 인터셉터: 401(세션 만료/비로그인) 응답 시 로그인 만료를 명확히 안내한다.
  * /api/auth/ 경로(로그인 자체)는 auth 스토어에서 이미 처리하므로 제외.
  * 동시에 여러 요청이 401 로 실패해도 대화상자는 한 번만 뜬다.
  * 각 catch 블록에서 isAuthExpiredError() 로 판별해 일반 오류 alert 를 억제한다.
  */
 let authExpiredDialogShowing = false;
+const SESSION_EXPIRED_QUERY = { sessionExpired: "Y" };
 axios.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
@@ -28,24 +30,37 @@ axios.interceptors.response.use(
         authExpiredDialogShowing = true;
         try {
           const isPopup = router.currentRoute.value.name === "journal-entry-search";
+          const authStore = useAuthStore();
+          authStore.purgeAuth();
+
           if (isPopup) {
-            /* 팝업 라우트: 로그인 이동 대신 창 닫기 확인 */
+            /* 팝업 라우트: 로그인 이동 대신 창 닫기 안내 */
             const result = await Swal.fire({
-              text: "세션이 만료되었습니다. 창을 닫겠습니까?",
+              icon: "warning",
+              title: "로그인이 풀렸습니다",
+              text: "현재 검색 창에서는 더 이상 저장/조회할 수 없습니다. 창을 닫을까요?",
               showCancelButton: true,
               confirmButtonText: "창 닫기",
-              cancelButtonText: "취소",
+              cancelButtonText: "그대로 두기",
             });
             if (result.isConfirmed) window.close();
           } else {
             const result = await Swal.fire({
-              text: "세션이 만료되었습니다. 작성 중인 내용이 유실될 수 있습니다. 로그인 화면으로 이동하시겠습니까?",
+              icon: "warning",
+              title: "로그인이 풀렸습니다",
+              text: "세션이 만료되었거나 다른 곳에서 로그인되어 현재 로그인이 해제되었습니다. 로그인 화면으로 이동하면 작성 중인 내용이 유실될 수 있습니다. 이동할까요?",
               showCancelButton: true,
-              confirmButtonText: "로그인 이동",
-              cancelButtonText: "취소",
+              confirmButtonText: "로그인 화면으로 이동",
+              cancelButtonText: "현재 화면에 머무르기",
             });
             if (result.isConfirmed) {
-              void router.push({ name: "sign-in" });
+              void router.push({
+                name: "sign-in",
+                query: {
+                  ...SESSION_EXPIRED_QUERY,
+                  redirect: router.currentRoute.value.fullPath,
+                },
+              });
             }
           }
         } finally {
