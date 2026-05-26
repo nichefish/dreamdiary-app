@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.web.handler;
 
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.exception.BaseException;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
@@ -63,7 +64,22 @@ public class BaseExceptionHandler {
      */
     private Object handleException(final Exception e, final WebRequest request, final HttpStatus status, final String errorType) {
         final String errorMsg = MessageUtils.getExceptionMsg(e);
-        log.warn("Exception handled: ", e);
+        if (isExpectedException(e)) {
+            log.warn(
+                    "EXCEPTION_HANDLED type={} status={} message={}",
+                    e.getClass().getSimpleName(),
+                    status.value(),
+                    errorMsg
+            );
+        } else {
+            log.warn(
+                    "EXCEPTION_HANDLED type={} status={} message={}",
+                    e.getClass().getSimpleName(),
+                    status.value(),
+                    errorMsg,
+                    e
+            );
+        }
 
         // 로그 처리
         final LogParam logParam = new LogParam(false, errorMsg);
@@ -85,6 +101,13 @@ public class BaseExceptionHandler {
                 .encode()
                 .toUriString();
         return new ModelAndView("redirect:" + redirectUrl);
+    }
+
+    private boolean isExpectedException(final Exception e) {
+        return e instanceof BaseException
+                || e instanceof BindException
+                || e instanceof AccessDeniedException
+                || e instanceof NoHandlerFoundException;
     }
 
     /**

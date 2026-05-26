@@ -30,7 +30,7 @@ public class LogInterceptor implements HandlerInterceptor {
     public boolean preHandle(final HttpServletRequest request, final @NotNull HttpServletResponse response, final @NotNull Object handler) throws Exception {
         request.setAttribute("startTime", System.currentTimeMillis());
         if (handler instanceof HandlerMethod handlerMethod) {
-            log.info(
+            log.debug(
                     "REQUEST_START method={} uri={} handler={} user={} ip={}",
                     request.getMethod(),
                     request.getRequestURI(),
@@ -53,38 +53,44 @@ public class LogInterceptor implements HandlerInterceptor {
 
         final String handlerSignature = getHandlerSignature(handlerMethod);
         final String username = getUsernameForLog();
+        final boolean failed = ex != null || response.getStatus() >= 400;
 
         if (ex != null) {
             log.error(
-                    "REQUEST_FAILED method={} uri={} handler={} status={} durationMs={} user={} ip={}",
+                    "HTTP_FLOW method={} uri={} status={} durationMs={} result={} handler={} user={} ip={} error={}:{}",
                     request.getMethod(),
                     request.getRequestURI(),
-                    handlerSignature,
                     response.getStatus(),
                     duration,
+                    false,
+                    handlerSignature,
                     username,
                     AuthUtils.getRemoteIpAddr(),
+                    ex.getClass().getSimpleName(),
+                    ex.getMessage(),
                     ex
             );
         } else if (response.getStatus() >= 400) {
             log.warn(
-                    "REQUEST_END method={} uri={} handler={} status={} durationMs={} user={} ip={}",
+                    "HTTP_FLOW method={} uri={} status={} durationMs={} result={} handler={} user={} ip={}",
                     request.getMethod(),
                     request.getRequestURI(),
-                    handlerSignature,
                     response.getStatus(),
                     duration,
+                    false,
+                    handlerSignature,
                     username,
                     AuthUtils.getRemoteIpAddr()
             );
         } else {
             log.info(
-                    "REQUEST_END method={} uri={} handler={} status={} durationMs={} user={} ip={}",
+                    "HTTP_FLOW method={} uri={} status={} durationMs={} result={} handler={} user={} ip={}",
                     request.getMethod(),
                     request.getRequestURI(),
-                    handlerSignature,
                     response.getStatus(),
                     duration,
+                    !failed,
+                    handlerSignature,
                     username,
                     AuthUtils.getRemoteIpAddr()
             );

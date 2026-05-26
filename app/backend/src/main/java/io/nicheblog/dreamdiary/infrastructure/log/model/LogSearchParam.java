@@ -21,4 +21,10 @@ public class LogSearchParam
 
     /** 제목 */
     private String title;
+
+    /** 최소 소요 시간(ms) */
+    private Long minDurationMs;
+
+    /** 예외 발생 로그만 조회 */
+    private Boolean hasException;
 }
