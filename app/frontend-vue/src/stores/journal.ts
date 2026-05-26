@@ -322,7 +322,9 @@ export const useJournalStore = defineStore("journal", () => {
         showTagCloud: params?.showTagCloud ?? showTagCloud.value,
         ...(diaryKeyword.value ? { diaryKeyword: diaryKeyword.value } : {}),
         ...(dreamKeyword.value ? { dreamKeyword: dreamKeyword.value } : {}),
-        ...(chapterCtgrCds.value.length > 0 ? { chapterCtgrCds: chapterCtgrCds.value } : {}),
+        // axios 1.x 는 배열을 chapterCtgrCds[]=A 형식으로 직렬화해 Spring @ModelAttribute 바인딩이 안 됨.
+        // normalizeChapterCtgrCds 가 콤마 구분 단일 문자열을 분리 처리하므로, join(',') 으로 전송.
+        ...(chapterCtgrCds.value.length > 0 ? { chapterCtgrCds: chapterCtgrCds.value.join(",") } : {}),
         ...(resolvedViewType === "WEEKLY" && weekStartDt.value
           ? { weekStartDt: weekStartDt.value }
           : {}),

@@ -259,6 +259,18 @@
       </div>
       <!--end::ENTRY 필터-->
 
+      <!--begin::필터 초기화 버튼-->
+      <button
+        type="button"
+        class="btn btn-sm btn-light-secondary w-100"
+        :disabled="!hasActiveFilters"
+        @click="resetFilters"
+      >
+        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        필터 초기화
+      </button>
+      <!--end::필터 초기화 버튼-->
+
       <!--begin::할일 등록 버튼-->
       <button
         type="button"
@@ -342,6 +354,15 @@ const weekDays = computed(() => {
     };
   });
 });
+
+const hasActiveFilters = computed(() =>
+  !store.showDiaries ||
+  !store.showDreams ||
+  !store.showTagCloud ||
+  store.diaryKeyword.trim() !== "" ||
+  store.dreamKeyword.trim() !== "" ||
+  store.chapterCtgrCds.length > 0
+);
 
 /** 요일 버튼 클릭 → 해당 날짜를 선택 상태로 전환 후 해당 일자 카드로 스크롤 */
 async function selectWeekDay(day: { dateStr: string; hasDay: boolean }): Promise<void> {
@@ -431,6 +452,20 @@ function toggleChapterCategory(code: string): void {
     ? store.chapterCtgrCds.filter((item) => item !== code)
     : [...store.chapterCtgrCds, code];
   void store.fetchDays();
+}
+
+async function resetFilters(): Promise<void> {
+  const shouldRefreshTagCloud = !store.showTagCloud;
+  store.showDiaries = true;
+  store.showDreams = true;
+  store.showTagCloud = true;
+  store.diaryKeyword = "";
+  store.dreamKeyword = "";
+  store.chapterCtgrCds = [];
+  if (shouldRefreshTagCloud) {
+    void store.fetchTagCloud();
+  }
+  await store.fetchDays();
 }
 
 /** 할일 등록 모달 열기 */
