@@ -138,6 +138,15 @@
     }
 }
 
+/* btn-bg-light 는 btn-color-* 없이 쓰면 아이콘이 거의 안 보임 → 기본 색상 보정 */
+.btn.btn-bg-light {
+    color: #7e8299;
+
+    i, .svg-icon {
+        color: #7e8299;
+    }
+}
+
 .btn {
     i {
         margin-bottom: 0 !important;
