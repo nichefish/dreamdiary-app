@@ -1,5 +1,7 @@
 # Dreamdiary AI Chat Philosophy
 
+동작 기준과 구현 상태는 [AI Chat Spec](migration/chat/ai-chat-spec.md)을 따른다.
+
 ## 핵심 관점
 
 Dreamdiary의 AI 채팅은 단순 질의응답 도구가 아니라, 사용자의 기록과 생각을 이어서 다루는 대화형 보조자다.

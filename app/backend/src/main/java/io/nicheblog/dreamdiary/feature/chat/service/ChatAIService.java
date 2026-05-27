@@ -1,9 +1,12 @@
 package io.nicheblog.dreamdiary.feature.chat.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.chat.entity.ChatSessionEntity;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
-import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
+import io.nicheblog.dreamdiary.feature.chat.model.RagIntent;
+import io.nicheblog.dreamdiary.feature.journal.embedding.model.RagSearchResult;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingSearchService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -14,10 +17,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * ChatAIService
@@ -34,8 +43,37 @@ public class ChatAIService {
 
     /** RAG 검색에서 가져올 최대 저널 엔트리 수 */
     private static final int RAG_TOP_K = 5;
+    /** 요약형 RAG 검색에서 가져올 최대 저널 엔트리 수 */
+    private static final int RAG_SUMMARY_TOP_K = 12;
+    /** 통섭형 RAG 검색에서 가져올 최대 저널 엔트리 수 */
+    private static final int RAG_SYNTHESIS_TOP_K = 25;
+    /** 관련 없는 기록을 억지로 주입하지 않기 위한 최소 검색 점수 */
+    private static final double RAG_MIN_SCORE = 0.35D;
+    /** 통섭형 질문에서 더 넓은 맥락을 가져오기 위한 최소 검색 점수 */
+    private static final double RAG_SYNTHESIS_MIN_SCORE = 0.25D;
     /** RAG 컨텍스트에 포함할 엔트리당 최대 텍스트 길이 */
     private static final int RAG_TEXT_MAX_LENGTH = 300;
+    /** 통섭형 RAG 컨텍스트에 포함할 엔트리당 최대 스니펫 길이 */
+    private static final int RAG_SYNTHESIS_TEXT_MAX_LENGTH = 220;
+    /** 세션별 프롬프트보다 우선 적용할 응답 안전 규칙 */
+    private static final String RESPONSE_GUARD_PROMPT = String.join("\n",
+            "",
+            "## 응답 규칙",
+            "반드시 한국어로만 답변한다. 사용자가 명시적으로 요청하지 않는 한 중국어, 영어, 일본어 문장을 섞지 않는다.",
+            "사용자의 질문이 한국어이면 자연스러운 한국어 구어체로 답한다.",
+            "참고할 저널 기록은 관련성이 충분할 때만 사용한다. 관련이 약하면 억지로 연결하지 않는다.",
+            "사용자가 인물, 장소, 태그, 고유명사를 물으면 외부 상식보다 먼저 참고 저널 기록 안의 맥락으로 이해한다.",
+            "기록에서 확인되지 않는 사람, 사건, 사실은 아는 척하지 말고 확인되는 정보가 없다고 말한 뒤 필요한 맥락을 짧게 물어본다.",
+            "참고 기록과 질문이 맞지 않더라도 '이전 기록과 무관합니다' 같은 시스템 내부 판단을 길게 설명하지 않는다."
+    );
+    /** LLM이 언어 규칙을 어긴 경우 1회 재시도할 때 추가하는 지시문 */
+    private static final String LANGUAGE_RETRY_PROMPT = String.join("\n",
+            "",
+            "## 중요",
+            "직전 응답에는 허용되지 않는 중국어/한자 문장이 섞였습니다.",
+            "이번 응답은 반드시 한글 중심의 한국어 문장으로만 다시 작성하세요.",
+            "중국어 원문, 한자 이름 추정, 병음, 번체/간체 문자를 쓰지 마세요."
+    );
 
     private final ChatMessageService chatMessageService;
     private final ChatSessionService chatSessionService;
@@ -43,6 +81,7 @@ public class ChatAIService {
     private final OllamaClient ollamaClient;
     private final JournalEntryEmbeddingSearchService embeddingSearchService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /** 세션별 응답 취소 플래그 */
     private final Map<Integer, AtomicBoolean> cancelFlags = new ConcurrentHashMap<>();
@@ -80,15 +119,22 @@ public class ChatAIService {
 
         // 3. AI 응답 생성 (RAG 컨텍스트 주입)
         final int recentMessageLimit = chatSettingService.getMyRecentMessageLimit();
-        final String ragContext = buildRagContext(message);
+        final RagContext ragContext = buildRagContext(message);
         final String systemPrompt = buildSystemPromptWithRag(
                 StringUtils.defaultIfBlank(session.getSystemPrompt(), chatSessionService.getDefaultSystemPrompt()),
                 ragContext
         );
-        final String rawResponse = ollamaClient.chat(
+        final List<ChatMessageDto> contextMessages = sanitizeContextMessages(
+                chatMessageService.getRecentContextMessages(sessionId, recentMessageLimit)
+        );
+        String rawResponse = ollamaClient.chat(
                         systemPrompt,
-                        chatMessageService.getRecentContextMessages(sessionId, recentMessageLimit)
+                        contextMessages
                 );
+        if (containsDisallowedHanScript(rawResponse)) {
+            log.warn("AI response language guard retry. sessionId={}", sessionId);
+            rawResponse = ollamaClient.chat(systemPrompt + LANGUAGE_RETRY_PROMPT, contextMessages);
+        }
 
         // 취소 요청이 들어왔으면 저장/broadcast 없이 종료
         if (isCancelled(sessionId)) {
@@ -97,7 +143,10 @@ public class ChatAIService {
             return;
         }
 
-        final String aiResponse = stripMarkdown(rawResponse);
+        final String strippedResponse = stripMarkdown(rawResponse);
+        final String aiResponse = containsDisallowedHanScript(strippedResponse)
+                ? buildLanguageFallback(message, ragContext)
+                : strippedResponse;
 
         // 4. AI 메시지 저장
         final ChatMessageDto aiMessage = ChatMessageDto.builder()
@@ -106,6 +155,7 @@ public class ChatAIService {
                         .role("ASSISTANT")
                         .title("Dreamdiary AI")
                         .content(aiResponse)
+                        .metadataJson(buildRagMetadataJson(ragContext))
                         .build();
         final ServiceResponse aiResult = chatMessageService.regist(aiMessage);
         chatSessionService.touchAfterMessage(sessionId, message);
@@ -152,21 +202,23 @@ public class ChatAIService {
      * @param queryText 검색할 사용자 메시지
      * @return 포맷팅된 RAG 컨텍스트 문자열, 결과가 없거나 오류 발생 시 null
      */
-    private String buildRagContext(final String queryText) {
+    private RagContext buildRagContext(final String queryText) {
+        final RagIntent intent = detectRagIntent(queryText);
         try {
-            final List<JournalEntryEmbeddingEntity> results = embeddingSearchService.search(queryText, RAG_TOP_K);
-            if (results.isEmpty()) return null;
+            final int topK = resolveRagTopK(intent);
+            final double minScore = resolveRagMinScore(intent);
+            final List<RagSearchResult> keywordResults = embeddingSearchService.searchByKeywordWithScore(queryText, topK);
+            final List<RagSearchResult> vectorResults = embeddingSearchService.searchWithScore(queryText, topK, minScore);
+            final List<RagSearchResult> results = mergeRagResults(keywordResults, vectorResults, topK);
+            if (results.isEmpty()) return RagContext.empty(intent);
+            log.info("AI RAG context built. intent={}, queryLength={}, keywordCount={}, vectorCount={}, mergedCount={}",
+                    intent, StringUtils.length(queryText), keywordResults.size(), vectorResults.size(), results.size());
+            logRagSources(results);
 
-            final StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < results.size(); i++) {
-                sb.append("[").append(i + 1).append("]\n");
-                sb.append(StringUtils.abbreviate(StringUtils.defaultString(results.get(i).getEmbeddingText()), RAG_TEXT_MAX_LENGTH));
-                sb.append("\n\n");
-            }
-            return sb.toString().trim();
+            return new RagContext(intent, results, buildRagContextText(intent, results));
         } catch (final Exception e) {
-            log.warn("RAG context search failed, proceeding without context. error={}", e.getMessage());
-            return null;
+            log.warn("RAG context search failed, proceeding without context. intent={}, error={}", intent, e.getMessage());
+            return RagContext.empty(intent);
         }
     }
 
@@ -177,12 +229,525 @@ public class ChatAIService {
      * @param ragContext 저널 검색 결과 컨텍스트
      * @return RAG 컨텍스트가 포함된 최종 시스템 프롬프트
      */
-    private String buildSystemPromptWithRag(final String basePrompt, final String ragContext) {
-        if (StringUtils.isBlank(ragContext)) return basePrompt;
-        return basePrompt
+    private String buildSystemPromptWithRag(final String basePrompt, final RagContext ragContext) {
+        final String guardedPrompt = StringUtils.defaultString(basePrompt) + RESPONSE_GUARD_PROMPT;
+        if (ragContext == null || StringUtils.isBlank(ragContext.text())) return guardedPrompt;
+        return guardedPrompt
                 + "\n\n## 참고할 저널 기록\n"
-                + "아래는 현재 질문과 관련성이 높은 나의 저널 기록입니다. 답변 시 참고하세요.\n\n"
-                + ragContext;
+                + "아래는 현재 질문과 관련성이 충분하다고 검색된 나의 저널 기록입니다.\n"
+                + "질문 속 인물/키워드가 아래 기록에 등장하면, 외부 인물이 아니라 나의 Dreamdiary 기록 속 맥락으로 해석하세요.\n"
+                + buildIntentPrompt(ragContext.intent())
+                + "\n\n"
+                + ragContext.text();
+    }
+
+    /**
+     * 직접 키워드 검색 결과를 우선하고, 벡터 검색 결과를 뒤에 합칩니다.
+     */
+    private List<RagSearchResult> mergeRagResults(
+            final List<RagSearchResult> keywordResults,
+            final List<RagSearchResult> vectorResults,
+            final int topK
+    ) {
+        final Map<Integer, RagSearchResult> merged = new LinkedHashMap<>();
+        for (final RagSearchResult result : keywordResults) {
+            if (result == null || result.getJournalEntryId() == null) continue;
+            merged.put(result.getJournalEntryId(), result);
+            if (merged.size() >= topK) return new ArrayList<>(merged.values());
+        }
+        for (final RagSearchResult result : vectorResults) {
+            if (result == null || result.getJournalEntryId() == null) continue;
+            merged.putIfAbsent(result.getJournalEntryId(), result);
+            if (merged.size() >= topK) break;
+        }
+        return new ArrayList<>(merged.values());
+    }
+
+    /**
+     * 질문 문장을 보고 RAG 응답 의도를 가볍게 분류합니다.
+     */
+    private RagIntent detectRagIntent(final String queryText) {
+        final String text = StringUtils.defaultString(queryText);
+        if (StringUtils.containsAny(text,
+                "의미", "통섭", "엮", "상징", "패턴", "흐름", "반복", "변화", "감정선",
+                "어떤 존재", "어떤 역할", "어떻게 이어", "전체 맥락", "관통", "해석")) {
+            return RagIntent.SYNTHESIS;
+        }
+        if (StringUtils.containsAny(text,
+                "요약", "정리", "모아", "묶어", "최근", "전체적으로", "한번에", "돌아봐")) {
+            return RagIntent.SUMMARY;
+        }
+        return RagIntent.LOOKUP;
+    }
+
+    /**
+     * RAG 의도별 검색 폭을 반환합니다.
+     */
+    private int resolveRagTopK(final RagIntent intent) {
+        if (intent == RagIntent.SYNTHESIS) return RAG_SYNTHESIS_TOP_K;
+        if (intent == RagIntent.SUMMARY) return RAG_SUMMARY_TOP_K;
+        return RAG_TOP_K;
+    }
+
+    /**
+     * RAG 의도별 벡터 검색 최소 점수를 반환합니다.
+     */
+    private double resolveRagMinScore(final RagIntent intent) {
+        if (intent == RagIntent.SYNTHESIS) return RAG_SYNTHESIS_MIN_SCORE;
+        return RAG_MIN_SCORE;
+    }
+
+    /**
+     * 의도에 맞는 RAG 컨텍스트 텍스트를 구성합니다.
+     */
+    private String buildRagContextText(final RagIntent intent, final List<RagSearchResult> results) {
+        if (intent == RagIntent.SYNTHESIS || intent == RagIntent.SUMMARY) {
+            return buildSynthesisRagContextText(intent, results);
+        }
+        return buildLookupRagContextText(results);
+    }
+
+    /**
+     * 단순 조회형 RAG 컨텍스트를 구성합니다.
+     */
+    private String buildLookupRagContextText(final List<RagSearchResult> results) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < results.size(); i++) {
+            sb.append("[").append(i + 1).append("]\n");
+            sb.append(StringUtils.abbreviate(StringUtils.defaultString(results.get(i).getEntity().getEmbeddingText()), RAG_TEXT_MAX_LENGTH));
+            sb.append("\n\n");
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * 요약/통섭형 RAG 컨텍스트를 시간순으로 압축 구성합니다.
+     */
+    private String buildSynthesisRagContextText(final RagIntent intent, final List<RagSearchResult> results) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("RAG_INTENT: ").append(intent.name()).append('\n');
+        sb.append("아래 기록 묶음은 통섭을 위한 재료입니다. 단일 기록만 보지 말고 반복, 변화, 연결을 함께 보세요.\n\n");
+        appendTagSummaryBlock(sb, results);
+        appendTimelineSummaryBlock(sb, results);
+        for (int i = 0; i < results.size(); i++) {
+            final RagSearchResult result = results.get(i);
+            if (result == null || result.getEntity() == null) continue;
+
+            sb.append("- [").append(i + 1).append("] ");
+            sb.append("date=").append(result.getEntity().getJournalDate()).append("; ");
+            sb.append("kind=").append(result.getEntity().getContentKind()).append("; ");
+            sb.append("match=").append(result.getMatchType()).append("; ");
+            sb.append("score=").append(formatScore(result.getScore())).append("; ");
+            if (result.getMatchedTokens() != null && !result.getMatchedTokens().isEmpty()) {
+                sb.append("tokens=").append(result.getMatchedTokens()).append("; ");
+            }
+            sb.append("snippet=");
+            sb.append(StringUtils.abbreviate(
+                    StringUtils.defaultIfBlank(result.getSnippet(), result.getEntity().getEmbeddingText()),
+                    RAG_SYNTHESIS_TEXT_MAX_LENGTH
+            ));
+            sb.append('\n');
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * 통섭 컨텍스트 상단에 태그 요약 블록을 추가합니다.
+     */
+    private void appendTagSummaryBlock(final StringBuilder sb, final List<RagSearchResult> results) {
+        final RagTagSummary tagSummary = buildRagTagSummary(results);
+
+        if (tagSummary.totalTagCountMap().isEmpty()) return;
+
+        sb.append("## 태그 요약\n");
+        sb.append("태그는 사용자가 의도적으로 붙인 주제 축입니다. 본문보다 강한 해석 신호로 우선 참고하세요.\n");
+        appendTagCountLine(sb, "전체 반복 태그", tagSummary.totalTagCountMap());
+        appendTagCountLine(sb, "꿈 기록 태그", tagSummary.dreamTagCountMap());
+        appendTagCountLine(sb, "일기 기록 태그", tagSummary.diaryTagCountMap());
+        appendTagCountLine(sb, "노트 기록 태그", tagSummary.noteTagCountMap());
+        appendTagPairLine(sb, "연결 태그", tagSummary.tagPairCountMap());
+        sb.append('\n');
+    }
+
+    /**
+     * RAG source들의 태그 빈도와 공동출현 쌍을 집계합니다.
+     */
+    private RagTagSummary buildRagTagSummary(final List<RagSearchResult> results) {
+        final Map<String, Integer> totalTagCountMap = new LinkedHashMap<>();
+        final Map<String, Integer> dreamTagCountMap = new LinkedHashMap<>();
+        final Map<String, Integer> diaryTagCountMap = new LinkedHashMap<>();
+        final Map<String, Integer> noteTagCountMap = new LinkedHashMap<>();
+        final Map<String, Integer> tagPairCountMap = new LinkedHashMap<>();
+
+        if (results == null) {
+            return new RagTagSummary(totalTagCountMap, dreamTagCountMap, diaryTagCountMap, noteTagCountMap, tagPairCountMap);
+        }
+
+        for (final RagSearchResult result : results) {
+            if (result == null || result.getEntity() == null) continue;
+
+            final List<String> tags = extractSourceTags(result).stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+            if (tags.isEmpty()) continue;
+
+            incrementTagCounts(totalTagCountMap, tags);
+            incrementTagPairCounts(tagPairCountMap, tags);
+
+            final String contentKind = StringUtils.defaultString(result.getEntity().getContentKind());
+            if ("DREAM".equalsIgnoreCase(contentKind)) {
+                incrementTagCounts(dreamTagCountMap, tags);
+            } else if ("DIARY".equalsIgnoreCase(contentKind)) {
+                incrementTagCounts(diaryTagCountMap, tags);
+            } else if ("NOTE".equalsIgnoreCase(contentKind)) {
+                incrementTagCounts(noteTagCountMap, tags);
+            }
+        }
+
+        return new RagTagSummary(totalTagCountMap, dreamTagCountMap, diaryTagCountMap, noteTagCountMap, tagPairCountMap);
+    }
+
+    /**
+     * 태그 카운트를 누적합니다.
+     */
+    private void incrementTagCounts(final Map<String, Integer> tagCountMap, final List<String> tags) {
+        for (final String tag : tags) {
+            if (StringUtils.isBlank(tag)) continue;
+            tagCountMap.merge(tag, 1, Integer::sum);
+        }
+    }
+
+    /**
+     * 태그 공동출현 쌍 카운트를 누적합니다.
+     */
+    private void incrementTagPairCounts(final Map<String, Integer> tagPairCountMap, final List<String> tags) {
+        if (tags.size() < 2) return;
+        final List<String> sortedTags = tags.stream()
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        for (int i = 0; i < sortedTags.size(); i++) {
+            for (int j = i + 1; j < sortedTags.size(); j++) {
+                tagPairCountMap.merge(sortedTags.get(i) + " ↔ " + sortedTags.get(j), 1, Integer::sum);
+            }
+        }
+    }
+
+    /**
+     * 태그 카운트 한 줄을 추가합니다.
+     */
+    private void appendTagCountLine(final StringBuilder sb, final String label, final Map<String, Integer> tagCountMap) {
+        if (tagCountMap.isEmpty()) return;
+        sb.append(label).append(": ").append(formatTopTags(tagCountMap, 14)).append('\n');
+    }
+
+    /**
+     * 태그 공동출현 쌍 한 줄을 추가합니다.
+     */
+    private void appendTagPairLine(final StringBuilder sb, final String label, final Map<String, Integer> tagPairCountMap) {
+        if (tagPairCountMap.isEmpty()) return;
+        sb.append(label).append(": ").append(formatTopTags(tagPairCountMap, 10)).append('\n');
+    }
+
+    /**
+     * 상위 태그 카운트를 프롬프트에 넣기 좋은 문자열로 변환합니다.
+     */
+    private String formatTopTags(final Map<String, Integer> tagCountMap, final int limit) {
+        return tagCountMap.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
+                .limit(limit)
+                .map(entry -> entry.getKey() + "(" + entry.getValue() + ")")
+                .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * 메시지 metadata에 저장할 태그 요약 정보를 구성합니다.
+     */
+    private Map<String, Object> buildTagSummaryMetadata(final List<RagSearchResult> results) {
+        final RagTagSummary tagSummary = buildRagTagSummary(results);
+        final Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("totalTags", buildTopTagCountMetadata(tagSummary.totalTagCountMap(), 20));
+        metadata.put("dreamTags", buildTopTagCountMetadata(tagSummary.dreamTagCountMap(), 20));
+        metadata.put("diaryTags", buildTopTagCountMetadata(tagSummary.diaryTagCountMap(), 20));
+        metadata.put("noteTags", buildTopTagCountMetadata(tagSummary.noteTagCountMap(), 20));
+        metadata.put("tagPairs", buildTopTagCountMetadata(tagSummary.tagPairCountMap(), 20));
+        return metadata;
+    }
+
+    /**
+     * 통섭 컨텍스트 상단에 시간/유형 요약 블록을 추가합니다.
+     */
+    private void appendTimelineSummaryBlock(final StringBuilder sb, final List<RagSearchResult> results) {
+        final RagTimelineSummary timelineSummary = buildRagTimelineSummary(results);
+        if (timelineSummary.sourceCount() <= 0) return;
+
+        sb.append("## 시간/유형 흐름\n");
+        if (StringUtils.isNotBlank(timelineSummary.firstDate()) || StringUtils.isNotBlank(timelineSummary.lastDate())) {
+            sb.append("기간: ")
+                    .append(StringUtils.defaultIfBlank(timelineSummary.firstDate(), "?"))
+                    .append(" ~ ")
+                    .append(StringUtils.defaultIfBlank(timelineSummary.lastDate(), "?"))
+                    .append('\n');
+        }
+        appendTagCountLine(sb, "기록 유형", timelineSummary.contentKindCountMap());
+        appendTagCountLine(sb, "월별 밀도", timelineSummary.monthCountMap());
+        sb.append("시간축은 주제가 어느 시기에 응집되거나 옮겨가는지 보는 보조 해석 축입니다.\n\n");
+    }
+
+    /**
+     * RAG source들의 시간/유형 흐름을 집계합니다.
+     */
+    private RagTimelineSummary buildRagTimelineSummary(final List<RagSearchResult> results) {
+        final Map<String, Integer> contentKindCountMap = new LinkedHashMap<>();
+        final Map<String, Integer> monthCountMap = new LinkedHashMap<>();
+        final List<Date> dateList = new ArrayList<>();
+
+        if (results != null) {
+            for (final RagSearchResult result : results) {
+                if (result == null || result.getEntity() == null) continue;
+
+                final String contentKind = StringUtils.defaultIfBlank(result.getEntity().getContentKind(), "UNKNOWN");
+                contentKindCountMap.merge(contentKind, 1, Integer::sum);
+
+                final Date journalDate = result.getEntity().getJournalDate();
+                if (journalDate == null) continue;
+
+                dateList.add(journalDate);
+                monthCountMap.merge(formatDate(journalDate, "yyyy-MM"), 1, Integer::sum);
+            }
+        }
+
+        dateList.sort(Date::compareTo);
+        final String firstDate = dateList.isEmpty() ? null : formatDate(dateList.get(0), "yyyy-MM-dd");
+        final String lastDate = dateList.isEmpty() ? null : formatDate(dateList.get(dateList.size() - 1), "yyyy-MM-dd");
+        return new RagTimelineSummary(results == null ? 0 : results.size(), firstDate, lastDate, contentKindCountMap, monthCountMap);
+    }
+
+    /**
+     * 메시지 metadata에 저장할 시간/유형 요약 정보를 구성합니다.
+     */
+    private Map<String, Object> buildTimelineSummaryMetadata(final List<RagSearchResult> results) {
+        final RagTimelineSummary timelineSummary = buildRagTimelineSummary(results);
+        final Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("sourceCount", timelineSummary.sourceCount());
+        metadata.put("firstDate", timelineSummary.firstDate());
+        metadata.put("lastDate", timelineSummary.lastDate());
+        metadata.put("contentKinds", buildTopTagCountMetadata(timelineSummary.contentKindCountMap(), 10));
+        metadata.put("months", buildTopTagCountMetadata(timelineSummary.monthCountMap(), 24));
+        return metadata;
+    }
+
+    /**
+     * 날짜를 지정한 패턴 문자열로 변환합니다.
+     */
+    private String formatDate(final Date date, final String pattern) {
+        if (date == null) return null;
+        return new SimpleDateFormat(pattern).format(date);
+    }
+
+    /**
+     * 태그 카운트 맵을 metadata 배열 형태로 변환합니다.
+     */
+    private List<Map<String, Object>> buildTopTagCountMetadata(final Map<String, Integer> tagCountMap, final int limit) {
+        if (tagCountMap == null || tagCountMap.isEmpty()) return List.of();
+        return tagCountMap.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
+                .limit(limit)
+                .map(entry -> {
+                    final Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("name", entry.getKey());
+                    item.put("count", entry.getValue());
+                    return item;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * RAG 의도별 추가 프롬프트를 구성합니다.
+     */
+    private String buildIntentPrompt(final RagIntent intent) {
+        if (intent == RagIntent.SYNTHESIS) {
+            return String.join("\n",
+                    "이 질문은 통섭형 질문입니다.",
+                    "답변은 기록에 확인되는 범위 안에서 다음 관점으로 엮으세요: 등장 맥락, 반복 패턴, 시기별 변화, 감정선, 태그/상징 연결.",
+                    "단정하지 말고 '기록상으로는', '반복해서 보이는 건'처럼 근거의 한계를 드러내세요.",
+                    "기록 조각을 단순 나열하지 말고, 사용자가 자기 흐름을 이해할 수 있게 하나의 해석으로 정리하세요."
+            );
+        }
+        if (intent == RagIntent.SUMMARY) {
+            return "이 질문은 요약형 질문입니다. 기록 묶음에서 핵심 사건, 반복 주제, 눈에 띄는 변화를 간결하게 정리하세요.";
+        }
+        return "답변은 기록에 적힌 범위 안에서만 정리하고, 부족한 부분은 짧게 확인 질문을 덧붙이세요.";
+    }
+
+    /**
+     * RAG가 어떤 기록을 근거로 선택했는지 운영 로그에 남깁니다.
+     */
+    private void logRagSources(final List<RagSearchResult> results) {
+        for (int i = 0; i < results.size(); i++) {
+            final RagSearchResult result = results.get(i);
+            if (result == null || result.getEntity() == null) continue;
+
+            log.info(
+                    "AI RAG source rank={} entryId={} date={} matchType={} score={} tokens={} snippet={}",
+                    i + 1,
+                    result.getJournalEntryId(),
+                    result.getEntity().getJournalDate(),
+                    result.getMatchType(),
+                    formatScore(result.getScore()),
+                    result.getMatchedTokens(),
+                    StringUtils.abbreviate(StringUtils.defaultString(result.getSnippet()), 160)
+            );
+        }
+    }
+
+    /**
+     * AI 메시지에 저장할 RAG 출처 메타데이터 JSON을 구성합니다.
+     */
+    private String buildRagMetadataJson(final RagContext ragContext) {
+        if (ragContext == null) return null;
+        try {
+            final Map<String, Object> metadata = new LinkedHashMap<>();
+            metadata.put("ragIntent", ragContext.intent() == null ? null : ragContext.intent().name());
+            metadata.put("ragSourceCount", ragContext.results() == null ? 0 : ragContext.results().size());
+            metadata.put("ragTagSummary", buildTagSummaryMetadata(ragContext.results()));
+            metadata.put("ragTimelineSummary", buildTimelineSummaryMetadata(ragContext.results()));
+            metadata.put("ragSources", buildRagSourceMetadataList(ragContext.results()));
+            return objectMapper.writeValueAsString(metadata);
+        } catch (final Exception e) {
+            log.warn("Failed to build RAG metadata JSON. error={}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * RAG 검색 결과를 메시지 메타데이터에 넣기 좋은 축약 구조로 변환합니다.
+     */
+    private List<Map<String, Object>> buildRagSourceMetadataList(final List<RagSearchResult> results) {
+        if (results == null || results.isEmpty()) return List.of();
+
+        final List<Map<String, Object>> sourceList = new ArrayList<>();
+        for (int i = 0; i < results.size(); i++) {
+            final RagSearchResult result = results.get(i);
+            if (result == null || result.getEntity() == null) continue;
+
+            final Map<String, Object> source = new LinkedHashMap<>();
+            source.put("rank", i + 1);
+            source.put("journalEntryId", result.getJournalEntryId());
+            source.put("journalDate", result.getEntity().getJournalDate());
+            source.put("contentKind", result.getEntity().getContentKind());
+            source.put("matchType", result.getMatchType());
+            source.put("score", result.getScore());
+            source.put("matchedTokens", result.getMatchedTokens());
+            source.put("tags", extractSourceTags(result));
+            source.put("snippet", StringUtils.abbreviate(StringUtils.defaultString(result.getSnippet()), 220));
+            sourceList.add(source);
+        }
+        return sourceList;
+    }
+
+    /**
+     * RAG source payload에서 태그 목록을 추출합니다.
+     */
+    private List<String> extractSourceTags(final RagSearchResult result) {
+        if (result == null || result.getEntity() == null) return List.of();
+        final Map<String, Object> payload = readEmbeddingPayload(result);
+        final Object rawTags = payload.get("tags");
+        if (rawTags == null) return List.of();
+
+        final String tagText = StringUtils.normalizeSpace(String.valueOf(rawTags));
+        if (StringUtils.isBlank(tagText)) return List.of();
+
+        final List<String> tagList = new ArrayList<>();
+        for (final String token : tagText.split("\\s+")) {
+            if (StringUtils.isBlank(token)) continue;
+            tagList.add(token);
+        }
+        return tagList;
+    }
+
+    /**
+     * 임베딩 payload JSON을 Map으로 변환합니다.
+     */
+    private Map<String, Object> readEmbeddingPayload(final RagSearchResult result) {
+        if (result == null || result.getEntity() == null || StringUtils.isBlank(result.getEntity().getEmbeddingPayloadJson())) {
+            return Map.of();
+        }
+        try {
+            return objectMapper.readValue(result.getEntity().getEmbeddingPayloadJson(), new TypeReference<Map<String, Object>>() {});
+        } catch (final Exception e) {
+            log.debug("Failed to parse RAG source payload. journalEntryId={}", result.getJournalEntryId(), e);
+            return Map.of();
+        }
+    }
+
+    /**
+     * 로그용 검색 점수를 소수점 넷째 자리까지 정리합니다.
+     */
+    private String formatScore(final Double score) {
+        if (score == null) return "null";
+        return String.format("%.4f", score);
+    }
+
+    /**
+     * 이전 assistant 응답이 언어 규칙을 어긴 경우 다음 프롬프트 맥락에서 제외합니다.
+     *
+     * <p>이미 저장된 잘못된 응답이 다음 생성에 다시 들어가면 모델이 같은 언어 패턴을 따라갈 수 있습니다.</p>
+     *
+     * @param messages 최근 대화 메시지
+     * @return 언어 규칙 위반 assistant 메시지를 대체한 맥락 메시지
+     */
+    private List<ChatMessageDto> sanitizeContextMessages(final List<ChatMessageDto> messages) {
+        if (messages == null) return List.of();
+        return messages.stream()
+                .map(message -> {
+                    if (!isAssistantRole(message.getRole()) || !containsDisallowedHanScript(message.getContent())) {
+                        return message;
+                    }
+                    return message.toBuilder()
+                            .content("[이전 AI 응답은 언어 규칙 위반으로 맥락에서 제외되었습니다.]")
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * assistant 역할 여부를 확인합니다.
+     */
+    private boolean isAssistantRole(final String role) {
+        return StringUtils.equalsAnyIgnoreCase(role, "ASSISTANT", "AI", "SYSTEM");
+    }
+
+    /**
+     * 한국어 응답에 섞이면 안 되는 한자/중국어 계열 문자가 포함되었는지 확인합니다.
+     *
+     * <p>한국어 일반 응답에서 한자 1자는 우연히 포함될 수 있으므로 2자 이상부터 차단합니다.</p>
+     */
+    private boolean containsDisallowedHanScript(final String text) {
+        if (StringUtils.isBlank(text)) return false;
+        int count = 0;
+        for (int i = 0; i < text.length(); i++) {
+            if (Character.UnicodeScript.of(text.charAt(i)) == Character.UnicodeScript.HAN) {
+                count++;
+                if (count >= 2) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * LLM이 재시도 후에도 언어 규칙을 어긴 경우 저장할 안전한 한국어 응답을 만듭니다.
+     */
+    private String buildLanguageFallback(final String userMessage, final RagContext ragContext) {
+        log.warn("AI response language guard fallback. query={}", StringUtils.abbreviate(userMessage, 80));
+        if (ragContext == null || StringUtils.isBlank(ragContext.text())) {
+            return "지금 확인되는 기록만으로는 답하기 어려워요. 어떤 사람이나 맥락을 말하는 건지 조금만 더 알려줘.";
+        }
+        if (ragContext.intent() == RagIntent.SYNTHESIS) {
+            return "관련 기록은 찾았지만, 응답 생성 중 언어가 섞여서 그대로 보여주지 않았어요. 통섭 답변으로 다시 정리할 수 있게 질문을 한 번만 더 보내줘.";
+        }
+        return "관련 기록은 일부 찾았지만, 응답 생성 중 언어가 섞여서 그대로 보여주지 않았어요. 질문을 조금 더 구체적으로 말해주면 한국어로 다시 정리해볼게.";
     }
 
     /**
@@ -223,4 +788,35 @@ public class ChatAIService {
                 .replaceAll("\\n{3,}", "\n\n")
                 .trim();
     }
+
+    /**
+     * RAG 의도, 검색 결과, 프롬프트용 컨텍스트 텍스트를 함께 보관합니다.
+     */
+    private record RagContext(RagIntent intent, List<RagSearchResult> results, String text) {
+        private static RagContext empty(final RagIntent intent) {
+            return new RagContext(intent, List.of(), null);
+        }
+    }
+
+    /**
+     * RAG 태그 빈도/공동출현 요약.
+     */
+    private record RagTagSummary(
+            Map<String, Integer> totalTagCountMap,
+            Map<String, Integer> dreamTagCountMap,
+            Map<String, Integer> diaryTagCountMap,
+            Map<String, Integer> noteTagCountMap,
+            Map<String, Integer> tagPairCountMap
+    ) {}
+
+    /**
+     * RAG 시간/유형 흐름 요약.
+     */
+    private record RagTimelineSummary(
+            int sourceCount,
+            String firstDate,
+            String lastDate,
+            Map<String, Integer> contentKindCountMap,
+            Map<String, Integer> monthCountMap
+    ) {}
 }

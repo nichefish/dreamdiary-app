@@ -162,6 +162,83 @@
               <div :class="['chat-message-bubble', messageBubbleClass(message)]">
                 {{ messageText(message) }}
               </div>
+              <div
+                v-if="isAssistantMessage(message) && messageRagMetadata(message)"
+                class="chat-rag"
+              >
+                <details>
+                  <summary>
+                    <span>참고 기록 {{ messageRagMetadata(message)?.ragSourceCount || 0 }}건</span>
+                    <span class="chat-rag__intent">
+                      {{ messageRagMetadata(message)?.ragIntent || "RAG" }}
+                    </span>
+                  </summary>
+
+                  <div class="chat-rag__body">
+                    <div
+                      v-if="topTagText(messageRagMetadata(message))"
+                      class="chat-rag__section"
+                    >
+                      <div class="chat-rag__label">태그 요약</div>
+                      <div class="chat-rag__text">
+                        {{ topTagText(messageRagMetadata(message)) }}
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="tagPairText(messageRagMetadata(message))"
+                      class="chat-rag__section"
+                    >
+                      <div class="chat-rag__label">연결 태그</div>
+                      <div class="chat-rag__text">
+                        {{ tagPairText(messageRagMetadata(message)) }}
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="timelineText(messageRagMetadata(message))"
+                      class="chat-rag__section"
+                    >
+                      <div class="chat-rag__label">시간 흐름</div>
+                      <div class="chat-rag__text">
+                        {{ timelineText(messageRagMetadata(message)) }}
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="messageRagMetadata(message)?.ragSources?.length"
+                      class="chat-rag__section"
+                    >
+                      <div class="chat-rag__label">참고 기록</div>
+                      <div class="chat-rag-source-list">
+                        <div
+                          v-for="source in visibleRagSources(messageRagMetadata(message))"
+                          :key="`${source.rank}-${source.journalEntryId}`"
+                          class="chat-rag-source"
+                        >
+                          <div class="chat-rag-source__meta">
+                            <span>{{ source.journalDate || "날짜 없음" }}</span>
+                            <span>{{ source.contentKind || "UNKNOWN" }}</span>
+                            <span>{{ source.matchType || "MATCH" }}</span>
+                            <span v-if="typeof source.score === 'number'">
+                              {{ formatScore(source.score) }}
+                            </span>
+                          </div>
+                          <div
+                            v-if="source.tags?.length"
+                            class="chat-rag-source__tags"
+                          >
+                            {{ source.tags.slice(0, 4).join(" ") }}
+                          </div>
+                          <div class="chat-rag-source__snippet">
+                            {{ source.snippet }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              </div>
             </div>
 
             <div
@@ -271,6 +348,47 @@ const message = ref("");
 const messageList = ref<HTMLElement | null>(null);
 const memoryOptions = [10, 20, 40, 80];
 
+interface RagCountItem {
+  name?: string;
+  count?: number;
+}
+
+interface RagTimelineSummary {
+  sourceCount?: number;
+  firstDate?: string;
+  lastDate?: string;
+  contentKinds?: RagCountItem[];
+  months?: RagCountItem[];
+}
+
+interface RagTagSummary {
+  totalTags?: RagCountItem[];
+  dreamTags?: RagCountItem[];
+  diaryTags?: RagCountItem[];
+  noteTags?: RagCountItem[];
+  tagPairs?: RagCountItem[];
+}
+
+interface RagSource {
+  rank?: number;
+  journalEntryId?: number;
+  journalDate?: string;
+  contentKind?: string;
+  matchType?: string;
+  score?: number;
+  matchedTokens?: string[];
+  tags?: string[];
+  snippet?: string;
+}
+
+interface RagMetadata {
+  ragIntent?: string;
+  ragSourceCount?: number;
+  ragTagSummary?: RagTagSummary;
+  ragTimelineSummary?: RagTimelineSummary;
+  ragSources?: RagSource[];
+}
+
 watch(
   () => authStore.isAuthenticated,
   async (isAuthenticated) => {
@@ -361,6 +479,60 @@ function messageTime(chatMessage: ChatMessage): string {
 
 function messageText(chatMessage: ChatMessage): string {
   return chatMessage.content || "";
+}
+
+function messageRagMetadata(chatMessage: ChatMessage): RagMetadata | null {
+  if (!chatMessage.metadataJson) return null;
+
+  try {
+    const metadata = JSON.parse(chatMessage.metadataJson) as RagMetadata;
+    if (!metadata || !metadata.ragSourceCount) return null;
+    return metadata;
+  } catch {
+    return null;
+  }
+}
+
+function visibleRagSources(metadata: RagMetadata | null | undefined): RagSource[] {
+  return (metadata?.ragSources || []).slice(0, 5);
+}
+
+function topTagText(metadata: RagMetadata | null | undefined): string {
+  return formatCountItems(metadata?.ragTagSummary?.totalTags, 8);
+}
+
+function tagPairText(metadata: RagMetadata | null | undefined): string {
+  return formatCountItems(metadata?.ragTagSummary?.tagPairs, 5);
+}
+
+function timelineText(metadata: RagMetadata | null | undefined): string {
+  const timeline = metadata?.ragTimelineSummary;
+  if (!timeline) return "";
+
+  const parts: string[] = [];
+  if (timeline.firstDate || timeline.lastDate) {
+    parts.push(`${timeline.firstDate || "?"} ~ ${timeline.lastDate || "?"}`);
+  }
+
+  const kinds = formatCountItems(timeline.contentKinds, 4);
+  if (kinds) parts.push(kinds);
+
+  const months = formatCountItems(timeline.months, 4);
+  if (months) parts.push(months);
+
+  return parts.join(" · ");
+}
+
+function formatCountItems(items: RagCountItem[] | undefined, limit: number): string {
+  if (!items || items.length === 0) return "";
+  return items
+    .slice(0, limit)
+    .map((item) => `${item.name || "-"}(${item.count || 0})`)
+    .join(", ");
+}
+
+function formatScore(score: number): string {
+  return Number.isFinite(score) ? score.toFixed(3) : "";
 }
 
 function messageRowClass(chatMessage: ChatMessage): string {
@@ -779,6 +951,121 @@ function messageBubbleClass(chatMessage: ChatMessage): string {
   border-bottom-left-radius: 5px;
   background: #eef2f7;
   color: #172033;
+}
+
+.chat-rag {
+  max-width: 100%;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.chat-rag details {
+  max-width: 100%;
+}
+
+.chat-rag summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  padding: 5px 9px;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  background: #f8fbff;
+  color: #2563eb;
+  cursor: pointer;
+  list-style: none;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.chat-rag summary::-webkit-details-marker {
+  display: none;
+}
+
+.chat-rag summary:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.chat-rag__intent {
+  color: #0f766e;
+  font-size: 10px;
+}
+
+.chat-rag__body {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.chat-rag__section + .chat-rag__section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.chat-rag__label {
+  margin-bottom: 4px;
+  color: #334155;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.chat-rag__text {
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.chat-rag-source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.chat-rag-source {
+  padding: 8px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.chat-rag-source__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.chat-rag-source__meta span {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e8f7f8;
+  color: #0b7280;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.chat-rag-source__tags {
+  margin-bottom: 4px;
+  color: #2563eb;
+  font-size: 10px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.chat-rag-source__snippet {
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+  word-break: break-word;
 }
 
 .chat-message-avatar {
