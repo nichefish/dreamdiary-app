@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
@@ -17,6 +18,7 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -106,10 +108,10 @@ public class JournalEntryEmbeddingQueueService {
         final JournalDaySmpEntity journalDay = chapter == null ? null : chapter.getJournalDay();
         final String contentKind = resolveContentKind(entry, chapter);
         final BigDecimal retrievalWeight = resolveRetrievalWeight(contentKind);
-        final String embeddingText = buildEmbeddingText(entry, journalDay, contentKind);
+        final String embeddingText = buildEmbeddingText(entry, chapter, journalDay, contentKind);
         final String contentHash = sha256Hex(embeddingText);
         final String payloadJson = objectMapper.writeValueAsString(buildPayload(entry, chapter, journalDay, contentKind, retrievalWeight));
-        final boolean hasEmbeddableContent = hasEmbeddableContent(entry);
+        final boolean hasEmbeddableContent = hasEmbeddableContent(entry, chapter);
 
         final Optional<JournalEntryEmbeddingEntity> existing = repository.findFirstByJournalEntryId(entry.getId());
         final boolean exists = existing.isPresent();
@@ -135,7 +137,7 @@ public class JournalEntryEmbeddingQueueService {
             entity.setEmbeddingModel(null);
             entity.setEmbeddingVectorJson(null);
             entity.setEmbeddedAt(null);
-            entity.setErrorMessage("title and content are blank");
+            entity.setErrorMessage("no embeddable title, content, tag, chapter, or dreamer context");
             repository.saveAndFlush(entity);
             return SyncAction.SKIPPED;
         } else if (!hasReusableVector) {
@@ -453,10 +455,21 @@ public class JournalEntryEmbeddingQueueService {
      * @param contentKind 검색 가중치 분류
      * @return 임베딩 입력 텍스트
      */
-    private String buildEmbeddingText(final JournalEntryEntity entry, final JournalDaySmpEntity journalDay, final String contentKind) {
+    private String buildEmbeddingText(
+            final JournalEntryEntity entry,
+            final JournalChapterEntity chapter,
+            final JournalDaySmpEntity journalDay,
+            final String contentKind
+    ) {
         final StringBuilder builder = new StringBuilder();
+        final String tagSummary = buildTagSummary(entry);
         appendLine(builder, "유형", contentKind);
         appendLine(builder, "날짜", formatDate(journalDay == null ? null : journalDay.getJournalDate()));
+        appendLine(builder, "챕터", chapter == null ? null : chapter.getTitle());
+        appendLine(builder, "챕터 분류", chapter == null ? null : StringUtils.firstNonBlank(chapter.getCategoryName(), chapter.getCategoryCode()));
+        appendLine(builder, "핵심 태그", tagSummary);
+        appendLine(builder, "주제 태그", tagSummary);
+        appendLine(builder, "태그", tagSummary);
         appendLine(builder, "제목", entry.getTitle());
         appendLine(builder, "본문", entry.getContent());
         appendLine(builder, "타인의 꿈 여부", entry.getElseDreamYn());
@@ -470,8 +483,12 @@ public class JournalEntryEmbeddingQueueService {
      * @param entry 원본 저널 엔트리
      * @return 벡터화 가능한 본문 존재 여부
      */
-    private boolean hasEmbeddableContent(final JournalEntryEntity entry) {
-        return StringUtils.isNotBlank(entry.getTitle()) || StringUtils.isNotBlank(entry.getContent());
+    private boolean hasEmbeddableContent(final JournalEntryEntity entry, final JournalChapterEntity chapter) {
+        return StringUtils.isNotBlank(entry.getTitle())
+                || StringUtils.isNotBlank(entry.getContent())
+                || StringUtils.isNotBlank(entry.getElseDreamerNm())
+                || (chapter != null && StringUtils.isNotBlank(chapter.getTitle()))
+                || StringUtils.isNotBlank(buildTagSummary(entry));
     }
 
     /**
@@ -499,7 +516,10 @@ public class JournalEntryEmbeddingQueueService {
         payload.put("retrievalWeight", retrievalWeight);
         payload.put("title", entry.getTitle());
         payload.put("journalChapterId", entry.getJournalChapterId());
+        payload.put("journalChapterTitle", chapter == null ? null : chapter.getTitle());
         payload.put("journalChapterType", chapter == null || chapter.getChapterType() == null ? null : chapter.getChapterType().name());
+        payload.put("journalChapterCategoryCode", chapter == null ? null : chapter.getCategoryCode());
+        payload.put("journalChapterCategoryName", chapter == null ? null : chapter.getCategoryName());
         payload.put("journalDayId", chapter == null ? null : chapter.getJournalDayId());
         payload.put("journalDate", formatDate(journalDay == null ? null : journalDay.getJournalDate()));
         payload.put("journalDatePrecision", journalDay == null || journalDay.getJournalDatePrecision() == null ? null : journalDay.getJournalDatePrecision().name());
@@ -508,7 +528,34 @@ public class JournalEntryEmbeddingQueueService {
         payload.put("sortOrder", entry.getSortOrder());
         payload.put("elseDreamYn", entry.getElseDreamYn());
         payload.put("elseDreamerNm", entry.getElseDreamerNm());
+        payload.put("tags", buildTagSummary(entry));
         return payload;
+    }
+
+    /**
+     * 태그 이름과 태그 카테고리를 임베딩 텍스트에 넣기 좋은 문자열로 구성한다.
+     */
+    private String buildTagSummary(final JournalEntryEntity entry) {
+        if (entry == null || entry.getTag() == null || CollectionUtils.isEmpty(entry.getTag().getList())) {
+            return null;
+        }
+        return entry.getTag().getList().stream()
+                .map(this::formatTag)
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .collect(Collectors.joining(" "));
+    }
+
+    /**
+     * 태그를 [카테고리]#태그 형식으로 변환한다.
+     */
+    private String formatTag(final TagContentEntity tagContent) {
+        if (tagContent == null || tagContent.getTag() == null || StringUtils.isBlank(tagContent.getTag().getName())) {
+            return null;
+        }
+        final String tagName = StringUtils.trim(tagContent.getTag().getName());
+        final String category = StringUtils.trimToNull(tagContent.getTag().getCtgr());
+        return category == null ? "#" + tagName : "[" + category + "]#" + tagName;
     }
 
     /**

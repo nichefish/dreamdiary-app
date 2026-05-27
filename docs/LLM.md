@@ -1,5 +1,7 @@
 ## 로컬 LLM 구축 및 활용.
 
+AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](migration/chat/ai-chat-spec.md)을 함께 갱신한다.
+
 ### 1. Ollama 다운로드 및 설치.
 - Ollama란?
   - 로컬 LLM 실행 런타임 + 모델 관리 도구.
