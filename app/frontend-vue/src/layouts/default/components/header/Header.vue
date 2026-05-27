@@ -63,7 +63,9 @@
         class="d-flex align-items-stretch justify-content-between flex-lg-grow-1"
         id="kt_app_header_wrapper"
       >
-        <KTPageTitle />
+        <!--begin::breadcrumb — 헤더 좌측, route.meta.breadcrumbs 기반 현재 경로 표시-->
+        <PageBreadcrumb />
+        <!--end::breadcrumb-->
         <KTHeaderNavbar />
       </div>
       <!--end::Header wrapper-->
@@ -77,7 +79,7 @@
 import { getAssetPath } from "@metronic/core/helpers/assets";
 import { defineComponent } from "vue";
 import KTHeaderNavbar from "@/layouts/default/components/header/Navbar.vue";
-import KTPageTitle from "@/layouts/default/components/toolbar/PageTitle.vue";
+import PageBreadcrumb from "@/layouts/default/components/content/PageBreadcrumb.vue";
 import {
   headerDisplay,
   headerWidthFluid,
@@ -91,7 +93,7 @@ export default defineComponent({
   name: "layout-header",
   components: {
     KTHeaderNavbar,
-    KTPageTitle,
+    PageBreadcrumb,
   },
   setup() {
     return {

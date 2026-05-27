@@ -21,16 +21,6 @@
     }
 }
 
-@media (min-width: 992px) {
-    [data-kt-app-header-fixed=true][data-kt-app-sidebar-fixed=true][data-kt-app-sidebar-push-header=true] .app-header,
-    [data-kt-app-header-fixed=true][data-kt-app-sidebar-sticky=on][data-kt-app-sidebar-push-header=true] .app-header {
-        left: 0 !important;
-    }
-    body:not([data-kt-app-header-fixed=true])[data-kt-app-sidebar-fixed=true][data-kt-app-sidebar-push-header=true] .app-header,
-    body:not([data-kt-app-header-fixed=true])[data-kt-app-sidebar-sticky=on][data-kt-app-sidebar-push-header=true] .app-header {
-        left: 0 !important;
-    }
-}
 
 @media (max-width: 767.98px) {
     body[data-app-hide-aside="true"] #kt_app_aside {
