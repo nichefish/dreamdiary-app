@@ -93,6 +93,32 @@ const editorInit = {
   toolbar2:
     "emoticons custom_image link | numlist bullist moreless | visualchars visualblocks pagebreak | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
   contextmenu: "link custom_image lists table",
+  /** 붙여넣기 후처리: 허용 태그(볼드/이탤릭/목록/링크) 외 서식 제거 */
+  paste_postprocess(_plugin: any, args: any): void {
+    const allowed = new Set<string>(['strong', 'b', 'em', 'i', 'u', 's', 'del', 'br', 'p', 'a', 'ul', 'ol', 'li', 'code', 'blockquote']);
+    const clean = (node: any): void => {
+      const children: any[] = Array.from(node.childNodes);
+      for (const child of children) {
+        if (child.nodeType !== 1) continue;
+        const tag: string = child.tagName.toLowerCase();
+        if (allowed.has(tag)) {
+          const attrs: Attr[] = Array.from(child.attributes);
+          for (const attr of attrs) {
+            if (tag === 'a' && attr.name === 'href') continue;
+            child.removeAttribute(attr.name);
+          }
+          clean(child);
+        } else {
+          const parent: Node = child.parentNode;
+          while (child.firstChild) {
+            parent.insertBefore(child.firstChild, child);
+          }
+          parent.removeChild(child);
+        }
+      }
+    };
+    clean(args.node);
+  },
   setup(editor: any): void {
     /** SaveContent 이벤트: HTML 엔티티 자동 이스케이핑 보정 */
     editor.on("SaveContent", (e: any) => {
