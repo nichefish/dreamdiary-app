@@ -11,7 +11,8 @@ PID_FILE="$APP_DIR/dreamdiary.pid"
 LOG_FILE="$APP_DIR/logs/dreamdiary.log"
 
 # JVM 옵션 설정 (AWS 프리티어 메모리가 1GB이므로 그 이하로 설정)
-JAVA_OPTS="-Xms256m -Xmx512m -server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_DIR/heapdump.hprof"
+# ReservedCodeCacheSize: 기본값 48MB → 128MB 로 증가 (CodeCache full 방지)
+JAVA_OPTS="-Xms256m -Xmx512m -server -XX:+UseG1GC -XX:ReservedCodeCacheSize=128m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_DIR/heapdump.hprof"
 
 # 명령어 처리
 case "$1" in
