@@ -11,7 +11,7 @@
 
 **Vue 구현 완료**: `app/frontend-vue/src/views/journal/components/JournalTagCloudHeader.vue`
 
-**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`)
+**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). `JournalDaily.vue` 에는 미포함 (일간 뷰는 태그클라우드 없음)
 
 **레거시 HTML 구조**:
 ```html
@@ -178,9 +178,12 @@ HTML 요소:
 ```
 
 **챕터 카테고리 데이터**:
-- API: `GET /api/code/items?groupCode=JOURNAL_CHAPTER_CTGR_CD`
-- 이미 `journalModalStore.fetchChapterCategories()` / `chapterCategoryOptions` 구현됨
-- `onMounted` 시 호출 (없으면 빈 셀렉트)
+- 일기 전용: `GET /api/code/items?groupCode=JOURNAL_CHAPTER_DIARY_CTGR_CD`
+- 노트 전용: `GET /api/code/items?groupCode=JOURNAL_CHAPTER_NOTE_CTGR_CD`
+- `journalModalStore.prefetchChapterCategories()` — 두 그룹 병렬 조회, 세션 캐시. `JournalMonthly` / `JournalWeekly` / `JournalDaily` onMounted에서 선제 호출해 모달 오픈 시 로딩 없이 사용
+- `chapterType === "NOTE"` 이면 `chapterNoteCategoryOptions`, 그 외엔 `chapterDiaryCategoryOptions` 사용 (`JournalChapterRegistModal` computed `currentCategoryOptions`)
+- `chapterType` 변경 시 `categoryCode` 자동 초기화 (watch)
+- DB 마이그레이션: `JOURNAL_CHAPTER_CTGR_CD` → `JOURNAL_CHAPTER_DIARY_CTGR_CD`로 복사 후 기존 그룹 삭제 (`data-required-cd-mariadb.sql`)
 
 **챕터 선택 → store 연동**:
 - `__ALL__` 선택 시: `store.chapterCtgrCds = []` → `store.fetchDays()`
@@ -374,7 +377,7 @@ interface TodoRow {
 
 **Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalDayCard.vue`
 
-**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue` — `v-for="day in store.dayList"`
+**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue`, `JournalDaily.vue` — `v-for="day in store.dayList"`
 
 **하위 컴포넌트**: `JournalChapterItem.vue`, `JournalEntryItem.vue`
 
@@ -387,6 +390,8 @@ interface TodoRow {
 **현재 Vue 동등**: ✓ 구현 완료 (레거시 `JournalDayMonthlyListApp` / 텔레포트 대체)
 
 **컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수
+
+**일간 뷰 새 창 열기**: ✓ 구현 완료 — 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` 새 창 강제 (features 지정)
 
 ---
 
