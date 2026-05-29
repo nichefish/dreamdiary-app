@@ -85,7 +85,7 @@
                 <select name="categoryCode" id="categoryCode" class="form-select form-select-solid" v-model="model.categoryCode">
                   <option value="">-- 카테고리 선택 --</option>
                   <option
-                    v-for="ctgr in modalStore.chapterCategoryOptions"
+                    v-for="ctgr in currentCategoryOptions"
                     :key="ctgr.code"
                     :value="ctgr.code"
                   >[{{ ctgr.codeName }}]</option>
@@ -186,6 +186,19 @@ const isModify = computed(() => !!model.value?.id);
 
 /** 수정 모드의 DREAM 챕터 여부 (타입 변경 불가) */
 const isModifyDream = computed(() => isModify.value && model.value?.chapterType === "DREAM");
+
+/** chapterType에 따라 일기/노트 전용 카테고리 목록을 분기한다. */
+const currentCategoryOptions = computed(() =>
+  model.value?.chapterType === "NOTE"
+    ? modalStore.chapterNoteCategoryOptions
+    : modalStore.chapterDiaryCategoryOptions
+);
+
+/* chapterType 변경 시 카테고리 선택 초기화 */
+watch(
+  () => model.value?.chapterType,
+  () => { if (model.value) model.value.categoryCode = ""; }
+);
 
 onMounted(() => {
   if (modalEl.value) {

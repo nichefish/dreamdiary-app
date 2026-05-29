@@ -247,23 +247,41 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   const chapterRegOpen = ref(false);
   /** 챕터 등록/수정 폼 모델 */
   const chapterRegModel = ref<JournalChapterRegModel | null>(null);
-  /** 챕터 카테고리 옵션 목록 (JOURNAL_CHAPTER_CTGR_CD) */
-  const chapterCategoryOptions = ref<ChapterCategoryOption[]>([]);
+  /** 챕터 카테고리 옵션 목록 — 일기 전용 (JOURNAL_CHAPTER_DIARY_CTGR_CD) */
+  const chapterDiaryCategoryOptions = ref<ChapterCategoryOption[]>([]);
+  /** 챕터 카테고리 옵션 목록 — 노트 전용 (JOURNAL_CHAPTER_NOTE_CTGR_CD) */
+  const chapterNoteCategoryOptions = ref<ChapterCategoryOption[]>([]);
+  /** 프리페치 진행 중 여부 (중복 요청 방지) */
+  let chapterCategoryFetching = false;
+
+  function mapCategoryOptions(list: unknown[]): ChapterCategoryOption[] {
+    return list.map((item: unknown) => {
+      const i = item as Record<string, string>;
+      return { code: i.code ?? "", codeName: i.codeName ?? "" };
+    });
+  }
 
   /**
-   * 챕터 카테고리 옵션을 조회한다.
-   * GET /api/code/items?groupCode=JOURNAL_CHAPTER_CTGR_CD — MNGR 권한 필요.
+   * 챕터 카테고리 옵션을 조회한다. (일기/노트 각각 별도 코드 그룹)
+   * 화면 마운트 시점에도 호출하여 세션 캐시에 넣어 두면 모달 오픈 시 로딩 없이 사용 가능하다.
    */
-  async function fetchChapterCategories() {
-    if (chapterCategoryOptions.value.length > 0) return;
+  async function prefetchChapterCategories(): Promise<void> {
+    const diaryDone = chapterDiaryCategoryOptions.value.length > 0;
+    const noteDone  = chapterNoteCategoryOptions.value.length > 0;
+    if (diaryDone && noteDone) return;
+    if (chapterCategoryFetching) return;
+    chapterCategoryFetching = true;
     try {
-      const res = await axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_CTGR_CD" } });
-      chapterCategoryOptions.value = (res.data?.rsltList ?? []).map((item: Record<string, string>) => ({
-        code: item.code ?? "",
-        codeName: item.codeName ?? "",
-      }));
+      const [diaryRes, noteRes] = await Promise.all([
+        diaryDone ? null : axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_DIARY_CTGR_CD" } }),
+        noteDone  ? null : axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_NOTE_CTGR_CD"  } }),
+      ]);
+      if (diaryRes) chapterDiaryCategoryOptions.value = mapCategoryOptions(diaryRes.data?.rsltList ?? []);
+      if (noteRes)  chapterNoteCategoryOptions.value  = mapCategoryOptions(noteRes.data?.rsltList  ?? []);
     } catch {
-      chapterCategoryOptions.value = [];
+      console.error("[journalModal] 챕터 카테고리 조회 실패");
+    } finally {
+      chapterCategoryFetching = false;
     }
   }
 
@@ -279,7 +297,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       ...payload,
     };
     chapterRegOpen.value = true;
-    void fetchChapterCategories();
+    void prefetchChapterCategories();
   }
 
   /** 챕터 등록/수정 모달을 닫는다. */
@@ -639,7 +657,9 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     // 챕터 등록/수정
     chapterRegOpen,
     chapterRegModel,
-    chapterCategoryOptions,
+    chapterDiaryCategoryOptions,
+    chapterNoteCategoryOptions,
+    prefetchChapterCategories,
     openChapterReg,
     closeChapterReg,
     // 해석 등록/수정
