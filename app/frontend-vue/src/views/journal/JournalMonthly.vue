@@ -50,11 +50,13 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useJournalStore } from "@/stores/journal";
+import { useJournalModalStore } from "@/stores/journalModal";
 import JournalDayCard from "./components/JournalDayCard.vue";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
 import JournalTagCloudHeader from "./components/JournalTagCloudHeader.vue";
 
 const store = useJournalStore();
+const modalStore = useJournalModalStore();
 
 onMounted(() => {
   store.setViewType("LIST");
@@ -62,5 +64,7 @@ onMounted(() => {
   if (store.showTagCloud) {
     void store.fetchTagCloud();
   }
+  /* 챕터 카테고리를 화면 로드 시점에 미리 캐시해 모달 오픈 시 로딩 없이 사용한다. */
+  void modalStore.prefetchChapterCategories();
 });
 </script>
