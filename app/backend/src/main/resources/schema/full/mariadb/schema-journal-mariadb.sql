@@ -305,3 +305,27 @@ CREATE TABLE IF NOT EXISTS journal_entry_embedding (
     INDEX idx_journal_entry_embedding_content_hash (content_hash),
     INDEX idx_journal_entry_embedding_deleted_at (deleted_at)
 ) COMMENT = '저널 엔트리 임베딩 작업 테이블';
+
+CREATE TABLE IF NOT EXISTS journal_entry_embedding_sync_job (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Embedding sync job ID',
+    job_key VARCHAR(100) NOT NULL COMMENT 'Job key',
+    status VARCHAR(20) NOT NULL DEFAULT 'IDLE' COMMENT 'IDLE, RUNNING, COMPLETED, FAILED',
+    phase VARCHAR(30) NOT NULL DEFAULT 'IDLE' COMMENT 'Current phase',
+    processed_count BIGINT DEFAULT 0 COMMENT 'Processed entry count',
+    total_count BIGINT DEFAULT 0 COMMENT 'Total entry count',
+    started_at DATETIME COMMENT 'Job started at',
+    finished_at DATETIME COMMENT 'Job finished at',
+    heartbeat_at DATETIME COMMENT 'Job heartbeat at',
+    locked_by VARCHAR(120) COMMENT 'Worker node',
+    result_json LONGTEXT COMMENT 'Job result JSON',
+    error_message LONGTEXT COMMENT 'Job error message',
+    created_by VARCHAR(20) COMMENT 'Created by',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+    updated_by VARCHAR(20) COMMENT 'Updated by',
+    updated_at DATETIME COMMENT 'Updated at',
+    deleted_at DATETIME COMMENT 'Deleted at',
+    UNIQUE KEY uk_journal_entry_embedding_sync_job_key (job_key),
+    INDEX idx_journal_entry_embedding_sync_job_status (status),
+    INDEX idx_journal_entry_embedding_sync_job_heartbeat_at (heartbeat_at),
+    INDEX idx_journal_entry_embedding_sync_job_deleted_at (deleted_at)
+) COMMENT = 'Journal entry embedding sync job';

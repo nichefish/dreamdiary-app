@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -180,8 +181,16 @@ public class JournalEntryEmbeddingQueueService {
      */
     @Transactional
     public JournalEntryEmbeddingSyncResultDto syncWithJournalEntries() throws Exception {
+        return syncWithJournalEntries(null);
+    }
+
+    @Transactional
+    public JournalEntryEmbeddingSyncResultDto syncWithJournalEntries(final IntConsumer progressConsumer) throws Exception {
         final List<JournalEntryEntity> entryList = journalEntryRepository.findAll();
         final List<JournalEntryEmbeddingEntity> embeddingListBefore = repository.findAll();
+        if (progressConsumer != null) {
+            progressConsumer.accept(0);
+        }
         final Set<Integer> activeEntryIdSet = entryList.stream()
                 .map(JournalEntryEntity::getId)
                 .filter(Objects::nonNull)
@@ -200,6 +209,7 @@ public class JournalEntryEmbeddingQueueService {
         long requeued = 0L;
         long unchanged = 0L;
         long skipped = 0L;
+        int processed = 0;
         for (final JournalEntryEntity entry : entryList) {
             final SyncAction action = queueForEntry(entry);
             switch (action) {
@@ -208,6 +218,10 @@ public class JournalEntryEmbeddingQueueService {
                 case SKIPPED -> skipped++;
                 case UNCHANGED -> unchanged++;
                 default -> unchanged++;
+            }
+            processed++;
+            if (progressConsumer != null) {
+                progressConsumer.accept(processed);
             }
         }
 
@@ -221,6 +235,11 @@ public class JournalEntryEmbeddingQueueService {
                 .removed(removed)
                 .activeEmbeddingCountAfter(repository.count())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public long countJournalEntriesForSync() {
+        return journalEntryRepository.count();
     }
 
     /**

@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Date;
+
 /**
  * 관리자 화면에 표시할 저널 엔트리 임베딩 작업 통계 DTO입니다.
  */
@@ -39,4 +41,38 @@ public class JournalEntryEmbeddingStatsDto {
 
     /** 전체 작업 중 실제 벡터 생성에 성공한 작업 비율입니다. */
     private final double vectorizedRate;
+
+    private final boolean syncRunning;
+    private final String syncPhase;
+    private final long syncProcessed;
+    private final long syncTotal;
+    private final Date syncStartedAt;
+    private final Date syncFinishedAt;
+    private final JournalEntryEmbeddingSyncResultDto syncResult;
+    private final String syncErrorMessage;
+
+    public JournalEntryEmbeddingStatsDto withSyncStatus(final JournalEntryEmbeddingSyncJobStatusDto syncStatus) {
+        if (syncStatus == null) return this;
+
+        return JournalEntryEmbeddingStatsDto.builder()
+                .total(total)
+                .pending(pending)
+                .processing(processing)
+                .embedded(embedded)
+                .failed(failed)
+                .skipped(skipped)
+                .remaining(remaining)
+                .completed(completed)
+                .completionRate(completionRate)
+                .vectorizedRate(vectorizedRate)
+                .syncRunning(syncStatus.isRunning())
+                .syncPhase(syncStatus.getPhase())
+                .syncProcessed(syncStatus.getProcessed())
+                .syncTotal(syncStatus.getTotal())
+                .syncStartedAt(syncStatus.getStartedAt())
+                .syncFinishedAt(syncStatus.getFinishedAt())
+                .syncResult(syncStatus.getResult())
+                .syncErrorMessage(syncStatus.getErrorMessage())
+                .build();
+    }
 }

@@ -76,12 +76,12 @@
               <div class="text-muted fs-8">30초마다 자동 갱신됩니다.</div>
             </div>
             <div class="admin-tool-actions">
-              <button type="button" class="btn btn-sm btn-light-primary" :disabled="embeddingBusy" @click="store.fetchEmbeddingStats">
+              <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.embeddingStatsLoading" @click="store.fetchEmbeddingStats">
                 Refresh
               </button>
-              <button type="button" class="btn btn-sm btn-primary" :disabled="embeddingBusy" @click="store.syncEmbeddingQueue">
-                <span v-if="store.embeddingSyncRunning" class="spinner-border spinner-border-sm me-1"></span>
-                Sync Entries
+              <button type="button" class="btn btn-sm btn-primary" :disabled="syncButtonDisabled" @click="store.syncEmbeddingQueue">
+                <span v-if="store.embeddingSyncRunning || store.embeddingStats.syncRunning" class="spinner-border spinner-border-sm me-1"></span>
+                {{ store.embeddingStats.syncRunning ? "Sync Running" : "Sync Entries" }}
               </button>
             </div>
           </div>
@@ -91,6 +91,18 @@
           </div>
           <div v-if="store.embeddingSyncResult" class="alert alert-success py-2">
             {{ embeddingSyncMessage }}
+          </div>
+          <div v-if="store.embeddingStats.syncRunning || store.embeddingStats.syncErrorMessage || embeddingWorkerActive" class="admin-sync-status mb-4">
+            <div class="d-flex justify-content-between gap-3 flex-wrap">
+              <div>
+                <strong>{{ syncStatusTitle }}</strong>
+                <div class="text-muted fs-8">{{ syncStatusMessage }}</div>
+              </div>
+              <span class="badge" :class="syncStatusBadgeClass">{{ store.embeddingStats.syncPhase || "IDLE" }}</span>
+            </div>
+            <div v-if="store.embeddingStats.syncRunning" class="progress h-6px mt-3">
+              <div class="progress-bar bg-primary" role="progressbar" :style="syncProgressStyle"></div>
+            </div>
           </div>
 
           <div class="admin-stat-grid">
@@ -238,11 +250,41 @@ const cacheDetailModalEl = ref<HTMLElement | null>(null);
 let cacheListModal: Modal | null = null;
 let cacheDetailModal: Modal | null = null;
 let statsTimer: number | undefined;
+let syncStatsTimer: number | undefined;
 
-const embeddingBusy = computed(() => store.embeddingStatsLoading || store.embeddingSyncRunning);
+const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
+const embeddingWorkerActive = computed(() => !store.embeddingStats.syncRunning && (store.embeddingStats.pending > 0 || store.embeddingStats.processing > 0));
 const embeddingProgressStyle = computed(() => {
   const value = Math.max(0, Math.min(100, Number(store.embeddingStats.completionRate) || 0));
   return { width: `${value}%` };
+});
+const syncProgressPercent = computed(() => {
+  const total = Number(store.embeddingStats.syncTotal) || 0;
+  if (total <= 0) return 0;
+  return Math.max(0, Math.min(100, (Number(store.embeddingStats.syncProcessed) / total) * 100));
+});
+const syncProgressStyle = computed(() => ({ width: `${syncProgressPercent.value}%` }));
+const syncStatusTitle = computed(() => {
+  if (store.embeddingStats.syncErrorMessage) return "Queue sync failed";
+  if (store.embeddingStats.syncRunning) return "Queue sync running";
+  if (embeddingWorkerActive.value) return "Vector generation running";
+  return "Embedding status";
+});
+const syncStatusMessage = computed(() => {
+  if (store.embeddingStats.syncErrorMessage) return store.embeddingStats.syncErrorMessage;
+  if (store.embeddingStats.syncRunning) {
+    return `Syncing entries ${formatNumber(store.embeddingStats.syncProcessed)} / ${formatNumber(store.embeddingStats.syncTotal)}`;
+  }
+  if (embeddingWorkerActive.value) {
+    return `Worker still has ${formatNumber(store.embeddingStats.pending)} pending and ${formatNumber(store.embeddingStats.processing)} processing rows.`;
+  }
+  return "";
+});
+const syncStatusBadgeClass = computed(() => {
+  if (store.embeddingStats.syncErrorMessage) return "badge-light-danger";
+  if (store.embeddingStats.syncRunning) return "badge-light-primary";
+  if (embeddingWorkerActive.value) return "badge-light-warning";
+  return "badge-light";
 });
 
 const embeddingStatsCards = computed(() => [
@@ -399,10 +441,16 @@ onMounted(async () => {
   statsTimer = window.setInterval(() => {
     void store.fetchEmbeddingStats();
   }, 30000);
+  syncStatsTimer = window.setInterval(() => {
+    if (store.embeddingStats.syncRunning || embeddingWorkerActive.value) {
+      void store.fetchEmbeddingStats();
+    }
+  }, 5000);
 });
 
 onUnmounted(() => {
   if (statsTimer) window.clearInterval(statsTimer);
+  if (syncStatsTimer) window.clearInterval(syncStatsTimer);
 });
 </script>
 
@@ -490,6 +538,13 @@ onUnmounted(() => {
   display: block;
   margin-top: 0.25rem;
   font-size: 1.25rem;
+}
+
+.admin-sync-status {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--bs-gray-200);
+  border-radius: 8px;
+  background: var(--bs-gray-100);
 }
 
 .admin-cache-block {
