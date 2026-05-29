@@ -1,8 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.controller;
 
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingStatsDto;
-import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncResultDto;
+import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncJobStatusDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
+import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingSyncJobService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class JournalEntryEmbeddingAdminRestController {
 
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
+    private final JournalEntryEmbeddingSyncJobService journalEntryEmbeddingSyncJobService;
 
     /**
      * 임베딩 큐의 전체/대기/처리/완료 건수와 진행률을 조회한다.
@@ -35,7 +37,8 @@ public class JournalEntryEmbeddingAdminRestController {
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> getStats() {
-        final JournalEntryEmbeddingStatsDto stats = journalEntryEmbeddingQueueService.getStats();
+        final JournalEntryEmbeddingStatsDto stats = journalEntryEmbeddingQueueService.getStats()
+                .withSyncStatus(journalEntryEmbeddingSyncJobService.getStatus());
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(stats));
     }
 
@@ -49,7 +52,7 @@ public class JournalEntryEmbeddingAdminRestController {
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> sync() throws Exception {
-        final JournalEntryEmbeddingSyncResultDto result = journalEntryEmbeddingQueueService.syncWithJournalEntries();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(result));
+        final JournalEntryEmbeddingSyncJobStatusDto status = journalEntryEmbeddingSyncJobService.startSync();
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(status));
     }
 }

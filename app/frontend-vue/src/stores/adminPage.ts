@@ -30,6 +30,14 @@ export interface EmbeddingStats {
   completed: number;
   completionRate: number;
   vectorizedRate: number;
+  syncRunning: boolean;
+  syncPhase: string;
+  syncProcessed: number;
+  syncTotal: number;
+  syncStartedAt: string | null;
+  syncFinishedAt: string | null;
+  syncResult: EmbeddingSyncResult | null;
+  syncErrorMessage: string;
 }
 
 export interface EmbeddingSyncResult {
@@ -41,6 +49,17 @@ export interface EmbeddingSyncResult {
   skipped: number;
   removed: number;
   activeEmbeddingCountAfter: number;
+}
+
+export interface EmbeddingSyncJobStatus {
+  running: boolean;
+  phase: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  processed: number;
+  total: number;
+  result: EmbeddingSyncResult | null;
+  errorMessage: string;
 }
 
 export type CacheMap = Record<string, Record<string, unknown>>;
@@ -65,6 +84,14 @@ function emptyEmbeddingStats(): EmbeddingStats {
     completed: 0,
     completionRate: 0,
     vectorizedRate: 0,
+    syncRunning: false,
+    syncPhase: "IDLE",
+    syncProcessed: 0,
+    syncTotal: 0,
+    syncStartedAt: null,
+    syncFinishedAt: null,
+    syncResult: null,
+    syncErrorMessage: "",
   };
 }
 
@@ -80,6 +107,14 @@ function normalizeEmbeddingStats(stats: Partial<EmbeddingStats> | null | undefin
     completed: Number(stats?.completed || 0),
     completionRate: Number(stats?.completionRate || 0),
     vectorizedRate: Number(stats?.vectorizedRate || 0),
+    syncRunning: Boolean(stats?.syncRunning),
+    syncPhase: String(stats?.syncPhase || "IDLE"),
+    syncProcessed: Number(stats?.syncProcessed || 0),
+    syncTotal: Number(stats?.syncTotal || 0),
+    syncStartedAt: typeof stats?.syncStartedAt === "string" ? stats.syncStartedAt : null,
+    syncFinishedAt: typeof stats?.syncFinishedAt === "string" ? stats.syncFinishedAt : null,
+    syncResult: stats?.syncResult ? normalizeEmbeddingSyncResult(stats.syncResult) : null,
+    syncErrorMessage: String(stats?.syncErrorMessage || ""),
   };
 }
 
@@ -93,6 +128,19 @@ function normalizeEmbeddingSyncResult(result: Partial<EmbeddingSyncResult> | nul
     skipped: Number(result?.skipped || 0),
     removed: Number(result?.removed || 0),
     activeEmbeddingCountAfter: Number(result?.activeEmbeddingCountAfter || 0),
+  };
+}
+
+function normalizeEmbeddingSyncJobStatus(status: Partial<EmbeddingSyncJobStatus> | null | undefined): EmbeddingSyncJobStatus {
+  return {
+    running: Boolean(status?.running),
+    phase: String(status?.phase || "IDLE"),
+    startedAt: typeof status?.startedAt === "string" ? status.startedAt : null,
+    finishedAt: typeof status?.finishedAt === "string" ? status.finishedAt : null,
+    processed: Number(status?.processed || 0),
+    total: Number(status?.total || 0),
+    result: status?.result ? normalizeEmbeddingSyncResult(status.result) : null,
+    errorMessage: String(status?.errorMessage || ""),
   };
 }
 
@@ -135,6 +183,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
       const res = await axios.get("/api/admin/journal-entry-embeddings/stats");
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding stats request failed");
       embeddingStats.value = normalizeEmbeddingStats(res.data.rsltObj);
+      embeddingSyncResult.value = embeddingStats.value.syncResult;
     } catch (error) {
       embeddingStatsError.value = error instanceof Error ? error.message : "Embedding stats request failed";
     } finally {
@@ -148,7 +197,19 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     try {
       const res = await axios.post("/api/admin/journal-entry-embeddings/sync");
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding sync request failed");
-      embeddingSyncResult.value = normalizeEmbeddingSyncResult(res.data.rsltObj);
+      const status = normalizeEmbeddingSyncJobStatus(res.data.rsltObj);
+      embeddingSyncResult.value = status.result;
+      embeddingStats.value = {
+        ...embeddingStats.value,
+        syncRunning: status.running,
+        syncPhase: status.phase,
+        syncProcessed: status.processed,
+        syncTotal: status.total,
+        syncStartedAt: status.startedAt,
+        syncFinishedAt: status.finishedAt,
+        syncResult: status.result,
+        syncErrorMessage: status.errorMessage,
+      };
       await fetchEmbeddingStats();
     } catch (error) {
       embeddingStatsError.value = error instanceof Error ? error.message : "Embedding sync request failed";

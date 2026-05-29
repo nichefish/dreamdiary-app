@@ -2,12 +2,14 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * 저널 엔트리와 임베딩 작업 테이블의 수동 동기화 결과 DTO입니다.
  */
 @Getter
 @Builder
+@Jacksonized
 public class JournalEntryEmbeddingSyncResultDto {
 
     /** 동기화 기준이 된 활성 저널 엔트리 건수입니다. */
