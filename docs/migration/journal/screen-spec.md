@@ -26,6 +26,7 @@
 | 저널 기본 진입 | — | `/journal` → `/journal/weekly` | `JournalWeekly.vue` | ✓ |
 | 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalMonthly.vue` | ✓ |
 | 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalWeekly.vue` | ✓ |
+| 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
 | 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalCalendar.vue` | △ 탭/플레이스홀더 |
 | 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalMeta.vue` | ⚠ 그래프 TODO |
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
@@ -35,6 +36,16 @@
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/cal.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
 | 대시보드 | — | `/dashboard` | `Dashboard.vue` | ❌ **파일 없음** |
+
+### 저널 일간 화면 (journal-daily) 스펙
+
+- **용도**: 단일 날짜를 새 창으로 열어 집중 편집
+- **레이아웃**: `SystemLayout` > `JournalDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
+- **네비게이션**: 상단 이전/다음 버튼으로 날짜 이동 (`router.replace` + `stdrdDt` query)
+- **모달**: `JournalDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
+- **진입점**: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼
+- **URL**: `/journal/daily?stdrdDt=YYYY-MM-DD`
+- **새 창 오픈**: `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제
 
 ### 저널 API (`useJournalStore`)
 

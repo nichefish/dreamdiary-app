@@ -11,9 +11,14 @@
 const URL_MAP: Record<string, string> = {
   // 저널
   "/app/journal/day/monthly.do": "/journal/monthly",
+  "/app/journal/day/daily.do": "/journal/daily",
   "/app/journal/day/weekly.do": "/journal/weekly",
   "/app/journal/day/cal.do": "/journal/calendar",
   "/app/journal/day/meta.do": "/journal/meta",
+  "/app/journal/thread/list.do": "/thread",
+  "/app/journal/thread/regist-form.do": "/thread",
+  "/app/journal/thread/detail.do": "/thread",
+  "/app/journal/thread/modify-form.do": "/thread",
   "/app/journal/annual/list.do": "/annual",
   "/app/schedule/cal.do": "/schedule",
   "/app/admin/admin-page.do": "/admin",

@@ -68,6 +68,14 @@
               </div>
             </div>
             <!--end::주간 뷰로 이동-->
+            <!--begin::새 창으로 열기 (일자 뷰)-->
+            <div class="menu-item px-3 my-1">
+              <div class="menu-link flex-stack px-3" @click="openDayView">
+                새 창으로 열기 (일자 뷰)
+                <i class="bi bi-box-arrow-up-right fs-8"></i>
+              </div>
+            </div>
+            <!--end::새 창으로 열기 (일자 뷰)-->
             <div class="separator my-2"></div>
             <!--begin::수정-->
             <div class="menu-item px-3 my-1">
@@ -315,6 +323,14 @@ function hasState(stateKey: string): boolean {
 /** 주간 뷰로 이동 */
 function gotoWeekly(): void {
   void router.push({ name: "journal-weekly", query: { stdrdDt: props.day.stdrdDt } });
+}
+
+/** 일자 뷰(daily) 새 창으로 열기 — features 지정으로 탭이 아닌 새 창 강제 */
+function openDayView(): void {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const w = Math.min(1200, window.screen.availWidth);
+  const h = Math.min(900, window.screen.availHeight);
+  window.open(`${base}/journal/daily?stdrdDt=${props.day.stdrdDt}`, "_blank", `width=${w},height=${h},left=100,top=60`);
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */

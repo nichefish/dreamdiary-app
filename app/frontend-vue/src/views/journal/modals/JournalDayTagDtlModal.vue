@@ -57,6 +57,14 @@
                 <!--end::월 구분 헤더-->
 
                 <div class="d-flex align-items-center gap-2 mb-2">
+                  <!--begin::새 창으로 보기-->
+                  <button
+                    type="button"
+                    class="btn btn-icon btn-sm btn-light-primary"
+                    title="새 창으로 보기 (일자 뷰)"
+                    @click="openDailyView(day.stdrdDt)"
+                  ><i class="bi bi-box-arrow-up-right fs-8 p-0"></i></button>
+                  <!--end::새 창으로 보기-->
                   <!--begin::일자-->
                   <div :class="{ 'text-danger': day.isHolyday }" style="column-gap: .25rem">
                     <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': day.isHolyday }"></i>
@@ -155,6 +163,15 @@ function showMonthHeader(day: JournalDayDto, index: number): boolean {
   if (index === 0) return true;
   const prev = payload.value?.list[index - 1];
   return prev?.mnth !== day.mnth || prev?.yy !== day.yy;
+}
+
+/** 일자 뷰를 새 창으로 연다. */
+function openDailyView(stdrdDt: string | undefined): void {
+  if (!stdrdDt) return;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const w = Math.min(1200, window.screen.availWidth);
+  const h = Math.min(900, window.screen.availHeight);
+  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h},left=100,top=60`);
 }
 
 /** 일자의 태그 목록 */

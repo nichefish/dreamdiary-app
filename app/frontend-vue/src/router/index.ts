@@ -196,6 +196,19 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/layouts/SystemLayout.vue"),
     children: [
       {
+        path: "/journal/daily",
+        component: () => import("@/views/journal/JournalDailyLayout.vue"),
+        meta: { middleware: "auth" },
+        children: [
+          {
+            path: "",
+            name: "journal-daily",
+            component: () => import("@/views/journal/JournalDaily.vue"),
+            meta: { pageTitle: "일간 일기" },
+          },
+        ],
+      },
+      {
         path: "/journal/entry/search",
         name: "journal-entry-search",
         component: () => import("@/views/journal/entry/JournalEntrySearchPage.vue"),

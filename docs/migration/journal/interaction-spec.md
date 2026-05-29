@@ -287,7 +287,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **레거시 출처**: `legacy/static/vue/feature/journal/day/components/JournalDayContextMenu.ts`
 
 **메뉴 구조**:
-- 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })`
+- 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간 뷰 전용 용도)
+- 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
 - 수정 → `openReg()` (등록 모달 재활용, id 포함)
 - 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 접힘(COLLAPSED, `POST /api/states` 토글)
 - 삭제 → `DELETE /api/journal/day/{id}` → `journalStore.fetchDays()`
