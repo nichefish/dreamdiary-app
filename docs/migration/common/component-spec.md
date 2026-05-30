@@ -617,7 +617,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 - 드롭다운: `menu menu-sub menu-sub-dropdown menu-rounded fw-bold fs-7 w-100px p-4`
 - 직접 입력: `w-70px page-ellipsis`
 
-**현재 Vue 동등**: 미존재 (MISSING). 스레드 목록, 게시판 목록은 기존 서버사이드 페이지네이션 유지. `Pagination.vue` 컴포넌트 추출 또는 서버사이드 렌더 유지 결정 필요.
+**현재 Vue 동등**: ⚠ 공통 컴포넌트(`Pagination.vue`) 없음. 게시판(`BoardPostList.vue`)·스레드(`JournalThreadList.vue`) 목록에서 `store.totalPages` + `store.fetchList(p-1)` 방식으로 각 컴포넌트 내부 인라인 구현. 서버사이드 렌더 방식에서 Vue store 기반 클라이언트 페이지네이션으로 전환 완료.
 
 ---
 
@@ -644,7 +644,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | `modal_btn_delete` | `_modal_elements.ftlh` | MISSING | 중 |
 | `modal_btn_close` | `_modal_elements.ftlh` | MISSING | 높음 |
 | `modal_btn_close_safe` | `_modal_elements.ftlh` | PARTIAL (`useSafeModalClose`) | 높음 |
-| `Pagination` | `_pagination.ftlh` | MISSING | 높음 |
+| `Pagination` | `_pagination.ftlh` | ⚠ 인라인 구현 (공통 컴포넌트 없음) | — |
 
 ---
 

@@ -1,6 +1,9 @@
 # 저널 화면 마이그레이션 스펙 (Journal Screen Spec)
 
-> 공통 컴포넌트/인터랙션 스펙은 ``common/`` 디렉토리 참조.
+> 공통 컴포넌트/인터랙션 스펙은 ``common/`` 디렉토리 참조.  
+> 게시판 화면 스펙: `board/screen-spec.md`  
+> 인증/사용자 화면 스펙(내 정보 포함): `auth/screen-spec.md`  
+> 사용자 관점 화면 행동 명세(UX flow, 라이프사이클 흐름): `docs/spec/JOURNAL_SCREEN_BEHAVIOR_SPEC.md`
 
 
 
@@ -32,7 +35,6 @@
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
-| 게시판 목록 | `/app/board/post/list.do` | `/board/:boardKey` | `BoardPostList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/cal.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
 | 대시보드 | — | `/dashboard` | `Dashboard.vue` | ❌ **파일 없음** |
@@ -415,164 +417,6 @@
 - `isNew` true이면 `.badge.border-0.text-white.bg-noti.blink.fs-8.ms-2` 에 "N" 표시 (blink 애니메이션)
 - 태그 있으면 `<span class="me-6.fs-7">` 내 태그 배지 목록 표시
 - 카테고리명 있으면 `<span class="ctgr-span ctgr-gray">` 형태로 제목 앞에 표시
-
----
-
-## 게시판 목록 (Board Post List)
-
-- **Route (레거시)**: `/board/post/list?board=XXX` · **Vue SPA**: `/board/:boardKey` (`board-post-list`)
-- **Legacy file**: `legacy/templates/view/feature/board/post/board_post_list.ftlh`
-
-### Layout Structure
-
-- 레이아웃: `layout_default.ftlh` (사이드바 없음)
-- 툴바: `_board_post_list_header.ftlh`
-- 메인 영역:
-  - 태그 필터바: `_tag_list_header.ftlh`
-  - 특수 버튼: `board == 'cmpyLife'` 조건 시 회사생활 공지사항 안내 버튼 (`#cmpy_life_modal` 트리거)
-  - Vue 마운트 루트: `#board_post_list_app.d-none`
-  - 카드: `.card.post`
-    - 카드 바디: 테이블 (서버사이드 `<#list>` 렌더)
-    - 카드 푸터: `_pagination.ftlh`
-- 히든 폼: `#procForm` (GET, `id`, `board` hidden)
-
-### Key UI Elements
-
-| Element | Type | Legacy class/id | Data source | Notes |
-|---------|------|----------------|-------------|-------|
-| 회사생활 안내 버튼 | `<button>` | `.btn.btn-sm.btn-light.btn-active-secondary.mx-1` | `board == 'cmpyLife'` | `blink` 애니메이션 + `bi-lightbulb-fill.text-noti` |
-| 테이블 | `<table>` | `.table.align-middle.table-row-dashed.fs-small.gy-5.table-fixed.hoverTable.mb-3` | `postList` | Freemarker 서버사이드 렌더 |
-| 번호 열 | `<th>` | `.text-center.wb-keepall.w-10.hidden-table` | `post.rnum` | 모바일 숨김 |
-| 제목 열 | `<th>` | `.col-lg-8.col-9.text-center.wb-keepall` | `post.title` | 태그 포함 시 `pb-4` |
-| 첨부파일 열 | `<th>` | `.col-lg-1.text-center.wb-keepall.hidden-table` | 파일 정보 | 모바일 숨김 |
-| 제목 링크 | `<a>` | `.text-dark.vertical-middle.text-underline-dotted` | `post.title`, `post.board`, `post.id`, `post.notionPageId` | 상세 페이지 링크 |
-| 카테고리 배지 | `<span>` | `.ctgr-span.ctgr-gray` | `post.ctgrNm` | 제목 앞 표시 |
-| 댓글 수 | `@component.list_comment` | `.text-noti.btn-active-warning.cursor-pointer` | `post.comment.cnt` | 댓글 모달 오픈 |
-| 신규 배지 | `.badge.border-0.text-white.bg-noti.blink.fs-8.ms-2` | `post.isNew` | N 텍스트 blink |
-| 태그 목록 | `@component.list_tag` | `.me-6.fs-7` | `post.tag.list` | `#` 접두사 태그 배지 |
-| 모달 보기 버튼 | `@component.list_dtl_modal` | `.badge.badge-secondary.p-2.btn-white.bg-hover-white.blank.blink-slow.float-end` | `post.id` | `bi-stickies.text-noti` |
-| 첨부파일 버튼 | `@component.list_file_group` | `.badge.badge-secondary.p-2.btn-white.blink-slow` | `post.fileGroupId` | `bi-file-earmark-arrow-down.text-info` |
-
-### Action Buttons & Interactions
-
-| Action | Trigger | Legacy handler | Expected behavior |
-|--------|---------|---------------|-------------------|
-| 게시글 상세 이동 | 제목 링크 클릭 | `href=${Url.BOARD_POST_DETAIL}?board=...&id=...&notionPageId=...` | 상세 페이지 이동 |
-| 상세 모달 열기 | `bi-stickies` 아이콘 클릭 | `window.dispatchEvent(new CustomEvent('board-post:open-detail-modal', { detail: { id: N } }))` | 상세 모달 오픈 |
-| 댓글 모달 | 댓글 수 클릭 | `CommentList.modal(id, contentType)` | 댓글 목록 모달 |
-| 파일 모달 | 첨부파일 아이콘 클릭 | `FileGroupList.modal(fileGroupId)` | 파일 목록 모달 |
-| 태그 상세 | 태그 클릭 | `dF.Tag.dtlModal(tagId)` | 태그 상세 모달 |
-
-### Data Displayed
-
-`postList` 서버 모델로 Freemarker `<#list>` 렌더. 각 행:
-- `post.rnum`: 행 번호
-- `post.id`: 게시글 ID
-- `post.board`: 게시판 구분
-- `post.notionPageId`: Notion 페이지 ID (있을 경우)
-- `post.title`: 제목
-- `post.ctgrNm`: 카테고리명
-- `post.isNew`: 신규 여부
-- `post.comment.cnt`: 댓글 수
-- `post.contentType`: 컨텐츠 타입 (댓글 모달용)
-- `post.fileGroupId`: 파일 그룹 ID
-- `post.fileGroupInfo.fileRecordList`: 파일 목록 (유무 체크)
-- `post.tagStrList`, `post.tag.list`, `tag.tagId`, `tag.ctgr`, `tag.name`: 태그
-
-### Modals opened from this page
-
-| Modal | 파일 | 열리는 조건 |
-|-------|------|-----------|
-| 게시글 상세 | `_board_post_detail_modal.ftlh` | 모달 아이콘 클릭 (CustomEvent) |
-| 댓글 목록 | `_comment_list_modal.ftlh` | 댓글 수 클릭 |
-| 파일 목록 | `_file_list_modal.ftlh` | 첨부파일 아이콘 클릭 |
-
-### Special behaviors
-
-- `board == 'cmpyLife'` 조건 분기: 회사생활 게시판이면 안내 버튼 추가 렌더
-- 신규 게시글 blink 배지 (`bg-noti blink`)
-- 모달 열기가 jQuery가 아닌 `CustomEvent` (`board-post:open-detail-modal`)로 처리 (Vue 전환)
-- `BoardPostListApp` Vue 모듈이 헤더/모달 버튼 처리 담당
-- 서버사이드 렌더 테이블 + Vue 기반 모달 혼재 구조
-
----
-
-## 내 정보 페이지 (User My Page)
-
-- **Route (레거시)**: `/user/my` · **Vue SPA**: `/my` (`user-my`)
-- **Legacy file**: `legacy/templates/view/feature/user/my/user_my_page.ftlh`
-
-### Layout Structure
-
-- 레이아웃: `layout_default.ftlh` (사이드바 없음)
-- 툴바: 없음 (서버 변수 `toolbar` 비어있음)
-- 메인 영역:
-  - Vue 마운트 루트: `#user_my_app`
-  - 컨텐츠 div: `#user_my_page_div` (Vue `UserMyPageApp` 텔레포트 대상)
-  - 히든 폼: `#procForm` (GET, `id`, `userProfileId` hidden)
-  - 프로필 이미지 폼 템플릿: `#proflImageTemplate` (hidden, 파일 업로드용)
-- 모달: 비밀번호 변경 모달 (`_user_my_pw_chg_modal.ftlh`)
-
-### Key UI Elements
-
-| Element | Type | Legacy class/id | Data source | Notes |
-|---------|------|----------------|-------------|-------|
-| Vue 마운트 루트 | `<div>` | `#user_my_app` | `UserMyPageApp` | Vue 앱 마운트 |
-| 컨텐츠 영역 | `<div>` | `#user_my_page_div` | Vue 텔레포트 | 내 정보 화면 렌더 |
-| 프로필 이미지 폼 | `<form id="profllImgForm">` | `#proflImageTemplate` (hidden) | `input[type=file]` | `.png`, `.jpg`, `.jpeg` 허용 |
-| 파일 인풋 | `<input type="file" id="fileGroup0">` | `#fileGroup0` | 프로필 이미지 | accept: `.png, .jpg, .jpeg` |
-
-### Action Buttons & Interactions
-
-Vue `UserMyPageApp` 내부에서 처리. 레거시 모듈(`user_my_module.js`, `user_my_pw_chg_module.js`, `user_my_page.js`)을 대체.
-
-| Action | 기대 동작 |
-|--------|----------|
-| 저장 | 폼 데이터 저장 (닉네임, 이메일, 전화번호 등) |
-| 프로필 이미지 업로드 | 파일 선택 후 `/file/fileUploadAjax.do` 업로드 |
-| 프로필 이미지 삭제 | 이미지 제거 |
-| 비밀번호 변경 | 비밀번호 변경 모달 오픈 |
-
-### Data Displayed
-
-`#user_my_page_data` (JSON script tag)로 모든 데이터 전달:
-
-**user 객체**:
-- `id`, `username`, `nickname`, `email`, `phoneNumber`, `profileImageUrl`
-- `userRoles[].roleKey`, `userRoles[].roleName`
-- `isAllowedIpY`: IP 허용 여부
-- `allowedIpList[].allowedIp`: 허용 IP 목록
-- `userInfo.userProfileId`, `userInfo.cmpyNm`, `userInfo.teamNm`, `userInfo.emplymNm`
-- `userInfo.rankNm`, `userInfo.rankCd`
-- `userInfo.apntcYn`: 수습 여부 (`Y`/`N`)
-- `userInfo.ecnyDt`: 입사일
-- `userInfo.retireYn`, `userInfo.retireDt`
-- `userInfo.brthdy`: 생년월일
-- `userInfo.acntBank`, `userInfo.acntNo`: 계좌 정보
-- `userInfo.itemList[].itemNm`, `.itemCn`, `.itemDc`: 추가 항목 목록
-
-**vacation 객체** (입사일 있는 경우만 표시):
-- `visible`: `authInfo.hasEcnyDt`
-- `statsYy`, `bgnDt`, `endDt`: 연차 기준 연도/기간
-- `total`, `used`, `remains`: 총/사용/잔여 연차
-- `tooltip`: 연차 상세 내용 (기본연차, 신입연차, 근속연차, 프로젝트연차 조합)
-
-**labels 객체**: 모든 UI 레이블 i18n 텍스트 포함 (`username`, `password`, `passwordChange`, `role`, `nickname`, `allowedIp`, `department`, `rank`, `probation`, `joinDate`, `retireDate`, `phoneNumber`, `email`, `birthDate`, `accountNumber`, `additionalInfo`, `vacationTitleSuffix`, `totalVacation`, `usedVacation`, `remainsVacation`, `currentPassword`, `newPassword`, `newPasswordConfirm`, `passwordReq`, `save`, `close`, 툴팁 4종)
-
-**errorMsg**: 서버 에러 메시지 (있을 경우 표시)
-
-### Modals opened from this page
-
-| Modal | 파일 | 열리는 조건 |
-|-------|------|-----------|
-| 비밀번호 변경 | `_user_my_pw_chg_modal.ftlh` | 비밀번호 변경 버튼 클릭 |
-
-### Special behaviors
-
-- `vacation.visible`: `authInfo.hasEcnyDt` 기반 — 입사일 없는 사용자에게는 연차 정보 미표시
-- 연차 툴팁: 기본연차(신입 여부 포함) + 근속추가연차 + 프로젝트추가연차 조합 문자열 (`\n` 개행)
-- 프로필 이미지 업로드: `onchange="return false;"` — Vue에서 직접 파일 접근 후 처리
-- `UserMyPageApp` Vue가 `user_my_module.js` + `user_my_pw_chg_module.js` + `user_my_page.js` 3개 레거시 모듈 완전 대체
 
 ---
 

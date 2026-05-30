@@ -24,7 +24,7 @@ plugins {
  * 프로젝트 정보
  */
 group = 'dreamdiary.io'
-version = '0.20.0'
+version = '0.21.0'
 
 /**
  * Java, Spring Boot 및 추가 설정
@@ -155,3 +155,4 @@ apply from: "$rootDir/gradle/testconfig.gradle"
  * 의존성 관련 정보를 dependencies.gradle 파일로 분리하여 관리한다.
  */
 apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/mobile.gradle"
