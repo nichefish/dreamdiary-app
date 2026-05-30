@@ -1,0 +1,13 @@
+/**
+ * _utilities.scss
+ * 유틸리티 클래스 정의
+ *
+ * @auther nichefish
+ */
+
+// width 클래스 정의 (1-99%)
+@for $i from 1 through 99 {
+    .w-#{$i} {
+        width: #{$i + "%"} !important;
+    }
+}

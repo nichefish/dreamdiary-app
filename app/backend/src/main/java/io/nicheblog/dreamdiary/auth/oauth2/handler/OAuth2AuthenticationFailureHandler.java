@@ -1,0 +1,124 @@
+package io.nicheblog.dreamdiary.auth.oauth2.handler;
+
+import io.nicheblog.dreamdiary.auth.security.exception.AccountDormantException;
+import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
+import io.nicheblog.dreamdiary.auth.security.exception.DupIdLoginException;
+import io.nicheblog.dreamdiary.auth.security.service.AuthService;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogAnonymousEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ * OAuth2AuthenticationFailureHandler
+ * <pre>
+ *  OAuth2 소셜 인증 실패 처리 핸들러
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Component
+@RequiredArgsConstructor
+@Log4j2
+public class OAuth2AuthenticationFailureHandler
+        extends SimpleUrlAuthenticationFailureHandler
+        implements AuthenticationFailureHandler {
+
+    private final AuthService authService;
+    private final ApplicationEventPublisherWrapper publisher;
+
+    /**
+     * 웹 로그인 로그인 실패시 상황별 분기 처리
+     *
+     * @param request 로그인 요청 객체
+     * @param response 응답 객체
+     * @param exception 인증 실패 예외 객체 {@link AuthenticationException}
+     * @see LogEventListener
+     */
+    @SneakyThrows
+    @Override
+    public void onAuthenticationFailure(
+        final HttpServletRequest request,
+        final HttpServletResponse response,
+        final AuthenticationException exception
+    ) {
+
+        request.removeAttribute("username");
+        request.removeAttribute("needsPasswordReset");
+        final String username = request.getParameter("username");
+        final String errorMsg = MessageUtils.getExceptionMsg(exception);
+        /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
+        if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLoginException)) {
+            final LogParam logParam = new LogParam(username, false, errorMsg, ActvtyCtgr.LGN);
+            publisher.publishAsyncEvent(new LogAnonymousEvent(this, logParam));
+        }
+        /* 비밀번호 불일치 */
+        if (exception instanceof AccountDormantException) {
+            authService.lockAccount(username);        // 계정 잠금 처리
+            /* 비밀번호 변경기간 만료 */
+        } else if (exception instanceof CredentialsExpiredException) {
+            request.setAttribute("username", username);
+            request.setAttribute("isCredentialExpired", true);
+            /* 중복 로그인 방지 */
+        } else if (exception instanceof DupIdLoginException) {
+            request.setAttribute("username", username);
+            // 세션에서 중복 아이디 정보 관리
+            final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            final HttpSession session = servletRequestAttribute.getRequest().getSession();
+            session.setAttribute("isDupIdLogin", username);
+            /* 패스워드 초기화 강제 */
+        } else if (exception instanceof AccountNeedsPwResetException) {
+            request.setAttribute("username", username);
+            request.setAttribute("needsPasswordReset", true);
+            request.setAttribute("passwordToken", ((AccountNeedsPwResetException) exception).getPasswordToken());
+        }
+
+        log.info("login attempt failed.. username: {} errorMsg: {}", username, errorMsg);
+        request.setAttribute(Constant.ERROR_MSG, errorMsg);
+
+        this.setFaiilureResponse(response, errorMsg);
+    }
+
+    /**
+     * Response에 Javascript alert 처리 및 리다이렉트
+     *
+     * @throws IOException 응답에 문제가 발생할 경우
+     */
+    public void setFaiilureResponse(final HttpServletResponse response, final String errorMsg) throws IOException {
+        response.setContentType("text/html; charset=utf-8");
+        try (final PrintWriter out = response.getWriter()) {
+            out.println("<script language=\"JavaScript\" type=\"text/JavaScript\">");
+            out.println("const hasSwal = (typeof Swal !== \"undefined\");");
+            out.println("if (hasSwal) {");
+            out.println("   Swal.fire({\"text\": `" + errorMsg + "`}).then(() => { window.close(); });");
+            out.println("} else {");
+            out.println("   alert(\"" + errorMsg + "\");");
+            out.println("   window.close();");
+            out.println("}");
+            out.println("</script>");
+        } catch (final IOException e) {
+            log.info(MessageUtils.getExceptionMsg(e));
+            response.sendRedirect("/");
+        }
+    }
+}

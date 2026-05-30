@@ -21,6 +21,32 @@ cF.tinymce = (function(): Module {
         toolbar1: 'undo redo | searchreplace | styles styleselect fontselect fontsizeselect | bold italic underline strikethrough | forecolor backcolor | align | code codesample | help',
         toolbar2: 'emoticons custom_image link pageembed | hr | numlist bullist checklist moreless | visualchars visualblocks pagebreak | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
         contextmenu: 'link custom_image lists table',
+        /** 붙여넣기 후처리: 허용 태그(볼드/이탤릭/목록/링크) 외 서식 제거 */
+        paste_postprocess: function(_plugin: any, args: any): void {
+            const allowed = new Set<string>(['strong', 'b', 'em', 'i', 'u', 's', 'del', 'br', 'p', 'a', 'ul', 'ol', 'li', 'code', 'blockquote']);
+            const clean = function(node: any): void {
+                const children: any[] = Array.from(node.childNodes);
+                for (const child of children) {
+                    if (child.nodeType !== 1) continue;
+                    const tag: string = child.tagName.toLowerCase();
+                    if (allowed.has(tag)) {
+                        const attrs: Attr[] = Array.from(child.attributes);
+                        for (const attr of attrs) {
+                            if (tag === 'a' && attr.name === 'href') continue;
+                            child.removeAttribute(attr.name);
+                        }
+                        clean(child);
+                    } else {
+                        const parent: Node = child.parentNode;
+                        while (child.firstChild) {
+                            parent.insertBefore(child.firstChild, child);
+                        }
+                        parent.removeChild(child);
+                    }
+                }
+            };
+            clean(args.node);
+        },
 
         /* https://www.tiny.cloud/docs/plugins/opensource/textpattern/
         textpattern_patterns: [

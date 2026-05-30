@@ -1,0 +1,25 @@
+/** daterangepicker 팝업이 다른 팝업 뒤쪽으로 출력되는 문제 처리 */
+.daterangepicker {
+    z-index: 6002 !important;
+}
+
+/** flatpickr — Bootstrap 모달 위에 표시 (저널 일자 등록 날짜) */
+.flatpickr-calendar {
+    z-index: 6002 !important;
+}
+
+.tooltip-inner {
+    white-space: pre-wrap;
+}
+
+/** !override */
+.text-decoration-underline {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+}
+
+/** !override */
+.text-underline-dotted {
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+}

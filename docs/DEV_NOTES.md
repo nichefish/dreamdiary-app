@@ -213,3 +213,29 @@
 ### 7. 운영 런북(메뉴 하드컷)
 
 - 메뉴 DB 하드컷 런북은 **저널 일자 마이그레이션과 별개** 운영 절차로, 본 롤업에 포함하지 않음. 스크립트는 저장소 `schema`/마이그레이션을 본다.
+
+---
+
+## 2026-05-17 frontend-vue 마이그레이션 지시 누락 정리
+
+이번 대화에서 나온 요구는 "화면을 Vue 파일로 만든다"가 아니라 **legacy templates/static 동작을 `app/frontend-vue`의 단일 앱 경계로 흡수한다**는 의미다. 중간 단계가 깨지는 것은 허용하지만, 완료라고 말하려면 아래 항목의 legacy 동등성을 검수해야 한다.
+
+| 범위 | 결정/기록 |
+|------|-----------|
+| Metronic vendor 경계 | `vendor/metronic` 자체를 앱 루트로 만들려 하지 않는다. vendor 내부 링크를 전부 고치는 방향은 피하고, 앱 쪽 adapter/layout에서 감싼다. 장기적으로 `vendor/metronic/components`는 삭제 대상이다. |
+| 기본 레이아웃명 | `layout/default-layout`은 의미 중복이므로 `layouts/default`로 둔다. |
+| 첫 화면 메뉴 | 대시보드가 placeholder여도 기본 메뉴/사이드바가 있어야 한다. 이동 수단 없는 빈 화면은 마이그레이션 완료 상태가 아니다. |
+| 사용자/관리자 메뉴 | 메뉴는 1차원 하드코딩이 아니라 `GET /api/menus?mode=USER|MNGR` + `subMenuList` depth 기반이어야 한다. fallback 메뉴는 서버 실패 시 보조 수단으로만 둔다. |
+| 관리자 화면 | boardGroup, code, menu, users, logs, stats_user, auth-policy는 `/admin/**` Vue route로 들어온다. 각 화면은 legacy 기능 단위로 재검수한다. |
+| 인증 결과 | `verify_success.ftlh`, `verify_failure.ftlh`는 `/auth/verify-result` 단일 Vue 화면으로 흡수한다. |
+| attachable | 댓글/이력/관련글/태그/파일 등은 하나씩 Vue modal/store로 흡수하고 FTLH owner를 제거한다. |
+| `static/vue/global` | 공통 전역은 `src/stores`, `src/utils`, `src/services`, `src/styles`로 재배치한다. 임시 참조가 남으면 migration spec에 제거 기준을 남긴다. |
+| 폰트 | legacy `font.css`를 `/css/font.css`로 로드하고 `/font/**` 파일은 Spring Boot static 경로를 사용한다. Vite dev server는 `/css`, `/font` proxy를 둔다. |
+| 저널 태그클라우드 | day/diary/dream tag row를 Vue에서 표시한다. "1개짜리 태그 숨김"과 "해당년도 태그 다 보기" 기능은 제거 요구에 따라 복원하지 않는다. |
+| 태그 클릭 | 태그 클릭은 즉시 검색이 아니다. `JournalTagContextMenu`를 열고, 검색 액션에서 일자 태그는 상세 모달, 일기/꿈 태그는 새 창 검색으로 간다. |
+| 엔트리 검색 새 창 | `/vue-app/journal/entry/search`는 legacy `journal_entry_search.ftlh`의 replacement다. 새 창이므로 메뉴/aside 없는 `SystemLayout` auth route로 둔다. 현재 구현은 목록/태그/키워드 조회와 결과 전체/개별 복사를 포함하며, export/sort/고급 다중 입력은 남은 검수 대상이다. |
+
+문서 위치:
+- 공통 통합 기준: `docs/migration/common/component-spec.md`
+- 저널 태그/검색 흐름: `docs/migration/journal/component-spec.md`, `interaction-spec.md`, `screen-spec.md`
+- 제품 동작 기준: `docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md`

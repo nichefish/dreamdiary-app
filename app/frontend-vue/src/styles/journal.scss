@@ -1,0 +1,773 @@
+/**
+ * journal.scss
+ * 저널 관련 css 내용을 정의한다.
+ *
+ * @auther : nichefish
+ */
+
+@use "abstracts/_mixins" as mixin;
+
+$color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
+@include mixin.color-classes("dream", $color-dream);
+
+/** ----------------------- */
+
+.journal-day {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+
+    .journal-day-header {
+        display: flex !important;
+        flex-wrap: wrap;
+    }
+}
+
+.journal-item {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: center;
+    margin-bottom: 0.25rem !important;
+    padding-right:0;
+
+    & > * {
+        box-sizing: border-box;
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+.journal-aside-week-nav {
+    margin-top: 0.25rem;
+}
+
+.journal-annual-aside {
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+}
+
+.journal-layout-vue__aside,
+.journal-annual-layout-vue__aside {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+.journal-aside-week-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.35rem;
+}
+
+.journal-aside-week-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding: 0.45rem 0.1rem;
+    border: 1px solid #d8e2ec;
+    border-radius: 0.7rem;
+    background: #ffffff;
+    color: #5e6278;
+    transition: all 0.2s ease;
+
+    &:not(:disabled) {
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            border-color: #3699ff;
+            background: #eef6ff;
+            color: #1b84ff;
+        }
+    }
+
+    &.is-active {
+        border-color: #1b84ff;
+        background: #1b84ff;
+        color: #ffffff;
+        box-shadow: 0 0.35rem 0.9rem rgba(27, 132, 255, 0.2);
+    }
+
+    &:disabled {
+        border-style: dashed;
+        background: #f5f8fa;
+        color: #a1a5b7;
+        opacity: 1;
+        cursor: not-allowed;
+    }
+
+    .journal-aside-week-day__label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .journal-aside-week-day__date {
+        margin-top: 0.2rem;
+        font-size: 0.72rem;
+        line-height: 1;
+        opacity: 0.8;
+    }
+}
+
+.journal-aside-chapter-categories {
+    max-height: 16rem;
+    overflow-y: auto;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.35rem;
+    background: #f1f1f1;
+}
+
+@media (max-width: 575.98px) {
+    .journal-aside-week-days {
+        gap: 0.25rem;
+    }
+
+    .journal-aside-week-day {
+        min-height: 3rem;
+        padding: 0.35rem 0.05rem;
+
+        .journal-aside-week-day__label {
+            font-size: 0.72rem;
+        }
+
+        .journal-aside-week-day__date {
+            font-size: 0.68rem;
+        }
+    }
+}
+
+.journal-interpretation {
+    margin-left: 1rem !important;
+}
+
+.journal-diary-item, .journal-dream-item, .journal-note-item, .journal-interpretation-item, .journal-sumry-review-item {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: start;
+    align-items: center;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
+.journal-note-content .journal-content {
+    p {
+        margin-top: 0.1rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+}
+
+@mixin collapsed-indicator {
+    content: "(collapsed)";
+    display: block;
+    color: #999;
+    font-style: italic;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin: 0.5em 0;
+}
+
+@mixin chapter-highlight($bg, $shadow, $padding-left) {
+    --chapter-collapsed-bg: #{$bg};
+    --chapter-collapsed-shadow: #{$shadow};
+    --chapter-collapsed-padding-left: #{$padding-left};
+}
+
+@mixin cn-collapse($lines, $height) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines; // 최대 줄 수
+    line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+    max-height: $height;
+
+    &.expanded {
+        display: unset !important;
+        -webkit-line-clamp: unset !important;
+        line-clamp: unset !important;
+        -webkit-box-orient: unset !important;
+        overflow: visible;
+        max-height: unset !important;
+
+        & + .expand-btn::after {
+            content: "－ 접기";
+        }
+    }
+}
+
+@mixin journal-entry-content-base {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem !important;
+    background: transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.3rem;
+        bottom: 0.3rem;
+        width: 1px;
+        background: rgba(148, 163, 184, 0.42);
+        pointer-events: none;
+    }
+}
+
+@mixin journal-paired-state($bg, $border, $before-bg, $before-shadow: none) {
+    .journal-diary-content,
+    .journal-dream-content {
+        background: $bg;
+        border-color: $border;
+
+        &::before {
+            background: $before-bg;
+            box-shadow: $before-shadow;
+        }
+    }
+}
+
+$journal-paired-states: (
+    '[data-resolved="Y"]': (
+        bg: rgba(34, 197, 94, 0.05),
+        border: rgba(34, 197, 94, 0.14),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: none
+    ),
+    '[data-refrnc="Y"]': (
+        bg: rgba(245, 158, 11, 0.07),
+        border: rgba(245, 158, 11, 0.16),
+        before-bg: rgba(245, 158, 11, 0.82),
+        before-shadow: none
+    ),
+    '[data-imprtc="Y"]': (
+        bg: rgba(239, 68, 68, 0.06),
+        border: rgba(239, 68, 68, 0.15),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: none
+    ),
+    '[data-resolved="Y"][data-refrnc="Y"]': (
+        bg: rgba(234, 179, 8, 0.08),
+        border: rgba(234, 179, 8, 0.17),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"]': (
+        bg: rgba(248, 113, 113, 0.08),
+        border: rgba(239, 68, 68, 0.16),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: 2px 0 0 rgba(239, 68, 68, 0.8)
+    ),
+    '[data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(251, 191, 36, 0.09),
+        border: rgba(245, 158, 11, 0.18),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(245, 208, 120, 0.1),
+        border: rgba(234, 179, 8, 0.2),
+        before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: (2px 0 0 rgba(239, 68, 68, 0.8), 4px 0 0 rgba(245, 158, 11, 0.82))
+    )
+);
+
+.journal-chapter-item {
+    &:has(> .journal-chapter-content.collapsed) {
+        --chapter-collapsed-bg: transparent;
+        --chapter-collapsed-shadow: none;
+        --chapter-collapsed-indent: 65px;
+        --chapter-collapsed-padding-left: 0.25rem;
+        box-sizing: border-box;
+        width: calc(100% - var(--chapter-collapsed-indent));
+        max-width: calc(100% - var(--chapter-collapsed-indent));
+        margin-left: var(--chapter-collapsed-indent);
+        margin-right: 0;
+        margin-top: 19px;
+        margin-bottom: 15px;
+        border-radius: 0 0.5rem 0.5rem 0;
+        overflow: hidden;
+        background: var(--chapter-collapsed-bg);
+        box-shadow: var(--chapter-collapsed-shadow);
+        padding-left: var(--chapter-collapsed-padding-left);
+        transition: background-color 0.2s ease, box-shadow 0.2s ease, padding-left 0.2s ease;
+    }
+
+    /* 마크업은 `journal-chapter-content` (구 cn 클래스명과 불일치해 접기 스타일이 적용되지 않던 문제 수정) */
+    .journal-chapter-content {
+        &.collapsed {
+            margin: 0;
+            padding-top: 0.45rem;
+        }
+        &.collapsed::before {
+            @include collapsed-indicator;
+            margin: 0;
+            padding: 0.15rem 0 0.25rem;
+        }
+        &.collapsed > * {
+            display: none !important;
+        }
+    }
+    .journal-chapter-tags {
+        margin: 0 !important;
+        padding: 0.15rem 0 0.65rem;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    &:has(> .journal-chapter-content.collapsed) {
+        .journal-chapter-content.collapsed,
+        .journal-chapter-tags:not(.d-none) {
+            background: transparent;
+            box-shadow: none;
+            padding-left: 0;
+        }
+    }
+
+    /* 챕터 접힘 하이라이트는 diary 전용 구조가 아니라 내부 항목의 상태를 공통으로 본다. */
+    &:has(> .journal-chapter-content.collapsed):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]) {
+        @include chapter-highlight(#fff5f5, inset 2px 0 0 #ef4444, 0.4rem);
+    }
+
+    &:has(> .journal-chapter-content.collapsed):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
+        @include chapter-highlight(#fffcec, inset 2px 0 0 #f59e0b, 0.4rem);
+    }
+
+    &:has(> .journal-chapter-content.collapsed):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
+        @include chapter-highlight(
+            #fff8ef,
+            (inset 2px 0 0 #ef4444, inset 6px 0 0 #f59e0b),
+            1.1rem
+        );
+    }
+
+    /* 챕터 접힘 상태에서 모든 엔트리가 RESOLVED인 경우: 접힌 바에 초록 하이라이트 */
+    &:has(> .journal-chapter-content.collapsed):has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])) {
+        @include chapter-highlight(
+            rgba(34, 197, 94, 0.05),
+            inset 1px 0 0 rgba(34, 197, 94, 0.82),
+            0.85rem
+        );
+
+        .journal-chapter-content.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
+
+@media (max-width: 767.98px) {
+    .journal-chapter-item {
+        &:has(> .journal-chapter-content.collapsed) {
+            --chapter-collapsed-indent: 0.5rem;
+        }
+    }
+}
+
+/* 챕터 펼친 상태에서 모든 엔트리가 RESOLVED인 경우: 전체 블록(헤더 포함)에 초록 배경 */
+.journal-chapter-block:has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])):not(:has(> .journal-chapter-item > .journal-chapter-content.collapsed)) {
+    background: rgba(34, 197, 94, 0.03);
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.journal-chapter-item[data-collapsed="N"] .journal-chapter-tags {
+    display: none;
+}
+
+.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
+.journal-note-content {
+    transition: all 0.2s ease;
+
+    .journal-content {
+        &.collapsed::before {
+            @include collapsed-indicator;
+        }
+        &.collapsed {
+            // BEFORE: text node 기반 구분선(예: ------)이 접기 상태에서 노출될 수 있었음
+            // AFTER : collapsed 본문 텍스트 노드를 렌더링하지 않아 구분선/본문이 함께 숨겨짐
+            font-size: 0;
+            line-height: 0;
+        }
+        &.collapsed > * {
+            display: none;
+        }
+    }
+
+    blockquote {
+        width: auto;
+        position: relative;
+        padding-top: 0.75rem;
+        padding-left: 1rem;
+        color: #8e8e8e;
+
+        &::before {
+            position: absolute;
+            color: #ccc;
+            content: "\f10d";
+            font-family: "Font Awesome 6 Free", serif; /* Font Awesome 폰트 패밀리 */
+            font-size: 1.25em;
+            font-weight: 900;
+            top: 0;
+            left: 0.5rem;
+        }
+
+        p:first-child {
+            padding-left: 1rem;
+        }
+
+        p:last-child {
+            position: relative;
+            display: inline;
+
+            &::after {
+                position: absolute;
+                color: #ccc;
+                content: "\f10e";
+                font-family: "Font Awesome 6 Free", serif; /* Font Awesome 폰트 패밀리 */
+                font-size: 1.25em;
+                font-weight: 900;
+                bottom: 0.1rem;
+                right: -1.5rem;
+            }
+        }
+    }
+}
+
+.journal-diary-item[data-resolved="Y"] .journal-diary-content .journal-content.collapsed::before,
+.journal-dream-item[data-resolved="Y"] .journal-dream-content .journal-content.collapsed::before,
+.journal-interpretation-item[data-resolved="Y"] .journal-interpretation-content .journal-content.collapsed::before,
+.journal-note-item[data-resolved="Y"] .journal-note-content .journal-content.collapsed::before {
+    color: #8ab89a;
+}
+
+.journal-diary-content, .journal-interpretation-content {
+    p {
+        color: rgba(75, 75, 75, 0.9);
+    }
+    .text-comment p {
+        color: initial;
+    }
+}
+.journal-dream-content {
+    p {
+        color: rgba(95, 0, 130, 0.8);
+    }
+    .text-comment {
+        p {
+            color: #ed7000 !important;
+        }
+    }
+}
+
+.journal-history-detail {
+    p {
+        margin-bottom: 0.35rem;
+    }
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.text-comment {
+    .md-text-dialo32g {
+        color: #8b7f91 !important;
+    }
+    .md-text-muted {
+        color: #a67850 !important;
+    }
+    .md-text-dan2ger {
+        color: #a04435 !important;
+    }
+}
+
+/* 글접기 처리 */
+.modal-body {
+    .journal-dream-content, .journal-diary-content, .journal-note-content {
+        [class*="collapse-"] {
+            &.collapse-3 {
+                @include cn-collapse(3, 62.3px);
+
+                &:has(p:nth-of-type(4)) + .expand-btn {
+                    display: inline-block; /* 4개 이상이면 버튼 표시 */
+                }
+
+                &:not(:has(p:nth-of-type(4))) + .expand-btn {
+                    display: none; /* 3개 이하라면 버튼 숨김 */
+                }
+            }
+
+            &.collapse-4 {
+                @include cn-collapse(4, 83px);
+
+                &:has(p:nth-of-type(5)) + .expand-btn {
+                    display: inline-block; /* 5개 이상이면 버튼 표시 */
+                }
+
+                &:not(:has(p:nth-of-type(5))) + .expand-btn {
+                    display: none; /* 4개 이하라면 버튼 숨김 */
+                }
+            }
+        }
+    }
+}
+
+/* 더보기 버튼 스타일 */
+.expand-btn {
+    display: none;
+    font-size: 0.85rem;
+    margin-top: 2px;
+    margin-left: 5px;
+
+    &::after {
+        content: "＋ ...더보기";
+    }
+}
+
+.icon-refrnc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--bs-warning);
+    color: #fff;
+
+    &:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+}
+
+.journal-dream-states {
+    min-height: 1.5rem;
+
+    .title-wrap {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+}
+
+.toggle-diary-btn,
+.toggle-dream-btn,
+.toggle-note-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 0.45rem;
+    background: rgba(255, 255, 255, 0.96);
+    color: #7c8aa0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(248, 250, 252, 1);
+        border-color: rgba(100, 116, 139, 0.34);
+        color: #475569;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    &.is-active {
+        background: rgba(14, 165, 233, 0.08);
+        border-color: rgba(14, 165, 233, 0.32);
+        color: #0284c7;
+        box-shadow: 0 2px 8px rgba(14, 165, 233, 0.12);
+    }
+}
+
+.journal-diary-item,
+.journal-dream-item {
+    .journal-diary-content,
+    .journal-dream-content {
+        @include journal-entry-content-base;
+    }
+
+    &.is-collapsed {
+        .toggle-diary-btn,
+        .toggle-dream-btn {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(14, 165, 233, 0.2);
+            color: #0284c7;
+        }
+    }
+}
+
+.journal-entry-actions {
+    min-width: 80px;
+}
+
+.journal-entry-action-btn {
+    border: 1px solid rgba(27, 132, 255, 0.22) !important;
+    background: #f1f8ff !important;
+    color: #1b84ff !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    opacity: 0.92;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+
+    i {
+        color: inherit !important;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: rgba(27, 132, 255, 0.42) !important;
+        background: #e3f2ff !important;
+        color: #056ee9 !important;
+        box-shadow: 0 3px 8px rgba(27, 132, 255, 0.16);
+        opacity: 1;
+        transform: translateY(-1px);
+    }
+}
+
+.journal-annual-action-btn {
+    border: 1px solid rgba(27, 132, 255, 0.22) !important;
+    background: #f1f8ff !important;
+    color: #1b84ff !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    opacity: 0.92;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+
+    i {
+        color: inherit !important;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: rgba(27, 132, 255, 0.42) !important;
+        background: #e3f2ff !important;
+        color: #056ee9 !important;
+        box-shadow: 0 3px 8px rgba(27, 132, 255, 0.16);
+        opacity: 1;
+        transform: translateY(-1px);
+    }
+
+    &--danger {
+        border-color: rgba(241, 65, 108, 0.2) !important;
+        background: #fff0f4 !important;
+        color: #f1416c !important;
+
+        &:hover,
+        &:focus-visible {
+            border-color: rgba(241, 65, 108, 0.42) !important;
+            background: #ffe4eb !important;
+            color: #d9214e !important;
+            box-shadow: 0 3px 8px rgba(241, 65, 108, 0.16);
+        }
+    }
+}
+
+.journal-note-item {
+    .journal-note-content {
+        @include journal-entry-content-base;
+    }
+
+    &.is-collapsed {
+        .toggle-note-btn {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(14, 165, 233, 0.2);
+            color: #0284c7;
+        }
+    }
+}
+
+@each $selector, $state in $journal-paired-states {
+    .journal-diary-item#{$selector},
+    .journal-dream-item#{$selector} {
+        @include journal-paired-state(
+            map-get($state, bg),
+            map-get($state, border),
+            map-get($state, before-bg),
+            map-get($state, before-shadow)
+        );
+    }
+}
+
+.journal-sumry-review-item {
+    border-left: 3px solid #f59e0b;
+}
+
+/* 태그 컨텍스트 메뉴 (레거시 journalDayTagContextMenuShell 의 동적 DOM 방식 → Vue 컴포넌트로 대체) */
+.journal-tag-context-menu {
+    position: fixed;
+    min-width: 176px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(11, 99, 206, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    z-index: 2000;
+}
+
+.journal-tag-ctx-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    text-align: left;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.15s ease;
+
+    &--search {
+        background: #edf5ff;
+        color: #0b63ce;
+        font-weight: 600;
+
+        &:hover {
+            background: #dbeafe;
+        }
+    }
+
+    &--configure {
+        background: transparent;
+        color: #7c2d12;
+        margin-top: 4px;
+
+        &:hover {
+            background: #ffedd5;
+        }
+    }
+}
+
+.journal-entry-reg-modal__body {
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+.journal-entry-reg-form {
+    .tox-tinymce {
+        border-radius: 0.475rem;
+    }
+
+    .tagify-editor-wrapper,
+    .rich-editor-wrapper,
+    .form-control,
+    .form-select {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .journal-entry-reg-modal__body {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+}

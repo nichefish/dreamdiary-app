@@ -1,0 +1,29 @@
+/**
+ * icons.scss
+ *
+ * @auther nichefish
+ */
+
+// 네이버
+i.bi.bi-naver {
+    font-family: Arial, serif;
+    font-size: 1.25em;
+    font-weight: bolder;
+    margin-bottom: 0.35em;
+
+    &:before {
+        content: "Ｎ";
+    }
+}
+
+// 카카오
+i.bi.bi-kakao {
+    font-family: Arial, serif;
+    font-size: 1.25em;
+    font-weight: bolder;
+    margin-bottom: 0.35em;
+
+    &:before {
+        content: "Ｋ";
+    }
+}

@@ -1,5 +1,26 @@
 # CHANGELOG
 
+### 2026-05-30 | v0.21.0
+- 신규 기능
+  - 저널 일간(`daily`) 화면 추가.
+    - 단일 날짜만 표시하는 새 창 전용 뷰. 사이드바·헤더 없이 해당 날짜 카드만 렌더링.
+    - 상단 이전/다음 버튼으로 날짜 이동.
+    - 월간/주간 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" 진입점 추가.
+    - 태그 상세 모달 일자 행에도 "새 창으로 열기" 버튼 추가.
+  - 저널 챕터 카테고리 일기/노트 전용 분리.
+    - 기존 `JOURNAL_CHAPTER_CTGR_CD` → `JOURNAL_CHAPTER_DIARY_CTGR_CD` / `JOURNAL_CHAPTER_NOTE_CTGR_CD` 으로 분리.
+    - 챕터 유형(`DIARY`/`NOTE`) 변경 시 카테고리 선택 자동 초기화.
+    - 화면 로드 시점에 카테고리 선제 캐시 → 모달 오픈 시 로딩 없음.
+  - 월간 컨텍스트 메뉴에 "주간 뷰로 이동" 추가. 월간·주간 공통으로 "새 창으로 열기 (일자 뷰)" 추가.
+- 개선 사항
+  - AI 임베딩 동기화 방식 비동기 개선.
+  - JVM CodeCache 기본값(48MB) → 128MB 증가 (`dreamdiary.sh`).
+  - 저널 URL 매핑 보완: `daily.do`, thread 계열(`regist-form`, `detail`, `modify-form`) 매핑 추가.
+  - 브레드크럼(`breadcrumb`) 개선.
+- 문서
+  - spec 구조 재편: `docs/spec/` 신설, `docs/migration/` 도메인별 분리(board/admin/auth).
+  - CLAUDE.md·cursor.mdc에 spec 갱신 의무 규약 추가.
+
 ### 2026-05-12 | v0.20.0
 - 신규 기능
   - 채팅(`chat`) 기능에 로컬 LLM(Ollama) 연동.

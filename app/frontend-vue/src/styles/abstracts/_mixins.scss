@@ -1,0 +1,18 @@
+/**
+ * _mixin.scss
+ * 색상, 글꼴, 여백 등과 같은 스타일을 정의하는 파일
+ *
+ * @auther nichefish
+ */
+
+@mixin color-classes($name, $color) {
+    .text-#{$name} {
+        color: $color !important;
+    }
+    .bg-#{$name} {
+        background-color: $color !important;
+    }
+    .border-#{$name} {
+        border-color: $color !important;
+    }
+}
