@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "DreamDiary",
+    "slug": "dreamdiary-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "dreamdiary",
+    "splash": {
+      "backgroundColor": "#F7F2EA"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dreamdiary.mobile"
+    },
+    "android": {
+      "package": "com.dreamdiary.mobile"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

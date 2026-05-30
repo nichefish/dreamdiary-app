@@ -19,7 +19,7 @@ WORKDIR /dreamdiary/
 
 # 애플리케이션 파일 복사
 COPY config/application.yml /dreamdiary/config/application.yml
-COPY content/* /dreamdiary/content/
+COPY files/contents/ /dreamdiary/files/contents/
 COPY templates/* /dreamdiary/templates/
 # .jar 파일
 COPY build/libs/dreamdiary.jar /dreamdiary/dreamdiary.jar

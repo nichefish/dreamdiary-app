@@ -1,0 +1,18 @@
+export const JOURNAL_CONTENT_TYPES = {
+  DAY: "JOURNAL_DAY",
+  DIARY: "JOURNAL_DIARY",
+  DREAM: "JOURNAL_DREAM",
+  NOTE: "JOURNAL_NOTE",
+  CHAPTER: "JOURNAL_CHAPTER",
+  THREAD: "JOURNAL_THREAD",
+  ANNUAL: "JOURNAL_ANNUAL",
+  ANNUAL_REVIEW: "JOURNAL_ANNUAL_REVIEW",
+  INTERPRETATION: "JOURNAL_INTERPRETATION"
+} as const;
+
+export type JournalContentType = (typeof JOURNAL_CONTENT_TYPES)[keyof typeof JOURNAL_CONTENT_TYPES];
+
+export type ContentType = JournalContentType | string;
+
+export type JournalEntryKind = "DAY" | "DIARY" | "DREAM" | "NOTE";
+

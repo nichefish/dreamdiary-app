@@ -24,7 +24,7 @@ plugins {
  * 프로젝트 정보
  */
 group = 'dreamdiary.io'
-version = '0.20.0'
+version = '0.21.0'
 
 /**
  * Java, Spring Boot 및 추가 설정
@@ -43,6 +43,7 @@ node {
     version = '20.11.1'
     npmVersion = '10.5.0'
     download = true
+    nodeProjectDir = file("$projectDir/app/frontend-vue")
 }
 
 /**
@@ -52,10 +53,10 @@ node {
 sourceSets {
 	main {
         java {
-            srcDirs = ["$projectDir/src/main/java"]
+            srcDirs = ["$projectDir/app/backend/src/main/java"]
         }
 		resources {
-            srcDirs = ["$projectDir/src/main/resources"]
+            srcDirs = ["$projectDir/app/backend/src/main/resources"]
 		}
 	}
 }
@@ -124,6 +125,7 @@ tasks.withType(JavaCompile).configureEach {
  */
 tasks.register('buildFrontend', NpmTask) {
     dependsOn npmInstall
+    workingDir = file("$projectDir/app/frontend-vue")
     args = ['run', 'build']
 }
 
@@ -132,7 +134,7 @@ def generateI18nCatalogs = tasks.register('generateI18nCatalogs', GenerateI18nCa
     group = 'build'
     description = 'Spring 메시지 번들을 Vue용 JSON catalog로 변환합니다.'
 
-    messagesDir = layout.projectDirectory.dir('src/main/resources/messages')
+    messagesDir = layout.projectDirectory.dir('app/backend/src/main/resources/messages')
     outputDir = i18nCatalogRoot.map { it.dir('static/i18n') }
 }
 
@@ -153,3 +155,4 @@ apply from: "$rootDir/gradle/testconfig.gradle"
  * 의존성 관련 정보를 dependencies.gradle 파일로 분리하여 관리한다.
  */
 apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/mobile.gradle"
