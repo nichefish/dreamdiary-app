@@ -64,4 +64,9 @@ public class AuthPolicyEntity
     @Column(name = "password_reset_token_expiry_minutes")
     @Comment("비밀번호 재설정 토큰 만료 시간(분)")
     private Integer passwordResetTokenExpiryMinutes;
+
+    /** 중복 로그인 허용 여부 */
+    @Column(name = "duplicate_login_allowed_yn", length = 1)
+    @Comment("중복 로그인 허용 여부 (Y/N)")
+    private String duplicateLoginAllowedYn;
 }

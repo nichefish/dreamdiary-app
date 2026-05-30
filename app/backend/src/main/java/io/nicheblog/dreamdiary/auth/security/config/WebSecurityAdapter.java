@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.auth.security.config;
 import io.nicheblog.dreamdiary.auth.jwt.filter.JwtAuthenticationFilter;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationFailureHandler;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationSuccessHandler;
+import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyQueryDto;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.handler.AjaxAwareAuthenticationEntryPoint;
 import io.nicheblog.dreamdiary.auth.security.handler.LoginFailureHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.LoginSuccessHandler;
@@ -20,6 +22,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -56,6 +59,7 @@ public class WebSecurityAdapter {
     private final AuthenticationProvider authenticationProvider;
     private final SessionRegistry sessionRegistry;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthPolicyQueryService authPolicyQueryService;
 
     @Value("${springdoc.api-docs.path:/v3/api-docs}")
     private String API_DOCS_PATH;
@@ -168,13 +172,19 @@ public class WebSecurityAdapter {
                 .userDetailsService(authService)
                 .authenticationSuccessHandler(webLoginSuccessHandler);
 
-        // 중복 로그인 방지
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .maximumSessions(1)     // 최대 1개
-                .maxSessionsPreventsLogin(false)        // true:: 나중에 접속한 사용자 로그인 방지, false:: 먼저 접속한 사용자 로그아웃 처리
-                .expiredUrl(Url.VUE_SIGN_IN + "?dupLoginAt=Y")
-                .sessionRegistry(sessionRegistry);
+        // 중복 로그인 정책
+        final SessionManagementConfigurer<HttpSecurity> sessionManagement = http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+        if (this.isDuplicateLoginAllowed()) {
+            log.info("Security session policy initialized. duplicateLoginAllowed=true");
+        } else {
+            sessionManagement
+                    .maximumSessions(1)
+                    .maxSessionsPreventsLogin(false)
+                    .expiredUrl(Url.VUE_SIGN_IN + "?dupLoginAt=Y")
+                    .sessionRegistry(sessionRegistry);
+            log.info("Security session policy initialized. duplicateLoginAllowed=false");
+        }
 
         // 로그아웃 설정
         http.logout()
@@ -190,6 +200,16 @@ public class WebSecurityAdapter {
                 .accessDeniedPage(Url.ERROR_ACCESS_DENIED);
 
         return http.build();
+    }
+
+    private boolean isDuplicateLoginAllowed() {
+        try {
+            final AuthPolicyQueryDto authPolicy = authPolicyQueryService.getDtlDto();
+            return authPolicy != null && "Y".equalsIgnoreCase(authPolicy.getDuplicateLoginAllowedYn());
+        } catch (final Exception e) {
+            log.warn("Failed to read duplicate login policy from auth_policy. fallback=denyDuplicateLogin", e);
+            return false;
+        }
     }
 
 }
