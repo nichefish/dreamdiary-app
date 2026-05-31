@@ -92,7 +92,7 @@
 | 메타 탭 | `<a>` | `.nav-link.px-6.cursor-pointer` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 (Vue) |
 | 탭 라벨 | text | — | — | `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW` |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 등록 버튼; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
-| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayReg()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex` |
+| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex` |
 | 키워드 검색 | include | `_journal_day_keyword_search.ftlh` | 검색 파라미터 | 팝업 형태 — SPA ❌ MISSING |
 | 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부 |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayMonthlyListApp` 마운트 대상 |
@@ -105,7 +105,7 @@
 | 월간 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_MONTHLY)` | 현재 페이지 유지(active) |
 | 달력 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_CAL)` | 달력 보기 페이지로 이동 |
 | 메타 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_META_VIEW)` | 메타 보기 페이지로 이동 |
-| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayReg()`) |
+| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayRegist()`) |
 
 **레이아웃 전역 툴바** (`_journal_day_page_header.ftlh` 나머지): 고급필터·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ❌ MISSING (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
@@ -184,7 +184,7 @@
 | 달력 탭 | `<a>` | `.nav-link` | `Url.JOURNAL_DAY_CAL` | `bi-calendar3` 아이콘 |
 | 메타 탭 | `<a>` | `.nav-link` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 월간 목록과 동일 (탭 + 저널 일자 등록) |
-| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `openDayReg()` | 월간 목록 표와 동일 |
+| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `openDayRegist()` | 월간 목록 표와 동일 |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayWeeklyListApp` 마운트 대상 |
 
 ### Action Buttons & Interactions
@@ -193,7 +193,7 @@
 
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
-| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` `reg-modal` | `JournalDayRegistModal` 신규 등록 (`openDayReg()`) |
+| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` `reg-modal` | `JournalDayRegistModal` 신규 등록 (`openDayRegist()`) |
 
 ### Data Displayed
 

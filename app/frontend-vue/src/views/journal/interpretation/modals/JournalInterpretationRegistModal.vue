@@ -142,10 +142,10 @@ const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
-  modalStore.closeInterpretationReg();
+  modalStore.closeInterpretationRegist();
 });
 
-const model = computed(() => modalStore.interpretationRegModel);
+const model = computed(() => modalStore.interpretationRegistModel);
 
 /** 수정 모드 여부 */
 const isModify = computed(() => !!model.value?.id);
@@ -156,13 +156,13 @@ onMounted(() => {
     /* bootstrap 이벤트로 store와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
-      modalStore.closeInterpretationReg();
+      modalStore.closeInterpretationRegist();
     });
   }
 });
 
 watch(
-  () => modalStore.interpretationRegOpen,
+  () => modalStore.interpretationRegistOpen,
   (isOpen) => {
     if (isOpen) {
       resetSafeClose();
@@ -173,7 +173,7 @@ watch(
 
 function close() {
   resetSafeClose();
-  modalStore.closeInterpretationReg();
+  modalStore.closeInterpretationRegist();
 }
 
 /** 등록/수정 처리 (axios multipart). 해석 API는 등록/수정 모두 POST. */

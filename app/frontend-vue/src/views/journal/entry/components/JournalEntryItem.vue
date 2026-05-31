@@ -98,7 +98,7 @@
         type="button"
         class="btn btn-xs btn-icon journal-entry-action-btn"
         title="댓글 등록"
-        @click="openCommentReg"
+        @click="openCommentRegist"
       >
         <i class="bi bi-chat-dots fs-8"></i>
       </button>
@@ -138,7 +138,7 @@
 
           <!--begin::수정-->
           <div class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openMdf">
+            <div class="menu-link flex-stack px-3" @click="openModify">
               수정
               <i class="bi bi-pencil-square fs-8"></i>
             </div>
@@ -147,7 +147,7 @@
 
           <!--begin::해석 등록-->
           <div class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openInterpretationReg">
+            <div class="menu-link flex-stack px-3" @click="openInterpretationRegist">
               해석 등록
               <i class="bi bi-lightbulb fs-8"></i>
             </div>
@@ -430,14 +430,14 @@ async function copyEntry(): Promise<void> {
 }
 
 /** 엔트리 수정 모달 열기 */
-function openMdf() {
-  void modalStore.openEntryMdf(props.entry.id);
+function openModify() {
+  void modalStore.openEntryModify(props.entry.id);
 }
 
 /** 댓글 등록 모달 열기 */
-function openCommentReg() {
+function openCommentRegist() {
   if (!props.entry.id || !props.entry.contentType) return;
-  attachableStore.openCommentReg(props.entry.id, props.entry.contentType);
+  attachableStore.openCommentRegist(props.entry.id, props.entry.contentType);
 }
 
 /** 이력 모달 열기 */
@@ -453,9 +453,9 @@ function openRelated() {
 }
 
 /** 해석 등록 모달 열기 */
-function openInterpretationReg() {
+function openInterpretationRegist() {
   if (!props.entry.id || !props.entry.contentType) return;
-  modalStore.openInterpretationReg({
+  modalStore.openInterpretationRegist({
     refId: props.entry.id,
     refContentType: props.entry.contentType,
     stdrdDt: props.entry.stdrdDt,

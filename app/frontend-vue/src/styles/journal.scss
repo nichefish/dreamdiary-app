@@ -747,12 +747,12 @@ $journal-paired-states: (
     }
 }
 
-.journal-entry-reg-modal__body {
+.journal-entry-regist-modal__body {
     padding-left: 3rem;
     padding-right: 3rem;
 }
 
-.journal-entry-reg-form {
+.journal-entry-regist-form {
     .tox-tinymce {
         border-radius: 0.475rem;
     }
@@ -766,7 +766,7 @@ $journal-paired-states: (
 }
 
 @media (max-width: 767.98px) {
-    .journal-entry-reg-modal__body {
+    .journal-entry-regist-modal__body {
         padding-left: 1.25rem;
         padding-right: 1.25rem;
     }

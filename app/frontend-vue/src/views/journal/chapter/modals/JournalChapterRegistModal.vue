@@ -175,10 +175,10 @@ let bsModal: InstanceType<typeof Modal> | null = null;
  *  hidden.bs.modal 이후 실행할 스크롤 대상 일자를 임시 보관한다. */
 let pendingScrollDt: string | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
-  modalStore.closeChapterReg();
+  modalStore.closeChapterRegist();
 });
 
-const model = computed(() => modalStore.chapterRegModel);
+const model = computed(() => modalStore.chapterRegistModel);
 
 /** 수정 모드 여부 */
 const isModify = computed(() => !!model.value?.id);
@@ -205,7 +205,7 @@ onMounted(() => {
     /* bootstrap 이벤트로 store와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
-      modalStore.closeChapterReg();
+      modalStore.closeChapterRegist();
       if (pendingScrollDt) {
         const dt = pendingScrollDt;
         pendingScrollDt = null;
@@ -216,7 +216,7 @@ onMounted(() => {
 });
 
 watch(
-  () => modalStore.chapterRegOpen,
+  () => modalStore.chapterRegistOpen,
   (isOpen) => {
     if (isOpen) {
       resetSafeClose();
@@ -229,7 +229,7 @@ watch(
 
 function close() {
   resetSafeClose();
-  modalStore.closeChapterReg();
+  modalStore.closeChapterRegist();
 }
 
 /** 등록/수정 후 해당 일자 카드(#journal-day-{stdrdDt})로 스크롤한다. */

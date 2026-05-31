@@ -163,10 +163,10 @@ const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
-  modalStore.closeTodoReg();
+  modalStore.closeTodoRegist();
 });
 
-const model = computed(() => modalStore.todoRegModel);
+const model = computed(() => modalStore.todoRegistModel);
 const isModify = computed(() => !!model.value?.id);
 
 /** 태그 문자열 바인딩 */
@@ -180,13 +180,13 @@ onMounted(() => {
     bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
-      modalStore.closeTodoReg();
+      modalStore.closeTodoRegist();
     });
   }
 });
 
 watch(
-  () => modalStore.todoRegOpen,
+  () => modalStore.todoRegistOpen,
   (isOpen) => {
     if (isOpen) {
       resetSafeClose();
@@ -197,7 +197,7 @@ watch(
 
 function close() {
   resetSafeClose();
-  modalStore.closeTodoReg();
+  modalStore.closeTodoRegist();
 }
 
 /** 등록/수정 처리 */

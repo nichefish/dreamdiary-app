@@ -98,7 +98,7 @@
         type="button"
         class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer text-nowrap"
         title="저널 일자 등록"
-        @click="openDayReg"
+        @click="openDayRegist"
       >
         <i class="bi bi-calendar-plus fs-4 pe-1"></i>
         저널 일자 등록
@@ -130,7 +130,7 @@ function openSearchTab(type: "DIARY" | "DREAM", keyword: string): void {
 }
 
 /** 신규 저널 일자 등록 모달 */
-function openDayReg(): void {
-  void modalStore.openDayReg();
+function openDayRegist(): void {
+  void modalStore.openDayRegist();
 }
 </script>

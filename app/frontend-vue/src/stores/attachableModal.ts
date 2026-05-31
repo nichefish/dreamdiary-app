@@ -114,9 +114,9 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   // ---- 댓글 등록/수정 모달 ----
 
   /** 댓글 등록/수정 모달 오픈 여부 */
-  const commentRegOpen = ref(false);
+  const commentRegistOpen = ref(false);
   /** 댓글 등록/수정 로딩 여부 */
-  const commentRegLoading = ref(false);
+  const commentRegistLoading = ref(false);
   /** 수정 대상 댓글 번호 (신규 시 undefined) */
   const commentId = ref<number | undefined>(undefined);
   /** 참조 게시물 번호 */
@@ -131,40 +131,40 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param refId - 참조 게시물 번호
    * @param refContentType - 참조 콘텐츠 타입
    */
-  function openCommentReg(refId: number, refContentType: string): void {
+  function openCommentRegist(refId: number, refContentType: string): void {
     commentId.value = undefined;
     commentRefId.value = refId;
     commentRefContentType.value = refContentType;
     commentContent.value = "";
-    commentRegOpen.value = true;
+    commentRegistOpen.value = true;
   }
 
   /**
    * 댓글 수정 모달을 연다. API에서 댓글 데이터를 조회한다.
    * @param id - 수정할 댓글 번호
    */
-  async function openCommentMdf(id: number): Promise<void> {
-    commentRegOpen.value = true;
-    commentRegLoading.value = true;
+  async function openCommentModify(id: number): Promise<void> {
+    commentRegistOpen.value = true;
+    commentRegistLoading.value = true;
     commentContent.value = "";
     try {
       const res = await axios.get(`/api/comment/${id}`);
       const data = res.data?.rsltObj;
-      if (!data) { commentRegOpen.value = false; return; }
+      if (!data) { commentRegistOpen.value = false; return; }
       commentId.value = Number(data.id);
       commentRefId.value = Number(data.refId);
       commentRefContentType.value = String(data.refContentType ?? "");
       commentContent.value = String(data.content ?? "");
     } catch {
-      commentRegOpen.value = false;
+      commentRegistOpen.value = false;
     } finally {
-      commentRegLoading.value = false;
+      commentRegistLoading.value = false;
     }
   }
 
   /** 댓글 등록/수정 모달을 닫는다. */
-  function closeCommentReg(): void {
-    commentRegOpen.value = false;
+  function closeCommentRegist(): void {
+    commentRegistOpen.value = false;
     commentContent.value = "";
   }
 
@@ -679,15 +679,15 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
 
   return {
     // 댓글 등록/수정
-    commentRegOpen,
-    commentRegLoading,
+    commentRegistOpen,
+    commentRegistLoading,
     commentId,
     commentRefId,
     commentRefContentType,
     commentContent,
-    openCommentReg,
-    openCommentMdf,
-    closeCommentReg,
+    openCommentRegist,
+    openCommentModify,
+    closeCommentRegist,
     // 댓글 목록
     commentListOpen,
     commentListLoading,

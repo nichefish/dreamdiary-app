@@ -15,7 +15,7 @@
         <div class="modal-body modal-mbl-body my-5">
 
           <!--begin::로딩-->
-          <div v-if="modalStore.dayDtlLoading" class="d-flex justify-content-center py-10">
+          <div v-if="modalStore.dayDetailLoading" class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary" role="status"></span>
           </div>
           <!--end::로딩-->
@@ -119,7 +119,7 @@ const modalStore = useJournalModalStore();
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
 
-const day = computed(() => modalStore.dayDtlData);
+const day = computed(() => modalStore.dayDetailData);
 const tagList = computed(() => day.value?.tag?.list ?? []);
 const journalChapterList = computed(() => day.value?.journalChapterList ?? []);
 const journalDreamList = computed(() => day.value?.journalDreamList ?? []);
@@ -129,13 +129,13 @@ onMounted(() => {
   if (modalEl.value) {
     bsModal = new Modal(modalEl.value);
     modalEl.value.addEventListener("hidden.bs.modal", () => {
-      modalStore.closeDayDtl();
+      modalStore.closeDayDetail();
     });
   }
 });
 
 watch(
-  () => modalStore.dayDtlOpen,
+  () => modalStore.dayDetailOpen,
   (isOpen) => {
     if (isOpen) bsModal?.show();
     else bsModal?.hide();
@@ -143,6 +143,6 @@ watch(
 );
 
 function close() {
-  modalStore.closeDayDtl();
+  modalStore.closeDayDetail();
 }
 </script>

@@ -62,7 +62,7 @@ export async function preloadCategoryMaps(): Promise<void> {
 // ---- 타입 정의 ----
 
 /** 저널 일자 등록/수정 폼 모델 */
-export interface JournalDayRegModel {
+export interface JournalDayRegistModel {
   id?: number;
   journalDate?: string;
   journalDatePrecision?: string;
@@ -75,7 +75,7 @@ export interface JournalDayRegModel {
 }
 
 /** 저널 챕터 등록/수정 폼 모델 */
-export interface JournalChapterRegModel {
+export interface JournalChapterRegistModel {
   id?: number;
   journalDayId?: number;
   stdrdDt?: string;
@@ -93,7 +93,7 @@ export interface ChapterCategoryOption {
 }
 
 /** 저널 해석 등록/수정 폼 모델 */
-export interface JournalInterpretationRegModel {
+export interface JournalInterpretationRegistModel {
   id?: number;
   refId?: number;
   refContentType?: string;
@@ -126,7 +126,7 @@ export interface JournalDayTagDetailPayload {
 }
 
 /** 저널 할일 등록/수정 폼 모델 */
-export interface JournalTodoRegModel {
+export interface JournalTodoRegistModel {
   id?: number;
   yy?: number | string;
   mnth?: number | string;
@@ -149,7 +149,7 @@ export interface JournalChapterOption {
 }
 
 /** 저널 엔트리(일기/꿈/노트) 등록/수정 폼 모델 */
-export interface JournalEntryRegModel {
+export interface JournalEntryRegistModel {
   id?: number;
   /** 컨텐츠 유형: 'JOURNAL_DIARY' | 'JOURNAL_DREAM' | 'JOURNAL_NOTE' */
   contentType: string;
@@ -175,17 +175,17 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   // ---- 일자 등록/수정 모달 ----
 
   /** 등록/수정 모달 오픈 여부 */
-  const dayRegOpen = ref(false);
+  const dayRegistOpen = ref(false);
   /** 등록/수정 폼 모델 */
-  const dayRegModel = ref<JournalDayRegModel | null>(null);
+  const dayRegistModel = ref<JournalDayRegistModel | null>(null);
 
   /**
    * 일자 등록/수정 모달을 연다.
    * 수정(id 있음) 시 Tagify 초기값(tagListStr/metaListStr)을 API 상세에서 채운다.
    * @param payload - 수정 시 기존 데이터, 신규 시 날짜 등 초기값
    */
-  async function openDayReg(payload?: JournalDayRegModel) {
-    let merged: JournalDayRegModel = {
+  async function openDayRegist(payload?: JournalDayRegistModel) {
+    let merged: JournalDayRegistModel = {
       journalDatePrecision: "EXACT",
       diaryResolvedYn: "N",
       weather: "",
@@ -214,61 +214,61 @@ export const useJournalModalStore = defineStore("journalModal", () => {
           };
         }
       } catch {
-        console.error("[journalModal] openDayReg 상세 조회 실패 id=", payload.id);
+        console.error("[journalModal] openDayRegist 상세 조회 실패 id=", payload.id);
       }
     }
-    dayRegModel.value = merged;
+    dayRegistModel.value = merged;
     /** 앱 세션 categoryMap — preload 미적재 시에만 HTTP */
     await Promise.all([
       ensureCategoryMap(CATEGORY_MAP_URL_DAY_TAG),
       ensureCategoryMap(CATEGORY_MAP_URL_DAY_META),
     ]);
-    dayRegOpen.value = true;
+    dayRegistOpen.value = true;
   }
 
   /** 일자 등록/수정 모달을 닫는다. */
-  function closeDayReg() {
-    dayRegOpen.value = false;
+  function closeDayRegist() {
+    dayRegistOpen.value = false;
   }
 
   // ---- 일자 상세 모달 ----
 
   /** 상세 모달 오픈 여부 */
-  const dayDtlOpen = ref(false);
+  const dayDetailOpen = ref(false);
   /** 상세 모달 로딩 여부 */
-  const dayDtlLoading = ref(false);
+  const dayDetailLoading = ref(false);
   /** 상세 모달 데이터 */
-  const dayDtlData = ref<JournalDayDto | null>(null);
+  const dayDetailData = ref<JournalDayDto | null>(null);
 
   /**
    * 일자 상세 모달을 연다. API에서 상세 데이터를 조회한다.
    * @param id - 저널 일자 ID
    */
-  async function openDayDtl(id: number) {
-    dayDtlData.value = null;
-    dayDtlOpen.value = true;
-    dayDtlLoading.value = true;
+  async function openDayDetail(id: number) {
+    dayDetailData.value = null;
+    dayDetailOpen.value = true;
+    dayDetailLoading.value = true;
     try {
       const res = await axios.get(`/api/journal/day/${id}`);
-      dayDtlData.value = res.data?.rsltObj ?? null;
+      dayDetailData.value = res.data?.rsltObj ?? null;
     } catch {
-      dayDtlData.value = null;
+      dayDetailData.value = null;
     } finally {
-      dayDtlLoading.value = false;
+      dayDetailLoading.value = false;
     }
   }
 
   /** 일자 상세 모달을 닫는다. */
-  function closeDayDtl() {
-    dayDtlOpen.value = false;
+  function closeDayDetail() {
+    dayDetailOpen.value = false;
   }
 
   // ---- 챕터 등록/수정 모달 ----
 
   /** 챕터 등록/수정 모달 오픈 여부 */
-  const chapterRegOpen = ref(false);
+  const chapterRegistOpen = ref(false);
   /** 챕터 등록/수정 폼 모델 */
-  const chapterRegModel = ref<JournalChapterRegModel | null>(null);
+  const chapterRegistModel = ref<JournalChapterRegistModel | null>(null);
   /** 챕터 카테고리 옵션 목록 — 일기 전용 (JOURNAL_CHAPTER_DIARY_CTGR_CD) */
   const chapterDiaryCategoryOptions = ref<ChapterCategoryOption[]>([]);
   /** 챕터 카테고리 옵션 목록 — 노트 전용 (JOURNAL_CHAPTER_NOTE_CTGR_CD) */
@@ -311,46 +311,46 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * 챕터 등록/수정 모달을 연다.
    * @param payload - 수정 시 기존 챕터 데이터, 신규 시 journalDayId 등 초기값
    */
-  function openChapterReg(payload?: JournalChapterRegModel) {
-    chapterRegModel.value = {
+  function openChapterRegist(payload?: JournalChapterRegistModel) {
+    chapterRegistModel.value = {
       chapterType: "DIARY",
       categoryCode: "",
       title: "",
       ...payload,
     };
-    chapterRegOpen.value = true;
+    chapterRegistOpen.value = true;
     void prefetchChapterCategories();
   }
 
   /** 챕터 등록/수정 모달을 닫는다. */
-  function closeChapterReg() {
-    chapterRegOpen.value = false;
+  function closeChapterRegist() {
+    chapterRegistOpen.value = false;
   }
 
   // ---- 해석 등록/수정 모달 ----
 
   /** 해석 등록/수정 모달 오픈 여부 */
-  const interpretationRegOpen = ref(false);
+  const interpretationRegistOpen = ref(false);
   /** 해석 등록/수정 폼 모델 */
-  const interpretationRegModel = ref<JournalInterpretationRegModel | null>(null);
+  const interpretationRegistModel = ref<JournalInterpretationRegistModel | null>(null);
 
   /**
    * 해석 등록/수정 모달을 연다.
    * @param payload - 수정 시 기존 데이터, 신규 시 refId 등 초기값
    */
-  function openInterpretationReg(payload?: JournalInterpretationRegModel) {
-    interpretationRegModel.value = {
+  function openInterpretationRegist(payload?: JournalInterpretationRegistModel) {
+    interpretationRegistModel.value = {
       ctgrCd: "",
       title: "",
       content: "",
       ...payload,
     };
-    interpretationRegOpen.value = true;
+    interpretationRegistOpen.value = true;
   }
 
   /** 해석 등록/수정 모달을 닫는다. */
-  function closeInterpretationReg() {
-    interpretationRegOpen.value = false;
+  function closeInterpretationRegist() {
+    interpretationRegistOpen.value = false;
   }
 
   // ---- 메타 모달 ----
@@ -457,38 +457,38 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   // ---- 할일 등록/수정 모달 ----
 
   /** 할일 등록/수정 모달 오픈 여부 */
-  const todoRegOpen = ref(false);
+  const todoRegistOpen = ref(false);
   /** 할일 등록/수정 폼 모델 */
-  const todoRegModel = ref<JournalTodoRegModel | null>(null);
+  const todoRegistModel = ref<JournalTodoRegistModel | null>(null);
 
   /**
    * 할일 등록/수정 모달을 연다.
    * @param payload - 수정 시 기존 데이터, 신규 시 yy/mnth 등 초기값
    */
-  function openTodoReg(payload?: JournalTodoRegModel) {
-    todoRegModel.value = {
+  function openTodoRegist(payload?: JournalTodoRegistModel) {
+    todoRegistModel.value = {
       categoryCode: "",
       title: "",
       content: "",
       tag: { tagListStrWithCtgr: "" },
       ...payload,
     };
-    todoRegOpen.value = true;
+    todoRegistOpen.value = true;
   }
 
   /** 할일 등록/수정 모달을 닫는다. */
-  function closeTodoReg() {
-    todoRegOpen.value = false;
+  function closeTodoRegist() {
+    todoRegistOpen.value = false;
   }
 
   // ---- 엔트리(일기/꿈/노트) 등록/수정 모달 ----
 
   /** 엔트리 등록/수정 모달 오픈 여부 */
-  const entryRegOpen = ref(false);
+  const entryRegistOpen = ref(false);
   /** 엔트리 등록/수정 로딩 여부 */
-  const entryRegLoading = ref(false);
+  const entryRegistLoading = ref(false);
   /** 엔트리 등록/수정 폼 모델 */
-  const entryRegModel = ref<JournalEntryRegModel | null>(null);
+  const entryRegistModel = ref<JournalEntryRegistModel | null>(null);
   /** 일자 태그 categoryMap — 앱 세션 SSOT (TagifyEditor prop) */
   const dayTagCategoryMap = ref<Record<string, string[]>>({});
   const dayTagCategoryMapLoaded = ref(false);
@@ -503,13 +503,13 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   const entryDreamCategoryMapLoaded = ref(false);
   /** 엔트리 모달용 뷰 (contentType 에 따라 diary/dream map 참조) */
   const entryCategoryMap = computed((): Record<string, string[]> | null => {
-    const ct = entryRegModel.value?.contentType;
+    const ct = entryRegistModel.value?.contentType;
     if (!ct) return null;
     if (isDreamEntry(ct)) return entryDreamCategoryMap.value;
     if (isDiaryLikeEntry(ct)) return entryDiaryCategoryMap.value;
     return null;
   });
-  let dreamEntryRegOpening = false;
+  let dreamEntryRegistOpening = false;
 
   function categoryMapRefForUrl(url: string) {
     switch (url) {
@@ -556,12 +556,12 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * categoryMap 과 챕터 옵션을 병렬로 조회한 뒤 모달 로딩을 해제한다.
    * @param payload - contentType, journalDayId, stdrdDt 등 초기값
    */
-  async function openEntryReg(payload: JournalEntryRegModel) {
-    entryRegOpen.value = true;
-    entryRegLoading.value = true;
-    entryRegModel.value = null;
+  async function openEntryRegist(payload: JournalEntryRegistModel) {
+    entryRegistOpen.value = true;
+    entryRegistLoading.value = true;
+    entryRegistModel.value = null;
     try {
-      const model: JournalEntryRegModel = {
+      const model: JournalEntryRegistModel = {
         ctgrCd: "",
         title: "",
         content: "",
@@ -575,9 +575,9 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         showTagForType && categoryUrl ? ensureCategoryMap(categoryUrl) : Promise.resolve(),
         hydrateEntryChapterOptions(model),
       ]);
-      entryRegModel.value = model;
+      entryRegistModel.value = model;
     } finally {
-      entryRegLoading.value = false;
+      entryRegistLoading.value = false;
     }
   }
 
@@ -585,12 +585,12 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * 꿈 엔트리 신규 등록 모달을 연다. dream-auto API 로 챕터를 자동 생성/조회한다.
    * @param params - journalDayId, stdrdDt, journalDateWeekDay
    */
-  async function openDreamEntryReg(params: { journalDayId: number; stdrdDt: string; journalDateWeekDay?: string }) {
-    if (dreamEntryRegOpening) return;
-    dreamEntryRegOpening = true;
-    entryRegOpen.value = true;
-    entryRegLoading.value = true;
-    entryRegModel.value = null;
+  async function openDreamEntryRegist(params: { journalDayId: number; stdrdDt: string; journalDateWeekDay?: string }) {
+    if (dreamEntryRegistOpening) return;
+    dreamEntryRegistOpening = true;
+    entryRegistOpen.value = true;
+    entryRegistLoading.value = true;
+    entryRegistModel.value = null;
     try {
       const fd = new FormData();
       fd.append("journalDayId", String(params.journalDayId));
@@ -599,7 +599,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         ensureCategoryMap(CATEGORY_MAP_URL_ENTRY_DREAM),
       ]);
       const chapter = res.data?.rsltObj;
-      entryRegModel.value = {
+      entryRegistModel.value = {
         contentType: "JOURNAL_DREAM",
         journalDayId: params.journalDayId,
         journalChapterId: chapter?.id ?? "",
@@ -611,11 +611,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         chapterList: [],
       };
     } catch {
-      entryRegModel.value = null;
-      entryRegOpen.value = false;
+      entryRegistModel.value = null;
+      entryRegistOpen.value = false;
     } finally {
-      entryRegLoading.value = false;
-      dreamEntryRegOpening = false;
+      entryRegistLoading.value = false;
+      dreamEntryRegistOpening = false;
     }
   }
 
@@ -623,18 +623,18 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * 엔트리 수정 모달을 연다. API 에서 기존 데이터를 조회한다.
    * @param id - 엔트리 ID
    */
-  async function openEntryMdf(id: number) {
-    entryRegOpen.value = true;
-    entryRegLoading.value = true;
-    entryRegModel.value = null;
+  async function openEntryModify(id: number) {
+    entryRegistOpen.value = true;
+    entryRegistLoading.value = true;
+    entryRegistModel.value = null;
     try {
       const res = await axios.get(`/api/journal/entry/${id}`);
       const entry = res.data?.rsltObj;
       if (!entry) {
-        entryRegOpen.value = false;
+        entryRegistOpen.value = false;
         return;
       }
-      const merged: JournalEntryRegModel = {
+      const merged: JournalEntryRegistModel = {
         ...entry,
         tag: { tagListStrWithCtgr: entry.tag?.tagListStrWithCtgr ?? "" },
         chapterList: entry.chapterList ?? [],
@@ -645,16 +645,16 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         showTagForType && categoryUrl ? ensureCategoryMap(categoryUrl) : Promise.resolve(),
         hydrateEntryChapterOptions(merged),
       ]);
-      entryRegModel.value = merged;
+      entryRegistModel.value = merged;
     } catch {
-      entryRegModel.value = null;
-      entryRegOpen.value = false;
+      entryRegistModel.value = null;
+      entryRegistOpen.value = false;
     } finally {
-      entryRegLoading.value = false;
+      entryRegistLoading.value = false;
     }
   }
 
-  function shouldLoadChapterOptions(model: JournalEntryRegModel | null): model is JournalEntryRegModel {
+  function shouldLoadChapterOptions(model: JournalEntryRegistModel | null): model is JournalEntryRegistModel {
     if (!model?.journalDayId) return false;
     return isDiaryLikeEntry(model.contentType) || isNoteLikeEntry(model.contentType);
   }
@@ -691,7 +691,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       .filter((chapter) => chapter.id !== undefined && chapter.id !== null && String(chapter.id) !== "");
   }
 
-  async function hydrateEntryChapterOptions(model: JournalEntryRegModel | null): Promise<void> {
+  async function hydrateEntryChapterOptions(model: JournalEntryRegistModel | null): Promise<void> {
     if (!shouldLoadChapterOptions(model)) return;
     try {
       const res = await axios.get(`/api/journal/day/${model.journalDayId}`);
@@ -713,9 +713,9 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   }
 
   /** 엔트리 등록/수정 모달을 닫는다. */
-  function closeEntryReg() {
-    entryRegOpen.value = false;
-    entryRegModel.value = null;
+  function closeEntryRegist() {
+    entryRegistOpen.value = false;
+    entryRegistModel.value = null;
   }
 
   /**
@@ -764,29 +764,29 @@ export const useJournalModalStore = defineStore("journalModal", () => {
 
   return {
     // 일자 등록/수정
-    dayRegOpen,
-    dayRegModel,
-    openDayReg,
-    closeDayReg,
+    dayRegistOpen,
+    dayRegistModel,
+    openDayRegist,
+    closeDayRegist,
     // 일자 상세
-    dayDtlOpen,
-    dayDtlLoading,
-    dayDtlData,
-    openDayDtl,
-    closeDayDtl,
+    dayDetailOpen,
+    dayDetailLoading,
+    dayDetailData,
+    openDayDetail,
+    closeDayDetail,
     // 챕터 등록/수정
-    chapterRegOpen,
-    chapterRegModel,
+    chapterRegistOpen,
+    chapterRegistModel,
     chapterDiaryCategoryOptions,
     chapterNoteCategoryOptions,
     prefetchChapterCategories,
-    openChapterReg,
-    closeChapterReg,
+    openChapterRegist,
+    closeChapterRegist,
     // 해석 등록/수정
-    interpretationRegOpen,
-    interpretationRegModel,
-    openInterpretationReg,
-    closeInterpretationReg,
+    interpretationRegistOpen,
+    interpretationRegistModel,
+    openInterpretationRegist,
+    closeInterpretationRegist,
     // 메타 모달
     metaModalOpen,
     metaModalLoading,
@@ -800,21 +800,21 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     openTagDetail,
     closeTagDetail,
     // 할일 등록/수정
-    todoRegOpen,
-    todoRegModel,
-    openTodoReg,
-    closeTodoReg,
+    todoRegistOpen,
+    todoRegistModel,
+    openTodoRegist,
+    closeTodoRegist,
     // 엔트리 등록/수정
-    entryRegOpen,
-    entryRegLoading,
-    entryRegModel,
+    entryRegistOpen,
+    entryRegistLoading,
+    entryRegistModel,
     dayTagCategoryMap,
     dayMetaCategoryMap,
     entryCategoryMap,
-    openEntryReg,
-    openDreamEntryReg,
-    openEntryMdf,
-    closeEntryReg,
+    openEntryRegist,
+    openDreamEntryRegist,
+    openEntryModify,
+    closeEntryRegist,
     preloadAllCategoryMaps,
     applyCategoryMapsFromSaveResponse,
     resetCategoryMaps,

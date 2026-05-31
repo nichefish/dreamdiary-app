@@ -19,7 +19,7 @@
         <!--begin::Modal Body-->
         <div class="modal-body modal-mbl-body my-5">
           <!--begin::로딩-->
-          <div v-if="attachableStore.commentRegLoading" class="d-flex justify-content-center py-10">
+          <div v-if="attachableStore.commentRegistLoading" class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary" role="status"></span>
           </div>
           <!--end::로딩-->
@@ -79,7 +79,7 @@ const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
-  attachableStore.closeCommentReg();
+  attachableStore.closeCommentRegist();
 });
 
 onMounted(() => {
@@ -88,13 +88,13 @@ onMounted(() => {
     /* bootstrap 이벤트로 store 와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
-      attachableStore.closeCommentReg();
+      attachableStore.closeCommentRegist();
     });
   }
 });
 
 watch(
-  () => attachableStore.commentRegOpen,
+  () => attachableStore.commentRegistOpen,
   (isOpen) => {
     if (isOpen) {
       resetSafeClose();
@@ -105,7 +105,7 @@ watch(
 
 function close() {
   resetSafeClose();
-  attachableStore.closeCommentReg();
+  attachableStore.closeCommentRegist();
 }
 
 /** 댓글 등록/수정 처리. 신규 시 /api/comments, 수정 시 /api/comment/{id} 로 multipart POST. */
@@ -114,8 +114,8 @@ async function submit() {
     void swalAlert("내용을 입력해 주세요.");
     return;
   }
-  const isMdf = !!attachableStore.commentId;
-  const confirmed = await swalConfirm(isMdf ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const isModify = !!attachableStore.commentId;
+  const confirmed = await swalConfirm(isModify ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;
 
   submitting.value = true;
@@ -126,7 +126,7 @@ async function submit() {
     fd.append("refContentType", attachableStore.commentRefContentType);
     fd.append("content", attachableStore.commentContent);
 
-    const url = isMdf ? `/api/comment/${attachableStore.commentId}` : "/api/comments";
+    const url = isModify ? `/api/comment/${attachableStore.commentId}` : "/api/comments";
     const res = await axios.post(url, fd, {
       headers: { "Content-Type": "multipart/form-data" },
     });
