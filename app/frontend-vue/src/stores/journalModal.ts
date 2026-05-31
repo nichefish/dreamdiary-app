@@ -6,9 +6,9 @@ import { formatLocalDateStr } from "@/utils/journalDate";
 
 // ---- 세션 캐시 (모듈 레벨: 페이지 새로고침 전까지 유지) ----
 
-const ctgrMapCache: Record<string, Record<string, string[]>> = {};
+const categoryMapCache: Record<string, Record<string, string[]>> = {};
 
-function normalizeCtgrMap(raw: unknown): Record<string, string[]> {
+function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
   const out: Record<string, string[]> = {};
   for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
@@ -18,23 +18,33 @@ function normalizeCtgrMap(raw: unknown): Record<string, string[]> {
   return out;
 }
 
-/** ctgrMap 을 URL 별로 세션 캐시한다. 첫 요청 후 새로고침 전까지 재사용. */
-async function fetchCtgrMapCached(url: string): Promise<Record<string, string[]>> {
-  if (ctgrMapCache[url]) return ctgrMapCache[url];
+/** categoryMap 을 URL 별로 세션 캐시한다. 첫 요청 후 새로고침 전까지 재사용. */
+async function fetchCategoryMapCached(url: string): Promise<Record<string, string[]>> {
+  if (categoryMapCache[url]) return categoryMapCache[url];
   try {
     const res = await axios.get(url);
     if (!res.data?.rslt) {
-      console.error("[journalModal] ctgrMap 조회 rslt=false:", url);
+      console.error("[journalModal] categoryMap 조회 rslt=false:", url);
       return {};
     }
     const raw = res.data.rsltMap ?? res.data.rsltObj;
-    const map = normalizeCtgrMap(raw);
-    ctgrMapCache[url] = map;
+    const map = normalizeCategoryMap(raw);
+    categoryMapCache[url] = map;
     return map;
   } catch {
-    console.error("[journalModal] ctgrMap 조회 실패:", url);
+    console.error("[journalModal] categoryMap 조회 실패:", url);
     return {};
   }
+}
+
+/** 앱 마운트 시점에 categoryMap 캐시를 사전 로드한다. 이후 모달 open 시 캐시에서 즉시 반환. */
+export async function preloadCategoryMaps(): Promise<void> {
+  await Promise.all([
+    fetchCategoryMapCached("/api/journal/day/tag/categories"),
+    fetchCategoryMapCached("/api/journal/day/meta/categories"),
+    fetchCategoryMapCached("/api/journal/entry/tag/categories?type=DREAM"),
+    fetchCategoryMapCached("/api/journal/entry/tag/categories?type=DIARY"),
+  ]);
 }
 
 // ---- 타입 정의 ----
@@ -196,13 +206,13 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       }
     }
     dayRegModel.value = merged;
-    /** ctgrMap 을 모달 오픈 전에 세션 캐시에서 가져온다. 첫 오픈 시만 HTTP 발생. */
+    /** categoryMap 을 모달 오픈 전에 세션 캐시에서 가져온다. 첫 오픈 시만 HTTP 발생. */
     const [tagMap, metaMap] = await Promise.all([
-      fetchCtgrMapCached("/api/journal/day/tag/ctgr-map"),
-      fetchCtgrMapCached("/api/journal/day/meta/ctgr-map"),
+      fetchCategoryMapCached("/api/journal/day/tag/categories"),
+      fetchCategoryMapCached("/api/journal/day/meta/categories"),
     ]);
-    dayTagCtgrMap.value = tagMap;
-    dayMetaCtgrMap.value = metaMap;
+    dayTagCategoryMap.value = tagMap;
+    dayMetaCategoryMap.value = metaMap;
     dayRegOpen.value = true;
   }
 
@@ -469,17 +479,17 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   const entryRegLoading = ref(false);
   /** 엔트리 등록/수정 폼 모델 */
   const entryRegModel = ref<JournalEntryRegModel | null>(null);
-  /** 일자 태그 ctgrMap (TagifyEditor 에 prop으로 주입) */
-  const dayTagCtgrMap = ref<Record<string, string[]> | null>(null);
-  /** 일자 메타 ctgrMap (TagifyEditor 에 prop으로 주입) */
-  const dayMetaCtgrMap = ref<Record<string, string[]> | null>(null);
-  /** 엔트리 태그 ctgrMap (TagifyEditor 에 prop으로 주입; contentType 별 분기) */
-  const entryCtgrMap = ref<Record<string, string[]> | null>(null);
+  /** 일자 태그 categoryMap (TagifyEditor 에 prop으로 주입) */
+  const dayTagCategoryMap = ref<Record<string, string[]> | null>(null);
+  /** 일자 메타 categoryMap (TagifyEditor 에 prop으로 주입) */
+  const dayMetaCategoryMap = ref<Record<string, string[]> | null>(null);
+  /** 엔트리 태그 categoryMap (TagifyEditor 에 prop으로 주입; contentType 별 분기) */
+  const entryCategoryMap = ref<Record<string, string[]> | null>(null);
   let dreamEntryRegOpening = false;
 
   /**
    * 엔트리 신규 등록 모달을 연다. (DIARY/NOTE: 챕터 목록을 caller 가 전달)
-   * ctgrMap 과 챕터 옵션을 병렬로 조회한 뒤 모달 로딩을 해제한다.
+   * categoryMap 과 챕터 옵션을 병렬로 조회한 뒤 모달 로딩을 해제한다.
    * @param payload - contentType, journalDayId, stdrdDt 등 초기값
    */
   async function openEntryReg(payload: JournalEntryRegModel) {
@@ -496,14 +506,14 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         ...payload,
       };
       const showTagForType = isDiaryLikeEntry(payload.contentType) || isDreamEntry(payload.contentType);
-      const ctgrUrl = isDreamEntry(payload.contentType)
-        ? "/api/journal/entry/tag/ctgr-map?type=DREAM"
-        : "/api/journal/entry/tag/ctgr-map?type=DIARY";
-      const [ctgrMap] = await Promise.all([
-        showTagForType ? fetchCtgrMapCached(ctgrUrl) : Promise.resolve(null),
+      const categoryUrl = isDreamEntry(payload.contentType)
+        ? "/api/journal/entry/tag/categories?type=DREAM"
+        : "/api/journal/entry/tag/categories?type=DIARY";
+      const [categoryMap] = await Promise.all([
+        showTagForType ? fetchCategoryMapCached(categoryUrl) : Promise.resolve(null),
         hydrateEntryChapterOptions(model),
       ]);
-      entryCtgrMap.value = ctgrMap;
+      entryCategoryMap.value = categoryMap;
       entryRegModel.value = model;
     } finally {
       entryRegLoading.value = false;
@@ -523,12 +533,12 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     try {
       const fd = new FormData();
       fd.append("journalDayId", String(params.journalDayId));
-      const [res, ctgrMap] = await Promise.all([
+      const [res, categoryMap] = await Promise.all([
         axios.post("/api/journal/chapters/dream-auto", fd, { headers: { "Content-Type": "multipart/form-data" } }),
-        fetchCtgrMapCached("/api/journal/entry/tag/ctgr-map?type=DREAM"),
+        fetchCategoryMapCached("/api/journal/entry/tag/categories?type=DREAM"),
       ]);
       const chapter = res.data?.rsltObj;
-      entryCtgrMap.value = ctgrMap;
+      entryCategoryMap.value = categoryMap;
       entryRegModel.value = {
         contentType: "JOURNAL_DREAM",
         journalDayId: params.journalDayId,
@@ -570,14 +580,14 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         chapterList: entry.chapterList ?? [],
       };
       const showTagForType = isDiaryLikeEntry(merged.contentType) || isDreamEntry(merged.contentType);
-      const ctgrUrl = isDreamEntry(merged.contentType)
-        ? "/api/journal/entry/tag/ctgr-map?type=DREAM"
-        : "/api/journal/entry/tag/ctgr-map?type=DIARY";
-      const [ctgrMap] = await Promise.all([
-        showTagForType ? fetchCtgrMapCached(ctgrUrl) : Promise.resolve(null),
+      const categoryUrl = isDreamEntry(merged.contentType)
+        ? "/api/journal/entry/tag/categories?type=DREAM"
+        : "/api/journal/entry/tag/categories?type=DIARY";
+      const [categoryMap] = await Promise.all([
+        showTagForType ? fetchCategoryMapCached(categoryUrl) : Promise.resolve(null),
         hydrateEntryChapterOptions(merged),
       ]);
-      entryCtgrMap.value = ctgrMap;
+      entryCategoryMap.value = categoryMap;
       entryRegModel.value = merged;
     } catch {
       entryRegModel.value = null;
@@ -696,9 +706,9 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     entryRegOpen,
     entryRegLoading,
     entryRegModel,
-    dayTagCtgrMap,
-    dayMetaCtgrMap,
-    entryCtgrMap,
+    dayTagCategoryMap,
+    dayMetaCategoryMap,
+    entryCategoryMap,
     openEntryReg,
     openDreamEntryReg,
     openEntryMdf,

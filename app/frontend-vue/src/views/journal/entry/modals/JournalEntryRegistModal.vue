@@ -135,7 +135,7 @@
                 <label class="d-flex align-items-center mb-2">
                   <span class="text-gray-700 fs-6 fw-bolder">태그</span>
                 </label>
-                <TagifyEditor v-model="tagListStrWithCtgr" :ctgr-map="modalStore.entryCtgrMap" />
+                <TagifyEditor v-model="tagListStrWithCtgr" :category-map="modalStore.entryCategoryMap" />
               </div>
             </div>
             <!--end::태그-->

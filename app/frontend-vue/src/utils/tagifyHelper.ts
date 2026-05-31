@@ -143,11 +143,11 @@ export function serializeTagifyValue(tagify: TagifyInstance | null): string {
   );
 }
 
-/** 태그 자동완성 (ctgrMap 키 prefix 필터). whitelist 가 비면 dropdown 을 닫는다. */
-export function bindTagifyAutoComplete(tagify: TagifyInstance, ctgrMap: Record<string, string[]>): void {
+/** 태그 자동완성 (categoryMap 키 prefix 필터). whitelist 가 비면 dropdown 을 닫는다. */
+export function bindTagifyAutoComplete(tagify: TagifyInstance, categoryMap: Record<string, string[]>): void {
   tagify.on("input", (e: { detail: { value: string } }) => {
     const val = e.detail.value ?? "";
-    tagify.settings.whitelist = Object.keys(ctgrMap).filter((tag) => tag.startsWith(val));
+    tagify.settings.whitelist = Object.keys(categoryMap).filter((tag) => tag.startsWith(val));
     if ((tagify.settings.whitelist as string[]).length > 0) {
       tagify.dropdown.show(val);
     } else {
@@ -158,11 +158,11 @@ export function bindTagifyAutoComplete(tagify: TagifyInstance, ctgrMap: Record<s
 
 /**
  * 태그 추가 시 카테고리(·메타) 입력 프롬프트.
- * ctgrMap에 없거나 카테고리 목록이 비면 태그를 제거한다 (레거시와 동일).
+ * categoryMap에 없거나 카테고리 목록이 비면 태그를 제거한다 (레거시와 동일).
  */
 export function bindTagifyCtgrInputPrompt(
   tagify: TagifyInstance,
-  ctgrMap: Record<string, string[]>,
+  categoryMap: Record<string, string[]>,
   options: { hasValueInput?: boolean; onCommitted?: () => void } = {},
 ): void {
   const { hasValueInput = false, onCommitted } = options;
@@ -185,23 +185,23 @@ export function bindTagifyCtgrInputPrompt(
     if (tagify.ctgr?.display) tagify.ctgr.display.value = tagify.draft.value ?? "";
     toggle(tagify.ctgr?.selectContainer, false);
 
-    const filteredCtgr = (ctgrMap[tagify.draft.value ?? ""] ?? []).filter(Boolean);
+    const filteredCategories = (categoryMap[tagify.draft.value ?? ""] ?? []).filter(Boolean);
 
-    if (filteredCtgr.length === 0) {
-      /* ctgrMap에 없는 태그: 텍스트 입력으로 카테고리 직접 입력 */
+    if (filteredCategories.length === 0) {
+      /* categoryMap에 없는 태그: 텍스트 입력으로 카테고리 직접 입력 */
       tagify.removeTags(e.detail.tag);
       showAndFocus(tagify.ctgr?.inputContainer, tagify.ctgr?.input);
       if (hasValueInput) toggle(tagify.ctgr?.metaInputContainer, true);
       return;
     }
 
-    /* ctgrMap에 있는 태그: select로 카테고리 선택 (텍스트 입력은 "직접입력" 선택 시에만 표시) */
+    /* categoryMap에 있는 태그: select로 카테고리 선택 (텍스트 입력은 "직접입력" 선택 시에만 표시) */
     toggle(tagify.ctgr?.inputContainer, false);
     if (tagify.ctgr?.select) {
       tagify.ctgr.select.innerHTML =
         '<option value="custom">직접입력</option>' +
-        filteredCtgr.map((item) => `<option value="${item}">${item}</option>`).join("");
-      tagify.ctgr.select.size = filteredCtgr.length + 1;
+        filteredCategories.map((item) => `<option value="${item}">${item}</option>`).join("");
+      tagify.ctgr.select.size = filteredCategories.length + 1;
     }
     showAndFocus(tagify.ctgr?.selectContainer, tagify.ctgr?.select);
 

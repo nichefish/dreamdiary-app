@@ -126,7 +126,7 @@
                 <TagifyEditor
                   ref="tagEditorRef"
                   v-model="tagListStr"
-                  :ctgr-map="modalStore.dayTagCtgrMap"
+                  :category-map="modalStore.dayTagCategoryMap"
                 />
               </div>
             </div>
@@ -143,7 +143,7 @@
                 <TagifyEditor
                   ref="metaEditorRef"
                   v-model="metaListStr"
-                  :ctgr-map="modalStore.dayMetaCtgrMap"
+                  :category-map="modalStore.dayMetaCategoryMap"
                   meta-mode
                 />
               </div>

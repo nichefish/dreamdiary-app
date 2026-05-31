@@ -38,7 +38,7 @@ public class MyJournalDayTagService {
         return journalDayTagService.getSizedTagGroupMapByUser(AuthUtils.requireLoginUsername(), query);
     }
 
-    public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        return journalDayTagService.getTagCtgrMapByUser(AuthUtils.requireLoginUsername());
+    public Map<String, List<String>> getMyTagCategoryMap() throws Exception {
+        return journalDayTagService.getTagCategoryMapByUser(AuthUtils.requireLoginUsername());
     }
 }
