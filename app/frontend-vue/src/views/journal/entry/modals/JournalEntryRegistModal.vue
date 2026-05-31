@@ -263,19 +263,7 @@ onMounted(() => {
       if (pendingScrollTarget) {
         const target = pendingScrollTarget;
         pendingScrollTarget = null;
-        void nextTick(() => {
-          const entryEl = target.entryId
-            ? document.getElementById(`journal-entry-${target.entryId}`)
-            : null;
-          if (entryEl) {
-            entryEl.scrollIntoView({ behavior: "smooth", block: "center" });
-            return;
-          }
-          const dayEl = target.stdrdDt
-            ? document.getElementById(`journal-day-${target.stdrdDt}`)
-            : null;
-          if (dayEl) dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+        scrollToSavedPositionWhenReady(target.entryId, target.stdrdDt);
       }
     });
   }
@@ -304,20 +292,36 @@ function scrollToSavedPosition(entryId?: number | string, stdrdDt?: string): voi
     pendingScrollTarget = { entryId, stdrdDt };
     return;
   }
+  scrollToSavedPositionWhenReady(entryId, stdrdDt);
+}
+
+function findVisibleEntryElement(entryId: number | string): HTMLElement | null {
+  const targetId = `journal-entry-${entryId}`;
+  const candidates = Array.from(document.querySelectorAll<HTMLElement>(`[id="${targetId}"]`));
+  return candidates.find((el) => !el.closest(".modal")) ?? candidates[0] ?? null;
+}
+
+function scrollToSavedPositionWhenReady(entryId?: number | string, stdrdDt?: string, attempt = 0): void {
   void nextTick(() => {
-    const entryEl = entryId ? document.getElementById(`journal-entry-${entryId}`) : null;
+    const entryEl = entryId ? findVisibleEntryElement(entryId) : null;
     if (entryEl) {
       entryEl.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     const dayEl = stdrdDt ? document.getElementById(`journal-day-${stdrdDt}`) : null;
-    if (dayEl) dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (dayEl) {
+      dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (attempt < 8) {
+      window.setTimeout(() => scrollToSavedPositionWhenReady(entryId, stdrdDt, attempt + 1), 80);
+    }
   });
 }
 
 function scrollToDayDetailPosition(entryId?: number | string): void {
   void nextTick(() => {
-    const modal = document.getElementById("journal_day_dtl_modal");
+    const modal = document.getElementById("journal_day_detail_modal");
     if (!modal) return;
     const entryEl = entryId
       ? Array.from(modal.querySelectorAll<HTMLElement>("[data-id]"))
@@ -375,6 +379,19 @@ function resolveSavedEntryId(responseData: Record<string, unknown>, fallbackId?:
   return candidates.find((value) => value !== undefined && value !== null && String(value) !== "") as number | string | undefined;
 }
 
+function resolveSavedDate(responseData: Record<string, unknown>, fallbackDate?: string): string | undefined {
+  const rsltObj = responseData.rsltObj as Record<string, unknown> | undefined;
+  const candidates = [
+    rsltObj?.stdrdDt,
+    rsltObj?.journalDate,
+    responseData.stdrdDt,
+    responseData.journalDate,
+    fallbackDate,
+  ];
+  const savedDate = candidates.find((value) => value !== undefined && value !== null && String(value).trim() !== "");
+  return savedDate == null ? undefined : String(savedDate).slice(0, 10);
+}
+
 /** 등록/수정 처리. API 는 등록/수정 모두 POST. */
 async function submit() {
   if (submitting.value) return;
@@ -410,7 +427,7 @@ async function submit() {
 
     if (res.data?.rslt) {
       const savedEntryId = resolveSavedEntryId(res.data ?? {}, model.value.id);
-      const savedDate = model.value.stdrdDt;
+      const savedDate = resolveSavedDate(res.data ?? {}, model.value.stdrdDt);
       close();
       refreshCurrentDayView(savedEntryId, savedDate);
       emit("success", { entryId: savedEntryId, stdrdDt: savedDate, isModify: wasModify });

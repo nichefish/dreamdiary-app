@@ -20,7 +20,7 @@
 | 스레드 목록 행 | `JournalThreadList.vue` 인라인 | 동일 | `useJournalThreadStore` |
 | 페이지네이션 | 목록 Vue 인라인 + `utils/paginationDataService.ts` | `Pagination` / `_pagination.ftlh` | 서버 JSON script 태그 호환 유틸만 존재, `Pagination.vue` 없음 |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
-| 앱 런타임 상태 | `layouts/AppRuntimeStatus.vue` + `utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
+| 앱 런타임 상태 | `components/system/AppRuntimeStatus.vue` + `utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
 
 `useAttachableModalStore` (`stores/attachableModal.ts`) 주요 API: `openCommentReg`, `openCommentMdf`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
 
@@ -39,7 +39,7 @@ Vue SPA는 빌드가 성공했더라도 라우팅, 동적 import, 렌더링, 전
 - `app/frontend-vue/src/App.vue`
 - `app/frontend-vue/src/main.ts`
 - `app/frontend-vue/src/router/index.ts`
-- `app/frontend-vue/src/layouts/AppRuntimeStatus.vue`
+- `app/frontend-vue/src/components/system/AppRuntimeStatus.vue`
 - `app/frontend-vue/src/utils/appRuntimeStatus.ts`
 
 ---

@@ -40,7 +40,7 @@ function onSearch(): void {
   store.close();
 
   if (payload.contentType === "JOURNAL_DAY") {
-    void journalModalStore.openTagDtl(payload.tagId, payload.name);
+    void journalModalStore.openTagDetail(payload.tagId, payload.name);
     return;
   }
 

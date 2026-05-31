@@ -1,4 +1,4 @@
-# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
+﻿# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
 
 > 공통 Freemarker 매크로(checkbox, modal_header 등)는 ``common/component-spec.md`` 참조.
 
@@ -9,9 +9,9 @@
 
 **Source (Legacy)**: `legacy/templates/view/feature/journal/day/tag/_journal_day_tag_header.ftlh`
 
-**Vue 구현 완료**: `app/frontend-vue/src/views/journal/components/JournalTagCloudHeader.vue`
+**Vue 구현 완료**: `app/frontend-vue/src/views/journal/day/components/JournalTagCloudHeader.vue`
 
-**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). `JournalDaily.vue` 에는 미포함 (일간 뷰는 태그클라우드 없음)
+**사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). `JournalDayDaily.vue` 에는 미포함 (일간 뷰는 태그클라우드 없음)
 
 **레거시 HTML 구조**:
 ```html
@@ -150,7 +150,7 @@ HTML 요소:
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideEntryFiltersApp.ts`
 
-**현재 Vue 동등**: ⚠ 부분구현 — TAGCLOUD/DIARIES/DREAMS 토글+키워드는 있으나 CHAPTER CATEGORIES·고급필터 없음
+**현재 Vue 동등**: ⚠ 부분구현 — CHAPTER CATEGORIES 체크박스·고급필터 아코디언은 레거시 멀티셀렉트·토글과 DOM 상이
 
 **5개 블록 구조**:
 
@@ -161,7 +161,7 @@ HTML 요소:
 ```html
 <!-- B-1: DIARIES 토글 -->
 <input type="checkbox" id="toggleDiaries" :checked="store.showDiaries" @change="toggleDiaries">
-<!-- B-2: CHAPTER CATEGORIES (MISSING) -->
+<!-- B-2: CHAPTER CATEGORIES (Vue: 체크박스 목록, 레거시: 멀티셀렉트) -->
 <div id="chapterCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
     <div class="d-flex align-items-center justify-content-between">
         <label class="text-muted mb-0">- CHAPTER CATEGORIES</label>
@@ -282,13 +282,13 @@ interface TodoRow {
 
 ### 22-1. `JournalDayViewToolbar` (저널 일자 뷰 상단 툴바)
 
-**Vue 구현 완료**: `app/frontend-vue/src/views/journal/components/JournalDayViewToolbar.vue`
+**Vue 구현 완료**: `app/frontend-vue/src/views/journal/day/components/JournalDayViewToolbar.vue`
 
 **레거시 출처**:
 - 본문 상단 탭 행: `journal_day_monthly.ftlh` / `journal_day_weekly.ftlh` — `nav-tabs-line` 4탭
 - 일자 등록 버튼: `_journal_day_page_header.ftlh` — `@component.header_btn_reg_modal` (`data-journal-day-action=reg-modal` → `JournalDayRuntimeService`)
 
-**사용 화면**: `JournalWeekly.vue`, `JournalMonthly.vue`, `JournalCalendar.vue`, `JournalMeta.vue` — 카드(`.card.post`) 위 첫 행
+**사용 화면**: `JournalDayWeekly.vue`, `JournalDayMonthly.vue`, `JournalDayCalendar.vue`, `JournalDayMeta.vue` — 카드(`.card.post`) 위 첫 행
 
 **DOM 구조**:
 - flex 행 (`justify-content-between`): 좌측 `nav-tabs` (router-link 4개) + 우측 등록 버튼 (`d-none d-md-flex pe-5 mt-5`)
@@ -375,9 +375,9 @@ interface TodoRow {
 
 ### 23. `JournalDayCard` (저널 일자 카드 — 목록 단위)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalDayCard.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/day/components/JournalDayCard.vue`
 
-**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue`, `JournalDaily.vue` — `v-for="day in store.dayList"`
+**사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue`, `JournalDayDaily.vue` — `v-for="day in store.dayList"`
 
 **하위 컴포넌트**: `JournalChapterItem.vue`, `JournalEntryItem.vue`
 
@@ -397,7 +397,7 @@ interface TodoRow {
 
 ### 23-1. `JournalChapterItem` (저널 챕터 아이템)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalChapterItem.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/chapter/components/JournalChapterItem.vue`
 
 **scss 클래스 바인딩**:
 - 외부 div: `class="journal-chapter-item"` + `:data-collapsed` — journal.scss `:has(.collapsed)` 선택자 연동
@@ -422,7 +422,7 @@ interface TodoRow {
 
 ### 23-2. `JournalEntryItem` (저널 엔트리 아이템)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryItem.ts`
 
@@ -452,7 +452,7 @@ interface TodoRow {
 
 ### 23-3. `JournalTagContextMenu` (태그 클릭 컨텍스트 메뉴)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalTagContextMenu.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/shared/components/JournalTagContextMenu.vue`
 
 **Pinia 스토어**: `app/frontend-vue/src/stores/tagContextMenu.ts`
 
@@ -474,7 +474,7 @@ interface TodoRow {
 - 일기/꿈 태그 검색은 현재 목록 필터가 아니라 새 창 검색 화면이다.
 - 닫기는 외부 클릭, ESC, 스크롤/리사이즈에서 동작한다.
 
-**마운트 위치**: `JournalLayout.vue` 및 `JournalEntrySearchPage.vue` — `<JournalTagContextMenu />` (Teleport to body)
+**마운트 위치**: `JournalDayLayout.vue` 및 `JournalEntrySearchPage.vue` — `<JournalTagContextMenu />` (Teleport to body)
 
 ---
 
@@ -510,7 +510,7 @@ interface TodoRow {
 
 ### 24. `JournalLayout` (저널 공통 레이아웃·모달 호스트)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/JournalLayout.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/day/JournalDayLayout.vue`
 
 **역할**: `<router-view>` + `JournalAside` + 저널·공통 attachable 모달 일괄 마운트
 

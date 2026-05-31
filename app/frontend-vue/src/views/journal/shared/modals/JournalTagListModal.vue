@@ -54,7 +54,7 @@
                   type="button"
                   :class="['btn btn-sm btn-light-primary text-start', tag.textClass]"
                   :title="'태그 일자 목록 보기: ' + tag.name"
-                  @click="openTagDtl(tag)"
+                  @click="openTagDetail(tag)"
                 >
                   #{{ tag.name }}
                   <span class="fs-9 text-noti ms-1">[{{ tag.contentSize }}]</span>
@@ -113,7 +113,7 @@ function close() {
   attachableStore.closeTagList();
 }
 
-function openTagDtl(tag: TagListItem) {
-  void journalModalStore.openTagDtl(tag.id, tag.name);
+function openTagDetail(tag: TagListItem) {
+  void journalModalStore.openTagDetail(tag.id, tag.name);
 }
 </script>
