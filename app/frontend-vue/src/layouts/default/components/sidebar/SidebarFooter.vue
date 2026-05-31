@@ -20,11 +20,13 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { swalConfirm } from "@/utils/swal";
 
 const authStore = useAuthStore();
 const router = useRouter();
 
 async function handleLogout() {
+  if (!await swalConfirm("로그아웃 하시겠습니까?")) return;
   await authStore.logout();
   await router.push({ name: "sign-in" });
 }
