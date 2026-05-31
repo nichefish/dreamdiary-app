@@ -426,6 +426,12 @@ async function submit() {
     });
 
     if (res.data?.rslt) {
+      if (showTag.value && model.value.contentType) {
+        modalStore.applyCategoryMapsFromSaveResponse(
+          res.data?.rsltMap,
+          model.value.contentType,
+        );
+      }
       const savedEntryId = resolveSavedEntryId(res.data ?? {}, model.value.id);
       const savedDate = resolveSavedDate(res.data ?? {}, model.value.stdrdDt);
       close();

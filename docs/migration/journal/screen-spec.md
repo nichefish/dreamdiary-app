@@ -1,4 +1,4 @@
-﻿# 저널 화면 마이그레이션 스펙 (Journal Screen Spec)
+# 저널 화면 마이그레이션 스펙 (Journal Screen Spec)
 
 > 공통 컴포넌트/인터랙션 스펙은 ``common/`` 디렉토리 참조.  
 > 게시판 화면 스펙: `board/screen-spec.md`  

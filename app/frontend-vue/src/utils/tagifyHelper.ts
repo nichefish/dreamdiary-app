@@ -143,6 +143,42 @@ export function serializeTagifyValue(tagify: TagifyInstance | null): string {
   );
 }
 
+/** 백엔드 TagCmpstn.getParsedTagList 와 동일: 공백은 밑줄로 정규화 */
+function normalizeTagifyTagName(raw: string): string {
+  return raw.trim().replace(/\s+/g, "_");
+}
+
+/**
+ * Tagify JSON(tagListStr / tagListStrWithCtgr)을 categoryMap에 병합한다.
+ * 저장 성공 시 앱 세션 map 을 무효화·재조회 없이 갱신할 때 사용한다.
+ */
+export function mergeTagifyListIntoCategoryMap(
+  tagListStr: string,
+  categoryMap: Record<string, string[]>,
+): Record<string, string[]> {
+  const next: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(categoryMap)) {
+    next[tagName] = [...categories];
+  }
+  let items: Array<{ value?: string; data?: { ctgr?: string } }> = [];
+  try {
+    const parsed: unknown = JSON.parse(tagListStr || "[]");
+    if (Array.isArray(parsed)) items = parsed;
+  } catch {
+    console.warn("[tagifyHelper] mergeTagifyListIntoCategoryMap: invalid tagListStr JSON");
+    return next;
+  }
+  for (const item of items) {
+    const name = normalizeTagifyTagName(String(item.value ?? ""));
+    if (!name) continue;
+    const ctgr = String(item.data?.ctgr ?? "").trim();
+    const list = next[name] ? [...next[name]] : [];
+    if (ctgr && !list.includes(ctgr)) list.push(ctgr);
+    next[name] = list;
+  }
+  return next;
+}
+
 /** 태그 자동완성 (categoryMap 키 prefix 필터). whitelist 가 비면 dropdown 을 닫는다. */
 export function bindTagifyAutoComplete(tagify: TagifyInstance, categoryMap: Record<string, string[]>): void {
   tagify.on("input", (e: { detail: { value: string } }) => {

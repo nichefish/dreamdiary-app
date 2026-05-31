@@ -1,12 +1,16 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import type { JournalDayDto } from "@/stores/journal";
 import { formatLocalDateStr } from "@/utils/journalDate";
+import { mergeTagifyListIntoCategoryMap } from "@/utils/tagifyHelper";
 
-// ---- 세션 캐시 (모듈 레벨: 페이지 새로고침 전까지 유지) ----
+// ---- categoryMap (앱 세션 SSOT: 로그인·마운트 시 preload 1회, 저장 시 Tagify JSON 병합 — 무효화·모달 오픈 재조회 없음) ----
 
-const categoryMapCache: Record<string, Record<string, string[]>> = {};
+const CATEGORY_MAP_URL_DAY_TAG = "/api/journal/day/tag/categories";
+const CATEGORY_MAP_URL_DAY_META = "/api/journal/day/meta/categories";
+const CATEGORY_MAP_URL_ENTRY_DIARY = "/api/journal/entry/tag/categories?type=DIARY";
+const CATEGORY_MAP_URL_ENTRY_DREAM = "/api/journal/entry/tag/categories?type=DREAM";
 
 function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
@@ -18,9 +22,8 @@ function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
   return out;
 }
 
-/** categoryMap 을 URL 별로 세션 캐시한다. 첫 요청 후 새로고침 전까지 재사용. */
-async function fetchCategoryMapCached(url: string): Promise<Record<string, string[]>> {
-  if (categoryMapCache[url]) return categoryMapCache[url];
+/** categoryMap 을 서버에서 조회한다. (최초 preload·캐시 미적재 시에만 호출) */
+async function fetchCategoryMap(url: string): Promise<Record<string, string[]>> {
   try {
     const res = await axios.get(url);
     if (!res.data?.rslt) {
@@ -28,23 +31,32 @@ async function fetchCategoryMapCached(url: string): Promise<Record<string, strin
       return {};
     }
     const raw = res.data.rsltMap ?? res.data.rsltObj;
-    const map = normalizeCategoryMap(raw);
-    categoryMapCache[url] = map;
-    return map;
+    return normalizeCategoryMap(raw);
   } catch {
     console.error("[journalModal] categoryMap 조회 실패:", url);
     return {};
   }
 }
 
-/** 앱 마운트 시점에 categoryMap 캐시를 사전 로드한다. 이후 모달 open 시 캐시에서 즉시 반환. */
+function resolveEntryCategoryMapUrl(contentType: string | undefined): string | null {
+  if (!contentType) return null;
+  if (contentType === "JOURNAL_DREAM" || contentType === "DREAM") {
+    return CATEGORY_MAP_URL_ENTRY_DREAM;
+  }
+  if (
+    contentType === "JOURNAL_DIARY"
+    || contentType === "DIARY"
+    || contentType === "JOURNAL_NOTE"
+    || contentType === "NOTE"
+  ) {
+    return CATEGORY_MAP_URL_ENTRY_DIARY;
+  }
+  return null;
+}
+
+/** 앱 마운트·로그인 후 4종 categoryMap 을 1회 적재한다. */
 export async function preloadCategoryMaps(): Promise<void> {
-  await Promise.all([
-    fetchCategoryMapCached("/api/journal/day/tag/categories"),
-    fetchCategoryMapCached("/api/journal/day/meta/categories"),
-    fetchCategoryMapCached("/api/journal/entry/tag/categories?type=DREAM"),
-    fetchCategoryMapCached("/api/journal/entry/tag/categories?type=DIARY"),
-  ]);
+  await useJournalModalStore().preloadAllCategoryMaps();
 }
 
 // ---- 타입 정의 ----
@@ -206,13 +218,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       }
     }
     dayRegModel.value = merged;
-    /** categoryMap 을 모달 오픈 전에 세션 캐시에서 가져온다. 첫 오픈 시만 HTTP 발생. */
-    const [tagMap, metaMap] = await Promise.all([
-      fetchCategoryMapCached("/api/journal/day/tag/categories"),
-      fetchCategoryMapCached("/api/journal/day/meta/categories"),
+    /** 앱 세션 categoryMap — preload 미적재 시에만 HTTP */
+    await Promise.all([
+      ensureCategoryMap(CATEGORY_MAP_URL_DAY_TAG),
+      ensureCategoryMap(CATEGORY_MAP_URL_DAY_META),
     ]);
-    dayTagCategoryMap.value = tagMap;
-    dayMetaCategoryMap.value = metaMap;
     dayRegOpen.value = true;
   }
 
@@ -479,13 +489,67 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   const entryRegLoading = ref(false);
   /** 엔트리 등록/수정 폼 모델 */
   const entryRegModel = ref<JournalEntryRegModel | null>(null);
-  /** 일자 태그 categoryMap (TagifyEditor 에 prop으로 주입) */
-  const dayTagCategoryMap = ref<Record<string, string[]> | null>(null);
-  /** 일자 메타 categoryMap (TagifyEditor 에 prop으로 주입) */
-  const dayMetaCategoryMap = ref<Record<string, string[]> | null>(null);
-  /** 엔트리 태그 categoryMap (TagifyEditor 에 prop으로 주입; contentType 별 분기) */
-  const entryCategoryMap = ref<Record<string, string[]> | null>(null);
+  /** 일자 태그 categoryMap — 앱 세션 SSOT (TagifyEditor prop) */
+  const dayTagCategoryMap = ref<Record<string, string[]>>({});
+  const dayTagCategoryMapLoaded = ref(false);
+  /** 일자 메타 categoryMap — 앱 세션 SSOT */
+  const dayMetaCategoryMap = ref<Record<string, string[]>>({});
+  const dayMetaCategoryMapLoaded = ref(false);
+  /** 엔트리 DIARY 태그 categoryMap */
+  const entryDiaryCategoryMap = ref<Record<string, string[]>>({});
+  const entryDiaryCategoryMapLoaded = ref(false);
+  /** 엔트리 DREAM 태그 categoryMap */
+  const entryDreamCategoryMap = ref<Record<string, string[]>>({});
+  const entryDreamCategoryMapLoaded = ref(false);
+  /** 엔트리 모달용 뷰 (contentType 에 따라 diary/dream map 참조) */
+  const entryCategoryMap = computed((): Record<string, string[]> | null => {
+    const ct = entryRegModel.value?.contentType;
+    if (!ct) return null;
+    if (isDreamEntry(ct)) return entryDreamCategoryMap.value;
+    if (isDiaryLikeEntry(ct)) return entryDiaryCategoryMap.value;
+    return null;
+  });
   let dreamEntryRegOpening = false;
+
+  function categoryMapRefForUrl(url: string) {
+    switch (url) {
+      case CATEGORY_MAP_URL_DAY_TAG: return dayTagCategoryMap;
+      case CATEGORY_MAP_URL_DAY_META: return dayMetaCategoryMap;
+      case CATEGORY_MAP_URL_ENTRY_DIARY: return entryDiaryCategoryMap;
+      case CATEGORY_MAP_URL_ENTRY_DREAM: return entryDreamCategoryMap;
+      default: return null;
+    }
+  }
+
+  function categoryMapLoadedRefForUrl(url: string) {
+    switch (url) {
+      case CATEGORY_MAP_URL_DAY_TAG: return dayTagCategoryMapLoaded;
+      case CATEGORY_MAP_URL_DAY_META: return dayMetaCategoryMapLoaded;
+      case CATEGORY_MAP_URL_ENTRY_DIARY: return entryDiaryCategoryMapLoaded;
+      case CATEGORY_MAP_URL_ENTRY_DREAM: return entryDreamCategoryMapLoaded;
+      default: return null;
+    }
+  }
+
+  /** URL 별 map 이 아직 적재되지 않았을 때만 서버에서 1회 조회 */
+  async function ensureCategoryMap(url: string): Promise<Record<string, string[]>> {
+    const mapRef = categoryMapRefForUrl(url);
+    const loadedRef = categoryMapLoadedRefForUrl(url);
+    if (!mapRef || !loadedRef) return {};
+    if (loadedRef.value) return mapRef.value;
+    mapRef.value = await fetchCategoryMap(url);
+    loadedRef.value = true;
+    return mapRef.value;
+  }
+
+  async function preloadAllCategoryMaps(): Promise<void> {
+    await Promise.all([
+      ensureCategoryMap(CATEGORY_MAP_URL_DAY_TAG),
+      ensureCategoryMap(CATEGORY_MAP_URL_DAY_META),
+      ensureCategoryMap(CATEGORY_MAP_URL_ENTRY_DREAM),
+      ensureCategoryMap(CATEGORY_MAP_URL_ENTRY_DIARY),
+    ]);
+  }
 
   /**
    * 엔트리 신규 등록 모달을 연다. (DIARY/NOTE: 챕터 목록을 caller 가 전달)
@@ -506,14 +570,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         ...payload,
       };
       const showTagForType = isDiaryLikeEntry(payload.contentType) || isDreamEntry(payload.contentType);
-      const categoryUrl = isDreamEntry(payload.contentType)
-        ? "/api/journal/entry/tag/categories?type=DREAM"
-        : "/api/journal/entry/tag/categories?type=DIARY";
-      const [categoryMap] = await Promise.all([
-        showTagForType ? fetchCategoryMapCached(categoryUrl) : Promise.resolve(null),
+      const categoryUrl = resolveEntryCategoryMapUrl(payload.contentType);
+      await Promise.all([
+        showTagForType && categoryUrl ? ensureCategoryMap(categoryUrl) : Promise.resolve(),
         hydrateEntryChapterOptions(model),
       ]);
-      entryCategoryMap.value = categoryMap;
       entryRegModel.value = model;
     } finally {
       entryRegLoading.value = false;
@@ -533,12 +594,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     try {
       const fd = new FormData();
       fd.append("journalDayId", String(params.journalDayId));
-      const [res, categoryMap] = await Promise.all([
+      const [res] = await Promise.all([
         axios.post("/api/journal/chapters/dream-auto", fd, { headers: { "Content-Type": "multipart/form-data" } }),
-        fetchCategoryMapCached("/api/journal/entry/tag/categories?type=DREAM"),
+        ensureCategoryMap(CATEGORY_MAP_URL_ENTRY_DREAM),
       ]);
       const chapter = res.data?.rsltObj;
-      entryCategoryMap.value = categoryMap;
       entryRegModel.value = {
         contentType: "JOURNAL_DREAM",
         journalDayId: params.journalDayId,
@@ -580,14 +640,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         chapterList: entry.chapterList ?? [],
       };
       const showTagForType = isDiaryLikeEntry(merged.contentType) || isDreamEntry(merged.contentType);
-      const categoryUrl = isDreamEntry(merged.contentType)
-        ? "/api/journal/entry/tag/categories?type=DREAM"
-        : "/api/journal/entry/tag/categories?type=DIARY";
-      const [categoryMap] = await Promise.all([
-        showTagForType ? fetchCategoryMapCached(categoryUrl) : Promise.resolve(null),
+      const categoryUrl = resolveEntryCategoryMapUrl(merged.contentType);
+      await Promise.all([
+        showTagForType && categoryUrl ? ensureCategoryMap(categoryUrl) : Promise.resolve(),
         hydrateEntryChapterOptions(merged),
       ]);
-      entryCategoryMap.value = categoryMap;
       entryRegModel.value = merged;
     } catch {
       entryRegModel.value = null;
@@ -660,6 +717,51 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     entryRegOpen.value = false;
     entryRegModel.value = null;
   }
+
+  /**
+   * 저장 성공 응답 rsltMap 으로 앱 세션 categoryMap 을 교체한다.
+   * 변경 전: Tagify JSON 병합만(삭제 미반영).
+   * 변경 후: 서버가 evict 후 조회한 전역 map — 추가 GET 없이 삭제 포함 동기화.
+   */
+
+  /** 로그아웃·세션 만료 시 앱 categoryMap 을 비운다 (다음 사용자 preload 용). */
+  function resetCategoryMaps(): void {
+    dayTagCategoryMap.value = {};
+    dayTagCategoryMapLoaded.value = false;
+    dayMetaCategoryMap.value = {};
+    dayMetaCategoryMapLoaded.value = false;
+    entryDiaryCategoryMap.value = {};
+    entryDiaryCategoryMapLoaded.value = false;
+    entryDreamCategoryMap.value = {};
+    entryDreamCategoryMapLoaded.value = false;
+  }
+
+  function applyCategoryMapsFromSaveResponse(
+    rsltMap: unknown,
+    entryContentType?: string,
+  ): void {
+    if (!rsltMap || typeof rsltMap !== "object" || Array.isArray(rsltMap)) return;
+    const maps = rsltMap as Record<string, unknown>;
+    if (maps.dayTagCategoryMap != null) {
+      dayTagCategoryMap.value = normalizeCategoryMap(maps.dayTagCategoryMap);
+      dayTagCategoryMapLoaded.value = true;
+    }
+    if (maps.dayMetaCategoryMap != null) {
+      dayMetaCategoryMap.value = normalizeCategoryMap(maps.dayMetaCategoryMap);
+      dayMetaCategoryMapLoaded.value = true;
+    }
+    if (maps.entryTagCategoryMap != null && entryContentType) {
+      const entryUrl = resolveEntryCategoryMapUrl(entryContentType);
+      if (!entryUrl) return;
+      const mapRef = categoryMapRefForUrl(entryUrl);
+      const loadedRef = categoryMapLoadedRefForUrl(entryUrl);
+      if (mapRef) {
+        mapRef.value = normalizeCategoryMap(maps.entryTagCategoryMap);
+        if (loadedRef) loadedRef.value = true;
+      }
+    }
+  }
+
   return {
     // 일자 등록/수정
     dayRegOpen,
@@ -713,5 +815,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     openDreamEntryReg,
     openEntryMdf,
     closeEntryReg,
+    preloadAllCategoryMaps,
+    applyCategoryMapsFromSaveResponse,
+    resetCategoryMaps,
   };
 });
