@@ -5,6 +5,11 @@
 } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
+import {
+  clearRuntimePending,
+  markRuntimePending,
+  reportRuntimeError,
+} from "@/utils/appRuntimeStatus";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -267,20 +272,27 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const configStore = useConfigStore();
 
-  document.title = `${to.meta.pageTitle ?? ""} - ${import.meta.env.VITE_APP_NAME}`;
-  configStore.resetLayoutConfig();
+  markRuntimePending("화면 이동 중입니다.");
+  try {
+    document.title = `${to.meta.pageTitle ?? ""} - ${import.meta.env.VITE_APP_NAME}`;
+    configStore.resetLayoutConfig();
 
-  await authStore.verifyAuth();
+    await authStore.verifyAuth();
 
-  const requiresAuth = to.matched.some((r) => r.meta.middleware === "auth");
-  if (requiresAuth) {
-    if (authStore.isAuthenticated) {
-      next();
+    const requiresAuth = to.matched.some((r) => r.meta.middleware === "auth");
+    if (requiresAuth) {
+      if (authStore.isAuthenticated) {
+        next();
+      } else {
+        next({ name: "sign-in" });
+      }
     } else {
-      next({ name: "sign-in" });
+      next();
     }
-  } else {
-    next();
+  } catch (error) {
+    clearRuntimePending();
+    reportRuntimeError(error, "router-before-each", "화면 이동 중 오류가 발생했습니다");
+    next(false);
   }
 });
 

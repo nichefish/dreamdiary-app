@@ -20,8 +20,27 @@
 | 스레드 목록 행 | `JournalThreadList.vue` 인라인 | 동일 | `useJournalThreadStore` |
 | 페이지네이션 | 목록 Vue 인라인 + `utils/paginationDataService.ts` | `Pagination` / `_pagination.ftlh` | 서버 JSON script 태그 호환 유틸만 존재, `Pagination.vue` 없음 |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
+| 앱 런타임 상태 | `layouts/AppRuntimeStatus.vue` + `utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
 
 `useAttachableModalStore` (`stores/attachableModal.ts`) 주요 API: `openCommentReg`, `openCommentMdf`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
+
+---
+
+### AppRuntimeStatus
+
+Vue SPA는 빌드가 성공했더라도 라우팅, 동적 import, 렌더링, 전역 Promise 예외가 발생하면 화면에 상태를 표시해야 한다.
+
+- 라우터 이동이 500ms 이상 이어지면 상단에 `화면 이동 중입니다.` 상태를 표시한다.
+- Vue 렌더 오류, `app.config.errorHandler`, `router.onError`, `window.error`, `unhandledrejection`은 `AppRuntimeStatus` 패널에 오류 출처와 메시지를 표시한다.
+- 오류 패널에는 `새로고침`과 `메인으로` 액션을 제공한다.
+- 오류를 정상 화면처럼 숨기지 않는다. 콘솔에도 같은 오류를 남겨 개발자가 원인을 확인할 수 있어야 한다.
+
+적용 파일:
+- `app/frontend-vue/src/App.vue`
+- `app/frontend-vue/src/main.ts`
+- `app/frontend-vue/src/router/index.ts`
+- `app/frontend-vue/src/layouts/AppRuntimeStatus.vue`
+- `app/frontend-vue/src/utils/appRuntimeStatus.ts`
 
 ---
 

@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
-import { swalConfirm, swalAlert } from "@/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError } from "@/utils/swal";
 
 // ---- 타입 정의 ----
 
@@ -200,8 +200,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       }
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
       return false;
     } finally {
       submitting.value = false;
@@ -223,8 +223,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       } else {
         void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
       }
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
     }
   }
 

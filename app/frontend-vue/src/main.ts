@@ -11,6 +11,10 @@ TIP: To get started with clean router change path to @/router/clean.ts.
 import router from "./router";
 import { AuthExpiredError } from "@/utils/authError";
 import { useAuthStore } from "@/stores/auth";
+import {
+  clearRuntimePending,
+  reportRuntimeError,
+} from "@/utils/appRuntimeStatus";
 
 /**
  * 전역 Axios 인터셉터: 401(세션 만료/비로그인) 응답 시 로그인 만료를 명확히 안내한다.
@@ -47,10 +51,10 @@ axios.interceptors.response.use(
           } else {
             const result = await Swal.fire({
               icon: "warning",
-              title: "로그인이 풀렸습니다",
-              text: "세션이 만료되었거나 다른 곳에서 로그인되어 현재 로그인이 해제되었습니다. 로그인 화면으로 이동하면 작성 중인 내용이 유실될 수 있습니다. 이동할까요?",
+              title: "인증이 만료되었습니다",
+              text: "인증이 만료되었습니다. 로그인 화면으로 돌아가시겠습니까?",
               showCancelButton: true,
-              confirmButtonText: "로그인 화면으로 이동",
+              confirmButtonText: "로그인 화면으로 돌아가기",
               cancelButtonText: "현재 화면에 머무르기",
             });
             if (result.isConfirmed) {
@@ -93,6 +97,10 @@ import "@metronic/core/plugins/prismjs";
 const app = createApp(App);
 const pinia = createPinia();
 
+app.config.errorHandler = (error) => {
+  reportRuntimeError(error, "vue-error-handler");
+};
+
 app.use(pinia);
 app.use(router);
 app.use(ElementPlus);
@@ -115,9 +123,54 @@ LayoutService.init();
 initializeComponents();
 
 router.afterEach(() => {
+  clearRuntimePending();
   setTimeout(() => {
     reinitializeComponents();
   }, 0);
 });
 
-app.mount("#app");
+router.onError((error) => {
+  reportRuntimeError(error, "router");
+});
+
+window.addEventListener("error", (event) => {
+  reportRuntimeError(event.error ?? event.message, "window-error");
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  reportRuntimeError(event.reason, "unhandled-rejection");
+});
+
+try {
+  app.mount("#app");
+} catch (error) {
+  reportRuntimeError(error, "app-mount");
+  renderBootFailure(error);
+}
+
+function renderBootFailure(error: unknown) {
+  document.body.classList.remove("page-loading");
+  document.getElementById("splash-screen")?.remove();
+  const root = document.getElementById("app");
+  if (!root) return;
+  const message = error instanceof Error ? error.message : String(error);
+  root.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:24px;">
+      <div style="max-width:720px;width:100%;background:#fff;border:1px solid #e4e6ef;border-radius:8px;padding:28px;box-shadow:0 12px 32px rgba(15,23,42,.16);">
+        <div style="color:#7e8299;font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:8px;">app-mount</div>
+        <h1 style="color:#181c32;font-size:22px;font-weight:700;margin:0 0 10px;">앱을 시작하지 못했습니다</h1>
+        <p style="color:#5e6278;font-size:14px;white-space:pre-wrap;margin:0 0 18px;">${escapeHtml(message)}</p>
+        <button type="button" onclick="window.location.reload()" style="border:1px solid #e4e6ef;border-radius:6px;background:#f5f8fa;color:#181c32;font-weight:600;padding:8px 12px;cursor:pointer;">새로고침</button>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
