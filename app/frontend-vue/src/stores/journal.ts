@@ -116,6 +116,12 @@ export interface JournalChapterDto {
   journalDayId?: number;
   stdrdDt?: string;
   sortOrder?: number;
+  /** 등록자 ID (백엔드 BaseAuditRegDto) */
+  createdBy?: string;
+  /** 등록자 표시명 */
+  createdByNm?: string;
+  /** 현재 로그인 사용자 소유 여부 (백엔드 getIsCreatedBy 직렬화) */
+  isCreatedBy?: boolean;
   journalEntryList?: JournalEntryDto[];
   tag?: TagCmpstn;
   state?: StateCmpstn;

@@ -411,7 +411,11 @@ interface TodoRow {
 - 레거시에서 제목 없이 등록 가능 — `title` 빈 값 허용.
 - `submit()` 에서 title 공백 검증 제거.
 
-**헤더 액션 버튼** (우측 `col-3` 영역, 레거시 `JournalChapterItem.ts` 동형, 구현 완료):
+**소유권 표시·쓰기 제한** (`isCreatedBy` — 백엔드 `BaseAuditRegDto` 직렬화):
+- `isCreatedBy === false`: 헤더에 `타인 작성` 배지, 수정·삭제·엔트리 등록·⋯ 메뉴·서버 접힘 변경 버튼 숨김 (읽기·클라이언트 접힘·복사·TXT는 유지)
+- 수정 API 거부 시 메시지 `msg.rslt.not-owner` → 「본인이 작성한 글이 아닙니다.」(HTTP 403)
+
+**헤더 액션 버튼** (우측 `col-3` 영역, `canManageChapter` 일 때만, 레거시 `JournalChapterItem.ts` 동형):
 - 엔트리 등록 TEXT 버튼: 타입별 `저널 일기 등록` / `저널 꿈 등록` / `저널 노트 등록` + `bi-book` / `bi-moon-stars` — `openEntryNew()`
 - 복사 버튼 (`bi-copy`): `copyChapter()` — 날짜·카테고리·제목 + 하위 엔트리 전체를 줄바꿈 연결 텍스트로 클립보드 복사
 - TXT보내기 버튼 (`fas fa-download`, `btn-outline btn-light-primary`): `exportChapter()` — `GET /api/journal/chapter/{id}/export`

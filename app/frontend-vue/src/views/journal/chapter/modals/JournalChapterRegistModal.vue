@@ -153,8 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/utils/swal";
-import { isAuthExpiredError } from "@/utils/authError";
+import { swalConfirm, swalAlert, swalRequestError } from "@/utils/swal";
 import { useSafeModalClose } from "@/utils/safeModalClose";
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { Modal } from "bootstrap";
@@ -297,8 +296,7 @@ async function moveChapter(): Promise<void> {
       void swalAlert(res.data?.message ?? "일자 이동에 실패했습니다.");
     }
   } catch (e: unknown) {
-    if (isAuthExpiredError(e)) return;
-    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e, "요청 처리 중 오류가 발생했습니다.");
   } finally {
     moving.value = false;
   }
@@ -338,8 +336,7 @@ async function submit() {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
   } catch (e: unknown) {
-    if (isAuthExpiredError(e)) return;
-    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e, "요청 처리 중 오류가 발생했습니다.");
   } finally {
     submitting.value = false;
   }
