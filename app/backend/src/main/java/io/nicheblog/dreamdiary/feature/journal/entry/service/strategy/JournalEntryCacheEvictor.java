@@ -60,7 +60,7 @@ public class JournalEntryCacheEvictor
             this.evictMyJournalDayYyMnthCaches(username, yy, mnth);
             this.evictMyJournalDayWeeklyCaches(username, weekStartDt);
 
-            EhCacheUtils.clearUserCache("journalEntryTagCtgrMapByUser", username);
+            EhCacheUtils.clearUserCache("journalEntryTagCategoryMapByUser", username);
             EhCacheUtils.clearUserCache("journalEntryTagListByUser", username);
             EhCacheUtils.clearUserCache("journalEntryPeriodTagListByUser", username);
             EhCacheUtils.clearUserCache("journalEntryTagCountMapByUser", username);

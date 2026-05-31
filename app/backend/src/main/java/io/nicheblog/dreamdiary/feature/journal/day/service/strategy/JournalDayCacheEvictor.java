@@ -44,12 +44,12 @@ public class JournalDayCacheEvictor
             this.evictMyJournalDayYyMnthCaches(username, yy, mnth);
             this.evictMyJournalDayWeeklyCaches(username, prevWeekStartDt, weekStartDt);
             // journal_day_tag
-            EhCacheUtils.clearUserCache("journalDayTagCtgrMapByUser", username);
+            EhCacheUtils.clearUserCache("journalDayTagCategoryMapByUser", username);
             EhCacheUtils.clearUserCache("journalDayPeriodTagListByUser", username);
             EhCacheUtils.clearUserCache("journalDayTagCountMapByUser", username);
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JOURNAL_DAY");
             // journal_day_meta
-            EhCacheUtils.clearUserCache("journalDayMetaCtgrMapByUser", username);
+            EhCacheUtils.clearUserCache("journalDayMetaCategoryMapByUser", username);
             EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", id + "_JOURNAL_DAY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

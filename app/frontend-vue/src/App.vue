@@ -10,6 +10,7 @@ import { RouterView, useRoute } from "vue-router";
 import AppRuntimeStatus from "@/components/system/AppRuntimeStatus.vue";
 import AppChat from "@/views/chat/AppChat.vue";
 import { useAuthStore } from "@/stores/auth";
+import { preloadCategoryMaps } from "@/stores/journalModal";
 import { reportRuntimeError } from "@/utils/appRuntimeStatus";
 
 const authStore = useAuthStore();
@@ -20,6 +21,7 @@ const isPopup = computed(() => route.name === "journal-entry-search");
 
 onMounted(() => {
   document.body.classList.remove("page-loading");
+  if (authStore.isAuthenticated) void preloadCategoryMaps();
 });
 
 onErrorCaptured((error) => {

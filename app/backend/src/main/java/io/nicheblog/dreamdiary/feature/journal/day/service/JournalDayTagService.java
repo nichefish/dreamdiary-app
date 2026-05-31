@@ -131,8 +131,8 @@ public class JournalDayTagService
         return new ConcurrentHashMap<>(concurrentMap);
     }
 
-    @Cacheable(value = "journalDayTagCtgrMapByUser", key = "#username")
-    public Map<String, List<String>> getTagCtgrMapByUser(final String username) throws Exception {
+    @Cacheable(value = "journalDayTagCategoryMapByUser", key = "#username")
+    public Map<String, List<String>> getTagCategoryMapByUser(final String username) throws Exception {
         final List<JournalDayTagEntity> tagList = this.getSelf().getListEntity(toTagListParamMap(username));
         return tagList.stream()
                 .collect(Collectors.groupingBy(

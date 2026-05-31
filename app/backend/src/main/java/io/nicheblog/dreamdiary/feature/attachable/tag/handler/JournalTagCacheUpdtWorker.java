@@ -51,7 +51,7 @@ public class JournalTagCacheUpdtWorker {
         );
         EhCacheUtils.clearUserCache("journalDayPeriodTagListByUser", username);
         EhCacheUtils.clearUserCache("journalDayTagCountMapByUser", username);
-        EhCacheUtils.clearUserCache("journalDayTagCtgrMapByUser", username);
+        EhCacheUtils.clearUserCache("journalDayTagCategoryMapByUser", username);
     }
 
     private void evictJournalEntryCaches(
@@ -61,7 +61,7 @@ public class JournalTagCacheUpdtWorker {
             final ContentType contentType
     ) {
         EhCacheUtils.evictUserCacheByKey("journalEntryTagListByUser", username, contentType);
-        EhCacheUtils.evictUserCacheByKey("journalEntryTagCtgrMapByUser", username, contentType);
+        EhCacheUtils.evictUserCacheByKey("journalEntryTagCategoryMapByUser", username, contentType);
         EhCacheUtils.evictUserCacheByKey(
                 "journalEntryPeriodTagListByUser",
                 username,

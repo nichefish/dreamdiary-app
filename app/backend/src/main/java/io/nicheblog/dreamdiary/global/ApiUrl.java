@@ -42,12 +42,12 @@ public interface ApiUrl {
     String JOURNAL_DAY_TAG_GROUP_LIST = Prefix.API + "/journal/day/tag/group-list";
     String JOURNAL_DAY_TAG = Prefix.API + "/journal/day/tag/{tagId}";
     String JOURNAL_DAY_TAG_YYS = Prefix.API + "/journal/day/tag/{tagId}/years";
-    String JOURNAL_DAY_TAG_CTGR_MAP = Prefix.API + "/journal/day/tag/ctgr-map";
+    String JOURNAL_DAY_TAG_CATEGORIES = Prefix.API + "/journal/day/tag/categories";
     /** 저널 일자 메타 */
     String JOURNAL_DAY_METAS = Prefix.API + "/journal/day/metas";
     String JOURNAL_DAY_META = Prefix.API + "/journal/day/metas/{id}";
     String JOURNAL_DAY_META_YYS = Prefix.API + "/journal/day/metas/{id}/years";
-    String JOURNAL_DAY_META_CTGR_MAP = Prefix.API + "/journal/day/meta/ctgr-map";
+    String JOURNAL_DAY_META_CATEGORIES = Prefix.API + "/journal/day/meta/categories";
 
     /** 저널 챕터 */
     String JOURNAL_CHAPTERS = Prefix.API + "/journal/chapters";
@@ -65,7 +65,7 @@ public interface ApiUrl {
     /** 저널 엔트리 태그(통합) */
     String JOURNAL_ENTRY_TAGS = Prefix.API + "/journal/entry/tags";
     String JOURNAL_ENTRY_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/entry/tag/group-list";
-    String JOURNAL_ENTRY_TAG_CTGR_MAP = Prefix.API + "/journal/entry/tag/ctgr-map";
+    String JOURNAL_ENTRY_TAG_CATEGORIES = Prefix.API + "/journal/entry/tag/categories";
     /** 저널 해석 */
     String JOURNAL_INTERPRETATIONS = Prefix.API + "/journal/interpretations";
     String JOURNAL_INTERPRETATION = Prefix.API + "/journal/interpretation/{id}";
