@@ -26,6 +26,7 @@
 | 등록/수정 후 스크롤 | 일자 submit 성공 → `#journal-day-{stdrdDt}`, 엔트리 submit 성공 → `#journal-entry-{id}` 또는 일자 카드 scrollIntoView | ✓ |
 | 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정·삭제 등 모든 서버 반영 후 `fetchDays().then` → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, `POST /api/journal/chapter/{id}/move` 호출 후 `fetchDays` + 신 일자 scrollIntoView | ✓ |
+| 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 수정/삭제/이동 거부 시 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. CSS `:has` + `:not(:has([data-resolved=\"N\"]))` 로 하위 엔트리 전체 resolved 여부를 집계해 접힘 하이라이트 표시. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러 | ✓ |
 

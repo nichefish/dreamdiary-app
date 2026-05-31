@@ -23,11 +23,16 @@ public final class AuthMapstructHelper {
      */
     public static void mapAuditFields(final Object entity, final Object dto) throws Exception {
         if (entity instanceof BaseAuditRegEntity baseRegEntity && dto instanceof BaseAuditRegDto baseRegDto) {
+            // 변경 전: createdByInfo 가 없으면 createdBy·isCreatedBy 를 DTO에 넣지 않아 화면에서 소유 여부를 알 수 없음.
+            // 변경 후: 등록자 ID·소유 여부는 AuditorInfo 유무와 무관하게 항상 매핑한다.
+            baseRegDto.setCreatedBy(baseRegEntity.getCreatedBy());
+            baseRegDto.setIsCreatedBy(baseRegEntity.isCreatedBy());
+            if (baseRegEntity.getCreatedAt() != null) {
+                baseRegDto.setCreatedAt(DateUtils.asStr(baseRegEntity.getCreatedAt(), DatePtn.DATETIME));
+            }
             final AuditorInfo createdByInfo = baseRegEntity.getCreatedByInfo();
             if (createdByInfo != null) {
                 baseRegDto.setCreatedByNm(createdByInfo.getNickname());
-                baseRegDto.setCreatedAt(DateUtils.asStr(baseRegEntity.getCreatedAt(), DatePtn.DATETIME));
-                baseRegDto.setIsCreatedBy(baseRegEntity.isCreatedBy());
             }
         }
 

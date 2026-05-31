@@ -164,10 +164,10 @@ public class AuthUtils {
      */
     public static Boolean isCreatedBy(final String createdBy) {
         if (StringUtils.isEmpty(createdBy)) return false;
-        final AuthInfo authInfo = getAuthenticatedUser();
-        if (authInfo == null) return false;
-
-        final String myUsername = authInfo.getUsername();
+        // 변경 전: AuthInfo principal 만 인정 → RememberMe 등 UserDetails 세션에서 항상 false.
+        // 변경 후: getLoginUsername() 과 동일 기준( AuthInfo 우선, UserDetails username 폴백).
+        final String myUsername = getLoginUsername();
+        if (StringUtils.isEmpty(myUsername)) return false;
         return createdBy.equals(myUsername);
     }
 

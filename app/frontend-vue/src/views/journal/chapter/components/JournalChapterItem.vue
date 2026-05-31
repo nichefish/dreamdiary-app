@@ -11,13 +11,14 @@
             <span v-if="chapter.categoryName" style="color:#287D94;">{{ chapter.categoryName }}</span>
             <span class="text-muted fs-8 me-1">{{ chapter.categoryCode }}</span>
           </template>
+          <span v-if="!canManageChapter" class="badge badge-light-danger fs-8 ms-1">타인 작성</span>
         </span>
         <i class="bi fs-4" :class="iconClass"></i>
       </div>
       <!--end::챕터 타입·카테고리 라벨 + 아이콘-->
 
-      <!--begin::챕터 액션 버튼 (col-3)-->
-      <div class="col-3 d-none d-md-flex align-items-center gap-2">
+      <!--begin::챕터 액션 버튼 (col-3) — 본인 작성 챕터만-->
+      <div v-if="canManageChapter" class="col-3 d-none d-md-flex align-items-center gap-2">
         <!--begin::엔트리 등록 TEXT 버튼-->
         <button
           type="button"
@@ -154,8 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/utils/swal";
-import { isAuthExpiredError } from "@/utils/authError";
+import { swalConfirm, swalAlert, swalRequestError } from "@/utils/swal";
 import { computed, ref, watch, nextTick } from "vue";
 import axios from "axios";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
@@ -199,8 +199,18 @@ watch(serverCollapsed, () => {
   localCollapsedOverride.value = null;
 });
 
+/** 본인 작성 챕터만 수정·삭제·엔트리 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
+const canManageChapter = computed(() => props.chapter.isCreatedBy === true);
+
 const isDreamChapter = computed(() => props.chapter.chapterType === "DREAM");
 const isNoteChapter = computed(() => props.chapter.chapterType === "NOTE");
+
+/** 소유권 없을 때 안내 후 중단 */
+function guardChapterOwner(): boolean {
+  if (canManageChapter.value) return true;
+  void swalAlert("본인이 작성한 챕터만 변경할 수 있습니다.");
+  return false;
+}
 
 const entryRegIcon = computed(() => (isDreamChapter.value ? "bi-moon-stars" : "bi-book"));
 const entryRegLabel = computed(() => {
@@ -244,6 +254,7 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 
 /** 챕터 수정 모달 열기 */
 function openChapterMdf() {
+  if (!guardChapterOwner()) return;
   modalStore.openChapterReg({
     id: props.chapter.id,
     journalDayId: props.chapter.journalDayId,
@@ -257,6 +268,7 @@ function openChapterMdf() {
 
 /** 일기/노트/꿈 엔트리 신규 등록 모달 열기 */
 function openEntryNew() {
+  if (!guardChapterOwner()) return;
   if (!props.chapter.journalDayId) return;
   const contentType = isDreamChapter.value
     ? "JOURNAL_DREAM"
@@ -291,6 +303,7 @@ function scrollAfterFetch(): void {
 
 /** 챕터 접힘 상태 토글 (서버 반영 후 목록 갱신 — ⋯ 메뉴 전용) */
 async function toggleCollapsedState(): Promise<void> {
+  if (!guardChapterOwner()) return;
   if (!props.chapter.id) return;
   try {
     await axios.post("/api/states", {
@@ -313,6 +326,7 @@ function exportChapter(): void {
 
 /** 챕터 삭제 */
 async function deleteChapter(): Promise<void> {
+  if (!guardChapterOwner()) return;
   if (!props.chapter.id) return;
   if (!await swalConfirm("챕터를 삭제하시겠습니까?")) return;
   try {
@@ -323,8 +337,7 @@ async function deleteChapter(): Promise<void> {
       void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
     }
   } catch (e: unknown) {
-    if (isAuthExpiredError(e)) return;
-    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e, "요청 처리 중 오류가 발생했습니다.");
   }
 }
 
