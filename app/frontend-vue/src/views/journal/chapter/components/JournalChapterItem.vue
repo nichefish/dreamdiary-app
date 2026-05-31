@@ -23,11 +23,11 @@
         <button
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-          :title="entryRegTitle"
+          :title="entryRegistTitle"
           @click="openEntryNew"
         >
-          <i class="bi fs-4 pe-1" :class="entryRegIcon"></i>
-          {{ entryRegLabel }}
+          <i class="bi fs-4 pe-1" :class="entryRegistIcon"></i>
+          {{ entryRegistLabel }}
         </button>
         <!--end::엔트리 등록 TEXT 버튼-->
         <!--begin::복사 버튼-->
@@ -66,7 +66,7 @@
             </div>
             <!--begin::수정-->
             <div class="menu-item px-3 my-1">
-              <div class="menu-link flex-stack px-3" @click="openChapterMdf">
+              <div class="menu-link flex-stack px-3" @click="openChapterModify">
                 수정
                 <i class="bi bi-pencil-square fs-8"></i>
               </div>
@@ -212,13 +212,13 @@ function guardChapterOwner(): boolean {
   return false;
 }
 
-const entryRegIcon = computed(() => (isDreamChapter.value ? "bi-moon-stars" : "bi-book"));
-const entryRegLabel = computed(() => {
+const entryRegistIcon = computed(() => (isDreamChapter.value ? "bi-moon-stars" : "bi-book"));
+const entryRegistLabel = computed(() => {
   if (isDreamChapter.value) return "저널 꿈 등록";
   if (isNoteChapter.value) return "저널 노트 등록";
   return "저널 일기 등록";
 });
-const entryRegTitle = computed(() => entryRegLabel.value);
+const entryRegistTitle = computed(() => entryRegistLabel.value);
 
 const iconClass = computed(() => {
   if (props.chapter.chapterType === "DREAM") return "bi-moon-stars";
@@ -253,9 +253,9 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 }
 
 /** 챕터 수정 모달 열기 */
-function openChapterMdf() {
+function openChapterModify() {
   if (!guardChapterOwner()) return;
-  modalStore.openChapterReg({
+  modalStore.openChapterRegist({
     id: props.chapter.id,
     journalDayId: props.chapter.journalDayId,
     stdrdDt: props.chapter.stdrdDt,
@@ -275,7 +275,7 @@ function openEntryNew() {
     : isNoteChapter.value
       ? "JOURNAL_NOTE"
       : "JOURNAL_DIARY";
-  modalStore.openEntryReg({
+  modalStore.openEntryRegist({
     contentType,
     journalDayId: props.chapter.journalDayId,
     journalChapterId: props.chapter.id,

@@ -11,7 +11,7 @@
           <span
             v-if="day.id"
             class="cursor-pointer opacity-hover text-decoration-underline"
-            @click="openDtl"
+            @click="openDetail"
           >{{ day.stdrdDt }}</span>
           <span v-else>{{ day.stdrdDt }}</span>
           <!--end::날짜-->
@@ -28,7 +28,7 @@
           v-if="showDiaries"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-          @click="openChapterReg"
+          @click="openChapterRegist"
         >
           <i class="bi bi-list-columns-reverse fs-4 pe-1"></i>
           저널 챕터 등록
@@ -39,7 +39,7 @@
           v-if="showDreams"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-          @click="openDreamReg"
+          @click="openDreamRegist"
         >
           <i class="bi bi-moon-stars fs-4 pe-1"></i>
           저널 꿈 등록
@@ -79,7 +79,7 @@
             <div class="separator my-2"></div>
             <!--begin::수정-->
             <div class="menu-item px-3 my-1">
-              <div class="menu-link flex-stack px-3" @click="openReg">
+              <div class="menu-link flex-stack px-3" @click="openRegist">
                 수정
                 <i class="bi bi-pencil-square fs-8"></i>
               </div>
@@ -221,7 +221,7 @@
               type="button"
               class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
               title="저널 꿈 등록"
-              @click="openDreamReg"
+              @click="openDreamRegist"
             >
               <i class="bi bi-moon-stars fs-4 pe-1"></i>
               저널 꿈 등록
@@ -398,13 +398,13 @@ async function deleteDay(): Promise<void> {
 }
 
 /** 상세 모달 열기 */
-function openDtl() {
-  if (props.day.id) void modalStore.openDayDtl(props.day.id);
+function openDetail() {
+  if (props.day.id) void modalStore.openDayDetail(props.day.id);
 }
 
 /** 수정 모달 열기 */
-function openReg() {
-  modalStore.openDayReg({
+function openRegist() {
+  modalStore.openDayRegist({
     id: props.day.id,
     journalDate: props.day.journalDate ?? props.day.stdrdDt,
     journalDatePrecision: props.day.journalDatePrecision,
@@ -414,9 +414,9 @@ function openReg() {
 
 
 /** 챕터 등록 모달 열기 */
-function openChapterReg() {
+function openChapterRegist() {
   if (!props.day.id) return;
-  modalStore.openChapterReg({
+  modalStore.openChapterRegist({
     journalDayId: props.day.id,
     stdrdDt: props.day.stdrdDt,
     journalDateWeekDay: props.day.journalDateWeekDay,
@@ -481,9 +481,9 @@ function exportDreams(): void {
 }
 
 /** 꿈 엔트리 등록 모달 열기 */
-function openDreamReg() {
+function openDreamRegist() {
   if (!props.day.id) return;
-  void modalStore.openDreamEntryReg({
+  void modalStore.openDreamEntryRegist({
     journalDayId: props.day.id,
     stdrdDt: props.day.stdrdDt ?? "",
     journalDateWeekDay: props.day.journalDateWeekDay,

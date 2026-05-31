@@ -1,4 +1,4 @@
-﻿# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
+# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
 
 > 공통 Freemarker 매크로(checkbox, modal_header 등)는 ``common/component-spec.md`` 참조.
 
@@ -45,7 +45,7 @@
 | Handlebars 태그 목록 렌더 | `store.tagCloud.{dayTagList,diaryTagList,dreamTagList}` |
 | `dF.Tag.hideSingleTag(selector)` | 각 행별 로컬 ref (`hideDaySingles`, `hideDiarySingles`, `hideDreamSingles`) |
 | `dF.JournalTag.listAllAjax()` | `attachableStore.openTagList({ yy, mnth, weekStartDt })` |
-| 태그 클릭 → 일자 목록 모달 | `journalModalStore.openTagDtl(tag.id, tag.name)` |
+| 태그 클릭 → 일자 목록 모달 | `journalModalStore.openTagDetail(tag.id, tag.name)` |
 
 **상태 / API**:
 | 항목 | 위치 |
@@ -298,7 +298,7 @@ interface TodoRow {
 **동작**:
 | 액션 | Vue |
 |------|-----|
-| 저널 일자 등록 클릭 | `useJournalModalStore().openDayReg()` → `JournalDayRegistModal` (`JournalLayout` 마운트) |
+| 저널 일자 등록 클릭 | `useJournalModalStore().openDayRegist()` → `JournalDayRegistModal` (`JournalLayout` 마운트) |
 | 탭 전환 | `router-link` — `journal-weekly` / `journal-monthly` / `journal-calendar` / `journal-meta` |
 | 일기 키워드 검색 | `v-model="store.diaryKeyword"`, Enter/버튼 클릭 → `store.fetchDays()` |
 | 꿈 키워드 검색 | `v-model="store.dreamKeyword"`, Enter/버튼 클릭 → `store.fetchDays()` |
@@ -321,7 +321,7 @@ interface TodoRow {
 
 **Vue 동등**: `flatpickrSingleDate.ts` — `bindSingleDatePicker()` (flatpickr, `Y-m-d`, locale `ko`). 모달 `shown` 시 부착·`hidden` 시 `destroy`. 캘린더 아이콘 클릭 → `open()`. 모달 내부 입력도 calendar DOM은 기본 body append를 사용한다. `.modal-body`에 append하면 입력칸 좌표와 calendar 좌표 기준이 달라져 위치가 틀어질 수 있다.
 
-**신규 등록 기본값**: `openDayReg()` 에서 `journalDate` 비어 있으면 오늘(`formatLocalDateStr`) — 레거시 daterangepicker `startDate: moment()` 와 동일.
+**신규 등록 기본값**: `openDayRegist()` 에서 `journalDate` 비어 있으면 오늘(`formatLocalDateStr`) — 레거시 daterangepicker `startDate: moment()` 와 동일.
 
 **저장 후 갱신**: `JournalDayRegistModal.vue` 는 현재 route 기준으로 목록을 갱신한다. `/journal/weekly` 에서는 `setViewType("WEEKLY")` 후 `fetchDays({ viewType: "WEEKLY" })`, `/journal/monthly` 에서는 `setViewType("LIST")` 후 `fetchDays({ viewType: "LIST" })` 를 호출해 주간 등록 완료 후 월간 목록으로 돌아가지 않게 한다. 태그 변경이 태그클라우드에 즉시 반영되도록 `fetchTagCloud()`도 함께 호출한다 (2026-05-19 수정).
 
@@ -359,11 +359,11 @@ interface TodoRow {
 
 ### 22-4. `JournalEntryRegistModal` 등록/수정 폼 여백
 
-**Vue**: `JournalEntryRegistModal.vue` → `journal-entry-reg-modal__body`, `journal-entry-reg-form`
+**Vue**: `JournalEntryRegistModal.vue` → `journal-entry-regist-modal__body`, `journal-entry-regist-form`
 
 **스타일**: `journal.scss` 에서 데스크톱 좌우 `3rem`, 모바일 좌우 `1.25rem` padding을 적용한다. 제목/본문/태그 입력이 모달 가장자리에 붙어 보이지 않게 하며, TinyMCE iframe 본문은 `RichEditor.vue` 의 `content_style` 로 `12px 16px` 내부 padding을 둔다.
 
-**중복 제출 방지**: 저장 클릭 즉시 `submitting` guard를 세운 뒤 확인창을 띄운다. 확인창이 떠 있는 동안 재클릭되어도 두 번째 `submit()`은 무시되어 같은 꿈/일기 엔트리가 두 번 POST되지 않는다. 꿈 등록 모달 오픈도 `dreamEntryRegOpening` guard로 `dream-auto` 요청 중복을 막는다.
+**중복 제출 방지**: 저장 클릭 즉시 `submitting` guard를 세운 뒤 확인창을 띄운다. 확인창이 떠 있는 동안 재클릭되어도 두 번째 `submit()`은 무시되어 같은 꿈/일기 엔트리가 두 번 POST되지 않는다. 꿈 등록 모달 오픈도 `dreamEntryRegistOpening` guard로 `dream-auto` 요청 중복을 막는다.
 
 **저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 현재 route 기준으로 목록을 갱신하고 저장한 엔트리 위치로 스크롤한다. 월간/주간은 `#journal-entry-{id}`를 우선 사용하고, 신규 등록 응답에서 id를 확인할 수 없으면 `#journal-day-{stdrdDt}`로 fallback한다. 일자 상세 팝업이 열려 있으면 `JournalDayDtlModal` 데이터를 다시 조회한 뒤 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
 
@@ -419,7 +419,7 @@ interface TodoRow {
 - 엔트리 등록 TEXT 버튼: 타입별 `저널 일기 등록` / `저널 꿈 등록` / `저널 노트 등록` + `bi-book` / `bi-moon-stars` — `openEntryNew()`
 - 복사 버튼 (`bi-copy`): `copyChapter()` — 날짜·카테고리·제목 + 하위 엔트리 전체를 줄바꿈 연결 텍스트로 클립보드 복사
 - TXT보내기 버튼 (`fas fa-download`, `btn-outline btn-light-primary`): `exportChapter()` — `GET /api/journal/chapter/{id}/export`
-- ⋯ 컨텍스트 메뉴: 수정(`openChapterMdf`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제
+- ⋯ 컨텍스트 메뉴: 수정(`openChapterModify`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제
 - 접힘 화살표 버튼 (`toggle-chapter-btn`): `toggleChapter()` — 클라이언트만 접힘(`localCollapsedOverride`), 서버 POST 없음
 
 ---
@@ -467,7 +467,7 @@ interface TodoRow {
 **메뉴 액션**:
 | 액션 | `JOURNAL_DAY` | `JOURNAL_DIARY` | `JOURNAL_DREAM` |
 |------|---------------|-----------------|-----------------|
-| 검색 | `journalModalStore.openTagDtl(tagId, name)` | 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds=...&tagName=...` | 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds=...&tagName=...` |
+| 검색 | `journalModalStore.openTagDetail(tagId, name)` | 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds=...&tagName=...` | 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds=...&tagName=...` |
 | 태그 설정 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DAY` 조회 후 태그 프로필 모달 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DIARY` 조회 후 태그 프로필 모달 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DREAM` 조회 후 태그 프로필 모달 |
 
 **검색 팝업 내부 동작**: 현재 route가 `journal-entry-search`이면 `검색` 액션은 새 창을 열지 않고 같은 창에서 `router.replace({ name: "journal-entry-search", query })`를 호출한다. `JournalEntrySearchPage`가 route 변경을 watch해 목록을 즉시 갱신한다.

@@ -276,7 +276,7 @@
       <button
         type="button"
         class="btn btn-sm btn-light-primary w-100"
-        @click="openTodoReg"
+        @click="openTodoRegist"
       >
         <i class="bi bi-check2-square me-1"></i>
         할일 등록
@@ -477,8 +477,8 @@ async function resetFilters(): Promise<void> {
 }
 
 /** 할일 등록 모달 열기 */
-function openTodoReg() {
-  modalStore.openTodoReg({ yy: store.yy, mnth: store.mnth });
+function openTodoRegist() {
+  modalStore.openTodoRegist({ yy: store.yy, mnth: store.mnth });
 }
 
 function toggleTagCloud() {

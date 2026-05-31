@@ -22,7 +22,7 @@
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
 | 앱 런타임 상태 | `components/system/AppRuntimeStatus.vue` + `utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
 
-`useAttachableModalStore` (`stores/attachableModal.ts`) 주요 API: `openCommentReg`, `openCommentMdf`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
+`useAttachableModalStore` (`stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
 
 ---
 
@@ -748,7 +748,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 
 | attachable 영역 | Vue 기준 |
 |-----------------|----------|
-| 댓글 등록/수정 | `useAttachableModalStore.openCommentReg/openCommentMdf` + `CommentRegModal.vue` |
+| 댓글 등록/수정 | `useAttachableModalStore.openCommentRegist/openCommentModify` + `CommentRegModal.vue` |
 | 댓글 목록 | `openCommentList` + `CommentListModal.vue` |
 | 이력 | `openHistory` + `HistoryModal.vue`. 각 이력 카드에 텍스트 복사 버튼 구현 완료 |
 | 관련글 추가 | `openRelatedContentAdd` + `RelatedContentAddModal.vue` |

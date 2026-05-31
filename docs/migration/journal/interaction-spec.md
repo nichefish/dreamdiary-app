@@ -1,4 +1,4 @@
-﻿# 저널 어사이드 인터랙션 스펙 (Journal Aside Interaction Spec)
+# 저널 어사이드 인터랙션 스펙 (Journal Aside Interaction Spec)
 
 > 공통 인터랙션 패턴(AJAX, 모달, Tagify, TinyMCE 등)은 ``common/interaction-spec.md`` 참조.
 
@@ -264,7 +264,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 닫기: 외부 클릭, ESC, scroll/resize
 
 **검색 액션**:
-- `JOURNAL_DAY`: `journalModalStore.openTagDtl(tagId, name)` 으로 일자 태그 상세 모달 오픈
+- `JOURNAL_DAY`: `journalModalStore.openTagDetail(tagId, name)` 으로 일자 태그 상세 모달 오픈
 - `JOURNAL_DIARY`: 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds={tagId}&tagName={name}`
 - `JOURNAL_DREAM`: 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds={tagId}&tagName={name}`
 - 단, 현재 route가 `journal-entry-search`인 검색 팝업 내부에서는 새 창을 다시 열지 않고 같은 창의 query를 `router.replace(...)`로 갱신한다. 검색 페이지는 `route.fullPath` watch로 즉시 재조회한다.
@@ -305,11 +305,11 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryContextMenu.ts`
 
 **우측 액션 영역 구조**:
-- 댓글 등록 버튼 (⋯ 밖, 단독 버튼) → `attachableStore.openCommentReg(id, contentType)`
+- 댓글 등록 버튼 (⋯ 밖, 단독 버튼) → `attachableStore.openCommentRegist(id, contentType)`
 - 복사 버튼 (`bi-copy`, ⋯ 밖, 단독 버튼) → `copyEntry()` — 날짜(요일)·`htmlToPlainText(content)` 클립보드 복사. `content` = TinyMCE HTML 원문; HTML 제거 후 평문. (레거시 `copy()` 동일 포맷)
 - ⋯ 드롭다운:
   - 헤더: contentLabel (일기/꿈)
-  - 수정 → `modalStore.openEntryMdf(id)`
+  - 수정 → `modalStore.openEntryModify(id)`
   - 이력 → `attachableStore.openHistory(contentType, id)`
   - 관련 글 추가 (`elseDreamYn !== "Y"` 조건) → `attachableStore.openRelated(contentType, id)`
   - 구분선

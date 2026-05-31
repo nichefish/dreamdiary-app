@@ -149,9 +149,9 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)
 ### 저널 엔트리 등록 폼
 
 각 엔트리 타입별 폼 ID:
-- DIARY: `#journalDiaryRegForm` → `enctype="multipart/form-data"`, `method="post"`
-- DREAM: `#journalDreamRegForm` → 동일
-- NOTE: `#journalEntryRegForm` → 동일
+- DIARY: `#journalDiaryRegistForm` → `enctype="multipart/form-data"`, `method="post"`
+- DREAM: `#journalDreamRegistForm` → 동일
+- NOTE: `#journalEntryRegistForm` → 동일
 
 `<input type="hidden" name="type" value="${entryRegType}">` — 타입 구분 hidden 필드 포함
 
@@ -159,7 +159,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)
 
 ### 저널 일자 등록 폼
 
-`#journalDayRegForm` → `enctype="multipart/form-data"`
+`#journalDayRegistForm` → `enctype="multipart/form-data"`
 저장 버튼: `dF.JournalDayRuntimeService.handleLegacyActionClick(event)` (이벤트 위임)
 닫기 버튼: `data-journal-day-action` 속성으로 액션 전달
 
@@ -401,7 +401,7 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
   └─ preloadCategoryMaps() → ensureCategoryMap × 4 → 스토어 ref 적재
 
 모달 오픈
-  └─ openDayReg / openEntryReg / …
+  └─ openDayRegist / openEntryRegist / …
        └─ ensureCategoryMap(url) — loaded 플래그 있으면 HTTP 생략
             └─ <TagifyEditor :category-map="modalStore.dayTagCategoryMap | entryCategoryMap(computed)" />
 

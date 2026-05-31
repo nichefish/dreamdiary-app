@@ -17,14 +17,14 @@
         <!--end::Modal Header-->
 
         <!--begin::Modal Body-->
-        <div class="modal-body modal-mbl-body my-5 journal-entry-reg-modal__body">
+        <div class="modal-body modal-mbl-body my-5 journal-entry-regist-modal__body">
           <!--begin::로딩-->
-          <div v-if="modalStore.entryRegLoading" class="d-flex justify-content-center py-10">
+          <div v-if="modalStore.entryRegistLoading" class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary" role="status"></span>
           </div>
           <!--end::로딩-->
 
-          <form v-else-if="model" id="journalEntryRegForm" class="form journal-entry-reg-form" @submit.prevent>
+          <form v-else-if="model" id="journalEntryRegistForm" class="form journal-entry-regist-form" @submit.prevent>
             <input type="hidden" name="id" :value="model.id ?? ''" />
             <input type="hidden" name="contentType" :value="model.contentType" />
             <input type="hidden" name="journalDayId" :value="model.journalDayId ?? ''" />
@@ -200,10 +200,10 @@ let bsModal: InstanceType<typeof Modal> | null = null;
  *  hidden.bs.modal 이후 실행할 스크롤 대상을 임시 보관한다. */
 let pendingScrollTarget: { entryId?: number | string; stdrdDt?: string } | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
-  modalStore.closeEntryReg();
+  modalStore.closeEntryRegist();
 });
 
-const model = computed(() => modalStore.entryRegModel);
+const model = computed(() => modalStore.entryRegistModel);
 
 /** 수정 모드 여부 */
 const isModify = computed(() => !!model.value?.id);
@@ -259,7 +259,7 @@ onMounted(() => {
     /* bootstrap 이벤트로 store 와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
-      modalStore.closeEntryReg();
+      modalStore.closeEntryRegist();
       if (pendingScrollTarget) {
         const target = pendingScrollTarget;
         pendingScrollTarget = null;
@@ -270,7 +270,7 @@ onMounted(() => {
 });
 
 watch(
-  () => modalStore.entryRegOpen,
+  () => modalStore.entryRegistOpen,
   (isOpen) => {
     if (isOpen) {
       resetSafeClose();
@@ -281,7 +281,7 @@ watch(
 
 function close() {
   resetSafeClose();
-  modalStore.closeEntryReg();
+  modalStore.closeEntryRegist();
 }
 
 /** 등록/수정 후 저장한 엔트리 위치로 돌아간다. 새 글 id를 모르면 해당 일자 카드로 복귀한다. */
@@ -336,9 +336,9 @@ function scrollToDayDetailPosition(entryId?: number | string): void {
 }
 
 function refreshOpenDayDetail(entryId?: number | string): boolean {
-  const dayId = modalStore.dayDtlData?.id;
-  if (!modalStore.dayDtlOpen || !dayId) return false;
-  void modalStore.openDayDtl(dayId).then(() => scrollToDayDetailPosition(entryId));
+  const dayId = modalStore.dayDetailData?.id;
+  if (!modalStore.dayDetailOpen || !dayId) return false;
+  void modalStore.openDayDetail(dayId).then(() => scrollToDayDetailPosition(entryId));
   return true;
 }
 

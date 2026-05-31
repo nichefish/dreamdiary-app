@@ -18,7 +18,7 @@
 
         <!--begin::Modal Body-->
         <div class="modal-body modal-mbl-body my-5">
-          <form v-if="model" id="journalDayRegForm" class="form" @submit.prevent>
+          <form v-if="model" id="journalDayRegistForm" class="form" @submit.prevent>
 
             <input type="hidden" name="id" :value="model.id ?? ''" />
 
@@ -212,10 +212,10 @@ let journalDateFp: FlatpickrInstance | null = null;
  *  hidden.bs.modal 이후 실행할 스크롤 대상 일자를 임시 보관한다. */
 let pendingScrollDt: string | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
-  modalStore.closeDayReg();
+  modalStore.closeDayRegist();
 });
 
-const model = computed(() => modalStore.dayRegModel);
+const model = computed(() => modalStore.dayRegistModel);
 
 /** 태그 문자열 — model.tag.tagListStr (Tagify JSON) */
 const tagListStr = computed({
@@ -238,7 +238,7 @@ function onDiaryResolvedChange(event: Event) {
   model.value.diaryResolvedYn = (event.target as HTMLInputElement).checked ? "Y" : "N";
 }
 
-/** 레거시 attachRegFormControls → cF.datepicker.singleDatePicker("#journalDate") */
+/** 레거시 attachRegFormControls → cF.datepicker.singleDatePicker("#journalDate"). Vue form id: #journalDayRegistForm */
 function attachJournalDatePicker(): void {
   destroyJournalDatePicker();
   const input = journalDateInputRef.value;
@@ -274,7 +274,7 @@ onMounted(() => {
     /* bootstrap 이벤트로 store와 상태를 동기화한다 */
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
-      modalStore.closeDayReg();
+      modalStore.closeDayRegist();
       if (pendingScrollDt) {
         const dt = pendingScrollDt;
         pendingScrollDt = null;
@@ -288,7 +288,7 @@ onMounted(() => {
 });
 
 watch(
-  () => modalStore.dayRegOpen,
+  () => modalStore.dayRegistOpen,
   async (isOpen) => {
     if (isOpen) {
       resetSafeClose();
@@ -305,7 +305,7 @@ watch(
 
 function close() {
   resetSafeClose();
-  modalStore.closeDayReg();
+  modalStore.closeDayRegist();
 }
 
 /** 등록/수정 후 해당 일자 카드(#journal-day-{stdrdDt})로 스크롤한다. */

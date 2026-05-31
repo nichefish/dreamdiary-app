@@ -34,7 +34,7 @@
           </a>
           <div
             class="badge badge-light btn-primary badge-outlined mx-2 cursor-pointer"
-            @click="delExistingFile(file.id)"
+            @click="deleteExistingFile(file.id)"
             data-bs-toggle="tooltip"
             data-bs-placement="top"
             title="파일을 삭제합니다."
@@ -69,7 +69,7 @@
           <button
             type="button"
             class="badge badge-light btn-primary badge-outlined mx-2"
-            @click.prevent="delNewFile(item.idx)"
+            @click.prevent="deleteNewFile(item.idx)"
             data-bs-toggle="tooltip"
             data-bs-placement="top"
             data-bs-dismiss="click"
@@ -146,13 +146,13 @@ function removeNewFile(idx: number): void {
 }
 
 /** 새로 추가된 파일 삭제 확인 후 제거 */
-async function delNewFile(idx: number): Promise<void> {
+async function deleteNewFile(idx: number): Promise<void> {
   if (!await swalConfirm("파일을 삭제하시겠습니까?")) return;
   removeNewFile(idx);
 }
 
 /** 기존 파일 삭제 플래그(atchCtrl=D) 세팅 */
-async function delExistingFile(fileId: number): Promise<void> {
+async function deleteExistingFile(fileId: number): Promise<void> {
   if (!await swalConfirm("파일을 삭제하시겠습니까?")) return;
   const file = existingList.value.find((f) => f.id === fileId);
   if (file) file.deleted = true;

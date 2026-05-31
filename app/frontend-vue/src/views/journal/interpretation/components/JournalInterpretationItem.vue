@@ -53,7 +53,7 @@
         type="button"
         class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
         title="댓글 등록"
-        @click="openCommentReg"
+        @click="openCommentRegist"
       >
         <i class="bi bi-chat-dots fs-8"></i>
       </button>
@@ -93,7 +93,7 @@
 
           <!--begin::수정-->
           <div class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openMdf">
+            <div class="menu-link flex-stack px-3" @click="openModify">
               수정
               <i class="bi bi-pencil-square fs-8"></i>
             </div>
@@ -247,8 +247,8 @@ function toggleInterpretation(): void {
 }
 
 /** 해석 수정 모달 열기 */
-function openMdf(): void {
-  modalStore.openInterpretationReg({
+function openModify(): void {
+  modalStore.openInterpretationRegist({
     id: props.interpretation.id,
     refId: props.interpretation.refId,
     refContentType: props.interpretation.refContentType,
@@ -257,8 +257,8 @@ function openMdf(): void {
 }
 
 /** 댓글 등록 모달 열기 */
-function openCommentReg(): void {
-  attachableStore.openCommentReg(props.interpretation.id, "JOURNAL_INTERPRETATION");
+function openCommentRegist(): void {
+  attachableStore.openCommentRegist(props.interpretation.id, "JOURNAL_INTERPRETATION");
 }
 
 /** 이력 모달 열기 */
