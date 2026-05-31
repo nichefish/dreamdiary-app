@@ -9,7 +9,6 @@
     <JournalChapterRegistModal />
     <JournalInterpretationRegistModal />
     <JournalEntryRegistModal />
-    <JournalDayTagDetailModal />
     <JournalTodoRegistModal />
     <JournalDayMetaModal />
     <CommentRegistModal />
@@ -32,7 +31,6 @@ import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
 import JournalChapterRegistModal from "../chapter/modals/JournalChapterRegistModal.vue";
 import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
 import JournalEntryRegistModal from "../entry/modals/JournalEntryRegistModal.vue";
-import JournalDayTagDetailModal from "./modals/JournalDayTagDetailModal.vue";
 import JournalTodoRegistModal from "../todo/modals/JournalTodoRegistModal.vue";
 import JournalDayMetaModal from "./modals/JournalDayMetaModal.vue";
 import CommentRegistModal from "../shared/modals/CommentRegistModal.vue";

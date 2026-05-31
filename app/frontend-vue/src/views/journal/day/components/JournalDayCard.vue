@@ -124,38 +124,32 @@
         </div>
         <!--end::컨텍스트 메뉴-->
         <!--begin::메타 메뉴 버튼-->
-        <div v-if="hasMeta" class="me-0 d-flex align-items-center">
+        <div v-if="hasMeta" class="dropup me-0 d-flex align-items-center">
           <button
+            type="button"
             class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-            data-kt-menu-trigger="click"
-            data-kt-menu-placement="bottom-end"
+            data-bs-toggle="dropdown"
+            data-bs-auto-close="true"
             title="메타"
           >
             <i class="bi bi-bar-chart"></i>
           </button>
-          <div
-            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold min-w-250px py-3"
-            data-kt-menu="true"
-          >
-            <div class="menu-item px-3">
-              <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">메타</div>
-            </div>
-            <div
+          <ul class="dropdown-menu dropdown-menu-end shadow py-2" style="width: max-content; min-width: 0;">
+            <li
               v-for="meta in metaList"
               :key="'meta-menu-' + meta.metaId"
-              class="menu-item px-3"
             >
               <button
                 type="button"
-                class="menu-link w-100 border-0 bg-transparent px-3 text-start d-flex align-items-center"
+                class="dropdown-item"
                 @click="openMetaModal(meta.metaId, meta.name)"
               >
                 <span v-if="meta.ctgr" class="text-noti pe-1">[{{ meta.ctgr }}]</span>
                 <span>{{ meta.name }}</span>
                 <span class="text-dialog ms-1">: {{ meta.value }}{{ meta.unit }}</span>
               </button>
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
         <!--end::메타 메뉴 버튼-->
       </div>
@@ -503,6 +497,6 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 /** 메타 컨텐츠 목록 모달 열기 */
 function openMetaModal(metaId?: number | string, metaName?: string): void {
   if (!metaId) return;
-  void modalStore.openMetaModal(metaId, undefined, metaName);
+  void modalStore.openDayFilterModal({ type: "meta", id: metaId, name: metaName ?? "" });
 }
 </script>
