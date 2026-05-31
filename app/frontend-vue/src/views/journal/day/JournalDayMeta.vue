@@ -193,7 +193,7 @@ onMounted(() => {
 /** 선택된 메타의 컨텐츠 목록 모달을 연다. */
 function openMetaModal() {
   if (!store.selectedMeta?.id) return;
-  void modalStore.openMetaModal(store.selectedMeta.id, undefined, store.selectedMeta.name);
+  void modalStore.openDayFilterModal({ type: "meta", id: store.selectedMeta.id, name: store.selectedMeta.name ?? "" });
 }
 
 /** 선택된 메타의 단위 */

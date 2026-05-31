@@ -114,6 +114,6 @@ function close() {
 }
 
 function openTagDetail(tag: TagListItem) {
-  void journalModalStore.openTagDetail(tag.id, tag.name);
+  void journalModalStore.openDayFilterModal({ type: "tag", id: tag.id, name: tag.name });
 }
 </script>

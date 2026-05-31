@@ -105,21 +105,19 @@ export interface JournalInterpretationRegistModel {
   content?: string;
 }
 
-/** 메타 모달 페이로드 */
-export interface JournalDayMetaModalPayload {
-  metaId: number | string;
-  /** 메타 이름 (헤더 표시용) */
-  metaName?: string;
-  yy: string;
-  yearOptions: Array<{ value: string | number; label: string; selected?: boolean }>;
-  list: JournalDayDto[];
-}
+/** 일자 필터 모달 시드 타입 */
+export type DayFilterSeedType = "meta" | "tag";
 
-
-/** 저널 일자 태그 상세 모달 페이로드 */
-export interface JournalDayTagDetailPayload {
-  tagId: number | string;
-  name: string;
+/** 일자 필터 모달 페이로드 (메타/태그 다중 AND 검색) */
+export interface JournalDayFilterPayload {
+  /** 초기 시드 타입 */
+  seedType: DayFilterSeedType;
+  /** 초기 시드 ID */
+  seedId: string;
+  /** 초기 시드 이름 */
+  seedName: string;
+  /** 초기 시드 카테고리 */
+  seedCtgr?: string;
   yy: string;
   yearOptions: Array<{ value: string | number; label: string; selected?: boolean }>;
   list: JournalDayDto[];
@@ -353,105 +351,70 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     interpretationRegistOpen.value = false;
   }
 
-  // ---- 메타 모달 ----
+  // ---- 일자 필터 모달 (메타/태그 다중 AND 검색) ----
 
-  /** 메타 모달 오픈 여부 */
-  const metaModalOpen = ref(false);
-  /** 메타 모달 로딩 여부 */
-  const metaModalLoading = ref(false);
-  /** 메타 모달 페이로드 */
-  const metaModalPayload = ref<JournalDayMetaModalPayload | null>(null);
-
-  /**
-   * 메타 모달을 연다. 연도 목록 + 해당 연도 일자 목록을 조회한다.
-   * @param metaId - 메타 ID
-   * @param yy - 조회 연도 (없으면 현재 연도)
-   */
-  async function openMetaModal(metaId: number | string, yy?: string, metaName?: string) {
-    metaModalOpen.value = true;
-    metaModalLoading.value = true;
-    metaModalPayload.value = null;
-    try {
-      const yearsRes = await axios.get(`/api/journal/day/metas/${metaId}/years`);
-      const yyList: string[] = (yearsRes.data?.rsltList ?? []).map(String);
-      const currentYy = yy ?? String(new Date().getFullYear());
-      const selectedYy = yyList.length > 0
-        ? (yyList.includes(currentYy) ? currentYy : yyList[0])
-        : currentYy;
-      const daysRes = await axios.get("/api/journal/days", {
-        params: { viewType: "SEARCH", metaId, yy: selectedYy },
-      });
-      metaModalPayload.value = {
-        metaId,
-        metaName,
-        yy: selectedYy,
-        yearOptions: yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy })),
-        list: daysRes.data?.rsltList ?? [],
-      };
-    } catch {
-      metaModalPayload.value = null;
-    } finally {
-      metaModalLoading.value = false;
-    }
-  }
-
-  /** 메타 모달을 닫는다. */
-  function closeMetaModal() {
-    metaModalOpen.value = false;
-  }
-
-
-  // ---- 일자 태그 상세 모달 ----
-
-  /** 태그 상세 모달 오픈 여부 */
-  const tagDetailOpen = ref(false);
-  /** 태그 상세 모달 로딩 여부 */
-  const tagDetailLoading = ref(false);
-  /** 태그 상세 모달 페이로드 */
-  const tagDetailPayload = ref<JournalDayTagDetailPayload | null>(null);
+  /** 일자 필터 모달 오픈 여부 */
+  const filterModalOpen = ref(false);
+  /** 일자 필터 모달 로딩 여부 */
+  const filterModalLoading = ref(false);
+  /** 일자 필터 모달 페이로드 */
+  const filterModalPayload = ref<JournalDayFilterPayload | null>(null);
 
   /**
-   * 태그 상세 모달을 연다. 연도 목록 + 해당 연도 일자 목록을 조회한다.
-   * @param tagId - 태그 ID
-   * @param name - 태그명
-   * @param yy - 조회 연도 (없으면 현재 연도)
+   * 일자 필터 모달을 연다. 메타 또는 태그를 시드로 연도별 일자 목록을 조회한다.
+   * @param seed - 시드 타입·ID·이름 (meta 또는 tag)
+   * @param yy - 조회 연도 (없으면 현재 연도; 태그 시드에서 "" 이면 전체 연도)
    */
-  async function openTagDetail(tagId: number | string, name: string, yy?: string) {
-    tagDetailOpen.value = true;
-    tagDetailLoading.value = true;
-    tagDetailPayload.value = null;
+  async function openDayFilterModal(
+    seed: { type: DayFilterSeedType; id: number | string; name: string; ctgr?: string },
+    yy?: string
+  ): Promise<void> {
+    filterModalOpen.value = true;
+    filterModalLoading.value = true;
+    filterModalPayload.value = null;
     try {
-      const yearsRes = await axios.get(`/api/journal/day/tag/${tagId}/years`);
+      const yearsUrl = seed.type === "meta"
+        ? `/api/journal/day/metas/${seed.id}/years`
+        : `/api/journal/day/tag/${seed.id}/years`;
+      const yearsRes = await axios.get(yearsUrl);
       const yyList: string[] = (yearsRes.data?.rsltList ?? []).map(String);
-      /** yy === '' 이면 전체 연도 조회 (연도 필터 미적용) */
-      const isAllYears = yy === "";
+      /** 태그 시드에서 yy === "" 이면 전체 연도 조회 */
+      const isAllYears = seed.type === "tag" && yy === "";
       const currentYy = isAllYears ? "" : (yy ?? String(new Date().getFullYear()));
       const selectedYy = isAllYears ? "" : (
         yyList.length > 0 ? (yyList.includes(currentYy) ? currentYy : yyList[0]) : currentYy
       );
-      const dayParams: Record<string, unknown> = { viewType: "SEARCH", tagId };
+      const dayParams: Record<string, unknown> = { viewType: "SEARCH" };
+      if (seed.type === "meta") dayParams.metaId = seed.id;
+      else dayParams.tagId = seed.id;
       if (selectedYy) dayParams.yy = selectedYy;
       const daysRes = await axios.get("/api/journal/days", { params: dayParams });
-      tagDetailPayload.value = {
-        tagId,
-        name,
+      const yearOptions: Array<{ value: string | number; label: string; selected?: boolean }> =
+        seed.type === "tag"
+          ? [
+              { value: "", label: "전체 년도" },
+              ...yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy })),
+            ]
+          : yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy }));
+      filterModalPayload.value = {
+        seedType: seed.type,
+        seedId: String(seed.id),
+        seedName: seed.name,
+        seedCtgr: seed.ctgr,
         yy: selectedYy,
-        yearOptions: [
-          { value: "", label: "전체 년도" },
-          ...yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy })),
-        ],
+        yearOptions,
         list: daysRes.data?.rsltList ?? [],
       };
     } catch {
-      tagDetailPayload.value = null;
+      filterModalPayload.value = null;
     } finally {
-      tagDetailLoading.value = false;
+      filterModalLoading.value = false;
     }
   }
 
-  /** 태그 상세 모달을 닫는다. */
-  function closeTagDetail() {
-    tagDetailOpen.value = false;
+  /** 일자 필터 모달을 닫는다. */
+  function closeDayFilterModal(): void {
+    filterModalOpen.value = false;
   }
 
   // ---- 할일 등록/수정 모달 ----
@@ -787,18 +750,12 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     interpretationRegistModel,
     openInterpretationRegist,
     closeInterpretationRegist,
-    // 메타 모달
-    metaModalOpen,
-    metaModalLoading,
-    metaModalPayload,
-    openMetaModal,
-    closeMetaModal,
-    // 일자 태그 상세
-    tagDetailOpen,
-    tagDetailLoading,
-    tagDetailPayload,
-    openTagDetail,
-    closeTagDetail,
+    // 일자 필터 모달 (메타/태그 다중 AND 검색)
+    filterModalOpen,
+    filterModalLoading,
+    filterModalPayload,
+    openDayFilterModal,
+    closeDayFilterModal,
     // 할일 등록/수정
     todoRegistOpen,
     todoRegistModel,
