@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import ApiService from "@metronic/core/services/ApiService";
 import type { AxiosError } from "axios";
 import { resolveProfileImageUrl } from "@/utils/profileImage";
+import { preloadCategoryMaps, useJournalModalStore } from "@/stores/journalModal";
 
 /**
  * Vue SPA 인증 사용자 정보.
@@ -38,10 +39,12 @@ export const useAuthStore = defineStore("auth", () => {
       profileImageUrl: resolveProfileImageUrl(authUser.profileImageUrl),
     };
     errors.value = [];
+    void preloadCategoryMaps();
   }
 
   /** 인증 상태 초기화 */
   function purgeAuth() {
+    useJournalModalStore().resetCategoryMaps();
     isAuthenticated.value = false;
     user.value = null;
     errors.value = [];

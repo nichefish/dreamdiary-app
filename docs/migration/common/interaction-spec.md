@@ -394,24 +394,28 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 
 **변경 전 (legacy/초기 SPA):** `TagifyEditor.vue`가 `onMounted` 시 HTTP로 ctgrMap을 직접 조회 → 모달 열릴 때마다 추가 round-trip 발생.
 
-**변경 후 (현행):** 호출자(`journalModal.ts`)가 모달 오픈 직전에 ctgrMap을 조회해 세션 캐시 후 prop으로 주입. 첫 오픈 시 1회만 HTTP 발생, 이후 재오픈 시 캐시 반환.
+**변경 후 (현행):** `journalModal` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `App.vue` 로그인·마운트 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensureCategoryMap`으로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그 저장 성공 시 `applyCategoryMapsFromTagSave`가 Tagify JSON을 `mergeTagifyListIntoCategoryMap`으로 **병합** — 무효화·추가 GET 없음.
 
 ```
-모달 오픈 요청
-  └─ journalModal.ts openDayReg/openEntryReg/openEntryMdf/openDreamEntryReg
-       ├─ fetchCtgrMapCached(url)  ← 세션 캐시 (ctgrMapCache, 모듈 레벨)
-       │    ├─ 캐시 HIT  → 즉시 반환
-       │    └─ 캐시 MISS → axios.get(url) → 정규화 → 캐시 저장 → 반환
-       └─ dayTagCtgrMap / dayMetaCtgrMap / entryCtgrMap ref 에 할당
-            └─ <TagifyEditor :ctgr-map="modalStore.dayTagCtgrMap" />
-                 └─ initTagify() — 이미 준비된 prop 사용, 추가 HTTP 없음
+앱 부트 (인증됨)
+  └─ preloadCategoryMaps() → ensureCategoryMap × 4 → 스토어 ref 적재
+
+모달 오픈
+  └─ openDayReg / openEntryReg / …
+       └─ ensureCategoryMap(url) — loaded 플래그 있으면 HTTP 생략
+            └─ <TagifyEditor :category-map="modalStore.dayTagCategoryMap | entryCategoryMap(computed)" />
+
+태그·메타 포함 저장 성공
+  └─ save API 응답 rsltMap: dayTagCategoryMap / dayMetaCategoryMap / entryTagCategoryMap (서버 evict 후 DB 기준 전역 map, 추가 GET 없음)
+  └─ applyCategoryMapsFromSaveResponse(rsltMap) — 앱 세션 ref 교체(삭제 반영)
+       └─ TagifyEditor categoryMap watch → initTagify()
 ```
 
-ctgrMap URL 매핑:
-- 일자 태그: `/api/journal/day/tag/ctgr-map`
-- 일자 메타: `/api/journal/day/meta/ctgr-map`
-- 엔트리 DIARY 태그: `/api/journal/entry/tag/ctgr-map?type=DIARY`
-- 엔트리 DREAM 태그: `/api/journal/entry/tag/ctgr-map?type=DREAM`
+categoryMap URL 매핑:
+- 일자 태그: `/api/journal/day/tag/categories`
+- 일자 메타: `/api/journal/day/meta/categories`
+- 엔트리 DIARY 태그: `/api/journal/entry/tag/categories?type=DIARY`
+- 엔트리 DREAM 태그: `/api/journal/entry/tag/categories?type=DREAM`
 
 `TagifyEditor` Props:
 - `ctgrMap?: Record<string, string[]> | null` — null이면 ctgr 없는 단순 태그 모드

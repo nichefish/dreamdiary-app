@@ -9,29 +9,7 @@
         'container-xxl': !headerWidthFluid,
       }"
     >
-      <div
-        v-if="layout === 'light-header' || layout === 'dark-header'"
-        class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-15"
-      >
-        <router-link to="/">
-          <img
-            v-if="themeMode === 'light' && layout === 'light-header'"
-            alt="Logo"
-            :src="getAssetPath('media/logos/default.svg')"
-            class="h-20px h-lg-30px app-sidebar-logo-default theme-light-show"
-          />
-          <img
-            v-if="
-              layout === 'dark-header' ||
-              (themeMode === 'dark' && layout === 'light-header')
-            "
-            alt="Logo"
-            :src="getAssetPath('media/logos/default-dark.svg')"
-            class="h-20px h-lg-30px app-sidebar-logo-default"
-          />
-        </router-link>
-      </div>
-      <template v-else>
+      <template>
         <!--begin::sidebar mobile toggle-->
         <div
           class="d-flex align-items-center d-lg-none ms-n3 me-1 me-md-2"
@@ -46,17 +24,6 @@
           </div>
         </div>
         <!--end::sidebar mobile toggle-->
-        <!--begin::Mobile logo-->
-        <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-          <router-link to="/" class="d-lg-none">
-            <img
-              alt="Logo"
-              :src="getAssetPath('media/logos/default-small.svg')"
-              class="h-30px"
-            />
-          </router-link>
-        </div>
-        <!--end::Mobile logo-->
       </template>
       <!--begin::Header wrapper-->
       <div
@@ -76,15 +43,12 @@
 </template>
 
 <script lang="ts">
-import { getAssetPath } from "@metronic/core/helpers/assets";
 import { defineComponent } from "vue";
 import KTHeaderNavbar from "@/layouts/default/components/header/Navbar.vue";
 import PageBreadcrumb from "@/layouts/default/components/content/PageBreadcrumb.vue";
 import {
   headerDisplay,
   headerWidthFluid,
-  layout,
-  themeMode,
   headerDesktopFixed,
   headerMobileFixed,
 } from "@/layouts/default/config/helper";
@@ -97,11 +61,8 @@ export default defineComponent({
   },
   setup() {
     return {
-      layout,
       headerWidthFluid,
       headerDisplay,
-      themeMode,
-      getAssetPath,
       headerDesktopFixed,
       headerMobileFixed,
     };

@@ -378,6 +378,7 @@ async function submit() {
     });
 
     if (res.data?.rslt) {
+      modalStore.applyCategoryMapsFromSaveResponse(res.data?.rsltMap);
       const savedDate = model.value?.journalDate ?? undefined;
       close();
       refreshCurrentDayView(savedDate);
