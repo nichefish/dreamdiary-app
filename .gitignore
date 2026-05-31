@@ -55,21 +55,15 @@ lerna-debug.log*
 # Metronic Vue source dump / vendor-heavy original assets
 /metronic_vue_v8.2.1_demo1/
 /app/frontend-vue/src/assets/
-/app/frontend-vue/src/components/
 /app/frontend-vue/src/core/data/
 /app/frontend-vue/src/core/helpers/
 /app/frontend-vue/src/core/plugins/
 /app/frontend-vue/src/views/crafted/
-/app/frontend-vue/src/views/Dashboard.vue
 /app/frontend-vue/src/views/LayoutBuilder.vue
 /app/frontend-vue/public/media/
-/app/frontend-vue/public/favicon.ico
-/app/frontend-vue/public/splash-screen.css
 /app/frontend-vue/src/layouts/default/components/drawers/
 /app/frontend-vue/src/layouts/default/components/extras/
-/app/frontend-vue/src/layouts/default/components/modals/
 /app/frontend-vue/src/layouts/default/components/search/
-/app/frontend-vue/src/layouts/default/components/theme-mode/
 /app/frontend-vue/src/layouts/default/components/toolbar/
 /app/frontend-vue/src/layouts/default/config/MainMenuConfig.ts
 /app/frontend-vue/src/layouts/default/config/CleanMainMenuConfig.ts

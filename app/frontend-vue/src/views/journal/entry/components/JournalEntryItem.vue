@@ -301,7 +301,7 @@ import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalStore } from "@/stores/journal";
 import type { JournalEntryDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
-import JournalInterpretationItem from "./JournalInterpretationItem.vue";
+import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
 
 const props = defineProps<{
   entry: JournalEntryDto;

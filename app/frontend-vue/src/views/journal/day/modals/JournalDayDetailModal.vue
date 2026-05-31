@@ -1,6 +1,6 @@
 <template>
   <!--begin::저널 일자 상세 모달-->
-  <div ref="modalEl" class="modal fade" id="journal_day_dtl_modal" tabindex="-1" aria-hidden="true">
+  <div ref="modalEl" class="modal fade" id="journal_day_detail_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xxl" style="--bs-modal-width: min(95vw, 1400px);">
       <div class="modal-content">
 
@@ -61,18 +61,21 @@
                   v-for="chapter in journalChapterList"
                   :key="'dtl-chapter-' + chapter.id"
                   :chapter="chapter"
+                  entry-dom-id-prefix="journal-day-dtl-entry-"
                 />
               </template>
               <!--begin::꿈 목록-->
               <JournalEntryItem
                 v-for="dream in journalDreamList"
                 :key="'dtl-dream-' + dream.id"
+                :dom-id="dream.id ? 'journal-day-dtl-entry-' + dream.id : undefined"
                 :entry="dream"
                 :is-dream="true"
               />
               <JournalEntryItem
                 v-for="dream in journalElseDreamList"
                 :key="'dtl-else-dream-' + dream.id"
+                :dom-id="dream.id ? 'journal-day-dtl-entry-' + dream.id : undefined"
                 :entry="dream"
                 :is-dream="true"
               />
@@ -108,8 +111,8 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalModalStore } from "@/stores/journalModal";
-import JournalChapterItem from "../components/JournalChapterItem.vue";
-import JournalEntryItem from "../components/JournalEntryItem.vue";
+import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
+import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
 
 const modalStore = useJournalModalStore();
 

@@ -26,7 +26,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "/journal",
-        component: () => import("@/views/journal/JournalLayout.vue"),
+        component: () => import("@/views/journal/day/JournalDayLayout.vue"),
         meta: { middleware: "auth" },
         children: [
           {
@@ -36,25 +36,25 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: "monthly",
             name: "journal-monthly",
-            component: () => import("@/views/journal/JournalMonthly.vue"),
+            component: () => import("@/views/journal/day/JournalDayMonthly.vue"),
             meta: { pageTitle: "월간 일기", breadcrumbs: ["일기"] },
           },
           {
             path: "weekly",
             name: "journal-weekly",
-            component: () => import("@/views/journal/JournalWeekly.vue"),
+            component: () => import("@/views/journal/day/JournalDayWeekly.vue"),
             meta: { pageTitle: "주간 일기", breadcrumbs: ["일기"] },
           },
           {
             path: "calendar",
             name: "journal-calendar",
-            component: () => import("@/views/journal/JournalCalendar.vue"),
+            component: () => import("@/views/journal/day/JournalDayCalendar.vue"),
             meta: { pageTitle: "일기 캘린더", breadcrumbs: ["일기"] },
           },
           {
             path: "meta",
             name: "journal-meta",
-            component: () => import("@/views/journal/JournalMeta.vue"),
+            component: () => import("@/views/journal/day/JournalDayMeta.vue"),
             meta: { pageTitle: "일기 메타", breadcrumbs: ["일기"] },
           },
         ],
@@ -202,13 +202,13 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "/journal/daily",
-        component: () => import("@/views/journal/JournalDailyLayout.vue"),
+        component: () => import("@/views/journal/day/JournalDayDailyLayout.vue"),
         meta: { middleware: "auth" },
         children: [
           {
             path: "",
             name: "journal-daily",
-            component: () => import("@/views/journal/JournalDaily.vue"),
+            component: () => import("@/views/journal/day/JournalDayDaily.vue"),
             meta: { pageTitle: "일간 일기" },
           },
         ],

@@ -86,6 +86,8 @@ export interface JournalInterpretationRegModel {
 /** 메타 모달 페이로드 */
 export interface JournalDayMetaModalPayload {
   metaId: number | string;
+  /** 메타 이름 (헤더 표시용) */
+  metaName?: string;
   yy: string;
   yearOptions: Array<{ value: string | number; label: string; selected?: boolean }>;
   list: JournalDayDto[];
@@ -93,7 +95,7 @@ export interface JournalDayMetaModalPayload {
 
 
 /** 저널 일자 태그 상세 모달 페이로드 */
-export interface JournalDayTagDtlPayload {
+export interface JournalDayTagDetailPayload {
   tagId: number | string;
   name: string;
   yy: string;
@@ -345,7 +347,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param metaId - 메타 ID
    * @param yy - 조회 연도 (없으면 현재 연도)
    */
-  async function openMetaModal(metaId: number | string, yy?: string) {
+  async function openMetaModal(metaId: number | string, yy?: string, metaName?: string) {
     metaModalOpen.value = true;
     metaModalLoading.value = true;
     metaModalPayload.value = null;
@@ -361,6 +363,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       });
       metaModalPayload.value = {
         metaId,
+        metaName,
         yy: selectedYy,
         yearOptions: yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy })),
         list: daysRes.data?.rsltList ?? [],
@@ -381,11 +384,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   // ---- 일자 태그 상세 모달 ----
 
   /** 태그 상세 모달 오픈 여부 */
-  const tagDtlOpen = ref(false);
+  const tagDetailOpen = ref(false);
   /** 태그 상세 모달 로딩 여부 */
-  const tagDtlLoading = ref(false);
+  const tagDetailLoading = ref(false);
   /** 태그 상세 모달 페이로드 */
-  const tagDtlPayload = ref<JournalDayTagDtlPayload | null>(null);
+  const tagDetailPayload = ref<JournalDayTagDetailPayload | null>(null);
 
   /**
    * 태그 상세 모달을 연다. 연도 목록 + 해당 연도 일자 목록을 조회한다.
@@ -393,37 +396,42 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param name - 태그명
    * @param yy - 조회 연도 (없으면 현재 연도)
    */
-  async function openTagDtl(tagId: number | string, name: string, yy?: string) {
-    tagDtlOpen.value = true;
-    tagDtlLoading.value = true;
-    tagDtlPayload.value = null;
+  async function openTagDetail(tagId: number | string, name: string, yy?: string) {
+    tagDetailOpen.value = true;
+    tagDetailLoading.value = true;
+    tagDetailPayload.value = null;
     try {
       const yearsRes = await axios.get(`/api/journal/day/tag/${tagId}/years`);
       const yyList: string[] = (yearsRes.data?.rsltList ?? []).map(String);
-      const currentYy = yy ?? String(new Date().getFullYear());
-      const selectedYy = yyList.length > 0
-        ? (yyList.includes(currentYy) ? currentYy : yyList[0])
-        : currentYy;
-      const daysRes = await axios.get("/api/journal/days", {
-        params: { viewType: "SEARCH", tagId, yy: selectedYy },
-      });
-      tagDtlPayload.value = {
+      /** yy === '' 이면 전체 연도 조회 (연도 필터 미적용) */
+      const isAllYears = yy === "";
+      const currentYy = isAllYears ? "" : (yy ?? String(new Date().getFullYear()));
+      const selectedYy = isAllYears ? "" : (
+        yyList.length > 0 ? (yyList.includes(currentYy) ? currentYy : yyList[0]) : currentYy
+      );
+      const dayParams: Record<string, unknown> = { viewType: "SEARCH", tagId };
+      if (selectedYy) dayParams.yy = selectedYy;
+      const daysRes = await axios.get("/api/journal/days", { params: dayParams });
+      tagDetailPayload.value = {
         tagId,
         name,
         yy: selectedYy,
-        yearOptions: yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy })),
+        yearOptions: [
+          { value: "", label: "전체 년도" },
+          ...yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy })),
+        ],
         list: daysRes.data?.rsltList ?? [],
       };
     } catch {
-      tagDtlPayload.value = null;
+      tagDetailPayload.value = null;
     } finally {
-      tagDtlLoading.value = false;
+      tagDetailLoading.value = false;
     }
   }
 
   /** 태그 상세 모달을 닫는다. */
-  function closeTagDtl() {
-    tagDtlOpen.value = false;
+  function closeTagDetail() {
+    tagDetailOpen.value = false;
   }
 
   // ---- 할일 등록/수정 모달 ----
@@ -674,11 +682,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     openMetaModal,
     closeMetaModal,
     // 일자 태그 상세
-    tagDtlOpen,
-    tagDtlLoading,
-    tagDtlPayload,
-    openTagDtl,
-    closeTagDtl,
+    tagDetailOpen,
+    tagDetailLoading,
+    tagDetailPayload,
+    openTagDetail,
+    closeTagDetail,
     // 할일 등록/수정
     todoRegOpen,
     todoRegModel,

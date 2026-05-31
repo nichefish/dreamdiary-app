@@ -6,10 +6,9 @@
       <!--begin::챕터 타입·카테고리 라벨 + 아이콘-->
       <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
         <span class="me-2">
-          {{ typeLabel }}
+          {{ typeLabel }}<template v-if="chapter.categoryCode">:</template>
           <template v-if="chapter.categoryCode">
-            :
-            <span style="color:#287D94;">{{ chapter.categoryName }}</span>
+            <span v-if="chapter.categoryName" style="color:#287D94;">{{ chapter.categoryName }}</span>
             <span class="text-muted fs-8 me-1">{{ chapter.categoryCode }}</span>
           </template>
         </span>
@@ -131,6 +130,7 @@
         <JournalEntryItem
           v-for="entry in entryList"
           :key="entry.id"
+          :dom-id="entry.id ? entryDomIdPrefix + entry.id : undefined"
           :entry="entry"
           :is-dream="chapter.chapterType === 'DREAM'"
           :force-collapsed="localCollapsedOverride"
@@ -163,11 +163,14 @@ import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
 import type { JournalChapterDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
-import JournalEntryItem from "./JournalEntryItem.vue";
+import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   chapter: JournalChapterDto;
-}>();
+  entryDomIdPrefix?: string;
+}>(), {
+  entryDomIdPrefix: "journal-entry-",
+});
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();

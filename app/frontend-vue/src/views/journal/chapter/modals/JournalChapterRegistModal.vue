@@ -210,10 +210,7 @@ onMounted(() => {
       if (pendingScrollDt) {
         const dt = pendingScrollDt;
         pendingScrollDt = null;
-        void nextTick(() => {
-          const el = document.getElementById(`journal-day-${dt}`);
-          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+        scrollToDayWhenReady(dt);
       }
     });
   }
@@ -244,10 +241,33 @@ function scrollToDay(stdrdDt: string): void {
     pendingScrollDt = stdrdDt;
     return;
   }
+  scrollToDayWhenReady(stdrdDt);
+}
+
+function scrollToDayWhenReady(stdrdDt: string, attempt = 0): void {
   void nextTick(() => {
     const el = document.getElementById(`journal-day-${stdrdDt}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (attempt < 8) {
+      window.setTimeout(() => scrollToDayWhenReady(stdrdDt, attempt + 1), 80);
+    }
   });
+}
+
+function resolveSavedDate(responseData: Record<string, unknown>, fallbackDate?: string): string | undefined {
+  const rsltObj = responseData.rsltObj as Record<string, unknown> | undefined;
+  const candidates = [
+    rsltObj?.stdrdDt,
+    rsltObj?.journalDate,
+    responseData.stdrdDt,
+    responseData.journalDate,
+    fallbackDate,
+  ];
+  const savedDate = candidates.find((value) => value !== undefined && value !== null && String(value).trim() !== "");
+  return savedDate == null ? undefined : String(savedDate).slice(0, 10);
 }
 
 /** 챕터를 선택한 일자로 이동한다. */
@@ -309,7 +329,7 @@ async function submit() {
     });
 
     if (res.data?.rslt) {
-      const savedDate = model.value?.stdrdDt;
+      const savedDate = resolveSavedDate(res.data ?? {}, model.value?.stdrdDt);
       close();
       void journalStore.fetchDays().then(() => {
         if (savedDate) scrollToDay(savedDate);

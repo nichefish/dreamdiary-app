@@ -1,12 +1,16 @@
 <template>
-  <!--begin::저널 메타 조회 모달-->
+  <!--begin::저널 일자 메타 조회 모달-->
   <div ref="modalEl" class="modal fade" id="journal_day_meta_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xxl">
       <div class="modal-content">
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">저널 일자 메타 조회</h5>
+          <h5 class="modal-title">
+            저널 일자 메타:
+            <span v-if="payload" class="text-primary">{{ payload.metaName }}</span>
+            <span v-if="payload" class="text-muted fs-7 ms-2">-- {{ dayCount }}개</span>
+          </h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
         <!--end::Modal Header-->
@@ -19,7 +23,7 @@
           </div>
           <!--end::로딩-->
 
-          <!--begin::메타 목록-->
+          <!--begin::메타 일자 목록-->
           <div v-else-if="payload" id="journal_day_meta_div">
             <div class="d-flex flex-column mb-4">
 
@@ -54,11 +58,19 @@
 
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <!--begin::일자-->
-                  <div :class="{ 'text-danger': day.isHolyday }" style="column-gap: .25rem">
+                  <div class="d-flex align-items-center gap-1" :class="{ 'text-danger': day.isHolyday }">
                     <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': day.isHolyday }"></i>
                     {{ day.stdrdDt }}
                     <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ day.journalDateWeekDay }})</span>
-                    <span class="fs-7 ms-4 text-muted" v-html="day.weather"></span>
+                    <!--begin::새 창으로 보기-->
+                    <button
+                      type="button"
+                      class="btn btn-icon btn-sm btn-light-primary"
+                      title="새 창으로 보기 (일자 뷰)"
+                      @click="openDailyView(day.stdrdDt)"
+                    ><i class="bi bi-box-arrow-up-right fs-8 p-0"></i></button>
+                    <!--end::새 창으로 보기-->
+                    <span class="fs-7 ms-1 text-muted" v-html="day.weather"></span>
                   </div>
                   <!--end::일자-->
 
@@ -74,12 +86,9 @@
                     </div>
                   </template>
                   <!--end::메타 값-->
-                </div>
 
-                <!--begin::태그 목록-->
-                <div v-if="tagList(day).length > 0" class="mb-4">
-                  <div class="ms-5 mt-2">
-                    <i class="bi bi-tag"></i>
+                  <!--begin::태그 목록-->
+                  <div v-if="tagList(day).length > 0" class="ms-2">
                     <span
                       v-for="tag in tagList(day)"
                       :key="String(tag.tagId) + ':' + String(tag.name)"
@@ -92,14 +101,14 @@
                       </span>
                     </span>
                   </div>
+                  <!--end::태그 목록-->
                 </div>
-                <!--end::태그 목록-->
               </template>
               <!--end::일자 목록-->
 
             </div>
           </div>
-          <!--end::메타 목록-->
+          <!--end::메타 일자 목록-->
 
           <div v-else class="text-muted text-center py-10">조회된 데이터가 없습니다.</div>
         </div>
@@ -116,7 +125,7 @@
       </div>
     </div>
   </div>
-  <!--end::저널 메타 조회 모달-->
+  <!--end::저널 일자 메타 조회 모달-->
 </template>
 
 <script setup lang="ts">
@@ -131,6 +140,7 @@ const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
 
 const payload = computed(() => modalStore.metaModalPayload);
+const dayCount = computed(() => payload.value?.list?.length ?? 0);
 
 onMounted(() => {
   if (modalEl.value) {
@@ -158,7 +168,7 @@ function close() {
 function onYyChange(event: Event) {
   const target = event.target as HTMLSelectElement | null;
   if (!target || !payload.value) return;
-  void modalStore.openMetaModal(payload.value.metaId, target.value);
+  void modalStore.openMetaModal(payload.value.metaId, target.value, payload.value.metaName);
 }
 
 /** 월이 바뀌는 경계인지 확인한다. */
@@ -181,5 +191,14 @@ function matchingMetaRows(day: JournalDayDto): MetaContentItem[] {
 /** 해당 일자의 태그 목록을 반환한다. */
 function tagList(day: JournalDayDto): TagItem[] {
   return day?.tag?.list ?? [];
+}
+
+/** 일자 뷰를 새 창으로 연다. */
+function openDailyView(stdrdDt: string | undefined): void {
+  if (!stdrdDt) return;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const w = Math.min(1200, window.screen.availWidth);
+  const h = Math.min(900, window.screen.availHeight);
+  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h},left=100,top=60`);
 }
 </script>

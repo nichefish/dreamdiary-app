@@ -1,4 +1,4 @@
-# 저널 화면 마이그레이션 스펙 (Journal Screen Spec)
+﻿# 저널 화면 마이그레이션 스펙 (Journal Screen Spec)
 
 > 공통 컴포넌트/인터랙션 스펙은 ``common/`` 디렉토리 참조.  
 > 게시판 화면 스펙: `board/screen-spec.md`  
@@ -19,32 +19,32 @@
 | 목록 렌더 | FTL `#journal_day_list_div` + `JournalDay*ListApp` 텔레포트/브리지 | `JournalDayCard.vue` + `useJournalStore.dayList` |
 | 상태 | `window.JOURNAL`, `JournalDayMonthlyApp.*` pending 큐 | Pinia `stores/journal.ts` |
 | 탭 전환 | `dF.JournalDayViewService.changeView(url)` | `router-link` (`journal-monthly` 등) |
-| 모달 | Bootstrap + 레거시 서비스 | `JournalLayout.vue` + `useJournalModalStore` |
+| 모달 | Bootstrap + 레거시 서비스 | `JournalDayLayout.vue` + `useJournalModalStore` |
 | 공통 첨부 | `CommentList.modal`, `FileGroupList.modal` | `useAttachableModalStore` |
 
 ### 라우트·화면 매핑
 
 | 화면 | 레거시 URL (대표) | Vue route | Vue view | 구현 |
 |------|-------------------|-----------|----------|------|
-| 저널 기본 진입 | — | `/journal` → `/journal/weekly` | `JournalWeekly.vue` | ✓ |
-| 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalMonthly.vue` | ✓ |
-| 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalWeekly.vue` | ✓ |
-| 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
-| 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalCalendar.vue` | △ 탭/플레이스홀더 |
-| 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalMeta.vue` | ⚠ 그래프 TODO |
+| 저널 기본 진입 | — | `/journal` → `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
+| 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalDayMonthly.vue` | ✓ |
+| 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
+| 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
+| 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalDayCalendar.vue` | △ 탭/플레이스홀더 |
+| 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalDayMeta.vue` | ⚠ 그래프 TODO |
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/cal.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
-| 대시보드 | — | `/dashboard` | `Dashboard.vue` | ❌ **파일 없음** |
+| 대시보드 | — | `/dashboard` | `Dashboard.vue` | ⚠ placeholder |
 
 ### 저널 일간 화면 (journal-daily) 스펙
 
 - **용도**: 단일 날짜를 새 창으로 열어 집중 편집
-- **레이아웃**: `SystemLayout` > `JournalDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
+- **레이아웃**: `SystemLayout` > `JournalDayDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
 - **네비게이션**: 상단 이전/다음 버튼으로 날짜 이동 (`router.replace` + `stdrdDt` query)
-- **모달**: `JournalDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
+- **모달**: `JournalDayDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
 - **진입점**: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼
 - **URL**: `/journal/daily?stdrdDt=YYYY-MM-DD`
 - **새 창 오픈**: `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제
@@ -171,7 +171,7 @@
   - 상단: `JournalDayViewToolbar.vue` (탭 + 저널 일자 등록 버튼) — 월간 목록과 동일 컴포넌트
   - 카드: `.card.post` (margin-top: 0 !important)
     - 카드 헤더: 태그 헤더 (`_journal_day_tag_header.ftlh`) → Vue: `JournalTagCloudHeader.vue` ✓ 구현 완료
-    - 카드 바디: `JournalDayCard` (`JournalWeekly.vue`, `viewType: WEEKLY`)
+    - 카드 바디: `JournalDayCard` (`JournalDayWeekly.vue`, `viewType: WEEKLY`)
   - 사이드 패널: `_journal_day_aside_base.ftlh`
 - 숨겨진 마운트 루트: `<div id="journal_day_app" class="d-none" data-view-type="weekly">`
 
@@ -473,7 +473,7 @@
 <div id="journal_day_aside_week_nav_app" class="d-none"></div>
 ```
 
-**Vue SPA 매핑**: `JournalLayout.vue` 우측 `JournalAside.vue` (`useJournalAsideStore` 표시 제어). Metronic `#kt_app_aside` drawer 는 SPA 저널에서 미사용(레거시 FTL 전용).
+**Vue SPA 매핑**: `JournalDayLayout.vue` 우측 `JournalAside.vue` (`useJournalAsideStore` 표시 제어). Metronic `#kt_app_aside` drawer 는 SPA 저널에서 미사용(레거시 FTL 전용).
 
 ---
 
@@ -912,7 +912,7 @@ type TodoRow = {
 | 2. Pinpoint | 돌아가기 버튼 | ❌ MISSING |
 | 3. 엔트리 필터 | TAGCLOUD 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | DIARIES 토글 | ✓ 구현 |
-| 3. 엔트리 필터 | CHAPTER CATEGORIES 멀티셀렉트 | ❌ MISSING |
+| 3. 엔트리 필터 | CHAPTER CATEGORIES (체크박스, 일기·노트 코드 병합) | ✓ |
 | 3. 엔트리 필터 | 일기 키워드 | ✓ 구현 (위치 다름) |
 | 3. 엔트리 필터 | DREAMS 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | 꿈 키워드 | ✓ 구현 (위치 다름) |

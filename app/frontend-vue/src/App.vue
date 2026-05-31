@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, onErrorCaptured, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
-import AppRuntimeStatus from "@/layouts/AppRuntimeStatus.vue";
+import AppRuntimeStatus from "@/components/system/AppRuntimeStatus.vue";
 import AppChat from "@/views/chat/AppChat.vue";
 import { useAuthStore } from "@/stores/auth";
 import { reportRuntimeError } from "@/utils/appRuntimeStatus";

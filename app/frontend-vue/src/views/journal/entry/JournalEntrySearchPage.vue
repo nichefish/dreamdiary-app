@@ -175,14 +175,14 @@ import { useJournalStore } from "@/stores/journal";
 import type { JournalEntryDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 import { reinitMetronicAfterDom } from "@/utils/metronicReinit";
-import JournalEntryItem from "@/views/journal/components/JournalEntryItem.vue";
-import JournalEntryRegistModal from "@/views/journal/modals/JournalEntryRegistModal.vue";
-import CommentRegistModal from "@/views/journal/modals/CommentRegistModal.vue";
+import JournalEntryItem from "./components/JournalEntryItem.vue";
+import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
+import CommentRegistModal from "../shared/modals/CommentRegistModal.vue";
 import CommentListModal from "@/views/attachable/CommentListModal.vue";
 import HistoryModal from "@/views/attachable/HistoryModal.vue";
-import RelatedContentAddModal from "@/views/journal/modals/RelatedContentAddModal.vue";
-import JournalTagContextMenu from "@/views/journal/components/JournalTagContextMenu.vue";
-import JournalTagProfileModal from "@/views/journal/modals/JournalTagProfileModal.vue";
+import RelatedContentAddModal from "../shared/modals/RelatedContentAddModal.vue";
+import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
+import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue";
 
 interface JournalEntrySaveEvent {
   entryId?: number | string;

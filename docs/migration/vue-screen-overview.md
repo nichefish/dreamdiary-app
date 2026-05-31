@@ -1,4 +1,4 @@
-# Vue SPA 전체 화면 현황 (Vue Screen Overview)
+﻿# Vue SPA 전체 화면 현황 (Vue Screen Overview)
 
 > 저널 화면 상세: `journal/screen-spec.md`  
 > 게시판 화면 상세: `board/screen-spec.md`  
@@ -13,11 +13,11 @@
 | `/` | — | redirect → `/dashboard` | DefaultLayout | — |
 | `/dashboard` | `dashboard` | `Dashboard.vue` | Default | ❌ placeholder |
 | `/journal` | — | redirect → `/journal/weekly` | JournalLayout | — |
-| `/journal/weekly` | `journal-weekly` | `JournalWeekly.vue` | Journal | ✓ |
-| `/journal/monthly` | `journal-monthly` | `JournalMonthly.vue` | Journal | ✓ |
-| `/journal/calendar` | `journal-calendar` | `JournalCalendar.vue` | Journal | ❌ placeholder |
-| `/journal/meta` | `journal-meta` | `JournalMeta.vue` | Journal | ⚠ 그래프 미구현 |
-| `/journal/daily` | `journal-daily` | `JournalDaily.vue` | JournalDailyLayout | ✓ 새 창 전용 |
+| `/journal/weekly` | `journal-weekly` | `JournalDayWeekly.vue` | Journal | ✓ |
+| `/journal/monthly` | `journal-monthly` | `JournalDayMonthly.vue` | Journal | ✓ |
+| `/journal/calendar` | `journal-calendar` | `JournalDayCalendar.vue` | Journal | ❌ placeholder |
+| `/journal/meta` | `journal-meta` | `JournalDayMeta.vue` | Journal | ⚠ 그래프 미구현 |
+| `/journal/daily` | `journal-daily` | `JournalDayDaily.vue` | JournalDayDailyLayout | ✓ 새 창 전용 |
 | `/annual` | `annual-list` | `JournalAnnualList.vue` | AnnualLayout | ✓ |
 | `/annual/:yy` | `annual-detail` | `JournalAnnualDetail.vue` | AnnualLayout | ✓ |
 | `/thread` | `thread-list` | `JournalThreadList.vue` | ThreadLayout | ✓ |
@@ -66,8 +66,8 @@ AuthLayout
 └── VerifyResultPage
 
 SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전용
-├── JournalDailyLayout         ← /journal/daily 전용 (모달 포함, aside 없음)
-│   └── JournalDaily.vue
+├── JournalDayDailyLayout         ← /journal/daily 전용 (모달 포함, aside 없음)
+│   └── JournalDayDaily.vue
 ├── JournalEntrySearchPage     ← 새 창 검색 팝업
 └── ErrorPage (400/403/404/500/error)
 ```

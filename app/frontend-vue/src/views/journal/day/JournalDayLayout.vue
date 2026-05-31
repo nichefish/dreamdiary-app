@@ -24,11 +24,11 @@
 
     <!--begin::저널 모달 컨테이너-->
     <JournalDayRegistModal />
-    <JournalDayDtlModal />
+    <JournalDayDetailModal />
     <JournalChapterRegistModal />
     <JournalInterpretationRegistModal />
     <JournalEntryRegistModal />
-    <JournalDayTagDtlModal />
+    <JournalDayTagDetailModal />
     <JournalTodoRegistModal />
     <JournalDayMetaModal />
     <CommentRegistModal />
@@ -49,19 +49,19 @@ import { useJournalAsideStore } from "@/stores/journalAside";
 import { useJournalStore } from "@/stores/journal";
 import JournalAside from "./components/JournalAside.vue";
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
-import JournalDayDtlModal from "./modals/JournalDayDtlModal.vue";
-import JournalChapterRegistModal from "./modals/JournalChapterRegistModal.vue";
-import JournalInterpretationRegistModal from "./modals/JournalInterpretationRegistModal.vue";
-import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
-import JournalDayTagDtlModal from "./modals/JournalDayTagDtlModal.vue";
-import JournalTodoRegistModal from "./modals/JournalTodoRegistModal.vue";
+import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
+import JournalChapterRegistModal from "../chapter/modals/JournalChapterRegistModal.vue";
+import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
+import JournalEntryRegistModal from "../entry/modals/JournalEntryRegistModal.vue";
+import JournalDayTagDetailModal from "./modals/JournalDayTagDetailModal.vue";
+import JournalTodoRegistModal from "../todo/modals/JournalTodoRegistModal.vue";
 import JournalDayMetaModal from "./modals/JournalDayMetaModal.vue";
-import CommentRegistModal from "./modals/CommentRegistModal.vue";
+import CommentRegistModal from "../shared/modals/CommentRegistModal.vue";
 import CommentListModal from "@/views/attachable/CommentListModal.vue";
 import HistoryModal from "@/views/attachable/HistoryModal.vue";
-import RelatedContentAddModal from "./modals/RelatedContentAddModal.vue";
-import JournalTagProfileModal from "./modals/JournalTagProfileModal.vue";
-import JournalTagContextMenu from "./components/JournalTagContextMenu.vue";
+import RelatedContentAddModal from "../shared/modals/RelatedContentAddModal.vue";
+import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue";
+import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
 
 const asideStore = useJournalAsideStore();
 const journalStore = useJournalStore();

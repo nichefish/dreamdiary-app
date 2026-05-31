@@ -123,21 +123,41 @@
           </div>
         </div>
         <!--end::컨텍스트 메뉴-->
-        <!--begin::메타 툴팁 버튼-->
-        <button
-          v-if="hasMeta"
-          class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          data-bs-dismiss="click"
-          data-bs-html="true"
-          data-bs-custom-class="meta-tooltip"
-          data-bs-sanitize="false"
-          :title="metaTooltipHtml"
-        >
-          <i class="bi bi-bar-chart"></i>
-        </button>
-        <!--end::메타 툴팁 버튼-->
+        <!--begin::메타 메뉴 버튼-->
+        <div v-if="hasMeta" class="me-0 d-flex align-items-center">
+          <button
+            class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+            data-kt-menu-trigger="click"
+            data-kt-menu-placement="bottom-end"
+            title="메타"
+          >
+            <i class="bi bi-bar-chart"></i>
+          </button>
+          <div
+            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold min-w-250px py-3"
+            data-kt-menu="true"
+          >
+            <div class="menu-item px-3">
+              <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">메타</div>
+            </div>
+            <div
+              v-for="meta in metaList"
+              :key="'meta-menu-' + meta.metaId"
+              class="menu-item px-3"
+            >
+              <button
+                type="button"
+                class="menu-link w-100 border-0 bg-transparent px-3 text-start d-flex align-items-center"
+                @click="openMetaModal(meta.metaId, meta.name)"
+              >
+                <span v-if="meta.ctgr" class="text-noti pe-1">[{{ meta.ctgr }}]</span>
+                <span>{{ meta.name }}</span>
+                <span class="text-dialog ms-1">: {{ meta.value }}{{ meta.unit }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!--end::메타 메뉴 버튼-->
       </div>
     </div>
     <!--end::헤더-->
@@ -287,8 +307,8 @@ import { getWeekDayStr } from "@/utils/journalDate";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
-import JournalChapterItem from "./JournalChapterItem.vue";
-import JournalEntryItem from "./JournalEntryItem.vue";
+import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
+import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
 
 const props = defineProps<{
   day: JournalDayDto;
@@ -480,29 +500,9 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
   });
 }
 
-/** HTML 특수문자를 이스케이프한다. */
-function escapeHtml(value: string | number | undefined | null): string {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+/** 메타 컨텐츠 목록 모달 열기 */
+function openMetaModal(metaId?: number | string, metaName?: string): void {
+  if (!metaId) return;
+  void modalStore.openMetaModal(metaId, undefined, metaName);
 }
-
-/** 메타 툴팁 HTML 생성 — Bootstrap tooltip data-bs-html="true" 용. */
-const metaTooltipHtml = computed(() =>
-  metaList.value.map((meta) => {
-    const metaId = escapeHtml(meta.metaId);
-    const category = meta.ctgr
-      ? `<span class='text-noti pe-1'>[${escapeHtml(meta.ctgr)}]</span>`
-      : "";
-    const value = `${escapeHtml(meta.value)}${escapeHtml(meta.unit)}`;
-    return (
-      `<div id='meta-id-${metaId}' class='cursor-pointer btn btn-sm btn-bg-light btn-active-color-primary meta-item' data-meta-id='${metaId}'>` +
-      `${category} ${escapeHtml(meta.name)}: <span class='text-dialog'>${value}</span>` +
-      `</div>`
-    );
-  }).join("")
-);
 </script>

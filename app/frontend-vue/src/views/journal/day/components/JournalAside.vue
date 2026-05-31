@@ -196,6 +196,7 @@
         <div>
           <div class="text-muted fs-8 fw-bold mb-1">- CHAPTER CATEGORIES</div>
           <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">Loading...</div>
+          <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">카테고리를 불러오지 못했습니다.</div>
           <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
             <label
               v-for="ctgr in chapterCategoryOptions"
@@ -290,7 +291,6 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from "vue";
-import axios from "axios";
 import { formatLocalDateStr, getWeekStartDateStr } from "@/utils/journalDate";
 import { useJournalStore } from "@/stores/journal";
 import { useJournalAsideStore } from "@/stores/journalAside";
@@ -429,13 +429,21 @@ async function fetchChapterCategories(): Promise<void> {
   if (chapterCategoryOptions.value.length > 0) return;
   chapterCategoryLoading.value = true;
   try {
-    const res = await axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_CTGR_CD" } });
-    chapterCategoryOptions.value = (res.data?.rsltList ?? [])
-      .map((item: Record<string, string>) => ({
-        code: item.code ?? "",
-        codeName: item.codeName ?? item.code ?? "",
-      }))
-      .filter((item: ChapterCategoryOption) => item.code);
+    // 변경 전: JOURNAL_CHAPTER_CTGR_CD(삭제된 그룹) 조회 → rsltList 빈 배열, 체크박스 미표시.
+    // 변경 후: 일기·노트 코드 그룹을 modalStore 와 동일 경로로 병합한다.
+    await modalStore.prefetchChapterCategories();
+    const merged = new Map<string, ChapterCategoryOption>();
+    for (const item of modalStore.chapterDiaryCategoryOptions) {
+      if (item.code) {
+        merged.set(item.code, { code: item.code, codeName: item.codeName || item.code });
+      }
+    }
+    for (const item of modalStore.chapterNoteCategoryOptions) {
+      if (item.code && !merged.has(item.code)) {
+        merged.set(item.code, { code: item.code, codeName: item.codeName || item.code });
+      }
+    }
+    chapterCategoryOptions.value = Array.from(merged.values());
   } catch {
     chapterCategoryOptions.value = [];
   } finally {

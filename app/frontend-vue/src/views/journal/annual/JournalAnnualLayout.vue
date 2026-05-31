@@ -36,7 +36,7 @@ import { ref } from "vue";
 import JournalAnnualAside from "./components/JournalAnnualAside.vue";
 import JournalAnnualRegistModal from "./modals/JournalAnnualRegistModal.vue";
 import JournalAnnualReviewRegistModal from "./modals/JournalAnnualReviewRegistModal.vue";
-import JournalTagContextMenu from "@/views/journal/components/JournalTagContextMenu.vue";
+import JournalTagContextMenu from "@/views/journal/shared/components/JournalTagContextMenu.vue";
 
 const asideVisible = ref(true);
 </script>

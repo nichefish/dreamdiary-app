@@ -1,4 +1,4 @@
-# 저널 어사이드 인터랙션 스펙 (Journal Aside Interaction Spec)
+﻿# 저널 어사이드 인터랙션 스펙 (Journal Aside Interaction Spec)
 
 > 공통 인터랙션 패턴(AJAX, 모달, Tagify, TinyMCE 등)은 ``common/interaction-spec.md`` 참조.
 
@@ -18,7 +18,7 @@
 | 엔트리 복사 버튼 | `JournalEntryItem.vue` — `copyEntry()`, 날짜(요일)·본문 텍스트 클립보드 복사 (레거시 동일 포맷) | ✓ |
 | 헤더 검색 드롭다운 | `Search.vue` — 일기/꿈 유형 선택 + debounce 검색 + 결과 링크 (`journal-entry-search`) | ✓ |
 | Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
-| 챕터 카테고리 필터 | `chapterCtgrCds` 있음, UI·`fetchDays` 연동은 store만 | ❌ UI |
+| 챕터 카테고리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY_CTGR_CD`·`NOTE` 병합 체크박스, `store.chapterCtgrCds` → `fetchDays` | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
@@ -110,7 +110,7 @@ function onChapterCtgrChange(event: Event) {
 - `checked=false` → `store.chapterCtgrCds = []` + `store.fetchDays()` (전체 표시)
 - `checked=true` → 현재 멀티셀렉트 값 적용
 
-**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.fetchChapterCategories()` 호출 (이미 구현됨)
+**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.prefetchChapterCategories()` 호출 후 일기·노트 코드 병합 (`JOURNAL_CHAPTER_CTGR_CD` 는 DB 마이그레이션으로 제거됨)
 
 **`__ALL__` 처리**: 첫 번째 `<option value="__ALL__">전체</option>` 선택 시 모든 챕터 표시
 
@@ -282,7 +282,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 일자 카드 ⋯ 컨텍스트 메뉴 (JournalDayCard Context Menu)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalDayCard.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/day/components/JournalDayCard.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/day/components/JournalDayContextMenu.ts`
 
@@ -299,7 +299,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 엔트리 ⋯ 컨텍스트 메뉴 (JournalEntryItem Context Menu)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryContextMenu.ts`
 
@@ -330,7 +330,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 엔트리 클라이언트 접힘 토글 (Entry Local Collapse Toggle)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `JournalEntryItem.ts` 왼쪽 열 토글 버튼 + `journalEntryStateService.toggle()` (localStorage 기반, 서버 상태 무변경)
 
@@ -378,7 +378,7 @@ function toggleEntry(): void {
 
 ### 챕터 복사 버튼 (Chapter Copy)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalChapterItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/chapter/components/JournalChapterItem.vue`
 
 **트리거**: 챕터 헤더 우측 복사 버튼 (`bi-copy`) 클릭
 
@@ -420,7 +420,7 @@ async function copyChapter(): Promise<void> {
 
 ### 엔트리 복사 버튼 (Entry Copy)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **트리거**: 우측 액션 영역 복사 버튼 (`bi-copy`) 클릭 (댓글 버튼과 ⋯ 사이)
 

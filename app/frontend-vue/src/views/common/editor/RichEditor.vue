@@ -32,6 +32,8 @@ import "tinymce/icons/default/icons";
 import "tinymce/skins/ui/oxide/skin.min.css";
 /** 플러그인 */
 import "tinymce/plugins/help/plugin";
+import "tinymce/plugins/help/js/i18n/keynav/en";
+import "tinymce/plugins/help/js/i18n/keynav/ko_KR";
 import "tinymce/plugins/quickbars/plugin";
 import "tinymce/plugins/searchreplace/plugin";
 import "tinymce/plugins/link/plugin";
