@@ -1,6 +1,6 @@
 <template>
   <!--begin::챕터-->
-  <div class="journal-chapter-block">
+  <div class="journal-chapter-block" :id="'journal-chapter-' + chapter.id">
     <!--begin::챕터 헤더-->
     <div class="d-flex align-items-center mt-2">
       <!--begin::챕터 타입·카테고리 라벨 + 아이콘-->
@@ -157,6 +157,7 @@
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError } from "@/utils/swal";
 import { computed, ref, watch, nextTick } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalModalStore } from "@/stores/journalModal";
@@ -175,6 +176,7 @@ const props = withDefaults(defineProps<{
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
 const tagContextMenuStore = useTagContextMenuStore();
+const route = useRoute();
 
 /** 서버 COLLAPSED 상태 (⋯ 메뉴 접힘 스위치·목록 재조회 반영) */
 const serverCollapsed = computed(() =>
@@ -290,15 +292,29 @@ function toggleChapter(): void {
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */
-function scrollAfterFetch(): void {
-  const dt = props.chapter.stdrdDt;
+function scrollAfterFetch(stdrdDt = props.chapter.stdrdDt): void {
+  const dt = stdrdDt;
   if (!dt) return;
-  void journalStore.fetchDays().then(() => {
+  const afterFetch = () => {
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  });
+  };
+
+  if (route.name === "journal-weekly") {
+    journalStore.setViewType("WEEKLY");
+    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
+    return;
+  }
+
+  if (route.name === "journal-monthly") {
+    journalStore.setViewType("LIST");
+    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
+    return;
+  }
+
+  void journalStore.fetchDays().then(afterFetch);
 }
 
 /** 챕터 접힘 상태 토글 (서버 반영 후 목록 갱신 — ⋯ 메뉴 전용) */
@@ -328,12 +344,13 @@ function exportChapter(): void {
 async function deleteChapter(): Promise<void> {
   if (!guardChapterOwner()) return;
   if (!props.chapter.id) return;
+  const stdrdDt = props.chapter.stdrdDt;
   if (!await swalConfirm("챕터를 삭제하시겠습니까?")) return;
   try {
     const res = await axios.delete(`/api/journal/chapter/${props.chapter.id}`);
     if (res.data?.rslt) {
       await swalAlert(res.data?.message ?? "삭제되었습니다.");
-      scrollAfterFetch();
+      scrollAfterFetch(stdrdDt);
     } else {
       void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
     }
