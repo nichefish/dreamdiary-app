@@ -351,7 +351,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **RESOLVED 자동 접힘**: `isCollapsed` computed에서 `localCollapsedOverride` 없고 `lifecycleKey === "RESOLVED"`이면 `true` 반환. 상태 서버 저장 없이 클라이언트에서 자동 접힘 처리.
 
-**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `success` 이벤트를 받아 현재 검색 목록을 다시 조회한 뒤 저장한 엔트리 article로 스크롤한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다.
+**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `success` 이벤트를 받아 현재 검색 목록을 다시 조회한 뒤 저장한 엔트리 article로 스크롤한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 저널 해석 수정 액션은 `JournalInterpretationRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회가 성공한 뒤 제목/본문/순번을 채운 폼을 표시한다. 해석 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 해석 저장 후 모달 내부의 `journalStore.fetchDays()` 완료를 감지해 검색 목록을 재조회한다.
 
 ---
 
