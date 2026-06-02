@@ -381,6 +381,7 @@ async function deleteDay(): Promise<void> {
   try {
     const res = await axios.delete(`/api/journal/day/${props.day.id}`);
     if (res.data?.rslt) {
+      await swalAlert(res.data?.message ?? "삭제되었습니다.");
       scrollAfterFetch();
     } else {
       void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");

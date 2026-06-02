@@ -377,12 +377,13 @@ async function submitRegist() {
 
   submitting.value = true;
   try {
-    await scheduleStore.saveSchedule({
+    const message = await scheduleStore.saveSchedule({
       ...registForm,
       endDt: showEndDate.value ? registForm.endDt : registForm.bgnDt,
       prtcpntList: registForm.prtcpntList.filter((item) => item.username),
     });
     closeRegist();
+    await swalAlert(message);
     await reload();
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : "일정을 저장하지 못했습니다.");
@@ -402,8 +403,9 @@ async function deleteDetail() {
   if (!detail.value?.id) return;
   if (!await swalConfirm("일정을 삭제하시겠습니까?")) return;
   try {
-    await scheduleStore.deleteSchedule(detail.value.id);
+    const message = await scheduleStore.deleteSchedule(detail.value.id);
     closeDetail();
+    await swalAlert(message);
     await reload();
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : "일정을 삭제하지 못했습니다.");

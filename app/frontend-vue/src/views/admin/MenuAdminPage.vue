@@ -227,7 +227,7 @@ async function submit() {
     return;
   }
   try {
-    void swalAlert(await store.submit());
+    await store.submit();
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "메뉴를 저장하지 못했습니다.");
   }
@@ -253,7 +253,7 @@ async function toggleUse(row: MenuNode) {
 async function deleteMenu(row: MenuNode) {
   if (!await swalConfirm(`${row.menuName ?? "메뉴"}를 삭제할까요? 하위 메뉴도 함께 삭제됩니다.`)) return;
   try {
-    void swalAlert(await store.deleteMenu(row.id));
+    await store.deleteMenu(row.id);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "메뉴를 삭제하지 못했습니다.");
   }

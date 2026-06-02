@@ -177,6 +177,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
    */
   async function submitRegist(): Promise<boolean> {
     if (!registModel.value) return false;
+    const wasModify = registModel.value.id != null;
     submitting.value = true;
     try {
       const fd = new FormData();
@@ -195,6 +196,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       });
       if (res.data?.rslt) {
         closeRegist();
+        await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
         void fetchList(0);
         return true;
       }
@@ -219,6 +221,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     try {
       const res = await axios.delete(`/api/journal/threads/${id}`);
       if (res.data?.rslt) {
+        await swalAlert(res.data?.message ?? "삭제되었습니다.");
         void fetchList(0);
       } else {
         void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");

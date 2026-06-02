@@ -522,6 +522,7 @@ async function deleteEntry(): Promise<void> {
   try {
     const res = await axios.delete(`/api/journal/entry/${props.entry.id}`);
     if (res.data?.rslt) {
+      await swalAlert(res.data?.message ?? "삭제되었습니다.");
       void journalStore.fetchDays();
     } else {
       void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");

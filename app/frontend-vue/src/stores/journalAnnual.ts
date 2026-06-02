@@ -303,6 +303,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    */
   async function submitRegist(): Promise<boolean> {
     if (!registModel.value?.yy) return false;
+    const wasModify = registModel.value.id != null;
     submitting.value = true;
     try {
       const fd = new FormData();
@@ -320,6 +321,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       );
       if (res.data?.rslt) {
         closeRegist();
+        await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
         void fetchList();
         return true;
       }
@@ -529,6 +531,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       });
       if (res.data?.rslt) {
         closeReviewRegist();
+        await swalAlert(res.data?.message ?? (model.id != null ? "수정되었습니다." : "등록되었습니다."));
         /* 상세 재조회 — 리뷰 목록이 detail DTO 에 포함되어 있어 refetch 로 갱신한다. */
         if (model.yy) void fetchDetail(model.yy);
         return true;
@@ -555,6 +558,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     try {
       const res = await axios.delete(`/api/journal/annual/review/${id}`);
       if (res.data?.rslt) {
+        await swalAlert(res.data?.message ?? "삭제되었습니다.");
         if (yy) void fetchDetail(yy);
       } else {
         void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");

@@ -332,6 +332,7 @@ async function deleteChapter(): Promise<void> {
   try {
     const res = await axios.delete(`/api/journal/chapter/${props.chapter.id}`);
     if (res.data?.rslt) {
+      await swalAlert(res.data?.message ?? "삭제되었습니다.");
       scrollAfterFetch();
     } else {
       void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");

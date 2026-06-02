@@ -418,7 +418,11 @@ function validate(): string | null {
   return null;
 }
 
-/** 계정 신청 폼 제출 */
+/**
+ * 계정 신청 폼 제출.
+ * 변경 전에는 성공 알림을 기다리지 않고 로그인 화면으로 이동했다.
+ * 변경 후에는 성공 알림 OK 이후 로그인 화면으로 이동한다.
+ */
 async function submit(): Promise<void> {
   const errMsg = validate();
   if (errMsg) {
@@ -459,9 +463,9 @@ async function submit(): Promise<void> {
   }
 
   const result = await store.submitSignup(fd);
-  void swalAlert(result.message);
+  await swalAlert(result.message);
   if (result.ok) {
-    void router.push("/sign-in");
+    await router.push("/sign-in");
   }
 }
 

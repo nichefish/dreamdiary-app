@@ -381,6 +381,7 @@ async function submit() {
       modalStore.applyCategoryMapsFromSaveResponse(res.data?.rsltMap);
       const savedDate = model.value?.journalDate ?? undefined;
       close();
+      await swalAlert(res.data?.message ?? (isEdit ? "수정되었습니다." : "등록되었습니다."));
       refreshCurrentDayView(savedDate);
     } else {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");

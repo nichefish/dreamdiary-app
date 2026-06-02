@@ -243,6 +243,7 @@ async function onSave() {
     const result = await attachableStore.saveTagProfile();
     if (result.rslt) {
       close();
+      await swalAlert(result.message ?? "저장되었습니다.");
       void journalStore.fetchDays();
     } else {
       void swalAlert(result.message ?? "처리에 실패했습니다.");
@@ -264,6 +265,7 @@ async function onDelete() {
     const result = await attachableStore.deleteTagProfile();
     if (result.rslt) {
       close();
+      await swalAlert(result.message ?? "삭제되었습니다.");
       void journalStore.fetchDays();
     } else {
       void swalAlert(result.message ?? "처리에 실패했습니다.");

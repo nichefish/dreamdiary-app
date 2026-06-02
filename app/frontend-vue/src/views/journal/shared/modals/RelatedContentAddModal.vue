@@ -273,6 +273,7 @@ async function save() {
     const result = await attachableStore.saveRelated();
     if (result.rslt) {
       close();
+      await swalAlert(result.message ?? "저장되었습니다.");
       void journalStore.fetchDays();
     } else if (result.message) {
       void swalAlert(result.message);
