@@ -1,7 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
-import type { JournalDayDto } from "@/stores/journal";
+import type { JournalDayDto, MetaDto } from "@/stores/journal";
 import { formatLocalDateStr } from "@/utils/journalDate";
 import { mergeTagifyListIntoCategoryMap } from "@/utils/tagifyHelper";
 
@@ -417,6 +417,50 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     filterModalOpen.value = false;
   }
 
+  // ---- 메타 프로필 모달 (메타 VIEW 컨텍스트 메뉴) ----
+
+  /** 메타 프로필 모달 오픈 여부 */
+  const metaProfileOpen = ref(false);
+  /** 메타 프로필 모달 로딩 여부 */
+  const metaProfileLoading = ref(false);
+  /** 메타 프로필 조회 결과 */
+  const metaProfileModel = ref<MetaDto | null>(null);
+
+  /**
+   * 메타 프로필 모달을 연다.
+   * GET /api/journal/day/metas/{id}
+   */
+  async function openMetaProfile(seed: {
+    id: number | string;
+    name?: string;
+    ctgr?: string;
+    unit?: string;
+  }): Promise<void> {
+    metaProfileOpen.value = true;
+    metaProfileLoading.value = true;
+    metaProfileModel.value = {
+      id: Number(seed.id),
+      name: seed.name,
+      ctgr: seed.ctgr,
+      unit: seed.unit,
+    };
+    try {
+      const res = await axios.get(`/api/journal/day/metas/${seed.id}`);
+      if (res.data?.rsltObj) {
+        metaProfileModel.value = res.data.rsltObj as MetaDto;
+      }
+    } catch (e: unknown) {
+      console.error("[journalModal] openMetaProfile failed", { metaId: seed.id }, e);
+    } finally {
+      metaProfileLoading.value = false;
+    }
+  }
+
+  /** 메타 프로필 모달을 닫는다. */
+  function closeMetaProfile(): void {
+    metaProfileOpen.value = false;
+  }
+
   // ---- 할일 등록/수정 모달 ----
 
   /** 할일 등록/수정 모달 오픈 여부 */
@@ -756,6 +800,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     filterModalPayload,
     openDayFilterModal,
     closeDayFilterModal,
+    metaProfileOpen,
+    metaProfileLoading,
+    metaProfileModel,
+    openMetaProfile,
+    closeMetaProfile,
     // 할일 등록/수정
     todoRegistOpen,
     todoRegistModel,

@@ -277,8 +277,8 @@ export const useJournalStore = defineStore("journal", () => {
 
   /** 메타 목록 */
   const metaList = ref<MetaDto[]>([]);
-  /** 선택된 메타 */
-  const selectedMeta = ref<MetaDto | null>(null);
+  /** 메타 VIEW 에서 선택된 메타 (최대 2개, 비교 그래프용) */
+  const selectedMetas = ref<MetaDto[]>([]);
   /** 메타 목록 로딩 상태 */
   const metaLoading = ref<boolean>(false);
   /** 메타 조회 에러 메시지 */
@@ -372,10 +372,24 @@ export const useJournalStore = defineStore("journal", () => {
   }
 
   /**
-   * 선택된 메타를 갱신한다.
+   * 메타 VIEW 그래프에 메타를 추가한다. 최대 2개. 이미 있으면 true, 추가 불가(꽉 참)면 false.
    */
-  function selectMeta(meta: MetaDto | null) {
-    selectedMeta.value = meta;
+  function addMetaToGraph(meta: MetaDto): boolean {
+    if (meta.id == null) return false;
+    if (selectedMetas.value.some((m) => m.id === meta.id)) return true;
+    if (selectedMetas.value.length >= 2) return false;
+    selectedMetas.value = [...selectedMetas.value, meta];
+    return true;
+  }
+
+  /** 메타 VIEW 그래프 선택에서 메타를 제거한다. */
+  function removeMetaFromGraph(metaId: number | string): void {
+    selectedMetas.value = selectedMetas.value.filter((m) => String(m.id) !== String(metaId));
+  }
+
+  /** 메타가 현재 그래프 선택 목록에 포함되는지 여부 */
+  function isMetaSelected(meta: MetaDto): boolean {
+    return meta.id != null && selectedMetas.value.some((m) => m.id === meta.id);
   }
 
   /**
@@ -522,13 +536,15 @@ export const useJournalStore = defineStore("journal", () => {
     dreamKeyword,
     chapterCtgrCds,
     metaList,
-    selectedMeta,
+    selectedMetas,
     metaLoading,
     metaError,
     yyMnthLabel,
     fetchDays,
     fetchMetas,
-    selectMeta,
+    addMetaToGraph,
+    removeMetaFromGraph,
+    isMetaSelected,
     navigateMonth,
     navigateWeek,
     gotoToday,

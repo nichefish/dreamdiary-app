@@ -35,10 +35,12 @@
     <HistoryModal @success="onHistorySuccess" />
     <RelatedContentAddModal />
     <JournalTagProfileModal />
+    <JournalMetaProfileModal />
     <!--end::저널 모달 컨테이너-->
-    <!--begin::태그 컨텍스트 메뉴 (전역 단일 인스턴스)-->
+    <!--begin::태그·메타 컨텍스트 메뉴 (전역 단일 인스턴스)-->
     <JournalTagContextMenu />
-    <!--end::태그 컨텍스트 메뉴-->
+    <JournalMetaContextMenu />
+    <!--end::태그·메타 컨텍스트 메뉴-->
   </div>
   <!--end::저널 레이아웃-->
 </template>
@@ -59,7 +61,9 @@ import CommentListModal from "@/views/attachable/CommentListModal.vue";
 import HistoryModal from "@/views/attachable/HistoryModal.vue";
 import RelatedContentAddModal from "../shared/modals/RelatedContentAddModal.vue";
 import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue";
+import JournalMetaProfileModal from "../shared/modals/JournalMetaProfileModal.vue";
 import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
+import JournalMetaContextMenu from "../shared/components/JournalMetaContextMenu.vue";
 
 const asideStore = useJournalAsideStore();
 const journalStore = useJournalStore();

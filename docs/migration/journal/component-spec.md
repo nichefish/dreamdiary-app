@@ -1,4 +1,4 @@
-# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
+﻿# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
 
 > 공통 Freemarker 매크로(checkbox, modal_header 등)는 ``common/component-spec.md`` 참조.
 
@@ -485,6 +485,38 @@ interface TodoRow {
 
 ---
 
+### 23-3a. `JournalMetaContextMenu` (메타 클릭 컨텍스트 메뉴)
+
+**Vue 구현**: `app/frontend-vue/src/views/journal/shared/components/JournalMetaContextMenu.vue`
+
+**Pinia 스토어**: `app/frontend-vue/src/stores/metaContextMenu.ts`
+
+**동작**: 메타 VIEW 헤더 `#메타` 클릭 시 태그와 동일한 fixed 팝업. payload `{ metaId, name, ctgr, unit? }`.
+
+**메뉴 액션** (메타 VIEW):
+
+| 액션 | 동작 |
+|------|------|
+| 검색 | `journalModalStore.openDayFilterModal({ type: "meta", ... })` → `JournalDayMetaModal` |
+| 그래프로 보기 | `journalStore.addMetaToGraph` (최대 2, 중복 시 비활성, 꽉 차면 alert) |
+| 메타 설정 | `journalModalStore.openMetaProfile` → `JournalMetaProfileModal` |
+
+**마운트 위치**: `JournalDayLayout.vue` — `<JournalMetaContextMenu />` (Teleport to body)
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
+### 23-3b. `JournalMetaProfileModal` (메타 설정 모달)
+
+**Vue 구현**: `app/frontend-vue/src/views/journal/shared/modals/JournalMetaProfileModal.vue`
+
+**데이터**: `GET /api/journal/day/metas/{id}` → `journalModalStore.metaProfileModel` (이름·카테고리·단위·기록 수 등 조회·표시)
+
+**현재 Vue 동등**: ⚠ 조회·표시만 (태그 프로필 수준의 색·메모 편집 API 없음)
+
+---
+
 ### 23-4. `JournalEntrySearchPage` (저널 엔트리 검색 새 창)
 
 **Vue 구현**: `app/frontend-vue/src/views/journal/entry/JournalEntrySearchPage.vue`
@@ -523,7 +555,7 @@ interface TodoRow {
 
 **Aside 스크롤 동작**: `journal.scss`에서 `.journal-layout-vue__aside`에 `position: sticky`, `top: 1rem`, `max-height: calc(100vh - 2rem)`, `overflow-y: auto`를 적용한다. 본문 스크롤 중 필터 패널이 viewport 안에서 따라오며, 패널 내용이 화면보다 길면 aside 내부만 스크롤된다. 연간 결산 aside(`.journal-annual-layout-vue__aside`)도 같은 규칙을 공유한다.
 
-**마운트 모달 목록**: `JournalDayRegistModal`, `JournalDayDtlModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`
+**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDtlModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`
 
 **현재 Vue 동등**: ✓ 구현 완료
 

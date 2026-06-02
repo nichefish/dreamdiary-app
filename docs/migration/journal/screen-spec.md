@@ -31,7 +31,7 @@
 | 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
 | 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
 | 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalDayCalendar.vue` | △ 탭/플레이스홀더 |
-| 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalDayMeta.vue` | ⚠ 그래프 TODO |
+| 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalDayMeta.vue` | ✓ 컨텍스트 메뉴·단일 비교 차트(최대 2시리즈)·연도 전체 |
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
@@ -48,6 +48,43 @@
 - **진입점**: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼
 - **URL**: `/journal/daily?stdrdDt=YYYY-MM-DD`
 - **새 창 오픈**: `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제
+
+
+### 저널 메타 VIEW (Journal Meta)
+
+- **Route**: `/journal/meta` (`journal-meta`)
+- **Legacy**: `/app/journal/day/meta.do`
+- **툴바**: `JournalDayViewToolbar` (주간/월간/달력/메타 탭)
+
+#### Layout
+
+- 카드 헤더: `#메타` 목록 (`GET /api/journal/day/metas` → `store.metaList`)
+- 카드 바디: 그래프 영역 `#journal_day_meta_graph_div`
+
+#### 메타 헤더 목록
+
+- 태그 클라우드와 동일하게 `btn btn-link` + 기록 수(`contentSize`)
+- 클릭 → `JournalMetaContextMenu` (즉시 그래프에 추가하지 않음)
+- 「그래프로 보기」로 포함된 메타: 굵게 + 옆 `bi-x-circle-fill` → `removeMetaFromGraph`
+
+#### 컨텍스트 메뉴 (`JournalMetaContextMenu`)
+
+| 액션 | 동작 |
+|------|------|
+| 검색 | `openDayFilterModal({ type: "meta", ... })` — `JournalDayMetaModal` |
+| 그래프로 보기 | `addMetaToGraph` (최대 2, 중복·꽉 참 시 안내) |
+| 메타 설정 | `openMetaProfile` — `JournalMetaProfileModal` |
+
+#### 그래프 영역
+
+- 선택 0: 안내 문구
+- 선택 1+: 연도(「전체」+ 연도 목록 합집합), 임계값, 메타별 통계(합계/평균/최고/최저)
+- 차트: 선택 메타 전부를 **한** line chart, X축=일자 합집합, 시리즈=메타별 1선, 범례(2메타 시)
+- 단일 메타일 때만 최고/최저 보조선; 비교(2메타) 시 임계선만 공통 적용
+
+#### Modals (layout 마운트)
+
+- `JournalDayMetaModal`, `JournalMetaProfileModal`, `JournalMetaContextMenu`
 
 ### 저널 API (`useJournalStore`)
 
