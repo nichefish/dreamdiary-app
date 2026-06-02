@@ -701,11 +701,36 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     return contentType === "JOURNAL_DREAM" || contentType === "DREAM";
   }
 
-  function normalizeChapterOptions(rawList: unknown, contentType: string): JournalChapterOption[] {
+  /**
+   * 엔트리 수정 시 챕터 선택 목록에 쓸 chapterType.
+   * 변경 전: contentType 만으로 NOTE/DIARY 분기 → NOTE 챕터의 JOURNAL_DIARY 엔트리가 DIARY 목록으로 잘못 필터됨.
+   * 변경 후: 기존 journalChapterId 가 NOTE 챕터면 NOTE 목록 유지 (백엔드 JournalEntryTypeResolver 와 동일).
+   */
+  function resolveExpectedChapterTypeForEntry(
+    contentType: string,
+    journalChapterId: number | string | undefined,
+    rawList: Record<string, unknown>[],
+  ): "NOTE" | "DIARY" | "DREAM" {
+    if (isDreamEntry(contentType)) return "DREAM";
+    if (isNoteLikeEntry(contentType)) return "NOTE";
+    if (journalChapterId !== undefined && journalChapterId !== null && String(journalChapterId) !== "") {
+      const current = rawList.find((raw) => String(raw.id) === String(journalChapterId));
+      const chapterType = String(current?.chapterType ?? "");
+      if (chapterType === "NOTE") return "NOTE";
+      if (chapterType === "DREAM") return "DREAM";
+    }
+    return "DIARY";
+  }
+
+  function normalizeChapterOptions(
+    rawList: unknown,
+    contentType: string,
+    journalChapterId?: number | string,
+  ): JournalChapterOption[] {
     if (!Array.isArray(rawList)) return [];
-    const expectedChapterType = isNoteLikeEntry(contentType) ? "NOTE" : "DIARY";
-    return rawList
-      .map((raw) => raw as Record<string, unknown>)
+    const rawRecords = rawList.map((raw) => raw as Record<string, unknown>);
+    const expectedChapterType = resolveExpectedChapterTypeForEntry(contentType, journalChapterId, rawRecords);
+    return rawRecords
       .filter((raw) => {
         const chapterType = String(raw.chapterType ?? "");
         return chapterType === "" || chapterType === expectedChapterType;
@@ -726,15 +751,19 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     try {
       const res = await axios.get(`/api/journal/day/${model.journalDayId}`);
       const day = res.data?.rsltObj ?? {};
-      const options = normalizeChapterOptions(
-        Array.isArray(day.chapterList) && day.chapterList.length > 0
-          ? day.chapterList
-          : day.journalChapterList,
-        model.contentType
-      );
+      const rawChapterList = Array.isArray(day.chapterList) && day.chapterList.length > 0
+        ? day.chapterList
+        : day.journalChapterList;
+      const options = normalizeChapterOptions(rawChapterList, model.contentType, model.journalChapterId);
       if (options.length === 0) return;
       model.chapterList = options;
-      if (!model.journalChapterId || !options.some((chapter) => String(chapter.id) === String(model.journalChapterId))) {
+      const chapterStillValid = model.journalChapterId
+        && options.some((chapter) => String(chapter.id) === String(model.journalChapterId));
+      if (!chapterStillValid) {
+        console.warn(
+          "[journalModal] 엔트리 챕터 ID가 선택 목록에 없어 첫 챕터로 보정",
+          { journalChapterId: model.journalChapterId, contentType: model.contentType, fallbackChapterId: options[0].id },
+        );
         model.journalChapterId = options[0].id;
       }
     } catch {
