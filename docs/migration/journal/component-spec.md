@@ -371,7 +371,7 @@ interface TodoRow {
 
 **저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림 OK 이후 현재 route 기준으로 목록을 갱신하고 저장한 엔트리 위치로 스크롤한다. 월간/주간은 `#journal-entry-{id}`를 우선 사용하고, 엔트리 DOM을 retry로 기다린 뒤 찾지 못하면 `#journal-day-{stdrdDt}`로 fallback한다. 신규 등록 응답에서 id를 확인할 수 없으면 바로 `#journal-day-{stdrdDt}`로 fallback한다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDtlModal` 데이터를 다시 조회한 뒤 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
 
-**챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. `JOURNAL_DIARY`는 `DIARY` 챕터, `JOURNAL_NOTE`는 `NOTE` 챕터만 후보로 사용하며, 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다.
+**챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. 후보 `chapterType` 분기: `JOURNAL_DREAM`→`DREAM`, `JOURNAL_NOTE`→`NOTE`. **NOTE 챕터에 속한 엔트리도 백엔드 `contentType`은 `JOURNAL_DIARY`**(`JournalEntryTypeResolver`)이므로, 수정 시에는 기존 `journalChapterId`가 가리키는 챕터의 `chapterType`이 `NOTE`이면 `NOTE` 챕터만 후보로 둔다(DIARY 요약 챕터로 덮어쓰지 않음). NOTE 챕터 신규 등록(`JournalChapterItem.openEntryNew`)도 `JOURNAL_DIARY`를 전송한다. 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다(이때 `console.warn`).
 
 **현재 Vue 동등**: ✓ 구현 완료
 

@@ -245,7 +245,11 @@ const allEntriesResolved = computed(() => {
 
 /** 챕터 접힘 상태 태그 클릭 컨텍스트 메뉴 열기 */
 function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; name: string; ctgr?: string }): void {
-  const contentType = isDreamChapter.value ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
+  const contentType = isDreamChapter.value
+    ? "JOURNAL_DREAM"
+    : isNoteChapter.value
+      ? "JOURNAL_NOTE"
+      : "JOURNAL_DIARY";
   tagContextMenuStore.open(event, {
     tagId: tag.tagId,
     name: tag.name,
@@ -272,11 +276,8 @@ function openChapterModify() {
 function openEntryNew() {
   if (!guardChapterOwner()) return;
   if (!props.chapter.journalDayId) return;
-  const contentType = isDreamChapter.value
-    ? "JOURNAL_DREAM"
-    : isNoteChapter.value
-      ? "JOURNAL_NOTE"
-      : "JOURNAL_DIARY";
+  /* NOTE 챕터 엔트리도 백엔드 contentType 은 JOURNAL_DIARY (JournalEntryTypeResolver). */
+  const contentType = isDreamChapter.value ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
   modalStore.openEntryRegist({
     contentType,
     journalDayId: props.chapter.journalDayId,
