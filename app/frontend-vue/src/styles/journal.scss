@@ -736,6 +736,22 @@ $journal-paired-states: (
         }
     }
 
+    &--graph {
+        background: #ecfdf5;
+        color: #047857;
+        font-weight: 600;
+        margin-top: 4px;
+
+        &:hover:not(:disabled) {
+            background: #d1fae5;
+        }
+
+        &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+    }
+
     &--configure {
         background: transparent;
         color: #7c2d12;
