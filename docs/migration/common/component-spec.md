@@ -26,6 +26,12 @@
 
 ---
 
+### RichEditor 저장 HTML 계약
+
+`RichEditor.vue`는 TinyMCE HTML 원문을 전송하고, 서버 저장 정규화(`MarkdownUtils.normalize`)가 유효한 에디터 HTML 구조와 literal escaped HTML 텍스트를 보존한다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉘어 들어온 경우에는 저장 시 별도 `<p>` 문단으로 분리해 레거시 문단 간격을 보존한다.
+
+---
+
 ### AppRuntimeStatus
 
 Vue SPA는 빌드가 성공했더라도 라우팅, 동적 import, 렌더링, 전역 Promise 예외가 발생하면 화면에 상태를 표시해야 한다.
