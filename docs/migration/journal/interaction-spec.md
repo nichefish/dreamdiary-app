@@ -12,7 +12,7 @@
 | 태그 클릭 컨텍스트 메뉴 | `tagContextMenu.ts` + `JournalTagContextMenu.vue` | ✓ |
 | 일자 카드 ⋯ 컨텍스트 메뉴 | `JournalDayCard.vue` — Metronic dropdown | ✓ |
 | 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
-| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 칩 × 클릭 시 제거(메타+태그 합산 최소 1개 유지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴 | ✓코드 |
+| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 칩 × 클릭 시 자유 제거(제한 없음); 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴 | ✓코드 |
 | 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/삭제 | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 버튼 | `JournalChapterItem.vue` — `copyChapter()`, 날짜(요일)·카테고리·엔트리 전체 텍스트 클립보드 복사 | ✓ |
@@ -266,7 +266,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 닫기: 외부 클릭, ESC, scroll/resize
 
 **검색 액션**:
-- `JOURNAL_DAY`: `journalModalStore.openTagDetail(tagId, name)` 으로 일자 태그 상세 모달 오픈
+- `JOURNAL_DAY`: `journalModalStore.openDayFilterModal({ type: 'tag', id: tagId, name, ctgr })` 으로 일자 필터 모달(메타+태그 통합) 오픈
 - `JOURNAL_DIARY`: 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds={tagId}&tagName={name}`
 - `JOURNAL_DREAM`: 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds={tagId}&tagName={name}`
 - 단, 현재 route가 `journal-entry-search`인 검색 팝업 내부에서는 새 창을 다시 열지 않고 같은 창의 query를 `router.replace(...)`로 갱신한다. 검색 페이지는 `route.fullPath` watch로 즉시 재조회한다.
@@ -292,6 +292,10 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **메뉴 구조**:
 - 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간 뷰 전용 용도)
 - 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
+- `JournalDayDaily.vue` 로드 시 `stdrdDt`에서 `yy`·`mnth`를 파생해 `fetchDays`에 명시 전달 (스토어 기본값 현재 날짜가 백엔드 필터와 불일치하는 문제 방지)
+- 날짜 이동(이전/다음)은 로컬 Date 생성자로 파싱 — `new Date(stdrdDt)`는 UTC로 파싱되어 Korea(UTC+9) 환경에서 날짜가 1일 밀리는 버그 발생
+- 중앙 날짜 표시: `<input type=date>` 클릭 시 브라우저 달력 피커 오픈, 선택 날짜로 `router.replace`하여 이동
+- 팝업 너비 1600px / 높이 1080px (`window.screen.availWidth/Height` 상한); left/top 제거하여 OS 기본 배치 사용
 - 수정 → `openReg()` (등록 모달 재활용, id 포함)
 - 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 접힘(COLLAPSED, `POST /api/states` 토글)
 - 삭제 → `DELETE /api/journal/day/{id}` → `journalStore.fetchDays()`

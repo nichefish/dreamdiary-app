@@ -662,3 +662,9 @@ window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
 - legacy `verify_success.ftlh`, `verify_failure.ftlh`는 Vue route `/auth/verify-result`로 통합한다.
 - 성공/실패 분기는 query/status 또는 서버 redirect 파라미터로 표현한다.
 - 별도 FTLH 화면을 다시 만들지 않는다.
+---
+
+## 테마 (다크모드 / 라이트모드)
+
+- useThemeStore.setThemeMode(mode) → document.documentElement.setAttribute("data-bs-theme", ...) + localStorage 저장 (kt_theme_mode_value).
+- **로그인 화면(AuthLayout.vue)은 테마 설정과 무관하게 항상 라이트 모드**: onMounted에서 data-bs-theme=light 강제 적용, onUnmounted에서 localStorage 저장값으로 복원.
