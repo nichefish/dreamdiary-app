@@ -336,7 +336,10 @@ async function deleteInterpretation(): Promise<void> {
   if (!await swalConfirm("해석을 삭제하시겠습니까?")) return;
   try {
     const res = await axios.delete(`/api/journal/interpretation/${props.interpretation.id}`);
-    if (res.data?.rslt) void journalStore.fetchDays();
+    if (res.data?.rslt) {
+      await swalAlert(res.data?.message ?? "삭제되었습니다.");
+      void journalStore.fetchDays();
+    }
     else void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
   } catch (e: unknown) {
     if (isAuthExpiredError(e)) return;

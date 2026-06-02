@@ -21,6 +21,12 @@
 - `useBoardPostStore.fetchList(page)`, `useJournalThreadStore.fetchList(page)` — Vue 템플릿 내 페이지 버튼.
 - 레거시 `#listForm` + `Pagination.fnPage` 서버 리로드는 SPA 목록에서 **대체**.
 
+### CRUD 성공 알림 후 갱신
+
+- Vue SPA의 등록·수정·삭제 성공 흐름은 성공 메시지를 먼저 표시하고, 사용자가 OK를 누른 뒤 목록·상세·달력 갱신 또는 라우터 이동을 수행한다.
+- 적용 화면: 게시판 게시물, 일정 달력, 관리자 게시판 그룹, 코드 관리, 메뉴 관리, 계정 관리, 계정 신청.
+- 토글·정렬 저장처럼 등록·수정·삭제가 아닌 보조 동작은 각 화면의 기존 처리 순서를 유지한다.
+
 ### 모달
 
 - Pinia 스토어의 `visible` / `open*` 함수 + Bootstrap 5 모달 컴포넌트.

@@ -132,6 +132,7 @@ async function submit() {
     });
     if (res.data?.rslt) {
       close();
+      await swalAlert(res.data?.message ?? (isModify ? "수정되었습니다." : "등록되었습니다."));
       void journalStore.fetchDays();
     } else {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");

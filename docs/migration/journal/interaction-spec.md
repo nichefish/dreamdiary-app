@@ -25,8 +25,8 @@
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
 | 어사이드 키워드 필터 | `JournalDayViewToolbar.vue`에만 있음; `JournalAside.vue` 어사이드에는 키워드 입력 없음 | ⚠ 툴바만 |
-| 등록/수정 후 스크롤 | 일자 submit 성공 → `#journal-day-{stdrdDt}`, 엔트리 submit 성공 → `#journal-entry-{id}` 또는 일자 카드 scrollIntoView | ✓ |
-| 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정·삭제 등 모든 서버 반영 후 `fetchDays().then` → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
+| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 목록/상세 갱신 → 저장 위치 scrollIntoView | ✓ |
+| 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정 서버 반영 후 `fetchDays().then` → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, `POST /api/journal/chapter/{id}/move` 호출 후 `fetchDays` + 신 일자 scrollIntoView | ✓ |
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 수정/삭제/이동 거부 시 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. CSS `:has` + `:not(:has([data-resolved=\"N\"]))` 로 하위 엔트리 전체 resolved 여부를 집계해 접힘 하이라이트 표시. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
@@ -219,8 +219,10 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **동작**:
 1. `model.journalDate`를 `savedDate`로 캡처
-2. 모달 닫기 → `refreshCurrentDayView(savedDate)` 호출
-3. `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
+2. 모달 닫기
+3. 성공 알림 표시
+4. 사용자가 OK를 누른 뒤 `refreshCurrentDayView(savedDate)` 호출
+5. `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
 
 **카드 id SSOT**: `JournalDayCard.vue` `:id="'journal-day-' + day.stdrdDt"`
 
@@ -242,10 +244,11 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **동작**:
 1. 저장 성공 응답에서 엔트리 ID를 확인한다. 수정이면 기존 `model.id`를 fallback으로 사용한다.
-2. 월간/주간 화면에서는 현재 route 기준으로 `fetchDays()`를 다시 호출한다.
-3. 목록 갱신 후 `#journal-entry-{id}`로 스크롤한다. 신규 등록 등 엔트리 ID를 확인할 수 없으면 `#journal-day-{stdrdDt}`로 스크롤한다.
-4. 일자 상세 팝업(`JournalDayDtlModal`)이 열려 있으면 상세 데이터를 다시 조회하고, 팝업 내부의 동일 엔트리 위치로 스크롤한다.
-5. 검색 팝업(`JournalEntrySearchPage`)에서는 `success` 이벤트를 받아 현재 검색 조건으로 `loadEntries()` 후 `#journal-entry-search-{id}`로 스크롤한다.
+2. 모달을 닫고 성공 알림을 표시한다.
+3. 사용자가 OK를 누른 뒤 월간/주간 화면에서는 현재 route 기준으로 `fetchDays()`를 다시 호출한다.
+4. 목록 갱신 후 `#journal-entry-{id}`로 스크롤한다. 신규 등록 등 엔트리 ID를 확인할 수 없으면 `#journal-day-{stdrdDt}`로 스크롤한다.
+5. 일자 상세 팝업(`JournalDayDtlModal`)이 열려 있으면 OK 이후 상세 데이터를 다시 조회하고, 팝업 내부의 동일 엔트리 위치로 스크롤한다.
+6. 검색 팝업(`JournalEntrySearchPage`)에서는 OK 이후 `success` 이벤트를 받아 현재 검색 조건으로 `loadEntries()` 후 `#journal-entry-search-{id}`로 스크롤한다.
 
 **엔트리 id SSOT**: `JournalEntryItem.vue` `:id="'journal-entry-' + entry.id"`, 검색 팝업은 `JournalEntrySearchPage.vue` 결과 article `:id="'journal-entry-search-' + entry.id"`.
 
@@ -298,7 +301,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 팝업 너비 1600px / 높이 1080px (`window.screen.availWidth/Height` 상한); left/top 제거하여 OS 기본 배치 사용
 - 수정 → `openReg()` (등록 모달 재활용, id 포함)
 - 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 접힘(COLLAPSED, `POST /api/states` 토글)
-- 삭제 → `DELETE /api/journal/day/{id}` → `journalStore.fetchDays()`
+- 삭제 → `DELETE /api/journal/day/{id}` → 성공 알림 OK 이후 `journalStore.fetchDays()`
 
 **드롭다운**: Metronic `data-kt-menu-trigger="click"`, `data-kt-menu-placement="bottom-end"`
 
@@ -325,7 +328,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
     - NHTMR(악몽), HALLUC(환각/현시) — 꿈 전용 (`isDream`)
     - COLLAPSED(접기) — 공통
   - 구분선
-  - 삭제 → `DELETE /api/journal/entry/{id}` → `journalStore.fetchDays()`
+  - 삭제 → `DELETE /api/journal/entry/{id}` → 성공 알림 OK 이후 `journalStore.fetchDays()`
 
 **상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤.
 

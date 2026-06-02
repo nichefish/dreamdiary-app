@@ -2,6 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import type { RoleRow } from "@/stores/adminPage";
+import { swalAlert } from "@/utils/swal";
 
 export interface UserRoleRow {
   roleKey: string;
@@ -379,6 +380,11 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     form.value = emptyForm();
   }
 
+  /**
+   * 계정 등록/수정 처리.
+   * 변경 전에는 성공 직후 목록·상세를 갱신하고 호출부가 알림을 띄웠다.
+   * 변경 후에는 성공 알림 OK 이후 목록·상세를 갱신한다.
+   */
   async function submit() {
     saving.value = true;
     try {
@@ -389,9 +395,11 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
       });
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정을 저장하지 못했습니다.");
       closeForm();
+      const message = res.data?.message ?? "저장되었습니다.";
+      await swalAlert(message);
       await fetchUsers(id == null ? 0 : currentPage.value);
       if (detail.value?.id === id) await openDetail(id);
-      return res.data?.message ?? "저장되었습니다.";
+      return message;
     } finally {
       saving.value = false;
     }
@@ -403,13 +411,20 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     return res.data?.message ?? "비밀번호가 초기화되었습니다.";
   }
 
+  /**
+   * 계정 삭제 처리.
+   * 변경 전에는 성공 직후 목록을 갱신하고 호출부가 알림을 띄웠다.
+   * 변경 후에는 성공 알림 OK 이후 목록을 갱신한다.
+   */
   async function deleteUser(id: number) {
     const res = await axios.delete(`/api/users/${id}`);
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정을 삭제하지 못했습니다.");
     if (detail.value?.id === id) closeDetail();
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
+    const message = res.data?.message ?? "삭제되었습니다.";
+    await swalAlert(message);
     await fetchUsers(nextPage);
-    return res.data?.message ?? "삭제되었습니다.";
+    return message;
   }
 
   async function usernameDuplicateCheck(username: string) {

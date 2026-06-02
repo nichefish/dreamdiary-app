@@ -435,6 +435,7 @@ async function submit() {
       const savedEntryId = resolveSavedEntryId(res.data ?? {}, model.value.id);
       const savedDate = resolveSavedDate(res.data ?? {}, model.value.stdrdDt);
       close();
+      await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
       refreshCurrentDayView(savedEntryId, savedDate);
       emit("success", { entryId: savedEntryId, stdrdDt: savedDate, isModify: wasModify });
     } else {

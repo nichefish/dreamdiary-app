@@ -289,6 +289,7 @@ async function moveChapter(): Promise<void> {
     if (res.data?.rslt) {
       const targetDt = moveTargetDt.value;
       close();
+      await swalAlert(res.data?.message ?? "처리되었습니다.");
       void journalStore.fetchDays().then(() => {
         scrollToDay(targetDt);
       });
@@ -329,6 +330,7 @@ async function submit() {
     if (res.data?.rslt) {
       const savedDate = resolveSavedDate(res.data ?? {}, model.value?.stdrdDt);
       close();
+      await swalAlert(res.data?.message ?? (isModify.value ? "수정되었습니다." : "등록되었습니다."));
       void journalStore.fetchDays().then(() => {
         if (savedDate) scrollToDay(savedDate);
       });

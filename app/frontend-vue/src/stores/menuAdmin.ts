@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { swalAlert } from "@/utils/swal";
 
 export interface MenuNode {
   id: number;
@@ -187,6 +188,11 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     form.value = { ...EMPTY_FORM };
   }
 
+  /**
+   * 메뉴 등록/수정 처리.
+   * 변경 전에는 성공 직후 트리를 갱신하고 호출부가 알림을 띄웠다.
+   * 변경 후에는 성공 알림 OK 이후 트리를 갱신한다.
+   */
   async function submit() {
     saving.value = true;
     try {
@@ -197,8 +203,10 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
       });
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴를 저장하지 못했습니다.");
       closeModal();
+      const message = res.data?.message ?? "저장되었습니다.";
+      await swalAlert(message);
       await fetchTree();
-      return res.data?.message ?? "저장되었습니다.";
+      return message;
     } finally {
       saving.value = false;
     }
@@ -212,11 +220,18 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     return res.data?.message ?? "변경되었습니다.";
   }
 
+  /**
+   * 메뉴 삭제 처리.
+   * 변경 전에는 성공 직후 트리를 갱신하고 호출부가 알림을 띄웠다.
+   * 변경 후에는 성공 알림 OK 이후 트리를 갱신한다.
+   */
   async function deleteMenu(id: number) {
     const res = await axios.delete(`/api/menu/${id}`);
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴를 삭제하지 못했습니다.");
+    const message = res.data?.message ?? "삭제되었습니다.";
+    await swalAlert(message);
     await fetchTree();
-    return res.data?.message ?? "삭제되었습니다.";
+    return message;
   }
 
   async function reorderMainWithinGroup(adminYn: "Y" | "N", sourceIndex: number, targetIndex: number) {
