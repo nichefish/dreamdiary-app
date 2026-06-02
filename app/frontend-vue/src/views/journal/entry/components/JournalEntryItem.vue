@@ -294,6 +294,7 @@
 import { swalConfirm, swalAlert } from "@/utils/swal";
 import { isAuthExpiredError } from "@/utils/authError";
 import { ref, computed, nextTick } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useAttachableModalStore } from "@/stores/attachableModal";
@@ -316,6 +317,7 @@ const modalStore = useJournalModalStore();
 const attachableStore = useAttachableModalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();
+const route = useRoute();
 
 /** 엔트리 타입별 외부 item 클래스 (journal.scss 의 data-* 셀렉터 연동) */
 const itemClass = computed(() => {
@@ -463,15 +465,29 @@ function openInterpretationRegist() {
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */
-function scrollAfterFetch(): void {
-  const dt = props.entry.stdrdDt;
+function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
+  const dt = stdrdDt;
   if (!dt) return;
-  void journalStore.fetchDays().then(() => {
+  const afterFetch = () => {
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  });
+  };
+
+  if (route.name === "journal-weekly") {
+    journalStore.setViewType("WEEKLY");
+    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
+    return;
+  }
+
+  if (route.name === "journal-monthly") {
+    journalStore.setViewType("LIST");
+    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
+    return;
+  }
+
+  void journalStore.fetchDays().then(afterFetch);
 }
 
 /** 라이프사이클 설정 (PUT /api/lifecycles) */
@@ -517,13 +533,14 @@ async function toggleState(stateKey: string): Promise<void> {
 /** 엔트리 삭제 (DELETE /api/journal/entry/{id}) */
 async function deleteEntry(): Promise<void> {
   if (!props.entry.id) return;
+  const stdrdDt = props.entry.stdrdDt;
   const confirmed = await swalConfirm("삭제하시겠습니까?");
   if (!confirmed) return;
   try {
     const res = await axios.delete(`/api/journal/entry/${props.entry.id}`);
     if (res.data?.rslt) {
       await swalAlert(res.data?.message ?? "삭제되었습니다.");
-      void journalStore.fetchDays();
+      scrollAfterFetch(stdrdDt);
     } else {
       void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
     }

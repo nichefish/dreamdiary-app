@@ -367,7 +367,7 @@ interface TodoRow {
 
 **본문 문단 저장 기준**: `RichEditor`가 전송한 TinyMCE HTML은 서버 저장 정규화(`MarkdownUtils.normalize`)를 거친다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉜 본문은 저장 시 별도 `<p>` 문단으로 분리해 레거시처럼 문단 단위 여백을 유지한다.
 
-**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림 OK 이후 현재 route 기준으로 목록을 갱신하고 저장한 엔트리 위치로 스크롤한다. 월간/주간은 `#journal-entry-{id}`를 우선 사용하고, 신규 등록 응답에서 id를 확인할 수 없으면 `#journal-day-{stdrdDt}`로 fallback한다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDtlModal` 데이터를 다시 조회한 뒤 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
+**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림 OK 이후 현재 route 기준으로 목록을 갱신하고 저장한 엔트리 위치로 스크롤한다. 월간/주간은 `#journal-entry-{id}`를 우선 사용하고, 엔트리 DOM을 retry로 기다린 뒤 찾지 못하면 `#journal-day-{stdrdDt}`로 fallback한다. 신규 등록 응답에서 id를 확인할 수 없으면 바로 `#journal-day-{stdrdDt}`로 fallback한다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDtlModal` 데이터를 다시 조회한 뒤 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
 
 **챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. `JOURNAL_DIARY`는 `DIARY` 챕터, `JOURNAL_NOTE`는 `NOTE` 챕터만 후보로 사용하며, 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다.
 
@@ -402,6 +402,7 @@ interface TodoRow {
 **Vue 구현**: `app/frontend-vue/src/views/journal/chapter/components/JournalChapterItem.vue`
 
 **scss 클래스 바인딩**:
+- root div: `class="journal-chapter-block"` + `:id="'journal-chapter-' + chapter.id"` — 챕터 등록/수정 후 저장 위치 스크롤 앵커
 - 외부 div: `class="journal-chapter-item"` + `:data-collapsed` — journal.scss `:has(.collapsed)` 선택자 연동
 - 콘텐츠 div: `:class="['journal-chapter-content', { 'collapsed': isCollapsed }]"` — `&.collapsed > * { display: none !important }` CSS 연동
 

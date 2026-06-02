@@ -158,11 +158,13 @@ import { useSafeModalClose } from "@/utils/safeModalClose";
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { Modal } from "bootstrap";
 import axios from "axios";
+import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
@@ -172,8 +174,9 @@ const moveTargetDt = ref<string>("");
 const moving = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
 /** 모달 닫기 애니메이션(~300ms) 동안 body.overflow:hidden 으로 scrollIntoView 가 무시되므로
- *  hidden.bs.modal 이후 실행할 스크롤 대상 일자를 임시 보관한다. */
-let pendingScrollDt: string | null = null;
+ *  hidden.bs.modal 이후 실행할 스크롤 대상을 임시 보관한다.
+ *  변경 이유: 챕터 등록 직후에는 일자 카드보다 저장된 챕터 DOM 렌더 완료가 더 늦을 수 있다. */
+let pendingScrollTarget: { chapterId?: number | string; stdrdDt?: string } | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
   modalStore.closeChapterRegist();
 });
@@ -206,10 +209,10 @@ onMounted(() => {
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
       modalStore.closeChapterRegist();
-      if (pendingScrollDt) {
-        const dt = pendingScrollDt;
-        pendingScrollDt = null;
-        scrollToDayWhenReady(dt);
+      if (pendingScrollTarget) {
+        const target = pendingScrollTarget;
+        pendingScrollTarget = null;
+        scrollToSavedPositionWhenReady(target.chapterId, target.stdrdDt);
       }
     });
   }
@@ -232,28 +235,76 @@ function close() {
   modalStore.closeChapterRegist();
 }
 
-/** 등록/수정 후 해당 일자 카드(#journal-day-{stdrdDt})로 스크롤한다. */
-function scrollToDay(stdrdDt: string): void {
+/** 등록/수정 후 저장한 챕터 위치로 돌아간다. 챕터 id를 모르면 해당 일자 카드로 복귀한다. */
+function scrollToSavedPosition(chapterId?: number | string, stdrdDt?: string): void {
   if (modalEl.value?.classList.contains("show")) {
     /* 모달 닫기 애니메이션(Bootstrap ~300ms) 중에는 body.overflow:hidden 이므로
      * scrollIntoView 가 무시된다. hidden.bs.modal 이후 실행되도록 미룬다. */
-    pendingScrollDt = stdrdDt;
+    pendingScrollTarget = { chapterId, stdrdDt };
     return;
   }
-  scrollToDayWhenReady(stdrdDt);
+  scrollToSavedPositionWhenReady(chapterId, stdrdDt);
 }
 
-function scrollToDayWhenReady(stdrdDt: string, attempt = 0): void {
+function findVisibleChapterElement(chapterId: number | string): HTMLElement | null {
+  const targetId = `journal-chapter-${chapterId}`;
+  const candidates = Array.from(document.querySelectorAll<HTMLElement>(`[id="${targetId}"]`));
+  return candidates.find((el) => !el.closest(".modal")) ?? candidates[0] ?? null;
+}
+
+function scrollToSavedPositionWhenReady(chapterId?: number | string, stdrdDt?: string, attempt = 0): void {
   void nextTick(() => {
-    const el = document.getElementById(`journal-day-${stdrdDt}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    const chapterEl = chapterId ? findVisibleChapterElement(chapterId) : null;
+    if (chapterEl) {
+      chapterEl.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    if (attempt < 8) {
-      window.setTimeout(() => scrollToDayWhenReady(stdrdDt, attempt + 1), 80);
+    const dayEl = stdrdDt ? document.getElementById(`journal-day-${stdrdDt}`) : null;
+    if (dayEl && !chapterId) {
+      dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (attempt < 16) {
+      window.setTimeout(() => scrollToSavedPositionWhenReady(chapterId, stdrdDt, attempt + 1), 100);
+      return;
+    }
+    if (dayEl) {
+      console.warn("[JournalChapterRegistModal] saved chapter scroll target not found; fallback to day.", { chapterId, stdrdDt });
+      dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      console.warn("[JournalChapterRegistModal] saved chapter/day scroll target not found.", { chapterId, stdrdDt });
     }
   });
+}
+
+function refreshCurrentDayView(chapterId?: number | string, stdrdDt?: string): void {
+  void journalStore.fetchTagCloud();
+  const afterFetch = () => scrollToSavedPosition(chapterId, stdrdDt);
+
+  if (route.name === "journal-weekly") {
+    journalStore.setViewType("WEEKLY");
+    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
+    return;
+  }
+
+  if (route.name === "journal-monthly") {
+    journalStore.setViewType("LIST");
+    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
+    return;
+  }
+
+  void journalStore.fetchDays().then(afterFetch);
+}
+
+function resolveSavedChapterId(responseData: Record<string, unknown>, fallbackId?: number): number | string | undefined {
+  const rsltObj = responseData.rsltObj as Record<string, unknown> | undefined;
+  const candidates = [
+    fallbackId,
+    responseData.id,
+    responseData.rsltId,
+    rsltObj?.id,
+  ];
+  return candidates.find((value) => value !== undefined && value !== null && String(value) !== "") as number | string | undefined;
 }
 
 function resolveSavedDate(responseData: Record<string, unknown>, fallbackDate?: string): string | undefined {
@@ -272,6 +323,7 @@ function resolveSavedDate(responseData: Record<string, unknown>, fallbackDate?: 
 /** 챕터를 선택한 일자로 이동한다. */
 async function moveChapter(): Promise<void> {
   if (!model.value?.id || !moveTargetDt.value) return;
+  const fallbackChapterId = model.value.id;
   if (moveTargetDt.value === model.value.stdrdDt) {
     void swalAlert("이미 해당 일자에 속해 있습니다.");
     return;
@@ -282,17 +334,16 @@ async function moveChapter(): Promise<void> {
   moving.value = true;
   try {
     const res = await axios.post(
-      `/api/journal/chapter/${model.value.id}/move`,
+      `/api/journal/chapter/${fallbackChapterId}/move`,
       null,
       { params: { targetStdrdDt: moveTargetDt.value } }
     );
     if (res.data?.rslt) {
       const targetDt = moveTargetDt.value;
+      const savedChapterId = resolveSavedChapterId(res.data ?? {}, fallbackChapterId);
       close();
       await swalAlert(res.data?.message ?? "처리되었습니다.");
-      void journalStore.fetchDays().then(() => {
-        scrollToDay(targetDt);
-      });
+      refreshCurrentDayView(savedChapterId, targetDt);
     } else {
       void swalAlert(res.data?.message ?? "일자 이동에 실패했습니다.");
     }
@@ -306,7 +357,10 @@ async function moveChapter(): Promise<void> {
 /** 등록/수정 처리 (axios multipart). 챕터 API는 등록/수정 모두 POST. */
 async function submit() {
   if (!model.value) return;
-  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const wasModify = isModify.value;
+  const fallbackChapterId = model.value.id;
+  const fallbackDate = model.value.stdrdDt;
+  const confirmed = await swalConfirm(wasModify ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;
 
   submitting.value = true;
@@ -320,20 +374,19 @@ async function submit() {
     if (model.value.sortOrder != null) formData.append("sortOrder", String(model.value.sortOrder));
 
     /* 챕터 등록/수정 API는 모두 POST (backend @PostMapping) */
-    const url = isModify.value
-      ? `/api/journal/chapter/${model.value.id}`
+    const url = wasModify
+      ? `/api/journal/chapter/${fallbackChapterId}`
       : "/api/journal/chapters";
     const res = await axios.post(url, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
     if (res.data?.rslt) {
-      const savedDate = resolveSavedDate(res.data ?? {}, model.value?.stdrdDt);
+      const savedChapterId = resolveSavedChapterId(res.data ?? {}, fallbackChapterId);
+      const savedDate = resolveSavedDate(res.data ?? {}, fallbackDate);
       close();
-      await swalAlert(res.data?.message ?? (isModify.value ? "수정되었습니다." : "등록되었습니다."));
-      void journalStore.fetchDays().then(() => {
-        if (savedDate) scrollToDay(savedDate);
-      });
+      await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
+      refreshCurrentDayView(savedChapterId, savedDate);
     } else {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }

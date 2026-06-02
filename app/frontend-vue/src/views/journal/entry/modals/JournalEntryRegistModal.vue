@@ -309,12 +309,19 @@ function scrollToSavedPositionWhenReady(entryId?: number | string, stdrdDt?: str
       return;
     }
     const dayEl = stdrdDt ? document.getElementById(`journal-day-${stdrdDt}`) : null;
-    if (dayEl) {
+    if (dayEl && !entryId) {
       dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    if (attempt < 8) {
-      window.setTimeout(() => scrollToSavedPositionWhenReady(entryId, stdrdDt, attempt + 1), 80);
+    if (attempt < 16) {
+      window.setTimeout(() => scrollToSavedPositionWhenReady(entryId, stdrdDt, attempt + 1), 100);
+      return;
+    }
+    if (dayEl) {
+      console.warn("[JournalEntryRegistModal] saved entry scroll target not found; fallback to day.", { entryId, stdrdDt });
+      dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      console.warn("[JournalEntryRegistModal] saved entry/day scroll target not found.", { entryId, stdrdDt });
     }
   });
 }
@@ -397,6 +404,8 @@ async function submit() {
   if (submitting.value) return;
   if (!model.value) return;
   const wasModify = isModify.value;
+  const fallbackEntryId = model.value.id;
+  const fallbackDate = model.value.stdrdDt;
   submitting.value = true;
   try {
     const confirmed = await swalConfirm(wasModify ? "수정하시겠습니까?" : "등록하시겠습니까?");
@@ -418,8 +427,8 @@ async function submit() {
     if (showTag.value) formData.append("tag.tagListStr", model.value.tag?.tagListStrWithCtgr ?? "");
 
     /* 등록/수정 API 는 모두 POST (backend @PostMapping) */
-    const url = isModify.value
-      ? `/api/journal/entry/${model.value.id}`
+    const url = wasModify
+      ? `/api/journal/entry/${fallbackEntryId}`
       : "/api/journal/entries";
     const res = await axios.post(url, formData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -432,8 +441,8 @@ async function submit() {
           model.value.contentType,
         );
       }
-      const savedEntryId = resolveSavedEntryId(res.data ?? {}, model.value.id);
-      const savedDate = resolveSavedDate(res.data ?? {}, model.value.stdrdDt);
+      const savedEntryId = resolveSavedEntryId(res.data ?? {}, fallbackEntryId);
+      const savedDate = resolveSavedDate(res.data ?? {}, fallbackDate);
       close();
       await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
       refreshCurrentDayView(savedEntryId, savedDate);
