@@ -1,4 +1,4 @@
-﻿# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
+# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
 
 > 공통 Freemarker 매크로(checkbox, modal_header 등)는 ``common/component-spec.md`` 참조.
 
@@ -18,7 +18,7 @@
 <div id="journal_tag_header" class="mb-6 ms-4 w-100">
   <!-- 일자 태그 행 -->
   <div id="journal_day_tag_header" class="row align-items-center mb-4 ms-4 min-h-42px">
-    <div class="col-auto d-none d-md-flex ms-4 me-6 text-center fs-6"><b>일자 태그 :</b></div>
+    <div class="journal-tag-header__label col-auto d-none d-md-flex ms-4 me-6 text-center fs-6"><b>일자 태그 :</b></div>
     <div class="col flex-grow-1" id="journal_day_tag_list_div"><!-- Handlebars 태그 렌더 --></div>
     <div class="col-auto d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
     <div class="col-auto d-none d-md-flex ms-4 me-20 text-center fs-6 gap-3">
@@ -56,6 +56,8 @@
 | `TagCloudItem` | `{ id: number|string, name: string, ctgr?: string, contentSize: number, textClass?: string }` |
 
 **태그 크기 클래스**: `.ts-1` ~ `.ts-9` (`src/styles/components/tag.scss`) — `textClass` 필드로 전달
+
+**가로 정렬 계약**: 일자/일기/꿈 태그 3행의 태그 목록 시작 x좌표는 동일해야 한다. `꿈 태그` 라벨이 한 글자 짧다는 이유로 태그 목록이 왼쪽으로 들어오면 실패다. Vue 구현은 라벨 컬럼에 `.journal-tag-header__label { width: 6.25rem; justify-content: center; }`를 적용해 3행 모두 같은 라벨 폭을 사용한다.
 
 **초기화 타이밍**:
 - 월간/주간 parent view가 `store.viewType`과 기간 상태를 먼저 설정한 뒤 `store.fetchTagCloud()` 호출
@@ -445,6 +447,10 @@ interface TodoRow {
 **클라이언트 접힘 토글**: 왼쪽 열 `#sortOrder` 아래 `bi-arrows-expand`/`bi-arrows-collapse` 버튼 — 서버 상태 무변경, `localCollapsedOverride ref`로 임시 제어
 
 **태그 클릭**: `@click.stop="openTagContextMenu($event, tag)"` → `tagContextMenuStore.open(event, payload)`
+
+**꿈 태그 프로필 표시**: 펼쳐진 `JOURNAL_DREAM` 엔트리에서만 `tag.list[].profileContent` 값이 있는 태그 프로필을 엔트리 태그 줄 아래에 표시한다. 접힌 엔트리와 일기/노트 엔트리는 같은 필드가 응답에 있더라도 렌더하지 않는다. 태그 줄은 기존 검색/설정용 태그 역할 그대로 유지하고, 프로필은 그 아래에서 `#태그명 | 프로필 내용` 구조로 별도 표시한다. 프로필 태그명 칸은 고정폭(`4.5rem`)으로 두어 여러 프로필 행의 본문 시작선이 맞아야 한다. 태그 프로필 본문은 `.journal-dream-tag-profile__content { white-space: pre-line; }` 로 줄바꿈을 보존한다.
+
+**데이터 보강**: 백엔드 `TagProfileService.applyProfileContent(...)`가 사용자별 `tag_profile.content`를 `TagContentDto.profileContent`에 병합한다. 월간/주간/일간 일자 응답은 `JournalDayQueryService`, 검색/연간/상세 엔트리 응답은 `JournalEntryMyViewService`에서 `JOURNAL_DREAM`에 한정해 병합한다.
 
 **스크롤 앵커**: root 요소는 `:id="'journal-entry-' + entry.id"`와 `:data-id="entry.id"`를 가진다. 메인 월간/주간 목록은 id를, 일자 상세 팝업 내부 스크롤은 modal 내부 `[data-id]`를 사용한다.
 

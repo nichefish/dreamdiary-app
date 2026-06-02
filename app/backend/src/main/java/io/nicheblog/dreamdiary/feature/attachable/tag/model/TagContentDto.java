@@ -53,6 +53,9 @@ public class TagContentDto
     @Size(max = 50)
     private String name;
 
+    /** 태그 프로필 본문 */
+    private String profileContent;
+
     /* ----- */
 
     /**
