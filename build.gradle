@@ -59,6 +59,14 @@ sourceSets {
             srcDirs = ["$projectDir/app/backend/src/main/resources"]
 		}
 	}
+    test {
+        java {
+            srcDirs = ["$projectDir/app/backend/src/test/java"]
+        }
+        resources {
+            srcDirs = ["$projectDir/app/backend/src/test/resources"]
+        }
+    }
 }
 
 /**

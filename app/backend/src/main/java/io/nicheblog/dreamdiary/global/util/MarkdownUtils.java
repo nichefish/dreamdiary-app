@@ -240,6 +240,108 @@ public class MarkdownUtils {
             }
         }
 
+        /*
+         * BEFORE: pasted or editor-generated paragraphs stored as one <p> with
+         * direct <br> separators rendered without legacy paragraph spacing.
+         * AFTER: direct <br> separators split that paragraph into separate <p>
+         * nodes so registered editor content keeps the legacy paragraph unit.
+         */
+        final int splitParagraphCount = splitParagraphsByDirectLineBreak(doc);
+        if (splitParagraphCount > 0) log.debug("MarkdownUtils.normalize split paragraphs by direct br. count={}", splitParagraphCount);
+
         return doc.body().html();
+    }
+
+    /**
+     * 단일 문단 내부의 직접 자식 br 기준 문단 분리
+     *
+     * @param doc Document
+     * @return int 분리된 문단 수
+     */
+    private static int splitParagraphsByDirectLineBreak(final Document doc) {
+        int splitCount = 0;
+        final List<Element> paragraphs = new ArrayList<>(doc.select("p"));
+
+        for (final Element paragraph : paragraphs) {
+            final List<List<Node>> segments = splitChildNodesByDirectBr(paragraph);
+            if (segments.size() <= 1) continue;
+
+            final List<List<Node>> meaningfulSegments = new ArrayList<>();
+            for (final List<Node> segment : segments) {
+                if (hasMeaningfulContent(segment)) meaningfulSegments.add(segment);
+            }
+            if (meaningfulSegments.size() <= 1) continue;
+
+            final Element firstParagraph = createParagraphWithNodes(paragraph, meaningfulSegments.get(0));
+            paragraph.replaceWith(firstParagraph);
+
+            Element cursor = firstParagraph;
+            for (int i = 1; i < meaningfulSegments.size(); i++) {
+                final Element nextParagraph = createParagraphWithNodes(paragraph, meaningfulSegments.get(i));
+                cursor.after(nextParagraph);
+                cursor = nextParagraph;
+            }
+            splitCount += meaningfulSegments.size() - 1;
+        }
+
+        return splitCount;
+    }
+
+    /**
+     * 직접 자식 br을 기준으로 자식 노드 목록 분할
+     *
+     * @param paragraph Element
+     * @return List&lt;List&lt;Node&gt;&gt;
+     */
+    private static List<List<Node>> splitChildNodesByDirectBr(final Element paragraph) {
+        final List<List<Node>> segments = new ArrayList<>();
+        List<Node> currentSegment = new ArrayList<>();
+
+        for (final Node child : paragraph.childNodes()) {
+            if (child instanceof Element childElement && childElement.tagName().equalsIgnoreCase("br")) {
+                segments.add(currentSegment);
+                currentSegment = new ArrayList<>();
+                continue;
+            }
+            currentSegment.add(child.clone());
+        }
+        segments.add(currentSegment);
+
+        return segments;
+    }
+
+    /**
+     * 원본 문단 속성을 보존한 새 문단 생성
+     *
+     * @param paragraph Element
+     * @param nodes List&lt;Node&gt;
+     * @return Element
+     */
+    private static Element createParagraphWithNodes(final Element paragraph, final List<Node> nodes) {
+        final Element newParagraph = paragraph.clone();
+        newParagraph.empty();
+        for (final Node node : nodes) {
+            newParagraph.appendChild(node);
+        }
+        return newParagraph;
+    }
+
+    /**
+     * 공백만 남은 br 분리 조각 제외
+     *
+     * @param nodes List&lt;Node&gt;
+     * @return boolean
+     */
+    private static boolean hasMeaningfulContent(final List<Node> nodes) {
+        for (final Node node : nodes) {
+            if (node instanceof TextNode textNode) {
+                if (!textNode.getWholeText().replace('\u00A0', ' ').trim().isEmpty()) return true;
+                continue;
+            }
+            if (node instanceof Element element && element.tagName().equalsIgnoreCase("br")) continue;
+            return true;
+        }
+
+        return false;
     }
 }
