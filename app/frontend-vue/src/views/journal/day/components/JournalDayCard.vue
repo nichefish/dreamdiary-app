@@ -342,9 +342,9 @@ function gotoWeekly(): void {
 /** 일자 뷰(daily) 새 창으로 열기 — features 지정으로 탭이 아닌 새 창 강제 */
 function openDayView(): void {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const w = Math.min(1200, window.screen.availWidth);
-  const h = Math.min(900, window.screen.availHeight);
-  window.open(`${base}/journal/daily?stdrdDt=${props.day.stdrdDt}`, "_blank", `width=${w},height=${h},left=100,top=60`);
+  const w = Math.min(1600, window.screen.availWidth);
+  const h = Math.min(1080, window.screen.availHeight);
+  window.open(`${base}/journal/daily?stdrdDt=${props.day.stdrdDt}`, "_blank", `width=${w},height=${h}`);
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */

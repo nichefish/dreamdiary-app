@@ -7,7 +7,16 @@
       <button type="button" class="btn btn-sm btn-light-primary" @click="movePrev">
         <i class="bi bi-chevron-left"></i> 이전
       </button>
-      <span class="fs-5 fw-bold">{{ currentDt }}</span>
+      <!--begin::날짜 선택 (클릭 시 달력 피커 오픈)-->
+      <input
+        type="date"
+        :value="currentDt"
+        class="fs-5 fw-bold text-center border-0 bg-transparent"
+        style="cursor: pointer; width: 12rem;"
+        title="날짜 선택"
+        @change="onDateSelect"
+      />
+      <!--end::날짜 선택-->
       <button type="button" class="btn btn-sm btn-light-primary" @click="moveNext">
         다음 <i class="bi bi-chevron-right"></i>
       </button>
@@ -63,14 +72,28 @@ const currentDt = computed(() => (route.query.stdrdDt as string | undefined) ?? 
 
 function load(stdrdDt?: string): void {
   store.setViewType("DAILY");
-  void store.fetchDays({ viewType: "DAILY", stdrdDt });
+  // stdrdDt 에서 yy·mnth 를 추출해 명시적으로 전달한다.
+  // fetchDays 내부의 store.yy/mnth 기본값(현재 날짜)이 적용되면 백엔드 필터와 불일치하여 빈 결과가 반환된다.
+  const parsedYy = stdrdDt ? parseInt(stdrdDt.slice(0, 4), 10) : undefined;
+  const parsedMnth = stdrdDt ? parseInt(stdrdDt.slice(5, 7), 10) : undefined;
+  void store.fetchDays({ viewType: "DAILY", stdrdDt, yy: parsedYy, mnth: parsedMnth });
 }
 
-/** stdrdDt 에서 n일 이동한 날짜 문자열 반환 */
+/** stdrdDt 에서 n일 이동한 날짜 문자열 반환 (로컬 날짜 파싱 — UTC 오프셋 문제 방지) */
 function shiftDate(stdrdDt: string, days: number): string {
-  const d = new Date(stdrdDt);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  const [y, m, d] = stdrdDt.split("-").map(Number);
+  const date = new Date(y, m - 1, d + days);
+  const yy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
+/** 달력 피커에서 날짜 선택 시 해당 날짜로 이동 */
+function onDateSelect(event: Event): void {
+  const target = event.target as HTMLInputElement | null;
+  if (!target?.value) return;
+  void router.replace({ query: { stdrdDt: target.value } });
 }
 
 function movePrev(): void {

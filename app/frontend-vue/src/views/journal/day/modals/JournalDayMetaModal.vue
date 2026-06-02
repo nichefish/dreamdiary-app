@@ -397,8 +397,8 @@ function otherTagItems(day: JournalDayDto): TagItem[] {
 function openDailyView(stdrdDt: string | undefined): void {
   if (!stdrdDt) return;
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const w = Math.min(1200, window.screen.availWidth);
-  const h = Math.min(900, window.screen.availHeight);
-  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h},left=100,top=60`);
+  const w = Math.min(1600, window.screen.availWidth);
+  const h = Math.min(1080, window.screen.availHeight);
+  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h}`);
 }
 </script>
