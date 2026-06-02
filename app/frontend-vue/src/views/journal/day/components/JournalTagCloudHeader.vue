@@ -2,7 +2,7 @@
   <div id="journal_tag_header" class="mb-6 ms-4 w-100">
     <template v-for="row in rows" :key="row.id">
       <div :id="row.id" class="row align-items-center mb-4 ms-4 min-h-42px">
-        <div class="col-auto d-none d-md-flex ms-4 me-6 text-center fs-6">
+        <div class="journal-tag-header__label col-auto d-none d-md-flex ms-4 me-6 text-center fs-6">
           <b>{{ row.label }} :</b>
         </div>
         <div class="col flex-grow-1">
@@ -82,6 +82,11 @@ function openTagContextMenu(event: MouseEvent, tag: TagCloudItem, contentType: s
 </script>
 
 <style scoped>
+.journal-tag-header__label {
+  width: 6.25rem;
+  justify-content: center;
+}
+
 .tag-count {
   margin-left: 0.2em;
 }

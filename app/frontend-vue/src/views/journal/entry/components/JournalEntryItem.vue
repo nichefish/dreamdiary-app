@@ -62,6 +62,20 @@
       </div>
       <!--end::엔트리 태그-->
 
+      <!--begin::꿈 태그 프로필-->
+      <div v-if="!isCollapsed && dreamTagProfileList.length > 0" class="journal-dream-tag-profiles">
+        <div
+          v-for="tag in dreamTagProfileList"
+          :key="'profile-' + tag.tagId"
+          class="journal-dream-tag-profile"
+        >
+          <span class="journal-dream-tag-profile__tag">#{{ tag.name }}</span>
+          <span class="journal-dream-tag-profile__divider"></span>
+          <span class="journal-dream-tag-profile__content">{{ tag.profileContent }}</span>
+        </div>
+      </div>
+      <!--end::꿈 태그 프로필-->
+
       <!--begin::관련글-->
       <div v-if="relatedList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
         <div
@@ -360,6 +374,11 @@ function hasState(key: string): boolean {
 }
 
 const tagList = computed(() => props.entry.tag?.list ?? []);
+/** 변경 전: 태그 프로필은 설정 모달에서만 보였음. 변경 후: 꿈 엔트리에서만 본문 아래에 프로필을 표시. */
+const dreamTagProfileList = computed(() => {
+  if (!(props.isDream || props.entry.contentType === "JOURNAL_DREAM")) return [];
+  return tagList.value.filter((tag) => typeof tag.profileContent === "string" && tag.profileContent.trim() !== "");
+});
 const relatedList = computed(() => props.entry.relatedContentList ?? []);
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const interpretationList = computed(() => props.entry.journalInterpretationList ?? []);

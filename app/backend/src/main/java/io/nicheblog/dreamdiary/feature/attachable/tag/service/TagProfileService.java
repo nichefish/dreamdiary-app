@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagCategoryProfileE
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagProfileEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.mapstruct.TagProfileMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagProfileDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagCategoryProfileRepository;
@@ -155,6 +156,43 @@ public class TagProfileService
             tag.setTextClassCd(semantic.getKey());
             tag.setTextClass(toCssTextClass(tag.getTextClassCd()));
         });
+    }
+
+    /**
+     * 태그-컨텐츠 목록에 사용자별 태그 프로필 본문을 병합한다.
+     * <p>변경 전: 태그 프로필 본문은 설정 모달에서만 조회되어 목록 엔트리 하단에 표시할 수 없었다.</p>
+     * <p>변경 후: 호출자가 지정한 컨텐츠 타입의 태그 프로필 본문을 같은 DTO 트리에 싣는다.</p>
+     *
+     * @param tagList 태그-컨텐츠 목록
+     * @param contentType 컨텐츠 타입
+     */
+    @Transactional(readOnly = true)
+    public void applyProfileContent(final List<TagContentDto> tagList, final String contentType) {
+        if (CollectionUtils.isEmpty(tagList) || StringUtils.isBlank(contentType)) return;
+        final String createdBy = AuthUtils.getLoginUsername();
+        if (StringUtils.isBlank(createdBy)) {
+            log.warn("[TagProfileService] 태그 프로필 본문 병합 생략: 로그인 사용자 없음");
+            return;
+        }
+
+        final List<Integer> tagIdList = tagList.stream()
+                .map(TagContentDto::getTagId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (CollectionUtils.isEmpty(tagIdList)) return;
+
+        final Map<Integer, String> profileContentMap = repository.findAllByTagIdInAndContentTypeAndCreatedBy(tagIdList, contentType, createdBy)
+                .stream()
+                .filter(profile -> StringUtils.isNotBlank(profile.getContent()))
+                .collect(Collectors.toMap(
+                        TagProfileEntity::getTagId,
+                        TagProfileEntity::getContent,
+                        (left, right) -> left
+                ));
+        if (profileContentMap.isEmpty()) return;
+
+        tagList.forEach(tag -> tag.setProfileContent(profileContentMap.get(tag.getTagId())));
     }
 
     @Transactional
@@ -333,4 +371,3 @@ public class TagProfileService
         return "text-" + normalized.toLowerCase(Locale.ROOT);
     }
 }
-

@@ -15,6 +15,8 @@ export interface TagItem {
   name: string;
   /** 태그 카테고리 코드 */
   ctgr?: string;
+  /** 태그 프로필 본문 */
+  profileContent?: string;
 }
 
 /** TagCmpstn 공통 컴포지션 — 백엔드 TagCmpstn 직렬화 구조 */

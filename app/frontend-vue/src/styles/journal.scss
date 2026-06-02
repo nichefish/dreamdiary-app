@@ -461,6 +461,35 @@ $journal-paired-states: (
     p {
         color: rgba(95, 0, 130, 0.8);
     }
+    .journal-dream-tag-profiles {
+        margin: 0.15rem 0 0.1rem 0.5rem;
+        padding-left: 0.3rem;
+        color: rgba(94, 98, 120, 0.78);
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+    .journal-dream-tag-profile {
+        display: flex;
+        gap: 0.35rem;
+        align-items: flex-start;
+    }
+    .journal-dream-tag-profile__tag {
+        flex: 0 0 4.5rem;
+        color: rgba(27, 132, 255, 0.82);
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+    .journal-dream-tag-profile__divider {
+        flex: 0 0 auto;
+        width: 1px;
+        min-height: 1.1em;
+        margin-top: 0.15em;
+        background: rgba(148, 163, 184, 0.42);
+    }
+    .journal-dream-tag-profile__content {
+        white-space: pre-line;
+        min-width: 0;
+    }
     .text-comment {
         p {
             color: #ed7000 !important;

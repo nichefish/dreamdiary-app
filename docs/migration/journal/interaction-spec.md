@@ -293,6 +293,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **태그 설정 액션**:
 - `GET /api/tags/{tagId}/profile?contentType=...` 로 기존 프로필 조회
 - `attachableStore.openTagProfile(...)` 로 태그 프로필 모달 오픈
+- 저장된 `JOURNAL_DREAM` 태그 프로필 본문은 목록/검색/상세의 꿈 엔트리 본문 아래에 표시된다. 일기(`JOURNAL_DIARY`) 태그 프로필은 설정 모달과 태그 색상 의미에만 사용하고, 엔트리 본문 아래에는 표시하지 않는다.
 
 **중요 보존 규칙**:
 - 일기/꿈 태그 검색은 현재 목록의 `diaryKeyword` / `dreamKeyword` 필터로 대체하지 않는다.
