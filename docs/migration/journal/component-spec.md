@@ -543,6 +543,9 @@ interface TodoRow {
 - 결과 태그 클릭 컨텍스트 메뉴(`JournalTagContextMenu`)와 태그 프로필 모달(`JournalTagProfileModal`) 마운트
 - 검색 팝업 내부 태그 검색은 같은 창 query 갱신으로 반영
 - 엔트리 수정 저장 성공 시 `JournalEntryRegistModal` `success` 이벤트로 현재 검색 목록 재조회 후 저장 위치 스크롤
+- 검색 결과에 포함된 저널 해석의 수정 액션은 같은 창에서 `JournalInterpretationRegistModal`을 열어야 한다. 검색 팝업이 이 모달을 직접 마운트하며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회로 제목/본문/순번을 채운 뒤 모달을 열어야 한다. 저장 성공 후 모달 내부의 `journalStore.fetchDays()` 완료 신호를 `JournalEntrySearchPage`가 감지해 현재 검색 목록을 재조회한다.
+- `JournalInterpretationRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 해석 등록/수정이 가능해야 한다.
+- 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
 
 **남은 legacy 동등성 확인 대상**:
 - 결과 전체 복사 버튼

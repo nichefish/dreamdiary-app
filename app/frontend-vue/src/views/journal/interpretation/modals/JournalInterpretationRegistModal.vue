@@ -179,10 +179,6 @@ function close() {
 /** 등록/수정 처리 (axios multipart). 해석 API는 등록/수정 모두 POST. */
 async function submit() {
   if (!model.value) return;
-  if (!model.value.title) {
-    void swalAlert("제목을 입력해 주세요.");
-    return;
-  }
 
   const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;

@@ -132,10 +132,19 @@
         <!--begin::날짜 헤더 (날짜가 바뀔 때만)-->
         <div
           v-if="idx === 0 || entry.stdrdDt !== entries[idx - 1].stdrdDt"
-          class="text-gray-700 fw-bold fs-6 ps-2 pt-3 pb-1"
+          class="d-flex align-items-center gap-2 text-gray-700 fw-bold fs-6 ps-2 pt-3 pb-1"
         >
-          {{ entry.stdrdDt }}
-          <span v-if="entry.stdrdDt" class="text-muted fs-7 ms-1">({{ getWeekDayStr(entry.stdrdDt) }})</span>
+          <span>{{ entry.stdrdDt }}</span>
+          <span v-if="entry.stdrdDt" class="text-muted fs-7">({{ getWeekDayStr(entry.stdrdDt) }})</span>
+          <button
+            v-if="entry.stdrdDt"
+            type="button"
+            class="btn btn-xs btn-icon btn-light-primary"
+            title="새 창으로 보기 (일자 뷰)"
+            @click="openDailyView(entry.stdrdDt)"
+          >
+            <i class="bi bi-box-arrow-up-right fs-8"></i>
+          </button>
         </div>
         <!--end::날짜 헤더-->
         <JournalEntryItem
@@ -149,6 +158,7 @@
 
     <!--begin::모달 컨테이너-->
     <JournalEntryRegistModal @success="onEntrySaveSuccess" />
+    <JournalInterpretationRegistModal />
     <CommentRegistModal />
     <CommentListModal />
     <HistoryModal @success="onHistorySuccess" />
@@ -177,6 +187,7 @@ import { getWeekDayStr } from "@/utils/journalDate";
 import { reinitMetronicAfterDom } from "@/utils/metronicReinit";
 import JournalEntryItem from "./components/JournalEntryItem.vue";
 import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
+import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
 import CommentRegistModal from "../shared/modals/CommentRegistModal.vue";
 import CommentListModal from "@/views/attachable/CommentListModal.vue";
 import HistoryModal from "@/views/attachable/HistoryModal.vue";
@@ -388,6 +399,15 @@ function exportTxt(): void {
   window.location.href = `/api/journal/entries/export?${params.toString()}`;
 }
 
+/** 일자 뷰를 새 창으로 연다. */
+function openDailyView(stdrdDt: string | undefined): void {
+  if (!stdrdDt) return;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const w = Math.min(1600, window.screen.availWidth);
+  const h = Math.min(1080, window.screen.availHeight);
+  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h}`);
+}
+
 async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void> {
   const entryId = payload?.entryId;
   if (!entryId) {
@@ -502,5 +522,9 @@ watch(() => journalStore.loading, (newVal, oldVal) => {
 
 .journal-entry-search-input {
   max-width: 28rem;
+}
+
+.journal-entry-search-page :deep(.journal-interpretation-item) {
+  margin-top: 0.35rem !important;
 }
 </style>

@@ -334,15 +334,38 @@ export const useJournalModalStore = defineStore("journalModal", () => {
 
   /**
    * 해석 등록/수정 모달을 연다.
-   * @param payload - 수정 시 기존 데이터, 신규 시 refId 등 초기값
+   * 변경 전: 수정(id 있음) 호출도 caller payload만 사용해 제목/본문이 비어 있을 수 있었다.
+   * 변경 후: 수정(id 있음) 호출은 상세 API를 먼저 조회해 실제 저장값을 폼 모델로 사용한다.
+   * @param payload - 수정 시 식별자, 신규 시 refId 등 초기값
    */
-  function openInterpretationRegist(payload?: JournalInterpretationRegistModel) {
-    interpretationRegistModel.value = {
+  async function openInterpretationRegist(payload?: JournalInterpretationRegistModel): Promise<void> {
+    let merged: JournalInterpretationRegistModel = {
       ctgrCd: "",
       title: "",
       content: "",
       ...payload,
     };
+    if (payload?.id) {
+      try {
+        const res = await axios.get(`/api/journal/interpretation/${payload.id}`);
+        const dto = res.data?.rsltObj as JournalInterpretationRegistModel | undefined;
+        if (!res.data?.rslt || !dto?.id) {
+          console.error("[journalModal] openInterpretationRegist 상세 조회 결과 없음 id=", payload.id);
+          return;
+        }
+        merged = {
+          ...merged,
+          ...dto,
+          refId: dto.refId ?? merged.refId,
+          refContentType: dto.refContentType ?? merged.refContentType,
+          stdrdDt: dto.stdrdDt ?? merged.stdrdDt,
+        };
+      } catch (e: unknown) {
+        console.error("[journalModal] openInterpretationRegist 상세 조회 실패 id=", payload.id, e);
+        return;
+      }
+    }
+    interpretationRegistModel.value = merged;
     interpretationRegistOpen.value = true;
   }
 
