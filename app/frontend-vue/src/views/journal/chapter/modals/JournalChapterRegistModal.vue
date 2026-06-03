@@ -161,6 +161,7 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
@@ -280,19 +281,7 @@ function scrollToSavedPositionWhenReady(chapterId?: number | string, stdrdDt?: s
 function refreshCurrentDayView(chapterId?: number | string, stdrdDt?: string): void {
   const afterFetch = () => scrollToSavedPosition(chapterId, stdrdDt);
 
-  if (route.name === "journal-weekly") {
-    journalStore.setViewType("WEEKLY");
-    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
-    return;
-  }
-
-  if (route.name === "journal-monthly") {
-    journalStore.setViewType("LIST");
-    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
-    return;
-  }
-
-  void journalStore.fetchDays().then(afterFetch);
+  void refreshJournalDaysForRoute(journalStore, route, stdrdDt).then(afterFetch);
 }
 
 function parseSavedChapterId(value: unknown): string | null {

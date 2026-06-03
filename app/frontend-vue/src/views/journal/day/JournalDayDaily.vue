@@ -61,6 +61,7 @@ import { computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useJournalStore } from "@/stores/journal";
 import { useJournalModalStore } from "@/stores/journalModal";
+import { buildDailyFetchParams } from "@/utils/journalDayRefresh";
 import JournalDayCard from "./components/JournalDayCard.vue";
 
 const store = useJournalStore();
@@ -74,9 +75,11 @@ function load(stdrdDt?: string): void {
   store.setViewType("DAILY");
   // stdrdDt 에서 yy·mnth 를 추출해 명시적으로 전달한다.
   // fetchDays 내부의 store.yy/mnth 기본값(현재 날짜)이 적용되면 백엔드 필터와 불일치하여 빈 결과가 반환된다.
-  const parsedYy = stdrdDt ? parseInt(stdrdDt.slice(0, 4), 10) : undefined;
-  const parsedMnth = stdrdDt ? parseInt(stdrdDt.slice(5, 7), 10) : undefined;
-  void store.fetchDays({ viewType: "DAILY", stdrdDt, yy: parsedYy, mnth: parsedMnth });
+  if (stdrdDt?.trim()) {
+    void store.fetchDays(buildDailyFetchParams(stdrdDt));
+  } else {
+    void store.fetchDays({ viewType: "DAILY" });
+  }
 }
 
 /** stdrdDt 에서 n일 이동한 날짜 문자열 반환 (로컬 날짜 파싱 — UTC 오프셋 문제 방지) */

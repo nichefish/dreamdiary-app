@@ -244,6 +244,7 @@ import type { JournalDayDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
 import JournalDreamVirtualSection from "../../dream/components/JournalDreamVirtualSection.vue";
@@ -301,12 +302,13 @@ function openDayView(): void {
 function scrollAfterFetch(): void {
   const dt = props.day.stdrdDt;
   if (!dt) return;
-  void journalStore.fetchDays().then(() => {
+  const afterFetch = () => {
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  });
+  };
+  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
 }
 
 /** 접힘 상태 토글 (서버 반영 후 목록 갱신) */

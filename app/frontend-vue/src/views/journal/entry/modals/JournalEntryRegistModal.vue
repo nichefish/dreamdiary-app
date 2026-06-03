@@ -202,6 +202,7 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import type { JournalChapterOption } from "@/stores/journalModal";
 import { hasDreamerName } from "@/utils/journalDream";
 
@@ -346,19 +347,7 @@ async function refreshCurrentDayView(contentType?: string): Promise<boolean> {
   const detailRefreshed = await prepareOpenDayDetail();
   if (detailRefreshed) return true;
 
-  if (route.name === "journal-weekly") {
-    journalStore.setViewType("WEEKLY");
-    await journalStore.fetchDays({ viewType: "WEEKLY" });
-    return false;
-  }
-
-  if (route.name === "journal-monthly") {
-    journalStore.setViewType("LIST");
-    await journalStore.fetchDays({ viewType: "LIST" });
-    return false;
-  }
-
-  await journalStore.fetchDays();
+  await refreshJournalDaysForRoute(journalStore, route, model.value?.stdrdDt);
   return false;
 }
 

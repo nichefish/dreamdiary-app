@@ -165,6 +165,7 @@ import axios from "axios";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import type { JournalChapterDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
@@ -306,19 +307,7 @@ function scrollAfterFetch(stdrdDt = props.chapter.stdrdDt): void {
     });
   };
 
-  if (route.name === "journal-weekly") {
-    journalStore.setViewType("WEEKLY");
-    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
-    return;
-  }
-
-  if (route.name === "journal-monthly") {
-    journalStore.setViewType("LIST");
-    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
-    return;
-  }
-
-  void journalStore.fetchDays().then(afterFetch);
+  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
 }
 
 /** 챕터 접힘 상태 토글 (서버 반영 후 목록 갱신 — ⋯ 메뉴 전용) */

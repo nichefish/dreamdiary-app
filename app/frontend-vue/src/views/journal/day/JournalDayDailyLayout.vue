@@ -25,7 +25,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from "vue-router";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
 import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
 import JournalChapterRegistModal from "../chapter/modals/JournalChapterRegistModal.vue";
@@ -41,9 +43,10 @@ import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue"
 import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
 
 const journalStore = useJournalStore();
+const route = useRoute();
 
 /** 이력 복원/삭제 성공 시 일지 목록을 다시 조회한다. */
 function onHistorySuccess(): void {
-  void journalStore.fetchDays();
+  void refreshJournalDaysForRoute(journalStore, route);
 }
 </script>

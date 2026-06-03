@@ -71,9 +71,12 @@ import { Modal } from "bootstrap";
 import axios from "axios";
 import { useAttachableModalStore } from "@/stores/attachableModal";
 import { useJournalStore } from "@/stores/journal";
+import { useRoute } from "vue-router";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
@@ -133,7 +136,7 @@ async function submit() {
     if (res.data?.rslt) {
       close();
       await swalAlert(res.data?.message ?? (isModify ? "수정되었습니다." : "등록되었습니다."));
-      void journalStore.fetchDays();
+      void refreshJournalDaysForRoute(journalStore, route);
     } else {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
