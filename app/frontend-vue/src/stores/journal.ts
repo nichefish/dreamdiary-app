@@ -229,6 +229,8 @@ export interface TagCloudItem {
   textClass?: string;
 }
 
+export type TagCloudSection = "day" | "diary" | "dream";
+
 /** 태그 클라우드 결과 — 일자/일기/꿈 태그 목록 */
 export interface JournalTagCloud {
   /** 일자 태그 목록 */
@@ -290,7 +292,8 @@ export const useJournalStore = defineStore("journal", () => {
   const tagCloud = ref<JournalTagCloud>({ dayTagList: [], diaryTagList: [], dreamTagList: [] });
   /** 태그 클라우드 로딩 상태 */
   const tagCloudLoading = ref<boolean>(false);
-  let tagCloudRequestSeq = 0;
+  const tagCloudRequestSeq: Record<TagCloudSection, number> = { day: 0, diary: 0, dream: 0 };
+  let tagCloudLoadingCount = 0;
 
   /** 현재 "년-월" 표시 라벨 */
   const yyMnthLabel = computed(() =>
@@ -397,30 +400,58 @@ export const useJournalStore = defineStore("journal", () => {
   /**
    * 태그 클라우드 조회.
    */
-  async function fetchTagCloud() {
-    const requestSeq = ++tagCloudRequestSeq;
+  async function fetchTagCloud(options: { sections?: TagCloudSection[] } = {}) {
+    const sections: TagCloudSection[] = options.sections?.length
+      ? options.sections
+      : ["day", "diary", "dream"];
+    const sectionSeq = Object.fromEntries(
+      sections.map((section) => [section, ++tagCloudRequestSeq[section]])
+    ) as Record<TagCloudSection, number>;
+    tagCloudLoadingCount += 1;
     tagCloudLoading.value = true;
     try {
       const periodParams = getTagPeriodParams();
-      const [dayRes, diaryRes, dreamRes] = await Promise.all([
-        axios.get("/api/journal/day/tags", { params: periodParams }),
-        axios.get("/api/journal/entry/tags", { params: { ...periodParams, type: "DIARY" } }),
-        axios.get("/api/journal/entry/tags", { params: { ...periodParams, type: "DREAM" } }),
-      ]);
-      if (requestSeq !== tagCloudRequestSeq) return;
-      tagCloud.value = {
-        dayTagList: normalizeTagCloudList(dayRes.data?.rsltList),
-        diaryTagList: normalizeTagCloudList(diaryRes.data?.rsltList),
-        dreamTagList: normalizeTagCloudList(dreamRes.data?.rsltList),
-      };
-    } catch {
-      if (requestSeq === tagCloudRequestSeq) {
-        tagCloud.value = { dayTagList: [], diaryTagList: [], dreamTagList: [] };
-      }
+      await Promise.all(sections.map(async (section) => {
+        try {
+          if (section === "day") {
+            const res = await axios.get("/api/journal/day/tags", { params: periodParams });
+            if (sectionSeq.day === tagCloudRequestSeq.day) {
+              tagCloud.value = {
+                ...tagCloud.value,
+                dayTagList: normalizeTagCloudList(res.data?.rsltList),
+              };
+            }
+            return;
+          }
+          const type = section === "diary" ? "DIARY" : "DREAM";
+          const res = await axios.get("/api/journal/entry/tags", { params: { ...periodParams, type } });
+          if (section === "diary" && sectionSeq.diary === tagCloudRequestSeq.diary) {
+            tagCloud.value = {
+              ...tagCloud.value,
+              diaryTagList: normalizeTagCloudList(res.data?.rsltList),
+            };
+          }
+          if (section === "dream" && sectionSeq.dream === tagCloudRequestSeq.dream) {
+            tagCloud.value = {
+              ...tagCloud.value,
+              dreamTagList: normalizeTagCloudList(res.data?.rsltList),
+            };
+          }
+        } catch (e: unknown) {
+          console.error("[journal] fetchTagCloud failed", { section }, e);
+          if (sectionSeq[section] !== tagCloudRequestSeq[section]) return;
+          if (section === "day") {
+            tagCloud.value = { ...tagCloud.value, dayTagList: [] };
+          } else if (section === "diary") {
+            tagCloud.value = { ...tagCloud.value, diaryTagList: [] };
+          } else {
+            tagCloud.value = { ...tagCloud.value, dreamTagList: [] };
+          }
+        }
+      }));
     } finally {
-      if (requestSeq === tagCloudRequestSeq) {
-        tagCloudLoading.value = false;
-      }
+      tagCloudLoadingCount = Math.max(0, tagCloudLoadingCount - 1);
+      tagCloudLoading.value = tagCloudLoadingCount > 0;
     }
   }
 

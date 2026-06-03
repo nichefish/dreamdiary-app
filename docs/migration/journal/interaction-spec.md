@@ -267,6 +267,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **월간/주간 재조회 렌더 계약**: 기존 `dayList`가 있는 상태에서 `fetchDays()`가 다시 실행될 때는 본문을 전체 로딩 스피너로 교체하지 않는다. 기존 목록 DOM을 유지해야 문서 높이가 순간적으로 줄어들지 않고, 저장 후 스크롤 위치가 브라우저에 의해 `0`으로 클램프되지 않는다.
 
+**태그클라우드 갱신 범위 계약**: 저장 후 태그클라우드는 변경된 데이터 범위만 다시 조회한다. 저널 일자 저장은 `day`, `JOURNAL_DIARY` 엔트리 저장은 `diary`, `JOURNAL_DREAM` 엔트리 저장은 `dream` 섹션만 갱신한다. `JOURNAL_NOTE` 엔트리 저장과 저널 챕터 저장은 일자/일기/꿈 태그클라우드의 직접 변경이 아니므로 태그클라우드를 재조회하지 않는다.
+
 **엔트리 id SSOT**: `JournalEntryItem.vue` `:id="'journal-entry-' + entry.id"`, 검색 팝업은 `JournalEntrySearchPage.vue` 결과 article `:id="'journal-entry-search-' + entry.id"`.
 
 ---

@@ -310,12 +310,20 @@ function scrollDayDetailIfRefreshed(entryId?: number | string, detailRefreshed =
   scrollToDayDetailPosition(entryId);
 }
 
-async function refreshCurrentDayView(): Promise<boolean> {
+function refreshEntryTagCloud(contentType?: string): void {
+  if (contentType === "JOURNAL_DIARY") {
+    void journalStore.fetchTagCloud({ sections: ["diary"] });
+  } else if (contentType === "JOURNAL_DREAM") {
+    void journalStore.fetchTagCloud({ sections: ["dream"] });
+  }
+}
+
+async function refreshCurrentDayView(contentType?: string): Promise<boolean> {
   if (route.name === "journal-entry-search") {
     return false;
   }
 
-  void journalStore.fetchTagCloud();
+  refreshEntryTagCloud(contentType);
   const detailRefreshed = await prepareOpenDayDetail();
   if (detailRefreshed) return true;
 
@@ -408,6 +416,7 @@ async function submit() {
       }
       const savedEntryId = resolveSavedEntryId(res.data ?? {}, fallbackEntryId);
       const savedDate = resolveSavedDate(res.data ?? {}, fallbackDate);
+      const savedContentType = model.value.contentType;
       close();
       const successPayload = { entryId: savedEntryId, stdrdDt: savedDate, isModify: wasModify };
       const prepareTasks: Promise<void>[] = [];
@@ -426,7 +435,7 @@ async function submit() {
       if (route.name === "journal-entry-search") {
         emit("success", successPayload);
       } else {
-        const detailRefreshed = await refreshCurrentDayView();
+        const detailRefreshed = await refreshCurrentDayView(savedContentType);
         scrollDayDetailIfRefreshed(savedEntryId, detailRefreshed);
       }
     } else {

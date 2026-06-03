@@ -278,7 +278,6 @@ function scrollToSavedPositionWhenReady(chapterId?: number | string, stdrdDt?: s
 }
 
 function refreshCurrentDayView(chapterId?: number | string, stdrdDt?: string): void {
-  void journalStore.fetchTagCloud();
   const afterFetch = () => scrollToSavedPosition(chapterId, stdrdDt);
 
   if (route.name === "journal-weekly") {
