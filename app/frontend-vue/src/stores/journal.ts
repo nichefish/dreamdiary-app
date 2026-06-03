@@ -209,6 +209,8 @@ export interface JournalDaySearchParam {
   showTagCloud?: boolean;
   diaryKeyword?: string;
   dreamKeyword?: string;
+  diaryLifecycleKey?: string;
+  dreamLifecycleKey?: string;
   chapterCtgrCds?: string[];
   /** 정렬 (ASC/DESC) — 백엔드 JournalDaySearchParam.sort */
   sort?: "ASC" | "DESC";
@@ -277,6 +279,8 @@ export const useJournalStore = defineStore("journal", () => {
   );
   const diaryKeyword = ref<string>("");
   const dreamKeyword = ref<string>("");
+  const diaryLifecycleKey = ref<string>("");
+  const dreamLifecycleKey = ref<string>("");
   const chapterCtgrCds = ref<string[]>([]);
 
   /** 메타 목록 */
@@ -333,6 +337,8 @@ export const useJournalStore = defineStore("journal", () => {
         showTagCloud: params?.showTagCloud ?? showTagCloud.value,
         ...(diaryKeyword.value ? { diaryKeyword: diaryKeyword.value } : {}),
         ...(dreamKeyword.value ? { dreamKeyword: dreamKeyword.value } : {}),
+        ...(diaryLifecycleKey.value ? { diaryLifecycleKey: diaryLifecycleKey.value } : {}),
+        ...(dreamLifecycleKey.value ? { dreamLifecycleKey: dreamLifecycleKey.value } : {}),
         // axios 1.x 는 배열을 chapterCtgrCds[]=A 형식으로 직렬화해 Spring @ModelAttribute 바인딩이 안 됨.
         // normalizeChapterCtgrCds 가 콤마 구분 단일 문자열을 분리 처리하므로, join(',') 으로 전송.
         ...(chapterCtgrCds.value.length > 0 ? { chapterCtgrCds: chapterCtgrCds.value.join(",") } : {}),
@@ -567,6 +573,8 @@ export const useJournalStore = defineStore("journal", () => {
     sortOrder,
     diaryKeyword,
     dreamKeyword,
+    diaryLifecycleKey,
+    dreamLifecycleKey,
     chapterCtgrCds,
     metaList,
     selectedMetas,

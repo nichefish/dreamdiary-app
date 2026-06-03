@@ -215,6 +215,23 @@
         </div>
 
         <div>
+          <div class="text-muted fs-8 fw-bold mb-1">- DIARY LIFECYCLE</div>
+          <select
+            id="diaryLifecycleFilter"
+            v-model="store.diaryLifecycleKey"
+            class="form-select form-select-sm"
+            @change="store.fetchDays()"
+          >
+            <option value="">전체</option>
+            <option
+              v-for="option in lifecycleOptions"
+              :key="'diary-lifecycle-' + option.key"
+              :value="option.key"
+            >{{ option.label }}</option>
+          </select>
+        </div>
+
+        <div>
           <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
           <div class="input-group input-group-sm">
             <input
@@ -234,6 +251,23 @@
               <i class="bi bi-funnel fs-7"></i>
             </button>
           </div>
+        </div>
+
+        <div>
+          <div class="text-muted fs-8 fw-bold mb-1">- DREAM LIFECYCLE</div>
+          <select
+            id="dreamLifecycleFilter"
+            v-model="store.dreamLifecycleKey"
+            class="form-select form-select-sm"
+            @change="store.fetchDays()"
+          >
+            <option value="">전체</option>
+            <option
+              v-for="option in lifecycleOptions"
+              :key="'dream-lifecycle-' + option.key"
+              :value="option.key"
+            >{{ option.label }}</option>
+          </select>
         </div>
 
         <div>
@@ -336,6 +370,11 @@ interface ChapterCategoryOption {
 
 const chapterCategoryOptions = ref<ChapterCategoryOption[]>([]);
 const chapterCategoryLoading = ref(false);
+const lifecycleOptions = [
+  { key: "OPEN", label: "진행 중" },
+  { key: "PENDING", label: "보류" },
+  { key: "RESOLVED", label: "완료" },
+];
 
 /** 주간 요일 버튼 목록 (월~일) */
 const weekDays = computed(() => {
@@ -361,6 +400,8 @@ const hasActiveFilters = computed(() =>
   !store.showTagCloud ||
   store.diaryKeyword.trim() !== "" ||
   store.dreamKeyword.trim() !== "" ||
+  store.diaryLifecycleKey !== "" ||
+  store.dreamLifecycleKey !== "" ||
   store.chapterCtgrCds.length > 0
 );
 
@@ -469,6 +510,8 @@ async function resetFilters(): Promise<void> {
   store.showTagCloud = true;
   store.diaryKeyword = "";
   store.dreamKeyword = "";
+  store.diaryLifecycleKey = "";
+  store.dreamLifecycleKey = "";
   store.chapterCtgrCds = [];
   if (shouldRefreshTagCloud) {
     void store.fetchTagCloud();
