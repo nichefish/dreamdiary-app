@@ -11,7 +11,6 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrH
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
-import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -87,11 +86,8 @@ public class JournalDayDto
     /** 챕터 필터로 숨겨진 카테고리 목록 */
     private List<JournalChapterCtgrHintDto> hiddenChapterCtgrList;
 
-    /** 저널 꿈 목록 */
-    private List<JournalEntryDto> journalDreamList;
-
-    /** 저널 꿈(타인) 목록 */
-    private List<JournalEntryDto> journalElseDreamList;
+    /** 저널 꿈 가상 섹션 (내 꿈 + 꿈꾼 이름별) */
+    private List<JournalDreamSectionDto> journalDreamSectionList;
 
     /* ----- */
 
@@ -106,7 +102,7 @@ public class JournalDayDto
      * Getter :: 꿈 목록 보유 여부
      */
     public Boolean getHasDream() {
-        return !CollectionUtils.isEmpty(this.journalDreamList) || !CollectionUtils.isEmpty(this.journalElseDreamList);
+        return CollectionUtils.isNotEmpty(this.journalDreamSectionList);
     }
 
     /* ----- */

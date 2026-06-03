@@ -16,6 +16,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilt
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalDreamSectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
@@ -335,8 +336,7 @@ public class JournalDayQueryService {
         for (final JournalDayDto journalDay : listDto) {
             if (journalDay == null) continue;
             if (contentType == ContentType.JOURNAL_DREAM) {
-                forEachEntry(journalDay.getJournalDreamList(), consumer);
-                forEachEntry(journalDay.getJournalElseDreamList(), consumer);
+                JournalDreamSectionHelper.forEachDreamEntry(journalDay, consumer);
                 continue;
             }
             if (journalDay.getJournalChapterList() == null) continue;

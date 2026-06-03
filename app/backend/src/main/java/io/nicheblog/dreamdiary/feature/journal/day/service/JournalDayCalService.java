@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.mapstruct.JournalEntryCalMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryCalDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalDreamSectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class JournalDayCalService {
                 }
             }
 
-            final List<JournalEntryDto> myDreamList = journalDay.getJournalDreamList();
+            final List<JournalEntryDto> myDreamList = JournalDreamSectionHelper.getOwnDreamEntries(journalDay);
             if (CollectionUtils.isNotEmpty(myDreamList)) {
                 for (final JournalEntryDto journalDreamDto : myDreamList) {
                     final JournalEntryCalDto dreamCalDto = entryCalMapstruct.toCalDto(journalDreamDto);

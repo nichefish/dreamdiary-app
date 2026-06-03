@@ -8,6 +8,14 @@ export interface JournalEntry {
   stdrdDt?: string;
 }
 
+/** 백엔드 JournalDreamSectionDto */
+export interface JournalDreamSection {
+  sectionKey: string;
+  title: string;
+  dreamerName?: string | null;
+  entries?: JournalEntry[];
+}
+
 /** 백엔드 JournalChapterDto 최소 필드 */
 export interface JournalChapter {
   id: number;
@@ -29,7 +37,11 @@ export interface JournalDay {
   id: number;
   stdrdDt: string;
   journalChapterList?: JournalChapter[];
-  /** 챕터 외부 꿈 목록 */
-  journalDreamList?: JournalEntry[];
-  journalElseDreamList?: JournalEntry[];
+  /** 일자 화면용 꿈 가상 섹션 */
+  journalDreamSectionList?: JournalDreamSection[];
+}
+
+/** 일자 DTO 에서 모든 꿈 엔트리를 펼친다 */
+export function dreamEntriesFromDay(day: JournalDay | undefined): JournalEntry[] {
+  return (day?.journalDreamSectionList ?? []).flatMap((section) => section.entries ?? []);
 }

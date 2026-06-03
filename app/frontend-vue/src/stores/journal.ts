@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { formatLocalDateStr, resolveWeekStartDt } from "@/utils/journalDate";
 import { reinitMetronicAfterDom } from "@/utils/metronicReinit";
+import type { JournalDreamSectionDto } from "@/utils/journalDream";
 
 // ---- 타입 정의 ----
 
@@ -186,8 +187,7 @@ export interface JournalDayDto {
   holydayNm?: string;
   weather?: string;
   journalChapterList?: JournalChapterDto[];
-  journalDreamList?: JournalEntryDto[];
-  journalElseDreamList?: JournalEntryDto[];
+  journalDreamSectionList?: JournalDreamSectionDto[];
   /** 꿈 목록 보유 여부 — 백엔드 getHasDream() getter 직렬화 */
   hasDream?: boolean;
   /** 챕터 필터로 숨겨진 카테고리 목록 */

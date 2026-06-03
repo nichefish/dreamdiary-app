@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { getDailyJournalDay } from "../api/dreamDiaryApi";
 import type { JournalDay, JournalChapter, JournalEntry } from "../types/journalDay";
+import { dreamEntriesFromDay } from "../types/journalDay";
 
 export type UseJournalDayOptions = {
   /** 포커스 시 조용한 refresh (스피너 없음). 기본 true */
@@ -66,7 +67,7 @@ export function useJournalDay(
   }, [load]);
 
   const chapters = day?.journalChapterList ?? [];
-  const topDreams = day?.journalDreamList ?? [];
+  const topDreams = dreamEntriesFromDay(day);
   const hasAny = chapters.length > 0 || topDreams.length > 0;
 
   return {

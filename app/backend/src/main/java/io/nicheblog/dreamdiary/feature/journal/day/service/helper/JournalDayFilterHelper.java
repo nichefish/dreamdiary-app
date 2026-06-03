@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrH
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDreamSectionDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -94,11 +95,9 @@ public final class JournalDayFilterHelper {
                 }
             }
 
-            List<JournalEntryDto> filteredDreams = day.getJournalDreamList();
-            List<JournalEntryDto> filteredElseDreams = day.getJournalElseDreamList();
+            List<JournalDreamSectionDto> filteredDreamSections = day.getJournalDreamSectionList();
             if (filterDreams || filterDreamLifecycle) {
-                filteredDreams = filterDreamList(day.getJournalDreamList(), dreamKeyword, dreamLifecycleKey);
-                filteredElseDreams = filterDreamList(day.getJournalElseDreamList(), dreamKeyword, dreamLifecycleKey);
+                filteredDreamSections = filterDreamSections(day.getJournalDreamSectionList(), dreamKeyword, dreamLifecycleKey);
             }
 
             final boolean hasHiddenChapterCtgr = !filterDiaries && !filterDiaryLifecycle && CollectionUtils.isNotEmpty(hiddenChapterCtgrList);
@@ -107,13 +106,12 @@ public final class JournalDayFilterHelper {
             if ((filterDiaries || filterDiaryLifecycle || (filterChapterCtgr && hadChapters))
                     && CollectionUtils.isEmpty(filteredEntries)
                     && !hasHiddenChapterCtgr) continue;
-            if ((filterDreams || filterDreamLifecycle) && CollectionUtils.isEmpty(filteredDreams) && CollectionUtils.isEmpty(filteredElseDreams)) continue;
+            if ((filterDreams || filterDreamLifecycle) && CollectionUtils.isEmpty(filteredDreamSections)) continue;
 
             final JournalDayDto nextDay = day.toBuilder()
                     .journalChapterList(filteredEntries)
                     .hiddenChapterCtgrList(hiddenChapterCtgrList)
-                    .journalDreamList(filteredDreams)
-                    .journalElseDreamList(filteredElseDreams)
+                    .journalDreamSectionList(filteredDreamSections)
                     .build();
             result.add(nextDay);
         }
@@ -176,6 +174,22 @@ public final class JournalDayFilterHelper {
             if (matchesEntryFilters(dream, keyword, lifecycleKey)) filtered.add(dream);
         }
         return filtered;
+    }
+
+    private static List<JournalDreamSectionDto> filterDreamSections(
+            final List<JournalDreamSectionDto> sections,
+            final String keyword,
+            final String lifecycleKey
+    ) {
+        if (CollectionUtils.isEmpty(sections)) return null;
+        final List<JournalDreamSectionDto> filtered = new ArrayList<>();
+        for (final JournalDreamSectionDto section : sections) {
+            if (section == null) continue;
+            final List<JournalEntryDto> filteredEntries = filterDreamList(section.getEntries(), keyword, lifecycleKey);
+            if (CollectionUtils.isEmpty(filteredEntries)) continue;
+            filtered.add(section.toBuilder().entries(filteredEntries).build());
+        }
+        return CollectionUtils.isEmpty(filtered) ? null : filtered;
     }
 
     private static List<String> normalizeChapterCtgrCds(final List<String> chapterCtgrCds) {
