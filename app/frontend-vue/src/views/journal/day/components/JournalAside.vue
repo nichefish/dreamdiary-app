@@ -87,6 +87,7 @@
           <input
             ref="weekPickerRef"
             type="date"
+            :value="store.weekStartDt || ''"
             style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
             tabindex="-1"
             @change="onWeekPickerChange"
@@ -423,10 +424,14 @@ async function selectWeekDay(day: { dateStr: string; hasDay: boolean }): Promise
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** 주간 범위 레이블 클릭 → 날짜 선택기 열기 */
+/** 주간 범위 레이블 클릭 → 날짜 선택기 열기 (표시 기준일 = store.weekStartDt) */
 async function openWeekPicker(): Promise<void> {
+  const el = weekPickerRef.value;
+  if (el && store.weekStartDt) {
+    el.value = store.weekStartDt;
+  }
   await nextTick();
-  (weekPickerRef.value as HTMLInputElement & { showPicker?: () => void })?.showPicker?.();
+  (el as HTMLInputElement & { showPicker?: () => void } | null)?.showPicker?.();
 }
 
 /** 날짜 선택 → 해당 날짜가 포함된 주로 이동 후 해당 일자 카드로 스크롤 */

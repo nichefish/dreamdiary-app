@@ -179,6 +179,7 @@ const weekRangeLabel = computed(() => {
 
 **주간 범위 레이블 클릭 → 날짜 선택기** (`openWeekPicker` / `onWeekPickerChange`):
 - 사이드바의 주간 범위 레이블(`MM-DD ~ MM-DD`)을 클릭하면 브라우저 네이티브 date picker 팝업.
+- 팝업 표시 기준일은 현재 `store.weekStartDt`(해당 주 월요일) — `:value` 바인딩 및 `openWeekPicker` 직전 `input.value` 동기화.
 - 날짜 선택 시 `getWeekStartDateStr(selectedDate)`로 해당 주 월요일 계산.
 - `store.weekStartDt`, `store.yy`, `store.mnth` 갱신 후 `await store.fetchDays()` 호출.
 - 목록 렌더 완료 후 선택한 날짜(`val`)에 해당하는 `#journal-day-{val}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
