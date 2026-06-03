@@ -703,9 +703,9 @@ const pinnedMnth = ref<number | null>(null);
 
 **챕터 카테고리 옵션 데이터 출처**:
 - 레거시: FTL이 `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` 에 서버 코드 목록을 주입
-- Vue SPA: `journalModalStore.fetchChapterCategories()` → `GET /api/code/items?groupCode=JOURNAL_CHAPTER_CTGR_CD`
+- Vue SPA: `journalModalStore.prefetchChapterCategories()` → `GET /api/code/items?groupCode=JOURNAL_CHAPTER_DIARY_CTGR_CD` + `GET /api/code/items?groupCode=JOURNAL_CHAPTER_NOTE_CTGR_CD` 병합
 
-**정확한 HTML 구조 (5개 블록)**:
+**필터 구조 계약**:
 
 ```html
 <div class="journal-day-aside-entry-filters-vue-root">
@@ -736,28 +736,16 @@ const pinnedMnth = ref<number | null>(null);
                    :checked="store.showDiaries"
                    @change="toggleDiaries">
         </div>
-        <!-- B-2: CHAPTER CATEGORIES 멀티셀렉트 (DIARIES 블록 안에만 있음) — MISSING -->
-        <div id="chapterCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
-            <div class="d-flex align-items-center justify-content-between">
-                <label for="chapterCtgrFilter" class="text-muted mb-0">- CHAPTER CATEGORIES</label>
-                <!-- 챕터 필터 활성화 여부 토글 (checked = 필터 적용 중) -->
-                <input type="checkbox" id="toggleChapterCtgr"
-                       class="form-check-input cursor-pointer m-0"
-                       :checked="chapterCtgrEnabled"
-                       @change="toggleChapterCtgr">
-            </div>
-            <!-- multiple size="4" 멀티셀렉트 — Ctrl+클릭으로 복수 선택 -->
-            <select id="chapterCtgrFilter"
-                    class="form-select form-select-sm w-100"
-                    multiple size="4"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Ctrl+클릭으로 여러 항목 선택"
-                    @change="onChapterCtgrChange">
-                <option value="__ALL__">{{ 전체 }}</option>
-                <option v-for="ct in chapterCtgrOptions" :key="ct.code" :value="ct.code">
-                    [{{ ct.codeName }}]
-                </option>
-            </select>
+        <!-- B-2: CHAPTER CATEGORIES 체크박스 목록 (DIARIES 블록 안에만 있음) -->
+        <div class="journal-aside-chapter-categories d-flex flex-column gap-1">
+            <label v-for="ctgr in chapterCategoryOptions" :key="ctgr.code"
+                   class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer">
+                <input class="form-check-input w-16px h-16px"
+                       type="checkbox"
+                       :checked="isChapterCategorySelected(ctgr.code)"
+                       @change="toggleChapterCategory(ctgr.code)">
+                <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+            </label>
         </div>
         <!-- B-3: DIARY LIFECYCLE 선택 -->
         <div class="d-flex flex-column ps-3 gap-1">
@@ -781,7 +769,7 @@ const pinnedMnth = ref<number | null>(null);
                        v-model="store.diaryKeyword"
                        placeholder="일기 키워드" maxlength="200"
                        @keyup.enter="applyFilters">
-                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" disabled>
+                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3">
                     <i class="bi bi-funnel pe-0"></i>
                 </button>
             </div>
@@ -823,7 +811,7 @@ const pinnedMnth = ref<number | null>(null);
                        v-model="store.dreamKeyword"
                        placeholder="꿈 키워드" maxlength="200"
                        @keyup.enter="applyFilters">
-                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" disabled>
+                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3">
                     <i class="bi bi-funnel pe-0"></i>
                 </button>
             </div>
@@ -831,7 +819,10 @@ const pinnedMnth = ref<number | null>(null);
     </div>
     <div class="separator"></div>
 
-    <!-- 블록 D: 고급 필터 아코디언 (Bootstrap accordion) — MISSING -->
+    <!-- 블록 D: ENTRY FILTER 레이블 -->
+    <div class="text-gray-900 fs-6 fw-bold mt-1">ENTRY FILTER</div>
+
+    <!-- 블록 E: 고급 필터 아코디언 (Bootstrap accordion) — MISSING -->
     <div class="accordion accordion-flush" id="journal_day_filter_accordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="journal_day_filter_heading_advanced">
@@ -860,20 +851,25 @@ const pinnedMnth = ref<number | null>(null);
 </div> <!-- end journal-day-aside-entry-filters-vue-root -->
 ```
 
+**부모-자식 배치 계약**:
+- `TAGCLOUD`는 엔트리 필터와 독립된 표시 토글로 둔다.
+- `DIARIES` 토글은 `CHAPTER CATEGORIES`, `DIARY LIFECYCLE`, `DIARY KEYWORDS`의 부모 항목이다.
+- `DREAMS` 토글은 `DREAM LIFECYCLE`, `DREAM KEYWORDS`의 부모 항목이다.
+- `DIARIES=false` 또는 `DREAMS=false`일 때 해당 하위 필터 값은 삭제하지 않고 보존하되, 하위 필터 UI는 렌더링하지 않는다.
+- `ENTRY FILTER` 레이블은 위 필터 묶음 아래에 표시한다.
+
 **엔트리 필터 Vue 상태 바인딩**:
 | Element | 레거시 ID | Vue 상태 |
 |---------|----------|---------|
 | TAGCLOUD 체크박스 | `#toggleTagCloud` | `store.showTagCloud` — ON 변경 시 `store.fetchTagCloud()` |
 | DIARIES 체크박스 | `#toggleDiaries` | `store.showDiaries` — 변경 시 `store.fetchDays()` |
-| CHAPTER CATEGORIES 체크박스 | `#toggleChapterCtgr` | `chapterCtgrEnabled: ref(true)` — false 시 `store.chapterCtgrCds = []` |
-| CHAPTER CATEGORIES 멀티셀렉트 | `#chapterCtgrFilter` | `store.chapterCtgrCds: string[]` — 변경 시 `store.fetchDays()` |
-| 챕터 옵션 목록 | `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` | `journalModalStore.chapterCategoryOptions` — `fetchChapterCategories()` 로 로드 |
-| `__ALL__` 선택 시 | 전체 선택 처리 | `store.chapterCtgrCds = []` (필터 없음으로 처리) |
+| CHAPTER CATEGORIES 항목 체크박스 | `.journal-aside-chapter-categories input[type=checkbox]` | `store.chapterCtgrCds: string[]` — `store.showDiaries=true` 시에만 표시, 변경 시 `store.fetchDays()` |
+| 챕터 옵션 목록 | `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` | `journalModalStore.chapterDiaryCategoryOptions` + `chapterNoteCategoryOptions` — `prefetchChapterCategories()` 로 로드 |
 | DREAMS 체크박스 | `#toggleDreams` | `store.showDreams` — 변경 시 `store.fetchDays()` |
-| 일기 라이프사이클 | `#diaryLifecycleFilter` | `store.diaryLifecycleKey` — 변경 시 `store.fetchDays()` |
-| 꿈 라이프사이클 | `#dreamLifecycleFilter` | `store.dreamLifecycleKey` — 변경 시 `store.fetchDays()` |
-| 일기 키워드 | `#diaryFilterKeyword` | `store.diaryKeyword` — Enter 시 `store.fetchDays()` |
-| 꿈 키워드 | `#dreamFilterKeyword` | `store.dreamKeyword` — Enter 시 `store.fetchDays()` |
+| 일기 라이프사이클 | `#diaryLifecycleFilter` | `store.diaryLifecycleKey` — `store.showDiaries=true` 시에만 표시, 변경 시 `store.fetchDays()` |
+| 꿈 라이프사이클 | `#dreamLifecycleFilter` | `store.dreamLifecycleKey` — `store.showDreams=true` 시에만 표시, 변경 시 `store.fetchDays()` |
+| 일기 키워드 | `#diaryFilterKeyword` | `store.diaryKeyword` — `store.showDiaries=true` 시에만 표시, Enter 시 `store.fetchDays()` |
+| 꿈 키워드 | `#dreamFilterKeyword` | `store.dreamKeyword` — `store.showDreams=true` 시에만 표시, Enter 시 `store.fetchDays()` |
 
 ---
 

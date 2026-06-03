@@ -170,17 +170,16 @@ HTML 요소:
 ```html
 <!-- B-1: DIARIES 토글 -->
 <input type="checkbox" id="toggleDiaries" :checked="store.showDiaries" @change="toggleDiaries">
-<!-- B-2: CHAPTER CATEGORIES (Vue: 체크박스 목록, 레거시: 멀티셀렉트) -->
+<!-- B-2: CHAPTER CATEGORIES 체크박스 목록 -->
 <div id="chapterCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
-    <div class="d-flex align-items-center justify-content-between">
-        <label class="text-muted mb-0">- CHAPTER CATEGORIES</label>
-        <input type="checkbox" id="toggleChapterCtgr" :checked="chapterCtgrEnabled" @change="toggleChapterCtgr">
-    </div>
-    <select id="chapterCtgrFilter" class="form-select form-select-sm w-100" multiple size="4"
-            title="Ctrl+클릭으로 여러 항목 선택" @change="onChapterCtgrChange">
-        <option value="__ALL__">전체</option>
-        <option v-for="ct in chapterCtgrOptions" :key="ct.code" :value="ct.code">[{{ ct.codeName }}]</option>
-    </select>
+    <label v-for="ctgr in chapterCategoryOptions" :key="ctgr.code"
+           class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer">
+        <input class="form-check-input w-16px h-16px"
+               type="checkbox"
+               :checked="isChapterCategorySelected(ctgr.code)"
+               @change="toggleChapterCategory(ctgr.code)">
+        <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+    </label>
 </div>
 <!-- B-3: 일기 라이프사이클 선택 -->
 <select id="diaryLifecycleFilter" class="form-select form-select-sm" v-model="store.diaryLifecycleKey" @change="store.fetchDays()">
@@ -197,16 +196,26 @@ HTML 요소:
 - 일기 전용: `GET /api/code/items?groupCode=JOURNAL_CHAPTER_DIARY_CTGR_CD`
 - 노트 전용: `GET /api/code/items?groupCode=JOURNAL_CHAPTER_NOTE_CTGR_CD`
 - `journalModalStore.prefetchChapterCategories()` — 두 그룹 병렬 조회, 세션 캐시. `JournalMonthly` / `JournalWeekly` / `JournalDaily` onMounted에서 선제 호출해 모달 오픈 시 로딩 없이 사용
+- 동시 호출 시 새 요청을 버리지 않고 진행 중인 Promise를 반환한다. Aside와 월간/주간 화면이 같은 시점에 호출해도 호출자는 동일한 조회 완료를 기다린 뒤 옵션을 병합한다.
 - `chapterType === "NOTE"` 이면 `chapterNoteCategoryOptions`, 그 외엔 `chapterDiaryCategoryOptions` 사용 (`JournalChapterRegistModal` computed `currentCategoryOptions`)
 - `chapterType` 변경 시 `categoryCode` 자동 초기화 (watch)
 - DB 마이그레이션: `JOURNAL_CHAPTER_CTGR_CD` → `JOURNAL_CHAPTER_DIARY_CTGR_CD`로 복사 후 기존 그룹 삭제 (`data-required-cd-mariadb.sql`)
 
 **챕터 선택 → store 연동**:
-- `__ALL__` 선택 시: `store.chapterCtgrCds = []` → `store.fetchDays()`
-- 일반 선택 시: 선택된 코드값 배열 → `store.chapterCtgrCds = selectedCodes` → `store.fetchDays()`
+- 체크박스 ON: 해당 코드가 `store.chapterCtgrCds` 에 없으면 추가 → `store.fetchDays()`
+- 체크박스 OFF: 해당 코드를 `store.chapterCtgrCds` 에서 제거 → `store.fetchDays()`
+- `DIARIES=false` 상태에서는 챕터 카테고리 필터 UI를 렌더링하지 않고 기존 선택값은 보존한다.
 
 **블록 C — DREAMS + 꿈 LIFECYCLE + 꿈 키워드**: 블록 B와 동일 구조, 챕터 카테고리 sub-block 없음
 - 꿈 LIFECYCLE select: `store.dreamLifecycleKey` — 변경 시 `store.fetchDays()`
+
+**부모 토글과 하위 필터 계약**:
+- `TAGCLOUD`는 엔트리 종류와 독립된 표시 토글이므로 DIARIES/DREAMS 하위에 두지 않는다.
+- `CHAPTER CATEGORIES`, 일기 LIFECYCLE, 일기 키워드는 `DIARIES` 토글 하위에 배치한다.
+- 꿈 LIFECYCLE, 꿈 키워드는 `DREAMS` 토글 하위에 배치한다.
+- 부모 토글이 OFF이면 해당 하위 필터 UI는 렌더링하지 않는다.
+- 부모 토글 OFF는 하위 필터 값을 삭제하지 않는다. 다시 ON으로 돌리면 기존 하위 필터 값이 그대로 적용된다.
+- `ENTRY FILTER` 레이블은 TAGCLOUD/DIARIES/DREAMS 필터 묶음 아래에 표시한다.
 
 **라이프사이클 필터**:
 - 일기 LIFECYCLE select: `store.diaryLifecycleKey`
@@ -409,7 +418,7 @@ interface TodoRow {
 
 **데이터**: `JournalDayDto` (`stores/journal.ts`) — `journalChapterList`, `journalDreamList`, `tag`, `meta` 등
 
-**꿈 렌더링 분리**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 는 DREAM 챕터 안의 꿈 엔트리를 `journalDreamList` / `journalElseDreamList` 로 투영한다. 목록 응답과 Vue 상세 모달처럼 일반 챕터/꿈 목록을 분리해서 보여주는 응답은 `excludeDreamChapters()` 로 `journalChapterList` / `chapterList` 에서 DREAM 챕터를 제외한다. 따라서 `JournalDayCard.vue` 와 `JournalDayDtlModal.vue` 는 별도 프론트 필터 없이 응답 DTO를 그대로 렌더링한다.
+**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 는 DREAM 챕터 안 꿈을 `journalDreamList`(꿈꾼 이름 없음) / `journalElseDreamList`(이름 있음) 로 투영한다. 분류는 `else_dream_yn` 이 아니라 `elseDreamerNm` 트림 후 비어 있지 않은지이다. 저장 시 `JournalDreamerFieldHelper` 가 이름을 정규화하고 `else_dream_yn` 을 파생한다. `JournalDayCard.vue`·`JournalDayDetailModal.vue` 는 `buildDreamVirtualSections()` 로 「꿈」·「{이름} 의 꿈」(동일 철자=한 블록) 가상 섹션을 `JournalDreamVirtualSection.vue` 로 렌더한다. `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력이 있고, 섹션별 등록은 해당 이름을 초기값으로 넣는다.
 
 **모달 연동**: `useJournalModalStore` — 일자/챕터/엔트리 등록·상세·수정
 
