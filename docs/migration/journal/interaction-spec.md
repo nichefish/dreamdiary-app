@@ -92,32 +92,29 @@ function toggleSort() {
 
 ### 챕터 카테고리 필터 (Chapter Category Filter)
 
-**트리거**: CHAPTER CATEGORIES `<select multiple>` 항목 변경
+**트리거**: CHAPTER CATEGORIES 항목 체크박스 변경
 
 **레거시**: `data-journal-day-action="chapter-ctgr-select"` → `bridge.applySearchParamsAndReload({ chapterCtgrCds: [...] })`
 
 **Vue SPA 구현**:
 ```typescript
 // JournalAside.vue 또는 JournalAsideEntryFilters 컴포넌트 내
-function onChapterCtgrChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const selected = Array.from(select.selectedOptions).map(opt => opt.value);
-    if (selected.includes('__ALL__') || selected.length === 0) {
-        store.chapterCtgrCds = [];  // 필터 없음 = 전체 표시
+function toggleChapterCategory(code: string) {
+    if (store.chapterCtgrCds.includes(code)) {
+        store.chapterCtgrCds = store.chapterCtgrCds.filter((item) => item !== code);
     } else {
-        store.chapterCtgrCds = selected;
+        store.chapterCtgrCds = [...store.chapterCtgrCds, code];
     }
     void store.fetchDays();
 }
 ```
 
-**챕터 필터 활성화 토글** (`#toggleChapterCtgr`):
-- `checked=false` → `store.chapterCtgrCds = []` + `store.fetchDays()` (전체 표시)
-- `checked=true` → 현재 멀티셀렉트 값 적용
+**DIARIES 부모 토글과의 관계**:
+- 챕터 카테고리 필터는 `DIARIES` 하위 필터다.
+- `store.showDiaries=false` 동안 챕터 카테고리 필터 UI는 렌더링하지 않는다.
+- `DIARIES` OFF는 `store.chapterCtgrCds` 값을 삭제하지 않는다. 다시 ON으로 돌리면 기존 선택값이 그대로 적용된다.
 
-**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.prefetchChapterCategories()` 호출 후 일기·노트 코드 병합 (`JOURNAL_CHAPTER_CTGR_CD` 는 DB 마이그레이션으로 제거됨)
-
-**`__ALL__` 처리**: 첫 번째 `<option value="__ALL__">전체</option>` 선택 시 모든 챕터 표시
+**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.prefetchChapterCategories()` 호출 후 일기·노트 코드 병합 (`JOURNAL_CHAPTER_CTGR_CD` 는 DB 마이그레이션으로 제거됨). 동일 시점에 여러 컴포넌트가 호출하면 진행 중인 Promise를 공유해, 뒤따른 호출자도 실제 조회 완료 후 옵션을 병합한다.
 
 **store 반영**: `store.chapterCtgrCds: string[]` — `fetchDays` 에서 `chapterCtgrCds.length > 0` 이면 query param 포함
 
@@ -133,6 +130,9 @@ function onChapterCtgrChange(event: Event) {
 - 옵션: 전체(`""`), 진행 중(`OPEN`), 보류(`PENDING`), 완료(`RESOLVED`)
 - select 변경 즉시 `store.fetchDays()` 호출
 - 필터 초기화 시 두 값 모두 `""` 로 되돌림
+- 일기 LIFECYCLE은 `DIARIES` 하위 필터이며, `store.showDiaries=false` 동안 렌더링하지 않는다.
+- 꿈 LIFECYCLE은 `DREAMS` 하위 필터이며, `store.showDreams=false` 동안 렌더링하지 않는다.
+- 부모 토글 OFF는 하위 필터 값을 삭제하지 않는다. 다시 ON으로 돌리면 기존 값이 그대로 적용된다.
 
 **서버 반영**: `JournalDaySearchParam.diaryLifecycleKey` / `dreamLifecycleKey` 를 `JournalDayFilterHelper.filterInMemory()`에서 적용한다. 일기/꿈 키워드와는 AND 조건이며, `OPEN`은 값이 없거나 `OPEN`인 엔트리를 포함한다.
 
@@ -355,7 +355,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
   - 헤더: contentLabel (일기/꿈)
   - 수정 → `modalStore.openEntryModify(id)`
   - 이력 → `attachableStore.openHistory(contentType, id)`
-  - 관련 글 추가 (`elseDreamYn !== "Y"` 조건) → `attachableStore.openRelated(contentType, id)`
+  - 관련 글 추가 (지정 꿈꾼 이름 없을 때만 — `hasDreamerName(entry)` false) → `attachableStore.openRelated(contentType, id)`
   - 구분선
   - 라이프사이클 서브메뉴 (OPEN/PENDING/RESOLVED radio) → `PUT /api/lifecycles { id, contentType, lifecycleKey }`
   - 상태 서브메뉴 toggle → `POST /api/states { id, contentType, stateKey }`

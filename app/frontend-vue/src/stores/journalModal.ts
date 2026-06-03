@@ -160,6 +160,7 @@ export interface JournalEntryRegistModel {
   sortOrder?: number;
   content?: string;
   elseDreamYn?: string;
+  elseDreamerNm?: string;
   collapsedYn?: string;
   imprtcYn?: string;
   /** 태그 컴포지션 */
@@ -271,8 +272,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   const chapterDiaryCategoryOptions = ref<ChapterCategoryOption[]>([]);
   /** 챕터 카테고리 옵션 목록 — 노트 전용 (JOURNAL_CHAPTER_NOTE_CTGR_CD) */
   const chapterNoteCategoryOptions = ref<ChapterCategoryOption[]>([]);
-  /** 프리페치 진행 중 여부 (중복 요청 방지) */
-  let chapterCategoryFetching = false;
+  /** 챕터 카테고리 프리페치 진행 중 Promise (동시 호출자는 같은 요청 완료를 기다린다.) */
+  let chapterCategoryFetchPromise: Promise<void> | null = null;
 
   function mapCategoryOptions(list: unknown[]): ChapterCategoryOption[] {
     return list.map((item: unknown) => {
@@ -289,20 +290,22 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     const diaryDone = chapterDiaryCategoryOptions.value.length > 0;
     const noteDone  = chapterNoteCategoryOptions.value.length > 0;
     if (diaryDone && noteDone) return;
-    if (chapterCategoryFetching) return;
-    chapterCategoryFetching = true;
-    try {
+    if (chapterCategoryFetchPromise) return chapterCategoryFetchPromise;
+    chapterCategoryFetchPromise = (async () => {
       const [diaryRes, noteRes] = await Promise.all([
         diaryDone ? null : axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_DIARY_CTGR_CD" } }),
         noteDone  ? null : axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_NOTE_CTGR_CD"  } }),
       ]);
       if (diaryRes) chapterDiaryCategoryOptions.value = mapCategoryOptions(diaryRes.data?.rsltList ?? []);
       if (noteRes)  chapterNoteCategoryOptions.value  = mapCategoryOptions(noteRes.data?.rsltList  ?? []);
-    } catch {
-      console.error("[journalModal] 챕터 카테고리 조회 실패");
-    } finally {
-      chapterCategoryFetching = false;
-    }
+    })()
+      .catch((error) => {
+        console.error("[journalModal] 챕터 카테고리 조회 실패", error);
+      })
+      .finally(() => {
+        chapterCategoryFetchPromise = null;
+      });
+    return chapterCategoryFetchPromise;
   }
 
   /**
@@ -615,7 +618,12 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * 꿈 엔트리 신규 등록 모달을 연다. dream-auto API 로 챕터를 자동 생성/조회한다.
    * @param params - journalDayId, stdrdDt, journalDateWeekDay
    */
-  async function openDreamEntryRegist(params: { journalDayId: number; stdrdDt: string; journalDateWeekDay?: string }) {
+  async function openDreamEntryRegist(params: {
+    journalDayId: number;
+    stdrdDt: string;
+    journalDateWeekDay?: string;
+    dreamerName?: string;
+  }) {
     if (dreamEntryRegistOpening) return;
     dreamEntryRegistOpening = true;
     entryRegistOpen.value = true;
@@ -635,6 +643,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         journalChapterId: chapter?.id ?? "",
         stdrdDt: params.stdrdDt,
         journalDateWeekDay: params.journalDateWeekDay,
+        elseDreamerNm: params.dreamerName?.trim() ?? "",
         title: "",
         content: "",
         tag: { tagListStrWithCtgr: "" },

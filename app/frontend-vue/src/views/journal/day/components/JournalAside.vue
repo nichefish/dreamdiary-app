@@ -157,28 +157,11 @@
 
       <div class="separator"></div>
 
-      <!--begin::보기 필터 토글-->
+      <!--begin::표시 필터 토글-->
       <div class="d-flex flex-column gap-2">
         <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
           <input
-            class="form-check-input w-30px h-20px"
-            type="checkbox"
-            :checked="store.showDiaries"
-            @change="toggleDiaries"
-          />
-          <span class="form-check-label text-muted fs-7">DIARIES</span>
-        </label>
-        <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-          <input
-            class="form-check-input w-30px h-20px"
-            type="checkbox"
-            :checked="store.showDreams"
-            @change="toggleDreams"
-          />
-          <span class="form-check-label text-muted fs-7">DREAMS</span>
-        </label>
-        <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-          <input
+            id="toggleTagCloud"
             class="form-check-input w-30px h-20px"
             type="checkbox"
             :checked="store.showTagCloud"
@@ -187,110 +170,140 @@
           <span class="form-check-label text-muted fs-7">TAGCLOUD</span>
         </label>
       </div>
-      <!--end::보기 필터 토글-->
+      <!--end::표시 필터 토글-->
 
       <!--begin::ENTRY 필터-->
       <div class="d-flex flex-column gap-2">
-        <div class="text-gray-900 fs-6 fw-bold">ENTRY FILTER</div>
-
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- CHAPTER CATEGORIES</div>
-          <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">Loading...</div>
-          <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">카테고리를 불러오지 못했습니다.</div>
-          <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
-            <label
-              v-for="ctgr in chapterCategoryOptions"
-              :key="ctgr.code"
-              class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer"
-            >
-              <input
-                class="form-check-input w-16px h-16px"
-                type="checkbox"
-                :checked="isChapterCategorySelected(ctgr.code)"
-                @change="toggleChapterCategory(ctgr.code)"
-              />
-              <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DIARY LIFECYCLE</div>
-          <select
-            id="diaryLifecycleFilter"
-            v-model="store.diaryLifecycleKey"
-            class="form-select form-select-sm"
-            @change="store.fetchDays()"
-          >
-            <option value="">전체</option>
-            <option
-              v-for="option in lifecycleOptions"
-              :key="'diary-lifecycle-' + option.key"
-              :value="option.key"
-            >{{ option.label }}</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
-          <div class="input-group input-group-sm">
+        <div class="d-flex flex-column gap-2">
+          <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
             <input
-              v-model="store.diaryKeyword"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="일기 키워드"
-              maxlength="200"
-              @keyup.enter="store.fetchDays()"
+              id="toggleDiaries"
+              class="form-check-input w-30px h-20px"
+              type="checkbox"
+              :checked="store.showDiaries"
+              @change="toggleDiaries"
             />
-            <button
-              type="button"
-              class="btn btn-sm btn-icon btn-light"
-              title="일기 키워드 필터 적용"
-              @click="store.fetchDays()"
-            >
-              <i class="bi bi-funnel fs-7"></i>
-            </button>
+            <span class="form-check-label text-muted fs-7">DIARIES</span>
+          </label>
+
+          <div v-if="store.showDiaries" class="d-flex flex-column gap-2 ps-3">
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- CHAPTER CATEGORIES</div>
+              <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">Loading...</div>
+              <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">카테고리를 불러오지 못했습니다.</div>
+              <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
+                <label
+                  v-for="ctgr in chapterCategoryOptions"
+                  :key="ctgr.code"
+                  class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer"
+                >
+                  <input
+                    class="form-check-input w-16px h-16px"
+                    type="checkbox"
+                    :checked="isChapterCategorySelected(ctgr.code)"
+                    @change="toggleChapterCategory(ctgr.code)"
+                  />
+                  <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DIARY LIFECYCLE</div>
+              <select
+                id="diaryLifecycleFilter"
+                v-model="store.diaryLifecycleKey"
+                class="form-select form-select-sm"
+                @change="store.fetchDays()"
+              >
+                <option value="">전체</option>
+                <option
+                  v-for="option in lifecycleOptions"
+                  :key="'diary-lifecycle-' + option.key"
+                  :value="option.key"
+                >{{ option.label }}</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
+              <div class="input-group input-group-sm">
+                <input
+                  v-model="store.diaryKeyword"
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="일기 키워드"
+                  maxlength="200"
+                  @keyup.enter="store.fetchDays()"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm btn-icon btn-light"
+                  title="일기 키워드 필터 적용"
+                  @click="store.fetchDays()"
+                >
+                  <i class="bi bi-funnel fs-7"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DREAM LIFECYCLE</div>
-          <select
-            id="dreamLifecycleFilter"
-            v-model="store.dreamLifecycleKey"
-            class="form-select form-select-sm"
-            @change="store.fetchDays()"
-          >
-            <option value="">전체</option>
-            <option
-              v-for="option in lifecycleOptions"
-              :key="'dream-lifecycle-' + option.key"
-              :value="option.key"
-            >{{ option.label }}</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DREAM KEYWORDS</div>
-          <div class="input-group input-group-sm">
+        <div class="d-flex flex-column gap-2">
+          <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
             <input
-              v-model="store.dreamKeyword"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="꿈 키워드"
-              maxlength="200"
-              @keyup.enter="store.fetchDays()"
+              id="toggleDreams"
+              class="form-check-input w-30px h-20px"
+              type="checkbox"
+              :checked="store.showDreams"
+              @change="toggleDreams"
             />
-            <button
-              type="button"
-              class="btn btn-sm btn-icon btn-light"
-              title="꿈 키워드 필터 적용"
-              @click="store.fetchDays()"
-            >
-              <i class="bi bi-funnel fs-7"></i>
-            </button>
+            <span class="form-check-label text-muted fs-7">DREAMS</span>
+          </label>
+
+          <div v-if="store.showDreams" class="d-flex flex-column gap-2 ps-3">
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DREAM LIFECYCLE</div>
+              <select
+                id="dreamLifecycleFilter"
+                v-model="store.dreamLifecycleKey"
+                class="form-select form-select-sm"
+                @change="store.fetchDays()"
+              >
+                <option value="">전체</option>
+                <option
+                  v-for="option in lifecycleOptions"
+                  :key="'dream-lifecycle-' + option.key"
+                  :value="option.key"
+                >{{ option.label }}</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DREAM KEYWORDS</div>
+              <div class="input-group input-group-sm">
+                <input
+                  v-model="store.dreamKeyword"
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="꿈 키워드"
+                  maxlength="200"
+                  @keyup.enter="store.fetchDays()"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm btn-icon btn-light"
+                  title="꿈 키워드 필터 적용"
+                  @click="store.fetchDays()"
+                >
+                  <i class="bi bi-funnel fs-7"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="text-gray-900 fs-6 fw-bold mt-1">ENTRY FILTER</div>
       </div>
       <!--end::ENTRY 필터-->
 
