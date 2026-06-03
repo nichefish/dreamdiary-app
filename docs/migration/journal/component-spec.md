@@ -1,4 +1,4 @@
-﻿# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
+# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
 
 > 공통 Freemarker 매크로(checkbox, modal_header 등)는 ``common/component-spec.md`` 참조.
 
@@ -416,9 +416,9 @@ interface TodoRow {
 
 **하위 컴포넌트**: `JournalChapterItem.vue`, `JournalEntryItem.vue`
 
-**데이터**: `JournalDayDto` (`stores/journal.ts`) — `journalChapterList`, `journalDreamList`, `tag`, `meta` 등
+**데이터**: `JournalDayDto` (`stores/journal.ts`) — `journalChapterList`, `journalDreamSectionList`, `tag`, `meta` 등
 
-**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 는 DREAM 챕터 안 꿈을 `journalDreamList`(꿈꾼 이름 없음) / `journalElseDreamList`(이름 있음) 로 투영한다. 분류는 `else_dream_yn` 이 아니라 `elseDreamerNm` 트림 후 비어 있지 않은지이다. 저장 시 `JournalDreamerFieldHelper` 가 이름을 정규화하고 `else_dream_yn` 을 파생한다. `JournalDayCard.vue`·`JournalDayDetailModal.vue` 는 `buildDreamVirtualSections()` 로 「꿈」·「{이름} 의 꿈」(동일 철자=한 블록) 가상 섹션을 `JournalDreamVirtualSection.vue` 로 렌더한다. `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력이 있고, 섹션별 등록은 해당 이름을 초기값으로 넣는다.
+**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 가 DREAM 챕터 꿈을 `journalDreamSectionList`(`JournalDreamSectionDto`: `sectionKey`, `title`, `dreamerName`, `entries`) 로 내려준다. 내 꿈=`own`/「꿈」, 지정 꿈꾼=`dreamer:{이름}`/「{이름} 꿈」(동일 철자=한 섹션). 분류·묶음 SSOT는 `JournalDreamSectionHelper`·`JournalDreamerFieldHelper` 이다. Vue는 `journalDreamSectionList` 를 `JournalDreamVirtualSection.vue` 로만 렌더(프론트 재묶음 없음). 지정 꿈꾼 섹션에는 저널 꿈 등록 버튼 없음(내 꿈 `own` 만). 엔트리 본문에 꿈꾼 이름 배지 없음(섹션 헤더로 구분). `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력.
 
 **모달 연동**: `useJournalModalStore` — 일자/챕터/엔트리 등록·상세·수정
 
@@ -470,7 +470,7 @@ interface TodoRow {
 **scss 클래스 바인딩**:
 - 외부 div: `itemClass` computed (contentType/isDream 기준) → `journal-dream-item` / `journal-note-item` / `journal-diary-item`
 - 콘텐츠 div: `contentClass` computed → `journal-dream-content` / `journal-note-content` / `journal-diary-content`
-- data 속성: `:data-imprtc`, `:data-refrnc`, `:data-resolved`, `:data-id` — journal.scss CSS 선택자 연동
+- data 속성: `:data-imprtc`, `:data-refrnc`, `:data-resolved`, `:data-else-dream`, `:data-id` — journal.scss CSS 선택자 연동. 타인 꿈(`hasDreamerName` → `data-else-dream="Y"`)은 RESOLVED 초록 1줄 대신 **회색 이중선**(slate 0/2px) 기본; RESOLVED·중요·참조는 그 뒤 4px·6px·8px inset 에 기존 색으로 추가(`$journal-else-dream-paired-states`)
 
 **우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/라이프사이클/상태/삭제)
 

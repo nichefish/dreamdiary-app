@@ -133,8 +133,40 @@ class JournalEntryViewProjectionHelperTest {
         // DREAM 챕터는 journalChapterList에서 제거되어야 한다
         assertEquals(1, day.getJournalChapterList().size());
         assertEquals(ChapterType.DIARY, day.getJournalChapterList().get(0).getChapterType());
-        // 꿈 엔트리는 journalDreamList로 분리되어야 한다
-        assertEquals(1, day.getJournalDreamList().size());
-        assertEquals(dream.getId(), day.getJournalDreamList().get(0).getId());
+        assertEquals(1, day.getJournalDreamSectionList().size());
+        assertEquals("own", day.getJournalDreamSectionList().get(0).getSectionKey());
+        assertEquals(dream.getId(), day.getJournalDreamSectionList().get(0).getEntries().get(0).getId());
+    }
+
+    @Test
+    void applyDayEntryProjections_splitsByDreamerNameNotElseDreamYnAlone() {
+        final JournalEntryDto ownDream = JournalEntryDto.builder()
+                .id(2)
+                .contentType(ContentType.JOURNAL_DREAM.key)
+                .elseDreamYn("Y")
+                .build();
+        final JournalEntryDto namedDream = JournalEntryDto.builder()
+                .id(3)
+                .contentType(ContentType.JOURNAL_DREAM.key)
+                .elseDreamYn("N")
+                .elseDreamerNm("  형  ")
+                .build();
+
+        final JournalChapterDto dreamChapter = JournalChapterDto.builder()
+                .id(20)
+                .chapterType(ChapterType.DREAM)
+                .build();
+        JournalEntryViewProjectionHelper.applyChapterEntries(dreamChapter, List.of(ownDream, namedDream));
+
+        final JournalDayDto day = JournalDayDto.builder()
+                .journalChapterList(new java.util.ArrayList<>(List.of(dreamChapter)))
+                .build();
+
+        JournalEntryViewProjectionHelper.applyDayEntryProjections(day);
+
+        assertEquals(2, day.getJournalDreamSectionList().size());
+        assertEquals(ownDream.getId(), day.getJournalDreamSectionList().get(0).getEntries().get(0).getId());
+        assertEquals("dreamer:형", day.getJournalDreamSectionList().get(1).getSectionKey());
+        assertEquals(namedDream.getId(), day.getJournalDreamSectionList().get(1).getEntries().get(0).getId());
     }
 }

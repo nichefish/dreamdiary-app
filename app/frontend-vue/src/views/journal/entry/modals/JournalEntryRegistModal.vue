@@ -117,7 +117,25 @@
               <!--end::순서-->
             </div>
             <!--end::제목-->
-
+            <!--begin::꿈꾼 이름 (DREAM, 비필수)-->
+            <div v-if="isDream" class="row d-flex mb-8">
+              <div class="col-2">
+                <label class="d-flex align-items-center mb-2">
+                  <span class="text-gray-700 fs-6 fw-bolder">꿈꾼</span>
+                </label>
+              </div>
+              <div class="col-4">
+                <input
+                  type="text"
+                  name="elseDreamerNm"
+                  class="form-control"
+                  v-model="model.elseDreamerNm"
+                  placeholder="비우면 내 꿈"
+                  maxlength="64"
+                />
+              </div>
+            </div>
+            <!--end::꿈꾼 이름-->
             <!--begin::본문-->
             <div class="row d-flex mb-8">
               <div class="col-12">
@@ -185,6 +203,7 @@ import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
 import type { JournalChapterOption } from "@/stores/journalModal";
+import { hasDreamerName } from "@/utils/journalDream";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
@@ -226,10 +245,10 @@ const modalTitle = computed(() => {
 /** 태그 입력 표시 여부 (DIARY/DREAM 전용) */
 const showTag = computed(() => isDiary.value || isDream.value);
 
-/** 순서 입력 표시 여부: 수정 모드, DREAM 은 대타꿈(elseDreamYn='Y') 제외 */
+/** 순서 입력 표시 여부: 수정 모드, 지정 꿈꾼(이름 있음) 꿈은 제외 */
 const showSortCol = computed(() => {
   if (!isModify.value) return false;
-  if (isDream.value && (model.value?.elseDreamYn === "Y" || model.value?.elseDreamYn === "y")) return false;
+  if (isDream.value && hasDreamerName(model.value)) return false;
   return true;
 });
 
@@ -396,6 +415,9 @@ async function submit() {
     if (isDiary.value) {
       formData.append("collapsedYn", model.value.collapsedYn ?? "");
       formData.append("imprtcYn", model.value.imprtcYn ?? "");
+    }
+    if (isDream.value) {
+      formData.append("elseDreamerNm", model.value.elseDreamerNm?.trim() ?? "");
     }
     if (showTag.value) formData.append("tag.tagListStr", model.value.tag?.tagListStrWithCtgr ?? "");
 

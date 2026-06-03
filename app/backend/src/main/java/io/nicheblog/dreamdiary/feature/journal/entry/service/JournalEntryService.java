@@ -24,6 +24,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.mybatis.JournalEntryMapper;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalDreamerFieldHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryPolicyResolver;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypeResolver;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
@@ -335,7 +336,18 @@ public class JournalEntryService
     public void preRegist(final JournalEntryPostDto registDto) {
         final JournalEntryTypePolicy policy = policyResolver.resolve(registDto);
         assertChapterForEntry(policy, registDto.getJournalChapterId());
+        JournalDreamerFieldHelper.applyDreamerFieldsFromPost(registDto, policy.contentType);
         registDto.setSortOrder(journalEntryOrderService.getNextSortOrder(registDto.getJournalChapterId(), policy.contentType));
+    }
+
+    /**
+     * 등록 직전 엔티티에 꿈꾼 이름·else_dream_yn 을 반영한다.
+     *
+     * @param registEntity 등록 엔티티
+     */
+    @Override
+    public void preRegist(final JournalEntryEntity registEntity) throws Exception {
+        JournalDreamerFieldHelper.applyDreamerFieldsToEntity(registEntity);
     }
 
     /**
@@ -359,6 +371,7 @@ public class JournalEntryService
     @Override
     public void preModify(final JournalEntryPostDto modifyDto, final JournalEntryEntity modifyEntity) {
         final JournalEntryTypePolicy policy = policyResolver.resolve(modifyDto);
+        JournalDreamerFieldHelper.applyDreamerFieldsFromPost(modifyDto, policy.contentType);
         policyResolver.assertMatches(modifyEntity, policy);
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
@@ -422,6 +435,7 @@ public class JournalEntryService
         this.preModify(postDto, modifyEntity);
 
         mapstruct.updateFromDto(postDto, modifyEntity);
+        JournalDreamerFieldHelper.applyDreamerFieldsToEntity(modifyEntity);
         BaseAttachableManagtHelper.applyModifyManagt(postDto, modifyEntity);
         BaseAttachableHistoryHelper.applyModifyHistory(historySnapshot, modifyEntity);
 

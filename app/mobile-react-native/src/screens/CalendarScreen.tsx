@@ -16,6 +16,7 @@ import { normalizeDateStr, toDateStr } from "../utils/date";
 import type { MainTabParamList } from "../navigation/AppNavigator";
 import { navigateToDailyHub } from "../navigation/dailyHub";
 import type { JournalDay } from "../types/journalDay";
+import { dreamEntriesFromDay } from "../types/journalDay";
 
 // ─── 날짜 유틸 ──────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ function buildCalendarGrid(year: number, month: number): (number | null)[][] {
 
 /** 해당 JournalDay 에 실제 엔트리가 있는지 판별 */
 function hasEntries(day: JournalDay): boolean {
-  if ((day.journalDreamList?.length ?? 0) > 0) return true;
+  if (dreamEntriesFromDay(day).length > 0) return true;
   return day.journalChapterList?.some(ch =>
     (ch.journalDiaryList?.length ?? 0) > 0 ||
     (ch.journalDreamList?.length ?? 0) > 0 ||

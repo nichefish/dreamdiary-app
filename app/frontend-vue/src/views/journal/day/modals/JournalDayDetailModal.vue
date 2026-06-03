@@ -64,23 +64,17 @@
                   entry-dom-id-prefix="journal-day-dtl-entry-"
                 />
               </template>
-              <!--begin::꿈 목록-->
-              <JournalEntryItem
-                v-for="dream in journalDreamList"
-                :key="'dtl-dream-' + dream.id"
-                :dom-id="dream.id ? 'journal-day-dtl-entry-' + dream.id : undefined"
-                :entry="dream"
-                :is-dream="true"
-              />
-              <JournalEntryItem
-                v-for="dream in journalElseDreamList"
-                :key="'dtl-else-dream-' + dream.id"
-                :dom-id="dream.id ? 'journal-day-dtl-entry-' + dream.id : undefined"
-                :entry="dream"
-                :is-dream="true"
+              <!--begin::꿈 목록 (API journalDreamSectionList)-->
+              <JournalDreamVirtualSection
+                v-for="section in journalDreamSectionList"
+                :key="'dtl-dream-section-' + section.sectionKey"
+                :section="section"
+                :collapsed="false"
+                :show-actions="false"
+                entry-dom-id-prefix="journal-day-dtl-entry-"
               />
               <!--end::꿈 목록-->
-              <div v-if="journalChapterList.length === 0 && journalDreamList.length === 0 && journalElseDreamList.length === 0"
+              <div v-if="journalChapterList.length === 0 && journalDreamSectionList.length === 0"
                    class="text-muted py-5 text-center">
                 내용이 없습니다.
               </div>
@@ -112,7 +106,7 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalModalStore } from "@/stores/journalModal";
 import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
-import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
+import JournalDreamVirtualSection from "../../dream/components/JournalDreamVirtualSection.vue";
 
 const modalStore = useJournalModalStore();
 
@@ -122,8 +116,7 @@ let bsModal: InstanceType<typeof Modal> | null = null;
 const day = computed(() => modalStore.dayDetailData);
 const tagList = computed(() => day.value?.tag?.list ?? []);
 const journalChapterList = computed(() => day.value?.journalChapterList ?? []);
-const journalDreamList = computed(() => day.value?.journalDreamList ?? []);
-const journalElseDreamList = computed(() => day.value?.journalElseDreamList ?? []);
+const journalDreamSectionList = computed(() => day.value?.journalDreamSectionList ?? []);
 
 onMounted(() => {
   if (modalEl.value) {

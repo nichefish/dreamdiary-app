@@ -4,7 +4,10 @@
     <!--begin::챕터 헤더-->
     <div class="d-flex align-items-center mt-2">
       <!--begin::챕터 타입·카테고리 라벨 + 아이콘-->
-      <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
+      <div
+        class="d-flex-align-center fs-6 ps-1 ps-md-5 me-5 fw-bolder"
+        :class="isDreamChapter ? 'journal-dream-section-header' : 'text-gray-700'"
+      >
         <span class="me-2">
           {{ typeLabel }}<template v-if="chapter.categoryCode">:</template>
           <template v-if="chapter.categoryCode">

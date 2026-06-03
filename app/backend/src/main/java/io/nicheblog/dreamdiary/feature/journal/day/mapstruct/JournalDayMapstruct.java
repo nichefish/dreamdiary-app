@@ -70,7 +70,7 @@ public abstract class JournalDayMapstruct
     public abstract JournalDayDto toDto(final JournalDayEntity entity) throws Exception;
 
     /**
-     * toDto 후처리: DREAM 챕터의 꿈 엔트리를 journalDreamList/journalElseDreamList로 추출하고, DREAM 챕터를 journalChapterList에서 제거한다.
+     * toDto 후처리: DREAM 챕터의 꿈 엔트리를 journalDreamSectionList로 추출하고, DREAM 챕터를 journalChapterList에서 제거한다.
      * Entity는 꿈 엔트리를 DREAM 타입 챕터 안에 보관하지만, DTO는 꿈과 일반 챕터를 별도 목록으로 분리해 표현한다.
      *
      * @param entity 변환 대상 엔티티
