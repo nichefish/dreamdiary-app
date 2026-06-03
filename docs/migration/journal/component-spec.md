@@ -369,9 +369,9 @@ interface TodoRow {
 
 **본문 문단 저장 기준**: `RichEditor`가 전송한 TinyMCE HTML은 서버 저장 정규화(`MarkdownUtils.normalize`)를 거친다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉜 본문은 저장 시 별도 `<p>` 문단으로 분리해 레거시처럼 문단 단위 여백을 유지한다.
 
-**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림 OK 이후 현재 route 기준으로 목록을 갱신하고 저장한 엔트리 위치로 스크롤한다. 월간/주간은 `#journal-entry-{id}`를 우선 사용하고, 엔트리 DOM을 retry로 기다린 뒤 찾지 못하면 `#journal-day-{stdrdDt}`로 fallback한다. 신규 등록 응답에서 id를 확인할 수 없으면 바로 `#journal-day-{stdrdDt}`로 fallback한다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDtlModal` 데이터를 다시 조회한 뒤 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
+**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림을 표시한다. 월간/주간 기본 목록은 성공 알림 OK 이후 현재 route 기준 목록을 갱신하되 강제 스크롤하지 않고, 기존 목록 DOM 유지로 브라우저 스크롤 위치 보존에 맡긴다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDtlModal` 데이터를 다시 조회하고, 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 `prepare-success` 이벤트에서 결과 DOM을 준비하고, OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
 
-**챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. 후보 `chapterType` 분기: `JOURNAL_DREAM`→`DREAM`, `JOURNAL_NOTE`→`NOTE`. **NOTE 챕터에 속한 엔트리도 백엔드 `contentType`은 `JOURNAL_DIARY`**(`JournalEntryTypeResolver`)이므로, 수정 시에는 기존 `journalChapterId`가 가리키는 챕터의 `chapterType`이 `NOTE`이면 `NOTE` 챕터만 후보로 둔다(DIARY 요약 챕터로 덮어쓰지 않음). NOTE 챕터 신규 등록(`JournalChapterItem.openEntryNew`)도 `JOURNAL_DIARY`를 전송한다. 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다(이때 `console.warn`).
+**챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. `JOURNAL_DREAM`→`DREAM` 챕터만, `JOURNAL_NOTE`→`NOTE` 챕터만 후보로 쓴다. **NOTE 챕터 엔트리의 `contentType`은 `JOURNAL_DIARY`**이므로, 후보 `chapterType`은 `contentType`이 아니라 `journalChapterId`가 가리키는 챕터(또는 신규 시 caller 가 넘긴 챕터)의 `chapterType`으로 분기한다 — 노트끼리·일기끼리만 이동한다. NOTE 챕터 신규 등록(`JournalChapterItem.openEntryNew`)도 `JOURNAL_DIARY`를 전송한다. 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다(이때 `console.warn`).
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -452,7 +452,7 @@ interface TodoRow {
 
 **데이터 보강**: 백엔드 `TagProfileService.applyProfileContent(...)`가 사용자별 `tag_profile.content`를 `TagContentDto.profileContent`에 병합한다. 월간/주간/일간 일자 응답은 `JournalDayQueryService`, 검색/연간/상세 엔트리 응답은 `JournalEntryMyViewService`에서 `JOURNAL_DREAM`에 한정해 병합한다.
 
-**스크롤 앵커**: root 요소는 `:id="'journal-entry-' + entry.id"`와 `:data-id="entry.id"`를 가진다. 메인 월간/주간 목록은 id를, 일자 상세 팝업 내부 스크롤은 modal 내부 `[data-id]`를 사용한다.
+**스크롤 앵커**: root 요소는 `:id="'journal-entry-' + entry.id"`와 `:data-id="entry.id"`를 가진다. 메인 월간/주간 목록은 id를, 일자 상세 팝업 내부 스크롤은 modal 내부 `[data-id]`를 사용한다. 엔트리 수정은 현재 목록 route를 유지한 채 `JournalEntryRegistModal`을 직접 열며, 수정 모달 open/close는 URL을 변경하지 않는다.
 
 **⋯ 메뉴 API**:
 | 액션 | 엔드포인트 |
@@ -542,7 +542,7 @@ interface TodoRow {
 - 결과별 수정/삭제 버튼
 - 결과 태그 클릭 컨텍스트 메뉴(`JournalTagContextMenu`)와 태그 프로필 모달(`JournalTagProfileModal`) 마운트
 - 검색 팝업 내부 태그 검색은 같은 창 query 갱신으로 반영
-- 엔트리 수정 저장 성공 시 `JournalEntryRegistModal` `success` 이벤트로 현재 검색 목록 재조회 후 저장 위치 스크롤
+- 엔트리 수정 저장 성공 시 `JournalEntryRegistModal` `prepare-success` 이벤트로 현재 검색 목록/수정 대상 DOM을 먼저 준비하고, `success` 이벤트로 저장 위치 스크롤만 수행
 - 검색 결과에 포함된 저널 해석의 수정 액션은 같은 창에서 `JournalInterpretationRegistModal`을 열어야 한다. 검색 팝업이 이 모달을 직접 마운트하며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회로 제목/본문/순번을 채운 뒤 모달을 열어야 한다. 저장 성공 후 모달 내부의 `journalStore.fetchDays()` 완료 신호를 `JournalEntrySearchPage`가 감지해 현재 검색 목록을 재조회한다.
 - `JournalInterpretationRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 해석 등록/수정이 가능해야 한다.
 - 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.

@@ -12,7 +12,7 @@
       <!--end::태그 클라우드 헤더-->
       <div class="card-body">
         <!--begin::로딩-->
-        <div v-if="store.loading" class="d-flex justify-content-center py-10">
+        <div v-if="store.loading && store.dayList.length === 0" class="d-flex justify-content-center py-10">
           <span class="spinner-border text-primary" role="status"></span>
         </div>
         <!--end::로딩-->
@@ -48,7 +48,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useJournalStore } from "@/stores/journal";
 import { useJournalModalStore } from "@/stores/journalModal";
 import JournalDayCard from "./components/JournalDayCard.vue";
@@ -57,14 +58,28 @@ import JournalTagCloudHeader from "./components/JournalTagCloudHeader.vue";
 
 const store = useJournalStore();
 const modalStore = useJournalModalStore();
+const route = useRoute();
 
-onMounted(() => {
+function loadMonthlyView(): void {
   store.setViewType("LIST");
   void store.fetchDays({ viewType: "LIST" });
   if (store.showTagCloud) {
     void store.fetchTagCloud();
   }
+}
+
+onMounted(() => {
+  loadMonthlyView();
   /* 챕터 카테고리를 화면 로드 시점에 미리 캐시해 모달 오픈 시 로딩 없이 사용한다. */
   void modalStore.prefetchChapterCategories();
 });
+
+watch(
+  () => route.name,
+  (name) => {
+    if (name === "journal-monthly") {
+      loadMonthlyView();
+    }
+  },
+);
 </script>

@@ -190,15 +190,18 @@ const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
 const route = useRoute();
 const emit = defineEmits<{
+  (e: "prepare-success", payload: {
+    entryId?: number | string;
+    stdrdDt?: string;
+    isModify?: boolean;
+    waitUntil: (task: Promise<void>) => void;
+  }): void;
   (e: "success", payload: { entryId?: number | string; stdrdDt?: string; isModify?: boolean }): void;
 }>();
 
 const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
-/** 모달 닫기 애니메이션(~300ms) 동안 body.overflow:hidden 으로 scrollIntoView 가 무시되므로
- *  hidden.bs.modal 이후 실행할 스크롤 대상을 임시 보관한다. */
-let pendingScrollTarget: { entryId?: number | string; stdrdDt?: string } | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
   modalStore.closeEntryRegist();
 });
@@ -260,11 +263,6 @@ onMounted(() => {
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
       modalStore.closeEntryRegist();
-      if (pendingScrollTarget) {
-        const target = pendingScrollTarget;
-        pendingScrollTarget = null;
-        scrollToSavedPositionWhenReady(target.entryId, target.stdrdDt);
-      }
     });
   }
 });
@@ -284,48 +282,6 @@ function close() {
   modalStore.closeEntryRegist();
 }
 
-/** 등록/수정 후 저장한 엔트리 위치로 돌아간다. 새 글 id를 모르면 해당 일자 카드로 복귀한다. */
-function scrollToSavedPosition(entryId?: number | string, stdrdDt?: string): void {
-  if (modalEl.value?.classList.contains("show")) {
-    /* 모달 닫기 애니메이션(Bootstrap ~300ms) 중에는 body.overflow:hidden 이므로
-     * scrollIntoView 가 무시된다. hidden.bs.modal 이후 실행되도록 미룬다. */
-    pendingScrollTarget = { entryId, stdrdDt };
-    return;
-  }
-  scrollToSavedPositionWhenReady(entryId, stdrdDt);
-}
-
-function findVisibleEntryElement(entryId: number | string): HTMLElement | null {
-  const targetId = `journal-entry-${entryId}`;
-  const candidates = Array.from(document.querySelectorAll<HTMLElement>(`[id="${targetId}"]`));
-  return candidates.find((el) => !el.closest(".modal")) ?? candidates[0] ?? null;
-}
-
-function scrollToSavedPositionWhenReady(entryId?: number | string, stdrdDt?: string, attempt = 0): void {
-  void nextTick(() => {
-    const entryEl = entryId ? findVisibleEntryElement(entryId) : null;
-    if (entryEl) {
-      entryEl.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
-    const dayEl = stdrdDt ? document.getElementById(`journal-day-${stdrdDt}`) : null;
-    if (dayEl && !entryId) {
-      dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    if (attempt < 16) {
-      window.setTimeout(() => scrollToSavedPositionWhenReady(entryId, stdrdDt, attempt + 1), 100);
-      return;
-    }
-    if (dayEl) {
-      console.warn("[JournalEntryRegistModal] saved entry scroll target not found; fallback to day.", { entryId, stdrdDt });
-      dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      console.warn("[JournalEntryRegistModal] saved entry/day scroll target not found.", { entryId, stdrdDt });
-    }
-  });
-}
-
 function scrollToDayDetailPosition(entryId?: number | string): void {
   void nextTick(() => {
     const modal = document.getElementById("journal_day_detail_modal");
@@ -342,48 +298,57 @@ function scrollToDayDetailPosition(entryId?: number | string): void {
   });
 }
 
-function refreshOpenDayDetail(entryId?: number | string): boolean {
+async function prepareOpenDayDetail(): Promise<boolean> {
   const dayId = modalStore.dayDetailData?.id;
   if (!modalStore.dayDetailOpen || !dayId) return false;
-  void modalStore.openDayDetail(dayId).then(() => scrollToDayDetailPosition(entryId));
+  await modalStore.openDayDetail(dayId);
   return true;
 }
 
-function refreshCurrentDayView(entryId?: number | string, stdrdDt?: string): void {
+function scrollDayDetailIfRefreshed(entryId?: number | string, detailRefreshed = false): void {
+  if (!detailRefreshed) return;
+  scrollToDayDetailPosition(entryId);
+}
+
+async function refreshCurrentDayView(): Promise<boolean> {
   if (route.name === "journal-entry-search") {
-    return;
+    return false;
   }
 
   void journalStore.fetchTagCloud();
-  const detailRefreshed = refreshOpenDayDetail(entryId);
-  const afterFetch = () => {
-    if (!detailRefreshed) scrollToSavedPosition(entryId, stdrdDt);
-  };
+  const detailRefreshed = await prepareOpenDayDetail();
+  if (detailRefreshed) return true;
 
   if (route.name === "journal-weekly") {
     journalStore.setViewType("WEEKLY");
-    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
-    return;
+    await journalStore.fetchDays({ viewType: "WEEKLY" });
+    return false;
   }
 
   if (route.name === "journal-monthly") {
     journalStore.setViewType("LIST");
-    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
-    return;
+    await journalStore.fetchDays({ viewType: "LIST" });
+    return false;
   }
 
-  void journalStore.fetchDays().then(afterFetch);
+  await journalStore.fetchDays();
+  return false;
 }
 
-function resolveSavedEntryId(responseData: Record<string, unknown>, fallbackId?: number): number | string | undefined {
+function parseSavedEntryId(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  const raw = String(value).trim();
+  return /^\d+$/.test(raw) ? raw : null;
+}
+
+function resolveSavedEntryId(responseData: Record<string, unknown>, fallbackId?: number): string | undefined {
   const rsltObj = responseData.rsltObj as Record<string, unknown> | undefined;
-  const candidates = [
-    fallbackId,
-    responseData.id,
-    responseData.rsltId,
-    rsltObj?.id,
-  ];
-  return candidates.find((value) => value !== undefined && value !== null && String(value) !== "") as number | string | undefined;
+  const candidates = [fallbackId, responseData.id, responseData.rsltId, rsltObj?.id];
+  for (const value of candidates) {
+    const id = parseSavedEntryId(value);
+    if (id) return id;
+  }
+  return undefined;
 }
 
 function resolveSavedDate(responseData: Record<string, unknown>, fallbackDate?: string): string | undefined {
@@ -444,9 +409,26 @@ async function submit() {
       const savedEntryId = resolveSavedEntryId(res.data ?? {}, fallbackEntryId);
       const savedDate = resolveSavedDate(res.data ?? {}, fallbackDate);
       close();
+      const successPayload = { entryId: savedEntryId, stdrdDt: savedDate, isModify: wasModify };
+      const prepareTasks: Promise<void>[] = [];
+      if (route.name === "journal-entry-search") {
+        emit("prepare-success", {
+          ...successPayload,
+          waitUntil: (task: Promise<void>) => {
+            prepareTasks.push(task);
+          },
+        });
+      }
+      if (prepareTasks.length > 0) {
+        await Promise.allSettled(prepareTasks);
+      }
       await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
-      refreshCurrentDayView(savedEntryId, savedDate);
-      emit("success", { entryId: savedEntryId, stdrdDt: savedDate, isModify: wasModify });
+      if (route.name === "journal-entry-search") {
+        emit("success", successPayload);
+      } else {
+        const detailRefreshed = await refreshCurrentDayView();
+        scrollDayDetailIfRefreshed(savedEntryId, detailRefreshed);
+      }
     } else {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
