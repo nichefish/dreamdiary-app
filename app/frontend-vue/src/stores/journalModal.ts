@@ -702,9 +702,9 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   }
 
   /**
-   * 엔트리 수정 시 챕터 선택 목록에 쓸 chapterType.
+   * 엔트리 챕터 선택 목록에 쓸 chapterType (신규·수정 공통: 노트끼리·일기끼리).
    * 변경 전: contentType 만으로 NOTE/DIARY 분기 → NOTE 챕터의 JOURNAL_DIARY 엔트리가 DIARY 목록으로 잘못 필터됨.
-   * 변경 후: 기존 journalChapterId 가 NOTE 챕터면 NOTE 목록 유지 (백엔드 JournalEntryTypeResolver 와 동일).
+   * 변경 후: journalChapterId 가 NOTE 챕터면 NOTE 목록 유지 (백엔드 JournalEntryTypeResolver 와 동일).
    */
   function resolveExpectedChapterTypeForEntry(
     contentType: string,

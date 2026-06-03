@@ -157,7 +157,10 @@
     <!--end::결과 목록-->
 
     <!--begin::모달 컨테이너-->
-    <JournalEntryRegistModal @success="onEntrySaveSuccess" />
+    <JournalEntryRegistModal
+      @prepare-success="onEntrySavePrepare"
+      @success="onEntrySaveSuccess"
+    />
     <JournalInterpretationRegistModal />
     <CommentRegistModal />
     <CommentListModal />
@@ -199,6 +202,10 @@ interface JournalEntrySaveEvent {
   entryId?: number | string;
   stdrdDt?: string;
   isModify?: boolean;
+}
+
+interface JournalEntrySavePrepareEvent extends JournalEntrySaveEvent {
+  waitUntil: (task: Promise<void>) => void;
 }
 
 interface SearchTagDto {
@@ -320,7 +327,11 @@ async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
     const el = entryId
       ? document.getElementById(`journal-entry-search-${entryId}`)
       : null;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      console.warn("[JournalEntrySearchPage] saved entry scroll target not found.", { entryId });
+    }
   });
 }
 
@@ -408,7 +419,7 @@ function openDailyView(stdrdDt: string | undefined): void {
   window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h}`);
 }
 
-async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void> {
+async function prepareEntrySaveDom(payload?: JournalEntrySaveEvent): Promise<void> {
   const entryId = payload?.entryId;
   if (!entryId) {
     await loadEntries();
@@ -418,19 +429,26 @@ async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void
   const entryIndex = findEntryIndex(entryId);
   if (entryIndex < 0) {
     await loadEntries();
-    await scrollToSearchEntry(entryId);
     return;
   }
 
   const updatedEntry = await fetchEntryDetail(entryId);
   if (!updatedEntry) {
     await loadEntries();
-    await scrollToSearchEntry(entryId);
     return;
   }
 
   entries.value.splice(entryIndex, 1, mergeSearchEntryReplacement(updatedEntry, entries.value[entryIndex]));
   await reinitMetronicAfterDom();
+}
+
+function onEntrySavePrepare(payload: JournalEntrySavePrepareEvent): void {
+  payload.waitUntil(prepareEntrySaveDom(payload));
+}
+
+async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void> {
+  const entryId = payload?.entryId;
+  if (!entryId) return;
   await scrollToSearchEntry(entryId);
 }
 

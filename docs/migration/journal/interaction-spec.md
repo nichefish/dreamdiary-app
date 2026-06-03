@@ -27,7 +27,7 @@
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
 | 어사이드 키워드 필터 | `JournalDayViewToolbar.vue`에만 있음; `JournalAside.vue` 어사이드에는 키워드 입력 없음 | ⚠ 툴바만 |
-| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 목록/상세 갱신 → 저장 위치 scrollIntoView. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback | ✓ |
+| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView. 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback | ✓ |
 | 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정 서버 반영 후 현재 route 기준 목록 재조회 → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, `POST /api/journal/chapter/{id}/move` 호출 후 `fetchDays` + 신 일자 scrollIntoView | ✓ |
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 수정/삭제/이동 거부 시 `msg.rslt.not-owner` (403) alert | ✓ |
@@ -213,8 +213,6 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 툴바 인풋은 store 상태를 오염시키지 않는다 (`name` 속성 없음, 로컬 ref만 사용)
 - 어사이드 인풋은 store 상태를 직접 바인딩하며 필터로만 작동한다
 
----
-
 ### 등록/수정 후 일자/챕터 위치 스크롤
 
 **트리거**: `JournalDayRegistModal` submit 성공 (등록 및 수정 공통)
@@ -259,12 +257,15 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **동작**:
 1. 저장 성공 응답에서 엔트리 ID를 확인한다. 수정이면 기존 `model.id`를 fallback으로 사용한다.
-2. 모달을 닫고 성공 알림을 표시한다.
-3. 사용자가 OK를 누른 뒤 월간/주간 화면에서는 현재 route 기준으로 `fetchDays()`를 다시 호출한다.
-4. 목록 갱신 후 `#journal-entry-{id}`로 스크롤한다. 신규 등록 등 엔트리 ID를 확인할 수 없으면 `#journal-day-{stdrdDt}`로 스크롤한다.
-5. 일자 상세 팝업(`JournalDayDtlModal`)이 열려 있으면 OK 이후 상세 데이터를 다시 조회하고, 팝업 내부의 동일 엔트리 위치로 스크롤한다.
-6. 검색 팝업(`JournalEntrySearchPage`)에서는 OK 이후 `success` 이벤트를 받아 현재 검색 조건으로 `loadEntries()` 후 `#journal-entry-search-{id}`로 스크롤한다.
-7. 월간/주간 화면에서는 엔트리 ID가 있으면 엔트리 DOM을 retry로 우선 탐색하고, retry 이후에도 찾지 못할 때만 해당 일자 카드로 fallback한다.
+2. 모달을 닫은 뒤 성공 알림을 표시한다.
+3. 성공 알림 OK 이후 월간/주간 화면에서는 현재 route 기준으로 `fetchDays()`를 호출해 목록 DOM을 갱신한다.
+4. 검색 팝업(`JournalEntrySearchPage`)에서는 `prepare-success` 이벤트에서 현재 검색 조건 목록 또는 수정 대상 항목 DOM을 먼저 준비한다.
+5. 월간/주간 기본 목록은 재조회 후 강제 스크롤하지 않고 현재 스크롤 위치를 유지한다. 검색 팝업은 성공 알림 OK 이후 추가 재조회 없이 저장 위치 스크롤만 수행한다.
+6. 월간/주간 기본 목록은 기존 DOM을 유지해 브라우저 스크롤 위치 보존에 맡긴다.
+7. 일자 상세 팝업은 팝업 내부의 동일 엔트리 위치로 스크롤한다.
+8. 검색 팝업은 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
+
+**월간/주간 재조회 렌더 계약**: 기존 `dayList`가 있는 상태에서 `fetchDays()`가 다시 실행될 때는 본문을 전체 로딩 스피너로 교체하지 않는다. 기존 목록 DOM을 유지해야 문서 높이가 순간적으로 줄어들지 않고, 저장 후 스크롤 위치가 브라우저에 의해 `0`으로 클램프되지 않는다.
 
 **엔트리 id SSOT**: `JournalEntryItem.vue` `:id="'journal-entry-' + entry.id"`, 검색 팝업은 `JournalEntrySearchPage.vue` 결과 article `:id="'journal-entry-search-' + entry.id"`.
 
@@ -351,7 +352,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **RESOLVED 자동 접힘**: `isCollapsed` computed에서 `localCollapsedOverride` 없고 `lifecycleKey === "RESOLVED"`이면 `true` 반환. 상태 서버 저장 없이 클라이언트에서 자동 접힘 처리.
 
-**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `success` 이벤트를 받아 현재 검색 목록을 다시 조회한 뒤 저장한 엔트리 article로 스크롤한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 저널 해석 수정 액션은 `JournalInterpretationRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회가 성공한 뒤 제목/본문/순번을 채운 폼을 표시한다. 해석 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 해석 저장 후 모달 내부의 `journalStore.fetchDays()` 완료를 감지해 검색 목록을 재조회한다.
+**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `prepare-success` 이벤트에서 현재 검색 목록 또는 수정 대상 article DOM을 성공 알림 전에 준비한다. 모달의 `success` 이벤트는 성공 알림 OK 이후 저장한 엔트리 article 스크롤만 담당한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 저널 해석 수정 액션은 `JournalInterpretationRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회가 성공한 뒤 제목/본문/순번을 채운 폼을 표시한다. 해석 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 해석 저장 후 모달 내부의 `journalStore.fetchDays()` 완료를 감지해 검색 목록을 재조회한다.
 
 ---
 

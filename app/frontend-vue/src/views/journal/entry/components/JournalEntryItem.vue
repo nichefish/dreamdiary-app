@@ -452,6 +452,7 @@ async function copyEntry(): Promise<void> {
 
 /** 엔트리 수정 모달 열기 */
 function openModify() {
+  if (!props.entry.id) return;
   void modalStore.openEntryModify(props.entry.id);
 }
 

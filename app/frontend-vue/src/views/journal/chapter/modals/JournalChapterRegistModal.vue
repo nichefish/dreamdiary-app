@@ -296,15 +296,20 @@ function refreshCurrentDayView(chapterId?: number | string, stdrdDt?: string): v
   void journalStore.fetchDays().then(afterFetch);
 }
 
-function resolveSavedChapterId(responseData: Record<string, unknown>, fallbackId?: number): number | string | undefined {
+function parseSavedChapterId(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  const raw = String(value).trim();
+  return /^\d+$/.test(raw) ? raw : null;
+}
+
+function resolveSavedChapterId(responseData: Record<string, unknown>, fallbackId?: number): string | undefined {
   const rsltObj = responseData.rsltObj as Record<string, unknown> | undefined;
-  const candidates = [
-    fallbackId,
-    responseData.id,
-    responseData.rsltId,
-    rsltObj?.id,
-  ];
-  return candidates.find((value) => value !== undefined && value !== null && String(value) !== "") as number | string | undefined;
+  const candidates = [fallbackId, responseData.id, responseData.rsltId, rsltObj?.id];
+  for (const value of candidates) {
+    const id = parseSavedChapterId(value);
+    if (id) return id;
+  }
+  return undefined;
 }
 
 function resolveSavedDate(responseData: Record<string, unknown>, fallbackDate?: string): string | undefined {

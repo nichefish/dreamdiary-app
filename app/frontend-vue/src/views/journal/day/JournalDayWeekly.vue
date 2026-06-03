@@ -12,7 +12,7 @@
       <!--end::태그 클라우드 헤더-->
       <div class="card-body">
         <!--begin::로딩-->
-        <div v-if="store.loading" class="d-flex justify-content-center py-10">
+        <div v-if="store.loading && store.dayList.length === 0" class="d-flex justify-content-center py-10">
           <span class="spinner-border text-primary" role="status"></span>
         </div>
         <!--end::로딩-->
