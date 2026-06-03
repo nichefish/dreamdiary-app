@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntrySearchPar
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.my.JournalEntryMyViewService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypeResolver;
+import io.nicheblog.dreamdiary.feature.journal._shared.helper.JournalCategoryMapSaveHelper;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +41,7 @@ public class JournalEntryRestController
     private final JournalEntryService journalEntryService;
     private final JournalEntryMyViewService journalEntryMyViewService;
     private final JournalEntryTypeResolver typeResolver;
+    private final JournalCategoryMapSaveHelper journalCategoryMapSaveHelper;
 
     /**
      * 내 엔트리 목록을 타입 조건으로 조회한다.
@@ -175,7 +179,19 @@ public class JournalEntryRestController
         final ServiceResponse result = isMdf
                 ? journalEntryService.modify(postDto, request)
                 : journalEntryService.regist(postDto, request);
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, result.getRslt() ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
+        final boolean isSuccess = Boolean.TRUE.equals(result.getRslt());
+        final AjaxResponse ajax = AjaxResponse.fromResponseWithObj(
+                result,
+                isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE
+        );
+        if (isSuccess) {
+            final ContentType contentType = ContentType.get(postDto.getContentType());
+            final Map<String, Object> categoryMaps = journalCategoryMapSaveHelper.buildEntrySaveCategoryMaps(contentType);
+            if (!categoryMaps.isEmpty()) {
+                ajax.setRsltMap(new HashMap<>(categoryMaps));
+            }
+        }
+        return ResponseEntity.ok(ajax);
     }
 
     /**

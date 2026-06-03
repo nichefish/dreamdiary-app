@@ -132,10 +132,19 @@
         <!--begin::날짜 헤더 (날짜가 바뀔 때만)-->
         <div
           v-if="idx === 0 || entry.stdrdDt !== entries[idx - 1].stdrdDt"
-          class="text-gray-700 fw-bold fs-6 ps-2 pt-3 pb-1"
+          class="d-flex align-items-center gap-2 text-gray-700 fw-bold fs-6 ps-2 pt-3 pb-1"
         >
-          {{ entry.stdrdDt }}
-          <span v-if="entry.stdrdDt" class="text-muted fs-7 ms-1">({{ getWeekDayStr(entry.stdrdDt) }})</span>
+          <span>{{ entry.stdrdDt }}</span>
+          <span v-if="entry.stdrdDt" class="text-muted fs-7">({{ getWeekDayStr(entry.stdrdDt) }})</span>
+          <button
+            v-if="entry.stdrdDt"
+            type="button"
+            class="btn btn-xs btn-icon btn-light-primary"
+            title="새 창으로 보기 (일자 뷰)"
+            @click="openDailyView(entry.stdrdDt)"
+          >
+            <i class="bi bi-box-arrow-up-right fs-8"></i>
+          </button>
         </div>
         <!--end::날짜 헤더-->
         <JournalEntryItem
@@ -148,7 +157,11 @@
     <!--end::결과 목록-->
 
     <!--begin::모달 컨테이너-->
-    <JournalEntryRegistModal @success="onEntrySaveSuccess" />
+    <JournalEntryRegistModal
+      @prepare-success="onEntrySavePrepare"
+      @success="onEntrySaveSuccess"
+    />
+    <JournalInterpretationRegistModal />
     <CommentRegistModal />
     <CommentListModal />
     <HistoryModal @success="onHistorySuccess" />
@@ -175,19 +188,24 @@ import { useJournalStore } from "@/stores/journal";
 import type { JournalEntryDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 import { reinitMetronicAfterDom } from "@/utils/metronicReinit";
-import JournalEntryItem from "@/views/journal/components/JournalEntryItem.vue";
-import JournalEntryRegistModal from "@/views/journal/modals/JournalEntryRegistModal.vue";
-import CommentRegistModal from "@/views/journal/modals/CommentRegistModal.vue";
+import JournalEntryItem from "./components/JournalEntryItem.vue";
+import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
+import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
+import CommentRegistModal from "../shared/modals/CommentRegistModal.vue";
 import CommentListModal from "@/views/attachable/CommentListModal.vue";
 import HistoryModal from "@/views/attachable/HistoryModal.vue";
-import RelatedContentAddModal from "@/views/journal/modals/RelatedContentAddModal.vue";
-import JournalTagContextMenu from "@/views/journal/components/JournalTagContextMenu.vue";
-import JournalTagProfileModal from "@/views/journal/modals/JournalTagProfileModal.vue";
+import RelatedContentAddModal from "../shared/modals/RelatedContentAddModal.vue";
+import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
+import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue";
 
 interface JournalEntrySaveEvent {
   entryId?: number | string;
   stdrdDt?: string;
   isModify?: boolean;
+}
+
+interface JournalEntrySavePrepareEvent extends JournalEntrySaveEvent {
+  waitUntil: (task: Promise<void>) => void;
 }
 
 interface SearchTagDto {
@@ -309,7 +327,11 @@ async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
     const el = entryId
       ? document.getElementById(`journal-entry-search-${entryId}`)
       : null;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      console.warn("[JournalEntrySearchPage] saved entry scroll target not found.", { entryId });
+    }
   });
 }
 
@@ -388,7 +410,16 @@ function exportTxt(): void {
   window.location.href = `/api/journal/entries/export?${params.toString()}`;
 }
 
-async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void> {
+/** 일자 뷰를 새 창으로 연다. */
+function openDailyView(stdrdDt: string | undefined): void {
+  if (!stdrdDt) return;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const w = Math.min(1600, window.screen.availWidth);
+  const h = Math.min(1080, window.screen.availHeight);
+  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h}`);
+}
+
+async function prepareEntrySaveDom(payload?: JournalEntrySaveEvent): Promise<void> {
   const entryId = payload?.entryId;
   if (!entryId) {
     await loadEntries();
@@ -398,19 +429,26 @@ async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void
   const entryIndex = findEntryIndex(entryId);
   if (entryIndex < 0) {
     await loadEntries();
-    await scrollToSearchEntry(entryId);
     return;
   }
 
   const updatedEntry = await fetchEntryDetail(entryId);
   if (!updatedEntry) {
     await loadEntries();
-    await scrollToSearchEntry(entryId);
     return;
   }
 
   entries.value.splice(entryIndex, 1, mergeSearchEntryReplacement(updatedEntry, entries.value[entryIndex]));
   await reinitMetronicAfterDom();
+}
+
+function onEntrySavePrepare(payload: JournalEntrySavePrepareEvent): void {
+  payload.waitUntil(prepareEntrySaveDom(payload));
+}
+
+async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void> {
+  const entryId = payload?.entryId;
+  if (!entryId) return;
   await scrollToSearchEntry(entryId);
 }
 
@@ -502,5 +540,9 @@ watch(() => journalStore.loading, (newVal, oldVal) => {
 
 .journal-entry-search-input {
   max-width: 28rem;
+}
+
+.journal-entry-search-page :deep(.journal-interpretation-item) {
+  margin-top: 0.35rem !important;
 }
 </style>

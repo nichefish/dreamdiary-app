@@ -39,10 +39,10 @@ public class JournalCacheWarmupTask
      */
     @Override
     public void warmup() throws Exception {
-        journalDayTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
-        journalDayMetaService.getMetaCtgrMapByUser(Constant.SYSTEM_ACNT);
-        journalEntryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT, ContentType.JOURNAL_DIARY);
-        journalEntryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT, ContentType.JOURNAL_DREAM);
+        journalDayTagService.getTagCategoryMapByUser(Constant.SYSTEM_ACNT);
+        journalDayMetaService.getMetaCategoryMapByUser(Constant.SYSTEM_ACNT);
+        journalEntryTagService.getTagCategoryMapByUser(Constant.SYSTEM_ACNT, ContentType.JOURNAL_DIARY);
+        journalEntryTagService.getTagCategoryMapByUser(Constant.SYSTEM_ACNT, ContentType.JOURNAL_DREAM);
     }
 
     /**

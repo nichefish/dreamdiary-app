@@ -73,8 +73,8 @@ public class JournalDayMetaService
      * @param username 사용자 계정명
      * @return {@link Map} -- 메타 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
-    @Cacheable(value="journalDayMetaCtgrMapByUser", key="#username")
-    public Map<String, List<String>> getMetaCtgrMapByUser(final String username) throws Exception {
+    @Cacheable(value="journalDayMetaCategoryMapByUser", key="#username")
+    public Map<String, List<String>> getMetaCategoryMapByUser(final String username) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
             put("createdBy", AuthUtils.requireUsername(username));
         }};

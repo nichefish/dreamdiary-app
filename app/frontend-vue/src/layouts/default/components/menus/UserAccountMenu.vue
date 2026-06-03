@@ -53,6 +53,7 @@
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { swalConfirm } from "@/utils/swal";
 import {
   handleProfileImageError,
   resolveProfileImageUrl,
@@ -70,6 +71,7 @@ export default defineComponent({
     );
 
     const signOut = async () => {
+      if (!await swalConfirm("로그아웃 하시겠습니까?")) return;
       await store.logout();
       await router.push({ name: "sign-in" });
     };

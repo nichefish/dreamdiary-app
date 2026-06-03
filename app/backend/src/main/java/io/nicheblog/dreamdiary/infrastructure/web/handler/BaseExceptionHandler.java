@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.web.handler;
 
+import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.exception.BaseException;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -107,7 +108,23 @@ public class BaseExceptionHandler {
         return e instanceof BaseException
                 || e instanceof BindException
                 || e instanceof AccessDeniedException
+                || e instanceof NotAuthorizedException
                 || e instanceof NoHandlerFoundException;
+    }
+
+    /**
+     * {@link NotAuthorizedException} — 리소스 소유·조회 권한 부재 시 처리 (Ajax 403).
+     *
+     * @param e 처리할 {@link NotAuthorizedException}
+     * @param request 발생한 웹 요청 정보
+     * @return Ajax 요청의 경우 {@link ResponseEntity}, 페이지 요청의 경우 {@link ModelAndView} 객체
+     */
+    @ExceptionHandler(NotAuthorizedException.class)
+    public Object handleNotAuthorizedException(
+            final NotAuthorizedException e,
+            final WebRequest request
+    ) {
+        return handleException(e, request, HttpStatus.FORBIDDEN, "access_denied");
     }
 
     /**

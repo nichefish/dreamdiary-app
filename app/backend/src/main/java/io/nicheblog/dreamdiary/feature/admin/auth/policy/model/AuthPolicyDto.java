@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
 /**
@@ -56,4 +57,8 @@ public class AuthPolicyDto
     @Positive
     @Max(value = 10080)
     private Integer passwordResetTokenExpiryMinutes;
+
+    /** 중복 로그인 허용 여부 */
+    @Pattern(regexp = "Y|N")
+    private String duplicateLoginAllowedYn;
 }

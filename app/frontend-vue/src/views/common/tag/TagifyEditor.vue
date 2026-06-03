@@ -73,15 +73,15 @@ import {
 interface Props {
   /** 태그 JSON 문자열 (v-model). Tagify 직렬화 형식 */
   modelValue?: string;
-  /** 카테고리 맵 데이터. 지정 시 initWithCtgr / initMeta 동작. 호출자가 세션 캐시 후 주입 */
-  ctgrMap?: Record<string, string[]> | null;
+  /** 카테고리 맵 데이터. 지정 시 initWithCategoryMap / initMeta 동작. 호출자가 세션 캐시 후 주입 */
+  categoryMap?: Record<string, string[]> | null;
   /** true 이면 initMeta (카테고리 + 메타 값 2단계 입력) */
   metaMode?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
-  ctgrMap: null,
+  categoryMap: null,
   metaMode: false,
 });
 
@@ -149,23 +149,23 @@ function initTagify(): void {
   if (!inputRef.value) return;
   destroyTagify();
 
-  const ctgrMapData = props.ctgrMap ?? {};
-  const useCtgr = props.ctgrMap != null;
+  const categoryMapData = props.categoryMap ?? {};
+  const useCategoryMap = props.categoryMap != null;
 
   tagifyInst = new Tagify(inputRef.value, {
     ...baseTagifyOptions,
     templates: { tag: props.metaMode ? metaTemplate : tagTemplate },
     /* ctgr 모드: 어떤 태그명이든 add 이벤트까지 도달해야 ctgr 프롬프트가 열린다.
        skipInvalid: true 이면 whitelist 에 없는 태그가 add 전에 차단되어 프롬프트가 열리지 않는다. */
-    ...(useCtgr ? { duplicates: true, skipInvalid: false } : {}),
+    ...(useCategoryMap ? { duplicates: true, skipInvalid: false } : {}),
   }) as TagifyInstance;
 
   tagifyInst.draft = { value: null, ctgr: null, meta: null };
 
-  if (useCtgr) {
+  if (useCategoryMap) {
     tagifyInst.ctgr = resolveCtgrDom();
-    bindTagifyAutoComplete(tagifyInst, ctgrMapData);
-    bindTagifyCtgrInputPrompt(tagifyInst, ctgrMapData, {
+    bindTagifyAutoComplete(tagifyInst, categoryMapData);
+    bindTagifyCtgrInputPrompt(tagifyInst, categoryMapData, {
       hasValueInput: props.metaMode,
       onCommitted: emitValue,
     });
@@ -227,7 +227,7 @@ watch(
 );
 
 watch(
-  () => props.ctgrMap,
+  () => props.categoryMap,
   async () => {
     await nextTick();
     initTagify();

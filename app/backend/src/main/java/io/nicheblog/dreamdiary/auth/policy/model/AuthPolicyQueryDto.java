@@ -43,4 +43,7 @@ public class AuthPolicyQueryDto
 
     /** 비밀번호 재설정 토큰 만료 시간(분) */
     private Integer passwordResetTokenExpiryMinutes;
+
+    /** 중복 로그인 허용 여부 */
+    private String duplicateLoginAllowedYn;
 }

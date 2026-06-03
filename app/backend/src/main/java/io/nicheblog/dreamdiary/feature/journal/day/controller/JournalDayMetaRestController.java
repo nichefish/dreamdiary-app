@@ -110,18 +110,18 @@ public class JournalDayMetaRestController
      *
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JOURNAL_DAY_META_CTGR_MAP)
+    @GetMapping(Url.JOURNAL_DAY_META_CATEGORIES)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalDayMetaCtgrMapAjax(
+    public ResponseEntity<AjaxResponse> journalDayMetaCategoryMapAjax(
             //
     ) throws Exception {
 
-        final Map<String, List<String>> metaCtgrMap = myJournalDayMetaService.getMyMetaCtgrMap();
+        final Map<String, List<String>> metaCategoryMap = myJournalDayMetaService.getMyMetaCategoryMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(metaCtgrMap));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(metaCategoryMap));
     }
 }
 

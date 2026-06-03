@@ -121,8 +121,8 @@ public class JournalEntryTagService
      * @return 태그명별 카테고리 맵
      * @throws Exception 조회 중 예외
      */
-    @Cacheable(value = "journalEntryTagCtgrMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #contentType)")
-    public Map<String, List<String>> getTagCtgrMapByUser(final String username, final ContentType contentType) throws Exception {
+    @Cacheable(value = "journalEntryTagCategoryMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #contentType)")
+    public Map<String, List<String>> getTagCategoryMapByUser(final String username, final ContentType contentType) throws Exception {
         final List<JournalEntryTagEntity> tagList = this.getSelf().getListEntity(toTagListParamMap(username, contentType));
         return tagList.stream()
                 .collect(Collectors.groupingBy(

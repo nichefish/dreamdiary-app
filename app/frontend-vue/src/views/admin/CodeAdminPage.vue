@@ -398,7 +398,7 @@ async function submitGroup() {
     return;
   }
   try {
-    void swalAlert(await store.submitGroup());
+    await store.submitGroup();
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "코드 그룹을 저장하지 못했습니다.");
   }
@@ -416,7 +416,7 @@ async function toggleGroupUse(row: CodeGroupRow) {
 async function deleteGroup(row: CodeGroupRow) {
   if (!await swalConfirm(`${row.groupName} 분류 코드를 삭제할까요?`)) return;
   try {
-    void swalAlert(await store.deleteGroup(row.id));
+    await store.deleteGroup(row.id);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "코드 그룹을 삭제하지 못했습니다.");
   }
@@ -440,7 +440,7 @@ async function submitItem() {
     return;
   }
   try {
-    void swalAlert(await store.submitItem());
+    await store.submitItem();
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "상세 코드를 저장하지 못했습니다.");
   }
@@ -449,7 +449,7 @@ async function submitItem() {
 async function deleteItem(item: CodeItemRow) {
   if (!await swalConfirm(`${item.codeName} 상세 코드를 삭제할까요?`)) return;
   try {
-    void swalAlert(await store.deleteItem(item.id));
+    await store.deleteItem(item.id);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "상세 코드를 삭제하지 못했습니다.");
   }

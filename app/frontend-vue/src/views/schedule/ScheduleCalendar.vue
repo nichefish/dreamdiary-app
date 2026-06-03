@@ -36,11 +36,11 @@
       </button>
 
       <div class="schedule-toolbar__actions">
-        <button type="button" class="btn btn-sm btn-primary" @click="openReg(false)">
+        <button type="button" class="btn btn-sm btn-primary" @click="openRegist(false)">
           <i class="bi bi-plus-lg"></i>
           일정 등록
         </button>
-        <button type="button" class="btn btn-sm btn-light-primary" @click="openReg(true)">
+        <button type="button" class="btn btn-sm btn-light-primary" @click="openRegist(true)">
           <i class="bi bi-lock"></i>
           개인 일정
         </button>
@@ -85,21 +85,21 @@
       </div>
     </div>
 
-    <div ref="regModalEl" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div ref="registModalEl" class="modal fade" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">일정 저장</h5>
-            <button type="button" class="btn-close" @click="closeReg"></button>
+            <button type="button" class="btn-close" @click="closeRegist"></button>
           </div>
           <div class="modal-body">
-            <form class="form" @submit.prevent="submitReg">
-              <input type="hidden" :value="regForm.id ?? ''" />
+            <form class="form" @submit.prevent="submitRegist">
+              <input type="hidden" :value="registForm.id ?? ''" />
 
               <div class="row g-3 mb-3">
                 <div class="col-md-4">
                   <label class="form-label required" for="scheduleCd">구분</label>
-                  <select id="scheduleCd" v-model="regForm.scheduleCd" class="form-select form-select-solid" required @change="onScheduleCodeChange">
+                  <select id="scheduleCd" v-model="registForm.scheduleCd" class="form-select form-select-solid" required @change="onScheduleCodeChange">
                     <option value="">선택</option>
                     <option v-for="code in filteredCodeOptions" :key="code.code" :value="code.code">
                       {{ code.codeName }}
@@ -108,38 +108,38 @@
                 </div>
                 <div class="col-md-8">
                   <label class="form-label required" for="scheduleTitle">제목</label>
-                  <input id="scheduleTitle" v-model="regForm.title" class="form-control form-control-solid" maxlength="120" required />
+                  <input id="scheduleTitle" v-model="registForm.title" class="form-control form-control-solid" maxlength="120" required />
                 </div>
               </div>
 
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
                   <label class="form-label required" for="scheduleBgnDt">시작일</label>
-                  <input id="scheduleBgnDt" v-model="regForm.bgnDt" type="date" class="form-control form-control-solid" required />
+                  <input id="scheduleBgnDt" v-model="registForm.bgnDt" type="date" class="form-control form-control-solid" required />
                 </div>
                 <div class="col-md-6" v-if="showEndDate">
                   <label class="form-label" for="scheduleEndDt">종료일</label>
-                  <input id="scheduleEndDt" v-model="regForm.endDt" type="date" class="form-control form-control-solid" />
+                  <input id="scheduleEndDt" v-model="registForm.endDt" type="date" class="form-control form-control-solid" />
                 </div>
               </div>
 
               <div class="mb-3">
                 <label class="form-label" for="scheduleContent">내용</label>
-                <textarea id="scheduleContent" v-model="regForm.content" class="form-control form-control-solid" rows="4" maxlength="500"></textarea>
+                <textarea id="scheduleContent" v-model="registForm.content" class="form-control form-control-solid" rows="4" maxlength="500"></textarea>
               </div>
 
               <div class="mb-3">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                   <label class="form-label mb-0">참여자</label>
-                  <button v-if="!isPrivateReg" type="button" class="btn btn-sm btn-icon btn-light-primary" @click="addParticipant">
+                  <button v-if="!isPrivateRegist" type="button" class="btn btn-sm btn-icon btn-light-primary" @click="addParticipant">
                     <i class="bi bi-plus-lg"></i>
                   </button>
                 </div>
-                <div v-if="isPrivateReg" class="text-muted fs-7">
+                <div v-if="isPrivateRegist" class="text-muted fs-7">
                   개인 일정은 본인과 참여자 화면에만 표시됩니다.
                 </div>
                 <div v-else class="schedule-participants">
-                  <div v-for="(participant, index) in regForm.prtcpntList" :key="index" class="schedule-participants__row">
+                  <div v-for="(participant, index) in registForm.prtcpntList" :key="index" class="schedule-participants__row">
                     <select v-model="participant.username" class="form-select form-select-solid">
                       <option value="">선택</option>
                       <option v-for="user in scheduleStore.userOptions" :key="user.username" :value="user.username">
@@ -155,11 +155,11 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-primary" :disabled="submitting" @click="submitReg">
+            <button type="button" class="btn btn-sm btn-primary" :disabled="submitting" @click="submitRegist">
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1"></span>
               저장
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="closeReg">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="closeRegist">닫기</button>
           </div>
         </div>
       </div>
@@ -222,9 +222,9 @@ import { useScheduleStore, type ScheduleDetail, type ScheduleFilter, type Schedu
 const scheduleStore = useScheduleStore();
 
 const calendarRef = ref<any>(null);
-const regModalEl = ref<HTMLElement | null>(null);
+const registModalEl = ref<HTMLElement | null>(null);
 const detailModalEl = ref<HTMLElement | null>(null);
-let regModal: Modal | null = null;
+let registModal: Modal | null = null;
 let detailModal: Modal | null = null;
 
 const today = new Date();
@@ -232,11 +232,11 @@ const currentAnchor = ref(new Date(today.getFullYear(), today.getMonth(), 1));
 const anchorDateText = ref(formatDate(currentAnchor.value));
 const searchKeyword = ref("");
 const submitting = ref(false);
-const isPrivateReg = ref(false);
+const isPrivateRegist = ref(false);
 const showEndDate = ref(true);
 const detail = ref<ScheduleDetail | null>(null);
 
-const regForm = reactive<ScheduleForm>({
+const registForm = reactive<ScheduleForm>({
   scheduleCd: "",
   title: "",
   content: "",
@@ -257,7 +257,7 @@ const filterItems: Array<{ key: keyof ScheduleFilter; label: string }> = [
 
 const filteredCodeOptions = computed(() => {
   const excluded = ["HOLYDAY", "CEREMONY", "TLCMMT"];
-  if (!isPrivateReg.value) return scheduleStore.codeOptions;
+  if (!isPrivateRegist.value) return scheduleStore.codeOptions;
   return scheduleStore.codeOptions.filter((item) => !excluded.includes(item.code));
 });
 
@@ -329,26 +329,26 @@ async function onEventClick(arg: EventClickArg) {
   }
 }
 
-function resetRegForm(isPrivate: boolean, source?: ScheduleDetail) {
-  isPrivateReg.value = isPrivate;
-  regForm.id = source?.id;
-  regForm.scheduleCd = source?.scheduleCd ?? "";
-  regForm.title = source?.title ?? "";
-  regForm.content = source?.content ?? "";
-  regForm.bgnDt = source?.bgnDt ?? formatDate(today);
-  regForm.endDt = source?.endDt ?? source?.bgnDt ?? formatDate(today);
-  regForm.privateYn = isPrivate ? "Y" : source?.privateYn ?? "N";
-  regForm.prtcpntList = [...(source?.prtcpntList ?? [])];
-  showEndDate.value = regForm.scheduleCd !== scheduleStore.holyDayCode;
+function resetRegistForm(isPrivate: boolean, source?: ScheduleDetail) {
+  isPrivateRegist.value = isPrivate;
+  registForm.id = source?.id;
+  registForm.scheduleCd = source?.scheduleCd ?? "";
+  registForm.title = source?.title ?? "";
+  registForm.content = source?.content ?? "";
+  registForm.bgnDt = source?.bgnDt ?? formatDate(today);
+  registForm.endDt = source?.endDt ?? source?.bgnDt ?? formatDate(today);
+  registForm.privateYn = isPrivate ? "Y" : source?.privateYn ?? "N";
+  registForm.prtcpntList = [...(source?.prtcpntList ?? [])];
+  showEndDate.value = registForm.scheduleCd !== scheduleStore.holyDayCode;
 }
 
-function openReg(isPrivate: boolean) {
-  resetRegForm(isPrivate);
-  regModal?.show();
+function openRegist(isPrivate: boolean) {
+  resetRegistForm(isPrivate);
+  registModal?.show();
 }
 
-function closeReg() {
-  regModal?.hide();
+function closeRegist() {
+  registModal?.hide();
 }
 
 function closeDetail() {
@@ -356,33 +356,34 @@ function closeDetail() {
 }
 
 function addParticipant() {
-  regForm.prtcpntList.push({ username: "" });
+  registForm.prtcpntList.push({ username: "" });
 }
 
 function removeParticipant(index: number) {
-  regForm.prtcpntList.splice(index, 1);
+  registForm.prtcpntList.splice(index, 1);
 }
 
 function onScheduleCodeChange() {
-  showEndDate.value = regForm.scheduleCd !== scheduleStore.holyDayCode;
-  if (!showEndDate.value) regForm.endDt = regForm.bgnDt;
+  showEndDate.value = registForm.scheduleCd !== scheduleStore.holyDayCode;
+  if (!showEndDate.value) registForm.endDt = registForm.bgnDt;
 }
 
-async function submitReg() {
-  if (!regForm.scheduleCd || !regForm.title || !regForm.bgnDt) {
+async function submitRegist() {
+  if (!registForm.scheduleCd || !registForm.title || !registForm.bgnDt) {
     void swalAlert("필수 값을 입력해 주세요.");
     return;
   }
-  if (!await swalConfirm(regForm.id ? "일정을 수정하시겠습니까?" : "일정을 등록하시겠습니까?")) return;
+  if (!await swalConfirm(registForm.id ? "일정을 수정하시겠습니까?" : "일정을 등록하시겠습니까?")) return;
 
   submitting.value = true;
   try {
-    await scheduleStore.saveSchedule({
-      ...regForm,
-      endDt: showEndDate.value ? regForm.endDt : regForm.bgnDt,
-      prtcpntList: regForm.prtcpntList.filter((item) => item.username),
+    const message = await scheduleStore.saveSchedule({
+      ...registForm,
+      endDt: showEndDate.value ? registForm.endDt : registForm.bgnDt,
+      prtcpntList: registForm.prtcpntList.filter((item) => item.username),
     });
-    closeReg();
+    closeRegist();
+    await swalAlert(message);
     await reload();
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : "일정을 저장하지 못했습니다.");
@@ -394,16 +395,17 @@ async function submitReg() {
 function modifyDetail() {
   if (!detail.value) return;
   closeDetail();
-  resetRegForm(detail.value.privateYn === "Y", detail.value);
-  regModal?.show();
+  resetRegistForm(detail.value.privateYn === "Y", detail.value);
+  registModal?.show();
 }
 
 async function deleteDetail() {
   if (!detail.value?.id) return;
   if (!await swalConfirm("일정을 삭제하시겠습니까?")) return;
   try {
-    await scheduleStore.deleteSchedule(detail.value.id);
+    const message = await scheduleStore.deleteSchedule(detail.value.id);
     closeDetail();
+    await swalAlert(message);
     await reload();
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : "일정을 삭제하지 못했습니다.");
@@ -415,7 +417,7 @@ function showListNotice() {
 }
 
 onMounted(async () => {
-  if (regModalEl.value) regModal = new Modal(regModalEl.value);
+  if (registModalEl.value) registModal = new Modal(registModalEl.value);
   if (detailModalEl.value) detailModal = new Modal(detailModalEl.value);
   await scheduleStore.fetchBootstrap();
   await reload();

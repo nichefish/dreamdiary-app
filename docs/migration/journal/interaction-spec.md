@@ -11,21 +11,26 @@
 | 정렬 토글 | `sortOrder` + `toggleSort` + localStorage 유지 + 프론트 역순 | ✓ |
 | 태그 클릭 컨텍스트 메뉴 | `tagContextMenu.ts` + `JournalTagContextMenu.vue` | ✓ |
 | 일자 카드 ⋯ 컨텍스트 메뉴 | `JournalDayCard.vue` — Metronic dropdown | ✓ |
+| 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
+| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 칩 × 클릭 시 자유 제거(제한 없음); 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴 | ✓코드 |
 | 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/삭제 | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 버튼 | `JournalChapterItem.vue` — `copyChapter()`, 날짜(요일)·카테고리·엔트리 전체 텍스트 클립보드 복사 | ✓ |
 | 꿈 복사 버튼 | `JournalDayCard.vue` — `copyDreams()`, 날짜(요일) 헤더 + 꿈 엔트리 전체 클립보드 복사 | ✓ |
 | 엔트리 복사 버튼 | `JournalEntryItem.vue` — `copyEntry()`, 날짜(요일)·본문 텍스트 클립보드 복사 (레거시 동일 포맷) | ✓ |
 | 헤더 검색 드롭다운 | `Search.vue` — 일기/꿈 유형 선택 + debounce 검색 + 결과 링크 (`journal-entry-search`) | ✓ |
+| 메타 VIEW · 메타 컨텍스트 메뉴 | `metaContextMenu.ts` + `JournalMetaContextMenu.vue` — 헤더 `#메타` 클릭 시 팝업(태그 메뉴와 동일 UI); 「검색」→ `openDayFilterModal`(`JournalDayMetaModal`), 「그래프로 보기」→ `addMetaToGraph`(최대 2·이미 있으면 비활성), 「메타 설정」→ `openMetaProfile`(`JournalMetaProfileModal`, `GET /api/journal/day/metas/{id}`) | ✓코드 |
+| 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
 | Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
-| 챕터 카테고리 필터 | `chapterCtgrCds` 있음, UI·`fetchDays` 연동은 store만 | ❌ UI |
+| 챕터 카테고리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY_CTGR_CD`·`NOTE` 병합 체크박스, `store.chapterCtgrCds` → `fetchDays` | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
 | 어사이드 키워드 필터 | `JournalDayViewToolbar.vue`에만 있음; `JournalAside.vue` 어사이드에는 키워드 입력 없음 | ⚠ 툴바만 |
-| 등록/수정 후 스크롤 | 일자 submit 성공 → `#journal-day-{stdrdDt}`, 엔트리 submit 성공 → `#journal-entry-{id}` 또는 일자 카드 scrollIntoView | ✓ |
-| 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정·삭제 등 모든 서버 반영 후 `fetchDays().then` → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
+| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView. 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback | ✓ |
+| 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정 서버 반영 후 현재 route 기준 목록 재조회 → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, `POST /api/journal/chapter/{id}/move` 호출 후 `fetchDays` + 신 일자 scrollIntoView | ✓ |
+| 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 수정/삭제/이동 거부 시 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. CSS `:has` + `:not(:has([data-resolved=\"N\"]))` 로 하위 엔트리 전체 resolved 여부를 집계해 접힘 하이라이트 표시. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러 | ✓ |
 
@@ -110,7 +115,7 @@ function onChapterCtgrChange(event: Event) {
 - `checked=false` → `store.chapterCtgrCds = []` + `store.fetchDays()` (전체 표시)
 - `checked=true` → 현재 멀티셀렉트 값 적용
 
-**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.fetchChapterCategories()` 호출 (이미 구현됨)
+**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.prefetchChapterCategories()` 호출 후 일기·노트 코드 병합 (`JOURNAL_CHAPTER_CTGR_CD` 는 DB 마이그레이션으로 제거됨)
 
 **`__ALL__` 처리**: 첫 번째 `<option value="__ALL__">전체</option>` 선택 시 모든 챕터 표시
 
@@ -208,18 +213,31 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 툴바 인풋은 store 상태를 오염시키지 않는다 (`name` 속성 없음, 로컬 ref만 사용)
 - 어사이드 인풋은 store 상태를 직접 바인딩하며 필터로만 작동한다
 
----
-
-### 등록/수정 후 일자 카드 스크롤
+### 등록/수정 후 일자/챕터 위치 스크롤
 
 **트리거**: `JournalDayRegistModal` submit 성공 (등록 및 수정 공통)
 
 **동작**:
 1. `model.journalDate`를 `savedDate`로 캡처
-2. 모달 닫기 → `refreshCurrentDayView(savedDate)` 호출
-3. `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
+2. 모달 닫기
+3. 성공 알림 표시
+4. 사용자가 OK를 누른 뒤 `refreshCurrentDayView(savedDate)` 호출
+5. `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
 
 **카드 id SSOT**: `JournalDayCard.vue` `:id="'journal-day-' + day.stdrdDt"`
+
+**챕터 id SSOT**: `JournalChapterItem.vue` `:id="'journal-chapter-' + chapter.id"`
+
+**챕터 등록/수정 후 동작**:
+1. 저장 성공 응답에서 챕터 ID를 확인한다. 수정이면 기존 `model.id`를 fallback으로 사용한다.
+2. 모달을 닫고 성공 알림을 표시한다.
+3. 사용자가 OK를 누른 뒤 현재 route 기준으로 월간(`LIST`) 또는 주간(`WEEKLY`) 목록을 다시 조회한다.
+4. 목록 렌더 완료 후 `#journal-chapter-{id}`로 스크롤한다.
+5. 신규 등록 등 챕터 ID를 확인할 수 없거나 retry 이후에도 챕터 DOM을 찾지 못하면 `#journal-day-{stdrdDt}`로 스크롤한다.
+
+**챕터 삭제/상태 변경 후 동작**:
+- 삭제는 삭제 전에 `stdrdDt`를 캡처하고, 성공 알림 OK 이후 현재 route 기준 목록 재조회 + `#journal-day-{stdrdDt}` 스크롤.
+- 상태 변경은 현재 route 기준 목록 재조회 + `#journal-day-{stdrdDt}` 스크롤.
 
 ---
 
@@ -239,10 +257,17 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **동작**:
 1. 저장 성공 응답에서 엔트리 ID를 확인한다. 수정이면 기존 `model.id`를 fallback으로 사용한다.
-2. 월간/주간 화면에서는 현재 route 기준으로 `fetchDays()`를 다시 호출한다.
-3. 목록 갱신 후 `#journal-entry-{id}`로 스크롤한다. 신규 등록 등 엔트리 ID를 확인할 수 없으면 `#journal-day-{stdrdDt}`로 스크롤한다.
-4. 일자 상세 팝업(`JournalDayDtlModal`)이 열려 있으면 상세 데이터를 다시 조회하고, 팝업 내부의 동일 엔트리 위치로 스크롤한다.
-5. 검색 팝업(`JournalEntrySearchPage`)에서는 `success` 이벤트를 받아 현재 검색 조건으로 `loadEntries()` 후 `#journal-entry-search-{id}`로 스크롤한다.
+2. 모달을 닫은 뒤 성공 알림을 표시한다.
+3. 성공 알림 OK 이후 월간/주간 화면에서는 현재 route 기준으로 `fetchDays()`를 호출해 목록 DOM을 갱신한다.
+4. 검색 팝업(`JournalEntrySearchPage`)에서는 `prepare-success` 이벤트에서 현재 검색 조건 목록 또는 수정 대상 항목 DOM을 먼저 준비한다.
+5. 월간/주간 기본 목록은 재조회 후 강제 스크롤하지 않고 현재 스크롤 위치를 유지한다. 검색 팝업은 성공 알림 OK 이후 추가 재조회 없이 저장 위치 스크롤만 수행한다.
+6. 월간/주간 기본 목록은 기존 DOM을 유지해 브라우저 스크롤 위치 보존에 맡긴다.
+7. 일자 상세 팝업은 팝업 내부의 동일 엔트리 위치로 스크롤한다.
+8. 검색 팝업은 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
+
+**월간/주간 재조회 렌더 계약**: 기존 `dayList`가 있는 상태에서 `fetchDays()`가 다시 실행될 때는 본문을 전체 로딩 스피너로 교체하지 않는다. 기존 목록 DOM을 유지해야 문서 높이가 순간적으로 줄어들지 않고, 저장 후 스크롤 위치가 브라우저에 의해 `0`으로 클램프되지 않는다.
+
+**태그클라우드 갱신 범위 계약**: 저장 후 태그클라우드는 변경된 데이터 범위만 다시 조회한다. 저널 일자 저장은 `day`, `JOURNAL_DIARY` 엔트리 저장은 `diary`, `JOURNAL_DREAM` 엔트리 저장은 `dream` 섹션만 갱신한다. `JOURNAL_NOTE` 엔트리 저장과 저널 챕터 저장은 일자/일기/꿈 태그클라우드의 직접 변경이 아니므로 태그클라우드를 재조회하지 않는다.
 
 **엔트리 id SSOT**: `JournalEntryItem.vue` `:id="'journal-entry-' + entry.id"`, 검색 팝업은 `JournalEntrySearchPage.vue` 결과 article `:id="'journal-entry-search-' + entry.id"`.
 
@@ -263,7 +288,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 닫기: 외부 클릭, ESC, scroll/resize
 
 **검색 액션**:
-- `JOURNAL_DAY`: `journalModalStore.openTagDtl(tagId, name)` 으로 일자 태그 상세 모달 오픈
+- `JOURNAL_DAY`: `journalModalStore.openDayFilterModal({ type: 'tag', id: tagId, name, ctgr })` 으로 일자 필터 모달(메타+태그 통합) 오픈
 - `JOURNAL_DIARY`: 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds={tagId}&tagName={name}`
 - `JOURNAL_DREAM`: 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds={tagId}&tagName={name}`
 - 단, 현재 route가 `journal-entry-search`인 검색 팝업 내부에서는 새 창을 다시 열지 않고 같은 창의 query를 `router.replace(...)`로 갱신한다. 검색 페이지는 `route.fullPath` watch로 즉시 재조회한다.
@@ -271,6 +296,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **태그 설정 액션**:
 - `GET /api/tags/{tagId}/profile?contentType=...` 로 기존 프로필 조회
 - `attachableStore.openTagProfile(...)` 로 태그 프로필 모달 오픈
+- 저장된 `JOURNAL_DREAM` 태그 프로필 본문은 목록/검색/상세의 꿈 엔트리 본문 아래에 표시된다. 일기(`JOURNAL_DIARY`) 태그 프로필은 설정 모달과 태그 색상 의미에만 사용하고, 엔트리 본문 아래에는 표시하지 않는다.
 
 **중요 보존 규칙**:
 - 일기/꿈 태그 검색은 현재 목록의 `diaryKeyword` / `dreamKeyword` 필터로 대체하지 않는다.
@@ -282,16 +308,20 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 일자 카드 ⋯ 컨텍스트 메뉴 (JournalDayCard Context Menu)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalDayCard.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/day/components/JournalDayCard.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/day/components/JournalDayContextMenu.ts`
 
 **메뉴 구조**:
 - 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간 뷰 전용 용도)
 - 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
+- `JournalDayDaily.vue` 로드 시 `stdrdDt`에서 `yy`·`mnth`를 파생해 `fetchDays`에 명시 전달 (스토어 기본값 현재 날짜가 백엔드 필터와 불일치하는 문제 방지)
+- 날짜 이동(이전/다음)은 로컬 Date 생성자로 파싱 — `new Date(stdrdDt)`는 UTC로 파싱되어 Korea(UTC+9) 환경에서 날짜가 1일 밀리는 버그 발생
+- 중앙 날짜 표시: `<input type=date>` 클릭 시 브라우저 달력 피커 오픈, 선택 날짜로 `router.replace`하여 이동
+- 팝업 너비 1600px / 높이 1080px (`window.screen.availWidth/Height` 상한); left/top 제거하여 OS 기본 배치 사용
 - 수정 → `openReg()` (등록 모달 재활용, id 포함)
 - 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 접힘(COLLAPSED, `POST /api/states` 토글)
-- 삭제 → `DELETE /api/journal/day/{id}` → `journalStore.fetchDays()`
+  - 삭제 → `DELETE /api/journal/day/{id}` → 성공 알림 OK 이후 `journalStore.fetchDays()`
 
 **드롭다운**: Metronic `data-kt-menu-trigger="click"`, `data-kt-menu-placement="bottom-end"`
 
@@ -299,16 +329,16 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 엔트리 ⋯ 컨텍스트 메뉴 (JournalEntryItem Context Menu)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryContextMenu.ts`
 
 **우측 액션 영역 구조**:
-- 댓글 등록 버튼 (⋯ 밖, 단독 버튼) → `attachableStore.openCommentReg(id, contentType)`
+- 댓글 등록 버튼 (⋯ 밖, 단독 버튼) → `attachableStore.openCommentRegist(id, contentType)`
 - 복사 버튼 (`bi-copy`, ⋯ 밖, 단독 버튼) → `copyEntry()` — 날짜(요일)·`htmlToPlainText(content)` 클립보드 복사. `content` = TinyMCE HTML 원문; HTML 제거 후 평문. (레거시 `copy()` 동일 포맷)
 - ⋯ 드롭다운:
   - 헤더: contentLabel (일기/꿈)
-  - 수정 → `modalStore.openEntryMdf(id)`
+  - 수정 → `modalStore.openEntryModify(id)`
   - 이력 → `attachableStore.openHistory(contentType, id)`
   - 관련 글 추가 (`elseDreamYn !== "Y"` 조건) → `attachableStore.openRelated(contentType, id)`
   - 구분선
@@ -318,19 +348,19 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
     - NHTMR(악몽), HALLUC(환각/현시) — 꿈 전용 (`isDream`)
     - COLLAPSED(접기) — 공통
   - 구분선
-  - 삭제 → `DELETE /api/journal/entry/{id}` → `journalStore.fetchDays()`
+  - 삭제 → `DELETE /api/journal/entry/{id}` → 성공 알림 OK 이후 현재 route 기준 목록 재조회 + `#journal-day-{stdrdDt}` 스크롤
 
 **상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤.
 
 **RESOLVED 자동 접힘**: `isCollapsed` computed에서 `localCollapsedOverride` 없고 `lifecycleKey === "RESOLVED"`이면 `true` 반환. 상태 서버 저장 없이 클라이언트에서 자동 접힘 처리.
 
-**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `success` 이벤트를 받아 현재 검색 목록을 다시 조회한 뒤 저장한 엔트리 article로 스크롤한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다.
+**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `prepare-success` 이벤트에서 현재 검색 목록 또는 수정 대상 article DOM을 성공 알림 전에 준비한다. 모달의 `success` 이벤트는 성공 알림 OK 이후 저장한 엔트리 article 스크롤만 담당한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 저널 해석 수정 액션은 `JournalInterpretationRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회가 성공한 뒤 제목/본문/순번을 채운 폼을 표시한다. 해석 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 해석 저장 후 모달 내부의 `journalStore.fetchDays()` 완료를 감지해 검색 목록을 재조회한다.
 
 ---
 
 ### 엔트리 클라이언트 접힘 토글 (Entry Local Collapse Toggle)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `JournalEntryItem.ts` 왼쪽 열 토글 버튼 + `journalEntryStateService.toggle()` (localStorage 기반, 서버 상태 무변경)
 
@@ -378,7 +408,7 @@ function toggleEntry(): void {
 
 ### 챕터 복사 버튼 (Chapter Copy)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalChapterItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/chapter/components/JournalChapterItem.vue`
 
 **트리거**: 챕터 헤더 우측 복사 버튼 (`bi-copy`) 클릭
 
@@ -420,7 +450,7 @@ async function copyChapter(): Promise<void> {
 
 ### 엔트리 복사 버튼 (Entry Copy)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **트리거**: 우측 액션 영역 복사 버튼 (`bi-copy`) 클릭 (댓글 버튼과 ⋯ 사이)
 

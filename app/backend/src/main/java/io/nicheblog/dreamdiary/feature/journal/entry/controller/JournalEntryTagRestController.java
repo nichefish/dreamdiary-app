@@ -45,13 +45,13 @@ public class JournalEntryTagRestController
      * @return Ajax 응답
      * @throws Exception 조회 중 예외
      */
-    @GetMapping(Url.JOURNAL_ENTRY_TAG_CTGR_MAP)
+    @GetMapping(Url.JOURNAL_ENTRY_TAG_CATEGORIES)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalEntryTagCtgrMapAjax(
+    public ResponseEntity<AjaxResponse> journalEntryTagCategoryMapAjax(
             final @RequestParam("type") String type
     ) throws Exception {
-        return tagCtgrMapAjax(typeResolver.resolveByRawType(type));
+        return tagCategoryMapAjax(typeResolver.resolveByRawType(type));
     }
 
     /**
@@ -97,9 +97,9 @@ public class JournalEntryTagRestController
      * @return Ajax 응답
      * @throws Exception 조회 중 예외
      */
-    private ResponseEntity<AjaxResponse> tagCtgrMapAjax(final ContentType contentType) throws Exception {
-        final Map<String, List<String>> tagCtgrMap = journalEntryMyTagService.getMyTagCtgrMap(contentType);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withMap(tagCtgrMap));
+    private ResponseEntity<AjaxResponse> tagCategoryMapAjax(final ContentType contentType) throws Exception {
+        final Map<String, List<String>> tagCategoryMap = journalEntryMyTagService.getMyTagCategoryMap(contentType);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withMap(tagCategoryMap));
     }
 
     /**

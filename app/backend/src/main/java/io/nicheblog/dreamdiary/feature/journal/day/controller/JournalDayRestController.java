@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayCalSer
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayQueryService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayService;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
+import io.nicheblog.dreamdiary.feature.journal._shared.helper.JournalCategoryMapSaveHelper;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -22,7 +23,9 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JournalDayRestController
@@ -46,6 +49,7 @@ public class JournalDayRestController
     private final MyJournalDayQueryService myJournalDayQueryService;
     private final MyJournalDayCalService myJournalDayCalService;
     private final MyJournalDayService myJournalDayService;
+    private final JournalCategoryMapSaveHelper journalCategoryMapSaveHelper;
 
     /**
      * 저널 일자 목록 조회 (Ajax)
@@ -110,7 +114,12 @@ public class JournalDayRestController
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+        final AjaxResponse ajax = AjaxResponse.fromResponseWithObj(result, rsltMsg);
+        if (Boolean.TRUE.equals(isSuccess)) {
+            final Map<String, Object> categoryMaps = journalCategoryMapSaveHelper.buildDaySaveCategoryMaps();
+            ajax.setRsltMap(new HashMap<>(categoryMaps));
+        }
+        return ResponseEntity.ok(ajax);
     }
 
     /**

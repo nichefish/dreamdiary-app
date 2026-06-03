@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
-import { swalConfirm, swalAlert } from "@/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError } from "@/utils/swal";
 
 // ---- 타입 정의 ----
 
@@ -177,6 +177,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
    */
   async function submitRegist(): Promise<boolean> {
     if (!registModel.value) return false;
+    const wasModify = registModel.value.id != null;
     submitting.value = true;
     try {
       const fd = new FormData();
@@ -195,13 +196,14 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       });
       if (res.data?.rslt) {
         closeRegist();
+        await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
         void fetchList(0);
         return true;
       }
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
       return false;
     } finally {
       submitting.value = false;
@@ -219,12 +221,13 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     try {
       const res = await axios.delete(`/api/journal/threads/${id}`);
       if (res.data?.rslt) {
+        await swalAlert(res.data?.message ?? "삭제되었습니다.");
         void fetchList(0);
       } else {
         void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
       }
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
     }
   }
 

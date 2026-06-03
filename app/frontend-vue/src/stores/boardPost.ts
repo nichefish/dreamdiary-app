@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
-import { swalConfirm, swalAlert } from "@/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError } from "@/utils/swal";
 
 // ---- 타입 정의 ----
 
@@ -193,6 +193,8 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   /**
    * 게시물 등록/수정 처리.
    * POST /api/board/posts (신규) | POST /api/board/posts/{id} (수정)
+   * 변경 전에는 성공 직후 목록을 갱신했다.
+   * 변경 후에는 성공 알림 OK 이후 목록을 갱신한다.
    */
   async function submitRegist(): Promise<boolean> {
     if (!registModel.value) return false;
@@ -214,13 +216,14 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       });
       if (res.data?.rslt) {
         closeRegist();
+        await swalAlert(res.data?.message ?? "저장되었습니다.");
         void fetchList(0);
         return true;
       }
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
       return false;
     } finally {
       submitting.value = false;
@@ -230,6 +233,8 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   /**
    * 게시물 삭제.
    * DELETE /api/board/posts/{id}
+   * 변경 전에는 성공 직후 목록을 갱신했다.
+   * 변경 후에는 성공 알림 OK 이후 목록을 갱신한다.
    * @param id - 게시물 ID
    */
   async function deletePost(id: number) {
@@ -238,12 +243,13 @@ export const useBoardPostStore = defineStore("boardPost", () => {
     try {
       const res = await axios.delete(`/api/board/posts/${id}`);
       if (res.data?.rslt) {
+        await swalAlert(res.data?.message ?? "삭제되었습니다.");
         void fetchList(0);
       } else {
         void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
       }
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
     }
   }
 

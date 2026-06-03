@@ -9,16 +9,16 @@
 
 **Source (Legacy)**: `legacy/templates/view/feature/journal/day/tag/_journal_day_tag_header.ftlh`
 
-**Vue 구현 완료**: `app/frontend-vue/src/views/journal/components/JournalTagCloudHeader.vue`
+**Vue 구현 완료**: `app/frontend-vue/src/views/journal/day/components/JournalTagCloudHeader.vue`
 
-**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). `JournalDaily.vue` 에는 미포함 (일간 뷰는 태그클라우드 없음)
+**사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). `JournalDayDaily.vue` 에는 미포함 (일간 뷰는 태그클라우드 없음)
 
 **레거시 HTML 구조**:
 ```html
 <div id="journal_tag_header" class="mb-6 ms-4 w-100">
   <!-- 일자 태그 행 -->
   <div id="journal_day_tag_header" class="row align-items-center mb-4 ms-4 min-h-42px">
-    <div class="col-auto d-none d-md-flex ms-4 me-6 text-center fs-6"><b>일자 태그 :</b></div>
+    <div class="journal-tag-header__label col-auto d-none d-md-flex ms-4 me-6 text-center fs-6"><b>일자 태그 :</b></div>
     <div class="col flex-grow-1" id="journal_day_tag_list_div"><!-- Handlebars 태그 렌더 --></div>
     <div class="col-auto d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
     <div class="col-auto d-none d-md-flex ms-4 me-20 text-center fs-6 gap-3">
@@ -45,23 +45,32 @@
 | Handlebars 태그 목록 렌더 | `store.tagCloud.{dayTagList,diaryTagList,dreamTagList}` |
 | `dF.Tag.hideSingleTag(selector)` | 각 행별 로컬 ref (`hideDaySingles`, `hideDiarySingles`, `hideDreamSingles`) |
 | `dF.JournalTag.listAllAjax()` | `attachableStore.openTagList({ yy, mnth, weekStartDt })` |
-| 태그 클릭 → 일자 목록 모달 | `journalModalStore.openTagDtl(tag.id, tag.name)` |
+| 태그 클릭 → 일자 목록 모달 | `journalModalStore.openTagDetail(tag.id, tag.name)` |
 
 **상태 / API**:
 | 항목 | 위치 |
 |------|------|
 | `store.tagCloud` | `useJournalStore` — `JournalTagCloud { dayTagList, diaryTagList, dreamTagList }` |
 | `store.tagCloudLoading` | `useJournalStore` |
-| `store.fetchTagCloud()` | `GET /api/journal/day/tag/cloud?yy=&mnth=` → `rsltObj.{dayTagList,diaryTagList,dreamTagList}` |
+| `store.fetchTagCloud()` | 전체 갱신: `GET /api/journal/day/tags`, `GET /api/journal/entry/tags?type=DIARY`, `GET /api/journal/entry/tags?type=DREAM` |
+| `store.fetchTagCloud({ sections })` | 부분 갱신: `sections: ["day" \| "diary" \| "dream"]` 에 포함된 태그클라우드 섹션만 조회·반영 |
 | `TagCloudItem` | `{ id: number|string, name: string, ctgr?: string, contentSize: number, textClass?: string }` |
 
 **태그 크기 클래스**: `.ts-1` ~ `.ts-9` (`src/styles/components/tag.scss`) — `textClass` 필드로 전달
+
+**가로 정렬 계약**: 일자/일기/꿈 태그 3행의 태그 목록 시작 x좌표는 동일해야 한다. `꿈 태그` 라벨이 한 글자 짧다는 이유로 태그 목록이 왼쪽으로 들어오면 실패다. Vue 구현은 라벨 컬럼에 `.journal-tag-header__label { width: 6.25rem; justify-content: center; }`를 적용해 3행 모두 같은 라벨 폭을 사용한다.
 
 **초기화 타이밍**:
 - 월간/주간 parent view가 `store.viewType`과 기간 상태를 먼저 설정한 뒤 `store.fetchTagCloud()` 호출
 - `JournalTagCloudHeader`는 mounted 선조회를 하지 않는다. 자식 mounted가 부모 초기화보다 먼저 실행되어 직전 월간 상태로 조회되는 것을 방지한다.
 - `[store.yy, store.mnth, store.weekStartDt, store.viewType]` watch → 기간/뷰 변경 시 재호출
-- store는 태그클라우드 요청 순서를 추적해, 이전 기간 요청이 늦게 완료되어도 최신 요청 결과만 반영한다.
+- store는 태그클라우드 요청 순서를 섹션별로 추적해, 이전 기간/섹션 요청이 늦게 완료되어도 최신 요청 결과만 반영한다. 부분 갱신 응답은 해당 섹션만 교체하고 다른 섹션의 현재 값을 덮어쓰지 않는다.
+
+**저장 후 부분 갱신 계약**:
+- 저널 일자 저장: 일자 태그가 변경될 수 있으므로 `fetchTagCloud({ sections: ["day"] })` 만 호출한다.
+- `JOURNAL_DIARY` 엔트리 저장: 일기 태그가 변경될 수 있으므로 `fetchTagCloud({ sections: ["diary"] })` 만 호출한다.
+- `JOURNAL_DREAM` 엔트리 저장: 꿈 태그가 변경될 수 있으므로 `fetchTagCloud({ sections: ["dream"] })` 만 호출한다.
+- `JOURNAL_NOTE` 엔트리 저장과 저널 챕터 저장은 태그클라우드 직접 변경이 아니므로 태그클라우드를 재조회하지 않는다.
 
 **현재 Vue 동등**: ✓ 구현 완료 (`JournalTagCloudHeader.vue`)
 
@@ -150,7 +159,7 @@ HTML 요소:
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideEntryFiltersApp.ts`
 
-**현재 Vue 동등**: ⚠ 부분구현 — TAGCLOUD/DIARIES/DREAMS 토글+키워드는 있으나 CHAPTER CATEGORIES·고급필터 없음
+**현재 Vue 동등**: ⚠ 부분구현 — CHAPTER CATEGORIES 체크박스·고급필터 아코디언은 레거시 멀티셀렉트·토글과 DOM 상이
 
 **5개 블록 구조**:
 
@@ -161,7 +170,7 @@ HTML 요소:
 ```html
 <!-- B-1: DIARIES 토글 -->
 <input type="checkbox" id="toggleDiaries" :checked="store.showDiaries" @change="toggleDiaries">
-<!-- B-2: CHAPTER CATEGORIES (MISSING) -->
+<!-- B-2: CHAPTER CATEGORIES (Vue: 체크박스 목록, 레거시: 멀티셀렉트) -->
 <div id="chapterCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
     <div class="d-flex align-items-center justify-content-between">
         <label class="text-muted mb-0">- CHAPTER CATEGORIES</label>
@@ -282,13 +291,13 @@ interface TodoRow {
 
 ### 22-1. `JournalDayViewToolbar` (저널 일자 뷰 상단 툴바)
 
-**Vue 구현 완료**: `app/frontend-vue/src/views/journal/components/JournalDayViewToolbar.vue`
+**Vue 구현 완료**: `app/frontend-vue/src/views/journal/day/components/JournalDayViewToolbar.vue`
 
 **레거시 출처**:
 - 본문 상단 탭 행: `journal_day_monthly.ftlh` / `journal_day_weekly.ftlh` — `nav-tabs-line` 4탭
 - 일자 등록 버튼: `_journal_day_page_header.ftlh` — `@component.header_btn_reg_modal` (`data-journal-day-action=reg-modal` → `JournalDayRuntimeService`)
 
-**사용 화면**: `JournalWeekly.vue`, `JournalMonthly.vue`, `JournalCalendar.vue`, `JournalMeta.vue` — 카드(`.card.post`) 위 첫 행
+**사용 화면**: `JournalDayWeekly.vue`, `JournalDayMonthly.vue`, `JournalDayCalendar.vue`, `JournalDayMeta.vue` — 카드(`.card.post`) 위 첫 행
 
 **DOM 구조**:
 - flex 행 (`justify-content-between`): 좌측 `nav-tabs` (router-link 4개) + 우측 등록 버튼 (`d-none d-md-flex pe-5 mt-5`)
@@ -298,7 +307,7 @@ interface TodoRow {
 **동작**:
 | 액션 | Vue |
 |------|-----|
-| 저널 일자 등록 클릭 | `useJournalModalStore().openDayReg()` → `JournalDayRegistModal` (`JournalLayout` 마운트) |
+| 저널 일자 등록 클릭 | `useJournalModalStore().openDayRegist()` → `JournalDayRegistModal` (`JournalLayout` 마운트) |
 | 탭 전환 | `router-link` — `journal-weekly` / `journal-monthly` / `journal-calendar` / `journal-meta` |
 | 일기 키워드 검색 | `v-model="store.diaryKeyword"`, Enter/버튼 클릭 → `store.fetchDays()` |
 | 꿈 키워드 검색 | `v-model="store.dreamKeyword"`, Enter/버튼 클릭 → `store.fetchDays()` |
@@ -321,9 +330,9 @@ interface TodoRow {
 
 **Vue 동등**: `flatpickrSingleDate.ts` — `bindSingleDatePicker()` (flatpickr, `Y-m-d`, locale `ko`). 모달 `shown` 시 부착·`hidden` 시 `destroy`. 캘린더 아이콘 클릭 → `open()`. 모달 내부 입력도 calendar DOM은 기본 body append를 사용한다. `.modal-body`에 append하면 입력칸 좌표와 calendar 좌표 기준이 달라져 위치가 틀어질 수 있다.
 
-**신규 등록 기본값**: `openDayReg()` 에서 `journalDate` 비어 있으면 오늘(`formatLocalDateStr`) — 레거시 daterangepicker `startDate: moment()` 와 동일.
+**신규 등록 기본값**: `openDayRegist()` 에서 `journalDate` 비어 있으면 오늘(`formatLocalDateStr`) — 레거시 daterangepicker `startDate: moment()` 와 동일.
 
-**저장 후 갱신**: `JournalDayRegistModal.vue` 는 현재 route 기준으로 목록을 갱신한다. `/journal/weekly` 에서는 `setViewType("WEEKLY")` 후 `fetchDays({ viewType: "WEEKLY" })`, `/journal/monthly` 에서는 `setViewType("LIST")` 후 `fetchDays({ viewType: "LIST" })` 를 호출해 주간 등록 완료 후 월간 목록으로 돌아가지 않게 한다. 태그 변경이 태그클라우드에 즉시 반영되도록 `fetchTagCloud()`도 함께 호출한다 (2026-05-19 수정).
+**저장 후 갱신**: `JournalDayRegistModal.vue` 는 저장 성공 시 모달을 닫고 성공 알림을 표시한 뒤, 사용자가 OK를 누르면 현재 route 기준으로 목록을 갱신한다. `/journal/weekly` 에서는 `setViewType("WEEKLY")` 후 `fetchDays({ viewType: "WEEKLY" })`, `/journal/monthly` 에서는 `setViewType("LIST")` 후 `fetchDays({ viewType: "LIST" })` 를 호출해 주간 등록 완료 후 월간 목록으로 돌아가지 않게 한다. 일자 태그 변경이 일자 태그클라우드에 반영되도록 OK 이후 `fetchTagCloud({ sections: ["day"] })`도 함께 호출한다 (2026-05-19 수정, 2026-06-02 OK 이후 갱신, 2026-06-03 부분 갱신).
 
 **중복 등록 정책**: 신규 등록 시 같은 사용자에게 같은 `journalDate`의 활성 저널 일자가 이미 있으면 등록을 실패 처리한다. 과거처럼 기존 일자를 수정으로 전환하지 않는다 (2026-05-20 수정).
 
@@ -359,15 +368,17 @@ interface TodoRow {
 
 ### 22-4. `JournalEntryRegistModal` 등록/수정 폼 여백
 
-**Vue**: `JournalEntryRegistModal.vue` → `journal-entry-reg-modal__body`, `journal-entry-reg-form`
+**Vue**: `JournalEntryRegistModal.vue` → `journal-entry-regist-modal__body`, `journal-entry-regist-form`
 
 **스타일**: `journal.scss` 에서 데스크톱 좌우 `3rem`, 모바일 좌우 `1.25rem` padding을 적용한다. 제목/본문/태그 입력이 모달 가장자리에 붙어 보이지 않게 하며, TinyMCE iframe 본문은 `RichEditor.vue` 의 `content_style` 로 `12px 16px` 내부 padding을 둔다.
 
-**중복 제출 방지**: 저장 클릭 즉시 `submitting` guard를 세운 뒤 확인창을 띄운다. 확인창이 떠 있는 동안 재클릭되어도 두 번째 `submit()`은 무시되어 같은 꿈/일기 엔트리가 두 번 POST되지 않는다. 꿈 등록 모달 오픈도 `dreamEntryRegOpening` guard로 `dream-auto` 요청 중복을 막는다.
+**중복 제출 방지**: 저장 클릭 즉시 `submitting` guard를 세운 뒤 확인창을 띄운다. 확인창이 떠 있는 동안 재클릭되어도 두 번째 `submit()`은 무시되어 같은 꿈/일기 엔트리가 두 번 POST되지 않는다. 꿈 등록 모달 오픈도 `dreamEntryRegistOpening` guard로 `dream-auto` 요청 중복을 막는다.
 
-**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 현재 route 기준으로 목록을 갱신하고 저장한 엔트리 위치로 스크롤한다. 월간/주간은 `#journal-entry-{id}`를 우선 사용하고, 신규 등록 응답에서 id를 확인할 수 없으면 `#journal-day-{stdrdDt}`로 fallback한다. 일자 상세 팝업이 열려 있으면 `JournalDayDtlModal` 데이터를 다시 조회한 뒤 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다.
+**본문 문단 저장 기준**: `RichEditor`가 전송한 TinyMCE HTML은 서버 저장 정규화(`MarkdownUtils.normalize`)를 거친다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉜 본문은 저장 시 별도 `<p>` 문단으로 분리해 레거시처럼 문단 단위 여백을 유지한다.
 
-**챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. `JOURNAL_DIARY`는 `DIARY` 챕터, `JOURNAL_NOTE`는 `NOTE` 챕터만 후보로 사용하며, 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다.
+**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림을 표시한다. 월간/주간 기본 목록은 성공 알림 OK 이후 현재 route 기준 목록을 갱신하되 강제 스크롤하지 않고, 기존 목록 DOM 유지로 브라우저 스크롤 위치 보존에 맡긴다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDtlModal` 데이터를 다시 조회하고, 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 `prepare-success` 이벤트에서 결과 DOM을 준비하고, OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다. 태그클라우드는 엔트리 타입별로 필요한 섹션만 갱신한다: `JOURNAL_DIARY`는 `fetchTagCloud({ sections: ["diary"] })`, `JOURNAL_DREAM`은 `fetchTagCloud({ sections: ["dream"] })`, `JOURNAL_NOTE`는 태그클라우드를 갱신하지 않는다.
+
+**챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. `JOURNAL_DREAM`→`DREAM` 챕터만, `JOURNAL_NOTE`→`NOTE` 챕터만 후보로 쓴다. **NOTE 챕터 엔트리의 `contentType`은 `JOURNAL_DIARY`**이므로, 후보 `chapterType`은 `contentType`이 아니라 `journalChapterId`가 가리키는 챕터(또는 신규 시 caller 가 넘긴 챕터)의 `chapterType`으로 분기한다 — 노트끼리·일기끼리만 이동한다. NOTE 챕터 신규 등록(`JournalChapterItem.openEntryNew`)도 `JOURNAL_DIARY`를 전송한다. 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다(이때 `console.warn`).
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -375,9 +386,9 @@ interface TodoRow {
 
 ### 23. `JournalDayCard` (저널 일자 카드 — 목록 단위)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalDayCard.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/day/components/JournalDayCard.vue`
 
-**사용 화면**: `JournalMonthly.vue`, `JournalWeekly.vue`, `JournalDaily.vue` — `v-for="day in store.dayList"`
+**사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue`, `JournalDayDaily.vue` — `v-for="day in store.dayList"`
 
 **하위 컴포넌트**: `JournalChapterItem.vue`, `JournalEntryItem.vue`
 
@@ -397,9 +408,10 @@ interface TodoRow {
 
 ### 23-1. `JournalChapterItem` (저널 챕터 아이템)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalChapterItem.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/chapter/components/JournalChapterItem.vue`
 
 **scss 클래스 바인딩**:
+- root div: `class="journal-chapter-block"` + `:id="'journal-chapter-' + chapter.id"` — 챕터 등록/수정 후 저장 위치 스크롤 앵커
 - 외부 div: `class="journal-chapter-item"` + `:data-collapsed` — journal.scss `:has(.collapsed)` 선택자 연동
 - 콘텐츠 div: `:class="['journal-chapter-content', { 'collapsed': isCollapsed }]"` — `&.collapsed > * { display: none !important }` CSS 연동
 
@@ -411,18 +423,22 @@ interface TodoRow {
 - 레거시에서 제목 없이 등록 가능 — `title` 빈 값 허용.
 - `submit()` 에서 title 공백 검증 제거.
 
-**헤더 액션 버튼** (우측 `col-3` 영역, 레거시 `JournalChapterItem.ts` 동형, 구현 완료):
+**소유권 표시·쓰기 제한** (`isCreatedBy` — 백엔드 `BaseAuditRegDto` 직렬화):
+- `isCreatedBy === false`: 헤더에 `타인 작성` 배지, 수정·삭제·엔트리 등록·⋯ 메뉴·서버 접힘 변경 버튼 숨김 (읽기·클라이언트 접힘·복사·TXT는 유지)
+- 수정 API 거부 시 메시지 `msg.rslt.not-owner` → 「본인이 작성한 글이 아닙니다.」(HTTP 403)
+
+**헤더 액션 버튼** (우측 `col-3` 영역, `canManageChapter` 일 때만, 레거시 `JournalChapterItem.ts` 동형):
 - 엔트리 등록 TEXT 버튼: 타입별 `저널 일기 등록` / `저널 꿈 등록` / `저널 노트 등록` + `bi-book` / `bi-moon-stars` — `openEntryNew()`
 - 복사 버튼 (`bi-copy`): `copyChapter()` — 날짜·카테고리·제목 + 하위 엔트리 전체를 줄바꿈 연결 텍스트로 클립보드 복사
 - TXT보내기 버튼 (`fas fa-download`, `btn-outline btn-light-primary`): `exportChapter()` — `GET /api/journal/chapter/{id}/export`
-- ⋯ 컨텍스트 메뉴: 수정(`openChapterMdf`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제
+- ⋯ 컨텍스트 메뉴: 수정(`openChapterModify`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제
 - 접힘 화살표 버튼 (`toggle-chapter-btn`): `toggleChapter()` — 클라이언트만 접힘(`localCollapsedOverride`), 서버 POST 없음
 
 ---
 
 ### 23-2. `JournalEntryItem` (저널 엔트리 아이템)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalEntryItem.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryItem.ts`
 
@@ -439,7 +455,11 @@ interface TodoRow {
 
 **태그 클릭**: `@click.stop="openTagContextMenu($event, tag)"` → `tagContextMenuStore.open(event, payload)`
 
-**스크롤 앵커**: root 요소는 `:id="'journal-entry-' + entry.id"`와 `:data-id="entry.id"`를 가진다. 메인 월간/주간 목록은 id를, 일자 상세 팝업 내부 스크롤은 modal 내부 `[data-id]`를 사용한다.
+**꿈 태그 프로필 표시**: 펼쳐진 `JOURNAL_DREAM` 엔트리에서만 `tag.list[].profileContent` 값이 있는 태그 프로필을 엔트리 태그 줄 아래에 표시한다. 접힌 엔트리와 일기/노트 엔트리는 같은 필드가 응답에 있더라도 렌더하지 않는다. 태그 줄은 기존 검색/설정용 태그 역할 그대로 유지하고, 프로필은 그 아래에서 `#태그명 | 프로필 내용` 구조로 별도 표시한다. 프로필 태그명 칸은 고정폭(`4.5rem`)으로 두어 여러 프로필 행의 본문 시작선이 맞아야 한다. 태그 프로필 본문은 `.journal-dream-tag-profile__content { white-space: pre-line; }` 로 줄바꿈을 보존한다.
+
+**데이터 보강**: 백엔드 `TagProfileService.applyProfileContent(...)`가 사용자별 `tag_profile.content`를 `TagContentDto.profileContent`에 병합한다. 월간/주간/일간 일자 응답은 `JournalDayQueryService`, 검색/연간/상세 엔트리 응답은 `JournalEntryMyViewService`에서 `JOURNAL_DREAM`에 한정해 병합한다.
+
+**스크롤 앵커**: root 요소는 `:id="'journal-entry-' + entry.id"`와 `:data-id="entry.id"`를 가진다. 메인 월간/주간 목록은 id를, 일자 상세 팝업 내부 스크롤은 modal 내부 `[data-id]`를 사용한다. 엔트리 수정은 현재 목록 route를 유지한 채 `JournalEntryRegistModal`을 직접 열며, 수정 모달 open/close는 URL을 변경하지 않는다.
 
 **⋯ 메뉴 API**:
 | 액션 | 엔드포인트 |
@@ -452,7 +472,7 @@ interface TodoRow {
 
 ### 23-3. `JournalTagContextMenu` (태그 클릭 컨텍스트 메뉴)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/components/JournalTagContextMenu.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/shared/components/JournalTagContextMenu.vue`
 
 **Pinia 스토어**: `app/frontend-vue/src/stores/tagContextMenu.ts`
 
@@ -463,7 +483,7 @@ interface TodoRow {
 **메뉴 액션**:
 | 액션 | `JOURNAL_DAY` | `JOURNAL_DIARY` | `JOURNAL_DREAM` |
 |------|---------------|-----------------|-----------------|
-| 검색 | `journalModalStore.openTagDtl(tagId, name)` | 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds=...&tagName=...` | 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds=...&tagName=...` |
+| 검색 | `journalModalStore.openTagDetail(tagId, name)` | 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds=...&tagName=...` | 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds=...&tagName=...` |
 | 태그 설정 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DAY` 조회 후 태그 프로필 모달 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DIARY` 조회 후 태그 프로필 모달 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DREAM` 조회 후 태그 프로필 모달 |
 
 **검색 팝업 내부 동작**: 현재 route가 `journal-entry-search`이면 `검색` 액션은 새 창을 열지 않고 같은 창에서 `router.replace({ name: "journal-entry-search", query })`를 호출한다. `JournalEntrySearchPage`가 route 변경을 watch해 목록을 즉시 갱신한다.
@@ -474,7 +494,39 @@ interface TodoRow {
 - 일기/꿈 태그 검색은 현재 목록 필터가 아니라 새 창 검색 화면이다.
 - 닫기는 외부 클릭, ESC, 스크롤/리사이즈에서 동작한다.
 
-**마운트 위치**: `JournalLayout.vue` 및 `JournalEntrySearchPage.vue` — `<JournalTagContextMenu />` (Teleport to body)
+**마운트 위치**: `JournalDayLayout.vue` 및 `JournalEntrySearchPage.vue` — `<JournalTagContextMenu />` (Teleport to body)
+
+---
+
+### 23-3a. `JournalMetaContextMenu` (메타 클릭 컨텍스트 메뉴)
+
+**Vue 구현**: `app/frontend-vue/src/views/journal/shared/components/JournalMetaContextMenu.vue`
+
+**Pinia 스토어**: `app/frontend-vue/src/stores/metaContextMenu.ts`
+
+**동작**: 메타 VIEW 헤더 `#메타` 클릭 시 태그와 동일한 fixed 팝업. payload `{ metaId, name, ctgr, unit? }`.
+
+**메뉴 액션** (메타 VIEW):
+
+| 액션 | 동작 |
+|------|------|
+| 검색 | `journalModalStore.openDayFilterModal({ type: "meta", ... })` → `JournalDayMetaModal` |
+| 그래프로 보기 | `journalStore.addMetaToGraph` (최대 2, 중복 시 비활성, 꽉 차면 alert) |
+| 메타 설정 | `journalModalStore.openMetaProfile` → `JournalMetaProfileModal` |
+
+**마운트 위치**: `JournalDayLayout.vue` — `<JournalMetaContextMenu />` (Teleport to body)
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
+### 23-3b. `JournalMetaProfileModal` (메타 설정 모달)
+
+**Vue 구현**: `app/frontend-vue/src/views/journal/shared/modals/JournalMetaProfileModal.vue`
+
+**데이터**: `GET /api/journal/day/metas/{id}` → `journalModalStore.metaProfileModel` (이름·카테고리·단위·기록 수 등 조회·표시)
+
+**현재 Vue 동등**: ⚠ 조회·표시만 (태그 프로필 수준의 색·메모 편집 API 없음)
 
 ---
 
@@ -497,7 +549,10 @@ interface TodoRow {
 - 결과별 수정/삭제 버튼
 - 결과 태그 클릭 컨텍스트 메뉴(`JournalTagContextMenu`)와 태그 프로필 모달(`JournalTagProfileModal`) 마운트
 - 검색 팝업 내부 태그 검색은 같은 창 query 갱신으로 반영
-- 엔트리 수정 저장 성공 시 `JournalEntryRegistModal` `success` 이벤트로 현재 검색 목록 재조회 후 저장 위치 스크롤
+- 엔트리 수정 저장 성공 시 `JournalEntryRegistModal` `prepare-success` 이벤트로 현재 검색 목록/수정 대상 DOM을 먼저 준비하고, `success` 이벤트로 저장 위치 스크롤만 수행
+- 검색 결과에 포함된 저널 해석의 수정 액션은 같은 창에서 `JournalInterpretationRegistModal`을 열어야 한다. 검색 팝업이 이 모달을 직접 마운트하며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회로 제목/본문/순번을 채운 뒤 모달을 열어야 한다. 저장 성공 후 모달 내부의 `journalStore.fetchDays()` 완료 신호를 `JournalEntrySearchPage`가 감지해 현재 검색 목록을 재조회한다.
+- `JournalInterpretationRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 해석 등록/수정이 가능해야 한다.
+- 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
 
 **남은 legacy 동등성 확인 대상**:
 - 결과 전체 복사 버튼
@@ -510,13 +565,13 @@ interface TodoRow {
 
 ### 24. `JournalLayout` (저널 공통 레이아웃·모달 호스트)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/JournalLayout.vue`
+**Vue 구현**: `app/frontend-vue/src/views/journal/day/JournalDayLayout.vue`
 
 **역할**: `<router-view>` + `JournalAside` + 저널·공통 attachable 모달 일괄 마운트
 
 **Aside 스크롤 동작**: `journal.scss`에서 `.journal-layout-vue__aside`에 `position: sticky`, `top: 1rem`, `max-height: calc(100vh - 2rem)`, `overflow-y: auto`를 적용한다. 본문 스크롤 중 필터 패널이 viewport 안에서 따라오며, 패널 내용이 화면보다 길면 aside 내부만 스크롤된다. 연간 결산 aside(`.journal-annual-layout-vue__aside`)도 같은 규칙을 공유한다.
 
-**마운트 모달 목록**: `JournalDayRegistModal`, `JournalDayDtlModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`
+**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDtlModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`
 
 **현재 Vue 동등**: ✓ 구현 완료
 

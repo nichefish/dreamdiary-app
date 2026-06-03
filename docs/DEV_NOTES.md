@@ -33,6 +33,16 @@
 - 목표는 **convergence**. 공통 축(부트스트랩·브리지·상태·렌더)을 세운 뒤 레거시 이중 경로를 제거하고 **단일 진입**만 남긴다. 브리지 실패 시 조용한 HBS 폴백으로 이어가지 않고 **로그 후 중단**이 기본이다.
 - 데이터와 코드가 어긋나면 클라이언트 **땜빵** 없이 DB·시드·서버 단일 진실 원천을 맞춘다.
 
+### 레거시 복원 모드 — UI 동일성 SSOT
+
+- 저널 Vue 마이그레이션에서 화면 UI의 SSOT는 legacy templates/static의 partial, FTL, CSS, 실제 DOM이다. `app/frontend-vue` 구현은 이를 재해석하지 않고 먼저 동일하게 복원한다.
+- 작업 순서: ① legacy partial/FTL 확인 ② legacy CSS 확인 ③ legacy 렌더 DOM·클래스 확인 ④ 현재 Vue 비교 ⑤ 차이 목록 작성 ⑥ 차이 전부 수정 ⑦ 타입체크와 필요한 spec 갱신.
+- 사용자가 짚은 한 픽셀·문구·간격은 국소 요청이 아니라 해당 컴포넌트의 legacy 동등성 검수 신호로 취급한다. 그 지점만 고치고 끝내지 않는다.
+- 의미를 이해하지 못한 UI는 추정·개선하지 않는다. 우선 legacy와 동일하게 옮긴 뒤, 개선은 별도 명시 요청이 있을 때만 진행한다.
+- "현재 화면을 보고 적당히 비슷하게 맞춘 뒤 사용자가 발견한 차이만 수정"하는 방식은 실패다. 완료 보고 전 관련 범위의 legacy ↔ Vue DOM·클래스·스타일·동작 차이를 선제적으로 확인한다.
+- 프레임워크 관용구로 마크업을 정리하지 않는다. legacy가 라벨과 코드를 별도 span/class/style로 나눴다면 Vue도 같은 DOM 경계와 class/style 경계를 유지한다. 클래스 통합, `fs-*` 통합, wrapper 합치기, gap 유틸 대체는 시각 차이를 만드는 재설계로 본다.
+- 자동 비주얼 diff가 없는 범위에서는 완료 보고에 최소 검증 근거를 포함한다: 비교한 legacy 파일, 비교한 Vue 파일, 보존한 DOM/class/style 차이, 남은 미검증 범위. Playwright/스크린샷 diff 도입 전까지 이 항목은 수동 게이트다.
+
 ### 저장소: 저널 엔트리 하드컷
 
 - 영속화는 **`journal_entry` 단일 테이블**로 수렴. 다형은 `content_type`(예: `JOURNAL_DIARY` 등)으로 구분.
@@ -76,6 +86,33 @@
 ### Vue 컴포넌트 디렉터리
 
 - `journal/day/components` 에 섞였던 entry/chapter/interpretation 조립 컴포넌트는 `feature/journal/entry|chapter|interpretation/components` 로 직접 이동했다. **UI/DOM/클래스 불변.**
+
+### frontend-vue 패키지 구조 기준
+
+- `src/components/` 는 앱 소유 공통 컴포넌트 루트다. `.gitignore` 로 숨기지 않는다. 시스템 공통 UI는 `components/system`, 폼·입력·표시 공통 UI는 `components/common` 아래에 둔다.
+- `src/layouts/` 는 라우트 셸과 레이아웃 전용 하위 컴포넌트만 둔다. 전역 상태 패널, 입력기, 모달 버튼처럼 레이아웃 의미가 아닌 공통 UI를 `layouts/` 에 넣지 않는다.
+- `src/views/` 는 라우트 화면과 feature-local 컴포넌트 경계다. 여러 feature가 재사용하는 컴포넌트는 `views/common` 에 새로 추가하지 말고 `src/components/common` 으로 둔다. 기존 `views/common/editor|tag` 는 이동 대상 부채다.
+- `src/stores/` 는 Pinia 상태와 API 조립까지만 담당한다. store가 `views` 또는 DOM 컴포넌트를 import하면 구조 위반이다.
+- `src/utils/` 는 순수 helper 또는 composable 성격만 둔다. 화면 렌더링 컴포넌트나 feature UI 상태가 커지면 `components` 또는 feature store로 이동한다.
+- `src/vendor/` 와 `metronic_vue_v8.2.1_demo1/` 은 외부 원본/벤더 경계다. 앱 코드 정리 목적으로 내부 파일을 수정하거나 새 앱 컴포넌트를 추가하지 않는다.
+
+### journal Vue 패키지 기준
+
+- `views/journal/**` 는 Java `feature/journal/**` 패키지 경계를 따른다. `day`, `entry`, `chapter`, `interpretation`, `todo`, `annual`, `thread`, `shared` 를 기준으로 둔다.
+- `daily`, `weekly`, `monthly`, `calendar`, `meta` 는 독립 feature가 아니라 `journal.day` 의 view mode/presentation 이다. 화면 파일은 `views/journal/day/` 아래에 둔다.
+- `views/journal/day/components` 는 day aggregate 표시용 컴포넌트만 둔다. `JournalEntryItem`, `JournalChapterItem`, `JournalInterpretationItem` 처럼 다른 journal feature의 항목 컴포넌트는 각 feature 하위에 둔다.
+- 여러 journal feature가 함께 쓰는 context menu, tag profile, comment/related modal 은 `views/journal/shared/**` 에 둔다.
+- modal 위치도 대상 도메인을 따른다. 예: day 등록/상세/meta/tag 상세는 `day/modals`, entry 등록은 `entry/modals`, chapter 등록은 `chapter/modals`, todo 등록은 `todo/modals`.
+
+### Metronic vendor 경계
+
+- **Metronic asset**: Metronic에서 가져온 CSS/SCSS, 폰트, 이미지, 아이콘, 데모 미디어처럼 제품 코드가 아닌 정적 자산이다. 예: `src/vendor/metronic/assets/**`, `public/media/**`.
+- **Metronic runtime/core**: 앱 코드가 직접 import하는 Metronic helper/plugin/service다. 예: `@metronic/core/services/ApiService`, `@metronic/core/plugins/keenthemes`, `@metronic/core/helpers/assets`. 이것은 정적 asset이 아니라 빌드 입력이지만, public repo에서는 Metronic 원본 재배포가 될 수 있으므로 커밋하지 않는다. 대신 로컬 설치/복원 절차를 둔다.
+- **Metronic demo source**: 원본 데모의 샘플 Vue 컴포넌트와 샘플 화면이다. 예: `src/vendor/metronic/components/**`, `views/crafted/**`, `LayoutBuilder.vue`, 데모용 drawer/search/toolbar/modal 컴포넌트. 제품에서 쓰지 않으면 보관하지 않고 제거한다.
+- **앱 소유 컴포넌트**: Metronic class, icon, asset을 사용하더라도 DreamDiary 라우트/레이아웃/기능에서 import하는 Vue 컴포넌트는 앱 소스다. `src/components/**`, `src/layouts/**`, `src/views/**` 아래 앱 경계에 둔다.
+- 예외 판단: `layouts/default/components/modals/Modals.vue` 처럼 Metronic demo modal들을 조립하는 Vue 파일은 asset은 아니지만 현재 앱에서 import하지 않는 demo source다. 제품에서 필요해지면 `src/components` 또는 `src/layouts`의 앱 소유 경계로 새로 승격하고, import 경로를 실제 사용 vendor/app 컴포넌트에 맞춘 뒤 커밋한다. 쓰지 않으면 제거한다.
+- 원칙: **추적되는 앱 코드가 import하는 파일은 ignored 상태로 두지 않는다.** ignored 파일을 import해야 한다면 먼저 그 파일을 앱 소유 코드로 승격하거나, 명시적 vendor 복원 절차를 만든다.
+- public repo 원칙: Metronic 원본 소스·SCSS·폰트·이미지·데모 미디어는 git에 올리지 않는다. 필요한 경우 라이선스를 보유한 개발자가 로컬 vendor 복원 절차로 채운다.
 
 ### 검증
 

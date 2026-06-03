@@ -202,6 +202,7 @@ public class DreamdiaryInitializer
                 .passwordChangeCycleDays(90)
                 .inactiveLockDays(90)
                 .passwordResetTokenExpiryMinutes(30)
+                .duplicateLoginAllowedYn("N")
                 .build();
 
         return authPolicyService.regist(authPolicy).getRslt();

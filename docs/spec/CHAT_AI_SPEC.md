@@ -221,8 +221,16 @@ For `SYNTHESIS`, the prompt asks the model to connect:
 - changes over time
 - emotional arc
 - tag/symbol links
+- uncertainty boundary for inferred real-world relationship roles
 
 It must present the answer as an interpretation grounded in records, not as external knowledge or a list of isolated snippets.
+
+For person meaning questions, the assistant must not infer real-world roles such as manager, coworker, lover, or family member unless retrieved records directly say so. The expected response shape is:
+
+- how the person appears in the records
+- repeated relationship/theme axes
+- emotional or desire function in the user's flow
+- what cannot be confirmed from the retrieved records
 
 For `SYNTHESIS`, the context starts with a tag summary block:
 
@@ -275,6 +283,8 @@ The assistant response must follow these rules even if the session prompt is wea
 4. If a person, event, or fact is not confirmed by chat context or retrieved journal records, say that it is not confirmed and ask for a short clarification.
 5. Do not over-explain internal RAG decisions such as "this is unrelated to previous records."
 6. Keep the answer conversational and useful, not defensive.
+7. Do not assign a real-world relationship role to a person unless that role is directly present in retrieved records.
+8. For person/symbol meaning questions, separate confirmed appearance context, repeated axes, emotional function, and uncertain points.
 
 ## Language Guard
 

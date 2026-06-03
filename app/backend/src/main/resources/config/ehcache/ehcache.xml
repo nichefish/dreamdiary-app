@@ -66,8 +66,8 @@
     <!-- ?? ??: ?? -->
     <cache alias="journalDayPeriodTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayTagYyListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDayTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDayMetaCtgrMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDayTagCategoryMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDayMetaCategoryMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayMetaYyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayTagCountMapByUser" uses-template="defaultTemplate" />
 
@@ -81,7 +81,7 @@
     <cache alias="journalEntryYyAnnualStatedListByUser" uses-template="defaultTemplate" />
     <cache alias="journalEntryTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalEntryPeriodTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalEntryTagCtgrMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalEntryTagCategoryMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalEntryTagCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryWeeklyStateMapByUser" uses-template="defaultTemplate" />

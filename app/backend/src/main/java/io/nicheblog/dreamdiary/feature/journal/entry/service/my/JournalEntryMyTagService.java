@@ -59,7 +59,7 @@ public class JournalEntryMyTagService {
      * @return 태그 카테고리 맵
      * @throws Exception 조회 중 예외
      */
-    public Map<String, List<String>> getMyTagCtgrMap(final ContentType contentType) throws Exception {
-        return journalEntryTagService.getTagCtgrMapByUser(AuthUtils.requireLoginUsername(), contentType);
+    public Map<String, List<String>> getMyTagCategoryMap(final ContentType contentType) throws Exception {
+        return journalEntryTagService.getTagCategoryMapByUser(AuthUtils.requireLoginUsername(), contentType);
     }
 }
