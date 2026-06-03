@@ -196,6 +196,7 @@ import { useRoute } from "vue-router";
 import { bindSingleDatePicker, destroySingleDatePicker } from "@/utils/flatpickrSingleDate";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
@@ -328,19 +329,7 @@ function refreshCurrentDayView(targetDate?: string): void {
 
   const afterFetch = () => { if (targetDate) scrollToDay(targetDate); };
 
-  if (route.name === "journal-weekly") {
-    journalStore.setViewType("WEEKLY");
-    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
-    return;
-  }
-
-  if (route.name === "journal-monthly") {
-    journalStore.setViewType("LIST");
-    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
-    return;
-  }
-
-  void journalStore.fetchDays().then(afterFetch);
+  void refreshJournalDaysForRoute(journalStore, route, targetDate).then(afterFetch);
 }
 
 /** 등록/수정 처리 (axios multipart). */

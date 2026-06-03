@@ -312,6 +312,7 @@ import { useJournalModalStore } from "@/stores/journalModal";
 import { useAttachableModalStore } from "@/stores/attachableModal";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import type { JournalEntryDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 import { hasDreamerName } from "@/utils/journalDream";
@@ -499,19 +500,7 @@ function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
     });
   };
 
-  if (route.name === "journal-weekly") {
-    journalStore.setViewType("WEEKLY");
-    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
-    return;
-  }
-
-  if (route.name === "journal-monthly") {
-    journalStore.setViewType("LIST");
-    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
-    return;
-  }
-
-  void journalStore.fetchDays().then(afterFetch);
+  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
 }
 
 /** 라이프사이클 설정 (PUT /api/lifecycles) */
