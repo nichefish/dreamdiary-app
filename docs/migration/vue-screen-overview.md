@@ -13,11 +13,11 @@
 | `/` | — | redirect → `/dashboard` | DefaultLayout | — |
 | `/dashboard` | `dashboard` | `Dashboard.vue` | Default | ❌ placeholder |
 | `/journal` | — | redirect → `/journal/weekly` | JournalLayout | — |
-| `/journal/weekly` | `journal-weekly` | `JournalWeekly.vue` | Journal | ✓ |
-| `/journal/monthly` | `journal-monthly` | `JournalMonthly.vue` | Journal | ✓ |
-| `/journal/calendar` | `journal-calendar` | `JournalCalendar.vue` | Journal | ❌ placeholder |
-| `/journal/meta` | `journal-meta` | `JournalMeta.vue` | Journal | ⚠ 그래프 미구현 |
-| `/journal/daily` | `journal-daily` | `JournalDaily.vue` | JournalDailyLayout | ✓ 새 창 전용 |
+| `/journal/weekly` | `journal-weekly` | `JournalDayWeekly.vue` | Journal | ✓ |
+| `/journal/monthly` | `journal-monthly` | `JournalDayMonthly.vue` | Journal | ✓ |
+| `/journal/calendar` | `journal-calendar` | `JournalDayCalendar.vue` | Journal | ❌ placeholder |
+| `/journal/meta` | `journal-meta` | `JournalDayMeta.vue` | Journal | ✓ 메타 컨텍스트 메뉴·단일 차트 2시리즈 비교 |
+| `/journal/daily` | `journal-daily` | `JournalDayDaily.vue` | JournalDayDailyLayout | ✓ 새 창 전용 |
 | `/annual` | `annual-list` | `JournalAnnualList.vue` | AnnualLayout | ✓ |
 | `/annual/:yy` | `annual-detail` | `JournalAnnualDetail.vue` | AnnualLayout | ✓ |
 | `/thread` | `thread-list` | `JournalThreadList.vue` | ThreadLayout | ✓ |
@@ -66,8 +66,8 @@ AuthLayout
 └── VerifyResultPage
 
 SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전용
-├── JournalDailyLayout         ← /journal/daily 전용 (모달 포함, aside 없음)
-│   └── JournalDaily.vue
+├── JournalDayDailyLayout         ← /journal/daily 전용 (모달 포함, aside 없음)
+│   └── JournalDayDaily.vue
 ├── JournalEntrySearchPage     ← 새 창 검색 팝업
 └── ErrorPage (400/403/404/500/error)
 ```
@@ -104,7 +104,7 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 |----------|------|------|
 | Dashboard | ❌ | placeholder 텍스트만 |
 | JournalCalendar | ❌ | `JournalDayViewToolbar` + 안내 텍스트만 |
-| JournalMeta 그래프 | ❌ | 헤더·목록 조회는 구현, 시각화 없음 |
+| JournalMeta 그래프 | ✓ | 컨텍스트 메뉴(검색/그래프로 보기/메타 설정), 최대 2메타·헤더 × 제거, 연도 전체, 한 차트 2선 |
 | JournalAside — CHAPTER CATEGORIES | ❌ | store(`chapterCtgrCds`) 존재, UI 없음 |
 | JournalAside — 키워드 필터 input | ❌ | 툴바에만 있음 |
 | JournalAside — 고급 필터 아코디언 | ❌ | |

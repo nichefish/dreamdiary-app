@@ -492,7 +492,7 @@ async function submit() {
     return;
   }
   try {
-    void swalAlert(await store.submit());
+    await store.submit();
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "계정을 저장하지 못했습니다.");
   }
@@ -510,7 +510,7 @@ async function passwordReset(id: number) {
 async function deleteUser(row: UserRow) {
   if (!await swalConfirm(`${row.username} 계정을 삭제할까요?`)) return;
   try {
-    void swalAlert(await store.deleteUser(row.id));
+    await store.deleteUser(row.id);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "계정을 삭제하지 못했습니다.");
   }

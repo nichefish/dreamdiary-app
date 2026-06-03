@@ -257,7 +257,17 @@ public class JournalChapterService
     @Override
     public void preModify(final JournalChapterDto modifyDto, final JournalChapterEntity modifyEntity) throws Exception {
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            final Object principal = AuthUtils.isAuthenticated()
+                    ? AuthUtils.getAuthentication().getPrincipal()
+                    : null;
+            log.warn(
+                    "[preModify] chapter ownership check failed chapterId={} entityCreatedBy=[{}] loginUsername=[{}] principalType={}",
+                    modifyEntity.getId(),
+                    modifyEntity.getCreatedBy(),
+                    AuthUtils.getLoginUsername(),
+                    principal == null ? "null" : principal.getClass().getName()
+            );
+            throw new NotAuthorizedException("msg.rslt.not-owner");
         }
         if (modifyEntity.getChapterType() == ChapterType.DREAM) {
             if (modifyDto.getChapterType() != null && modifyDto.getChapterType() != ChapterType.DREAM) {
@@ -297,7 +307,7 @@ public class JournalChapterService
     @Override
     public void preDelete(final JournalChapterDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("msg.rslt.not-owner");
         }
     }
 
@@ -326,7 +336,7 @@ public class JournalChapterService
         final JournalChapterDto deleted = journalChapterMapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("msg.rslt.not-owner");
         }
         return deleted;
     }
@@ -419,7 +429,7 @@ public class JournalChapterService
         final JournalChapterEntity chapterEntity = this.getDtlEntity(id);
         // 권한 체크
         if (!AuthUtils.isCreatedBy(chapterEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("msg.rslt.not-owner");
         }
         // DREAM 챕터 이동 불가
         if (chapterEntity.getChapterType() == ChapterType.DREAM) {

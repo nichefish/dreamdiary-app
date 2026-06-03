@@ -3,17 +3,14 @@
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "exclude": [
     "src/assets/**",
-    "src/components/**",
     "src/core/data/**",
     "src/core/helpers/**",
     "src/core/plugins/**",
     "src/layouts/default/components/drawers/**",
     "src/layouts/default/components/extras/**",
-    "src/layouts/default/components/modals/**",
     "src/layouts/default/components/search/**",
     "src/layouts/default/components/theme-mode/**",
     "src/layouts/default/components/toolbar/**",
-    "src/vendor/metronic/components/**",
     "src/views/crafted/**",
     "src/views/LayoutBuilder.vue"
   ],

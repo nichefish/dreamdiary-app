@@ -51,18 +51,18 @@ public class JournalDayTagRestController
      *
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JOURNAL_DAY_TAG_CTGR_MAP)
+    @GetMapping(Url.JOURNAL_DAY_TAG_CATEGORIES)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> journalDayTagCtgrMapAjax(
+    public ResponseEntity<AjaxResponse> journalDayTagCategoryMapAjax(
             //
     ) throws Exception {
 
-        final Map<String, List<String>> tagCtgrMap = myJournalDayTagService.getMyTagCtgrMap();
+        final Map<String, List<String>> tagCategoryMap = myJournalDayTagService.getMyTagCategoryMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagCtgrMap));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagCategoryMap));
     }
 
     /**

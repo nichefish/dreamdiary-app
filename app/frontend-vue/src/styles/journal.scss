@@ -153,8 +153,10 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     flex-direction: row !important;
     justify-content: start;
     align-items: center;
-    margin-top: 1rem !important;
-    margin-bottom: 1rem !important;
+    /* BEFORE: margin 1rem — 엔트리 사이 간격 2rem(상하 합)
+       AFTER : 0.5pt씩 줄여 인접 엔트리 간 세로 간격 1pt 축소 */
+    margin-top: calc(1rem - 0.5pt) !important;
+    margin-bottom: calc(1rem - 0.5pt) !important;
 }
 
 .journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
@@ -461,6 +463,35 @@ $journal-paired-states: (
     p {
         color: rgba(95, 0, 130, 0.8);
     }
+    .journal-dream-tag-profiles {
+        margin: 0.15rem 0 0.1rem 0.5rem;
+        padding-left: 0.3rem;
+        color: rgba(94, 98, 120, 0.78);
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+    .journal-dream-tag-profile {
+        display: flex;
+        gap: 0.35rem;
+        align-items: flex-start;
+    }
+    .journal-dream-tag-profile__tag {
+        flex: 0 0 4.5rem;
+        color: rgba(27, 132, 255, 0.82);
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+    .journal-dream-tag-profile__divider {
+        flex: 0 0 auto;
+        width: 1px;
+        min-height: 1.1em;
+        margin-top: 0.15em;
+        background: rgba(148, 163, 184, 0.42);
+    }
+    .journal-dream-tag-profile__content {
+        white-space: pre-line;
+        min-width: 0;
+    }
     .text-comment {
         p {
             color: #ed7000 !important;
@@ -736,6 +767,22 @@ $journal-paired-states: (
         }
     }
 
+    &--graph {
+        background: #ecfdf5;
+        color: #047857;
+        font-weight: 600;
+        margin-top: 4px;
+
+        &:hover:not(:disabled) {
+            background: #d1fae5;
+        }
+
+        &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+    }
+
     &--configure {
         background: transparent;
         color: #7c2d12;
@@ -747,12 +794,12 @@ $journal-paired-states: (
     }
 }
 
-.journal-entry-reg-modal__body {
+.journal-entry-regist-modal__body {
     padding-left: 3rem;
     padding-right: 3rem;
 }
 
-.journal-entry-reg-form {
+.journal-entry-regist-form {
     .tox-tinymce {
         border-radius: 0.475rem;
     }
@@ -766,7 +813,7 @@ $journal-paired-states: (
 }
 
 @media (max-width: 767.98px) {
-    .journal-entry-reg-modal__body {
+    .journal-entry-regist-modal__body {
         padding-left: 1.25rem;
         padding-right: 1.25rem;
     }

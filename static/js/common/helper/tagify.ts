@@ -93,11 +93,11 @@ cF.tagify = (function(): Module {
         /**
          * 카테고리 기능을 추가하여 Tagify를 초기화합니다.
          * @param {string} selector - 초기화할 태그 입력 요소의 선택자 문자열.
-         * @param {Record<string, any>} ctgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
+         * @param {Record<string, any>} categoryMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          * @param {Record<string, any>} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
          * @returns {Tagify} - 초기화된 Tagify 인스턴스. 카테고리 기능이 추가된 상태입니다.
          */
-        initWithCtgr: function(selector: string, ctgrMap: Record<string, any>, additionalOptions: Record<string, any> = {}): Tagify {
+        initWithCategoryMap: function(selector: string, categoryMap: Record<string, any>, additionalOptions: Record<string, any> = {}): Tagify {
             const tagify: Tagify = cF.tagify.init(selector, additionalOptions);
 
             // tagify 스코프 설정
@@ -117,9 +117,9 @@ cF.tagify = (function(): Module {
             tagify.settings.duplicates = true;
 
             // 태그 자동완성 :: 메소드 분리
-            cF.tagify._setAutoComplete(tagify, ctgrMap);
+            cF.tagify._setAutoComplete(tagify, categoryMap);
             // 태그 추가시 카테고리 입력 칸 prompt :: 메소드 분리
-            cF.tagify._setCtgrInputPrompt(tagify, ctgrMap, { hasValueInput: false });
+            cF.tagify._setCategoryInputPrompt(tagify, categoryMap, { hasValueInput: false });
             // 카테고리 입력칸에 이벤트리스너 추가 (ESC 또는 탭) :: 메소드 분리
             cF.tagify._setCtgrKeyListener(tagify, { hasValueInput: false });
 
@@ -129,11 +129,11 @@ cF.tagify = (function(): Module {
         /**
          * 카테고리 기능을 추가하여 Tagify를 초기화합니다.
          * @param {string} selector - 초기화할 태그 입력 요소의 선택자 문자열.
-         * @param {Record<string, any>} ctgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
+         * @param {Record<string, any>} categoryMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          * @param {Record<string, any>} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
          * @returns {Tagify} - 초기화된 Tagify 인스턴스. 카테고리 기능이 추가된 상태입니다.
          */
-        initMeta: function(selector: string, ctgrMap: Record<string, any>, additionalOptions: Record<string, any> = {}): Tagify {
+        initMeta: function(selector: string, categoryMap: Record<string, any>, additionalOptions: Record<string, any> = {}): Tagify {
             const tagify: Tagify = cF.tagify.init(selector, { ...additionalOptions, duplicates: true, templates: { tag: metaTemplate } });
 
             // tagify 스코프 설정
@@ -157,9 +157,9 @@ cF.tagify = (function(): Module {
             tagify.settings.duplicates = true;
 
             // 메타 자동완성 :: 메소드 분리
-            cF.tagify._setAutoComplete(tagify, ctgrMap);
+            cF.tagify._setAutoComplete(tagify, categoryMap);
             // 메타 추가시 카테고리 입력 칸 prompt :: 메소드 분리
-            cF.tagify._setCtgrInputPrompt(tagify, ctgrMap, { hasValueInput: true });
+            cF.tagify._setCategoryInputPrompt(tagify, categoryMap, { hasValueInput: true });
             // 카테고리 입력칸에 이벤트리스너 추가 (ESC 또는 탭) :: 메소드 분리
             cF.tagify._setCtgrKeyListener(tagify, { hasValueInput: true });
             // 값 입력칸에 이벤트리스너 추가 (ESC 또는 탭) :: 메소드 분리
@@ -171,14 +171,14 @@ cF.tagify = (function(): Module {
         /**
          * _내부함수 : 태그 자동완성을 설정합니다.
          * @param {Tagify} tagify - Tagify 인스턴스. 자동완성을 적용할 태그 입력 요소입니다.
-         * @param {Record<string, any>} ctgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
+         * @param {Record<string, any>} categoryMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          */
-        _setAutoComplete: function(tagify: Tagify, ctgrMap: Record<string, any>): void {
-            if (!ctgrMap) return;
+        _setAutoComplete: function(tagify: Tagify, categoryMap: Record<string, any>): void {
+            if (!categoryMap) return;
 
             tagify.on("input", function(e: CustomEvent): void {
                 const value: string = e.detail.value;
-                tagify.settings.whitelist = Object.keys(ctgrMap).filter(tag => tag.startsWith(value));
+                tagify.settings.whitelist = Object.keys(categoryMap).filter(tag => tag.startsWith(value));
                 tagify.dropdown.show(value);
             });
         },
@@ -186,11 +186,11 @@ cF.tagify = (function(): Module {
         /**
          * _내부함수 : 태그 추가 시 카테고리 입력 칸을 프롬프트합니다.
          * @param {Tagify} tagify - Tagify 인스턴스. 카테고리 입력을 위한 태그 입력 요소입니다.
-         * @param {Object} ctgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
+         * @param {Object} categoryMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          * @param {Object} [options={}] - 옵션 객체
          * @param {boolean} [options.hasValueInput=false] - 값 입력 존재 여부
          */
-        _setCtgrInputPrompt: function(tagify: Tagify, ctgrMap: Record<string, any>, options: { hasValueInput?: boolean; } = { hasValueInput: false }): void {
+        _setCategoryInputPrompt: function(tagify: Tagify, categoryMap: Record<string, any>, options: { hasValueInput?: boolean; } = { hasValueInput: false }): void {
             const { hasValueInput } = options;
             tagify.committing = false;
 
@@ -212,13 +212,13 @@ cF.tagify = (function(): Module {
 
                 // 2. 카테고리 맵 정의시: selectbox 세팅
                 cF.tagify._toggle(tagify.ctgr?.selectContainer, false);
-                if (!ctgrMap) return tagify.removeTags(e.detail.tag);
-                const predefinedCtgr: any = ctgrMap[tagify.draft.value];
-                const filteredCtgr: any = predefinedCtgr ? predefinedCtgr.filter((item: any): any => item) : [];
-                if (filteredCtgr.length === 0) return tagify.removeTags(e.detail.tag);
+                if (!categoryMap) return tagify.removeTags(e.detail.tag);
+                const predefinedCategory: any = categoryMap[tagify.draft.value];
+                const filteredCategories: any = predefinedCategory ? predefinedCategory.filter((item: any): any => item) : [];
+                if (filteredCategories.length === 0) return tagify.removeTags(e.detail.tag);
                 // selectbox 초기화 및 선택/직접입력 표시
-                tagify.ctgr.select.innerHTML = '<option value="custom">직접입력</option>' + filteredCtgr.map(item => '<option value="' + item + '">' + item + '</option>').join('');
-                tagify.ctgr.select.size = filteredCtgr.length + 1;
+                tagify.ctgr.select.innerHTML = '<option value="custom">직접입력</option>' + filteredCategories.map(item => '<option value="' + item + '">' + item + '</option>').join('');
+                tagify.ctgr.select.size = filteredCategories.length + 1;
                 cF.tagify._toggle(tagify.ctgr?.selectContainer, true);
                 // 자동완성 선택 이벤트 핸들러
                 tagify.ctgr.select.onchange = function(): void {

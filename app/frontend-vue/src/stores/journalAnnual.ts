@@ -1,7 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
-import { swalConfirm, swalAlert } from "@/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError } from "@/utils/swal";
 
 // ---- 타입 정의 ----
 
@@ -303,6 +303,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    */
   async function submitRegist(): Promise<boolean> {
     if (!registModel.value?.yy) return false;
+    const wasModify = registModel.value.id != null;
     submitting.value = true;
     try {
       const fd = new FormData();
@@ -320,13 +321,14 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       );
       if (res.data?.rslt) {
         closeRegist();
+        await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
         void fetchList();
         return true;
       }
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
       return false;
     } finally {
       submitting.value = false;
@@ -529,14 +531,15 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       });
       if (res.data?.rslt) {
         closeReviewRegist();
+        await swalAlert(res.data?.message ?? (model.id != null ? "수정되었습니다." : "등록되었습니다."));
         /* 상세 재조회 — 리뷰 목록이 detail DTO 에 포함되어 있어 refetch 로 갱신한다. */
         if (model.yy) void fetchDetail(model.yy);
         return true;
       }
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
       return false;
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
       return false;
     } finally {
       reviewSubmitting.value = false;
@@ -555,12 +558,13 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     try {
       const res = await axios.delete(`/api/journal/annual/review/${id}`);
       if (res.data?.rslt) {
+        await swalAlert(res.data?.message ?? "삭제되었습니다.");
         if (yy) void fetchDetail(yy);
       } else {
         void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
       }
-    } catch {
-      void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    } catch (e: unknown) {
+      void swalRequestError(e);
     }
   }
 

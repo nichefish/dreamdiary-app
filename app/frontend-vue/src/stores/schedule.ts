@@ -148,6 +148,11 @@ export const useScheduleStore = defineStore("schedule", () => {
     return res.data.rsltObj;
   }
 
+  /**
+   * 일정 등록/수정 처리.
+   * 변경 전에는 화면에서 성공 직후 달력을 갱신했다.
+   * 변경 후에는 성공 메시지를 반환하고 화면에서 OK 이후 달력을 갱신한다.
+   */
   async function saveSchedule(form: ScheduleForm) {
     const fd = new FormData();
     if (form.id) fd.append("id", String(form.id));
@@ -165,13 +170,20 @@ export const useScheduleStore = defineStore("schedule", () => {
       headers: { "Content-Type": "multipart/form-data" },
     });
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "일정을 저장하지 못했습니다.");
+    return res.data?.message ?? "일정이 저장되었습니다.";
   }
 
+  /**
+   * 일정 삭제 처리.
+   * 변경 전에는 화면에서 성공 직후 달력을 갱신했다.
+   * 변경 후에는 성공 메시지를 반환하고 화면에서 OK 이후 달력을 갱신한다.
+   */
   async function deleteSchedule(id: string | number) {
     const fd = new FormData();
     fd.append("id", String(id));
     const res = await axios.post("/api/schedule/cal-del", fd);
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "일정을 삭제하지 못했습니다.");
+    return res.data?.message ?? "일정이 삭제되었습니다.";
   }
 
   return {

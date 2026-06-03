@@ -19,41 +19,78 @@
 | 목록 렌더 | FTL `#journal_day_list_div` + `JournalDay*ListApp` 텔레포트/브리지 | `JournalDayCard.vue` + `useJournalStore.dayList` |
 | 상태 | `window.JOURNAL`, `JournalDayMonthlyApp.*` pending 큐 | Pinia `stores/journal.ts` |
 | 탭 전환 | `dF.JournalDayViewService.changeView(url)` | `router-link` (`journal-monthly` 등) |
-| 모달 | Bootstrap + 레거시 서비스 | `JournalLayout.vue` + `useJournalModalStore` |
+| 모달 | Bootstrap + 레거시 서비스 | `JournalDayLayout.vue` + `useJournalModalStore` |
 | 공통 첨부 | `CommentList.modal`, `FileGroupList.modal` | `useAttachableModalStore` |
 
 ### 라우트·화면 매핑
 
 | 화면 | 레거시 URL (대표) | Vue route | Vue view | 구현 |
 |------|-------------------|-----------|----------|------|
-| 저널 기본 진입 | — | `/journal` → `/journal/weekly` | `JournalWeekly.vue` | ✓ |
-| 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalMonthly.vue` | ✓ |
-| 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalWeekly.vue` | ✓ |
-| 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
-| 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalCalendar.vue` | △ 탭/플레이스홀더 |
-| 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalMeta.vue` | ⚠ 그래프 TODO |
+| 저널 기본 진입 | — | `/journal` → `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
+| 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalDayMonthly.vue` | ✓ |
+| 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
+| 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
+| 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalDayCalendar.vue` | △ 탭/플레이스홀더 |
+| 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalDayMeta.vue` | ✓ 컨텍스트 메뉴·단일 비교 차트(최대 2시리즈)·연도 전체 |
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/cal.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
-| 대시보드 | — | `/dashboard` | `Dashboard.vue` | ❌ **파일 없음** |
+| 대시보드 | — | `/dashboard` | `Dashboard.vue` | ⚠ placeholder |
 
 ### 저널 일간 화면 (journal-daily) 스펙
 
 - **용도**: 단일 날짜를 새 창으로 열어 집중 편집
-- **레이아웃**: `SystemLayout` > `JournalDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
+- **레이아웃**: `SystemLayout` > `JournalDayDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
 - **네비게이션**: 상단 이전/다음 버튼으로 날짜 이동 (`router.replace` + `stdrdDt` query)
-- **모달**: `JournalDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
+- **모달**: `JournalDayDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
 - **진입점**: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼
 - **URL**: `/journal/daily?stdrdDt=YYYY-MM-DD`
 - **새 창 오픈**: `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제
+
+
+### 저널 메타 VIEW (Journal Meta)
+
+- **Route**: `/journal/meta` (`journal-meta`)
+- **Legacy**: `/app/journal/day/meta.do`
+- **툴바**: `JournalDayViewToolbar` (주간/월간/달력/메타 탭)
+
+#### Layout
+
+- 카드 헤더: `#메타` 목록 (`GET /api/journal/day/metas` → `store.metaList`)
+- 카드 바디: 그래프 영역 `#journal_day_meta_graph_div`
+
+#### 메타 헤더 목록
+
+- 태그 클라우드와 동일하게 `btn btn-link` + 기록 수(`contentSize`)
+- 클릭 → `JournalMetaContextMenu` (즉시 그래프에 추가하지 않음)
+- 「그래프로 보기」로 포함된 메타: 굵게 + 옆 `bi-x-circle-fill` → `removeMetaFromGraph`
+
+#### 컨텍스트 메뉴 (`JournalMetaContextMenu`)
+
+| 액션 | 동작 |
+|------|------|
+| 검색 | `openDayFilterModal({ type: "meta", ... })` — `JournalDayMetaModal` |
+| 그래프로 보기 | `addMetaToGraph` (최대 2, 중복·꽉 참 시 안내) |
+| 메타 설정 | `openMetaProfile` — `JournalMetaProfileModal` |
+
+#### 그래프 영역
+
+- 선택 0: 안내 문구
+- 선택 1+: 연도(「전체」+ 연도 목록 합집합), 임계값, 메타별 통계(합계/평균/최고/최저)
+- 차트: 선택 메타 전부를 **한** line chart, X축=일자 합집합, 시리즈=메타별 1선, 범례(2메타 시)
+- 단일 메타일 때만 최고/최저 보조선; 비교(2메타) 시 임계선만 공통 적용
+
+#### Modals (layout 마운트)
+
+- `JournalDayMetaModal`, `JournalMetaProfileModal`, `JournalMetaContextMenu`
 
 ### 저널 API (`useJournalStore`)
 
 - `GET /api/journal/days` — `fetchDays` (`viewType`, `yy`, `mnth`, 필터, `weekStartDt`, `stdrdDt`)
 - `GET /api/journal/day/metas` — `fetchMetas`
-- `GET /api/journal/day/tag/cloud` — `fetchTagCloud`
+- `GET /api/journal/day/tags`, `GET /api/journal/entry/tags?type=DIARY`, `GET /api/journal/entry/tags?type=DREAM` — `fetchTagCloud`
 
 `sort` / `sortOrder` 는 스토어·UI 모두 구현되어 있으며, 기본값은 `DESC`이고 `localStorage("journal_day_sort")` 로 유지한다.
 
@@ -78,6 +115,7 @@
   - 카드: `.card.post` (margin-top: 0 !important)
     - 카드 헤더: 태그 헤더 (`_journal_day_tag_header.ftlh`) → Vue: `JournalTagCloudHeader.vue` ✓ 구현 완료
     - 카드 바디: `JournalDayCard` (`store.dayList`) — 레거시 `#journal_day_list_div` 텔레포트는 SPA 미사용
+    - 로딩 렌더: `store.dayList`가 비어 있는 초기 조회에서만 본문 전체 스피너를 표시한다. 이미 목록 DOM이 렌더된 상태의 재조회(등록/수정 후 갱신, 필터 갱신 등)에서는 기존 `JournalDayCard` DOM을 유지해 문서 높이 축소로 인한 스크롤 초기화를 막는다.
   - 사이드 패널: `_journal_day_aside_base.ftlh` include
 - 숨겨진 마운트 루트: `<div id="journal_day_app" class="d-none" data-view-type="monthly">`
 
@@ -92,9 +130,9 @@
 | 메타 탭 | `<a>` | `.nav-link.px-6.cursor-pointer` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 (Vue) |
 | 탭 라벨 | text | — | — | `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW` |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 등록 버튼; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
-| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayReg()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex` |
+| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex` |
 | 키워드 검색 | include | `_journal_day_keyword_search.ftlh` | 검색 파라미터 | 팝업 형태 — SPA ❌ MISSING |
-| 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부 |
+| 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부. 일자/일기/꿈 태그 행의 목록 시작 x좌표는 동일해야 하며, `꿈 태그` 라벨 길이 차이로 들여쓰기 차이가 생기면 안 된다. |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayMonthlyListApp` 마운트 대상 |
 
 ### Action Buttons & Interactions
@@ -105,7 +143,7 @@
 | 월간 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_MONTHLY)` | 현재 페이지 유지(active) |
 | 달력 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_CAL)` | 달력 보기 페이지로 이동 |
 | 메타 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_META_VIEW)` | 메타 보기 페이지로 이동 |
-| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayReg()`) |
+| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayRegist()`) |
 
 **레이아웃 전역 툴바** (`_journal_day_page_header.ftlh` 나머지): 고급필터·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ❌ MISSING (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
@@ -114,6 +152,7 @@
 `JournalDayMonthlyListApp` Vue 앱이 `#journal_day_list_div`에 렌더한다.
 - 월 단위 저널 일자 목록 (월별 카드 형태)
 - 각 일자 카드에 일기(DIARY)/꿈(DREAM)/노트(NOTE) 엔트리 포함
+- 꿈 엔트리(`JOURNAL_DREAM`)의 태그에 사용자별 프로필 본문(`tag.list[].profileContent`)이 있으면 해당 꿈 본문 아래에 표시한다. 일기/노트 태그 프로필 본문은 일자 카드 본문 아래에 표시하지 않는다.
 - 정렬, 필터, 검색 파라미터 반영
 
 **window 브리지 API** (Vue 마운트 전 큐잉):
@@ -154,7 +193,7 @@
 - TinyMCE 에디터 로드 (일기/꿈/노트 본문 편집용)
 - FullCalendar 로드 (달력 뷰 전환 대비)
 - Prism.js 코드 하이라이팅 로드
-- 태그 헤더: `JournalTagCloudHeader.vue` 컴포넌트 (`v-if="store.showTagCloud"`). `store.tagCloud` 상태를 읽고 `onMounted`/`watch([yy, mnth])`에서 `store.fetchTagCloud()` 호출
+- 태그 헤더: `JournalTagCloudHeader.vue` 컴포넌트 (`v-if="store.showTagCloud"`). `store.tagCloud` 상태를 읽고 parent view 초기화 및 기간/뷰 변경 watch에서 `store.fetchTagCloud()` 호출
 
 ---
 
@@ -171,7 +210,8 @@
   - 상단: `JournalDayViewToolbar.vue` (탭 + 저널 일자 등록 버튼) — 월간 목록과 동일 컴포넌트
   - 카드: `.card.post` (margin-top: 0 !important)
     - 카드 헤더: 태그 헤더 (`_journal_day_tag_header.ftlh`) → Vue: `JournalTagCloudHeader.vue` ✓ 구현 완료
-    - 카드 바디: `JournalDayCard` (`JournalWeekly.vue`, `viewType: WEEKLY`)
+    - 카드 바디: `JournalDayCard` (`JournalDayWeekly.vue`, `viewType: WEEKLY`)
+    - 로딩 렌더: `store.dayList`가 비어 있는 초기 조회에서만 본문 전체 스피너를 표시한다. 이미 목록 DOM이 렌더된 상태의 재조회(등록/수정 후 갱신, 필터 갱신 등)에서는 기존 `JournalDayCard` DOM을 유지해 문서 높이 축소로 인한 스크롤 초기화를 막는다.
   - 사이드 패널: `_journal_day_aside_base.ftlh`
 - 숨겨진 마운트 루트: `<div id="journal_day_app" class="d-none" data-view-type="weekly">`
 
@@ -184,7 +224,7 @@
 | 달력 탭 | `<a>` | `.nav-link` | `Url.JOURNAL_DAY_CAL` | `bi-calendar3` 아이콘 |
 | 메타 탭 | `<a>` | `.nav-link` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 월간 목록과 동일 (탭 + 저널 일자 등록) |
-| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `openDayReg()` | 월간 목록 표와 동일 |
+| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `openDayRegist()` | 월간 목록 표와 동일 |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayWeeklyListApp` 마운트 대상 |
 
 ### Action Buttons & Interactions
@@ -193,7 +233,7 @@
 
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
-| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` `reg-modal` | `JournalDayRegistModal` 신규 등록 (`openDayReg()`) |
+| 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` `reg-modal` | `JournalDayRegistModal` 신규 등록 (`openDayRegist()`) |
 
 ### Data Displayed
 
@@ -473,7 +513,7 @@
 <div id="journal_day_aside_week_nav_app" class="d-none"></div>
 ```
 
-**Vue SPA 매핑**: `JournalLayout.vue` 우측 `JournalAside.vue` (`useJournalAsideStore` 표시 제어). Metronic `#kt_app_aside` drawer 는 SPA 저널에서 미사용(레거시 FTL 전용).
+**Vue SPA 매핑**: `JournalDayLayout.vue` 우측 `JournalAside.vue` (`useJournalAsideStore` 표시 제어). Metronic `#kt_app_aside` drawer 는 SPA 저널에서 미사용(레거시 FTL 전용).
 
 ---
 
@@ -797,7 +837,7 @@ const pinnedMnth = ref<number | null>(null);
 **엔트리 필터 Vue 상태 바인딩**:
 | Element | 레거시 ID | Vue 상태 |
 |---------|----------|---------|
-| TAGCLOUD 체크박스 | `#toggleTagCloud` | `store.showTagCloud` — 변경 시 `store.fetchTagCloud()` |
+| TAGCLOUD 체크박스 | `#toggleTagCloud` | `store.showTagCloud` — ON 변경 시 `store.fetchTagCloud()` |
 | DIARIES 체크박스 | `#toggleDiaries` | `store.showDiaries` — 변경 시 `store.fetchDays()` |
 | CHAPTER CATEGORIES 체크박스 | `#toggleChapterCtgr` | `chapterCtgrEnabled: ref(true)` — false 시 `store.chapterCtgrCds = []` |
 | CHAPTER CATEGORIES 멀티셀렉트 | `#chapterCtgrFilter` | `store.chapterCtgrCds: string[]` — 변경 시 `store.fetchDays()` |
@@ -912,7 +952,7 @@ type TodoRow = {
 | 2. Pinpoint | 돌아가기 버튼 | ❌ MISSING |
 | 3. 엔트리 필터 | TAGCLOUD 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | DIARIES 토글 | ✓ 구현 |
-| 3. 엔트리 필터 | CHAPTER CATEGORIES 멀티셀렉트 | ❌ MISSING |
+| 3. 엔트리 필터 | CHAPTER CATEGORIES (체크박스, 일기·노트 코드 병합) | ✓ |
 | 3. 엔트리 필터 | 일기 키워드 | ✓ 구현 (위치 다름) |
 | 3. 엔트리 필터 | DREAMS 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | 꿈 키워드 | ✓ 구현 (위치 다름) |
@@ -946,6 +986,7 @@ type TodoRow = {
 - 목록 API: `GET /api/journal/entries`
 - 파라미터: `type`, `tagIds`, `searchKeywords`
 - 응답: `AjaxResponse.rsltList` (`JournalEntryDto[]`)
+- `type=DREAM` 응답의 태그 항목은 사용자별 꿈 태그 프로필 본문이 있으면 `tag.list[].profileContent`를 포함한다. 검색 결과 행은 `JournalEntryItem`을 통해 꿈 엔트리 본문 아래에 해당 프로필을 표시한다.
 
 ### Behavioral Contract
 
@@ -953,7 +994,10 @@ type TodoRow = {
 - 일기/꿈 태그의 `검색` 액션은 현재 월간/주간 목록 필터를 변경하지 않고 새 창 검색 화면으로 이동한다.
 - 검색 팝업 내부에서 일기/꿈 태그의 `검색` 액션을 누르면 새 팝업을 열지 않고 같은 창의 URL query를 바꿔 결과를 재조회한다.
 - 검색 팝업 내부의 `태그 설정` 액션은 `JournalTagProfileModal`을 같은 창에서 연다.
-- 각 검색 결과는 수정/삭제가 가능하다. 수정 저장 성공 시 현재 검색 조건으로 목록을 다시 조회하고 저장한 결과 위치로 스크롤하며, 삭제 성공 시 결과 목록에서 제거한다.
+- 검색 팝업 내부 검색 결과에 저널 해석이 표시되면, 해석 행의 수정 액션은 `JournalInterpretationRegistModal`을 같은 창에서 열어야 한다.
+- 각 검색 결과는 수정/삭제가 가능하다. 수정 저장 성공 시 성공 알림 표시 전에 현재 검색 조건 목록 또는 수정 대상 DOM을 준비하고, 성공 알림 OK 이후 저장한 결과 위치로 스크롤하며, 삭제 성공 시 결과 목록에서 제거한다.
+- 검색 팝업 내부에서 엔트리 본문/태그 프로필 다음에 이어지는 저널 해석 행은 같은 결과 묶음으로 읽히도록 공통 저널 행 간격보다 좁게 붙여 표시한다.
+- 날짜가 바뀔 때 표시되는 날짜 헤더에는 새 창 버튼이 있어야 한다. 버튼은 해당 날짜의 `/journal/daily?stdrdDt=YYYY-MM-DD` 일자 뷰를 새 창으로 연다.
 - 검색 조건은 URL query에 남아야 한다. 검색 결과는 새로고침/공유 가능한 주소 기반 상태여야 한다.
 - `결과 복사` 버튼은 현재 검색 결과 전체를 legacy 포맷(`날짜 (요일)`, `#정렬번호`, 본문)으로 클립보드에 복사한다.
 - 각 검색 결과 행의 복사 버튼은 해당 엔트리 하나만 같은 포맷으로 복사한다.

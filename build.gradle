@@ -24,7 +24,7 @@ plugins {
  * 프로젝트 정보
  */
 group = 'dreamdiary.io'
-version = '0.21.0'
+version = '0.21.1'
 
 /**
  * Java, Spring Boot 및 추가 설정
@@ -59,6 +59,14 @@ sourceSets {
             srcDirs = ["$projectDir/app/backend/src/main/resources"]
 		}
 	}
+    test {
+        java {
+            srcDirs = ["$projectDir/app/backend/src/test/java"]
+        }
+        resources {
+            srcDirs = ["$projectDir/app/backend/src/test/resources"]
+        }
+    }
 }
 
 /**

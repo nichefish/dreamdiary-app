@@ -324,8 +324,7 @@ function onUseYnChange(event: Event) {
 async function submitForm() {
   if (!validateForm()) return;
   try {
-    const message = await store.submitForm();
-    void swalAlert(message);
+    await store.submitForm();
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 저장하지 못했습니다.");
   }
@@ -344,7 +343,7 @@ async function toggleUse(row: BoardGroupRow) {
 async function deleteBoard(row: BoardGroupRow) {
   if (!await swalConfirm(`${row.boardName} 게시판 그룹을 삭제할까요?`)) return;
   try {
-    void swalAlert(await store.deleteBoard(row.id));
+    await store.deleteBoard(row.id);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 삭제하지 못했습니다.");
   }

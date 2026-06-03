@@ -4,6 +4,7 @@ import axios from "axios";
 
 export interface AuthPolicy {
   id: number | null;
+  duplicateLoginAllowedYn: "Y" | "N" | null;
   inactiveLockDays: number | null;
   loginAttemptLimit: number | null;
   loginAttemptWindowMinutes: number | null;
@@ -14,6 +15,7 @@ export interface AuthPolicy {
 
 const EMPTY_POLICY: AuthPolicy = {
   id: null,
+  duplicateLoginAllowedYn: "N",
   inactiveLockDays: null,
   loginAttemptLimit: null,
   loginAttemptWindowMinutes: null,
@@ -46,6 +48,7 @@ export const useAuthPolicyStore = defineStore("authPolicy", () => {
       const payload = {
         ...nextPolicy,
         id: nextPolicy.id ?? 1,
+        duplicateLoginAllowedYn: nextPolicy.duplicateLoginAllowedYn === "Y" ? "Y" : "N",
       };
       const res = await axios.put("/api/auth/policy", payload);
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "인증 정책을 저장하지 못했습니다.");

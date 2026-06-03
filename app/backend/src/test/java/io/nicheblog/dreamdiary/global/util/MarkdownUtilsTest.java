@@ -1,12 +1,33 @@
 package io.nicheblog.dreamdiary.global.util;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MarkdownUtilsTest {
+
+    @Test
+    @DisplayName("markdown wraps dream memory uncertainty fixed phrase in md-text-muted")
+    void markdownWrapsDreamMemoryUncertaintyFixedPhrase() {
+        final String phrase = "(잘 기억이 안 난다.)";
+        final String result = MarkdownUtils.markdown("<p>앞글 " + phrase + " 뒤글</p>");
+
+        assertTrue(result.contains("md-text-muted"));
+        assertTrue(result.contains(phrase));
+        assertFalse(result.contains("md-text-muted\">(다른 문구)"));
+    }
+
+    @Test
+    @DisplayName("markdown does not wrap non-matching parenthetical text as memory uncertainty")
+    void markdownDoesNotWrapSimilarParentheticalText() {
+        final String result = MarkdownUtils.markdown("<p>(비슷하지만 다른 문구)</p>");
+
+        assertFalse(result.contains("md-text-muted"));
+    }
 
     @Test
     @DisplayName("custom inline markdown escapes literal angle brackets")
@@ -65,5 +86,79 @@ class MarkdownUtilsTest {
         assertTrue(result.contains("<p>before</p>"));
         assertTrue(result.contains("<table>"));
         assertTrue(result.contains("<td>value</td>"));
+    }
+
+    @Test
+    @DisplayName("normalize splits direct br separated editor paragraphs")
+    void normalizeSplitsDirectBrSeparatedEditorParagraphs() {
+        final String result = MarkdownUtils.normalize("<p>오후 대화.<br>가영님: <span class=\"md-text-dialog\">\"브렌치가\"</span><br>나: 봐얄거같은데요</p>");
+
+        assertTrue(result.contains("<p>오후 대화.</p>"));
+        assertTrue(result.contains("<p>가영님: <span class=\"md-text-dialog\">\"브렌치가\"</span></p>"));
+        assertTrue(result.contains("<p>나: 봐얄거같은데요</p>"));
+        assertFalse(result.contains("<br>"));
+    }
+
+    @Test
+    @DisplayName("normalize splits pasted plain paragraphs stored as direct br in one paragraph")
+    void normalizeSplitsPastedPlainParagraphsStoredAsDirectBrInOneParagraph() {
+        final String result = normalizeSingleLine("<p>A<br>B<br>C</p>");
+
+        assertEquals("<p>A</p>\\n<p>B</p>\\n<p>C</p>", result);
+    }
+
+    @Test
+    @DisplayName("normalize preserves already separated paragraphs")
+    void normalizePreservesAlreadySeparatedParagraphs() {
+        final String result = normalizeSingleLine("<p>A</p><p>B</p>");
+
+        assertEquals("<p>A</p>\\n<p>B</p>", result);
+    }
+
+    @Test
+    @DisplayName("normalize keeps direct br inside list item")
+    void normalizeKeepsDirectBrInsideListItem() {
+        final String result = normalizeSingleLine("<ul><li>A<br>B</li></ul>");
+
+        assertTrue(result.contains("<li>A<br>\\n  B</li>"));
+    }
+
+    @Test
+    @DisplayName("normalize keeps nested br inside inline element")
+    void normalizeKeepsNestedBrInsideInlineElement() {
+        final String result = normalizeSingleLine("<p>A<span><br></span>B</p>");
+
+        assertEquals("<p>A<span><br></span>B</p>", result);
+    }
+
+    @Test
+    @Disabled("TODO: 붙여넣기 정규화 범위를 에디터 paste_postprocess로 좁힐 때 soft break 보존 계약으로 활성화")
+    @DisplayName("normalize should preserve intentional soft break")
+    void normalizeShouldPreserveIntentionalSoftBreak() {
+        final String result = normalizeSingleLine("<p>A<br>B</p>");
+
+        assertEquals("<p>A<br>B</p>", result);
+    }
+
+    @Test
+    @Disabled("TODO: 붙여넣기 정규화 범위를 에디터 paste_postprocess로 좁힐 때 빈 줄 보존 계약으로 활성화")
+    @DisplayName("normalize should preserve blank visual line")
+    void normalizeShouldPreserveBlankVisualLine() {
+        final String result = normalizeSingleLine("<p>A<br><br>B</p>");
+
+        assertEquals("<p>A<br><br>B</p>", result);
+    }
+
+    @Test
+    @Disabled("TODO: 붙여넣기 정규화 범위를 에디터 paste_postprocess로 좁힐 때 표 내부 문단 보존 계약으로 활성화")
+    @DisplayName("normalize should preserve paragraph line breaks inside table cell")
+    void normalizeShouldPreserveParagraphLineBreaksInsideTableCell() {
+        final String result = normalizeSingleLine("<table><tbody><tr><td><p>A<br>B</p></td></tr></tbody></table>");
+
+        assertTrue(result.contains("<p>A<br>B</p>"));
+    }
+
+    private String normalizeSingleLine(final String html) {
+        return MarkdownUtils.normalize(html).replace("\n", "\\n");
     }
 }

@@ -15,6 +15,8 @@ export interface TagItem {
   name: string;
   /** 태그 카테고리 코드 */
   ctgr?: string;
+  /** 태그 프로필 본문 */
+  profileContent?: string;
 }
 
 /** TagCmpstn 공통 컴포지션 — 백엔드 TagCmpstn 직렬화 구조 */
@@ -116,6 +118,12 @@ export interface JournalChapterDto {
   journalDayId?: number;
   stdrdDt?: string;
   sortOrder?: number;
+  /** 등록자 ID (백엔드 BaseAuditRegDto) */
+  createdBy?: string;
+  /** 등록자 표시명 */
+  createdByNm?: string;
+  /** 현재 로그인 사용자 소유 여부 (백엔드 getIsCreatedBy 직렬화) */
+  isCreatedBy?: boolean;
   journalEntryList?: JournalEntryDto[];
   tag?: TagCmpstn;
   state?: StateCmpstn;
@@ -221,6 +229,8 @@ export interface TagCloudItem {
   textClass?: string;
 }
 
+export type TagCloudSection = "day" | "diary" | "dream";
+
 /** 태그 클라우드 결과 — 일자/일기/꿈 태그 목록 */
 export interface JournalTagCloud {
   /** 일자 태그 목록 */
@@ -271,8 +281,8 @@ export const useJournalStore = defineStore("journal", () => {
 
   /** 메타 목록 */
   const metaList = ref<MetaDto[]>([]);
-  /** 선택된 메타 */
-  const selectedMeta = ref<MetaDto | null>(null);
+  /** 메타 VIEW 에서 선택된 메타 (최대 2개, 비교 그래프용) */
+  const selectedMetas = ref<MetaDto[]>([]);
   /** 메타 목록 로딩 상태 */
   const metaLoading = ref<boolean>(false);
   /** 메타 조회 에러 메시지 */
@@ -282,7 +292,8 @@ export const useJournalStore = defineStore("journal", () => {
   const tagCloud = ref<JournalTagCloud>({ dayTagList: [], diaryTagList: [], dreamTagList: [] });
   /** 태그 클라우드 로딩 상태 */
   const tagCloudLoading = ref<boolean>(false);
-  let tagCloudRequestSeq = 0;
+  const tagCloudRequestSeq: Record<TagCloudSection, number> = { day: 0, diary: 0, dream: 0 };
+  let tagCloudLoadingCount = 0;
 
   /** 현재 "년-월" 표시 라벨 */
   const yyMnthLabel = computed(() =>
@@ -366,39 +377,81 @@ export const useJournalStore = defineStore("journal", () => {
   }
 
   /**
-   * 선택된 메타를 갱신한다.
+   * 메타 VIEW 그래프에 메타를 추가한다. 최대 2개. 이미 있으면 true, 추가 불가(꽉 참)면 false.
    */
-  function selectMeta(meta: MetaDto | null) {
-    selectedMeta.value = meta;
+  function addMetaToGraph(meta: MetaDto): boolean {
+    if (meta.id == null) return false;
+    if (selectedMetas.value.some((m) => m.id === meta.id)) return true;
+    if (selectedMetas.value.length >= 2) return false;
+    selectedMetas.value = [...selectedMetas.value, meta];
+    return true;
+  }
+
+  /** 메타 VIEW 그래프 선택에서 메타를 제거한다. */
+  function removeMetaFromGraph(metaId: number | string): void {
+    selectedMetas.value = selectedMetas.value.filter((m) => String(m.id) !== String(metaId));
+  }
+
+  /** 메타가 현재 그래프 선택 목록에 포함되는지 여부 */
+  function isMetaSelected(meta: MetaDto): boolean {
+    return meta.id != null && selectedMetas.value.some((m) => m.id === meta.id);
   }
 
   /**
    * 태그 클라우드 조회.
    */
-  async function fetchTagCloud() {
-    const requestSeq = ++tagCloudRequestSeq;
+  async function fetchTagCloud(options: { sections?: TagCloudSection[] } = {}) {
+    const sections: TagCloudSection[] = options.sections?.length
+      ? options.sections
+      : ["day", "diary", "dream"];
+    const sectionSeq = Object.fromEntries(
+      sections.map((section) => [section, ++tagCloudRequestSeq[section]])
+    ) as Record<TagCloudSection, number>;
+    tagCloudLoadingCount += 1;
     tagCloudLoading.value = true;
     try {
       const periodParams = getTagPeriodParams();
-      const [dayRes, diaryRes, dreamRes] = await Promise.all([
-        axios.get("/api/journal/day/tags", { params: periodParams }),
-        axios.get("/api/journal/entry/tags", { params: { ...periodParams, type: "DIARY" } }),
-        axios.get("/api/journal/entry/tags", { params: { ...periodParams, type: "DREAM" } }),
-      ]);
-      if (requestSeq !== tagCloudRequestSeq) return;
-      tagCloud.value = {
-        dayTagList: normalizeTagCloudList(dayRes.data?.rsltList),
-        diaryTagList: normalizeTagCloudList(diaryRes.data?.rsltList),
-        dreamTagList: normalizeTagCloudList(dreamRes.data?.rsltList),
-      };
-    } catch {
-      if (requestSeq === tagCloudRequestSeq) {
-        tagCloud.value = { dayTagList: [], diaryTagList: [], dreamTagList: [] };
-      }
+      await Promise.all(sections.map(async (section) => {
+        try {
+          if (section === "day") {
+            const res = await axios.get("/api/journal/day/tags", { params: periodParams });
+            if (sectionSeq.day === tagCloudRequestSeq.day) {
+              tagCloud.value = {
+                ...tagCloud.value,
+                dayTagList: normalizeTagCloudList(res.data?.rsltList),
+              };
+            }
+            return;
+          }
+          const type = section === "diary" ? "DIARY" : "DREAM";
+          const res = await axios.get("/api/journal/entry/tags", { params: { ...periodParams, type } });
+          if (section === "diary" && sectionSeq.diary === tagCloudRequestSeq.diary) {
+            tagCloud.value = {
+              ...tagCloud.value,
+              diaryTagList: normalizeTagCloudList(res.data?.rsltList),
+            };
+          }
+          if (section === "dream" && sectionSeq.dream === tagCloudRequestSeq.dream) {
+            tagCloud.value = {
+              ...tagCloud.value,
+              dreamTagList: normalizeTagCloudList(res.data?.rsltList),
+            };
+          }
+        } catch (e: unknown) {
+          console.error("[journal] fetchTagCloud failed", { section }, e);
+          if (sectionSeq[section] !== tagCloudRequestSeq[section]) return;
+          if (section === "day") {
+            tagCloud.value = { ...tagCloud.value, dayTagList: [] };
+          } else if (section === "diary") {
+            tagCloud.value = { ...tagCloud.value, diaryTagList: [] };
+          } else {
+            tagCloud.value = { ...tagCloud.value, dreamTagList: [] };
+          }
+        }
+      }));
     } finally {
-      if (requestSeq === tagCloudRequestSeq) {
-        tagCloudLoading.value = false;
-      }
+      tagCloudLoadingCount = Math.max(0, tagCloudLoadingCount - 1);
+      tagCloudLoading.value = tagCloudLoadingCount > 0;
     }
   }
 
@@ -516,13 +569,15 @@ export const useJournalStore = defineStore("journal", () => {
     dreamKeyword,
     chapterCtgrCds,
     metaList,
-    selectedMeta,
+    selectedMetas,
     metaLoading,
     metaError,
     yyMnthLabel,
     fetchDays,
     fetchMetas,
-    selectMeta,
+    addMetaToGraph,
+    removeMetaFromGraph,
+    isMetaSelected,
     navigateMonth,
     navigateWeek,
     gotoToday,

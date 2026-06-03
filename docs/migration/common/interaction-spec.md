@@ -21,6 +21,12 @@
 - `useBoardPostStore.fetchList(page)`, `useJournalThreadStore.fetchList(page)` — Vue 템플릿 내 페이지 버튼.
 - 레거시 `#listForm` + `Pagination.fnPage` 서버 리로드는 SPA 목록에서 **대체**.
 
+### CRUD 성공 알림 후 갱신
+
+- Vue SPA의 등록·수정·삭제 성공 흐름은 성공 메시지를 먼저 표시하고, 사용자가 OK를 누른 뒤 목록·상세·달력 갱신 또는 라우터 이동을 수행한다.
+- 적용 화면: 게시판 게시물, 일정 달력, 관리자 게시판 그룹, 코드 관리, 메뉴 관리, 계정 관리, 계정 신청.
+- 토글·정렬 저장처럼 등록·수정·삭제가 아닌 보조 동작은 각 화면의 기존 처리 순서를 유지한다.
+
 ### 모달
 
 - Pinia 스토어의 `visible` / `open*` 함수 + Bootstrap 5 모달 컴포넌트.
@@ -149,9 +155,9 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)
 ### 저널 엔트리 등록 폼
 
 각 엔트리 타입별 폼 ID:
-- DIARY: `#journalDiaryRegForm` → `enctype="multipart/form-data"`, `method="post"`
-- DREAM: `#journalDreamRegForm` → 동일
-- NOTE: `#journalEntryRegForm` → 동일
+- DIARY: `#journalDiaryRegistForm` → `enctype="multipart/form-data"`, `method="post"`
+- DREAM: `#journalDreamRegistForm` → 동일
+- NOTE: `#journalEntryRegistForm` → 동일
 
 `<input type="hidden" name="type" value="${entryRegType}">` — 타입 구분 hidden 필드 포함
 
@@ -159,7 +165,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)
 
 ### 저널 일자 등록 폼
 
-`#journalDayRegForm` → `enctype="multipart/form-data"`
+`#journalDayRegistForm` → `enctype="multipart/form-data"`
 저장 버튼: `dF.JournalDayRuntimeService.handleLegacyActionClick(event)` (이벤트 위임)
 닫기 버튼: `data-journal-day-action` 속성으로 액션 전달
 
@@ -348,9 +354,10 @@ const tagify = cF.tagify.initMeta(selector, ctgrMap, additionalOptions?)
 1. 사용자가 태그 입력 → Tagify `add` 이벤트 발생
 2. 임시 태그로 처리 (committing = false)
 3. ctgrMap에 해당 태그 없으면 → 즉시 제거 (무효 태그)
-4. ctgrMap에 있으면 → selectbox 표시 + **selectbox에 자동 포커스**
-5a. selectbox에서 카테고리 선택 → commitTag(value, ctgr, null)
-5b. "직접입력" 선택 → ctgr 입력 필드 표시 + input에 자동 포커스 → Tab/Enter로 확정 → commitTag
+4. ctgrMap에 있으면 → 기존 카테고리 옵션을 먼저 렌더하고 `직접입력` 옵션은 마지막에 둔 selectbox 표시 + **selectbox에 자동 포커스**
+5a. selectbox에서 `Tab`/`Shift+Tab` → 다음/이전 카테고리 후보로 이동
+5b. selectbox에서 `Enter` → 현재 선택된 카테고리로 commitTag(value, ctgr, null)
+5c. "직접입력" 선택 후 `Enter` → ctgr 입력 필드 표시 + input에 자동 포커스 → Tab/Enter로 확정 → commitTag
 6. ctgrMap에 없는 태그 → ctgr 입력 필드 직접 표시 + input에 자동 포커스
 7. Escape → 입력 취소, draft 초기화
 ```
@@ -382,36 +389,41 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 | 키 | 동작 |
 |----|------|
 | Escape | 입력 취소, draft 초기화, 기본 입력창으로 포커스 |
-| Tab | 현재 단계 확정 후 다음 단계로 이동 |
-| Enter | Tab과 동일 |
+| Tab / Shift+Tab | 카테고리 select에서는 다음/이전 후보 이동. 카테고리 직접 입력·메타 값 입력에서는 현재 단계 확정 후 다음 단계로 이동 |
+| Enter | 현재 단계 확정 |
 
 **DRAFT 진입 시 자동 포커스**: 태그 추가로 DRAFT 상태에 진입하면 첫 입력 대상에 자동 포커스된다.
 - ctgrMap에 카테고리 목록이 있으면 → `select` 포커스
 - ctgrMap에 없거나 "직접입력" 선택 시 → `ctgr input` 포커스
-- 구현: `showAndFocus(container, el)` — `display:block` + `setTimeout(() => el.focus(), 0)`
+- 구현: `showAndFocus(container, el)` — `display:block` + `setTimeout(..., 0)` 포커스 후 다음 animation frame에서 `document.activeElement`를 확인한다. Tagify가 Enter/add 처리 직후 내부 입력창으로 포커스를 되가져가면 표시된 카테고리 컨트롤에 한 번 더 포커스를 적용한다.
+- 포커스 대상이 없거나 재시도 후에도 적용되지 않으면 `console.warn("[tagifyHelper] category focus ...")` 로 대상 컨트롤과 현재 activeElement를 남긴다.
 
 ### ctgrMap 로딩 아키텍처
 
 **변경 전 (legacy/초기 SPA):** `TagifyEditor.vue`가 `onMounted` 시 HTTP로 ctgrMap을 직접 조회 → 모달 열릴 때마다 추가 round-trip 발생.
 
-**변경 후 (현행):** 호출자(`journalModal.ts`)가 모달 오픈 직전에 ctgrMap을 조회해 세션 캐시 후 prop으로 주입. 첫 오픈 시 1회만 HTTP 발생, 이후 재오픈 시 캐시 반환.
+**변경 후 (현행):** `journalModal` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `App.vue` 로그인·마운트 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensureCategoryMap`으로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그 저장 성공 시 `applyCategoryMapsFromTagSave`가 Tagify JSON을 `mergeTagifyListIntoCategoryMap`으로 **병합** — 무효화·추가 GET 없음.
 
 ```
-모달 오픈 요청
-  └─ journalModal.ts openDayReg/openEntryReg/openEntryMdf/openDreamEntryReg
-       ├─ fetchCtgrMapCached(url)  ← 세션 캐시 (ctgrMapCache, 모듈 레벨)
-       │    ├─ 캐시 HIT  → 즉시 반환
-       │    └─ 캐시 MISS → axios.get(url) → 정규화 → 캐시 저장 → 반환
-       └─ dayTagCtgrMap / dayMetaCtgrMap / entryCtgrMap ref 에 할당
-            └─ <TagifyEditor :ctgr-map="modalStore.dayTagCtgrMap" />
-                 └─ initTagify() — 이미 준비된 prop 사용, 추가 HTTP 없음
+앱 부트 (인증됨)
+  └─ preloadCategoryMaps() → ensureCategoryMap × 4 → 스토어 ref 적재
+
+모달 오픈
+  └─ openDayRegist / openEntryRegist / …
+       └─ ensureCategoryMap(url) — loaded 플래그 있으면 HTTP 생략
+            └─ <TagifyEditor :category-map="modalStore.dayTagCategoryMap | entryCategoryMap(computed)" />
+
+태그·메타 포함 저장 성공
+  └─ save API 응답 rsltMap: dayTagCategoryMap / dayMetaCategoryMap / entryTagCategoryMap (서버 evict 후 DB 기준 전역 map, 추가 GET 없음)
+  └─ applyCategoryMapsFromSaveResponse(rsltMap) — 앱 세션 ref 교체(삭제 반영)
+       └─ TagifyEditor categoryMap watch → initTagify()
 ```
 
-ctgrMap URL 매핑:
-- 일자 태그: `/api/journal/day/tag/ctgr-map`
-- 일자 메타: `/api/journal/day/meta/ctgr-map`
-- 엔트리 DIARY 태그: `/api/journal/entry/tag/ctgr-map?type=DIARY`
-- 엔트리 DREAM 태그: `/api/journal/entry/tag/ctgr-map?type=DREAM`
+categoryMap URL 매핑:
+- 일자 태그: `/api/journal/day/tag/categories`
+- 일자 메타: `/api/journal/day/meta/categories`
+- 엔트리 DIARY 태그: `/api/journal/entry/tag/categories?type=DIARY`
+- 엔트리 DREAM 태그: `/api/journal/entry/tag/categories?type=DREAM`
 
 `TagifyEditor` Props:
 - `ctgrMap?: Record<string, string[]> | null` — null이면 ctgr 없는 단순 태그 모드
@@ -658,3 +670,9 @@ window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
 - legacy `verify_success.ftlh`, `verify_failure.ftlh`는 Vue route `/auth/verify-result`로 통합한다.
 - 성공/실패 분기는 query/status 또는 서버 redirect 파라미터로 표현한다.
 - 별도 FTLH 화면을 다시 만들지 않는다.
+---
+
+## 테마 (다크모드 / 라이트모드)
+
+- useThemeStore.setThemeMode(mode) → document.documentElement.setAttribute("data-bs-theme", ...) + localStorage 저장 (kt_theme_mode_value).
+- **로그인 화면(AuthLayout.vue)은 테마 설정과 무관하게 항상 라이트 모드**: onMounted에서 data-bs-theme=light 강제 적용, onUnmounted에서 localStorage 저장값으로 복원.

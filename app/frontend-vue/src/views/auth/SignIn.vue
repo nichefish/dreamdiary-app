@@ -89,11 +89,17 @@
           type="submit"
           class="btn btn-lg btn-light-primary opacity-75 w-100"
           :disabled="isLoading"
+          :aria-busy="isLoading"
         >
-          <span v-if="!isLoading" class="indicator-label">로그인</span>
-          <span v-else class="indicator-progress">
-            잠시만 기다려주세요...
-            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+          <!-- 변경 전: indicator-label/indicator-progress v-if 전환 — 테마 CSS가 progress 를 숨겨 글자만 사라지고 버튼이 납작해짐 -->
+          <span class="d-inline-flex align-items-center justify-content-center gap-2 w-100">
+            <span>로그인</span>
+            <span
+              v-show="isLoading"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
           </span>
         </button>
         <!--end::로그인 버튼-->

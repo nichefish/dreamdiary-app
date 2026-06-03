@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
@@ -47,6 +49,7 @@ public class JournalDayQueryService {
     private final RelatedContentQueryService relatedContentQueryService;
     private final JournalInterpretationQueryService journalInterpretationQueryService;
     private final LifecycleService lifecycleService;
+    private final TagProfileService tagProfileService;
 
     /**
      * 연월 기준 목록 조회 후 화면 정보를 보강한다.
@@ -163,6 +166,7 @@ public class JournalDayQueryService {
         }
         this.mergeLifecycles(listDto);
         this.mergeRelatedContents(username, listDto);
+        this.mergeDreamTagProfiles(listDto);
 
         return listDto;
     }
@@ -186,6 +190,7 @@ public class JournalDayQueryService {
         }
         this.mergeLifecycles(listDto);
         this.mergeRelatedContents(username, listDto);
+        this.mergeDreamTagProfiles(listDto);
 
         return listDto;
     }
@@ -205,6 +210,7 @@ public class JournalDayQueryService {
         JournalDayViewHelper.mergeStates(username, retrieved);
         this.mergeLifecycles(List.of(retrieved));
         this.mergeRelatedContents(username, List.of(retrieved));
+        this.mergeDreamTagProfiles(List.of(retrieved));
 
         return retrieved;
     }
@@ -249,6 +255,24 @@ public class JournalDayQueryService {
                     entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()))
             );
         }
+    }
+
+    /**
+     * 일자 트리의 꿈 엔트리 태그에만 프로필 본문을 병합한다.
+     * <p>변경 전: 월간/주간/일간 일자 응답의 꿈 태그에는 프로필 본문이 없었다.</p>
+     * <p>변경 후: {@code JOURNAL_DREAM} 태그 프로필 본문을 꿈 엔트리 태그 DTO에 싣는다.</p>
+     *
+     * @param listDto 일자 목록
+     */
+    private void mergeDreamTagProfiles(final List<JournalDayDto> listDto) {
+        if (listDto == null || listDto.isEmpty()) return;
+
+        final List<TagContentDto> tagList = new ArrayList<>();
+        this.forEachEntryByType(listDto, ContentType.JOURNAL_DREAM, entry -> {
+            if (entry.getTag() == null || entry.getTag().getList() == null) return;
+            tagList.addAll(entry.getTag().getList());
+        });
+        tagProfileService.applyProfileContent(tagList, ContentType.JOURNAL_DREAM.key);
     }
 
     /**

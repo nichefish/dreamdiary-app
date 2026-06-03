@@ -3,7 +3,7 @@
     <div class="auth-policy-toolbar">
       <div>
         <h2 class="mb-1">인증 정책 관리</h2>
-        <div class="text-muted fs-7">로그인 실패, 계정 잠금, 비밀번호 변경 주기를 관리합니다.</div>
+        <div class="text-muted fs-7">로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.</div>
       </div>
       <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
         <i class="bi bi-arrow-clockwise"></i>
@@ -18,6 +18,26 @@
         </div>
 
         <form class="auth-policy-form" @submit.prevent="save">
+          <div class="auth-policy-row">
+            <div>
+              <label for="duplicateLoginAllowedYn" class="form-label fw-bold">중복 로그인 허용</label>
+              <div class="text-muted fs-8">
+                켜면 같은 계정으로 여러 브라우저나 기기에서 동시에 로그인할 수 있습니다. 변경 후 서버 재시작 시 보안 정책에 반영됩니다.
+              </div>
+            </div>
+            <div class="auth-policy-toggle">
+              <label class="form-check form-switch form-check-custom form-check-solid justify-content-end">
+                <input
+                  id="duplicateLoginAllowedYn"
+                  v-model="duplicateLoginAllowed"
+                  class="form-check-input"
+                  type="checkbox"
+                />
+                <span class="form-check-label">{{ duplicateLoginAllowed ? "허용" : "차단" }}</span>
+              </label>
+            </div>
+          </div>
+
           <div v-for="field in fields" :key="field.key" class="auth-policy-row">
             <div>
               <label :for="field.key" class="form-label fw-bold">{{ field.label }}</label>
@@ -53,11 +73,11 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/utils/swal";
-import { onMounted, reactive, watch } from "vue";
+import { computed, onMounted, reactive, watch } from "vue";
+import { swalAlert, swalConfirm } from "@/utils/swal";
 import { useAuthPolicyStore, type AuthPolicy } from "@/stores/authPolicy";
 
-type NumberPolicyKey = Exclude<keyof AuthPolicy, "id">;
+type NumberPolicyKey = Exclude<keyof AuthPolicy, "id" | "duplicateLoginAllowedYn">;
 
 interface FieldDef {
   key: NumberPolicyKey;
@@ -71,6 +91,7 @@ const store = useAuthPolicyStore();
 
 const form = reactive<AuthPolicy>({
   id: null,
+  duplicateLoginAllowedYn: "N",
   inactiveLockDays: null,
   loginAttemptLimit: null,
   loginAttemptWindowMinutes: null,
@@ -83,51 +104,59 @@ const fields: FieldDef[] = [
   {
     key: "inactiveLockDays",
     label: "미로그인 계정 잠금",
-    notice: "해당 일수 동안 로그인하지 않은 계정을 휴면/잠금 대상으로 봅니다.",
+    notice: "해당 일수 동안 로그인하지 않은 계정을 자동 잠금 처리합니다.",
     unit: "일",
     max: 365,
   },
   {
     key: "loginAttemptLimit",
     label: "로그인 실패 제한",
-    notice: "아래 실패 집계 시간 안에서 허용할 로그인 실패 횟수입니다.",
+    notice: "실패 집계 시간 안에서 허용할 로그인 실패 횟수입니다.",
     unit: "회",
     max: 999,
   },
   {
     key: "loginAttemptWindowMinutes",
     label: "로그인 실패 집계 시간",
-    notice: "로그인 실패 횟수를 누적해서 판단하는 시간 창입니다.",
+    notice: "로그인 실패 횟수를 누적해서 판단하는 시간 범위입니다.",
     unit: "분",
     max: 999,
   },
   {
     key: "passwordChangeCycleDays",
     label: "비밀번호 변경 주기",
-    notice: "비밀번호 변경 후 경고 또는 변경 유도 기준이 되는 일수입니다.",
+    notice: "비밀번호 변경 경고 또는 변경 유도 기준이 되는 일수입니다.",
     unit: "일",
     max: 365,
   },
   {
     key: "accountLockDurationMinutes",
     label: "계정 잠금 지속 시간",
-    notice: "로그인 실패 제한 초과 후 잠금을 유지하는 시간입니다.",
+    notice: "로그인 실패 제한 초과 후 잠금이 유지되는 시간입니다.",
     unit: "분",
     max: 9999,
   },
   {
     key: "passwordResetTokenExpiryMinutes",
     label: "비밀번호 재설정 토큰 만료",
-    notice: "관리자 초기화 또는 재설정 링크의 유효 시간입니다.",
+    notice: "관리자 초기화 또는 재설정 링크가 유효한 시간입니다.",
     unit: "분",
     max: 10080,
   },
 ];
 
+const duplicateLoginAllowed = computed({
+  get: () => form.duplicateLoginAllowedYn === "Y",
+  set: (value: boolean) => {
+    form.duplicateLoginAllowedYn = value ? "Y" : "N";
+  },
+});
+
 watch(
   () => store.policy,
   (policy) => {
     Object.assign(form, policy);
+    form.duplicateLoginAllowedYn = policy.duplicateLoginAllowedYn === "Y" ? "Y" : "N";
   },
   { deep: true }
 );
@@ -146,6 +175,7 @@ function validate(): boolean {
 async function reload() {
   await store.fetchPolicy();
   Object.assign(form, store.policy);
+  form.duplicateLoginAllowedYn = store.policy.duplicateLoginAllowedYn === "Y" ? "Y" : "N";
 }
 
 async function save() {
@@ -216,9 +246,18 @@ onMounted(async () => {
   color: var(--bs-gray-600);
 }
 
+.auth-policy-toggle {
+  display: flex;
+  justify-content: flex-end;
+}
+
 @media (max-width: 768px) {
   .auth-policy-row {
     grid-template-columns: 1fr;
+  }
+
+  .auth-policy-toggle {
+    justify-content: flex-start;
   }
 }
 </style>

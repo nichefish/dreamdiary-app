@@ -20,8 +20,33 @@
 | 스레드 목록 행 | `JournalThreadList.vue` 인라인 | 동일 | `useJournalThreadStore` |
 | 페이지네이션 | 목록 Vue 인라인 + `utils/paginationDataService.ts` | `Pagination` / `_pagination.ftlh` | 서버 JSON script 태그 호환 유틸만 존재, `Pagination.vue` 없음 |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
+| 앱 런타임 상태 | `components/system/AppRuntimeStatus.vue` + `utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
 
-`useAttachableModalStore` (`stores/attachableModal.ts`) 주요 API: `openCommentReg`, `openCommentMdf`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
+`useAttachableModalStore` (`stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
+
+---
+
+### RichEditor 저장 HTML 계약
+
+`RichEditor.vue`는 TinyMCE HTML 원문을 전송하고, 서버 저장 정규화(`MarkdownUtils.normalize`)가 유효한 에디터 HTML 구조와 literal escaped HTML 텍스트를 보존한다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉘어 들어온 경우에는 저장 시 별도 `<p>` 문단으로 분리해 레거시 문단 간격을 보존한다.
+
+---
+
+### AppRuntimeStatus
+
+Vue SPA는 빌드가 성공했더라도 라우팅, 동적 import, 렌더링, 전역 Promise 예외가 발생하면 화면에 상태를 표시해야 한다.
+
+- 라우터 이동이 500ms 이상 이어지면 상단에 `화면 이동 중입니다.` 상태를 표시한다.
+- Vue 렌더 오류, `app.config.errorHandler`, `router.onError`, `window.error`, `unhandledrejection`은 `AppRuntimeStatus` 패널에 오류 출처와 메시지를 표시한다.
+- 오류 패널에는 `새로고침`과 `메인으로` 액션을 제공한다.
+- 오류를 정상 화면처럼 숨기지 않는다. 콘솔에도 같은 오류를 남겨 개발자가 원인을 확인할 수 있어야 한다.
+
+적용 파일:
+- `app/frontend-vue/src/App.vue`
+- `app/frontend-vue/src/main.ts`
+- `app/frontend-vue/src/router/index.ts`
+- `app/frontend-vue/src/components/system/AppRuntimeStatus.vue`
+- `app/frontend-vue/src/utils/appRuntimeStatus.ts`
 
 ---
 
@@ -729,7 +754,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 
 | attachable 영역 | Vue 기준 |
 |-----------------|----------|
-| 댓글 등록/수정 | `useAttachableModalStore.openCommentReg/openCommentMdf` + `CommentRegModal.vue` |
+| 댓글 등록/수정 | `useAttachableModalStore.openCommentRegist/openCommentModify` + `CommentRegModal.vue` |
 | 댓글 목록 | `openCommentList` + `CommentListModal.vue` |
 | 이력 | `openHistory` + `HistoryModal.vue`. 각 이력 카드에 텍스트 복사 버튼 구현 완료 |
 | 관련글 추가 | `openRelatedContentAdd` + `RelatedContentAddModal.vue` |

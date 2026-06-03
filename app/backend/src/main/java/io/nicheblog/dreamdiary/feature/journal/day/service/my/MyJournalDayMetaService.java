@@ -29,9 +29,9 @@ public class MyJournalDayMetaService {
      *
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
-    public Map<String, List<String>> getMyMetaCtgrMap() throws Exception {
+    public Map<String, List<String>> getMyMetaCategoryMap() throws Exception {
         final String username = AuthUtils.requireLoginUsername();
-        return journalDayMetaService.getMetaCtgrMapByUser(username);
+        return journalDayMetaService.getMetaCategoryMapByUser(username);
     }
 
     /**
