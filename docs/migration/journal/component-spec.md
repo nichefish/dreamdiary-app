@@ -140,10 +140,10 @@ const weekRangeLabel = ref<string>('----');
 
 **Sub-block 3 — Pinpoint** ✓ 구현:
 ```typescript
-const pinnedYy = ref<number | null>(null);
-const pinnedMnth = ref<number | null>(null);
-// pinpoint(): pinnedYy.value = store.yy; pinnedMnth.value = store.mnth
-// turnback(): if(pinnedYy && pinnedMnth) store.gotoYyMnth(pinnedYy, pinnedMnth)
+// useJournalAsideStore — pinnedYy/pinnedMnth + setPinpoint(yy, mnth)
+// localStorage journal_day_pinpoint: { yy, mnth } (서버 미저장)
+// pinpoint(): asideStore.setPinpoint(store.yy, store.mnth)
+// turnback(): store.gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth)
 ```
 
 HTML 요소:

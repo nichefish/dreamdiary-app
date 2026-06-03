@@ -136,9 +136,9 @@
           </button>
           <span class="mx-1">|</span>
           <span class="px-1 text-center">
-            <span class="fs-6 text-muted">{{ pinnedYy != null ? String(pinnedYy) : '----' }}</span>
+            <span class="fs-6 text-muted">{{ asideStore.pinnedYy != null ? String(asideStore.pinnedYy) : '----' }}</span>
             <span class="text-muted"> / </span>
-            <span class="fs-6 text-muted">{{ pinnedMnth != null ? String(pinnedMnth) : '--' }}</span>
+            <span class="fs-6 text-muted">{{ asideStore.pinnedMnth != null ? String(asideStore.pinnedMnth) : '--' }}</span>
             <i class="bi bi-pin-map fs-7 ms-1 text-muted"></i>
           </span>
           <span class="mx-1">|</span>
@@ -146,7 +146,7 @@
             type="button"
             class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
             title="고정한 년월로 돌아가기"
-            :disabled="pinnedYy == null"
+            :disabled="asideStore.pinnedYy == null"
             @click="turnback"
           >
             <i class="bi bi-reply-all pe-0"></i>
@@ -359,10 +359,6 @@ const weekPickerRef = ref<HTMLInputElement | null>(null);
 /** 요일 버튼에서 선택된 날짜 (기본: 오늘) */
 const selectedDt = ref<string>(formatLocalDateStr(new Date()));
 
-/** Pinpoint — 고정된 년/월 (null: 미고정) */
-const pinnedYy = ref<number | null>(null);
-const pinnedMnth = ref<number | null>(null);
-
 interface ChapterCategoryOption {
   code: string;
   codeName: string;
@@ -435,16 +431,15 @@ async function onWeekPickerChange(e: Event): Promise<void> {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** 현재 년/월을 Pinpoint로 고정 */
+/** 현재 년/월을 Pinpoint로 고정 (localStorage `journal_day_pinpoint`) */
 function pinpoint(): void {
-  pinnedYy.value = store.yy;
-  pinnedMnth.value = store.mnth;
+  asideStore.setPinpoint(store.yy, store.mnth);
 }
 
 /** 고정한 년/월로 되돌리기 */
 function turnback(): void {
-  if (pinnedYy.value == null || pinnedMnth.value == null) return;
-  store.gotoYyMnth(pinnedYy.value, pinnedMnth.value);
+  if (asideStore.pinnedYy == null || asideStore.pinnedMnth == null) return;
+  store.gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth);
 }
 
 function onYyChange(e: Event) {
