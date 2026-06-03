@@ -153,8 +153,10 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     flex-direction: row !important;
     justify-content: start;
     align-items: center;
-    margin-top: 1rem !important;
-    margin-bottom: 1rem !important;
+    /* BEFORE: margin 1rem — 엔트리 사이 간격 2rem(상하 합)
+       AFTER : 0.5pt씩 줄여 인접 엔트리 간 세로 간격 1pt 축소 */
+    margin-top: calc(1rem - 0.5pt) !important;
+    margin-bottom: calc(1rem - 0.5pt) !important;
 }
 
 .journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,

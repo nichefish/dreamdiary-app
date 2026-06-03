@@ -90,7 +90,7 @@
 
 - `GET /api/journal/days` — `fetchDays` (`viewType`, `yy`, `mnth`, 필터, `weekStartDt`, `stdrdDt`)
 - `GET /api/journal/day/metas` — `fetchMetas`
-- `GET /api/journal/day/tag/cloud` — `fetchTagCloud`
+- `GET /api/journal/day/tags`, `GET /api/journal/entry/tags?type=DIARY`, `GET /api/journal/entry/tags?type=DREAM` — `fetchTagCloud`
 
 `sort` / `sortOrder` 는 스토어·UI 모두 구현되어 있으며, 기본값은 `DESC`이고 `localStorage("journal_day_sort")` 로 유지한다.
 
@@ -193,7 +193,7 @@
 - TinyMCE 에디터 로드 (일기/꿈/노트 본문 편집용)
 - FullCalendar 로드 (달력 뷰 전환 대비)
 - Prism.js 코드 하이라이팅 로드
-- 태그 헤더: `JournalTagCloudHeader.vue` 컴포넌트 (`v-if="store.showTagCloud"`). `store.tagCloud` 상태를 읽고 `onMounted`/`watch([yy, mnth])`에서 `store.fetchTagCloud()` 호출
+- 태그 헤더: `JournalTagCloudHeader.vue` 컴포넌트 (`v-if="store.showTagCloud"`). `store.tagCloud` 상태를 읽고 parent view 초기화 및 기간/뷰 변경 watch에서 `store.fetchTagCloud()` 호출
 
 ---
 
@@ -837,7 +837,7 @@ const pinnedMnth = ref<number | null>(null);
 **엔트리 필터 Vue 상태 바인딩**:
 | Element | 레거시 ID | Vue 상태 |
 |---------|----------|---------|
-| TAGCLOUD 체크박스 | `#toggleTagCloud` | `store.showTagCloud` — 변경 시 `store.fetchTagCloud()` |
+| TAGCLOUD 체크박스 | `#toggleTagCloud` | `store.showTagCloud` — ON 변경 시 `store.fetchTagCloud()` |
 | DIARIES 체크박스 | `#toggleDiaries` | `store.showDiaries` — 변경 시 `store.fetchDays()` |
 | CHAPTER CATEGORIES 체크박스 | `#toggleChapterCtgr` | `chapterCtgrEnabled: ref(true)` — false 시 `store.chapterCtgrCds = []` |
 | CHAPTER CATEGORIES 멀티셀렉트 | `#chapterCtgrFilter` | `store.chapterCtgrCds: string[]` — 변경 시 `store.fetchDays()` |

@@ -324,7 +324,7 @@ function scrollToDay(stdrdDt: string): void {
 
 function refreshCurrentDayView(targetDate?: string): void {
   /** 태그 변경이 반영되도록 showTagCloud 상태와 무관하게 클라우드도 함께 갱신한다. */
-  void journalStore.fetchTagCloud();
+  void journalStore.fetchTagCloud({ sections: ["day"] });
 
   const afterFetch = () => { if (targetDate) scrollToDay(targetDate); };
 
