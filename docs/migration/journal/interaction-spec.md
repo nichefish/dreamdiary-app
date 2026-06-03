@@ -76,16 +76,15 @@ function toggleSort() {
 **목적**: 현재 조회 중인 연/월을 임시 저장하고, 나중에 그 시점으로 돌아올 수 있게 함.
 
 **트리거 A — 핀 고정** (`<i class="bi bi-bookmarks">`):
-1. `pinnedYy.value = store.yy`
-2. `pinnedMnth.value = store.mnth`
-3. UI 갱신: `#pinnedYy` → 저장된 연도, `#pinnedMnth` → 저장된 월 표시
+1. `asideStore.setPinpoint(store.yy, store.mnth)` — `localStorage` 동기 저장
+2. UI 갱신: 고정 연도·월 표시 (`asideStore.pinnedYy` / `pinnedMnth`)
 
 **트리거 B — 돌아가기** (`<i class="bi bi-reply-all">`):
-1. `if (pinnedYy.value && pinnedMnth.value)`
-2. `store.gotoYyMnth(pinnedYy.value, pinnedMnth.value)` 호출
+1. `if (asideStore.pinnedYy && asideStore.pinnedMnth)`
+2. `store.gotoYyMnth(...)` 호출
 3. 목록 재조회 (`store.fetchDays()` 내부 호출됨)
 
-**상태 저장 위치**: `JournalAside.vue` 로컬 ref (Pinia store 불필요 — 사이드바 범위 상태)
+**상태 저장 위치**: `useJournalAsideStore` + 브라우저 `localStorage` 키 `journal_day_pinpoint` (`{ yy, mnth }` JSON). 서버·계정 설정에 저장하지 않음. 새로고침·재방문 시 복원.
 
 **초기 표시**: `pinnedYy === null` → `<span id="pinnedYy">----</span>`, `<span id="pinnedMnth">--</span>`
 
