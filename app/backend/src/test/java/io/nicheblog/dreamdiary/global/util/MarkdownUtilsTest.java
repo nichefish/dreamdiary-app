@@ -11,6 +11,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MarkdownUtilsTest {
 
     @Test
+    @DisplayName("markdown wraps dream memory uncertainty fixed phrase in md-text-muted")
+    void markdownWrapsDreamMemoryUncertaintyFixedPhrase() {
+        final String phrase = "(잘 기억이 안 난다.)";
+        final String result = MarkdownUtils.markdown("<p>앞글 " + phrase + " 뒤글</p>");
+
+        assertTrue(result.contains("md-text-muted"));
+        assertTrue(result.contains(phrase));
+        assertFalse(result.contains("md-text-muted\">(다른 문구)"));
+    }
+
+    @Test
+    @DisplayName("markdown does not wrap non-matching parenthetical text as memory uncertainty")
+    void markdownDoesNotWrapSimilarParentheticalText() {
+        final String result = MarkdownUtils.markdown("<p>(비슷하지만 다른 문구)</p>");
+
+        assertFalse(result.contains("md-text-muted"));
+    }
+
+    @Test
     @DisplayName("custom inline markdown escapes literal angle brackets")
     void markdownEscapesLiteralAngleBracketsInCustomInlineMarkup() {
         final String result = MarkdownUtils.markdown("<p>plain &lt;table&lt; text ((marked &lt;table&lt; text))</p>");
