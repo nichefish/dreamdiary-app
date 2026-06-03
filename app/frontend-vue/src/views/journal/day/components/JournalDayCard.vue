@@ -60,8 +60,8 @@
             <div class="menu-item px-3">
               <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">저널 일자</div>
             </div>
-            <!--begin::주간 뷰로 이동-->
-            <div class="menu-item px-3 my-1">
+            <!--begin::주간 뷰로 이동 (월간 등; 주간 화면에서는 미표시)-->
+            <div v-if="showGotoWeeklyMenu" class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="gotoWeekly">
                 주간 뷰로 이동
                 <i class="bi bi-calendar-week fs-8"></i>
@@ -294,7 +294,7 @@
 import { swalConfirm, swalAlert } from "@/utils/swal";
 import { isAuthExpiredError } from "@/utils/authError";
 import { ref, computed, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import type { JournalDayDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
@@ -310,6 +310,7 @@ const props = defineProps<{
   showDreams?: boolean;
 }>();
 
+const route = useRoute();
 const router = useRouter();
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
@@ -328,6 +329,9 @@ const hasDream = computed(() =>
   props.day.hasDream === true ||
   journalDreamList.value.length + journalElseDreamList.value.length > 0
 );
+
+/** 월간·캘린더 등에서만 표시. 주간 화면(`journal-weekly`)에서는 이미 주간 뷰이므로 숨긴다. */
+const showGotoWeeklyMenu = computed(() => route.name !== "journal-weekly");
 
 /** 일자 상태 보유 여부 확인 */
 function hasState(stateKey: string): boolean {
