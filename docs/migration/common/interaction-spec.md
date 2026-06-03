@@ -354,9 +354,10 @@ const tagify = cF.tagify.initMeta(selector, ctgrMap, additionalOptions?)
 1. 사용자가 태그 입력 → Tagify `add` 이벤트 발생
 2. 임시 태그로 처리 (committing = false)
 3. ctgrMap에 해당 태그 없으면 → 즉시 제거 (무효 태그)
-4. ctgrMap에 있으면 → selectbox 표시 + **selectbox에 자동 포커스**
-5a. selectbox에서 카테고리 선택 → commitTag(value, ctgr, null)
-5b. "직접입력" 선택 → ctgr 입력 필드 표시 + input에 자동 포커스 → Tab/Enter로 확정 → commitTag
+4. ctgrMap에 있으면 → 기존 카테고리 옵션을 먼저 렌더하고 `직접입력` 옵션은 마지막에 둔 selectbox 표시 + **selectbox에 자동 포커스**
+5a. selectbox에서 `Tab`/`Shift+Tab` → 다음/이전 카테고리 후보로 이동
+5b. selectbox에서 `Enter` → 현재 선택된 카테고리로 commitTag(value, ctgr, null)
+5c. "직접입력" 선택 후 `Enter` → ctgr 입력 필드 표시 + input에 자동 포커스 → Tab/Enter로 확정 → commitTag
 6. ctgrMap에 없는 태그 → ctgr 입력 필드 직접 표시 + input에 자동 포커스
 7. Escape → 입력 취소, draft 초기화
 ```
@@ -388,13 +389,14 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 | 키 | 동작 |
 |----|------|
 | Escape | 입력 취소, draft 초기화, 기본 입력창으로 포커스 |
-| Tab | 현재 단계 확정 후 다음 단계로 이동 |
-| Enter | Tab과 동일 |
+| Tab / Shift+Tab | 카테고리 select에서는 다음/이전 후보 이동. 카테고리 직접 입력·메타 값 입력에서는 현재 단계 확정 후 다음 단계로 이동 |
+| Enter | 현재 단계 확정 |
 
 **DRAFT 진입 시 자동 포커스**: 태그 추가로 DRAFT 상태에 진입하면 첫 입력 대상에 자동 포커스된다.
 - ctgrMap에 카테고리 목록이 있으면 → `select` 포커스
 - ctgrMap에 없거나 "직접입력" 선택 시 → `ctgr input` 포커스
-- 구현: `showAndFocus(container, el)` — `display:block` + `setTimeout(() => el.focus(), 0)`
+- 구현: `showAndFocus(container, el)` — `display:block` + `setTimeout(..., 0)` 포커스 후 다음 animation frame에서 `document.activeElement`를 확인한다. Tagify가 Enter/add 처리 직후 내부 입력창으로 포커스를 되가져가면 표시된 카테고리 컨트롤에 한 번 더 포커스를 적용한다.
+- 포커스 대상이 없거나 재시도 후에도 적용되지 않으면 `console.warn("[tagifyHelper] category focus ...")` 로 대상 컨트롤과 현재 activeElement를 남긴다.
 
 ### ctgrMap 로딩 아키텍처
 

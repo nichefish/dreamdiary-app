@@ -95,9 +95,28 @@ function toggle(el: HTMLElement | null | undefined, show: boolean): void {
 function showAndFocus(container: HTMLElement | null | undefined, el?: HTMLElement | null): void {
   if (!container) return;
   container.style.display = "block";
-  setTimeout(() => {
-    el?.focus?.();
+  if (!el) {
+    console.warn("[tagifyHelper] category focus target missing");
+    return;
+  }
+
+  const focusTarget = () => {
+    el.focus();
     if (el instanceof HTMLInputElement) el.select();
+  };
+
+  setTimeout(() => {
+    focusTarget();
+    requestAnimationFrame(() => {
+      if (document.activeElement === el) return;
+      focusTarget();
+      if (document.activeElement !== el) {
+        console.warn("[tagifyHelper] category focus not applied", {
+          targetId: el.id,
+          activeElement: document.activeElement,
+        });
+      }
+    });
   }, 0);
 }
 
@@ -232,17 +251,20 @@ export function bindTagifyCtgrInputPrompt(
     }
 
     /* categoryMap에 있는 태그: select로 카테고리 선택 (텍스트 입력은 "직접입력" 선택 시에만 표시) */
+    tagify.removeTags(e.detail.tag);
     toggle(tagify.ctgr?.inputContainer, false);
     if (tagify.ctgr?.select) {
-      tagify.ctgr.select.innerHTML =
-        '<option value="custom">직접입력</option>' +
-        filteredCategories.map((item) => `<option value="${item}">${item}</option>`).join("");
+      tagify.ctgr.select.replaceChildren(
+        ...filteredCategories.map((item) => new Option(item, item)),
+        new Option("직접입력", "custom"),
+      );
+      tagify.ctgr.select.selectedIndex = 0;
       tagify.ctgr.select.size = filteredCategories.length + 1;
     }
     showAndFocus(tagify.ctgr?.selectContainer, tagify.ctgr?.select);
 
     if (tagify.ctgr?.select) {
-      tagify.ctgr.select.onchange = () => {
+      const confirmSelectedCategory = () => {
         tagify.draft!.ctgr = tagify.ctgr!.select!.value;
         if (tagify.draft!.ctgr === "custom") {
           if (tagify.ctgr?.input) tagify.ctgr.input.value = "";
@@ -261,15 +283,29 @@ export function bindTagifyCtgrInputPrompt(
           onCommitted?.();
         }
       };
-      /* 카테고리 select ESC → 입력 취소 */
-      tagify.ctgr.select.addEventListener("keydown", (event: KeyboardEvent) => {
-        if (event.key !== "Escape") return;
-        event.preventDefault();
-        cancelTagifyInput(tagify);
-      });
+      /* 카테고리 select: Tab은 다음 후보 이동, Enter는 현재 후보 확정, ESC는 취소. */
+      tagify.ctgr.select.onkeydown = (event: KeyboardEvent) => {
+        if (event.key === "Tab") {
+          event.preventDefault();
+          const optionCount = tagify.ctgr?.select?.options.length ?? 0;
+          if (optionCount === 0) return;
+          const delta = event.shiftKey ? -1 : 1;
+          const nextIndex = (tagify.ctgr!.select!.selectedIndex + delta + optionCount) % optionCount;
+          tagify.ctgr!.select!.selectedIndex = nextIndex;
+          return;
+        }
+        if (event.key === "Enter") {
+          event.preventDefault();
+          confirmSelectedCategory();
+          return;
+        }
+        if (event.key === "Escape") {
+          event.preventDefault();
+          cancelTagifyInput(tagify);
+        }
+      };
+      tagify.ctgr.select.onclick = () => confirmSelectedCategory();
     }
-
-    tagify.removeTags(e.detail.tag);
   });
 }
 
