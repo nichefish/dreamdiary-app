@@ -1,4 +1,4 @@
-# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
+﻿# 저널 컴포넌트 마이그레이션 스펙 (Journal Component Spec)
 
 > 공통 Freemarker 매크로(checkbox, modal_header 등)는 ``common/component-spec.md`` 참조.
 
@@ -182,7 +182,14 @@ HTML 요소:
         <option v-for="ct in chapterCtgrOptions" :key="ct.code" :value="ct.code">[{{ ct.codeName }}]</option>
     </select>
 </div>
-<!-- B-3: 일기 키워드 입력 -->
+<!-- B-3: 일기 라이프사이클 선택 -->
+<select id="diaryLifecycleFilter" class="form-select form-select-sm" v-model="store.diaryLifecycleKey" @change="store.fetchDays()">
+    <option value="">전체</option>
+    <option value="OPEN">진행 중</option>
+    <option value="PENDING">보류</option>
+    <option value="RESOLVED">완료</option>
+</select>
+<!-- B-4: 일기 키워드 입력 -->
 <input id="diaryFilterKeyword" class="form-control form-control-sm" v-model="store.diaryKeyword" @keyup.enter="applyFilters">
 ```
 
@@ -198,7 +205,15 @@ HTML 요소:
 - `__ALL__` 선택 시: `store.chapterCtgrCds = []` → `store.fetchDays()`
 - 일반 선택 시: 선택된 코드값 배열 → `store.chapterCtgrCds = selectedCodes` → `store.fetchDays()`
 
-**블록 C — DREAMS + 꿈 키워드**: 블록 B와 동일 구조, 챕터 카테고리 sub-block 없음
+**블록 C — DREAMS + 꿈 LIFECYCLE + 꿈 키워드**: 블록 B와 동일 구조, 챕터 카테고리 sub-block 없음
+- 꿈 LIFECYCLE select: `store.dreamLifecycleKey` — 변경 시 `store.fetchDays()`
+
+**라이프사이클 필터**:
+- 일기 LIFECYCLE select: `store.diaryLifecycleKey`
+- 꿈 LIFECYCLE select: `store.dreamLifecycleKey`
+- 옵션: 전체(`""`), 진행 중(`OPEN`), 보류(`PENDING`), 완료(`RESOLVED`)
+- `OPEN`은 라이프사이클 값이 없거나 `OPEN`인 엔트리를 포함한다.
+- 일기/꿈 각각 독립적으로 적용하며, 기존 키워드 필터와 AND 조건으로 동작한다.
 
 **블록 D — 고급 필터 아코디언 (MISSING)**:
 ```html
@@ -400,7 +415,7 @@ interface TodoRow {
 
 **현재 Vue 동등**: ✓ 구현 완료 (레거시 `JournalDayMonthlyListApp` / 텔레포트 대체)
 
-**컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수
+**컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수. 「주간 뷰로 이동」은 route `journal-weekly` 에서 미표시(월간·캘린더·메타 등 전용).
 
 **일간 뷰 새 창 열기**: ✓ 구현 완료 — 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` 새 창 강제 (features 지정)
 

@@ -32,14 +32,18 @@ public final class JournalDayFilterHelper {
 
         final String diaryKeyword = StringUtils.defaultString(searchParam.getDiaryKeyword()).trim().toLowerCase();
         final String dreamKeyword = StringUtils.defaultString(searchParam.getDreamKeyword()).trim().toLowerCase();
+        final String diaryLifecycleKey = StringUtils.defaultString(searchParam.getDiaryLifecycleKey()).trim();
+        final String dreamLifecycleKey = StringUtils.defaultString(searchParam.getDreamLifecycleKey()).trim();
 
         final boolean filterDiaries = showDiaries && StringUtils.isNotEmpty(diaryKeyword);
         final boolean filterDreams = showDreams && StringUtils.isNotEmpty(dreamKeyword);
+        final boolean filterDiaryLifecycle = showDiaries && StringUtils.isNotEmpty(diaryLifecycleKey);
+        final boolean filterDreamLifecycle = showDreams && StringUtils.isNotEmpty(dreamLifecycleKey);
 
         final List<String> chapterCtgrCds = normalizeChapterCtgrCds(searchParam.getChapterCtgrCds());
         final boolean filterChapterCtgr = showDiaries && CollectionUtils.isNotEmpty(chapterCtgrCds);
 
-        if (!filterDiaries && !filterDreams && !filterChapterCtgr) return listDto;
+        if (!filterDiaries && !filterDreams && !filterDiaryLifecycle && !filterDreamLifecycle && !filterChapterCtgr) return listDto;
 
         final boolean hasNoneCategory = filterChapterCtgr && chapterCtgrCds.contains(CHAPTER_CTGR_NONE);
         final Set<String> ctgrSet = new HashSet<>();
@@ -57,19 +61,19 @@ public final class JournalDayFilterHelper {
             final List<JournalChapterCtgrHintDto> hiddenChapterCtgrList = filterChapterCtgr
                     ? collectHiddenChapterCtgrList(day.getJournalChapterList(), hasNoneCategory, ctgrSet)
                     : List.of();
-            if (filterChapterCtgr || filterDiaries) {
+            if (filterChapterCtgr || filterDiaries || filterDiaryLifecycle) {
                 filteredEntries = new ArrayList<>();
                 final List<JournalChapterDto> chapterList = day.getJournalChapterList();
                 if (CollectionUtils.isNotEmpty(chapterList)) {
                     for (final JournalChapterDto chapter : chapterList) {
                         if (filterChapterCtgr && !matchesChapterCtgr(chapter, hasNoneCategory, ctgrSet)) continue;
 
-                        if (filterDiaries) {
+                        if (filterDiaries || filterDiaryLifecycle) {
                             final List<JournalEntryDto> diaryList = JournalEntryViewProjectionHelper.getDiaryEntries(chapter);
                             if (CollectionUtils.isEmpty(diaryList)) continue;
                             final List<JournalEntryDto> filteredDiaries = new ArrayList<>();
                             for (final JournalEntryDto diary : diaryList) {
-                                if (containsKeyword(diary.getContent(), diaryKeyword)) filteredDiaries.add(diary);
+                                if (matchesEntryFilters(diary, diaryKeyword, diaryLifecycleKey)) filteredDiaries.add(diary);
                             }
                             if (filteredDiaries.isEmpty()) continue;
 
@@ -92,18 +96,18 @@ public final class JournalDayFilterHelper {
 
             List<JournalEntryDto> filteredDreams = day.getJournalDreamList();
             List<JournalEntryDto> filteredElseDreams = day.getJournalElseDreamList();
-            if (filterDreams) {
-                filteredDreams = filterDreamList(day.getJournalDreamList(), dreamKeyword);
-                filteredElseDreams = filterDreamList(day.getJournalElseDreamList(), dreamKeyword);
+            if (filterDreams || filterDreamLifecycle) {
+                filteredDreams = filterDreamList(day.getJournalDreamList(), dreamKeyword, dreamLifecycleKey);
+                filteredElseDreams = filterDreamList(day.getJournalElseDreamList(), dreamKeyword, dreamLifecycleKey);
             }
 
-            final boolean hasHiddenChapterCtgr = !filterDiaries && CollectionUtils.isNotEmpty(hiddenChapterCtgrList);
+            final boolean hasHiddenChapterCtgr = !filterDiaries && !filterDiaryLifecycle && CollectionUtils.isNotEmpty(hiddenChapterCtgrList);
 
             // 챕터가 원래부터 없던 날은 챕터 카테고리 필터로 제외하지 않는다.
-            if ((filterDiaries || (filterChapterCtgr && hadChapters))
+            if ((filterDiaries || filterDiaryLifecycle || (filterChapterCtgr && hadChapters))
                     && CollectionUtils.isEmpty(filteredEntries)
                     && !hasHiddenChapterCtgr) continue;
-            if (filterDreams && CollectionUtils.isEmpty(filteredDreams) && CollectionUtils.isEmpty(filteredElseDreams)) continue;
+            if ((filterDreams || filterDreamLifecycle) && CollectionUtils.isEmpty(filteredDreams) && CollectionUtils.isEmpty(filteredElseDreams)) continue;
 
             final JournalDayDto nextDay = day.toBuilder()
                     .journalChapterList(filteredEntries)
@@ -154,11 +158,22 @@ public final class JournalDayFilterHelper {
         return value.toLowerCase().contains(keyword);
     }
 
-    private static List<JournalEntryDto> filterDreamList(final List<JournalEntryDto> dreamList, final String keyword) {
+    private static boolean matchesEntryFilters(final JournalEntryDto entry, final String keyword, final String lifecycleKey) {
+        if (entry == null) return false;
+        return containsKeyword(entry.getContent(), keyword) && matchesLifecycle(entry, lifecycleKey);
+    }
+
+    private static boolean matchesLifecycle(final JournalEntryDto entry, final String lifecycleKey) {
+        if (StringUtils.isEmpty(lifecycleKey)) return true;
+        if (entry == null || entry.getLifecycle() == null) return "OPEN".equals(lifecycleKey);
+        return lifecycleKey.equals(entry.getLifecycle().getLifecycleKey());
+    }
+
+    private static List<JournalEntryDto> filterDreamList(final List<JournalEntryDto> dreamList, final String keyword, final String lifecycleKey) {
         if (CollectionUtils.isEmpty(dreamList)) return new ArrayList<>();
         final List<JournalEntryDto> filtered = new ArrayList<>();
         for (final JournalEntryDto dream : dreamList) {
-            if (containsKeyword(dream.getContent(), keyword)) filtered.add(dream);
+            if (matchesEntryFilters(dream, keyword, lifecycleKey)) filtered.add(dream);
         }
         return filtered;
     }

@@ -759,7 +759,20 @@ const pinnedMnth = ref<number | null>(null);
                 </option>
             </select>
         </div>
-        <!-- B-3: DIARY KEYWORDS 입력 -->
+        <!-- B-3: DIARY LIFECYCLE 선택 -->
+        <div class="d-flex flex-column ps-3 gap-1">
+            <label for="diaryLifecycleFilter" class="text-muted mb-0">- DIARY LIFECYCLE</label>
+            <select id="diaryLifecycleFilter"
+                    class="form-select form-select-sm"
+                    v-model="store.diaryLifecycleKey"
+                    @change="store.fetchDays()">
+                <option value="">전체</option>
+                <option value="OPEN">진행 중</option>
+                <option value="PENDING">보류</option>
+                <option value="RESOLVED">완료</option>
+            </select>
+        </div>
+        <!-- B-4: DIARY KEYWORDS 입력 -->
         <div class="d-flex flex-column ps-3 gap-1">
             <label for="diaryFilterKeyword" class="text-muted mb-0">- DIARY KEYWORDS</label>
             <div class="d-flex gap-1">
@@ -788,7 +801,20 @@ const pinnedMnth = ref<number | null>(null);
                    :checked="store.showDreams"
                    @change="toggleDreams">
         </div>
-        <!-- C-2: DREAM KEYWORDS 입력 -->
+        <!-- C-2: DREAM LIFECYCLE 선택 -->
+        <div class="d-flex flex-column ps-3 gap-1">
+            <label for="dreamLifecycleFilter" class="text-muted mb-0">- DREAM LIFECYCLE</label>
+            <select id="dreamLifecycleFilter"
+                    class="form-select form-select-sm"
+                    v-model="store.dreamLifecycleKey"
+                    @change="store.fetchDays()">
+                <option value="">전체</option>
+                <option value="OPEN">진행 중</option>
+                <option value="PENDING">보류</option>
+                <option value="RESOLVED">완료</option>
+            </select>
+        </div>
+        <!-- C-3: DREAM KEYWORDS 입력 -->
         <div class="d-flex flex-column ps-3 gap-1">
             <label for="dreamFilterKeyword" class="text-muted mb-0">- DREAM KEYWORDS</label>
             <div class="d-flex gap-1">
@@ -844,6 +870,8 @@ const pinnedMnth = ref<number | null>(null);
 | 챕터 옵션 목록 | `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` | `journalModalStore.chapterCategoryOptions` — `fetchChapterCategories()` 로 로드 |
 | `__ALL__` 선택 시 | 전체 선택 처리 | `store.chapterCtgrCds = []` (필터 없음으로 처리) |
 | DREAMS 체크박스 | `#toggleDreams` | `store.showDreams` — 변경 시 `store.fetchDays()` |
+| 일기 라이프사이클 | `#diaryLifecycleFilter` | `store.diaryLifecycleKey` — 변경 시 `store.fetchDays()` |
+| 꿈 라이프사이클 | `#dreamLifecycleFilter` | `store.dreamLifecycleKey` — 변경 시 `store.fetchDays()` |
 | 일기 키워드 | `#diaryFilterKeyword` | `store.diaryKeyword` — Enter 시 `store.fetchDays()` |
 | 꿈 키워드 | `#dreamFilterKeyword` | `store.dreamKeyword` — Enter 시 `store.fetchDays()` |
 

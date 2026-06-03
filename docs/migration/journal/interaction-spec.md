@@ -23,6 +23,7 @@
 | 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
 | Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
 | 챕터 카테고리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY_CTGR_CD`·`NOTE` 병합 체크박스, `store.chapterCtgrCds` → `fetchDays` | ✓ |
+| 일기/꿈 라이프사이클 필터 | `JournalAside.vue` — `store.diaryLifecycleKey` / `store.dreamLifecycleKey` → `fetchDays` 후 일기/꿈 각각 후처리 필터 | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
@@ -120,6 +121,21 @@ function onChapterCtgrChange(event: Event) {
 **`__ALL__` 처리**: 첫 번째 `<option value="__ALL__">전체</option>` 선택 시 모든 챕터 표시
 
 **store 반영**: `store.chapterCtgrCds: string[]` — `fetchDays` 에서 `chapterCtgrCds.length > 0` 이면 query param 포함
+
+---
+
+### 일기/꿈 라이프사이클 필터
+
+**목표**: 우측 ENTRY FILTER에서 일기와 꿈을 각각 라이프사이클 상태로 거른다.
+
+**Vue 구현**:
+- `store.diaryLifecycleKey`: 일기 전용 lifecycle 필터
+- `store.dreamLifecycleKey`: 꿈 전용 lifecycle 필터
+- 옵션: 전체(`""`), 진행 중(`OPEN`), 보류(`PENDING`), 완료(`RESOLVED`)
+- select 변경 즉시 `store.fetchDays()` 호출
+- 필터 초기화 시 두 값 모두 `""` 로 되돌림
+
+**서버 반영**: `JournalDaySearchParam.diaryLifecycleKey` / `dreamLifecycleKey` 를 `JournalDayFilterHelper.filterInMemory()`에서 적용한다. 일기/꿈 키워드와는 AND 조건이며, `OPEN`은 값이 없거나 `OPEN`인 엔트리를 포함한다.
 
 ---
 
@@ -313,7 +329,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **레거시 출처**: `legacy/static/vue/feature/journal/day/components/JournalDayContextMenu.ts`
 
 **메뉴 구조**:
-- 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간 뷰 전용 용도)
+- 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간·캘린더·메타 등 전용; route `journal-weekly` 에서는 `v-if` 로 메뉴 미표시)
 - 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
 - `JournalDayDaily.vue` 로드 시 `stdrdDt`에서 `yy`·`mnth`를 파생해 `fetchDays`에 명시 전달 (스토어 기본값 현재 날짜가 백엔드 필터와 불일치하는 문제 방지)
 - 날짜 이동(이전/다음)은 로컬 Date 생성자로 파싱 — `new Date(stdrdDt)`는 UTC로 파싱되어 Korea(UTC+9) 환경에서 날짜가 1일 밀리는 버그 발생
