@@ -30,6 +30,10 @@ import java.util.regex.Pattern;
 @Log4j2
 public class MarkdownUtils {
 
+    /**
+     * 꿈 본문 기억 불확실 표시용 고정 문구. 일반 괄호 패턴이 아니다.
+     */
+    private static final String DREAM_MEMORY_UNCERTAINTY_PHRASE = "(잘 기억이 안 난다.)";
     private static String procTextWithGeneratedPlaceholders(final String text, final int maxGroupLength) {
         final List<String> generatedHtmlList = new ArrayList<>();
 
@@ -62,6 +66,17 @@ public class MarkdownUtils {
             final String group = matcher.group(1);
             return "<span class='md-text-muted'>@" + StringEscapeUtils.escapeHtml4(group) + "</span>";
         });
+
+
+        part = replaceGeneratedPattern(
+                part,
+                Pattern.compile("(" + Pattern.quote(DREAM_MEMORY_UNCERTAINTY_PHRASE) + ")"),
+                maxGroupLength,
+                generatedHtmlList,
+                matcher -> {
+                    final String group = matcher.group(1);
+                    return "<span class='md-text-muted'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+                });
 
         return escapeTextAndRestoreGeneratedHtml(part, generatedHtmlList);
     }
