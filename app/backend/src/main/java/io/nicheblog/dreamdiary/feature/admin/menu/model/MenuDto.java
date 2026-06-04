@@ -88,13 +88,10 @@ public class MenuDto
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String dirYn = "N";
     
-    /** 관리자 메뉴 여부 (Y/N) */
+    /** 관리자 메뉴 여부 (Y/N). 최상위 MAIN 메뉴에서만 직접 의미를 갖는다. */
     @Builder.Default
     private String adminYn = "N";
 
-    /** 필수 여부 (Y/N) */
-    @Builder.Default
-    private String requiredYn = "N";
     /** 시스템 보호 여부 (Y/N) */
     @Builder.Default
     private String protectedYn = "N";
@@ -131,6 +128,14 @@ public class MenuDto
             return this.submenuExpandTypeName;
         }
         return SubmenuExpandType.getDesc(this.submenuExpandType);
+    }
+
+    /**
+     * Getter :: 메뉴 관리 소유 유형 반환.
+     * BOARD 확장 유형은 게시판 관리에서 내용을 관리하고, 메뉴 관리는 배치만 담당한다.
+     */
+    public String getManagementType() {
+        return SubmenuExpandType.BOARD.name().equals(this.submenuExpandType) ? "BOARD" : "MENU";
     }
 
     /* ----- */

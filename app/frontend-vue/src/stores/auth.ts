@@ -4,6 +4,7 @@ import ApiService from "@metronic/core/services/ApiService";
 import type { AxiosError } from "axios";
 import { resolveProfileImageUrl } from "@/utils/profileImage";
 import { preloadCategoryMaps, useJournalModalStore } from "@/stores/journalModal";
+import { useMenuStore } from "@/stores/menu";
 
 /**
  * Vue SPA 인증 사용자 정보.
@@ -45,6 +46,7 @@ export const useAuthStore = defineStore("auth", () => {
   /** 인증 상태 초기화 */
   function purgeAuth() {
     useJournalModalStore().resetCategoryMaps();
+    useMenuStore().resetMenu();
     isAuthenticated.value = false;
     user.value = null;
     errors.value = [];

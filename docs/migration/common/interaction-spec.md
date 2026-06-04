@@ -657,6 +657,7 @@ window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
 - 조회 URL은 `/api/menus?mode=USER|MNGR`이며, 응답의 `subMenuList` depth를 유지한다.
 - 서버 메뉴 조회 실패 시에만 fallback 메뉴를 사용한다. fallback은 운영 메뉴 관리 기능의 대체물이 아니다.
 - 사용자/관리자 전환은 `useMenuStore.setMenuMode()`로 처리하고, 전환 시 menu cache를 비운 뒤 다시 조회한다.
+- 로그아웃 또는 인증 검증 실패로 `useAuthStore.purgeAuth()`가 실행되면 `useMenuStore.resetMenu()`로 사이드바 메뉴와 저장된 모드를 `USER` 기본 상태로 초기화한다. 다시 로그인한 뒤 기본 진입 화면(`/journal/weekly`)과 사이드바 모드가 어긋나지 않아야 한다.
 
 ### 정적 리소스와 폰트
 

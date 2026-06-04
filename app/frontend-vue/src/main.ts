@@ -113,8 +113,26 @@ initVeeValidate();
 
 app.use(i18n);
 
-app.directive("tooltip", (el) => {
-  new Tooltip(el);
+type TooltipElement = HTMLElement & { _dreamdiaryTooltip?: Tooltip };
+
+function refreshTooltip(el: TooltipElement) {
+  el._dreamdiaryTooltip?.dispose();
+  el._dreamdiaryTooltip = undefined;
+  if (!el.getAttribute("title")) return;
+  el._dreamdiaryTooltip = new Tooltip(el);
+}
+
+app.directive("tooltip", {
+  mounted(el: TooltipElement) {
+    refreshTooltip(el);
+  },
+  updated(el: TooltipElement) {
+    refreshTooltip(el);
+  },
+  unmounted(el: TooltipElement) {
+    el._dreamdiaryTooltip?.dispose();
+    el._dreamdiaryTooltip = undefined;
+  },
 });
 
 const configStore = useConfigStore();

@@ -2,18 +2,18 @@
   <li
     class="menu-admin-node"
     :class="{ 'is-main': isMain, 'is-disabled': !useY, 'is-dragging': dragging, 'is-drag-over': dragOver }"
-    @dragover.prevent.stop="handleDragOver"
-    @dragenter.prevent.stop="dragOver = true"
+    @dragover.stop="handleDragOver"
+    @dragenter.stop="handleDragEnter"
     @dragleave.stop="dragOver = false"
-    @drop.prevent.stop="handleDrop"
+    @drop.stop="handleDrop"
   >
     <div class="menu-admin-node-head">
       <div class="menu-admin-node-title">
         <span
           class="menu-admin-node-icon"
-          :class="{ 'is-drag-disabled': sortSaving }"
-          draggable="true"
-          title="끌어서 순서 변경"
+          :class="{ 'is-drag-disabled': !canDragHandle }"
+          :draggable="canDragHandle"
+          :title="canDragHandle ? '끌어서 순서 변경' : '시스템 보호 메뉴'"
           @dragstart.stop="handleDragStart"
           @dragend="handleDragEnd"
           v-html="node.icon || fallbackIcon"
@@ -21,8 +21,7 @@
         <div>
           <div class="menu-admin-node-name">
             <span>{{ node.menuName || "-" }}</span>
-            <i v-if="protectedY" class="bi bi-shield-lock text-muted"></i>
-            <i v-if="requiredY" class="bi bi-exclamation-diamond text-warning"></i>
+            <i v-if="protectedY" v-tooltip class="bi bi-shield-lock text-warning menu-admin-status-icon" title="시스템 보호 메뉴"></i>
           </div>
           <div class="menu-admin-node-meta">
             <span>{{ node.menuLabel || "-" }}</span>
@@ -30,19 +29,40 @@
           </div>
         </div>
       </div>
-      <div class="menu-admin-node-actions">
-        <button v-if="canAddChild" type="button" class="btn btn-sm btn-icon btn-light-primary" title="하위 메뉴 추가" @click="$emit('add-child', node)">
-          <i class="bi bi-plus-lg"></i>
+      <RouterLink v-if="boardManaged" class="menu-admin-node-link" to="/admin/board-group">
+        <i class="bi bi-box-arrow-up-right"></i>
+        <span>게시판 관리로 이동</span>
+      </RouterLink>
+      <div v-if="!boardManaged" class="menu-admin-node-actions">
+        <button
+          type="button"
+          class="btn btn-sm btn-icon btn-light"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+          title="메뉴 작업"
+        >
+          <i class="bi bi-three-dots-vertical"></i>
         </button>
-        <button type="button" class="btn btn-sm btn-icon btn-light-primary" title="수정" @click="$emit('edit', node.id)">
-          <i class="bi bi-pencil-square"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-icon" :class="useY ? 'btn-light-success' : 'btn-light'" title="사용 여부" :disabled="requiredY" @click="$emit('toggle-use', node)">
-          <i :class="useY ? 'bi bi-check2' : 'bi bi-x-lg'"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-icon btn-light-danger" title="삭제" :disabled="protectedY" @click="$emit('delete-node', node)">
-          <i class="bi bi-trash"></i>
-        </button>
+        <div class="dropdown-menu menu-admin-node-menu dropdown-menu-end">
+          <button v-if="canAddChild" type="button" class="dropdown-item" @click="$emit('add-child', node)">
+            <i class="bi bi-plus-lg"></i>
+            <span>하위 메뉴 추가</span>
+          </button>
+          <button type="button" class="dropdown-item" :disabled="protectedY" @click="$emit('edit', node.id)">
+            <i class="bi bi-pencil-square"></i>
+            <span>수정</span>
+          </button>
+          <button type="button" class="dropdown-item" :disabled="protectedY" @click="$emit('toggle-use', node)">
+            <i :class="useY ? 'bi bi-x-lg' : 'bi bi-check2'"></i>
+            <span>{{ useY ? "미사용 처리" : "사용 처리" }}</span>
+          </button>
+          <div class="dropdown-divider"></div>
+          <button type="button" class="dropdown-item text-danger" :disabled="protectedY" @click="$emit('delete-node', node)">
+            <i class="bi bi-trash"></i>
+            <span>삭제</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -68,7 +88,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { reinitializeComponents } from "@metronic/core/plugins/keenthemes";
 import type { MenuNode } from "@/stores/menuAdmin";
 
 const props = defineProps<{
@@ -94,17 +115,34 @@ const dragging = ref(false);
 const children = computed(() => props.node.subMenuList ?? []);
 const isMain = computed(() => props.node.menuType === "MAIN");
 const useY = computed(() => yn(props.node.useYn));
-const requiredY = computed(() => yn(props.node.requiredYn));
 const protectedY = computed(() => yn(props.node.protectedYn));
-const canAddChild = computed(() => !protectedY.value && props.node.submenuExpandType !== "NO_SUB");
+const canDragHandle = computed(() => !props.sortSaving && !protectedY.value);
+const boardManaged = computed(() => props.node.managementType === "BOARD");
+const canAddChild = computed(() => !boardManaged.value && props.node.submenuExpandType !== "NO_SUB");
 const fallbackIcon = computed(() => (isMain.value ? '<i class="bi bi-folder2-open"></i>' : '<i class="bi bi-dot"></i>'));
+
+async function refreshMenuComponents(): Promise<void> {
+  await nextTick();
+  reinitializeComponents();
+}
+
+onMounted(() => {
+  void refreshMenuComponents();
+});
+
+watch(
+  () => [props.node.id, props.node.useYn, props.node.protectedYn, props.node.managementType, props.node.submenuExpandType],
+  () => {
+    void refreshMenuComponents();
+  }
+);
 
 function yn(value: string | undefined): boolean {
   return String(value ?? "N").toUpperCase() === "Y";
 }
 
 function handleDragStart(event: DragEvent): void {
-  if (props.sortSaving) {
+  if (!canDragHandle.value) {
     event.preventDefault();
     return;
   }
@@ -117,7 +155,15 @@ function handleDragStart(event: DragEvent): void {
 }
 
 function handleDragOver(event: DragEvent): void {
+  if (protectedY.value || boardManaged.value) return;
+  event.preventDefault();
   if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+}
+
+function handleDragEnter(event: DragEvent): void {
+  if (protectedY.value || boardManaged.value) return;
+  event.preventDefault();
+  dragOver.value = true;
 }
 
 function handleDragEnd(): void {
@@ -126,6 +172,7 @@ function handleDragEnd(): void {
 }
 
 function handleDrop(): void {
+  if (protectedY.value || boardManaged.value) return;
   dragOver.value = false;
   dragging.value = false;
   if (!props.sortSaving) emit("drop-node", props.index);
@@ -199,15 +246,38 @@ function handleDrop(): void {
 }
 
 .menu-admin-node-actions {
+  position: relative;
   gap: 0.25rem;
-  flex-wrap: wrap;
-  opacity: 0.72;
+  opacity: 0.86;
   transition: opacity 0.15s ease;
 }
 
 .menu-admin-node-head:hover .menu-admin-node-actions,
 .menu-admin-node.is-drag-over .menu-admin-node-actions {
   opacity: 1;
+}
+
+.menu-admin-node-menu {
+  min-width: 160px;
+  padding: 0.35rem;
+}
+
+.menu-admin-node-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 34px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.menu-admin-node-menu .dropdown-item > i {
+  width: 1rem;
+  text-align: center;
+}
+
+.menu-admin-node-menu .dropdown-item:disabled {
+  opacity: 0.45;
 }
 
 .menu-admin-node-title {
@@ -273,6 +343,10 @@ function handleDrop(): void {
   font-weight: 700;
 }
 
+.menu-admin-status-icon {
+  cursor: help;
+}
+
 .menu-admin-node-meta {
   display: flex;
   gap: 0.75rem;
@@ -280,6 +354,29 @@ function handleDrop(): void {
   color: var(--bs-gray-600);
   font-size: 0.8rem;
   overflow-wrap: anywhere;
+}
+
+.menu-admin-node-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex: 0 0 auto;
+  min-width: 160px;
+  gap: 0.35rem;
+  min-height: 34px;
+  margin-left: auto;
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.18);
+  border-radius: 6px;
+  background: rgba(var(--bs-primary-rgb), 0.06);
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+.menu-admin-node-link:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.36);
+  background: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--bs-primary);
 }
 
 .menu-admin-children {
@@ -300,6 +397,16 @@ function handleDrop(): void {
 
   .menu-admin-node-head {
     flex-direction: column;
+  }
+
+  .menu-admin-node-actions {
+    justify-content: flex-end;
+  }
+
+  .menu-admin-node-link {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
   }
 }
 </style>

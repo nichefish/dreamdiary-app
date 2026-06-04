@@ -88,7 +88,6 @@ CREATE TABLE IF NOT EXISTS menu (
     icon VARCHAR(1000) COMMENT '아이콘',
     unread_cnt_nm VARCHAR(200) COMMENT '미열람 카운트 이름 (model)',
     submenu_expand_type VARCHAR(50) COMMENT '하위메뉴 확장 유형',
-    required_yn CHAR(1) DEFAULT 'N' COMMENT '필수 여부',
     protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부',
     -- STATE
     sort_order INT DEFAULT 0 COMMENT '정렬 순서',
