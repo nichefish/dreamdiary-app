@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 /**
  * Legacy schedule calendar entrypoint.
  *
- * <p>The screen is owned by the Vue app; this controller only preserves old
- * /app/schedule/cal.do links during the FreeMarker removal.</p>
+ * <p>The screen is owned by the Vue app; this controller only preserves
+ * {@link Url#SCHEDULE_CAL} and {@link Url#SCHEDULE_CAL_LEGACY} links during the FreeMarker removal.</p>
  */
 @Controller
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class ScheduleCalPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.SCHEDULE;
 
-    @GetMapping(Url.SCHEDULE_CAL)
+    @GetMapping({Url.SCHEDULE_CAL, Url.SCHEDULE_CAL_LEGACY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String scheduleCal() {
         return "redirect:/vue-app/schedule";

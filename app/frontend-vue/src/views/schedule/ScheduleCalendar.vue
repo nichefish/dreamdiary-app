@@ -1,53 +1,78 @@
-<template>
+1<template>
   <div class="schedule-calendar-page">
-    <div class="schedule-toolbar">
-      <div class="schedule-toolbar__date">
-        <label for="schedule_anchor_date" class="form-label mb-0 fw-bold">조회일</label>
-        <input
-          id="schedule_anchor_date"
-          v-model="anchorDateText"
-          type="date"
-          class="form-control form-control-solid schedule-toolbar__date-input"
-          @change="goToAnchorDate"
-        />
-      </div>
+    <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4 w-100">
+      <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1">
+        <li class="nav-item">
+          <button
+            type="button"
+            class="nav-link px-6 border-0 bg-transparent"
+            :class="{ active: viewMode === 'calendar' }"
+            @click="switchToCalendarView"
+          >
+            <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
+            <span class="nav-text">달력 VIEW</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            type="button"
+            class="nav-link px-6 border-0 bg-transparent"
+            :class="{ active: viewMode === 'list' }"
+            @click="switchToListView"
+          >
+            <span class="nav-icon"><i class="bi bi-list-ul"></i></span>
+            <span class="nav-text">목록 VIEW</span>
+          </button>
+        </li>
+      </ul>
 
-      <div class="schedule-toolbar__search">
-        <input
-          v-model="searchKeyword"
-          type="search"
-          class="form-control form-control-solid"
-          placeholder="검색어"
-          maxlength="200"
-          @keyup.enter="reload"
-        />
-        <button type="button" class="btn btn-sm btn-light-primary" @click="reload">
-          <i class="bi bi-search"></i>
+      <div class="schedule-view-toolbar__tools d-none d-md-flex align-items-center flex-shrink-0 pe-5 mt-3 gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <label for="schedule_anchor_date" class="form-label mb-0 text-nowrap fs-7 fw-bold">이동일</label>
+          <input
+            id="schedule_anchor_date"
+            v-model="anchorDateText"
+            type="date"
+            class="form-control form-control-sm form-control-solid schedule-view-toolbar__date-input"
+            @change="goToAnchorDate"
+          />
+        </div>
+        <div class="input-group input-group-sm">
+          <input
+            v-model="searchKeyword"
+            type="search"
+            class="form-control form-control-sm form-control-solid"
+            placeholder="검색어"
+            maxlength="200"
+            style="min-width: 140px;"
+            @keyup.enter="reloadActiveView"
+          />
+          <button type="button" class="btn btn-sm btn-icon btn-light" title="검색" @click="reloadActiveView">
+            <i class="bi bi-search fs-7"></i>
+          </button>
+        </div>
+        <button
+          type="button"
+          class="btn btn-sm btn-icon btn-light"
+          title="고급 필터"
+          data-bs-toggle="collapse"
+          data-bs-target="#schedule_filter_panel"
+        >
+          <i class="bi bi-funnel fs-7"></i>
         </button>
-      </div>
-
-      <button
-        type="button"
-        class="btn btn-sm btn-light-primary"
-        data-bs-toggle="collapse"
-        data-bs-target="#schedule_filter_panel"
-      >
-        <i class="bi bi-funnel"></i>
-      </button>
-
-      <div class="schedule-toolbar__actions">
-        <button type="button" class="btn btn-sm btn-primary" @click="openRegist(false)">
-          <i class="bi bi-plus-lg"></i>
+        <div class="vr mx-1 opacity-25"></div>
+        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(false)">
+          <i class="bi bi-plus-lg fs-4 pe-1"></i>
           일정 등록
         </button>
-        <button type="button" class="btn btn-sm btn-light-primary" @click="openRegist(true)">
-          <i class="bi bi-lock"></i>
+        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(true)">
+          <i class="bi bi-lock fs-4 pe-1"></i>
           개인 일정
         </button>
       </div>
     </div>
 
-    <div id="schedule_filter_panel" class="collapse schedule-filter">
+    <div id="schedule_filter_panel" class="collapse schedule-filter mx-5 mb-0">
       <label v-for="item in filterItems" :key="item.key" class="form-check form-check-sm form-check-custom form-check-solid">
         <input
           class="form-check-input"
@@ -59,29 +84,91 @@
       </label>
     </div>
 
-    <div class="card post schedule-calendar-card">
-      <div class="card-header min-h-auto">
-        <ul class="nav nav-tabs nav-tabs-line ps-2 mt-5">
-          <li class="nav-item">
-            <span class="nav-link px-6 active">
-              <i class="bi bi-calendar3 me-2"></i>
-              달력 VIEW
-            </span>
-          </li>
-          <li class="nav-item">
-            <button type="button" class="nav-link px-6 border-0 bg-transparent text-muted" @click="showListNotice">
-              <i class="bi bi-people me-2"></i>
-              목록 VIEW
-            </button>
-          </li>
-        </ul>
-      </div>
-      <div class="card-body position-relative">
+    <div class="card post schedule-calendar-card" style="margin-top: 0 !important;">
+      <div v-show="viewMode === 'calendar'" class="card-body position-relative">
         <div v-if="scheduleStore.loading" class="schedule-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
           불러오는 중
         </div>
         <FullCalendar ref="calendarRef" :options="calendarOptions" />
+      </div>
+      <div v-show="viewMode === 'list'" class="card-body">
+        <div v-if="scheduleStore.listLoading" class="schedule-list-loading">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          불러오는 중
+        </div>
+        <div v-else class="table-responsive">
+          <table class="table table-row-bordered table-row-gray-300 align-middle gs-0 gy-3 schedule-list-table">
+            <thead>
+              <tr class="fw-bold text-muted">
+                <th class="min-w-90px">구분</th>
+                <th class="min-w-200px">제목</th>
+                <th class="min-w-100px">시작일</th>
+                <th class="min-w-100px">종료일</th>
+                <th>참여자</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="scheduleStore.listRows.length === 0">
+                <td colspan="5" class="text-center text-muted py-10">표시할 일정이 없습니다.</td>
+              </tr>
+              <tr
+                v-for="row in scheduleStore.listRows"
+                :key="row.id"
+                class="schedule-list-table__row"
+                @click="openListRow(row)"
+              >
+                <td>{{ row.scheduleNm || row.scheduleCd }}</td>
+                <td>
+                  <span v-if="row.privateYn === 'Y'" class="me-1 text-muted" title="개인 일정">
+                    <i class="bi bi-lock-fill"></i>
+                  </span>
+                  {{ row.title }}
+                </td>
+                <td>{{ row.bgnDt }}</td>
+                <td>{{ row.endDt || row.bgnDt }}</td>
+                <td class="text-truncate" style="max-width: 240px;">{{ row.prtcpntListStr || "-" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div v-if="viewMode === 'list'" class="card-footer schedule-list-footer">
+        <span class="text-muted fs-8">총 {{ formatNumber(scheduleStore.listTotalElements) }}건</span>
+        <div class="d-flex align-items-center gap-2">
+          <select
+            :value="scheduleStore.listPageSize"
+            class="form-select form-select-solid form-select-sm schedule-list-page-size"
+            @change="onListPageSizeChange"
+          >
+            <option :value="10">10개</option>
+            <option :value="25">25개</option>
+            <option :value="50">50개</option>
+          </select>
+          <div v-if="listPageNumbers.length" class="pagination mb-0">
+            <button type="button" class="page-link" :disabled="scheduleStore.listCurrentPage <= 0" @click="goListPage(0)">
+              <i class="previous"></i>
+            </button>
+            <button
+              v-for="page in listPageNumbers"
+              :key="page"
+              type="button"
+              class="page-link"
+              :class="{ active: page === scheduleStore.listCurrentPage }"
+              @click="goListPage(page)"
+            >
+              {{ page + 1 }}
+            </button>
+            <button
+              type="button"
+              class="page-link"
+              :disabled="scheduleStore.listCurrentPage >= scheduleStore.listTotalPages - 1"
+              @click="goListPage(scheduleStore.listTotalPages - 1)"
+            >
+              <i class="next"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -217,7 +304,17 @@ import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import type { CalendarOptions, DatesSetArg, EventClickArg } from "@fullcalendar/core";
 import { Modal } from "bootstrap";
-import { useScheduleStore, type ScheduleDetail, type ScheduleFilter, type ScheduleForm } from "@/stores/schedule";
+import {
+  useScheduleStore,
+  queryRangeForMonth,
+  queryRangeForYear,
+  queryRangeFromVisible,
+  type ScheduleDetail,
+  type ScheduleFilter,
+  type ScheduleForm,
+  type ScheduleListRow,
+  type ScheduleQueryRange,
+} from "@/stores/schedule";
 
 const scheduleStore = useScheduleStore();
 
@@ -228,13 +325,14 @@ let registModal: Modal | null = null;
 let detailModal: Modal | null = null;
 
 const today = new Date();
-const currentAnchor = ref(new Date(today.getFullYear(), today.getMonth(), 1));
-const anchorDateText = ref(formatDate(currentAnchor.value));
+const queryRange = ref<ScheduleQueryRange>(queryRangeForMonth(today));
+const anchorDateText = ref(formatDate(today));
 const searchKeyword = ref("");
 const submitting = ref(false);
 const isPrivateRegist = ref(false);
 const showEndDate = ref(true);
 const detail = ref<ScheduleDetail | null>(null);
+const viewMode = ref<"calendar" | "list">("calendar");
 
 const registForm = reactive<ScheduleForm>({
   scheduleCd: "",
@@ -269,6 +367,19 @@ const detailTitle = computed(() => {
 
 const isDetailHolyday = computed(() => detail.value?.scheduleCd === scheduleStore.holyDayCode);
 
+const listPageNumbers = computed(() => {
+  const total = scheduleStore.listTotalPages;
+  const current = scheduleStore.listCurrentPage;
+  if (total <= 0) return [];
+  const windowSize = 5;
+  let start = Math.max(0, current - Math.floor(windowSize / 2));
+  const end = Math.min(total - 1, start + windowSize - 1);
+  start = Math.max(0, end - windowSize + 1);
+  const pages: number[] = [];
+  for (let page = start; page <= end; page += 1) pages.push(page);
+  return pages;
+});
+
 const calendarOptions = computed<CalendarOptions>(() => ({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
   initialView: "dayGridMonth",
@@ -296,26 +407,84 @@ function parseDate(value: string): Date {
   return new Date(yyyy, (mm || 1) - 1, dd || 1);
 }
 
-async function reload() {
-  await scheduleStore.fetchEvents(currentAnchor.value, searchKeyword.value);
+function formatNumber(value: number): string {
+  return new Intl.NumberFormat("ko-KR").format(value);
+}
+
+async function reloadActiveView() {
+  if (viewMode.value === "list") {
+    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, scheduleStore.listCurrentPage);
+    return;
+  }
+  await scheduleStore.fetchEvents(queryRange.value, searchKeyword.value);
+}
+
+async function switchToCalendarView() {
+  viewMode.value = "calendar";
+  if (scheduleStore.events.length === 0) {
+    await scheduleStore.fetchEvents(queryRange.value, searchKeyword.value);
+  }
+}
+
+async function switchToListView() {
+  viewMode.value = "list";
+  scheduleStore.listCurrentPage = 0;
+  try {
+    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, 0);
+  } catch (error) {
+    void swalAlert(error instanceof Error ? error.message : "일정 목록을 불러오지 못했습니다.");
+  }
+}
+
+async function goListPage(page: number) {
+  try {
+    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, page);
+  } catch (error) {
+    void swalAlert(error instanceof Error ? error.message : "일정 목록을 불러오지 못했습니다.");
+  }
+}
+
+async function onListPageSizeChange(event: Event) {
+  const size = Number((event.target as HTMLSelectElement).value);
+  await scheduleStore.changeListPageSize(size);
+  try {
+    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, 0);
+  } catch (error) {
+    void swalAlert(error instanceof Error ? error.message : "일정 목록을 불러오지 못했습니다.");
+  }
 }
 
 async function onDatesSet(arg: DatesSetArg) {
-  currentAnchor.value = new Date(arg.view.currentStart);
-  anchorDateText.value = formatDate(currentAnchor.value);
-  await reload();
+  queryRange.value = queryRangeFromVisible(arg.start, arg.end);
+  anchorDateText.value = formatDate(arg.view.currentStart);
+  await reloadActiveView();
 }
 
 function goToAnchorDate() {
   const next = parseDate(anchorDateText.value);
-  calendarRef.value?.getApi().gotoDate(next);
-  currentAnchor.value = next;
-  void reload();
+  scheduleStore.listCurrentPage = 0;
+  if (viewMode.value === "calendar") {
+    calendarRef.value?.getApi().gotoDate(next);
+    return;
+  }
+  queryRange.value = queryRangeForYear(next);
+  void reloadActiveView();
 }
 
 function toggleFilter(key: keyof ScheduleFilter, event: Event) {
   scheduleStore.setFilter({ [key]: (event.target as HTMLInputElement).checked });
-  void reload();
+  scheduleStore.listCurrentPage = 0;
+  void reloadActiveView();
+}
+
+async function openListRow(row: ScheduleListRow) {
+  if (row.scheduleCd === scheduleStore.bootstrap.vcatnCd || row.scheduleCd === scheduleStore.bootstrap.brthdyCd) return;
+  try {
+    detail.value = await scheduleStore.fetchDetail(row.id);
+    detailModal?.show();
+  } catch (error) {
+    void swalAlert(error instanceof Error ? error.message : "일정 정보를 조회하지 못했습니다.");
+  }
 }
 
 async function onEventClick(arg: EventClickArg) {
@@ -384,7 +553,7 @@ async function submitRegist() {
     });
     closeRegist();
     await swalAlert(message);
-    await reload();
+    await reloadActiveView();
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : "일정을 저장하지 못했습니다.");
   } finally {
@@ -406,57 +575,28 @@ async function deleteDetail() {
     const message = await scheduleStore.deleteSchedule(detail.value.id);
     closeDetail();
     await swalAlert(message);
-    await reload();
+    await reloadActiveView();
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : "일정을 삭제하지 못했습니다.");
   }
-}
-
-function showListNotice() {
-  void swalAlert("목록 VIEW는 아직 준비 중입니다.");
 }
 
 onMounted(async () => {
   if (registModalEl.value) registModal = new Modal(registModalEl.value);
   if (detailModalEl.value) detailModal = new Modal(detailModalEl.value);
   await scheduleStore.fetchBootstrap();
-  await reload();
 });
 </script>
 
 <style scoped>
-.schedule-calendar-page {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.schedule-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.schedule-toolbar__date,
-.schedule-toolbar__search,
-.schedule-toolbar__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.schedule-toolbar__date-input {
-  width: 160px;
-}
-
-.schedule-toolbar__search {
-  min-width: min(100%, 320px);
+.schedule-view-toolbar__date-input {
+  width: 148px;
 }
 
 .schedule-filter {
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 1.25rem 1rem;
   background: var(--bs-light);
+  border-radius: 0.475rem;
 }
 
 .schedule-filter.show,
@@ -511,22 +651,33 @@ onMounted(async () => {
   white-space: pre-wrap;
 }
 
+.schedule-list-loading {
+  padding: 2rem;
+  text-align: center;
+  color: var(--bs-gray-700);
+}
+
+.schedule-list-table__row {
+  cursor: pointer;
+}
+
+.schedule-list-table__row:hover {
+  background: var(--bs-gray-100);
+}
+
+.schedule-list-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.schedule-list-page-size {
+  width: 88px;
+}
+
 @media (max-width: 768px) {
-  .schedule-toolbar {
-    align-items: stretch;
-  }
-
-  .schedule-toolbar__date,
-  .schedule-toolbar__search,
-  .schedule-toolbar__actions {
-    width: 100%;
-  }
-
-  .schedule-toolbar__search input,
-  .schedule-toolbar__actions .btn {
-    flex: 1;
-  }
-
   .schedule-detail-row {
     grid-template-columns: 1fr;
     gap: 0.25rem;
