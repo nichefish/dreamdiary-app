@@ -203,7 +203,7 @@ async function handleLogin(): Promise<void> {
   try {
     await authStore.login({ username: form.value.username, password: form.value.password });
     const redirect = typeof route.query.redirect === "string" ? route.query.redirect : "";
-    await router.push(redirect || { name: "dashboard" });
+    await router.push(redirect || { name: "journal-weekly" });
   } catch {
     const msgs = authStore.errors.length > 0 ? authStore.errors : ["로그인에 실패했습니다."];
     errorMsgLines.value = msgs;

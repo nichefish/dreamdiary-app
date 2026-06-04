@@ -37,7 +37,6 @@
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/cal.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
-| 대시보드 | — | `/dashboard` | `Dashboard.vue` | ⚠ placeholder |
 
 ### 저널 일간 화면 (journal-daily) 스펙
 
@@ -103,7 +102,7 @@
 ## 저널 일자 월간 목록 (Journal Day Monthly)
 
 - **Route (레거시)**: `/journal/day/monthly` · **Vue SPA**: `/journal/monthly` (`journal-monthly`)
-- `/journal` 기본 진입은 주간 뷰(`/journal/weekly`)로 redirect한다.
+- `/` 및 `/journal` 기본 진입은 주간 뷰(`/journal/weekly`)로 redirect한다.
 - **Legacy file**: `legacy/templates/view/feature/journal/day/journal_day_monthly.ftlh`
 
 ### Layout Structure

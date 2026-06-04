@@ -63,7 +63,6 @@ const menuSection = (
 
 const FALLBACK_USER_MENU_LIST: MenuDto[] = [
   menuSection(-100, "\ub2e4\uc774\uc5b4\ub9ac", [
-    menuItem(-101, "\ub300\uc2dc\ubcf4\ub4dc", "/dashboard", "bi-speedometer2"),
     menuItem(-102, "\uc6d4\uac04 \uc77c\uae30", "/journal/monthly", "bi-journal-text"),
     menuItem(-103, "\uc8fc\uac04 \uc77c\uae30", "/journal/weekly", "bi-calendar-week"),
     menuItem(-104, "\uc77c\uae30 \uce98\ub9b0\ub354", "/journal/calendar", "bi-calendar3"),
