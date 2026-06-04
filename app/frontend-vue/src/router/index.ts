@@ -14,16 +14,10 @@ import {
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/dashboard",
+    redirect: "/journal/weekly",
     component: () => import("@/layouts/default/DefaultLayout.vue"),
     meta: { middleware: "auth" },
     children: [
-      {
-        path: "/dashboard",
-        name: "dashboard",
-        component: () => import("@/views/Dashboard.vue"),
-        meta: { pageTitle: "대시보드", breadcrumbs: ["홈"] },
-      },
       {
         path: "/journal",
         component: () => import("@/views/journal/day/JournalDayLayout.vue"),
