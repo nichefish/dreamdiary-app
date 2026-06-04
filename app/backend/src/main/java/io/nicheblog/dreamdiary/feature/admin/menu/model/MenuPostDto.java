@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.validation.constraints.NotBlank;
 
 /**
  * MenuPostDto
@@ -50,6 +51,7 @@ public class MenuPostDto
 
     /** 메뉴 라벨 */
     @Size(max = 100)
+    @NotBlank
     private String menuLabel;
 
     /** 미열람 카운트 이름 (model) */
@@ -60,7 +62,7 @@ public class MenuPostDto
     @Size(max = 1000)
     private String url;
 
-    /** 관리자 메뉴 여부 (Y/N) */
+    /** 관리자 메뉴 여부 (Y/N). 최상위 MAIN 메뉴에서만 직접 의미를 갖는다. */
     @Pattern(regexp = "^[YN]$")
     private String adminYn;
 

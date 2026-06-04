@@ -88,12 +88,6 @@ public class MenuEntity
     @Comment("시스템 보호 여부 (Y/N)")
     private String protectedYn = "N";
 
-    /** 필수 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "required_yn")
-    @Comment("필수 여부 (Y/N)")
-    private String requiredYn = "N";
-
     /** 하위메뉴 확장유형 */
     @Column(name = "submenu_expand_type")
     @Comment("하위메뉴 확장유형")

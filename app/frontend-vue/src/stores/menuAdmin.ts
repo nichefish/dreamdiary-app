@@ -7,6 +7,7 @@ export interface MenuNode {
   id: number;
   parentMenuId?: number | null;
   menuType: "MAIN" | "SUB" | string;
+  managementType?: "MENU" | "BOARD" | string;
   parentMenuType?: string;
   sortOrder?: number;
   useYn?: string;
@@ -17,7 +18,6 @@ export interface MenuNode {
   unreadCntNm?: string;
   url?: string;
   protectedYn?: string;
-  requiredYn?: string;
   submenuExpandType?: string;
   submenuExpandTypeName?: string;
   upperMenuNm?: string;
@@ -26,16 +26,15 @@ export interface MenuNode {
 
 export interface MenuForm {
   id: number | null;
-  menuType: "MAIN" | "SUB";
   parentMenuId: number | null;
   upperMenuNm: string;
   menuName: string;
   menuLabel: string;
   icon: string;
+  unreadCntEnabled: boolean;
   unreadCntNm: string;
   submenuExpandType: string;
   url: string;
-  adminYn: string;
   useYn: string;
 }
 
@@ -44,18 +43,19 @@ export interface SubmenuExpandOption {
   codeName: string;
 }
 
+export type MenuTargetMode = "USER" | "MNGR";
+
 const EMPTY_FORM: MenuForm = {
   id: null,
-  menuType: "MAIN",
   parentMenuId: null,
   upperMenuNm: "",
   menuName: "",
   menuLabel: "",
   icon: "",
+  unreadCntEnabled: false,
   unreadCntNm: "",
   submenuExpandType: "NO_SUB",
   url: "",
-  adminYn: "N",
   useYn: "Y",
 };
 
@@ -74,16 +74,15 @@ function yn(value: string | undefined): string {
 function cloneForm(row?: Partial<MenuNode>): MenuForm {
   return {
     id: row?.id ?? null,
-    menuType: String(row?.menuType ?? "MAIN") === "SUB" ? "SUB" : "MAIN",
     parentMenuId: row?.parentMenuId ?? null,
     upperMenuNm: row?.upperMenuNm ?? "",
     menuName: row?.menuName ?? "",
     menuLabel: row?.menuLabel ?? "",
     icon: row?.icon ?? "",
+    unreadCntEnabled: Boolean(row?.unreadCntNm),
     unreadCntNm: row?.unreadCntNm ?? "",
     submenuExpandType: row?.submenuExpandType ?? "NO_SUB",
     url: row?.url ?? "",
-    adminYn: yn(row?.adminYn),
     useYn: yn(row?.useYn) === "Y" ? "Y" : "N",
   };
 }
@@ -91,33 +90,19 @@ function cloneForm(row?: Partial<MenuNode>): MenuForm {
 function toFormData(form: MenuForm): FormData {
   const fd = new FormData();
   if (form.id != null) fd.append("id", String(form.id));
-  fd.append("menuType", form.menuType);
   if (form.parentMenuId != null) fd.append("parentMenuId", String(form.parentMenuId));
   fd.append("menuName", form.menuName.trim());
   fd.append("menuLabel", form.menuLabel.trim());
   fd.append("icon", form.icon.trim());
-  fd.append("unreadCntNm", form.unreadCntNm.trim());
+  fd.append("unreadCntNm", form.unreadCntEnabled ? form.unreadCntNm.trim() : "");
   fd.append("submenuExpandType", form.submenuExpandType);
   fd.append("url", form.submenuExpandType === "NO_SUB" ? form.url.trim() : "");
-  fd.append("adminYn", form.menuType === "MAIN" ? yn(form.adminYn) : "N");
   fd.append("useYn", yn(form.useYn));
   return fd;
 }
 
-function walk(nodes: MenuNode[], visit: (node: MenuNode, depth: number) => void, depth = 0) {
-  nodes.forEach((node) => {
-    visit(node, depth);
-    if (Array.isArray(node.subMenuList)) walk(node.subMenuList, visit, depth + 1);
-  });
-}
-
-function containsNode(root: MenuNode, id: number): boolean {
-  if (root.id === id) return true;
-  return (root.subMenuList ?? []).some((child) => containsNode(child, id));
-}
-
-function isAdminMenu(row: MenuNode): boolean {
-  return yn(row.adminYn) === "Y";
+function getMenuTargetMode(row: MenuNode): MenuTargetMode {
+  return yn(row.adminYn) === "Y" ? "MNGR" : "USER";
 }
 
 export const useMenuAdminStore = defineStore("menuAdmin", () => {
@@ -131,19 +116,6 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
   const submenuExpandOptions = ref<SubmenuExpandOption[]>(SUBMENU_EXPAND_OPTIONS);
 
   const isEdit = computed(() => form.value.id != null);
-  const isMainForm = computed(() => form.value.menuType === "MAIN");
-  const parentOptions = computed(() => {
-    const options: Array<{ id: number; label: string; depth: number }> = [];
-    const currentId = form.value.id;
-    walk(rows.value, (node, depth) => {
-      if (node.menuType !== "MAIN" && node.menuType !== "SUB") return;
-      if (yn(node.protectedYn) === "Y") return;
-      if (node.submenuExpandType === "NO_SUB") return;
-      if (currentId != null && containsNode(node, currentId)) return;
-      options.push({ id: node.id, label: node.menuName ?? `#${node.id}`, depth });
-    });
-    return options;
-  });
 
   async function fetchTree() {
     loading.value = true;
@@ -160,15 +132,9 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     }
   }
 
-  function openMainCreate() {
-    form.value = { ...EMPTY_FORM, menuType: "MAIN" };
-    modalOpen.value = true;
-  }
-
   function openSubCreate(parent: MenuNode) {
     form.value = {
       ...EMPTY_FORM,
-      menuType: "SUB",
       parentMenuId: parent.id,
       upperMenuNm: parent.menuName ?? "",
     };
@@ -234,9 +200,8 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     return message;
   }
 
-  async function reorderMainWithinGroup(adminYn: "Y" | "N", sourceIndex: number, targetIndex: number) {
-    const groupAdmin = adminYn === "Y";
-    const groupRows = rows.value.filter((row) => isAdminMenu(row) === groupAdmin);
+  async function reorderMainWithinGroup(targetMode: MenuTargetMode, sourceIndex: number, targetIndex: number) {
+    const groupRows = rows.value.filter((row) => getMenuTargetMode(row) === targetMode);
     if (sourceIndex === targetIndex) return "";
     if (sourceIndex < 0 || sourceIndex >= groupRows.length) return "";
     if (targetIndex < 0 || targetIndex >= groupRows.length) return "";
@@ -246,7 +211,7 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     nextGroupRows.splice(targetIndex, 0, moved);
 
     const groupQueue = [...nextGroupRows];
-    rows.value = rows.value.map((row) => (isAdminMenu(row) === groupAdmin ? groupQueue.shift() ?? row : row));
+    rows.value = rows.value.map((row) => (getMenuTargetMode(row) === targetMode ? groupQueue.shift() ?? row : row));
     return saveMainSortOrders();
   }
 
@@ -306,10 +271,8 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     form,
     submenuExpandOptions,
     isEdit,
-    isMainForm,
-    parentOptions,
+    getMenuTargetMode,
     fetchTree,
-    openMainCreate,
     openSubCreate,
     openEdit,
     closeModal,
