@@ -42,6 +42,11 @@ WITH T AS ( SELECT 'MAIN' AS upper_label )
 SELECT M.id, 'SUB', '일정', NULL, '<span class="menu-icon"><i class="bi bi-calendar3 fs-2"></i></span>', 6, 'system', 'LIST', 'SCHEDULE', 'N', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
+INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
+WITH T AS ( SELECT 'SCHEDULE' AS upper_label )
+SELECT M.id, 'SUB', '일정 달력', '/app/schedule/calendar.do', NULL, 0, 'system', 'NO_SUB', 'SCHEDULE_CAL', 'N', 'N', 'N', 'Y'
+FROM T
+INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 -- 사용자 관리
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
@@ -112,30 +117,12 @@ WITH T AS ( SELECT 'LOG' AS upper_label )
 SELECT M.id, 'SUB', '로그 목록', '/app/log/list.do', NULL, 26, 'nichefish', 'NO_SUB', 'LOG_LIST', 'N', 'Y', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
-
-
-
--- 메뉴 라벨 마이그레이션 (기존 운영/개발 데이터 정합)
-UPDATE menu
-SET menu_label = 'MENU_ADMIN'
-WHERE deleted_at IS NULL
-  AND menu_label = 'MENU'
-  AND menu_name = '메뉴 관리';
-
-UPDATE menu
-SET menu_label = 'CODE_ADMIN'
-WHERE deleted_at IS NULL
-  AND menu_label = 'CODE'
-  AND menu_name = '코드 관리';
-
-UPDATE menu
-SET menu_label = 'USER_ACCOUNT'
-WHERE deleted_at IS NULL
-  AND menu_label = 'USER_INFO'
-  AND menu_name = '계정 관리';
-
-UPDATE menu
-SET menu_label = 'BOARD_ADMIN'
-WHERE deleted_at IS NULL
-  AND menu_label = 'BOARD'
-  AND menu_name = '게시판 관리';
+-- 일정 달력 (기존 DB: SCHEDULE 부모만 있을 때 하위 메뉴 보강)
+INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, required_yn, use_yn )
+SELECT P.id, 'SUB', '일정 달력', '/app/schedule/calendar.do', NULL, 0, 'system', 'NO_SUB', 'SCHEDULE_CAL', 'N', 'N', 'N', 'Y'
+FROM menu P
+WHERE P.menu_label = 'SCHEDULE' AND P.deleted_at IS NULL
+  AND NOT EXISTS (SELECT 1 FROM menu C WHERE C.menu_label = 'SCHEDULE_CAL' AND C.deleted_at IS NULL);
+UPDATE menu SET url = '/app/schedule/calendar.do'
+WHERE menu_label = 'SCHEDULE_CAL' AND deleted_at IS NULL
+  AND url = '/app/schedule/cal.do';

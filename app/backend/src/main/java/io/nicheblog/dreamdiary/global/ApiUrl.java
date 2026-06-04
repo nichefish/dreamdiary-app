@@ -192,6 +192,8 @@ public interface ApiUrl {
     /* ---------- */
 
     String SCHEDULE_CAL_LIST_AJAX = Prefix.API + "/schedule/cal-list";
+    /** 일정 목록 VIEW (달력과 동일 필터·기간) */
+    String SCHEDULE_LIST_AJAX = Prefix.API + "/schedule/list";
     String SCHEDULE_BOOTSTRAP = Prefix.API + "/schedule/bootstrap";
     String SCHEDULE_REG_AJAX = Prefix.API + "/schedule/cal-reg";
     String SCHEDULE_DTL_AJAX = Prefix.API + "/schedule/cal-dtl";

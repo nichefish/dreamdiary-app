@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.calendar.holiday.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.calendar.holiday.model.HolydayKasiApiItemDto;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -19,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = { Constant.class, Code.class, DateUtils.class, StringUtils.class })
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = { Constant.class, Code.class, ContentType.class, DateUtils.class, StringUtils.class })
 public interface HolydayKasiApiMapstruct
         extends BaseWriteMapstruct<HolydayKasiApiItemDto, ScheduleEntity>, BaseMapstruct<HolydayKasiApiItemDto, ScheduleEntity> {
 
@@ -43,7 +44,7 @@ public interface HolydayKasiApiMapstruct
      */
     @Override
     @Mapping(target = "src", expression = "java(\"KASI\")")
-    @Mapping(target = "contentType", expression = "java(\"schedule\")")
+    @Mapping(target = "contentType", expression = "java(ContentType.SCHEDULE.key)")
     @Mapping(target = "title", expression = "java(dto.getDateName())")
     @Mapping(target = "content", expression = "java(dto.getDateName())")
     @Mapping(target = "scheduleCd", expression = "java(Code.SCHEDULE_HOLYDAY)")
@@ -60,7 +61,7 @@ public interface HolydayKasiApiMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "title", expression = "java(dto.getDateName())")
-    @Mapping(target = "scheduleCd", expression = "java(\"HOLYDAY\")")
+    @Mapping(target = "scheduleCd", expression = "java(Code.SCHEDULE_HOLYDAY)")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
     void updateFromDto(final HolydayKasiApiItemDto dto, final @MappingTarget ScheduleEntity entity) throws Exception;
