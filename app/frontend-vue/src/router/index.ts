@@ -83,6 +83,24 @@ const routes: Array<RouteRecordRaw> = [
             component: () => import("@/views/journal/thread/JournalThreadList.vue"),
             meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
           },
+          {
+            path: "new",
+            name: "thread-create",
+            component: () => import("@/views/journal/thread/JournalThreadList.vue"),
+            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+          },
+          {
+            path: ":id",
+            name: "thread-detail",
+            component: () => import("@/views/journal/thread/JournalThreadList.vue"),
+            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+          },
+          {
+            path: ":id/edit",
+            name: "thread-edit",
+            component: () => import("@/views/journal/thread/JournalThreadList.vue"),
+            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+          },
         ],
       },
       {

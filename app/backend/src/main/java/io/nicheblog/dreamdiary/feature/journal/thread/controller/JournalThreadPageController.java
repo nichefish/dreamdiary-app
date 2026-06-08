@@ -53,7 +53,7 @@ public class JournalThreadPageController
     @GetMapping(Url.JOURNAL_THREAD_REGIST_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String journalThreadRegistForm() {
-        return "redirect:/vue-app/thread";
+        return "redirect:/vue-app/thread/new";
     }
 
     /**
@@ -68,7 +68,7 @@ public class JournalThreadPageController
     public String journalThreadDetail(
             final @RequestParam("id") Integer key
     ) {
-        return "redirect:/vue-app/thread";
+        return "redirect:/vue-app/thread/" + key;
     }
 
     /**
@@ -83,6 +83,6 @@ public class JournalThreadPageController
     public String journalThreadModifyForm(
             final @RequestParam("id") Integer key
     ) {
-        return "redirect:/vue-app/thread";
+        return "redirect:/vue-app/thread/" + key + "/edit";
     }
 }
