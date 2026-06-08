@@ -329,3 +329,79 @@ CREATE TABLE IF NOT EXISTS journal_entry_embedding_sync_job (
     INDEX idx_journal_entry_embedding_sync_job_heartbeat_at (heartbeat_at),
     INDEX idx_journal_entry_embedding_sync_job_deleted_at (deleted_at)
 ) COMMENT = 'Journal entry embedding sync job';
+
+CREATE TABLE IF NOT EXISTS journal_entity (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Journal entity ID',
+    entity_type VARCHAR(30) NOT NULL COMMENT 'Entity type. PERSON first, then EVENT/PLACE/ORG/SYMBOL later',
+    canonical_label VARCHAR(200) NOT NULL COMMENT 'Canonical display label',
+    normalized_label VARCHAR(200) NOT NULL COMMENT 'Normalized label for dedupe and lookup',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' COMMENT 'ACTIVE, MERGED, IGNORED',
+    created_by VARCHAR(20) COMMENT 'Created by',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+    updated_by VARCHAR(20) COMMENT 'Updated by',
+    updated_at DATETIME COMMENT 'Updated at',
+    deleted_at DATETIME COMMENT 'Deleted at',
+    UNIQUE KEY uk_journal_entity_type_label (entity_type, normalized_label),
+    INDEX idx_journal_entity_status (status),
+    INDEX idx_journal_entity_created_by (created_by),
+    INDEX idx_journal_entity_deleted_at (deleted_at)
+) COMMENT = 'Journal entity catalog';
+
+CREATE TABLE IF NOT EXISTS journal_entry_entity_ref (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Journal entry entity reference ID',
+    journal_entry_id INT NOT NULL COMMENT 'Referenced journal_entry ID',
+    journal_entity_id INT NOT NULL COMMENT 'Referenced journal_entity ID',
+    surface_text VARCHAR(200) NOT NULL COMMENT 'Original surface text in the entry',
+    mention_type VARCHAR(30) NOT NULL DEFAULT 'DIRECT' COMMENT 'DIRECT, HONORIFIC, ALIAS, INFERRED',
+    evidence_snippet TEXT COMMENT 'Evidence snippet for this mention',
+    confidence DECIMAL(5,4) DEFAULT 1.0000 COMMENT 'Extraction confidence',
+    start_offset INT COMMENT 'Optional start offset in source text',
+    end_offset INT COMMENT 'Optional end offset in source text',
+    sort_order INT DEFAULT 1 COMMENT 'Mention order in the source entry',
+    created_by VARCHAR(20) COMMENT 'Created by',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+    updated_by VARCHAR(20) COMMENT 'Updated by',
+    updated_at DATETIME COMMENT 'Updated at',
+    deleted_at DATETIME COMMENT 'Deleted at',
+    INDEX idx_journal_entry_entity_ref_entry_id (journal_entry_id),
+    INDEX idx_journal_entry_entity_ref_entity_id (journal_entity_id),
+    INDEX idx_journal_entry_entity_ref_mention_type (mention_type),
+    INDEX idx_journal_entry_entity_ref_created_by (created_by),
+    INDEX idx_journal_entry_entity_ref_deleted_at (deleted_at)
+) COMMENT = 'Journal entry to entity reference';
+
+CREATE TABLE IF NOT EXISTS journal_entry_entity_role (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Journal entry entity role ID',
+    journal_entry_entity_ref_id INT NOT NULL COMMENT 'Referenced journal_entry_entity_ref ID',
+    role_type VARCHAR(40) NOT NULL COMMENT 'COLLABORATION, TENSION, EVALUATION, CARE, CONFLICT, DESIRE, SYMBOLIC_FIGURE, UNKNOWN',
+    evidence_snippet TEXT COMMENT 'Evidence snippet for this role judgment',
+    confidence DECIMAL(5,4) DEFAULT 1.0000 COMMENT 'Role extraction confidence',
+    created_by VARCHAR(20) COMMENT 'Created by',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+    updated_by VARCHAR(20) COMMENT 'Updated by',
+    updated_at DATETIME COMMENT 'Updated at',
+    deleted_at DATETIME COMMENT 'Deleted at',
+    INDEX idx_journal_entry_entity_role_ref_id (journal_entry_entity_ref_id),
+    INDEX idx_journal_entry_entity_role_role_type (role_type),
+    INDEX idx_journal_entry_entity_role_created_by (created_by),
+    INDEX idx_journal_entry_entity_role_deleted_at (deleted_at)
+) COMMENT = 'Journal entry entity role evidence';
+
+CREATE TABLE IF NOT EXISTS journal_entry_entity_job (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Entity sync queue row ID',
+    journal_entry_id INT NOT NULL COMMENT 'Source journal_entry ID',
+    job_status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'Sync status. PENDING, PROCESSING, SYNCED, FAILED, SKIPPED',
+    content_hash VARCHAR(64) COMMENT 'Content hash used to skip unchanged rows',
+    locked_by VARCHAR(200) COMMENT 'Worker node name when the row is currently processing',
+    processed_at DATETIME COMMENT 'Time when the queue row was last fully processed',
+    error_message LONGTEXT COMMENT 'Last worker error, if any',
+    created_by VARCHAR(20) COMMENT 'Created by',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
+    updated_by VARCHAR(20) COMMENT 'Updated by',
+    updated_at DATETIME COMMENT 'Updated at',
+    deleted_at DATETIME COMMENT 'Deleted at',
+    UNIQUE KEY uk_journal_entry_entity_job_entry_id (journal_entry_id),
+    INDEX idx_journal_entry_entity_job_status (job_status),
+    INDEX idx_journal_entry_entity_job_updated_at (updated_at),
+    INDEX idx_journal_entry_entity_job_deleted_at (deleted_at)
+) COMMENT = 'Queue rows for asynchronous journal entity ref and role sync';

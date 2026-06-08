@@ -1,151 +1,58 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import {
+  DEFAULT_ADMIN_PAGE_META,
+  emptyEmbeddingStats,
+  emptyEntityQueueStats,
+  normalizeEmbeddingStats,
+  normalizeEmbeddingSyncJobStatus,
+  normalizeEntityQueueStats,
+  normalizeEntityQueueSyncResult,
+  type AdminPageMeta,
+  type CacheDetail,
+  type CacheMap,
+  type EmbeddingStats,
+  type EmbeddingSyncResult,
+  type EntityQueueStats,
+  type EntityQueueSyncResult,
+  type RoleRow,
+} from "@/stores/adminPage.types";
 
-export interface AdminPageMeta {
-  authMngrKey: string;
-  authUserKey: string;
-  authDevKey: string;
-  currYy: number;
-}
+export type {
+  AdminPageMeta,
+  RoleRow,
+  EmbeddingStats,
+  EmbeddingSyncResult,
+  EmbeddingSyncJobStatus,
+  EntityQueueStats,
+  EntityQueueSyncResult,
+  CacheMap,
+  CacheDetail,
+} from "@/stores/adminPage.types";
 
-export interface RoleRow {
-  id: number;
-  roleKey: string;
-  roleName: string;
-  authLevel: number | null;
-  parentRoleId: number | null;
-  sortOrder: number | null;
-  useYn: string;
-}
+/** Embedding/Entity backfill is server-side; poll stats while queue or sync work is active. */
+let backfillPollTimer: number | undefined;
 
-export interface EmbeddingStats {
-  total: number;
-  pending: number;
-  processing: number;
-  embedded: number;
-  failed: number;
-  skipped: number;
-  remaining: number;
-  completed: number;
-  completionRate: number;
-  vectorizedRate: number;
-  syncRunning: boolean;
-  syncPhase: string;
-  syncProcessed: number;
-  syncTotal: number;
-  syncStartedAt: string | null;
-  syncFinishedAt: string | null;
-  syncResult: EmbeddingSyncResult | null;
-  syncErrorMessage: string;
-}
-
-export interface EmbeddingSyncResult {
-  activeEntryCount: number;
-  activeEmbeddingCountBefore: number;
-  created: number;
-  requeued: number;
-  unchanged: number;
-  skipped: number;
-  removed: number;
-  activeEmbeddingCountAfter: number;
-}
-
-export interface EmbeddingSyncJobStatus {
-  running: boolean;
-  phase: string;
-  startedAt: string | null;
-  finishedAt: string | null;
-  processed: number;
-  total: number;
-  result: EmbeddingSyncResult | null;
-  errorMessage: string;
-}
-
-export type CacheMap = Record<string, Record<string, unknown>>;
-export type CacheDetail = Record<string, unknown> | unknown[] | string | number | boolean | null;
-
-const DEFAULT_META: AdminPageMeta = {
-  authMngrKey: "MNGR",
-  authUserKey: "USER",
-  authDevKey: "DEV",
-  currYy: new Date().getFullYear(),
-};
-
-function emptyEmbeddingStats(): EmbeddingStats {
-  return {
-    total: 0,
-    pending: 0,
-    processing: 0,
-    embedded: 0,
-    failed: 0,
-    skipped: 0,
-    remaining: 0,
-    completed: 0,
-    completionRate: 0,
-    vectorizedRate: 0,
-    syncRunning: false,
-    syncPhase: "IDLE",
-    syncProcessed: 0,
-    syncTotal: 0,
-    syncStartedAt: null,
-    syncFinishedAt: null,
-    syncResult: null,
-    syncErrorMessage: "",
-  };
-}
-
-function normalizeEmbeddingStats(stats: Partial<EmbeddingStats> | null | undefined): EmbeddingStats {
-  return {
-    total: Number(stats?.total || 0),
-    pending: Number(stats?.pending || 0),
-    processing: Number(stats?.processing || 0),
-    embedded: Number(stats?.embedded || 0),
-    failed: Number(stats?.failed || 0),
-    skipped: Number(stats?.skipped || 0),
-    remaining: Number(stats?.remaining || 0),
-    completed: Number(stats?.completed || 0),
-    completionRate: Number(stats?.completionRate || 0),
-    vectorizedRate: Number(stats?.vectorizedRate || 0),
-    syncRunning: Boolean(stats?.syncRunning),
-    syncPhase: String(stats?.syncPhase || "IDLE"),
-    syncProcessed: Number(stats?.syncProcessed || 0),
-    syncTotal: Number(stats?.syncTotal || 0),
-    syncStartedAt: typeof stats?.syncStartedAt === "string" ? stats.syncStartedAt : null,
-    syncFinishedAt: typeof stats?.syncFinishedAt === "string" ? stats.syncFinishedAt : null,
-    syncResult: stats?.syncResult ? normalizeEmbeddingSyncResult(stats.syncResult) : null,
-    syncErrorMessage: String(stats?.syncErrorMessage || ""),
-  };
-}
-
-function normalizeEmbeddingSyncResult(result: Partial<EmbeddingSyncResult> | null | undefined): EmbeddingSyncResult {
-  return {
-    activeEntryCount: Number(result?.activeEntryCount || 0),
-    activeEmbeddingCountBefore: Number(result?.activeEmbeddingCountBefore || 0),
-    created: Number(result?.created || 0),
-    requeued: Number(result?.requeued || 0),
-    unchanged: Number(result?.unchanged || 0),
-    skipped: Number(result?.skipped || 0),
-    removed: Number(result?.removed || 0),
-    activeEmbeddingCountAfter: Number(result?.activeEmbeddingCountAfter || 0),
-  };
-}
-
-function normalizeEmbeddingSyncJobStatus(status: Partial<EmbeddingSyncJobStatus> | null | undefined): EmbeddingSyncJobStatus {
-  return {
-    running: Boolean(status?.running),
-    phase: String(status?.phase || "IDLE"),
-    startedAt: typeof status?.startedAt === "string" ? status.startedAt : null,
-    finishedAt: typeof status?.finishedAt === "string" ? status.finishedAt : null,
-    processed: Number(status?.processed || 0),
-    total: Number(status?.total || 0),
-    result: status?.result ? normalizeEmbeddingSyncResult(status.result) : null,
-    errorMessage: String(status?.errorMessage || ""),
-  };
+function isBackfillWorkActive(
+  embedding: EmbeddingStats,
+  entity: EntityQueueStats,
+  embeddingSyncRequestRunning: boolean,
+  entitySyncRequestRunning: boolean
+): boolean {
+  return (
+    embeddingSyncRequestRunning
+    || entitySyncRequestRunning
+    || embedding.syncRunning
+    || embedding.pending > 0
+    || embedding.processing > 0
+    || entity.pending > 0
+    || entity.processing > 0
+  );
 }
 
 export const useAdminPageStore = defineStore("adminPage", () => {
-  const meta = ref<AdminPageMeta>({ ...DEFAULT_META });
+  const meta = ref<AdminPageMeta>({ ...DEFAULT_ADMIN_PAGE_META });
   const roles = ref<RoleRow[]>([]);
   const bootstrapLoading = ref(false);
 
@@ -153,7 +60,14 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   const embeddingStatsLoading = ref(false);
   const embeddingStatsError = ref("");
   const embeddingSyncRunning = ref(false);
+  const embeddingRequeueRunning = ref(false);
   const embeddingSyncResult = ref<EmbeddingSyncResult | null>(null);
+  const entityQueueStats = ref<EntityQueueStats>(emptyEntityQueueStats());
+  const entityQueueStatsLoading = ref(false);
+  const entityQueueError = ref("");
+  const entityQueueSyncRunning = ref(false);
+  const entityQueueSyncResult = ref<EntityQueueSyncResult | null>(null);
+  const entityQueueRequeueRunning = ref(false);
 
   const cacheMap = ref<CacheMap>({});
   const cacheDetail = ref<CacheDetail>(null);
@@ -164,12 +78,45 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     return [yy - 1, yy, yy + 1];
   });
 
+  const backfillWorkActive = computed(() =>
+    isBackfillWorkActive(
+      embeddingStats.value,
+      entityQueueStats.value,
+      embeddingSyncRunning.value,
+      entityQueueSyncRunning.value
+    )
+  );
+
+  function stopBackfillPolling() {
+    if (backfillPollTimer !== undefined) {
+      window.clearInterval(backfillPollTimer);
+      backfillPollTimer = undefined;
+    }
+  }
+
+  /** Start 5s polling while backfill work is active; survives AdminPage unmount. */
+  function evaluateBackfillPolling() {
+    if (backfillWorkActive.value) {
+      if (backfillPollTimer === undefined) {
+        backfillPollTimer = window.setInterval(() => {
+          void Promise.all([fetchEmbeddingStats(), fetchEntityQueueStats()]).finally(() => {
+            if (!backfillWorkActive.value) {
+              stopBackfillPolling();
+            }
+          });
+        }, 5000);
+      }
+      return;
+    }
+    stopBackfillPolling();
+  }
+
   async function fetchBootstrap() {
     bootstrapLoading.value = true;
     try {
       const res = await axios.get("/api/admin/page/bootstrap");
       const payload = res.data?.rsltObj ?? {};
-      meta.value = { ...DEFAULT_META, ...(payload.meta ?? {}) };
+      meta.value = { ...DEFAULT_ADMIN_PAGE_META, ...(payload.meta ?? {}) };
       roles.value = Array.isArray(payload.roleList) ? payload.roleList : [];
     } finally {
       bootstrapLoading.value = false;
@@ -188,6 +135,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
       embeddingStatsError.value = error instanceof Error ? error.message : "Embedding stats request failed";
     } finally {
       embeddingStatsLoading.value = false;
+      evaluateBackfillPolling();
     }
   }
 
@@ -215,6 +163,68 @@ export const useAdminPageStore = defineStore("adminPage", () => {
       embeddingStatsError.value = error instanceof Error ? error.message : "Embedding sync request failed";
     } finally {
       embeddingSyncRunning.value = false;
+      evaluateBackfillPolling();
+    }
+  }
+
+  async function requeueFailedEmbeddingQueue() {
+    embeddingRequeueRunning.value = true;
+    embeddingStatsError.value = "";
+    try {
+      const res = await axios.post("/api/admin/journal-entry-embeddings/requeue-failed");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding requeue request failed");
+      await fetchEmbeddingStats();
+    } catch (error) {
+      embeddingStatsError.value = error instanceof Error ? error.message : "Embedding requeue request failed";
+    } finally {
+      embeddingRequeueRunning.value = false;
+      evaluateBackfillPolling();
+    }
+  }
+
+  async function fetchEntityQueueStats() {
+    entityQueueStatsLoading.value = true;
+    entityQueueError.value = "";
+    try {
+      const res = await axios.get("/api/admin/journal-entry-entities/stats");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Entity queue stats request failed");
+      entityQueueStats.value = normalizeEntityQueueStats(res.data.rsltObj);
+    } catch (error) {
+      entityQueueError.value = error instanceof Error ? error.message : "Entity queue stats request failed";
+    } finally {
+      entityQueueStatsLoading.value = false;
+      evaluateBackfillPolling();
+    }
+  }
+
+  async function syncEntityQueue() {
+    entityQueueSyncRunning.value = true;
+    entityQueueError.value = "";
+    try {
+      const res = await axios.post("/api/admin/journal-entry-entities/sync");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Entity queue sync request failed");
+      entityQueueSyncResult.value = normalizeEntityQueueSyncResult(res.data.rsltObj);
+      await fetchEntityQueueStats();
+    } catch (error) {
+      entityQueueError.value = error instanceof Error ? error.message : "Entity queue sync request failed";
+    } finally {
+      entityQueueSyncRunning.value = false;
+      evaluateBackfillPolling();
+    }
+  }
+
+  async function requeueFailedEntityQueue() {
+    entityQueueRequeueRunning.value = true;
+    entityQueueError.value = "";
+    try {
+      const res = await axios.post("/api/admin/journal-entry-entities/requeue-failed");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Entity queue failed-row requeue request failed");
+      await fetchEntityQueueStats();
+    } catch (error) {
+      entityQueueError.value = error instanceof Error ? error.message : "Entity queue failed-row requeue request failed";
+    } finally {
+      entityQueueRequeueRunning.value = false;
+      evaluateBackfillPolling();
     }
   }
 
@@ -288,7 +298,15 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingStatsLoading,
     embeddingStatsError,
     embeddingSyncRunning,
+    embeddingRequeueRunning,
     embeddingSyncResult,
+    entityQueueStats,
+    entityQueueStatsLoading,
+    entityQueueError,
+    entityQueueSyncRunning,
+    entityQueueSyncResult,
+    entityQueueRequeueRunning,
+    backfillWorkActive,
     cacheMap,
     cacheDetail,
     cacheLoading,
@@ -296,6 +314,10 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     fetchBootstrap,
     fetchEmbeddingStats,
     syncEmbeddingQueue,
+    requeueFailedEmbeddingQueue,
+    fetchEntityQueueStats,
+    syncEntityQueue,
+    requeueFailedEntityQueue,
     syncHolyday,
     fetchNotion,
     fetchCacheMap,

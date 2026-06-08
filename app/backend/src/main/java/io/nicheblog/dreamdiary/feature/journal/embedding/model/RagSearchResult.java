@@ -25,6 +25,10 @@ public class RagSearchResult {
     public static final String MATCH_TYPE_KEYWORD = "KEYWORD";
     /** 벡터 유사도 매칭 */
     public static final String MATCH_TYPE_VECTOR = "VECTOR";
+    /** entity catalog에 연결된 저널 엔트리 직접 조회 */
+    public static final String MATCH_TYPE_ENTITY = "ENTITY";
+    /** person 태그 직접 매칭 */
+    public static final String MATCH_TYPE_TAG = "TAG";
 
     /** 검색된 저널 임베딩 엔티티 */
     private JournalEntryEmbeddingEntity entity;

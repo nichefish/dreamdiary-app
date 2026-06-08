@@ -168,13 +168,29 @@
               >
                 <details>
                   <summary>
-                    <span>참고 기록 {{ messageRagMetadata(message)?.ragSourceCount || 0 }}건</span>
+                    <span>저널 검색 {{ messageRagMetadata(message)?.ragSourceCount || 0 }}건</span>
                     <span class="chat-rag__intent">
                       {{ messageRagMetadata(message)?.ragIntent || "RAG" }}
+                    </span>
+                    <span
+                      v-if="responseModeText(messageRagMetadata(message))"
+                      class="chat-rag__mode"
+                    >
+                      {{ responseModeText(messageRagMetadata(message)) }}
                     </span>
                   </summary>
 
                   <div class="chat-rag__body">
+                    <div
+                      v-if="personFocusText(messageRagMetadata(message))"
+                      class="chat-rag__section"
+                    >
+                      <div class="chat-rag__label">인물 포커스</div>
+                      <div class="chat-rag__text">
+                        {{ personFocusText(messageRagMetadata(message)) }}
+                      </div>
+                    </div>
+
                     <div
                       v-if="topTagText(messageRagMetadata(message))"
                       class="chat-rag__section"
@@ -209,7 +225,7 @@
                       v-if="messageRagMetadata(message)?.ragSources?.length"
                       class="chat-rag__section"
                     >
-                      <div class="chat-rag__label">참고 기록</div>
+                      <div class="chat-rag__label">저널 출처</div>
                       <div class="chat-rag-source-list">
                         <div
                           v-for="source in visibleRagSources(messageRagMetadata(message))"
@@ -291,7 +307,7 @@
             ></textarea>
             <div class="chat-composer__settings">
               <label class="chat-memory-select">
-                <span>Memory</span>
+                <span>대화 기억</span>
                 <select
                   :value="chat.setting.recentMessageLimit"
                   :disabled="chat.isSettingSaving"
@@ -302,7 +318,7 @@
                     :key="option"
                     :value="option"
                   >
-                    Last {{ option }}
+                    최근 {{ option }}개
                   </option>
                 </select>
               </label>
@@ -346,7 +362,7 @@ const authStore = useAuthStore();
 const chat = useChatStore();
 const message = ref("");
 const messageList = ref<HTMLElement | null>(null);
-const memoryOptions = [10, 20, 40, 80];
+const memoryOptions = [25, 50, 100, 200];
 
 interface RagCountItem {
   name?: string;
@@ -381,13 +397,43 @@ interface RagSource {
   snippet?: string;
 }
 
+interface PersonFocusMetadata {
+  target?: string;
+  tokens?: string[];
+  matchedSourceCount?: number;
+  journalEntityId?: number;
+  canonicalLabel?: string;
+  mentionCount?: number;
+  journalEntryCount?: number;
+  firstDate?: string;
+  lastDate?: string;
+  contentKinds?: RagCountItem[];
+  topRoles?: string[];
+  roleAxesKo?: string[];
+  surfaceForms?: string[];
+  journalEntryIds?: number[];
+}
+
 interface RagMetadata {
+  responseMode?: string;
   ragIntent?: string;
   ragSourceCount?: number;
+  personFocus?: PersonFocusMetadata;
   ragTagSummary?: RagTagSummary;
   ragTimelineSummary?: RagTimelineSummary;
   ragSources?: RagSource[];
 }
+
+const PERSON_ROLE_LABELS: Record<string, string> = {
+  COLLABORATION: "협업",
+  TENSION: "긴장",
+  EVALUATION: "평가/비교",
+  CARE: "돌봄",
+  CONFLICT: "갈등",
+  DESIRE: "욕망/끌림",
+  SYMBOLIC_FIGURE: "상징적 인물",
+  UNKNOWN: "맥락 미확정",
+};
 
 watch(
   () => authStore.isAuthenticated,
@@ -438,7 +484,7 @@ function updateMemoryLimit(event: Event): void {
   const target = event.target as HTMLSelectElement;
   chat.updateSetting({
     ...chat.setting,
-    recentMessageLimit: Number(target.value || 20),
+    recentMessageLimit: Number(target.value || 50),
   });
 }
 
@@ -497,6 +543,57 @@ function visibleRagSources(metadata: RagMetadata | null | undefined): RagSource[
   return (metadata?.ragSources || []).slice(0, 5);
 }
 
+function personFocusText(metadata: RagMetadata | null | undefined): string {
+  const personFocus = metadata?.personFocus;
+  if (!personFocus) return "";
+
+  const parts: string[] = [];
+  const target = personFocus.target || personFocus.canonicalLabel;
+  if (target) parts.push(`대상: ${target}`);
+
+  if (
+    typeof personFocus.mentionCount === "number" ||
+    typeof personFocus.journalEntryCount === "number"
+  ) {
+    parts.push(
+      `직접 언급 ${personFocus.mentionCount || 0}회, 엔트리 ${
+        personFocus.journalEntryCount || 0
+      }건`
+    );
+  }
+
+  if (personFocus.firstDate || personFocus.lastDate) {
+    parts.push(
+      `기간 ${personFocus.firstDate || "?"} ~ ${
+        personFocus.lastDate || "?"
+      }`
+    );
+  }
+
+  const kinds = formatCountItems(personFocus.contentKinds, 4);
+  if (kinds) parts.push(`기록 유형 ${kinds}`);
+
+  const topRoles = formatRoleList(personFocus.topRoles, 4);
+  if (topRoles) parts.push(`반복 역할 ${topRoles}`);
+
+  const roleAxesKo = formatTextList(personFocus.roleAxesKo, 4);
+  if (roleAxesKo) parts.push(`역할 축 ${roleAxesKo}`);
+
+  const surfaceForms = formatTextList(personFocus.surfaceForms, 4);
+  if (surfaceForms) parts.push(`표현형 ${surfaceForms}`);
+
+  return parts.join(" / ");
+}
+
+function responseModeText(metadata: RagMetadata | null | undefined): string {
+  const mode = metadata?.responseMode;
+  if (!mode) return "";
+  if (mode === "PERSON_MEANING_FALLBACK") return "person fallback";
+  if (mode === "LANGUAGE_FALLBACK") return "language fallback";
+  if (mode === "LLM") return "";
+  return mode;
+}
+
 function topTagText(metadata: RagMetadata | null | undefined): string {
   return formatCountItems(metadata?.ragTagSummary?.totalTags, 8);
 }
@@ -528,6 +625,27 @@ function formatCountItems(items: RagCountItem[] | undefined, limit: number): str
   return items
     .slice(0, limit)
     .map((item) => `${item.name || "-"}(${item.count || 0})`)
+    .join(", ");
+}
+
+function formatTextList(items: string[] | undefined, limit: number): string {
+  if (!items || items.length === 0) return "";
+  return items.slice(0, limit).join(", ");
+}
+
+function formatRoleList(items: string[] | undefined, limit: number): string {
+  if (!items || items.length === 0) return "";
+
+  return items
+    .slice(0, limit)
+    .map((item) => {
+      const match = item.match(/^([A-Z_]+)\((\d+)\)$/);
+      if (!match) return item;
+
+      const [, roleCode, count] = match;
+      const label = PERSON_ROLE_LABELS[roleCode] || roleCode;
+      return `${label}(${count})`;
+    })
     .join(", ");
 }
 
@@ -991,6 +1109,11 @@ function messageBubbleClass(chatMessage: ChatMessage): string {
 
 .chat-rag__intent {
   color: #0f766e;
+  font-size: 10px;
+}
+
+.chat-rag__mode {
+  color: #b45309;
   font-size: 10px;
 }
 

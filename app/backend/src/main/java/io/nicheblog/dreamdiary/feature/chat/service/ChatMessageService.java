@@ -105,7 +105,7 @@ public class ChatMessageService
      * @return 보정된 최근 메시지 조회 개수
      */
     private int normalizeRecentMessageLimit(final Integer recentMessageLimit) {
-        if (recentMessageLimit == null) return 20;
-        return Math.max(2, Math.min(100, recentMessageLimit));
+        if (recentMessageLimit == null) return 50;
+        return Math.max(2, Math.min(200, recentMessageLimit));
     }
 }

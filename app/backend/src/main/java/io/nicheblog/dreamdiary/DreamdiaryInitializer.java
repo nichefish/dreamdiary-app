@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingSyncJobService;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserRoleDto;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
@@ -48,9 +49,13 @@ public class DreamdiaryInitializer
     private final AuthPolicyService authPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
     private final ReleaseHistoryService releaseHistoryService;
+    private final JournalEntryEmbeddingSyncJobService journalEntryEmbeddingSyncJobService;
 
     @Value("${system.init-temp-pw:}")
     public String SYSTEM_INIT_TEMP_PW;
+
+    @Value("${dreamdiary.embedding.sync-on-startup:true}")
+    private boolean embeddingSyncOnStartup;
 
     /**
      * 프로그램 최초 구동시 수행할 로직.
@@ -83,6 +88,8 @@ public class DreamdiaryInitializer
         // 캐시 웜업:: 초기 로딩 속도를 희생하여 미리 캐싱 처리함으로써 실행속도 상승
         publisher.publishAsyncEvent(new CacheWarmupEvent(this));
         log.info("Startup task queued. task=cacheWarmup");
+
+        queueEmbeddingSyncOnStartup();
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
@@ -206,5 +213,25 @@ public class DreamdiaryInitializer
                 .build();
 
         return authPolicyService.regist(authPolicy).getRslt();
+    }
+
+    /**
+     * 서버 기동 시 embedding queue sync job을 백그라운드로 enqueue한다.
+     *
+     * <p>Admin Sync Entries와 동일한 {@link JournalEntryEmbeddingSyncJobService#startSync()} 경로를 사용한다.
+     * 이미 RUNNING이면 중복 시작하지 않는다.</p>
+     */
+    private void queueEmbeddingSyncOnStartup() {
+        if (!embeddingSyncOnStartup) {
+            log.info("Startup task skipped. task=journalEntryEmbeddingSync reason=disabled");
+            return;
+        }
+
+        try {
+            journalEntryEmbeddingSyncJobService.startSync();
+            log.info("Startup task queued. task=journalEntryEmbeddingSync");
+        } catch (final Exception e) {
+            log.warn("Startup task failed. task=journalEntryEmbeddingSync", e);
+        }
     }
 }
