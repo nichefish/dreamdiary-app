@@ -19,6 +19,7 @@
 ### 목록 갱신 (게시판·스레드)
 
 - `useBoardPostStore.fetchList(page)`, `useJournalThreadStore.fetchList(page)` — Vue 템플릿 내 페이지 버튼.
+- `journal-thread` 상세/등록/수정 진입은 목록 내부 local state만으로 열지 않고 Vue Router 경로(`/thread`, `/thread/new`, `/thread/:id`, `/thread/:id/edit`)를 단일 진입 경로로 사용한다. 라우트 변경 시 `JournalThreadLayout`이 모달 상태를 동기화하고, 모달이 모두 닫히면 `thread-list`로 복귀한다.
 - 레거시 `#listForm` + `Pagination.fnPage` 서버 리로드는 SPA 목록에서 **대체**.
 
 ### CRUD 성공 알림 후 갱신

@@ -35,6 +35,9 @@
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
+| 스레드 등록 | `/app/journal/thread/regist-form.do` | `/thread/new` | `JournalThreadList.vue` | ✓ |
+| 스레드 상세 | `/app/journal/thread/detail.do?id={id}` | `/thread/:id` | `JournalThreadList.vue` | ✓ |
+| 스레드 수정 | `/app/journal/thread/modify-form.do?id={id}` | `/thread/:id/edit` | `JournalThreadList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/calendar.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
 
@@ -392,6 +395,7 @@
 ## 저널 스레드 목록 (Journal Thread List)
 
 - **Route (레거시)**: `/journal/thread/list` · **Vue SPA**: `/thread` (`thread-list`)
+- **추가 진입 경로**: `/app/journal/thread/regist-form.do` → `/thread/new` (`thread-create`), `/app/journal/thread/detail.do?id={id}` → `/thread/:id` (`thread-detail`), `/app/journal/thread/modify-form.do?id={id}` → `/thread/:id/edit` (`thread-edit`)
 - **Legacy file**: `legacy/templates/view/feature/journal/thread/journal_thread_list.ftlh`
 
 ### Layout Structure
@@ -422,8 +426,9 @@
 
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
-| 상세 페이지 이동 | 제목 링크 클릭 | `JournalThreadListApp` CustomEvent | 상세 페이지 이동 |
-| 모달 상세 보기 | 모달 아이콘 클릭 | `JournalThreadListApp` CustomEvent | 상세 모달 오픈 |
+| 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 상세 모달 오픈 + URL `/thread/:id` 동기화 |
+| 등록 모달 열기 | 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
+| 수정 모달 열기 | 수정 버튼 클릭 | `router.push({ name: "thread-edit", params: { id } })` | 수정 모달 오픈 + URL `/thread/:id/edit` 동기화 |
 | 댓글 모달 | 댓글 수 클릭 | `CommentList.modal(id, contentType)` | 댓글 목록 모달 |
 | 파일 모달 | 첨부파일 아이콘 클릭 | `FileGroupList.modal(fileGroupId)` | 파일 목록 모달 |
 | 태그 상세 | 태그 클릭 | `dF.Tag.dtlModal(tagId)` | 태그 상세 모달 |
