@@ -70,6 +70,15 @@ class MarkdownUtilsTest {
     }
 
     @Test
+    @DisplayName("markdown processes nested inline text nodes")
+    void markdownProcessesNestedInlineTextNodes() {
+        final String result = MarkdownUtils.markdown("<p><span>__밑줄__</span> 그리고 <strong>\"대화\"</strong></p>");
+
+        assertTrue(result.contains("<span><u>밑줄</u></span>"));
+        assertTrue(result.contains("<strong><span class=\"md-text-dialog\">“대화”</span></strong>"));
+    }
+
+    @Test
     @DisplayName("normalize preserves escaped literal html text")
     void normalizePreservesEscapedLiteralHtmlText() {
         final String result = MarkdownUtils.normalize("<p>&lt;table&gt;</p>");
