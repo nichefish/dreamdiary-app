@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,14 @@ public interface JournalEntryEmbeddingRepository
      * @return 활성 임베딩 작업 엔티티
      */
     Optional<JournalEntryEmbeddingEntity> findFirstByJournalEntryId(Integer journalEntryId);
+
+    /**
+     * 원본 저널 엔트리 ID 묶음에 해당하는 임베딩 엔티티를 조회한다.
+     *
+     * @param journalEntryIdList 원본 저널 엔트리 ID 목록
+     * @return 연결된 임베딩 엔티티 목록
+     */
+    List<JournalEntryEmbeddingEntity> findAllByJournalEntryIdIn(Collection<Integer> journalEntryIdList);
 
     /**
      * 지정한 처리 상태의 임베딩 작업을 생성 순서대로 조회한다.

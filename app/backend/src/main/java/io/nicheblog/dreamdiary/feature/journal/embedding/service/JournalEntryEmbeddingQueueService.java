@@ -378,17 +378,21 @@ public class JournalEntryEmbeddingQueueService {
      */
     @Transactional(readOnly = true)
     public JournalEntryEmbeddingStatsDto getStats() {
-        final long total = repository.count();
+        final long activeEntryCount = journalEntryRepository.count();
+        final long queueRows = repository.count();
+        final long unqueuedEntries = Math.max(0L, activeEntryCount - queueRows);
         final long pending = repository.countByEmbeddingStatus(STATUS_PENDING);
         final long processing = repository.countByEmbeddingStatus(STATUS_PROCESSING);
         final long embedded = repository.countByEmbeddingStatus(STATUS_EMBEDDED);
         final long failed = repository.countByEmbeddingStatus(STATUS_FAILED);
         final long skipped = repository.countByEmbeddingStatus(STATUS_SKIPPED);
-        final long remaining = pending + processing;
-        final long completed = embedded + failed + skipped;
+        final long remaining = unqueuedEntries + pending + processing + failed;
+        final long completed = embedded + skipped + failed;
 
         return JournalEntryEmbeddingStatsDto.builder()
-                .total(total)
+                .total(activeEntryCount)
+                .queueRows(queueRows)
+                .unqueuedEntries(unqueuedEntries)
                 .pending(pending)
                 .processing(processing)
                 .embedded(embedded)
@@ -396,9 +400,30 @@ public class JournalEntryEmbeddingQueueService {
                 .skipped(skipped)
                 .remaining(remaining)
                 .completed(completed)
-                .completionRate(toPercent(completed, total))
-                .vectorizedRate(toPercent(embedded, total))
+                .completionRate(toPercent(completed, activeEntryCount))
+                .vectorizedRate(toPercent(embedded, activeEntryCount))
+                .queueCompletionRate(toPercent(completed, queueRows))
                 .build();
+    }
+
+    /**
+     * FAILED 상태 임베딩 작업을 다시 PENDING으로 되돌립니다.
+     *
+     * @return 재대기 처리한 row 수
+     */
+    @Transactional
+    public long requeueFailed() {
+        final List<JournalEntryEmbeddingEntity> failedEntityList = repository.findAllByEmbeddingStatus(STATUS_FAILED);
+        if (failedEntityList.isEmpty()) return 0L;
+
+        failedEntityList.forEach(entity -> {
+            entity.setEmbeddingStatus(STATUS_PENDING);
+            entity.setErrorMessage(null);
+        });
+        repository.saveAll(failedEntityList);
+        repository.flush();
+        log.info("Requeued failed journal entry embedding rows. count={}", failedEntityList.size());
+        return failedEntityList.size();
     }
 
     /**

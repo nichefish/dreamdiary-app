@@ -10,6 +10,17 @@
       </button>
     </div>
 
+    <div v-if="store.backfillWorkActive" class="admin-backfill-banner" role="status">
+      <i class="bi bi-cloud-check fs-4 text-primary"></i>
+      <div class="flex-grow-1">
+        <strong>서버에서 백그라운드 처리 중</strong>
+        <div class="text-muted fs-8">
+          Embedding·Entity 작업은 이 페이지를 떠나거나 다른 메뉴로 이동해도 서버에서 계속 진행됩니다.
+          진행 상황은 이 화면으로 돌아와 Refresh 하거나 아래 수치 갱신을 확인하세요.
+        </div>
+      </div>
+    </div>
+
     <div class="admin-layout">
       <section class="card post">
         <div class="card-body">
@@ -73,11 +84,16 @@
           <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
             <div>
               <h3 class="admin-section-title mb-1">AI Embedding Backfill</h3>
-              <div class="text-muted fs-8">30초마다 자동 갱신됩니다.</div>
+              <div class="text-muted fs-8">Total은 활성 저널 entry 수입니다. Embedded는 그중 벡터화 완료 entry 수입니다.</div>
+              <div class="text-muted fs-8 mt-1">Sync Entries 후 벡터 생성은 서버 워커가 백그라운드에서 처리합니다. 이 페이지를 떠나도 됩니다.</div>
             </div>
             <div class="admin-tool-actions">
               <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.embeddingStatsLoading" @click="store.fetchEmbeddingStats">
                 Refresh
+              </button>
+              <button type="button" class="btn btn-sm btn-light-warning" :disabled="embeddingFailedRequeueDisabled" @click="store.requeueFailedEmbeddingQueue">
+                <span v-if="store.embeddingRequeueRunning" class="spinner-border spinner-border-sm me-1"></span>
+                Requeue Failed
               </button>
               <button type="button" class="btn btn-sm btn-primary" :disabled="syncButtonDisabled" @click="store.syncEmbeddingQueue">
                 <span v-if="store.embeddingSyncRunning || store.embeddingStats.syncRunning" class="spinner-border spinner-border-sm me-1"></span>
@@ -113,18 +129,85 @@
           </div>
 
           <div class="d-flex flex-wrap gap-2 my-4">
-            <span class="badge badge-light-success">Completed {{ formatNumber(store.embeddingStats.completed) }}</span>
+            <span class="badge badge-light-success">Embedded {{ formatNumber(store.embeddingStats.embedded) }}</span>
             <span class="badge badge-light-warning">Remaining {{ formatNumber(store.embeddingStats.remaining) }}</span>
             <span class="badge badge-light-danger">Failed {{ formatNumber(store.embeddingStats.failed) }}</span>
             <span class="badge badge-light">Skipped {{ formatNumber(store.embeddingStats.skipped) }}</span>
+            <span class="badge badge-light-secondary">Unqueued {{ formatNumber(store.embeddingStats.unqueuedEntries) }}</span>
+            <span class="badge badge-light">Queue Rows {{ formatNumber(store.embeddingStats.queueRows) }}</span>
           </div>
 
           <div class="d-flex justify-content-between fs-8 text-muted mb-1">
-            <span>Completion {{ formatPercent(store.embeddingStats.completionRate) }}</span>
-            <span>Vectorized {{ formatPercent(store.embeddingStats.vectorizedRate) }}</span>
+            <span>Entry Coverage {{ formatPercent(store.embeddingStats.vectorizedRate) }}</span>
+            <span>Queue Completion {{ formatPercent(store.embeddingStats.queueCompletionRate) }}</span>
           </div>
           <div class="progress h-8px">
             <div class="progress-bar bg-success" role="progressbar" :style="embeddingProgressStyle"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card post">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
+            <div>
+              <h3 class="admin-section-title mb-1">Entity Queue Backfill</h3>
+              <div class="text-muted fs-8">Total은 활성 저널 entry 수입니다. Synced는 entity catalog 동기화가 끝난 entry 수입니다.</div>
+              <div class="text-muted fs-8 mt-1">Sync Entries 후 entity 추출은 서버 워커가 백그라운드에서 처리합니다. 이 페이지를 떠나도 됩니다.</div>
+            </div>
+            <div class="admin-tool-actions">
+              <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.entityQueueStatsLoading" @click="store.fetchEntityQueueStats">
+                Refresh
+              </button>
+              <button type="button" class="btn btn-sm btn-light-warning" :disabled="entityFailedRequeueDisabled" @click="store.requeueFailedEntityQueue">
+                <span v-if="store.entityQueueRequeueRunning" class="spinner-border spinner-border-sm me-1"></span>
+                Requeue Failed
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" :disabled="entitySyncButtonDisabled" @click="store.syncEntityQueue">
+                <span v-if="store.entityQueueSyncRunning" class="spinner-border spinner-border-sm me-1"></span>
+                Sync Entries
+              </button>
+            </div>
+          </div>
+
+          <div v-if="store.entityQueueError" class="alert alert-warning py-2">
+            {{ store.entityQueueError }}
+          </div>
+          <div v-if="store.entityQueueSyncResult" class="alert alert-success py-2">
+            {{ entityQueueSyncMessage }}
+          </div>
+          <div v-if="entityWorkerActive" class="admin-sync-status mb-4">
+            <div class="d-flex justify-content-between gap-3 flex-wrap">
+              <div>
+                <strong>Entity extraction running</strong>
+                <div class="text-muted fs-8">{{ entityWorkerStatusMessage }}</div>
+              </div>
+              <span class="badge badge-light-warning">WORKER</span>
+            </div>
+          </div>
+
+          <div class="admin-stat-grid">
+            <div v-for="stat in entityQueueStatsCards" :key="stat.label" class="admin-stat">
+              <span>{{ stat.label }}</span>
+              <strong :class="stat.className">{{ formatNumber(stat.value) }}</strong>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 my-4">
+            <span class="badge badge-light-success">Synced {{ formatNumber(store.entityQueueStats.synced) }}</span>
+            <span class="badge badge-light-warning">Remaining {{ formatNumber(store.entityQueueStats.remaining) }}</span>
+            <span class="badge badge-light-danger">Failed {{ formatNumber(store.entityQueueStats.failed) }}</span>
+            <span class="badge badge-light">Skipped {{ formatNumber(store.entityQueueStats.skipped) }}</span>
+            <span class="badge badge-light-secondary">Unqueued {{ formatNumber(store.entityQueueStats.unqueuedEntries) }}</span>
+            <span class="badge badge-light">Queue Rows {{ formatNumber(store.entityQueueStats.queueRows) }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between fs-8 text-muted mb-1">
+            <span>Entry Coverage {{ formatPercent(store.entityQueueStats.completionRate) }}</span>
+            <span>Queue Completion {{ formatPercent(store.entityQueueStats.queueCompletionRate) }}</span>
+          </div>
+          <div class="progress h-8px">
+            <div class="progress-bar bg-info" role="progressbar" :style="entityQueueProgressStyle"></div>
           </div>
         </div>
       </section>
@@ -239,7 +322,8 @@
 import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { Modal } from "bootstrap";
-import { useAdminPageStore, type RoleRow } from "@/stores/adminPage";
+import { useAdminPageStore } from "@/stores/adminPage";
+import type { RoleRow } from "@/stores/adminPage.types";
 
 const store = useAdminPageStore();
 const holydayYy = ref(String(new Date().getFullYear()));
@@ -250,12 +334,25 @@ const cacheDetailModalEl = ref<HTMLElement | null>(null);
 let cacheListModal: Modal | null = null;
 let cacheDetailModal: Modal | null = null;
 let statsTimer: number | undefined;
-let syncStatsTimer: number | undefined;
+const BACKGROUND_SYNC_NOTE = "큐 등록 후 처리는 서버에서 백그라운드로 계속됩니다. 이 페이지를 떠나도 됩니다.";
 
 const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
+const embeddingFailedRequeueDisabled = computed(
+  () => store.embeddingRequeueRunning || store.embeddingStats.failed <= 0
+);
+const entitySyncButtonDisabled = computed(() => store.entityQueueSyncRunning);
+const entityFailedRequeueDisabled = computed(() => store.entityQueueRequeueRunning || store.entityQueueStats.failed <= 0);
 const embeddingWorkerActive = computed(() => !store.embeddingStats.syncRunning && (store.embeddingStats.pending > 0 || store.embeddingStats.processing > 0));
+const entityWorkerActive = computed(() => store.entityQueueStats.pending > 0 || store.entityQueueStats.processing > 0);
+const entityWorkerStatusMessage = computed(() =>
+  `Worker still has ${formatNumber(store.entityQueueStats.pending)} pending and ${formatNumber(store.entityQueueStats.processing)} processing rows.`
+);
 const embeddingProgressStyle = computed(() => {
-  const value = Math.max(0, Math.min(100, Number(store.embeddingStats.completionRate) || 0));
+  const value = Math.max(0, Math.min(100, Number(store.embeddingStats.vectorizedRate) || 0));
+  return { width: `${value}%` };
+});
+const entityQueueProgressStyle = computed(() => {
+  const value = Math.max(0, Math.min(100, Number(store.entityQueueStats.completionRate) || 0));
   return { width: `${value}%` };
 });
 const syncProgressPercent = computed(() => {
@@ -288,10 +385,17 @@ const syncStatusBadgeClass = computed(() => {
 });
 
 const embeddingStatsCards = computed(() => [
-  { label: "Total", value: store.embeddingStats.total, className: "" },
-  { label: "Pending", value: store.embeddingStats.pending, className: "text-warning" },
-  { label: "Processing", value: store.embeddingStats.processing, className: "text-primary" },
+  { label: "Entries", value: store.embeddingStats.total, className: "" },
   { label: "Embedded", value: store.embeddingStats.embedded, className: "text-success" },
+  { label: "Unqueued", value: store.embeddingStats.unqueuedEntries, className: "text-muted" },
+  { label: "Pending", value: store.embeddingStats.pending, className: "text-warning" },
+]);
+
+const entityQueueStatsCards = computed(() => [
+  { label: "Entries", value: store.entityQueueStats.total, className: "" },
+  { label: "Synced", value: store.entityQueueStats.synced, className: "text-success" },
+  { label: "Unqueued", value: store.entityQueueStats.unqueuedEntries, className: "text-muted" },
+  { label: "Pending", value: store.entityQueueStats.pending, className: "text-warning" },
 ]);
 
 const embeddingSyncMessage = computed(() => {
@@ -304,6 +408,20 @@ const embeddingSyncMessage = computed(() => {
     `unchanged ${formatNumber(result.unchanged)}`,
     `skipped ${formatNumber(result.skipped)}`,
     `removed ${formatNumber(result.removed)}`,
+    BACKGROUND_SYNC_NOTE,
+  ].join(" / ");
+});
+
+const entityQueueSyncMessage = computed(() => {
+  const result = store.entityQueueSyncResult;
+  if (!result) return "";
+  return [
+    `entries ${formatNumber(result.activeEntryCount)}`,
+    `created ${formatNumber(result.created)}`,
+    `requeued ${formatNumber(result.requeued)}`,
+    `unchanged ${formatNumber(result.unchanged)}`,
+    `removed ${formatNumber(result.removed)}`,
+    BACKGROUND_SYNC_NOTE,
   ].join(" / ");
 });
 
@@ -362,7 +480,7 @@ function displayCacheKey(cacheKey: string): string {
 }
 
 async function reload() {
-  await Promise.all([store.fetchBootstrap(), store.fetchEmbeddingStats()]);
+  await Promise.all([store.fetchBootstrap(), store.fetchEmbeddingStats(), store.fetchEntityQueueStats()]);
   holydayYy.value = String(store.meta.currYy);
 }
 
@@ -439,18 +557,12 @@ onMounted(async () => {
   if (cacheDetailModalEl.value) cacheDetailModal = new Modal(cacheDetailModalEl.value);
   await reload();
   statsTimer = window.setInterval(() => {
-    void store.fetchEmbeddingStats();
+    void Promise.all([store.fetchEmbeddingStats(), store.fetchEntityQueueStats()]);
   }, 30000);
-  syncStatsTimer = window.setInterval(() => {
-    if (store.embeddingStats.syncRunning || embeddingWorkerActive.value) {
-      void store.fetchEmbeddingStats();
-    }
-  }, 5000);
 });
 
 onUnmounted(() => {
   if (statsTimer) window.clearInterval(statsTimer);
-  if (syncStatsTimer) window.clearInterval(syncStatsTimer);
 });
 </script>
 
@@ -538,6 +650,16 @@ onUnmounted(() => {
   display: block;
   margin-top: 0.25rem;
   font-size: 1.25rem;
+}
+
+.admin-backfill-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #cfe2ff;
+  border-radius: 8px;
+  background: #f1faff;
 }
 
 .admin-sync-status {

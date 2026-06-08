@@ -92,7 +92,7 @@ export const useChatStore = defineStore("chat", () => {
   const isSettingSaving = ref(false);
   const lastError = ref("");
 
-  const setting = ref<ChatSetting>({ recentMessageLimit: 20 });
+  const setting = ref<ChatSetting>({ recentMessageLimit: 50 });
   const sessions = ref<ChatSession[]>([]);
   const activeSessionId = ref<number | null>(null);
   const messages = ref<ChatMessage[]>([]);
@@ -402,7 +402,7 @@ export const useChatStore = defineStore("chat", () => {
     isWaitingResponse.value = false;
     isSessionLoading.value = false;
     isSettingSaving.value = false;
-    setting.value = { recentMessageLimit: 20 };
+    setting.value = { recentMessageLimit: 50 };
     sessions.value = [];
     activeSessionId.value = null;
     messages.value = [];

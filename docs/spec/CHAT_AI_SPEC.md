@@ -14,6 +14,7 @@ It must help the user continue thinking with their own journal data, but it must
 | --- | --- | --- |
 | Chat drawer UI | `app/frontend-vue/src/views/chat/AppChat.vue` | Floating AI chat panel, session list, composer, message rendering |
 | Chat store | `app/frontend-vue/src/stores/chat.ts` | Session/message state, REST calls, STOMP send/cancel |
+| Admin operations UI | `app/frontend-vue/src/views/admin/AdminPage.vue` / `app/frontend-vue/src/stores/adminPage.ts` | Show embedding backfill and entity queue stats / sync controls for operators |
 | Mobile chat | `app/mobile-react-native/src/screens/AIChatScreen.tsx` | Native chat screen using the same chat API and STOMP contract |
 
 ### Server
@@ -26,6 +27,9 @@ It must help the user continue thinking with their own journal data, but it must
 | Message history | `ChatMessageService` | Recent context messages |
 | LLM client | `OllamaClient` | Ollama chat and embedding API calls |
 | Memory search | `JournalEntryEmbeddingSearchService` | In-memory keyword + vector search over journal embeddings |
+| Entity focus summary | `JournalEntityFocusService` | Resolve entity-catalog-backed person summaries for synthesis questions |
+| Entity sync queue | `JournalEntryEntityQueueService` / `JournalEntryEntityWorker` | Queue and asynchronously refresh entity refs and mention roles after journal entry writes |
+| Entity queue admin API | `JournalEntryEntityAdminRestController` | Expose queue stats, full requeue sync, and failed-row requeue for operators |
 | RAG search result | `RagSearchResult` | Internal retrieval DTO carrying entity, match type, score, matched tokens, and snippet |
 | RAG intent | `RagIntent` | Classifies retrieval mode as `LOOKUP`, `SUMMARY`, or `SYNTHESIS` |
 
@@ -71,6 +75,15 @@ system prompt
 
 It must not mix messages from another chat session.
 
+The chat drawer UI must keep these two limits visually distinct:
+
+| UI label | Setting / metadata | Meaning |
+| --- | --- | --- |
+| `저널 검색 N건` | `ragSourceCount` | Journal entries retrieved for the current question via RAG |
+| `대화 기억 최근 N개` | `recentMessageLimit` | Recent chat messages from the same session included in LLM context. Chat drawer select options: `25`, `50`, `100`, `200`. Server clamp: `2`–`200`. Default for new settings: `50`. |
+
+They are unrelated numbers and must not be presented as if they should match.
+
 ### Journal RAG Memory
 
 Journal records are retrieved by intent-aware hybrid search.
@@ -100,8 +113,47 @@ Current constants:
 | `RAG_SYNTHESIS_MIN_SCORE` | `0.25` | Wider vector threshold for `SYNTHESIS` |
 | `RAG_TEXT_MAX_LENGTH` | `300` | Max characters per retrieved record |
 | `RAG_SYNTHESIS_TEXT_MAX_LENGTH` | `220` | Max snippet characters per synthesis source |
+| `RAG_PERSON_FOCUS_SNIPPET_MAX_LENGTH` | `400` | Max snippet characters for person-focused synthesis sources |
+| `RAG_ENTITY_LINK_MAX` | `10` | Reserved constant; person-meaning retrieval no longer injects entity-catalog entries |
 
 RAG context must be omitted when no result passes the threshold.
+
+### Entity Sync Freshness
+
+`personFocus` now depends on an asynchronous entity sync queue rather than an in-request write hook.
+
+```text
+journal entry save/modify/content update
+  -> queue entity sync row
+  -> scheduler notices pending jobs
+  -> worker regenerates journal_entry_entity_ref + journal_entry_entity_role
+  -> later AI chat reads refreshed personFocus/topRoles
+```
+
+This means `personFocus` and `topRoles` are eventually consistent. Immediately after a journal entry write, AI chat can briefly observe the previous entity summary until the queued worker finishes processing that entry.
+
+Server startup enqueues the same embedding queue sync job as Admin `Sync Entries` when `dreamdiary.embedding.sync-on-startup=true` (default). Vector generation still runs asynchronously via the embedding worker scheduler after queue rows exist.
+
+Admin queue visibility is available through:
+
+- `GET /api/admin/journal-entry-embeddings/stats`
+- `POST /api/admin/journal-entry-embeddings/sync`
+- `POST /api/admin/journal-entry-embeddings/requeue-failed`
+- `GET /api/admin/journal-entry-entities/stats`
+- `POST /api/admin/journal-entry-entities/sync`
+- `POST /api/admin/journal-entry-entities/requeue-failed`
+
+Admin stats use `total` as the active journal entry count (Entries baseline). `queueRows` and `unqueuedEntries` expose how many queue rows exist versus entries not yet queued. Progress bars use entry coverage (`embedded/total`, `synced/total`), not queue-row self-percentages.
+
+The existing Vue admin page surfaces embedding and entity queue status with:
+
+- Refresh
+- Requeue Failed
+- Sync Entries
+- Entries / Embedded(or Synced) / Unqueued / Pending stat cards
+- entry coverage progress plus queue completion secondary rate
+
+The full sync endpoint requeues every current `journal_entry` into the entity queue and removes stale queue rows whose source entry disappeared.
 
 Keyword search does not use the vector threshold. This is intentional: short person-name queries such as `원빈님에 대해 뭘 말해줄 수 있니` can have weak semantic similarity even when the exact name appears in records.
 
@@ -159,6 +211,24 @@ Shape:
 {
   "ragIntent": "SYNTHESIS",
   "ragSourceCount": 25,
+  "personFocus": {
+    "target": "원빈",
+    "tokens": ["원빈", "원빈님"],
+    "matchedSourceCount": 8,
+    "journalEntityId": 7,
+    "canonicalLabel": "원빈",
+    "mentionCount": 12,
+    "journalEntryCount": 9,
+    "firstDate": "2026-01-02",
+    "lastDate": "2026-05-29",
+    "contentKinds": [
+      { "name": "DREAM", "count": 6 },
+      { "name": "DIARY", "count": 3 }
+    ],
+    "topRoles": ["COLLABORATION(4)", "TENSION(3)"],
+    "surfaceForms": ["원빈님", "원빈"],
+    "journalEntryIds": [123, 124, 130]
+  },
   "ragTagSummary": {
     "totalTags": [
       { "name": "[정서실험]#원빈", "count": 8 }
@@ -198,7 +268,11 @@ Shape:
 }
 ```
 
-This metadata is not shown in the UI yet, but it is available through the existing chat message DTO and WebSocket payload.
+This metadata is available through the existing chat message DTO and WebSocket payload.
+
+The current chat drawer UI renders `personFocus` inside the existing RAG details block as a compact human-readable summary string. It still does not expose raw `ragSources`/`personFocus` JSON as a separate structured inspector.
+
+`personFocus` is optional. It is present only when a synthesis question is recognized as a person-meaning question and the entity catalog resolves a matching `PERSON` row or the prompt aid still has matched RAG sources to prioritize.
 
 ### RAG Intent
 
@@ -231,6 +305,29 @@ For person meaning questions, the assistant must not infer real-world roles such
 - repeated relationship/theme axes
 - emotional or desire function in the user's flow
 - what cannot be confirmed from the retrieved records
+
+When a `SYNTHESIS` question is also a person-meaning question, `ChatAIService` uses **tag-only retrieval** via `buildPersonMeaningTagOnlyRagContext(...)`. Only journal entries whose embedding payload tags contain a person focus token (substring match: `원빈` within `#김원빈`) become RAG sources.
+
+Person-meaning retrieval must **not** use keyword search, vector search, entity-catalog entry injection, or body-mention fallback sources.
+
+When tag-only retrieval finds zero matches, the RAG context states that no tagged records exist and deterministic fallback tells the user to attach the person tag first. Body-only mentions are not used as a substitute.
+
+The entity catalog may still be consulted **only** to expand alias tokens (`원빈` -> canonical `#김원빈`). Catalog mention counts, role axes, and linked entry IDs must not be injected into person-meaning RAG sources or `personFocus.entitySummary`.
+
+When tagged sources exist, `ChatAIService` prepends a `PERSON_FOCUS` block before the general tag/timeline summary and appends `PERSON_MEANING_SCAFFOLD` so the model cannot reply with empty topic buckets such as "업무 협업" or "조직 관계" without citing tags or record snippets.
+
+Prompt/scaffold behavior:
+
+- extracts the queried person token from the user message
+- runs `searchByPersonTagsWithScore(...)` as the sole retrieval path for person-meaning `SYNTHESIS` questions
+- resolves the matching `journal_entity(PERSON)` row only for alias token expansion when the catalog already knows that person
+- reports how many tagged sources matched
+- keeps repeated-tag summary scoped to person-relevant tags whose text contains a focus token, not co-occurring scene tags from the same entry body
+- sanitizes evidence snippets by stripping `embedding_text` metadata lines (`유형:`, `핵심 태그:`, `본문:` wrapper) and HTML before scaffold/fallback output
+- scopes `## 태그 요약` and message `ragTagSummary` metadata to person-focused tagged sources and person-relevant tags only when `personFocus` is present
+- prepends a rule-based `해석 시드:` line to `PERSON_MEANING_SCAFFOLD` and uses the same interpretive lead sentence at the top of `PERSON_MEANING_FALLBACK`
+- instructs the model to answer in five sections: repeated axes, role/function, content-kind spread, evidence scenes, and unconfirmed points
+- forbids generic workplace/category labels unless backed by cited tags or snippets
 
 For `SYNTHESIS`, the context starts with a tag summary block:
 
@@ -268,7 +365,7 @@ AI RAG context built. intent={LOOKUP|SUMMARY|SYNTHESIS}, queryLength={n}, keywor
 Per-source log:
 
 ```text
-AI RAG source rank={n} entryId={id} date={date} matchType={KEYWORD|VECTOR} score={score} tokens={tokens} snippet={snippet}
+AI RAG source rank={n} entryId={id} date={date} matchType={KEYWORD|VECTOR|ENTITY|TAG} score={score} tokens={tokens} snippet={snippet}
 ```
 
 This is intended for operational diagnosis: if a question like `원빈님에 대해...` fails, logs should show whether no source was found, a source was found but ignored by the model, or the wrong source was retrieved.
@@ -286,6 +383,17 @@ The assistant response must follow these rules even if the session prompt is wea
 7. Do not assign a real-world relationship role to a person unless that role is directly present in retrieved records.
 8. For person/symbol meaning questions, separate confirmed appearance context, repeated axes, emotional function, and uncertain points.
 
+
+### Person-Meaning Response Guard
+
+When a `SYNTHESIS` person-meaning question resolves `personFocus`, the server validates the assistant text after the language guard:
+
+1. A response is degraded when it leaks internal scaffold/meta field names (`role_axes_ko`, `repeated_tags`, machine-style section keys), or when it fails to cite tags/role axes from the current `PersonMeaningSnapshot`.
+2. Tags that do not contain the focused person token — including co-occurring scene tags on the same entry and app/meta tags such as `#dreamdiary` — are noise and do not count as valid evidence for repeated axes or guard citation.
+3. When no person tag or role axis exists in the current snapshot, a response that cites sanitized evidence snippets from the snapshot still passes the guard.
+4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_MEANING_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
+5. Degraded responses are replaced directly with `buildPersonMeaningDeterministicFallback(...)`; there is no second LLM retry for person-meaning.
+6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_MEANING_FALLBACK`, or `LANGUAGE_FALLBACK`.
 ## Language Guard
 
 Prompt rules alone are not considered sufficient.
@@ -372,6 +480,7 @@ The vector cache may contain many users' records, but `JournalEntryEmbeddingSear
 - Existing chat sessions may contain older weak `systemPrompt`; response guard rules are appended at runtime to compensate.
 - Han-script detection may also catch legitimate Korean Hanja usage; this is intentional for now because the chat UX should be Korean Hangul-first.
 - Keyword extraction is heuristic-based and Korean-particle aware, not a full morphological analyzer.
+- `personFocus.topRoles` is currently heuristic keyword matching around direct mention context, not a full relation extractor.
 
 ## Next Candidates
 

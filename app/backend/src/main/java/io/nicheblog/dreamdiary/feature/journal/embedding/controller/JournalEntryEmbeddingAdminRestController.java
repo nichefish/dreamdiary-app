@@ -55,4 +55,17 @@ public class JournalEntryEmbeddingAdminRestController {
         final JournalEntryEmbeddingSyncJobStatusDto status = journalEntryEmbeddingSyncJobService.startSync();
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(status));
     }
+
+    /**
+     * FAILED 상태 임베딩 작업 row를 다시 PENDING으로 되돌립니다.
+     *
+     * @return 재대기 처리한 row 수
+     */
+    @PostMapping(Url.ADMIN_JOURNAL_ENTRY_EMBEDDING_REQUEUE_FAILED)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> requeueFailed() {
+        final long requeued = journalEntryEmbeddingQueueService.requeueFailed();
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(requeued));
+    }
 }

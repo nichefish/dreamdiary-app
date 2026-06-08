@@ -34,7 +34,7 @@ public class ChatSettingDto
 
     /** 최근 대화 기억 메시지 수 */
     @Builder.Default
-    private Integer recentMessageLimit = 20;
+    private Integer recentMessageLimit = 50;
 
     /* ----- */
 

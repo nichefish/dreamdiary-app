@@ -51,5 +51,5 @@ public class ChatSettingEntity
     @Builder.Default
     @Column(name = "recent_message_limit")
     @Comment("AI 응답 생성 시 함께 전달할 최근 대화 메시지 수")
-    private Integer recentMessageLimit = 20;
+    private Integer recentMessageLimit = 50;
 }

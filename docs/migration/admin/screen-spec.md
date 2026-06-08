@@ -23,13 +23,25 @@
 ## 사이트 관리 (`admin-page`)
 
 **Vue view**: `app/frontend-vue/src/views/admin/AdminPage.vue`  
-**스토어**: `stores/adminPage.ts`
+**스토어**: `stores/adminPage.ts` / **타입**: `stores/adminPage.types.ts`
 
 **기능**:
 - 운영 도구 모음 (캐시 관리, 임베딩 백필 등)
 - 캐시 목록 조회 → `GET /api/cache/cache-active-map`
 - 캐시 초기화 → `POST /api/cache/cache-evict` / `POST /api/cache-clear`
-- AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`
+- AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`, `POST /api/admin/journal-entry-embeddings/requeue-failed`
+  - 서버 기동 시 `dreamdiary.embedding.sync-on-startup`(기본 `true`)이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`)
+  - `total` = active journal entry count (Entries baseline)
+  - `queueRows` / `unqueuedEntries` = queue table row count / entries not yet queued
+  - progress bars use entry coverage (`embedded/total`, `synced/total`)
+- Entity Queue Backfill → `GET /api/admin/journal-entry-entities/stats`, `POST /api/admin/journal-entry-entities/sync`, `POST /api/admin/journal-entry-entities/requeue-failed`
+  - same `total` semantics as embedding stats
+- Embedding/Entity 백필은 서버 스케줄러·워커에서 비동기 처리한다. Admin 화면을 떠나도 작업은 계속된다.
+  - `syncRunning` / pending / processing 중이면 상단 백그라운드 안내 배너 표시
+  - 각 Backfill 섹션 부제에 "페이지를 떠나도 됨" 안내
+  - Sync 성공 alert에 백그라운드 처리 문구 포함
+  - Entity 섹션에 pending/processing 시 worker 상태 패널 표시 (Embedding과 동일 패턴)
+  - `adminPage` store가 backfill 활성 시 5초 폴링을 유지하며, AdminPage unmount 후에도 SPA 내 다른 화면으로 이동해도 stats 갱신이 계속된다
 - 권한 정보 표시
 
 ---
