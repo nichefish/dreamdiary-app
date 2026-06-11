@@ -3,8 +3,7 @@
   <div class="journal-thread-list-vue">
 
     <!--begin::목록 헤더 툴바-->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="fs-5 fw-bold mb-0">저널 스레드</h4>
+    <div class="d-flex justify-content-end align-items-center mb-4">
       <button
         type="button"
         class="btn btn-sm btn-primary"

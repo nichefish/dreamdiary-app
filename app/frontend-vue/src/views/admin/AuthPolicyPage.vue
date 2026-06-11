@@ -1,10 +1,7 @@
 <template>
   <div class="auth-policy-page">
     <div class="auth-policy-toolbar">
-      <div>
-        <h2 class="mb-1">인증 정책 관리</h2>
-        <div class="text-muted fs-7">로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.</div>
-      </div>
+      <div class="text-muted fs-7">로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.</div>
       <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
         <i class="bi bi-arrow-clockwise"></i>
       </button>

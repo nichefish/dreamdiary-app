@@ -2,10 +2,6 @@
   <!--begin::계정 신청 승인관리-->
   <div class="user-signup-approval-vue">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="fs-5 fw-bold mb-0">계정 신청 승인관리</h4>
-    </div>
-
     <!--begin::로딩-->
     <div v-if="store.loading" class="d-flex justify-content-center py-10">
       <span class="spinner-border text-primary" role="status"></span>

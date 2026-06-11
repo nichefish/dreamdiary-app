@@ -1,10 +1,7 @@
 <template>
   <div class="user-admin-page">
     <div class="user-admin-toolbar">
-      <div>
-        <h2 class="mb-1">계정 관리</h2>
-        <div class="text-muted fs-7">사용자 계정과 권한을 관리합니다.</div>
-      </div>
+      <div class="text-muted fs-7">사용자 계정과 권한을 관리합니다.</div>
       <div class="user-admin-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchUsers(store.currentPage)">
           <i class="bi bi-arrow-clockwise"></i>

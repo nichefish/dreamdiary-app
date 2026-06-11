@@ -21,6 +21,7 @@
 
 - 레이아웃: `layout_default.ftlh` (사이드바 없음)
 - 툴바: `_board_post_list_header.ftlh`
+- Vue 목록 본문 상단은 breadcrumb와 중복되는 `게시판` 제목을 렌더링하지 않고 등록 버튼만 우측에 표시
 - 메인 영역:
   - 태그 필터바: `_tag_list_header.ftlh`
   - 특수 버튼: `board == 'cmpyLife'` 조건 시 회사생활 공지사항 안내 버튼 (`#cmpy_life_modal` 트리거)

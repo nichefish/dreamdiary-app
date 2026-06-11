@@ -3,6 +3,7 @@
 > 라우트: `app/frontend-vue/src/router/index.ts`
 > 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
 > 모든 관리자 화면은 `DefaultLayout` 하위, `MNGR` 권한 필요.
+> 관리자 화면 본문 상단은 breadcrumb와 중복되는 화면 제목을 렌더링하지 않고, 필요한 안내문과 액션 버튼만 표시한다.
 
 ## 라우트·화면 매핑
 
@@ -27,6 +28,7 @@
 
 **기능**:
 - 운영 도구 모음 (캐시 관리, 임베딩 백필 등)
+- 본문 상단 안내문과 새로고침 버튼 표시
 - 캐시 목록 조회 → `GET /api/cache/cache-active-map`
 - 캐시 초기화 → `POST /api/cache/cache-evict` / `POST /api/cache-clear`
 - AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`, `POST /api/admin/journal-entry-embeddings/requeue-failed`
@@ -52,6 +54,7 @@
 **스토어**: `stores/authPolicy.ts`
 
 **기능**:
+- 본문 상단 안내문과 새로고침 버튼 표시
 - 인증 정책 단건 조회/수정 (싱글톤)
 - IP 허용 정책, 허용 IP 목록 CRUD
 - `GET /api/auth/policy` → 현재 정책 조회
@@ -65,6 +68,7 @@
 **스토어**: `stores/boardGroup.ts`
 
 **기능**:
+- 본문 상단 안내문과 새로고침/등록 버튼 표시
 - 게시판 그룹 목록/등록/수정/삭제
 - 사용/미사용 토글
 - 드래그로 정렬 순서 변경
@@ -78,6 +82,7 @@
 **스토어**: `stores/codeAdmin.ts`
 
 **기능**:
+- 본문 상단 안내문과 새로고침/분류 코드 등록 버튼 표시
 - 분류 코드(code_group) 목록/등록/수정/삭제
 - 분류 코드별 상세 코드(code_item) 목록/등록/삭제
 - 상세 코드 정렬 순서 변경
@@ -93,6 +98,7 @@
 **스토어**: `stores/menuAdmin.ts`
 
 **기능**:
+- 본문 상단 안내문과 새로고침 버튼 표시
 - 메뉴 트리 2컬럼 구조 (사용자 메뉴 / 관리자 메뉴)
 - 메뉴 등록/수정/삭제
 - 하위 메뉴 추가, 사용 여부 토글
@@ -117,6 +123,7 @@
 **스토어**: `stores/userAdmin.ts`
 
 **기능**:
+- 본문 상단 안내문과 새로고침/계정 등록 버튼 표시
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
 - 계정 삭제 (본인 계정 삭제 불가)
@@ -133,6 +140,7 @@
 **스토어**: `stores/logAdmin.ts`
 
 **기능**:
+- 본문 상단 안내문과 목록/통계 전환 버튼 표시
 - 운영 로그 목록/검색/상세 모달
 - `/admin/log` → 전체 로그 관측 뷰 (`isStatsView = false`)
 - `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`, ⚠ placeholder)
@@ -146,6 +154,7 @@
 **스토어**: `stores/userSignup.ts`
 
 **기능**:
+- breadcrumb와 중복되는 본문 상단 제목은 표시하지 않는다.
 - 승인 대기 신청 목록 조회
 - 최근 신청 내역 (최근 30건)
 - 신청 승인 → `POST /api/user/signup-requests/{id}/approval`
