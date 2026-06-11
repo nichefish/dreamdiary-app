@@ -1,10 +1,7 @@
 <template>
   <div class="user-my-page">
     <div class="user-my-toolbar">
-      <div>
-        <h2 class="mb-1">내 정보</h2>
-        <div class="text-muted fs-7">계정, 프로필, 인사 정보를 확인합니다.</div>
-      </div>
+      <div class="text-muted fs-7">계정, 프로필, 인사 정보를 확인합니다.</div>
       <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
         <i class="bi bi-arrow-clockwise"></i>
       </button>

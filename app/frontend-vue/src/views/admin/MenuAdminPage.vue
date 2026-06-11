@@ -1,10 +1,7 @@
 <template>
   <div class="menu-admin-page">
     <div class="menu-admin-toolbar">
-      <div>
-        <h2 class="mb-1">메뉴 관리</h2>
-        <div class="text-muted fs-7">사이드바와 관리자 메뉴 트리를 관리합니다.</div>
-      </div>
+      <div class="text-muted fs-7">사이드바와 관리자 메뉴 트리를 관리합니다.</div>
       <div class="menu-admin-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchTree">
           <i class="bi bi-arrow-clockwise"></i>

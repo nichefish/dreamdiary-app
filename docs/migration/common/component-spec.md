@@ -19,8 +19,11 @@
 | 게시판 목록 행 | `BoardPostList.vue` 인라인 | `list_comment`, `list_tag`, `list_dtl_modal` | `useBoardPostStore.fetchList` + 페이지 버튼 |
 | 스레드 목록 행 | `JournalThreadList.vue` 인라인 | 동일 | `useJournalThreadStore` |
 | 페이지네이션 | 목록 Vue 인라인 + `utils/paginationDataService.ts` | `Pagination` / `_pagination.ftlh` | 서버 JSON script 태그 호환 유틸만 존재, `Pagination.vue` 없음 |
+| 페이지 breadcrumb | `layouts/default/components/content/PageBreadcrumb.vue` | 레거시 메뉴 경로 표시 | `useMenuStore.menuList` + `toVuePath(menu.url)` 기준 현재 route와 매칭되는 메뉴 트리를 표시. `route.meta.breadcrumbs/pageTitle`를 표시 원천으로 쓰지 않는다. |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
 | 앱 런타임 상태 | `components/system/AppRuntimeStatus.vue` + `utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
+
+화면 위치/제목 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title을 별도로 렌더링하지 않고, 필요한 경우 안내문과 액션 버튼만 둔다.
 
 `useAttachableModalStore` (`stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
 

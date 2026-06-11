@@ -1,10 +1,7 @@
 <template>
   <div class="board-group-page">
     <div class="board-group-toolbar">
-      <div>
-        <h2 class="mb-1">게시판 그룹 관리</h2>
-        <div class="text-muted fs-7">게시판 그룹과 카테고리 코드, 사용 여부, 노출 순서를 관리합니다.</div>
-      </div>
+      <div class="text-muted fs-7">게시판 그룹과 카테고리 코드, 사용 여부, 노출 순서를 관리합니다.</div>
       <div class="board-group-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
           <i class="bi bi-arrow-clockwise"></i>

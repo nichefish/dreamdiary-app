@@ -1,10 +1,7 @@
 <template>
   <div class="code-admin-page">
     <div class="code-admin-toolbar">
-      <div>
-        <h2 class="mb-1">코드 관리</h2>
-        <div class="text-muted fs-7">분류 코드와 상세 코드를 관리합니다.</div>
-      </div>
+      <div class="text-muted fs-7">분류 코드와 상세 코드를 관리합니다.</div>
       <div class="code-admin-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchGroups(store.currentPage)">
           <i class="bi bi-arrow-clockwise"></i>

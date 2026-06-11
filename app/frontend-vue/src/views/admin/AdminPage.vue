@@ -1,10 +1,7 @@
 <template>
   <div class="admin-page">
     <div class="admin-toolbar">
-      <div>
-        <h2 class="mb-1">사이트 관리</h2>
-        <div class="text-muted fs-7">캐시, 외부 동기화, 권한, 임베딩 큐를 관리합니다.</div>
-      </div>
+      <div class="text-muted fs-7">캐시, 외부 동기화, 권한, 임베딩 큐를 관리합니다.</div>
       <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.bootstrapLoading" @click="reload">
         <i class="bi bi-arrow-clockwise"></i>
       </button>
