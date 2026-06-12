@@ -26,6 +26,10 @@
 - Google OAuth2 소셜 로그인 → `/oauth2/authorization/google` (팝업)
 - Naver OAuth2 소셜 로그인 → `/oauth2/authorization/naver` (팝업)
 - 로그인 실패 메시지 표시
+- 로그인 실패 횟수 및 계정 잠금 정책은 `POST /api/auth/login` JSON 로그인에서도 적용
+- 로그인 실패 응답이 `isDupIdLogin`이면 중복 로그인 확인 다이얼로그 표시 후 확인 시 재로그인, 취소 시 `/api/auth/expire-session` 호출
+- 로그인 실패 응답이 `isCredentialExpired` 또는 `needsPasswordReset`이면 로그인 비밀번호 변경 모달 오픈
+- 로그인 비밀번호 변경 모달 저장 → `POST /api/auth/login-pw-chg`
 - 로그인 성공 → `/journal/weekly` 리다이렉트
 
 ---
@@ -57,11 +61,12 @@
 - **Vue SPA**: `/my`
 - **Legacy file**: `legacy/templates/view/feature/user/my/user_my_page.ftlh`
 - **스토어**: `stores/userMy.ts`
+- **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목은 렌더링하지 않고 안내문과 새로고침 버튼만 표시
 
 ### Layout Structure
 
 - 레이아웃: `layout_default.ftlh` (사이드바 없음)
-- 툴바: 없음
+- 툴바: 안내문과 새로고침 버튼
 - 메인 영역:
   - Vue 마운트 루트: `#user_my_app`
   - 컨텐츠 div: `#user_my_page_div` (Vue `UserMyPageApp` 텔레포트 대상)
