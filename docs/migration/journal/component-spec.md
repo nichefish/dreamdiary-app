@@ -80,9 +80,9 @@
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideFilterHeaderApp.ts`
 
-**현재 Vue 동등**: ❌ MISSING — `JournalAside.vue` 상단 필터 헤더 없음
+0**현재 Vue 동등**: ✓ 구현 완료 — `JournalAside.vue` 상단 `#journal_aside_header` + `#sortIcon` + `store.toggleSort()`
 
-**구현할 DOM 구조**:
+**Vue DOM 구조**:
 ```html
 <div id="journal_aside_header" class="card-header min-h-auto mb-5">
     <h3 class="card-title text-gray-900 fw-bold fs-3">
@@ -90,7 +90,6 @@
     </h3>
     <div class="card-toolbar">
         <a class="btn btn-sm btn-icon btn-color-gray-500 btn-light"
-           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
            title="정렬 변경" @click.prevent="toggleSort">
             <i class="bi bi-sort-numeric-up-alt fs-2 pe-0" id="sortIcon"></i>
         </a>
@@ -100,10 +99,10 @@
 
 **상태 / 액션**:
 ```typescript
-// journal.ts store에 추가 필요
 const sortOrder = ref<'ASC' | 'DESC'>('DESC');
 function toggleSort() {
-    sortOrder.value = sortOrder.value === 'DESC' ? 'ASC' : 'DESC';
+    sortOrder.value = sortOrder.value === 'ASC' ? 'DESC' : 'ASC';
+    localStorage.setItem('journal_day_sort', sortOrder.value);
     fetchDays();
 }
 ```
@@ -116,13 +115,13 @@ function toggleSort() {
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideYyMnthApp.ts`
 
-**현재 Vue 동등**: ✓ 구현완료 — 년/월 select + TODAY + 월 그리드 + 주간 네비게이터 + Pinpoint (`JournalAside.vue`)
+**현재 Vue 동등**: ✓ 구현완료 — 연도 select + 월 그리드/TODAY + 주간 네비게이터 + Pinpoint (`JournalAside.vue`)
 
 **3개 sub-block 요약**:
 
-**Sub-block 1 — 년·월 select + 이전/다음 화살표**:
-- 연도: `<select name="yy" id="yy">` — `v-model="store.yy"` (integer) — 2010년~현재 역순 목록
-- 월: `<select name="mnth" id="mnth">` — `v-model="store.mnth"` — 1~12 정수 목록
+**Sub-block 1 — 연도 select + 월 그리드 + 이전/다음 화살표**:
+- 연도: `<select class="form-select form-select-sm">` — `:value="store.yy"` / `onYyChange` — 2010년~현재 역순 목록
+- 월: 1~12 버튼 그리드 — `store.gotoYyMnth(store.yy, m)` 호출. 레거시 `<select id="mnth">` 구조는 쓰지 않는다.
 - 이전 월 화살표: `<i class="bi bi-caret-left fs-2">` — `store.navigateMonth(-1)` 호출
 - 다음 월 화살표: `<i class="bi bi-caret-right fs-2">` — `store.navigateMonth(1)` 호출
 - TODAY 버튼: `btn btn-sm btn-outline btn-light-info blink-slow` — `store.gotoToday()` 호출
@@ -159,7 +158,7 @@ HTML 요소:
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideEntryFiltersApp.ts`
 
-**현재 Vue 동등**: ⚠ 부분구현 — CHAPTER CATEGORIES 체크박스·고급필터 아코디언은 레거시 멀티셀렉트·토글과 DOM 상이
+**현재 Vue 동등**: ⚠ 부분구현 — TAGCLOUD/DIARIES/DREAMS, CHAPTER CATEGORIES, 일기·꿈 라이프사이클, 일기·꿈 키워드 필터는 구현. 고급필터 아코디언은 MISSING.
 
 **5개 블록 구조**:
 
@@ -476,6 +475,8 @@ interface TodoRow {
 
 **엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + `htmlToPlainText(content)` (TinyMCE HTML → 평문, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음 — 레거시 `copy()` 동일)
 
+**본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-interpretation-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
+
 **클라이언트 접힘 토글**: 왼쪽 열 `#sortOrder` 아래 `bi-arrows-expand`/`bi-arrows-collapse` 버튼 — 서버 상태 무변경, `localCollapsedOverride ref`로 임시 제어
 
 **태그 클릭**: `@click.stop="openTagContextMenu($event, tag)"` → `tagContextMenuStore.open(event, payload)`
@@ -570,7 +571,11 @@ interface TodoRow {
 **현재 Vue 범위**:
 - `type`, `tagIds`, `tagName`, `searchKeywords` query 파싱
 - `GET /api/journal/entries` 조회
-- 결과 목록, 태그 목록, 키워드 검색/초기화
+- 결과 목록, 태그 목록, 키워드 검색/초기화, 정렬 전환
+- 고급 필터 토글 영역에서 유형(일기/꿈) 선택과 키워드 추가
+- 결과 전체 복사 버튼 — 레거시 `JournalEntrySearch.copy()` 포맷으로 클립보드 복사
+- 개별 결과 복사 버튼 — `JournalEntryItem.copyEntry()` 사용
+- TXT export 버튼 — `GET /api/journal/entries/export`
 - 결과별 수정/삭제 버튼
 - 결과 태그 클릭 컨텍스트 메뉴(`JournalTagContextMenu`)와 태그 프로필 모달(`JournalTagProfileModal`) 마운트
 - 검색 팝업 내부 태그 검색은 같은 창 query 갱신으로 반영
@@ -580,11 +585,7 @@ interface TodoRow {
 - 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
 
 **남은 legacy 동등성 확인 대상**:
-- 결과 전체 복사 버튼
-- 개별 결과 복사 버튼
-- TXT export 버튼
-- 정렬 전환
-- 고급 검색 영역의 키워드/태그 다중 입력 UX
+- 고급 검색 영역의 태그 직접 입력 UX
 
 ---
 
@@ -609,7 +610,7 @@ interface TodoRow {
 |---------|-----------|---------|---------|
 | `JournalDayViewToolbar` | `_journal_day_page_header.ftlh` (`header_btn_reg_modal`) + 탭 행 | ✓ `JournalDayViewToolbar.vue` | 완료 |
 | `JournalTagCloudHeader` | `_journal_day_tag_header.ftlh` | ✓ `JournalTagCloudHeader.vue` | 완료 |
-| `JournalAsideFilterHeader` | `JournalDayAsideFilterHeaderApp.ts` | ❌ MISSING (`JournalAside.vue`에 FILTER 헤더·정렬 없음) | 높음 |
+| `JournalAsideFilterHeader` | `JournalDayAsideFilterHeaderApp.ts` | ✓ `JournalAside.vue` (`#journal_aside_header` + 정렬 토글) | 완료 |
 | `JournalAsideYyMnthSection` | `JournalDayAsideYyMnthApp.ts` | ✓ `JournalAside.vue` (연/월/TODAY/Week/Pinpoint 모두 구현) | 완료 |
-| `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ⚠ 부분 (토글·키워드; CHAPTER·고급필터 없음) | 높음 |
+| `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ⚠ 부분 (토글·챕터·라이프사이클·키워드 구현; 고급필터 아코디언 없음) | 높음 |
 | `JournalAsideTodoCard` | `JournalDayAsideTodoCardApp.ts` | ❌ MISSING (할일 등록 버튼만; 목록 API 미연동) | 높음 |

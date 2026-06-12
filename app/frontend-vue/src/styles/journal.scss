@@ -542,16 +542,44 @@ $journal-paired-states: (
 }
 
 .journal-diary-content, .journal-interpretation-content {
-    p {
+    .journal-content {
         color: rgba(75, 75, 75, 0.9);
+
+        ol,
+        ul {
+            margin-top: 0.15rem;
+            margin-bottom: 0.15rem;
+        }
+
+        li + li {
+            margin-top: 0.05rem;
+        }
+    }
+    p,
+    li {
+        color: inherit;
     }
     .text-comment p {
         color: initial;
     }
 }
 .journal-dream-content {
-    p {
+    .journal-content {
         color: rgba(95, 0, 130, 0.8);
+
+        ol,
+        ul {
+            margin-top: 0.15rem;
+            margin-bottom: 0.15rem;
+        }
+
+        li + li {
+            margin-top: 0.05rem;
+        }
+    }
+    p,
+    li {
+        color: inherit;
     }
     .journal-dream-tag-profiles {
         margin: 0.15rem 0 0.1rem 0.5rem;
