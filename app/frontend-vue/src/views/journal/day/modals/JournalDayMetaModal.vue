@@ -243,18 +243,25 @@ interface SelectedTag {
   tagName: string;
 }
 const selectedTags = ref<SelectedTag[]>([]);
+const initializedSeedKey = ref<string | null>(null);
+
+function makeSeedKey(p: NonNullable<typeof payload.value>): string {
+  return `${p.seedType}:${p.seedId}`;
+}
 
 /**
  * payload 객체 참조가 바뀔 때마다(신규 오픈·연도 변경) 실행된다.
- * 필터가 비어 있으면(신규 오픈) 시드로 초기화하고,
- * 필터가 남아 있으면(연도 변경 재조회) 기존 필터를 그대로 유지한다.
+ * 같은 seed 는 최초 1회만 초기화하고, 이후 같은 seed 의 payload 재조회에서는
+ * 사용자가 비워 둔 상태를 포함하여 기존 필터 상태를 그대로 유지한다.
  */
 watch(
   () => payload.value,
   (p) => {
     if (!p) return;
-    // 연도 변경 재조회 시에는 기존 필터(사용자가 추가한 메타·태그)를 보존한다.
-    if (selectedMetas.value.length > 0 || selectedTags.value.length > 0) return;
+    const seedKey = makeSeedKey(p);
+    // 연도 변경 재조회 시에는 기존 필터(사용자가 제거하거나 추가한 메타·태그)를 보존한다.
+    if (initializedSeedKey.value === seedKey) return;
+    initializedSeedKey.value = seedKey;
     if (p.seedType === "meta") {
       /** ctgr 을 list 에서 탐색하여 displayName 구성 */
       let ctgr: string | undefined = p.seedCtgr;
@@ -305,6 +312,7 @@ onMounted(() => {
       // 다음 오픈 시 payload watch 가 신규 시드로 재초기화할 수 있도록 비워 둔다.
       selectedMetas.value = [];
       selectedTags.value = [];
+      initializedSeedKey.value = null;
     });
   }
 });
