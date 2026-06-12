@@ -152,12 +152,113 @@
     <!--end::로그인 폼-->
   </div>
   <!--end::로그인 패널-->
+
+  <!--begin::로그인 비밀번호 변경 모달-->
+  <div
+    ref="passwordChangeModalEl"
+    class="modal fade"
+    id="login_pw_chg_modal"
+    tabindex="-1"
+    role="dialog"
+    aria-hidden="true"
+    data-bs-keyboard="false"
+    data-bs-backdrop="static"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark">
+          <h5 class="modal-title text-white">비밀번호 변경</h5>
+          <button type="button" class="btn-close btn-close-white" aria-label="닫기" @click="closePasswordChangeModal"></button>
+        </div>
+        <div class="modal-body">
+          <form name="loginPwChgForm" id="loginPwChgForm" class="form" @submit.prevent="submitPasswordChange">
+            <input type="hidden" name="username" id="loginUsername" :value="passwordChangeUsername" />
+            <div class="row">
+              <div class="col-xl-12 text-danger">
+                <template v-for="(line, index) in errorMsgLines" :key="index">
+                  {{ line }}<br v-if="index < errorMsgLines.length - 1" />
+                </template>
+              </div>
+            </div>
+            <div class="row mb-5">
+              <div class="col-xl-3">
+                <div class="col-form-label text-center fs-6 fw-bold">
+                  <label for="currPw">현재 비밀번호</label>
+                </div>
+              </div>
+              <div class="col-xl-9 text-start">
+                <input
+                  type="password"
+                  name="currPw"
+                  id="currPw"
+                  class="form-control required"
+                  maxlength="20"
+                  v-model="passwordChangeForm.currPw"
+                />
+                <div id="currPw_validate_span" class="text-danger">{{ passwordChangeErrors.currPw }}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-3">
+                <div class="col-form-label text-center fs-6 fw-bold">
+                  <label for="newPw">새 비밀번호</label>
+                </div>
+              </div>
+              <div class="col-xl-9 text-start">
+                <input
+                  type="password"
+                  name="newPw"
+                  id="newPw"
+                  class="form-control required"
+                  maxlength="20"
+                  v-model="passwordChangeForm.newPw"
+                />
+                <div class="fs-8 form-text text-noti">
+                  영문, 숫자, 특수문자를 조합해 입력하세요.
+                </div>
+                <div id="newPw_validate_span" class="text-danger">{{ passwordChangeErrors.newPw }}</div>
+              </div>
+            </div>
+            <div class="row mb-5">
+              <div class="col-xl-3">
+                <div class="col-form-label text-center fs-6 fw-bold">
+                  <label for="newPwCf">새 비밀번호 확인</label>
+                </div>
+              </div>
+              <div class="col-xl-9 text-start">
+                <input
+                  type="password"
+                  name="newPwCf"
+                  id="newPwCf"
+                  class="form-control required"
+                  maxlength="20"
+                  v-model="passwordChangeForm.newPwCf"
+                />
+                <div id="newPwCf_validate_span" class="text-danger">{{ passwordChangeErrors.newPwCf }}</div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" :disabled="isPasswordChanging" @click="submitPasswordChange">
+            <span v-if="isPasswordChanging" class="spinner-border spinner-border-sm me-1"></span>
+            저장
+          </button>
+          <button type="button" class="btn btn-light" @click="closePasswordChangeModal">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::로그인 비밀번호 변경 모달-->
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { Modal } from "bootstrap";
+import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
+import { swalConfirm } from "@/utils/swal";
 
 const router = useRouter();
 const route = useRoute();
@@ -172,6 +273,34 @@ const passwordDisabled = ref(false);
 const fieldErrors = ref<{ username?: string; password?: string }>({});
 const errorMsgLines = ref<string[]>([]);
 const sessionExpiredNotice = ref("");
+const passwordChangeModalEl = ref<HTMLElement | null>(null);
+let passwordChangeModal: Modal | null = null;
+const passwordChangeUsername = ref("");
+const passwordChangeToken = ref("");
+const isPasswordChanging = ref(false);
+const passwordChangeForm = reactive({
+  currPw: "",
+  newPw: "",
+  newPwCf: "",
+});
+const passwordChangeErrors = reactive({
+  currPw: "",
+  newPw: "",
+  newPwCf: "",
+});
+
+/** 서버 오류 메시지의 줄바꿈 마크업을 표시용 배열로 변환한다. */
+function splitErrorMsg(errorMsg: string): string[] {
+  return errorMsg
+    .split(/(?:&lt;br\s*\/?&gt;|<br\s*\/?>)/gi)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+/** 로그인 오류 메시지를 줄 단위로 표시한다. */
+function setLoginErrorLines(messages: string[]): void {
+  errorMsgLines.value = messages.flatMap((message) => splitErrorMsg(message));
+}
 
 /** OAuth2 소셜 로그인 팝업을 연다. */
 function openOAuthPopup(url: string): void {
@@ -184,8 +313,122 @@ function goUserSignup(): void {
   router.push("/user/signup");
 }
 
+/** 로그인 비밀번호 변경 폼을 초기화한다. */
+function resetPasswordChangeForm(): void {
+  passwordChangeForm.currPw = "";
+  passwordChangeForm.newPw = "";
+  passwordChangeForm.newPwCf = "";
+  passwordChangeErrors.currPw = "";
+  passwordChangeErrors.newPw = "";
+  passwordChangeErrors.newPwCf = "";
+}
+
+/** 로그인 실패 후 필요한 경우 비밀번호 변경 모달을 연다. */
+function openPasswordChangeModal(username: string): void {
+  passwordChangeUsername.value = username;
+  form.value.username = username;
+  passwordChangeToken.value = authStore.loginAction?.passwordToken ?? "";
+  console.info("[SignIn] password change required after login failure.", {
+    username,
+    isCredentialExpired: authStore.loginAction?.isCredentialExpired === true,
+    needsPasswordReset: authStore.loginAction?.needsPasswordReset === true,
+  });
+  resetPasswordChangeForm();
+  passwordChangeModal?.show();
+}
+
+/** 로그인 비밀번호 변경 모달을 닫는다. */
+function closePasswordChangeModal(): void {
+  passwordChangeModal?.hide();
+}
+
+/** 로그인 비밀번호 변경 폼을 검증한다. */
+function validatePasswordChangeForm(): boolean {
+  passwordChangeErrors.currPw = "";
+  passwordChangeErrors.newPw = "";
+  passwordChangeErrors.newPwCf = "";
+
+  if (!passwordChangeForm.currPw) passwordChangeErrors.currPw = "필수 값을 입력하세요.";
+  if (!passwordChangeForm.newPw) passwordChangeErrors.newPw = "필수 값을 입력하세요.";
+  if (!passwordChangeForm.newPwCf) passwordChangeErrors.newPwCf = "필수 값을 입력하세요.";
+  if (passwordChangeErrors.currPw || passwordChangeErrors.newPw || passwordChangeErrors.newPwCf) return false;
+
+  if (passwordChangeForm.newPw !== passwordChangeForm.newPwCf) {
+    passwordChangeErrors.newPwCf = "새 비밀번호 확인 값이 일치하지 않습니다.";
+    return false;
+  }
+  if (passwordChangeForm.newPw.length < 9 || passwordChangeForm.newPw.length > 15) {
+    passwordChangeErrors.newPw = "새 비밀번호는 9자 이상 15자 이하로 입력하세요.";
+    return false;
+  }
+  if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[$~@$!%*#?&_!])[a-zA-Z\d$~@$!%*#?&_!]{9,15}$/.test(passwordChangeForm.newPw)) {
+    passwordChangeErrors.newPw = "변경할 비밀번호가 형식에 맞지 않습니다.";
+    return false;
+  }
+  return true;
+}
+
+/** 로그인 비밀번호 변경을 처리한다. */
+async function submitPasswordChange(): Promise<void> {
+  if (!validatePasswordChangeForm()) return;
+
+  isPasswordChanging.value = true;
+  try {
+    const fd = new FormData();
+    fd.append("username", passwordChangeUsername.value);
+    fd.append("currPw", passwordChangeForm.currPw);
+    fd.append("newPw", passwordChangeForm.newPw);
+    if (passwordChangeToken.value) fd.append("passwordToken", passwordChangeToken.value);
+    const res = await axios.post("/api/auth/login-pw-chg", fd);
+    if (!res.data?.rslt) {
+      console.warn("[SignIn] password change rejected by server.", { username: passwordChangeUsername.value });
+      errorMsgLines.value = [res.data?.message ?? "비밀번호를 변경하지 못했습니다."];
+      return;
+    }
+    closePasswordChangeModal();
+    errorMsgLines.value = ["비밀번호가 변경되었습니다. 다시 로그인해주세요."];
+    form.value.password = "";
+    resetPasswordChangeForm();
+  } catch (error) {
+    if (axios.isAxiosError<{ message?: string }>(error)) {
+      console.warn("[SignIn] password change request failed.", {
+        username: passwordChangeUsername.value,
+        status: error.response?.status,
+      });
+      errorMsgLines.value = [error.response?.data?.message ?? "비밀번호를 변경하지 못했습니다."];
+    } else {
+      console.warn("[SignIn] password change request failed with unknown error.", error);
+      errorMsgLines.value = ["비밀번호를 변경하지 못했습니다."];
+    }
+  } finally {
+    isPasswordChanging.value = false;
+  }
+}
+
+/** 중복 로그인 확인 후 기존 세션을 끊고 로그인을 재시도한다. */
+async function confirmDuplicateLoginAndRetry(): Promise<void> {
+  const confirmed = await swalConfirm("이미 로그인된 세션이 있습니다. 기존 세션을 끊고 로그인할까요?");
+  if (!confirmed) {
+    await axios.post("/api/auth/expire-session");
+    form.value.password = "";
+    console.info("[SignIn] duplicate-login confirmation canceled.", { username: form.value.username });
+    return;
+  }
+
+  console.info("[SignIn] duplicate-login confirmation accepted.", { username: form.value.username });
+  try {
+    await authStore.login({ username: form.value.username, password: form.value.password });
+    const redirect = typeof route.query.redirect === "string" ? route.query.redirect : "";
+    await router.push(redirect || { name: "journal-weekly" });
+  } catch {
+    const msgs = authStore.errors.length > 0 ? authStore.errors : ["로그인에 실패했습니다."];
+    setLoginErrorLines(msgs);
+  }
+}
+
 /** 마운트 시 쿼리 파라미터에 따라 안내 메시지를 표시한다. */
 onMounted(() => {
+  if (passwordChangeModalEl.value) passwordChangeModal = new Modal(passwordChangeModalEl.value, { backdrop: "static", keyboard: false });
   if (route.query.dupLoginAt === "Y") {
     errorMsgLines.value = ["중복 로그인으로 인해 로그아웃되었습니다."];
   } else if (route.query.sessionExpired === "Y") {
@@ -206,7 +449,13 @@ async function handleLogin(): Promise<void> {
     await router.push(redirect || { name: "journal-weekly" });
   } catch {
     const msgs = authStore.errors.length > 0 ? authStore.errors : ["로그인에 실패했습니다."];
-    errorMsgLines.value = msgs;
+    setLoginErrorLines(msgs);
+    const loginAction = authStore.loginAction;
+    if (loginAction?.isDupIdLogin) {
+      await confirmDuplicateLoginAndRetry();
+    } else if (loginAction?.isCredentialExpired || loginAction?.needsPasswordReset) {
+      openPasswordChangeModal(loginAction.username);
+    }
   } finally {
     isLoading.value = false;
   }
