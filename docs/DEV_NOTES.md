@@ -1,5 +1,23 @@
 # DEV NOTES
 
+
+## Agent / CI 빌드 검증
+
+Agent shell·일부 CI에는 PATH 
+pm이 없다. **Vue 빌드는 Gradle Node로 돌린다** (uild.gradle → com.github.node-gradle.node, 
+odeProjectDir = app/frontend-vue).
+
+| 목적 | 명령 |
+|------|------|
+| Vue 프로덕션 빌드 | ./gradlew buildFrontend |
+| npm install | ./gradlew npmInstall |
+| 기타 package.json 스크립트 | ./gradlew npm_run_<script> (	ype-check → 
+pm_run_type_check) |
+
+인코딩 게이트: python scripts/check_encoding.py (
+pm run check:encoding과 동일).
+
+에이전트용 상세: .cursor/rules/agent-build-toolchain.mdc
 ## 공통 인코딩 게이트
 
 - `npm run check:encoding` → `scripts/check_encoding.py`. 실패 시 **해당 변경 묶음 전체 폐기·되돌림**(부분 통과 없음). `scripts/`에는 검증 외 자동 수정 도구를 두지 않는다(`scripts/README.md`).
