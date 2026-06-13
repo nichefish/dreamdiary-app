@@ -95,6 +95,22 @@ public class WebMvcContextConfig
                         return indexHtml.exists() ? indexHtml : null;
                     }
                 });
+        // react-app 경로 = React SPA (index.html SPA 폴백 포함)
+        final String reactAppContextPath = "/react-app/**";
+        final String reactAppResourcePath = "file:static/react-app/";
+        registry.addResourceHandler(reactAppContextPath)
+                .addResourceLocations(reactAppResourcePath)
+                .resourceChain(false)
+                .addResolver(new PathResourceResolver() {
+                    @Override
+                    protected Resource getResource(final String resourcePath, final Resource location) throws java.io.IOException {
+                        final Resource requested = location.createRelative(resourcePath);
+                        // 실제 파일이 존재하면 그대로 서빙, 없으면 SPA index.html 폴백
+                        if (requested.exists() && requested.isReadable()) return requested;
+                        final Resource indexHtml = new FileSystemResource("static/react-app/index.html");
+                        return indexHtml.exists() ? indexHtml : null;
+                    }
+                });
         // 기본 static 경로
         final String staticContextPath = "/static/**";
         final String orglStaticPath = "classpath:/static/";

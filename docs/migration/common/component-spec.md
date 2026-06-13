@@ -14,8 +14,10 @@
 | Product features | `app/frontend-vue/src/features/{admin,journal,chat,board,calendar,user,attachable,auth}/` | 화면 + feature store + (admin) types co-location |
 | Journal 횡단 store | `features/journal/stores/` | `journal.ts`, `journalModal.ts`, `journalAside.ts` 등 subdomain 공유 상태 |
 | Journal domain utils | `features/journal/utils/` | `journalDate.ts`, `journalDayRefresh.ts` 등 |
+| UI platform kit (Metronic) | `src/platform/metronic/` (`frontend-vue`·`frontend-react` 공통 SSOT) | UI platform kit 층. import `@metronic` alias. 제품 도메인(`app`/`shared`/`features`)·npm vendor 아님. 상세·편집 정책은 `docs/DEV_NOTES.md` §Metronic platform 경계. Vue·React `src/platform/metronic` (✓). |
+| App styles | `src/styles/` | 앱 전역 스타일 |
 
-Import alias는 `@/features/...`, `@/shared/...`, `@/app/...` 를 사용한다. 이전 `@/views/`, `@/stores/`, `@/layouts/` 경로는 re-export 없이 제거됐다.
+Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→ `src/platform/metronic`). 이전 `@/views/`, `@/stores/`, `@/layouts/` 경로는 re-export 없이 제거됐다.
 ## 공통 컴포넌트 목록
 
 ## Vue SPA 공통 구현 (소스 기준)
