@@ -1,6 +1,6 @@
 # 관리자 화면 스펙 (Admin Screen Spec)
 
-> 라우트: `app/frontend-vue/src/router/index.ts`
+> 라우트: `app/frontend-vue/src/app/router/index.ts`
 > 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
 > 모든 관리자 화면은 `DefaultLayout` 하위, `MNGR` 권한 필요.
 > 관리자 화면 본문 상단은 breadcrumb와 중복되는 화면 제목을 렌더링하지 않고, 필요한 안내문과 액션 버튼만 표시한다.
@@ -23,8 +23,8 @@
 
 ## 사이트 관리 (`admin-page`)
 
-**Vue view**: `app/frontend-vue/src/views/admin/AdminPage.vue`  
-**스토어**: `stores/adminPage.ts` / **타입**: `stores/adminPage.types.ts`
+**Vue view**: `app/frontend-vue/src/features/admin/AdminPage.vue`  
+**스토어**: `features/admin/stores/adminPage.ts` / **타입**: `features/admin/types/adminPage.types.ts`
 
 **기능**:
 - 운영 도구 모음 (캐시 관리, 임베딩 백필 등)
@@ -50,8 +50,8 @@
 
 ## 인증 정책 관리 (`auth-policy`)
 
-**Vue view**: `app/frontend-vue/src/views/admin/AuthPolicyPage.vue`  
-**스토어**: `stores/authPolicy.ts`
+**Vue view**: `app/frontend-vue/src/features/admin/AuthPolicyPage.vue`  
+**스토어**: `features/admin/stores/authPolicy.ts`
 
 **기능**:
 - 본문 상단 안내문과 새로고침 버튼 표시
@@ -64,8 +64,8 @@
 
 ## 게시판 그룹 관리 (`board-group-admin`)
 
-**Vue view**: `app/frontend-vue/src/views/admin/BoardGroupAdminPage.vue`  
-**스토어**: `stores/boardGroup.ts`
+**Vue view**: `app/frontend-vue/src/features/admin/BoardGroupAdminPage.vue`  
+**스토어**: `features/admin/stores/boardGroup.ts`
 
 **기능**:
 - 본문 상단 안내문과 새로고침/등록 버튼 표시
@@ -78,8 +78,8 @@
 
 ## 코드 관리 (`code-admin`)
 
-**Vue view**: `app/frontend-vue/src/views/admin/CodeAdminPage.vue`  
-**스토어**: `stores/codeAdmin.ts`
+**Vue view**: `app/frontend-vue/src/features/admin/CodeAdminPage.vue`  
+**스토어**: `features/admin/stores/codeAdmin.ts`
 
 **기능**:
 - 본문 상단 안내문과 새로고침/분류 코드 등록 버튼 표시
@@ -93,9 +93,9 @@
 
 ## 메뉴 관리 (`menu-admin`)
 
-**Vue view**: `app/frontend-vue/src/views/admin/MenuAdminPage.vue`  
+**Vue view**: `app/frontend-vue/src/features/admin/MenuAdminPage.vue`  
 **관련 컴포넌트**: `MenuAdminTreeNode.vue`  
-**스토어**: `stores/menuAdmin.ts`
+**스토어**: `features/admin/stores/menuAdmin.ts`
 
 **기능**:
 - 본문 상단 안내문과 새로고침 버튼 표시
@@ -119,8 +119,8 @@
 
 ## 계정 관리 (`user-admin`)
 
-**Vue view**: `app/frontend-vue/src/views/admin/UserAdminPage.vue`  
-**스토어**: `stores/userAdmin.ts`
+**Vue view**: `app/frontend-vue/src/features/admin/UserAdminPage.vue`  
+**스토어**: `features/admin/stores/userAdmin.ts`
 
 **기능**:
 - 본문 상단 안내문과 새로고침/계정 등록 버튼 표시
@@ -136,8 +136,8 @@
 
 ## 로그 관측 / 사용자별 로그 통계 (`log-list`, `log-stats-user`)
 
-**Vue view**: `app/frontend-vue/src/views/admin/LogAdminPage.vue` (route로 뷰 분기)  
-**스토어**: `stores/logAdmin.ts`
+**Vue view**: `app/frontend-vue/src/features/admin/LogAdminPage.vue` (route로 뷰 분기)  
+**스토어**: `features/admin/stores/logAdmin.ts`
 
 **기능**:
 - 본문 상단 안내문과 목록/통계 전환 버튼 표시
@@ -150,8 +150,8 @@
 
 ## 계정 신청 승인 관리 (`user-signup-approval`)
 
-**Vue view**: `app/frontend-vue/src/views/user/signup/UserSignupApprovalList.vue`  
-**스토어**: `stores/userSignup.ts`
+**Vue view**: `app/frontend-vue/src/features/user/signup/UserSignupApprovalList.vue`  
+**스토어**: `features/user/stores/userSignup.ts`
 
 **기능**:
 - breadcrumb와 중복되는 본문 상단 제목은 표시하지 않는다.

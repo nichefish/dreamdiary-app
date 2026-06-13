@@ -7,11 +7,11 @@
 <script setup lang="ts">
 import { computed, onErrorCaptured, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
-import AppRuntimeStatus from "@/components/system/AppRuntimeStatus.vue";
-import AppChat from "@/views/chat/AppChat.vue";
-import { useAuthStore } from "@/stores/auth";
-import { preloadCategoryMaps } from "@/stores/journalModal";
-import { reportRuntimeError } from "@/utils/appRuntimeStatus";
+import AppRuntimeStatus from "@/shared/components/system/AppRuntimeStatus.vue";
+import AppChat from "@/features/chat/AppChat.vue";
+import { useAuthStore } from "@/shared/auth/stores/auth";
+import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";
+import { reportRuntimeError } from "@/shared/utils/appRuntimeStatus";
 
 const authStore = useAuthStore();
 const route = useRoute();

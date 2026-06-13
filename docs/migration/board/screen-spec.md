@@ -14,7 +14,7 @@
 
 - **Vue SPA**: `/board/:boardKey`
 - **Legacy file**: `legacy/templates/view/feature/board/post/board_post_list.ftlh`
-- **스토어**: `stores/boardPost.ts`
+- **스토어**: `features/board/stores/boardPost.ts`
 - **레이아웃**: `BoardPostLayout` > `BoardPostList.vue`
 
 ### Layout Structure

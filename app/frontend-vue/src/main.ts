@@ -8,13 +8,13 @@ import App from "./App.vue";
 /*
 TIP: To get started with clean router change path to @/router/clean.ts.
  */
-import router from "./router";
-import { AuthExpiredError } from "@/utils/authError";
-import { useAuthStore } from "@/stores/auth";
+import router from "./app/router";
+import { AuthExpiredError } from "@/shared/utils/authError";
+import { useAuthStore } from "@/shared/auth/stores/auth";
 import {
   clearRuntimePending,
   reportRuntimeError,
-} from "@/utils/appRuntimeStatus";
+} from "@/shared/utils/appRuntimeStatus";
 
 /**
  * 전역 Axios 인터셉터: 401(세션 만료/비로그인) 응답 시 로그인 만료를 명확히 안내한다.
@@ -90,7 +90,7 @@ import {
   initializeComponents,
   reinitializeComponents,
 } from "@metronic/core/plugins/keenthemes";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/shared/config/stores/config";
 
 import "@metronic/core/plugins/prismjs";
 

@@ -12,9 +12,9 @@ It must help the user continue thinking with their own journal data, but it must
 
 | Area | File | Responsibility |
 | --- | --- | --- |
-| Chat drawer UI | `app/frontend-vue/src/views/chat/AppChat.vue` | Floating AI chat panel, session list, composer, message rendering |
-| Chat store | `app/frontend-vue/src/stores/chat.ts` | Session/message state, REST calls, STOMP send/cancel |
-| Admin operations UI | `app/frontend-vue/src/views/admin/AdminPage.vue` / `app/frontend-vue/src/stores/adminPage.ts` | Show embedding backfill and entity queue stats / sync controls for operators |
+| Chat drawer UI | `app/frontend-vue/src/features/chat/AppChat.vue` | Floating AI chat panel, session list, composer, message rendering |
+| Chat store | `app/frontend-vue/src/features/chat/stores/chat.ts` | Session/message state, REST calls, STOMP send/cancel |
+| Admin operations UI | `app/frontend-vue/src/features/admin/AdminPage.vue` / `app/frontend-vue/src/features/admin/stores/adminPage.ts` | Show embedding backfill and entity queue stats / sync controls for operators |
 | Mobile chat | `app/mobile-react-native/src/screens/AIChatScreen.tsx` | Native chat screen using the same chat API and STOMP contract |
 
 ### Server
