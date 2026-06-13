@@ -105,14 +105,17 @@ pm run check:encoding과 동일).
 
 - `journal/day/components` 에 섞였던 entry/chapter/interpretation 조립 컴포넌트는 `feature/journal/entry|chapter|interpretation/components` 로 직접 이동했다. **UI/DOM/클래스 불변.**
 
-### frontend-vue 패키지 구조 기준
+### frontend SPA 패키지 구조 기준 (Vue·React)
 
 - flat `src/views/`, `src/stores/`, `src/layouts/`, `src/router/` hybrid 는 제거됐다. import 축은 `@/app/`, `@/shared/`, `@/features/` 이다.
 - `src/app/` — `router/`, `layouts/`, `pages/Error*.vue` 등 앱 shell.
 - `src/shared/` — auth·config·theme·menu store, `ui/editor|tag`, 범용 `utils/`, `components/system/`.
 - `src/features/{admin,journal,chat,board,calendar,user,attachable,auth}/` — 화면 + feature store(+ types) co-location. 백엔드 `feature/*` 축과 맞춘다.
 - feature store는 Pinia 상태·API 조립까지만 담당한다. store가 Vue 컴포넌트나 DOM을 import하면 구조 위반이다.
-- `src/styles/`, `src/vendor/` 는 기존과 같이 앱/벤더 경계다. `metronic_vue_v8.2.1_demo1/` 은 외부 원본 경계.
+- `src/styles/` 는 앱 전역 스타일 경계다.
+- `src/platform/metronic/` 는 UI 플랫폼 킷(Metronic) 경계다. npm vendor·제품 도메인이 아닌 **UI platform 층**으로 분류한다. `frontend-vue`·`frontend-react` 공통 SSOT.
+- `src` top-level 책임: `app/`(shell), `shared/`(횡단 플랫폼), `features/`(제품), `platform/`(UI 킷), `styles/`(앱 스타일).
+- `metronic_vue_v8.2.1_demo1/` 은 Metronic 원본 참조·업그레이드 diff용 외부 경계(앱 import 축 아님).
 
 ### journal Vue 패키지 기준
 
@@ -123,15 +126,34 @@ pm run check:encoding과 동일).
 - 여러 journal feature가 함께 쓰는 context menu, tag profile, comment/related modal 은 `features/journal/shared/**` 에 둔다.
 - modal 위치도 대상 도메인을 따른다. 예: day 등록/상세/meta/tag 상세는 `day/modals`, entry 등록은 `entry/modals`, chapter 등록은 `chapter/modals`, todo 등록은 `todo/modals`.
 
-### Metronic vendor 경계
+### Metronic platform 경계 (UI 킷 층)
 
-- **Metronic asset**: Metronic에서 가져온 CSS/SCSS, 폰트, 이미지, 아이콘, 데모 미디어처럼 제품 코드가 아닌 정적 자산이다. 예: `src/vendor/metronic/assets/**`, `public/media/**`.
-- **Metronic runtime/core**: 앱 코드가 직접 import하는 Metronic helper/plugin/service다. 예: `@metronic/core/services/ApiService`, `@metronic/core/plugins/keenthemes`, `@metronic/core/helpers/assets`. 이것은 정적 asset이 아니라 빌드 입력이지만, public repo에서는 Metronic 원본 재배포가 될 수 있으므로 커밋하지 않는다. 대신 로컬 설치/복원 절차를 둔다.
-- **Metronic demo source**: 원본 데모의 샘플 Vue 컴포넌트와 샘플 화면이다. 예: `src/vendor/metronic/components/**`, `views/crafted/**`, `LayoutBuilder.vue`, 데모용 drawer/search/toolbar/modal 컴포넌트. 제품에서 쓰지 않으면 보관하지 않고 제거한다.
-- **앱 소유 컴포넌트**: Metronic class, icon, asset을 사용하더라도 DreamDiary 라우트/레이아웃/기능에서 import하는 Vue 컴포넌트는 앱 소스다. `src/app/**`, `src/shared/**`, `src/features/**` 아래 앱 경계에 둔다.
-- 예외 판단: `app/layouts/default/components/modals/Modals.vue` 처럼 Metronic demo modal들을 조립하는 Vue 파일은 asset은 아니지만 현재 앱에서 import하지 않는 demo source다. 제품에서 필요해지면 `src/shared` 또는 `src/app` 의 앱 소유 경계로 새로 승격하고, import 경로를 실제 사용 vendor/app 컴포넌트에 맞춘 뒤 커밋한다. 쓰지 않으면 제거한다.
-- 원칙: **추적되는 앱 코드가 import하는 파일은 ignored 상태로 두지 않는다.** ignored 파일을 import해야 한다면 먼저 그 파일을 앱 소유 코드로 승격하거나, 명시적 vendor 복원 절차를 만든다.
-- public repo 원칙: Metronic 원본 소스·SCSS·폰트·이미지·데모 미디어는 git에 올리지 않는다. 필요한 경우 라이선스를 보유한 개발자가 로컬 vendor 복원 절차로 채운다.
+분류: Metronic은 **외부 npm vendor**도 **DreamDiary 제품 도메인**(`app`/`shared`/`features`)도 아니다. 앱 부트스트랩·전역 SCSS·layout 런타임에 깊게 붙은 **UI platform kit** 으로 본다.
+
+| 층 | 경로 | 역할 |
+|---|---|---|
+| 제품 | `app/`, `shared/`, `features/` | DreamDiary 라우트·상태·도메인 UI |
+| 통합 | `app/layouts/**` | Metronic DOM/class를 DreamDiary 방식으로 소유·감쌈 |
+| UI 킷 | `platform/metronic/**` | Metronic 원본(runtime, assets, demo 잔재) |
+| import 축 | `@metronic` alias | 물리 경로 `src/platform/metronic` — 앱 코드에 물리 경로 하드코딩 금지 |
+
+`frontend-vue`·`frontend-react` 공통:
+- **물리 경로 SSOT**: `src/platform/metronic/`
+- **alias SSOT**: `@metronic` → 위 경로 (`vite.config`·`tsconfig` paths)
+- **내부 subtree**: Vue(`core/` 등)와 React(`layout/`, `partials/` 등)는 킷·스타터가 달라 **1:1 동일할 필요 없음**. 맞출 것은 층·alias·편집 정책.
+
+물리 경로 이전 현황:
+- Vue: `src/vendor/metronic` → `src/platform/metronic` (✓ 완료)
+- React: `src/_metronic` → `src/platform/metronic` (예정)
+
+- **Metronic asset**: CSS/SCSS, 폰트, 이미지, 아이콘, 데모 미디어 등 정적 자산. 예: `src/platform/metronic/assets/**`, `public/media/**`.
+- **Metronic runtime/core**: 앱이 직접 import하는 helper/plugin/service. 예: `@metronic/core/services/ApiService`, `@metronic/core/plugins/keenthemes`, `@metronic/core/helpers/assets`. public repo에서는 Metronic 원본 재배포 이슈로 git 미추적; **로컬 킷 복원 절차**로 채운다.
+- **Metronic demo source**: 원본 스타터 샘플 화면·컴포넌트. 예: `platform/metronic/components/**`, `views/crafted/**`, `LayoutBuilder.vue`, 데모용 drawer/search/toolbar/modal. 제품에서 import하지 않으면 제거.
+- **앱 소유 컴포넌트**: Metronic class/icon/asset을 쓰더라도 DreamDiary 라우트·레이아웃·기능에서 import하는 Vue/React 컴포넌트는 `src/app/**`, `src/shared/**`, `src/features/**` 소유.
+- 예외 판단: `app/layouts/default/components/modals/Modals.vue` 처럼 Metronic demo modal을 조립하는 파일은 demo source. 제품에서 필요해지면 `shared` 또는 `app` 으로 승격 후 import 경로를 앱 소유 컴포넌트에 맞춘 뒤 커밋. 쓰지 않으면 제거.
+- **편집 원칙**: `platform/metronic` 자체를 앱 루트로 만들지 않는다. 킷 내부 링크 일괄 수정은 피하고 `app/layouts` adapter에서 감쌈. 장기적으로 demo source(`components/**` 등)는 삭제 대상.
+- **추적 원칙**: 추적되는 앱 코드가 import하는 파일은 ignored 로 두지 않는다. ignored 킷 파일을 import해야 하면 앱 소유 코드로 승격하거나 명시적 **킷 복원 절차**를 문서화한다.
+- public repo 원칙: Metronic 원본 소스·SCSS·폰트·이미지·데모 미디어는 git에 올리지 않는다. 필요한 경우 라이선스를 보유한 개발자가 로컬 **킷 복원 절차**로 채운다.
 
 ### 검증
 
@@ -278,7 +300,7 @@ pm run check:encoding과 동일).
 
 | 범위 | 결정/기록 |
 |------|-----------|
-| Metronic vendor 경계 | `vendor/metronic` 자체를 앱 루트로 만들려 하지 않는다. vendor 내부 링크를 전부 고치는 방향은 피하고, 앱 쪽 adapter/layout에서 감싼다. 장기적으로 `vendor/metronic/components`는 삭제 대상이다. |
+| Metronic platform 경계 | `platform/metronic` 을 UI platform kit 층으로 둔다(제품 도메인·npm vendor 아님). 킷 자체를 앱 루트로 만들지 않고 `app/layouts` adapter에서 감싼다. import는 `@metronic` alias. 장기적으로 demo source(`platform/metronic/components/**` 등)는 삭제 대상. 물리 이동: Vue `vendor/metronic` → `platform/metronic` (✓). React `_metronic` → `platform/metronic` (예정). |
 | 기본 레이아웃명 | `layout/default-layout`은 의미 중복이므로 `layouts/default`로 둔다. |
 | 첫 화면 메뉴 | 대시보드가 placeholder여도 기본 메뉴/사이드바가 있어야 한다. 이동 수단 없는 빈 화면은 마이그레이션 완료 상태가 아니다. |
 | 사용자/관리자 메뉴 | 메뉴는 1차원 하드코딩이 아니라 `GET /api/menus?mode=USER|MNGR` + `subMenuList` depth 기반이어야 한다. fallback 메뉴는 서버 실패 시 보조 수단으로만 둔다. |
