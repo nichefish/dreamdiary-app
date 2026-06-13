@@ -73,7 +73,7 @@ lerna-debug.log*
 /app/frontend-vue/*.js
 /app/frontend-vue/**/*.js
 /app/frontend-vue/src/assets/css
-/app/frontend-vue/src/vendor/metronic/
+/app/frontend-vue/src/platform/metronic/
 
 /app/frontend-react/node_modules
 
