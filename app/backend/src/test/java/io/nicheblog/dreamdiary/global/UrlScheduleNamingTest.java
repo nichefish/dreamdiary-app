@@ -9,13 +9,15 @@ class UrlScheduleNamingTest {
 
     @Test
     void scheduleAppUrlUsesRenamedPath() {
-        assertEquals("/app/schedule/cal.do", Url.SCHEDULE_CAL);
+        assertEquals("/app/schedule/calendar.do", Url.SCHEDULE_CAL);
+        assertEquals("/app/schedule/cal.do", Url.SCHEDULE_CAL_LEGACY);
         assertTrue(Url.SCHEDULE_CAL.contains("/schedule/"));
     }
 
     @Test
     void scheduleApiUrlsUseRenamedPath() {
         assertTrue(Url.SCHEDULE_CAL_LIST_AJAX.startsWith("/api/schedule/"));
+        assertEquals("/api/schedule/list", Url.SCHEDULE_LIST_AJAX);
         assertTrue(Url.SCHEDULE_REG_AJAX.startsWith("/api/schedule/"));
         assertTrue(Url.SCHEDULE_DTL_AJAX.startsWith("/api/schedule/"));
         assertTrue(Url.SCHEDULE_MDF_AJAX.startsWith("/api/schedule/"));

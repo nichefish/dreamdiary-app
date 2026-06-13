@@ -16,6 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import { getMonthlyJournalDays } from "../api/dreamDiaryApi";
 import { colors } from "../theme/colors";
 import type { JournalDay } from "../types/journalDay";
+import { dreamEntriesFromDay } from "../types/journalDay";
 
 // ─── 통계 집계 유틸 ──────────────────────────────────────────
 
@@ -38,7 +39,7 @@ function calcMonthStats(monthDays: JournalDay[]): MonthStats {
   let days = 0, dreams = 0, diaries = 0;
   for (const day of monthDays) {
     // 이 날짜에 엔트리가 하나라도 있으면 기록 일수 +1
-    const topDreams = day.journalDreamList ?? [];
+    const topDreams = dreamEntriesFromDay(day);
     const chapters  = day.journalChapterList ?? [];
     const hasAny    = topDreams.length > 0 || chapters.some(ch =>
       (ch.journalDiaryList?.length ?? 0) > 0 ||

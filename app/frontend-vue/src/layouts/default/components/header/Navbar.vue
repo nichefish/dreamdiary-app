@@ -151,7 +151,7 @@ export default defineComponent({
     const onMenuModeChange = async (event: Event) => {
       const nextMode = (event.target as HTMLSelectElement).value as MenuMode;
       await menuStore.setMenuMode(nextMode);
-      await router.push(nextMode === "MNGR" ? "/admin" : "/dashboard");
+      await router.push(nextMode === "MNGR" ? "/admin" : "/journal/weekly");
     };
     return {
       canSwitchMenuMode,

@@ -87,6 +87,7 @@
           <input
             ref="weekPickerRef"
             type="date"
+            :value="store.weekStartDt || ''"
             style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
             tabindex="-1"
             @change="onWeekPickerChange"
@@ -136,9 +137,9 @@
           </button>
           <span class="mx-1">|</span>
           <span class="px-1 text-center">
-            <span class="fs-6 text-muted">{{ pinnedYy != null ? String(pinnedYy) : '----' }}</span>
+            <span class="fs-6 text-muted">{{ asideStore.pinnedYy != null ? String(asideStore.pinnedYy) : '----' }}</span>
             <span class="text-muted"> / </span>
-            <span class="fs-6 text-muted">{{ pinnedMnth != null ? String(pinnedMnth) : '--' }}</span>
+            <span class="fs-6 text-muted">{{ asideStore.pinnedMnth != null ? String(asideStore.pinnedMnth) : '--' }}</span>
             <i class="bi bi-pin-map fs-7 ms-1 text-muted"></i>
           </span>
           <span class="mx-1">|</span>
@@ -146,7 +147,7 @@
             type="button"
             class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
             title="고정한 년월로 돌아가기"
-            :disabled="pinnedYy == null"
+            :disabled="asideStore.pinnedYy == null"
             @click="turnback"
           >
             <i class="bi bi-reply-all pe-0"></i>
@@ -157,28 +158,11 @@
 
       <div class="separator"></div>
 
-      <!--begin::보기 필터 토글-->
+      <!--begin::표시 필터 토글-->
       <div class="d-flex flex-column gap-2">
         <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
           <input
-            class="form-check-input w-30px h-20px"
-            type="checkbox"
-            :checked="store.showDiaries"
-            @change="toggleDiaries"
-          />
-          <span class="form-check-label text-muted fs-7">DIARIES</span>
-        </label>
-        <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-          <input
-            class="form-check-input w-30px h-20px"
-            type="checkbox"
-            :checked="store.showDreams"
-            @change="toggleDreams"
-          />
-          <span class="form-check-label text-muted fs-7">DREAMS</span>
-        </label>
-        <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-          <input
+            id="toggleTagCloud"
             class="form-check-input w-30px h-20px"
             type="checkbox"
             :checked="store.showTagCloud"
@@ -187,76 +171,140 @@
           <span class="form-check-label text-muted fs-7">TAGCLOUD</span>
         </label>
       </div>
-      <!--end::보기 필터 토글-->
+      <!--end::표시 필터 토글-->
 
       <!--begin::ENTRY 필터-->
       <div class="d-flex flex-column gap-2">
-        <div class="text-gray-900 fs-6 fw-bold">ENTRY FILTER</div>
-
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- CHAPTER CATEGORIES</div>
-          <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">Loading...</div>
-          <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">카테고리를 불러오지 못했습니다.</div>
-          <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
-            <label
-              v-for="ctgr in chapterCategoryOptions"
-              :key="ctgr.code"
-              class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer"
-            >
-              <input
-                class="form-check-input w-16px h-16px"
-                type="checkbox"
-                :checked="isChapterCategorySelected(ctgr.code)"
-                @change="toggleChapterCategory(ctgr.code)"
-              />
-              <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
-          <div class="input-group input-group-sm">
+        <div class="d-flex flex-column gap-2">
+          <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
             <input
-              v-model="store.diaryKeyword"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="일기 키워드"
-              maxlength="200"
-              @keyup.enter="store.fetchDays()"
+              id="toggleDiaries"
+              class="form-check-input w-30px h-20px"
+              type="checkbox"
+              :checked="store.showDiaries"
+              @change="toggleDiaries"
             />
-            <button
-              type="button"
-              class="btn btn-sm btn-icon btn-light"
-              title="일기 키워드 필터 적용"
-              @click="store.fetchDays()"
-            >
-              <i class="bi bi-funnel fs-7"></i>
-            </button>
+            <span class="form-check-label text-muted fs-7">DIARIES</span>
+          </label>
+
+          <div v-if="store.showDiaries" class="d-flex flex-column gap-2 ps-3">
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- CHAPTER CATEGORIES</div>
+              <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">Loading...</div>
+              <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">카테고리를 불러오지 못했습니다.</div>
+              <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
+                <label
+                  v-for="ctgr in chapterCategoryOptions"
+                  :key="ctgr.code"
+                  class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer"
+                >
+                  <input
+                    class="form-check-input w-16px h-16px"
+                    type="checkbox"
+                    :checked="isChapterCategorySelected(ctgr.code)"
+                    @change="toggleChapterCategory(ctgr.code)"
+                  />
+                  <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DIARY LIFECYCLE</div>
+              <select
+                id="diaryLifecycleFilter"
+                v-model="store.diaryLifecycleKey"
+                class="form-select form-select-sm"
+                @change="store.fetchDays()"
+              >
+                <option value="">전체</option>
+                <option
+                  v-for="option in lifecycleOptions"
+                  :key="'diary-lifecycle-' + option.key"
+                  :value="option.key"
+                >{{ option.label }}</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
+              <div class="input-group input-group-sm">
+                <input
+                  v-model="store.diaryKeyword"
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="일기 키워드"
+                  maxlength="200"
+                  @keyup.enter="store.fetchDays()"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm btn-icon btn-light"
+                  title="일기 키워드 필터 적용"
+                  @click="store.fetchDays()"
+                >
+                  <i class="bi bi-funnel fs-7"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DREAM KEYWORDS</div>
-          <div class="input-group input-group-sm">
+        <div class="d-flex flex-column gap-2">
+          <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
             <input
-              v-model="store.dreamKeyword"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="꿈 키워드"
-              maxlength="200"
-              @keyup.enter="store.fetchDays()"
+              id="toggleDreams"
+              class="form-check-input w-30px h-20px"
+              type="checkbox"
+              :checked="store.showDreams"
+              @change="toggleDreams"
             />
-            <button
-              type="button"
-              class="btn btn-sm btn-icon btn-light"
-              title="꿈 키워드 필터 적용"
-              @click="store.fetchDays()"
-            >
-              <i class="bi bi-funnel fs-7"></i>
-            </button>
+            <span class="form-check-label text-muted fs-7">DREAMS</span>
+          </label>
+
+          <div v-if="store.showDreams" class="d-flex flex-column gap-2 ps-3">
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DREAM LIFECYCLE</div>
+              <select
+                id="dreamLifecycleFilter"
+                v-model="store.dreamLifecycleKey"
+                class="form-select form-select-sm"
+                @change="store.fetchDays()"
+              >
+                <option value="">전체</option>
+                <option
+                  v-for="option in lifecycleOptions"
+                  :key="'dream-lifecycle-' + option.key"
+                  :value="option.key"
+                >{{ option.label }}</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="text-muted fs-8 fw-bold mb-1">- DREAM KEYWORDS</div>
+              <div class="input-group input-group-sm">
+                <input
+                  v-model="store.dreamKeyword"
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="꿈 키워드"
+                  maxlength="200"
+                  @keyup.enter="store.fetchDays()"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm btn-icon btn-light"
+                  title="꿈 키워드 필터 적용"
+                  @click="store.fetchDays()"
+                >
+                  <i class="bi bi-funnel fs-7"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="text-gray-900 fs-6 fw-bold mt-1">ENTRY FILTER</div>
       </div>
       <!--end::ENTRY 필터-->
 
@@ -325,10 +373,6 @@ const weekPickerRef = ref<HTMLInputElement | null>(null);
 /** 요일 버튼에서 선택된 날짜 (기본: 오늘) */
 const selectedDt = ref<string>(formatLocalDateStr(new Date()));
 
-/** Pinpoint — 고정된 년/월 (null: 미고정) */
-const pinnedYy = ref<number | null>(null);
-const pinnedMnth = ref<number | null>(null);
-
 interface ChapterCategoryOption {
   code: string;
   codeName: string;
@@ -336,6 +380,11 @@ interface ChapterCategoryOption {
 
 const chapterCategoryOptions = ref<ChapterCategoryOption[]>([]);
 const chapterCategoryLoading = ref(false);
+const lifecycleOptions = [
+  { key: "OPEN", label: "진행 중" },
+  { key: "PENDING", label: "보류" },
+  { key: "RESOLVED", label: "완료" },
+];
 
 /** 주간 요일 버튼 목록 (월~일) */
 const weekDays = computed(() => {
@@ -361,6 +410,8 @@ const hasActiveFilters = computed(() =>
   !store.showTagCloud ||
   store.diaryKeyword.trim() !== "" ||
   store.dreamKeyword.trim() !== "" ||
+  store.diaryLifecycleKey !== "" ||
+  store.dreamLifecycleKey !== "" ||
   store.chapterCtgrCds.length > 0
 );
 
@@ -373,10 +424,14 @@ async function selectWeekDay(day: { dateStr: string; hasDay: boolean }): Promise
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** 주간 범위 레이블 클릭 → 날짜 선택기 열기 */
+/** 주간 범위 레이블 클릭 → 날짜 선택기 열기 (표시 기준일 = store.weekStartDt) */
 async function openWeekPicker(): Promise<void> {
+  const el = weekPickerRef.value;
+  if (el && store.weekStartDt) {
+    el.value = store.weekStartDt;
+  }
   await nextTick();
-  (weekPickerRef.value as HTMLInputElement & { showPicker?: () => void })?.showPicker?.();
+  (el as HTMLInputElement & { showPicker?: () => void } | null)?.showPicker?.();
 }
 
 /** 날짜 선택 → 해당 날짜가 포함된 주로 이동 후 해당 일자 카드로 스크롤 */
@@ -394,16 +449,15 @@ async function onWeekPickerChange(e: Event): Promise<void> {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** 현재 년/월을 Pinpoint로 고정 */
+/** 현재 년/월을 Pinpoint로 고정 (localStorage `journal_day_pinpoint`) */
 function pinpoint(): void {
-  pinnedYy.value = store.yy;
-  pinnedMnth.value = store.mnth;
+  asideStore.setPinpoint(store.yy, store.mnth);
 }
 
 /** 고정한 년/월로 되돌리기 */
 function turnback(): void {
-  if (pinnedYy.value == null || pinnedMnth.value == null) return;
-  store.gotoYyMnth(pinnedYy.value, pinnedMnth.value);
+  if (asideStore.pinnedYy == null || asideStore.pinnedMnth == null) return;
+  store.gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth);
 }
 
 function onYyChange(e: Event) {
@@ -469,6 +523,8 @@ async function resetFilters(): Promise<void> {
   store.showTagCloud = true;
   store.diaryKeyword = "";
   store.dreamKeyword = "";
+  store.diaryLifecycleKey = "";
+  store.dreamLifecycleKey = "";
   store.chapterCtgrCds = [];
   if (shouldRefreshTagCloud) {
     void store.fetchTagCloud();

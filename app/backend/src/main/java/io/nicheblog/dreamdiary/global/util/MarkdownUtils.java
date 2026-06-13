@@ -187,17 +187,32 @@ public class MarkdownUtils {
                 if (html.trim().startsWith("&nbsp;-")) elmt.addClass("my-2");
             }
 
-            // 해당 요소의 모든 자식 노드를 순회
-            for (final Node child : elmt.childNodes()) {
-                if (child instanceof TextNode textNode) {
-                    // 텍스트 노드의 경우, 마크다운 변환 로직을 적용
-                    final String text = textNode.getWholeText();
-                    final String processedText = procText(text); // 변환된 텍스트 처리 :: 메소드 분리
-                    if (text.equals(processedText)) continue;
-                    // 텍스트 노드에 HTML 코드를 직접 삽입
-                    textNode.before(processedText);
-                    textNode.remove();
-                }
+            procChildNodes(elmt);
+        }
+    }
+
+    /**
+     * 주어진 요소 하위의 텍스트 노드를 재귀 순회하며 커스텀 markdown 치환을 적용한다.
+     * direct child만 순회하면 span/strong 등 inline 태그 내부 텍스트가 누락되므로
+     * 하위 노드까지 내려가되, pre 내부 텍스트는 기존 계약대로 제외한다.
+     *
+     * @param parent 순회 시작 요소
+     */
+    private static void procChildNodes(final Node parent) {
+        final List<Node> children = new ArrayList<>(parent.childNodes());
+        for (final Node child : children) {
+            if (child instanceof TextNode textNode) {
+                final String text = textNode.getWholeText();
+                final String processedText = procText(text);
+                if (text.equals(processedText)) continue;
+                textNode.before(processedText);
+                textNode.remove();
+                continue;
+            }
+
+            if (child instanceof Element childElement) {
+                if (childElement.tagName().equalsIgnoreCase("pre")) continue;
+                procChildNodes(childElement);
             }
         }
     }

@@ -1,11 +1,8 @@
 <template>
   <div class="log-admin-page">
     <div class="log-admin-toolbar">
-      <div>
-        <h2 class="mb-1">{{ isStatsView ? "사용자별 로그 통계" : "로그 관측" }}</h2>
-        <div class="text-muted fs-7">
-          {{ isStatsView ? "사용자별 활동 로그 통계를 확인합니다." : "실패, 지연, trace 흐름을 중심으로 운영 로그를 확인합니다." }}
-        </div>
+      <div class="text-muted fs-7">
+        {{ isStatsView ? "사용자별 활동 로그 통계를 확인합니다." : "실패, 지연, trace 흐름을 중심으로 운영 로그를 확인합니다." }}
       </div>
       <div class="log-admin-actions">
         <RouterLink class="btn btn-sm" :class="!isStatsView ? 'btn-primary' : 'btn-light-primary'" to="/admin/log">

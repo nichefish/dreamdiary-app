@@ -1,17 +1,10 @@
 <template>
   <div class="menu-admin-page">
     <div class="menu-admin-toolbar">
-      <div>
-        <h2 class="mb-1">메뉴 관리</h2>
-        <div class="text-muted fs-7">사이드바와 관리자 메뉴 트리를 관리합니다.</div>
-      </div>
+      <div class="text-muted fs-7">사이드바와 관리자 메뉴 트리를 관리합니다.</div>
       <div class="menu-admin-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchTree">
           <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-primary" @click="store.openMainCreate">
-          <i class="bi bi-plus-lg"></i>
-          메인 메뉴 등록
         </button>
       </div>
     </div>
@@ -47,8 +40,8 @@
             @edit="openEdit"
             @toggle-use="toggleUse"
             @delete-node="deleteMenu"
-            @drag-start="(idx) => onMainDragStart('N', idx)"
-            @drop-node="(idx) => onMainDrop('N', idx)"
+            @drag-start="(idx) => onMainDragStart('USER', idx)"
+            @drop-node="(idx) => onMainDrop('USER', idx)"
             @child-drag-start="onChildDragStart"
             @child-drop="onChildDrop"
           />
@@ -85,8 +78,8 @@
             @edit="openEdit"
             @toggle-use="toggleUse"
             @delete-node="deleteMenu"
-            @drag-start="(idx) => onMainDragStart('Y', idx)"
-            @drop-node="(idx) => onMainDrop('Y', idx)"
+            @drag-start="(idx) => onMainDragStart('MNGR', idx)"
+            @drop-node="(idx) => onMainDrop('MNGR', idx)"
             @child-drag-start="onChildDragStart"
             @child-drop="onChildDrop"
           />
@@ -100,29 +93,11 @@
           <div class="modal-content">
             <form @submit.prevent="submit">
               <div class="modal-header">
-                <h5 class="modal-title">{{ store.isEdit ? "메뉴 수정" : "메뉴 등록" }}</h5>
+                <h5 class="modal-title">{{ store.isEdit ? "메뉴 수정" : "하위 메뉴 등록" }}</h5>
                 <button type="button" class="btn-close" @click="store.closeModal"></button>
               </div>
               <div class="modal-body">
                 <div class="menu-admin-form">
-                  <div class="menu-admin-form-row">
-                    <label class="form-label">메뉴 유형</label>
-                    <div class="menu-admin-type">
-                      <span class="badge" :class="store.form.menuType === 'MAIN' ? 'badge-light-primary' : 'badge-light-info'">
-                        {{ store.form.menuType === "MAIN" ? "메인 메뉴" : "하위 메뉴" }}
-                      </span>
-                      <span v-if="store.form.upperMenuNm" class="text-muted">{{ store.form.upperMenuNm }}</span>
-                    </div>
-                  </div>
-
-                  <div v-if="store.isMainForm" class="menu-admin-form-row">
-                    <label for="adminYn" class="form-label">관리자 메뉴</label>
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                      <input id="adminYn" class="form-check-input cursor-pointer" type="checkbox" :checked="store.form.adminYn === 'Y'" @change="onAdminYnChange" />
-                      <label class="form-check-label ms-3" for="adminYn">{{ store.form.adminYn === "Y" ? "관리자" : "사용자" }}</label>
-                    </div>
-                  </div>
-
                   <div class="menu-admin-form-row">
                     <label for="useYn" class="form-label">사용 여부</label>
                     <div class="form-check form-switch form-check-custom form-check-solid">
@@ -131,23 +106,25 @@
                     </div>
                   </div>
 
-                  <div v-if="!store.isMainForm" class="menu-admin-form-row">
-                    <label for="parentMenuId" class="form-label required">상위 메뉴</label>
-                    <select id="parentMenuId" v-model.number="store.form.parentMenuId" class="form-select form-select-solid" required>
-                      <option v-for="opt in store.parentOptions" :key="opt.id" :value="opt.id">
-                        {{ `${"--".repeat(opt.depth)} ${opt.label}` }}
-                      </option>
-                    </select>
+                  <div class="menu-admin-form-row">
+                    <label class="form-label required">상위 메뉴</label>
+                    <div class="form-control form-control-solid menu-admin-readonly-field">
+                      {{ store.form.upperMenuNm || "-" }}
+                    </div>
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label for="menuName" class="form-label required">메뉴명</label>
-                    <input id="menuName" v-model.trim="store.form.menuName" type="text" class="form-control form-control-solid" maxlength="200" required />
-                  </div>
-
-                  <div class="menu-admin-form-row">
-                    <label for="menuLabel" class="form-label">메뉴 라벨</label>
-                    <input id="menuLabel" v-model.trim="store.form.menuLabel" type="text" class="form-control form-control-solid" maxlength="100" />
+                    <label class="form-label">기본 정보</label>
+                    <div class="menu-admin-form-pair">
+                      <div>
+                        <label for="menuName" class="form-label required">메뉴명</label>
+                        <input id="menuName" v-model.trim="store.form.menuName" type="text" class="form-control form-control-solid" maxlength="200" required />
+                      </div>
+                      <div>
+                        <label for="menuLabel" class="form-label required">메뉴 라벨</label>
+                        <input id="menuLabel" v-model.trim="store.form.menuLabel" type="text" class="form-control form-control-solid" maxlength="100" required />
+                      </div>
+                    </div>
                   </div>
 
                   <div class="menu-admin-form-row">
@@ -158,13 +135,27 @@
                   </div>
 
                   <div v-if="store.form.submenuExpandType === 'NO_SUB'" class="menu-admin-form-row">
-                    <label for="url" class="form-label">URL</label>
-                    <input id="url" v-model.trim="store.form.url" type="text" class="form-control form-control-solid" maxlength="1000" />
+                    <label for="url" class="form-label required">URL</label>
+                    <input id="url" v-model.trim="store.form.url" type="text" class="form-control form-control-solid" maxlength="1000" required />
                   </div>
 
                   <div class="menu-admin-form-row">
                     <label for="unreadCntNm" class="form-label">미열람 카운트</label>
-                    <input id="unreadCntNm" v-model.trim="store.form.unreadCntNm" type="text" class="form-control form-control-solid" maxlength="100" />
+                    <div class="menu-admin-unread-row">
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                        <input id="unreadCntEnabled" v-model="store.form.unreadCntEnabled" class="form-check-input cursor-pointer" type="checkbox" @change="onUnreadCntEnabledChange" />
+                        <label class="form-check-label ms-3" for="unreadCntEnabled">{{ store.form.unreadCntEnabled ? "사용" : "미사용" }}</label>
+                      </div>
+                      <input
+                        v-if="store.form.unreadCntEnabled"
+                        id="unreadCntNm"
+                        v-model.trim="store.form.unreadCntNm"
+                        type="text"
+                        class="form-control form-control-solid"
+                        maxlength="100"
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div class="menu-admin-form-row">
@@ -197,12 +188,12 @@
 import { swalConfirm, swalAlert } from "@/utils/swal";
 import { computed, onMounted, ref } from "vue";
 import MenuAdminTreeNode from "@/views/admin/MenuAdminTreeNode.vue";
-import { useMenuAdminStore, type MenuNode } from "@/stores/menuAdmin";
+import { useMenuAdminStore, type MenuNode, type MenuTargetMode } from "@/stores/menuAdmin";
 
 const store = useMenuAdminStore();
-const userMenuRows = computed(() => store.rows.filter((row) => String(row.adminYn ?? "N").toUpperCase() !== "Y"));
-const adminMenuRows = computed(() => store.rows.filter((row) => String(row.adminYn ?? "N").toUpperCase() === "Y"));
-const mainDrag = ref<{ adminYn: "Y" | "N"; index: number } | null>(null);
+const userMenuRows = computed(() => store.rows.filter((row) => store.getMenuTargetMode(row) === "USER"));
+const adminMenuRows = computed(() => store.rows.filter((row) => store.getMenuTargetMode(row) === "MNGR"));
+const mainDrag = ref<{ targetMode: MenuTargetMode; index: number } | null>(null);
 const childDrag = ref<{ parentId: number; index: number } | null>(null);
 
 async function openEdit(id: number) {
@@ -218,12 +209,24 @@ async function submit() {
     void swalAlert("메뉴명을 입력해주세요.");
     return;
   }
+  if (!store.form.menuLabel.trim()) {
+    void swalAlert("메뉴 라벨을 입력해주세요.");
+    return;
+  }
   if (!store.form.submenuExpandType) {
     void swalAlert("하위메뉴 표시 방식을 선택해주세요.");
     return;
   }
-  if (store.form.menuType === "SUB" && store.form.parentMenuId == null) {
+  if (store.form.submenuExpandType === "NO_SUB" && !store.form.url.trim()) {
+    void swalAlert("URL을 입력해주세요.");
+    return;
+  }
+  if (store.form.parentMenuId == null) {
     void swalAlert("상위 메뉴를 선택해주세요.");
+    return;
+  }
+  if (store.form.unreadCntEnabled && !store.form.unreadCntNm.trim()) {
+    void swalAlert("미열람 카운트 이름을 입력해주세요.");
     return;
   }
   try {
@@ -233,12 +236,14 @@ async function submit() {
   }
 }
 
-function onAdminYnChange(event: Event) {
-  store.form.adminYn = (event.target as HTMLInputElement).checked ? "Y" : "N";
-}
-
 function onUseYnChange(event: Event) {
   store.form.useYn = (event.target as HTMLInputElement).checked ? "Y" : "N";
+}
+
+function onUnreadCntEnabledChange(event: Event) {
+  if (!(event.target as HTMLInputElement).checked) {
+    store.form.unreadCntNm = "";
+  }
 }
 
 async function toggleUse(row: MenuNode) {
@@ -259,12 +264,12 @@ async function deleteMenu(row: MenuNode) {
   }
 }
 
-async function onMainDrop(adminYn: "Y" | "N", targetIndex: number) {
+async function onMainDrop(targetMode: MenuTargetMode, targetIndex: number) {
   const drag = mainDrag.value;
   mainDrag.value = null;
-  if (!drag || drag.adminYn !== adminYn) return;
+  if (!drag || drag.targetMode !== targetMode) return;
   try {
-    const message = await store.reorderMainWithinGroup(adminYn, drag.index, targetIndex);
+    const message = await store.reorderMainWithinGroup(targetMode, drag.index, targetIndex);
     if (message) void swalAlert(message);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : "메인 메뉴 순서를 저장하지 못했습니다.");
@@ -272,8 +277,8 @@ async function onMainDrop(adminYn: "Y" | "N", targetIndex: number) {
   }
 }
 
-function onMainDragStart(adminYn: "Y" | "N", index: number) {
-  mainDrag.value = { adminYn, index };
+function onMainDragStart(targetMode: MenuTargetMode, index: number) {
+  mainDrag.value = { targetMode, index };
   childDrag.value = null;
 }
 
@@ -308,8 +313,7 @@ onMounted(async () => {
 }
 
 .menu-admin-toolbar,
-.menu-admin-actions,
-.menu-admin-type {
+.menu-admin-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -407,6 +411,30 @@ onMounted(async () => {
   font-weight: 700;
 }
 
+.menu-admin-form-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.menu-admin-form-pair .form-label {
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
+.menu-admin-readonly-field {
+  display: flex;
+  align-items: center;
+  min-height: 43px;
+}
+
+.menu-admin-unread-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .menu-admin-icon-editor {
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr);
@@ -435,6 +463,8 @@ onMounted(async () => {
   }
 
   .menu-admin-form-row,
+  .menu-admin-form-pair,
+  .menu-admin-unread-row,
   .menu-admin-icon-editor {
     grid-template-columns: 1fr;
   }

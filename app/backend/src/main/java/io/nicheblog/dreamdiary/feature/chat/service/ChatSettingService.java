@@ -29,9 +29,9 @@ public class ChatSettingService {
     private static final String SCOPE_USER = "USER";
     private static final String SCOPE_ADMIN = "ADMIN";
     private static final String ADMIN_SCOPE_KEY = "GLOBAL";
-    private static final int DEFAULT_RECENT_MESSAGE_LIMIT = 20;
+    private static final int DEFAULT_RECENT_MESSAGE_LIMIT = 50;
     private static final int MIN_RECENT_MESSAGE_LIMIT = 2;
-    private static final int MAX_RECENT_MESSAGE_LIMIT = 100;
+    private static final int MAX_RECENT_MESSAGE_LIMIT = 200;
 
     private final ChatSettingRepository repository;
 

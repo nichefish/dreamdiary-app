@@ -206,6 +206,8 @@ import axios from "axios";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useAttachableModalStore } from "@/stores/attachableModal";
 import { useJournalStore } from "@/stores/journal";
+import { useRoute } from "vue-router";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import type { InterpretationItem } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 
@@ -216,6 +218,7 @@ const props = defineProps<{
 const modalStore = useJournalModalStore();
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const route = useRoute();
 
 const lcKey = computed(() => props.interpretation.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
@@ -270,12 +273,13 @@ function openHistory(): void {
 function scrollAfterFetch(): void {
   const dt = props.interpretation.stdrdDt;
   if (!dt) return;
-  void journalStore.fetchDays().then(() => {
+  const afterFetch = () => {
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  });
+  };
+  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
 }
 
 /** 라이프사이클 설정 */
@@ -338,7 +342,7 @@ async function deleteInterpretation(): Promise<void> {
     const res = await axios.delete(`/api/journal/interpretation/${props.interpretation.id}`);
     if (res.data?.rslt) {
       await swalAlert(res.data?.message ?? "삭제되었습니다.");
-      void journalStore.fetchDays();
+      void refreshJournalDaysForRoute(journalStore, route, props.interpretation.stdrdDt);
     }
     else void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
   } catch (e: unknown) {

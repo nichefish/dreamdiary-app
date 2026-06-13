@@ -188,9 +188,12 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/stores/attachableModal";
 import { useJournalStore } from "@/stores/journal";
+import { useRoute } from "vue-router";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
 const saving = ref(false);
@@ -274,7 +277,7 @@ async function save() {
     if (result.rslt) {
       close();
       await swalAlert(result.message ?? "저장되었습니다.");
-      void journalStore.fetchDays();
+      void refreshJournalDaysForRoute(journalStore, route);
     } else if (result.message) {
       void swalAlert(result.message);
     }

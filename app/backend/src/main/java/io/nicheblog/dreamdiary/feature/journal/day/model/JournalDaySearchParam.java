@@ -55,6 +55,10 @@ public class JournalDaySearchParam
     private String diaryKeyword;
     /** 꿈 키워드 */
     private String dreamKeyword;
+    /** 일기 라이프사이클 키 */
+    private String diaryLifecycleKey;
+    /** 꿈 라이프사이클 키 */
+    private String dreamLifecycleKey;
     /** 엔티티 카테고리 코드 */
     private List<String> chapterCtgrCds;
 

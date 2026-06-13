@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.service.helper.JournalChapterViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDreamSectionDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
@@ -121,8 +122,7 @@ public final class JournalDayViewHelper {
     ) {
         for (JournalDayDto day : listDto) {
             JournalChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
-            JournalEntryStateViewHelper.applyDreamStates(day.getJournalDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
-            JournalEntryStateViewHelper.applyDreamStates(day.getJournalElseDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
+            applyDreamStatesForDay(day, dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
         }
     }
 
@@ -152,9 +152,28 @@ public final class JournalDayViewHelper {
             }
 
             if (searchParam.isShowDreams()) {
-                JournalEntryStateViewHelper.applyDreamStates(day.getJournalDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
-                JournalEntryStateViewHelper.applyDreamStates(day.getJournalElseDreamList(), dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
+                applyDreamStatesForDay(day, dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
             }
+        }
+    }
+
+    private static void applyDreamStatesForDay(
+            final JournalDayDto day,
+            final Map<Integer, JournalState> dreamMap,
+            final Map<Integer, String> dreamLifecycleMap,
+            final Map<Integer, JournalState> interpretationMap,
+            final Map<Integer, String> interpretationLifecycleMap
+    ) {
+        if (day == null || CollectionUtils.isEmpty(day.getJournalDreamSectionList())) return;
+        for (final JournalDreamSectionDto section : day.getJournalDreamSectionList()) {
+            if (section == null) continue;
+            JournalEntryStateViewHelper.applyDreamStates(
+                    section.getEntries(),
+                    dreamMap,
+                    dreamLifecycleMap,
+                    interpretationMap,
+                    interpretationLifecycleMap
+            );
         }
     }
 

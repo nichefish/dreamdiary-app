@@ -39,7 +39,7 @@
           v-if="showDreams"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-          @click="openDreamRegist"
+          @click="openDreamRegist()"
         >
           <i class="bi bi-moon-stars fs-4 pe-1"></i>
           저널 꿈 등록
@@ -60,8 +60,8 @@
             <div class="menu-item px-3">
               <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">저널 일자</div>
             </div>
-            <!--begin::주간 뷰로 이동-->
-            <div class="menu-item px-3 my-1">
+            <!--begin::주간 뷰로 이동 (월간 등; 주간 화면에서는 미표시)-->
+            <div v-if="showGotoWeeklyMenu" class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="gotoWeekly">
                 주간 뷰로 이동
                 <i class="bi bi-calendar-week fs-8"></i>
@@ -201,76 +201,20 @@
       </template>
       <!--end::일기 챕터 목록-->
 
-      <!--begin::꿈 목록-->
+      <!--begin::꿈 목록 (가상 섹션: 내 꿈 + 꿈꾼 이름별)-->
       <template v-if="showDreams && hasDream">
-        <!--begin::꿈 섹션 헤더-->
-        <div class="d-flex align-items-center mt-2">
-          <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
-            <span class="me-2">꿈</span>
-            <i class="bi bi-moon-stars fs-4"></i>
-          </div>
-          <div class="col-3 d-none d-md-flex align-items-center gap-2">
-            <!--begin::꿈 등록 버튼-->
-            <button
-              type="button"
-              class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-              title="저널 꿈 등록"
-              @click="openDreamRegist"
-            >
-              <i class="bi bi-moon-stars fs-4 pe-1"></i>
-              저널 꿈 등록
-            </button>
-            <!--end::꿈 등록 버튼-->
-            <!--begin::복사 버튼-->
-            <button
-              type="button"
-              class="btn btn-sm btn-light-primary btn-outlined ms-2 px-3 cursor-pointer"
-              title="복사"
-              @click="copyDreams"
-            >
-              <i class="bi bi-copy p-0"></i>
-            </button>
-            <!--end::복사 버튼-->
-            <!--begin::TXT보내기 버튼-->
-            <button
-              type="button"
-              class="btn btn-sm btn-outline btn-light-primary ps-3 pe-2"
-              title="TXT보내기"
-              @click="exportDreams"
-            >
-              <i class="fas fa-download"></i>
-            </button>
-            <!--end::TXT보내기 버튼-->
-            <!--begin::접힘 토글 버튼 (클라이언트 DOM만, 서버 상태 무변경)-->
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary ms-2 px-3 toggle-chapter-btn"
-              @click="toggleDreams"
-            >
-              <i class="bi pe-0" :class="dreamsCollapsed ? 'bi-arrows-expand' : 'bi-arrows-collapse'"></i>
-            </button>
-            <!--end::접힘 토글 버튼-->
-          </div>
-        </div>
-        <!--end::꿈 섹션 헤더-->
-        <!--begin::꿈 엔트리 목록-->
-        <div class="journal-chapter-item">
-          <div :class="['journal-chapter-content', { collapsed: dreamsCollapsed }]">
-            <JournalEntryItem
-              v-for="dream in journalDreamList"
-              :key="'dream-' + dream.id"
-              :entry="dream"
-              :is-dream="true"
-            />
-            <JournalEntryItem
-              v-for="dream in journalElseDreamList"
-              :key="'else-dream-' + dream.id"
-              :entry="dream"
-              :is-dream="true"
-            />
-          </div>
-        </div>
-        <!--end::꿈 엔트리 목록-->
+        <JournalDreamVirtualSection
+          v-for="(section, sectionIndex) in dreamSections"
+          :key="'dream-section-' + section.sectionKey"
+          :section="section"
+          :collapsed="isDreamSectionCollapsed(section.sectionKey)"
+          :show-actions="true"
+          :show-copy-export="sectionIndex === 0"
+          @open-regist="openDreamRegist"
+          @copy-section="copyDreamSection"
+          @export-day="exportDreams"
+          @toggle-collapse="toggleDreamSection(section.sectionKey)"
+        />
       </template>
       <template v-else-if="hasDream">
         <div class="d-flex align-items-center mt-2">
@@ -294,15 +238,18 @@
 import { swalConfirm, swalAlert } from "@/utils/swal";
 import { isAuthExpiredError } from "@/utils/authError";
 import { ref, computed, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import type { JournalDayDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
-import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
+import JournalDreamVirtualSection from "../../dream/components/JournalDreamVirtualSection.vue";
+import { hasDreamSections } from "@/utils/journalDream";
+import type { JournalEntryDto } from "@/stores/journal";
 
 const props = defineProps<{
   day: JournalDayDto;
@@ -310,6 +257,7 @@ const props = defineProps<{
   showDreams?: boolean;
 }>();
 
+const route = useRoute();
 const router = useRouter();
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
@@ -318,16 +266,19 @@ const tagContextMenuStore = useTagContextMenuStore();
 const tagList = computed(() => props.day.tag?.list ?? []);
 const metaList = computed(() => props.day.meta?.list ?? []);
 const journalChapterList = computed(() => props.day.journalChapterList ?? []);
-const journalDreamList = computed(() => props.day.journalDreamList ?? []);
-const journalElseDreamList = computed(() => props.day.journalElseDreamList ?? []);
+const journalDreamSectionList = computed(() => props.day.journalDreamSectionList ?? []);
 const hiddenChapterCtgrList = computed(() => props.day.hiddenChapterCtgrList ?? []);
 
 const hasVisibleTags = computed(() => tagList.value.length > 0);
 const hasMeta = computed(() => metaList.value.length > 0);
 const hasDream = computed(() =>
-  props.day.hasDream === true ||
-  journalDreamList.value.length + journalElseDreamList.value.length > 0
+  props.day.hasDream === true || hasDreamSections(journalDreamSectionList.value),
 );
+
+const dreamSections = computed(() => journalDreamSectionList.value);
+
+/** 월간·캘린더 등에서만 표시. 주간 화면(`journal-weekly`)에서는 이미 주간 뷰이므로 숨긴다. */
+const showGotoWeeklyMenu = computed(() => route.name !== "journal-weekly");
 
 /** 일자 상태 보유 여부 확인 */
 function hasState(stateKey: string): boolean {
@@ -351,12 +302,13 @@ function openDayView(): void {
 function scrollAfterFetch(): void {
   const dt = props.day.stdrdDt;
   if (!dt) return;
-  void journalStore.fetchDays().then(() => {
+  const afterFetch = () => {
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  });
+  };
+  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
 }
 
 /** 접힘 상태 토글 (서버 반영 후 목록 갱신) */
@@ -418,12 +370,18 @@ function openChapterRegist() {
   });
 }
 
-/** 꿈 섹션 접힘 여부 (클라이언트 DOM만, 서버 상태 무변경) */
-const dreamsCollapsed = ref(false);
+/** 꿈 가상 섹션별 접힘 (클라이언트 DOM만) */
+const dreamSectionCollapsed = ref<Record<string, boolean>>({});
 
-/** 꿈 섹션 접힘 토글 */
-function toggleDreams(): void {
-  dreamsCollapsed.value = !dreamsCollapsed.value;
+function isDreamSectionCollapsed(sectionKey: string): boolean {
+  return dreamSectionCollapsed.value[sectionKey] === true;
+}
+
+function toggleDreamSection(sectionKey: string): void {
+  dreamSectionCollapsed.value = {
+    ...dreamSectionCollapsed.value,
+    [sectionKey]: !isDreamSectionCollapsed(sectionKey),
+  };
 }
 
 /** HTML을 일반 텍스트로 변환한다 (클립보드 복사용). */
@@ -443,16 +401,15 @@ function htmlToPlainText(html: string): string {
     .trim();
 }
 
-/** 꿈 엔트리 전체를 클립보드에 복사한다. 레거시 형식: 날짜(요일)\n#순번\n본문 */
-async function copyDreams(): Promise<void> {
+/** 꿈 엔트리 목록을 클립보드에 복사한다. 레거시 형식: 날짜(요일)\n#순번\n본문 */
+async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   const lines: string[] = [];
   const weekDay = props.day.journalDateWeekDay ?? getWeekDayStr(props.day.stdrdDt);
   const dateLine = weekDay
     ? `${props.day.stdrdDt} (${weekDay})`
     : (props.day.stdrdDt ?? "");
   if (dateLine) lines.push(dateLine);
-  const allDreams = [...journalDreamList.value, ...journalElseDreamList.value];
-  for (const entry of allDreams) {
+  for (const entry of entries) {
     const sortNum = entry.sortOrder != null ? "#" + String(entry.sortOrder) : "";
     /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
@@ -475,13 +432,14 @@ function exportDreams(): void {
   window.location.href = `/api/journal/entries/export?journalDayId=${props.day.id}&type=DREAM`;
 }
 
-/** 꿈 엔트리 등록 모달 열기 */
-function openDreamRegist() {
+/** 꿈 엔트리 등록 모달 열기 (가상 섹션별 꿈꾼 이름 초기값) */
+function openDreamRegist(dreamerName = "") {
   if (!props.day.id) return;
   void modalStore.openDreamEntryRegist({
     journalDayId: props.day.id,
     stdrdDt: props.day.stdrdDt ?? "",
     journalDateWeekDay: props.day.journalDateWeekDay,
+    dreamerName,
   });
 }
 

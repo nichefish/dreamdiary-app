@@ -4,6 +4,7 @@ import ApiService from "@metronic/core/services/ApiService";
 import type { AxiosError } from "axios";
 import { resolveProfileImageUrl } from "@/utils/profileImage";
 import { preloadCategoryMaps, useJournalModalStore } from "@/stores/journalModal";
+import { useMenuStore } from "@/stores/menu";
 
 /**
  * Vue SPA 인증 사용자 정보.
@@ -19,6 +20,15 @@ export interface AuthUser {
   isDev: boolean;
 }
 
+/** Vue SPA 로그인 실패 후 추가 조치가 필요한 상태. */
+export interface LoginActionState {
+  username: string;
+  isCredentialExpired?: boolean;
+  isDupIdLogin?: boolean;
+  needsPasswordReset?: boolean;
+  passwordToken?: string;
+}
+
 /**
  * useAuthStore
  * Spring Boot JWT 쿠키 기반 인증 상태를 관리한다.
@@ -30,6 +40,7 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref<AuthUser | null>(null);
   const isAuthenticated = ref(false);
   const errors = ref<string[]>([]);
+  const loginAction = ref<LoginActionState | null>(null);
 
   /** 인증 상태 세팅 */
   function setAuth(authUser: AuthUser) {
@@ -39,15 +50,41 @@ export const useAuthStore = defineStore("auth", () => {
       profileImageUrl: resolveProfileImageUrl(authUser.profileImageUrl),
     };
     errors.value = [];
+    loginAction.value = null;
     void preloadCategoryMaps();
   }
 
   /** 인증 상태 초기화 */
   function purgeAuth() {
     useJournalModalStore().resetCategoryMaps();
+    useMenuStore().resetMenu();
     isAuthenticated.value = false;
     user.value = null;
     errors.value = [];
+  }
+
+  /** 로그인 실패 응답에 포함된 후속 조치 상태를 추출한다. */
+  function setLoginAction(rsltMap: unknown) {
+    if (!rsltMap || typeof rsltMap !== "object" || Array.isArray(rsltMap)) {
+      loginAction.value = null;
+      return;
+    }
+    const map = rsltMap as Record<string, unknown>;
+    const username = typeof map.username === "string" ? map.username : "";
+    const isCredentialExpired = map.isCredentialExpired === true;
+    const isDupIdLogin = map.isDupIdLogin === true;
+    const needsPasswordReset = map.needsPasswordReset === true;
+    if (!username || (!isCredentialExpired && !isDupIdLogin && !needsPasswordReset)) {
+      loginAction.value = null;
+      return;
+    }
+    loginAction.value = {
+      username,
+      isCredentialExpired,
+      isDupIdLogin,
+      needsPasswordReset,
+      passwordToken: typeof map.passwordToken === "string" ? map.passwordToken : undefined,
+    };
   }
 
   /**
@@ -58,18 +95,23 @@ export const useAuthStore = defineStore("auth", () => {
    */
   async function login(credentials: { username: string; password: string }) {
     errors.value = [];
+    loginAction.value = null;
     try {
       const { data } = await ApiService.post("/api/auth/login", credentials);
       if (data.rslt) {
         await verifyAuth();
       } else {
         errors.value = [data.message ?? "로그인에 실패했습니다."];
+        setLoginAction(data.rsltMap);
         throw new Error(data.message);
       }
     } catch (e) {
-      const axiosErr = e as AxiosError<{ message?: string }>;
-      const serverMsg = axiosErr.response?.data?.message;
+      const axiosErr = e as AxiosError<{ message?: string; rsltMap?: unknown }>;
+      const serverData = axiosErr.response?.data;
+      if (!serverData) throw e;
+      const serverMsg = serverData?.message;
       errors.value = [serverMsg ?? "로그인에 실패했습니다."];
+      setLoginAction(serverData?.rsltMap);
       throw e;
     }
   }
@@ -108,6 +150,7 @@ export const useAuthStore = defineStore("auth", () => {
     user,
     isAuthenticated,
     errors,
+    loginAction,
     login,
     logout,
     verifyAuth,

@@ -3,12 +3,11 @@
   <div class="journal-thread-list-vue">
 
     <!--begin::목록 헤더 툴바-->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="fs-5 fw-bold mb-0">저널 스레드</h4>
+    <div class="d-flex justify-content-end align-items-center mb-4">
       <button
         type="button"
         class="btn btn-sm btn-primary"
-        @click="store.openRegist()"
+        @click="openCreate()"
       >
         <i class="bi bi-plus fs-5 pe-1"></i>
         등록
@@ -42,7 +41,7 @@
               v-for="thread in store.threadList"
               :key="thread.id"
               class="cursor-pointer"
-              @click="store.openDetail(thread.id!)"
+              @click="openDetail(thread.id!)"
             >
               <td class="text-center text-gray-500 fs-7 hidden-table">{{ thread.rnum }}</td>
               <td class="ps-3">
@@ -77,7 +76,7 @@
                     type="button"
                     class="btn btn-sm btn-icon btn-light-primary"
                     title="수정"
-                    @click.stop="store.openModify(thread.id!)"
+                    @click.stop="openModify(thread.id!)"
                   >
                     <i class="bi bi-pencil fs-7"></i>
                   </button>
@@ -119,17 +118,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { useJournalThreadStore } from "@/stores/journalThread";
-import { useAttachableModalStore } from "@/stores/attachableModal";
-import type { JournalThreadDto } from "@/stores/journalThread";
+  import { onMounted } from "vue";
+  import { useRouter } from "vue-router";
+  import { useJournalThreadStore } from "@/stores/journalThread";
+  import { useAttachableModalStore } from "@/stores/attachableModal";
+  import type { JournalThreadDto } from "@/stores/journalThread";
+  
+  const store = useJournalThreadStore();
+  const attachableStore = useAttachableModalStore();
+  const router = useRouter();
+  
+  onMounted(() => {
+    void store.fetchList(0);
+  });
 
-const store = useJournalThreadStore();
-const attachableStore = useAttachableModalStore();
+  function openCreate(): void {
+    void router.push({ name: "thread-create" });
+  }
 
-onMounted(() => {
-  void store.fetchList(0);
-});
+  function openDetail(id: number): void {
+    void router.push({ name: "thread-detail", params: { id } });
+  }
+
+  function openModify(id: number): void {
+    void router.push({ name: "thread-edit", params: { id } });
+  }
 
 /** 스레드 태그 보유 여부 */
 function hasThreadTags(thread: JournalThreadDto): boolean {

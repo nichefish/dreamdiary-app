@@ -35,9 +35,18 @@
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
+| 스레드 등록 | `/app/journal/thread/regist-form.do` | `/thread/new` | `JournalThreadList.vue` | ✓ |
+| 스레드 상세 | `/app/journal/thread/detail.do?id={id}` | `/thread/:id` | `JournalThreadList.vue` | ✓ |
+| 스레드 수정 | `/app/journal/thread/modify-form.do?id={id}` | `/thread/:id/edit` | `JournalThreadList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
-| 일정 | `/app/schedule/cal.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
-| 대시보드 | — | `/dashboard` | `Dashboard.vue` | ⚠ placeholder |
+| 일정 | `/app/schedule/calendar.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
+
+### 일정 캘린더 (`ScheduleCalendar.vue`)
+
+- **탭·툴바**: `JournalDayViewToolbar` 와 동일 상하감 — 탭(`nav-tabs-line ps-5 mt-5`) 상단, 이동일·검색·필터·등록은 탭 오른쪽(`pe-5 mt-3`). 카드 `margin-top: 0`. 달력 VIEW(FullCalendar) · 목록 VIEW(테이블)
+- **목록 API**: `GET /api/schedule/list` — 달력과 동일 `bgnDt`/`endDt`·고급필터·검색어, `ScheduleDto` 페이징
+- **목록 행 클릭**: 휴가·생일 코드는 상세 모달 생략(달력과 동일), 그 외 `GET /api/schedule/cal-dtl` 상세 모달
+- **공휴일 DB SSOT**: `schedule.schedule_cd` = `HOLYDAY` (`SCHEDULE_CD` 코드·`ScheduleSpec` 조회와 동일). 레거시 `HLDY`·`content_type` `schdul`/`schedule` 은 `data-required-cd-mariadb.sql` 하단 UPDATE로 정합. **이동일**은 달력/목록 이동용(데이터 필터 아님). 달력 API `bgnDt`/`endDt` = FullCalendar `datesSet` visible 구간. 목록 VIEW는 동일 구간(달력에서 넘어온 경우) 또는 이동일 변경 시 해당 **연도 전체**.
 
 ### 저널 일간 화면 (journal-daily) 스펙
 
@@ -103,7 +112,7 @@
 ## 저널 일자 월간 목록 (Journal Day Monthly)
 
 - **Route (레거시)**: `/journal/day/monthly` · **Vue SPA**: `/journal/monthly` (`journal-monthly`)
-- `/journal` 기본 진입은 주간 뷰(`/journal/weekly`)로 redirect한다.
+- `/` 및 `/journal` 기본 진입은 주간 뷰(`/journal/weekly`)로 redirect한다.
 - **Legacy file**: `legacy/templates/view/feature/journal/day/journal_day_monthly.ftlh`
 
 ### Layout Structure
@@ -386,6 +395,7 @@
 ## 저널 스레드 목록 (Journal Thread List)
 
 - **Route (레거시)**: `/journal/thread/list` · **Vue SPA**: `/thread` (`thread-list`)
+- **추가 진입 경로**: `/app/journal/thread/regist-form.do` → `/thread/new` (`thread-create`), `/app/journal/thread/detail.do?id={id}` → `/thread/:id` (`thread-detail`), `/app/journal/thread/modify-form.do?id={id}` → `/thread/:id/edit` (`thread-edit`)
 - **Legacy file**: `legacy/templates/view/feature/journal/thread/journal_thread_list.ftlh`
 
 ### Layout Structure
@@ -416,8 +426,9 @@
 
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
-| 상세 페이지 이동 | 제목 링크 클릭 | `JournalThreadListApp` CustomEvent | 상세 페이지 이동 |
-| 모달 상세 보기 | 모달 아이콘 클릭 | `JournalThreadListApp` CustomEvent | 상세 모달 오픈 |
+| 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 상세 모달 오픈 + URL `/thread/:id` 동기화 |
+| 등록 모달 열기 | 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
+| 수정 모달 열기 | 수정 버튼 클릭 | `router.push({ name: "thread-edit", params: { id } })` | 수정 모달 오픈 + URL `/thread/:id/edit` 동기화 |
 | 댓글 모달 | 댓글 수 클릭 | `CommentList.modal(id, contentType)` | 댓글 목록 모달 |
 | 파일 모달 | 첨부파일 아이콘 클릭 | `FileGroupList.modal(fileGroupId)` | 파일 목록 모달 |
 | 태그 상세 | 태그 클릭 | `dF.Tag.dtlModal(tagId)` | 태그 상세 모달 |
@@ -703,9 +714,9 @@ const pinnedMnth = ref<number | null>(null);
 
 **챕터 카테고리 옵션 데이터 출처**:
 - 레거시: FTL이 `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` 에 서버 코드 목록을 주입
-- Vue SPA: `journalModalStore.fetchChapterCategories()` → `GET /api/code/items?groupCode=JOURNAL_CHAPTER_CTGR_CD`
+- Vue SPA: `journalModalStore.prefetchChapterCategories()` → `GET /api/code/items?groupCode=JOURNAL_CHAPTER_DIARY_CTGR_CD` + `GET /api/code/items?groupCode=JOURNAL_CHAPTER_NOTE_CTGR_CD` 병합
 
-**정확한 HTML 구조 (5개 블록)**:
+**필터 구조 계약**:
 
 ```html
 <div class="journal-day-aside-entry-filters-vue-root">
@@ -736,30 +747,31 @@ const pinnedMnth = ref<number | null>(null);
                    :checked="store.showDiaries"
                    @change="toggleDiaries">
         </div>
-        <!-- B-2: CHAPTER CATEGORIES 멀티셀렉트 (DIARIES 블록 안에만 있음) — MISSING -->
-        <div id="chapterCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
-            <div class="d-flex align-items-center justify-content-between">
-                <label for="chapterCtgrFilter" class="text-muted mb-0">- CHAPTER CATEGORIES</label>
-                <!-- 챕터 필터 활성화 여부 토글 (checked = 필터 적용 중) -->
-                <input type="checkbox" id="toggleChapterCtgr"
-                       class="form-check-input cursor-pointer m-0"
-                       :checked="chapterCtgrEnabled"
-                       @change="toggleChapterCtgr">
-            </div>
-            <!-- multiple size="4" 멀티셀렉트 — Ctrl+클릭으로 복수 선택 -->
-            <select id="chapterCtgrFilter"
-                    class="form-select form-select-sm w-100"
-                    multiple size="4"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Ctrl+클릭으로 여러 항목 선택"
-                    @change="onChapterCtgrChange">
-                <option value="__ALL__">{{ 전체 }}</option>
-                <option v-for="ct in chapterCtgrOptions" :key="ct.code" :value="ct.code">
-                    [{{ ct.codeName }}]
-                </option>
+        <!-- B-2: CHAPTER CATEGORIES 체크박스 목록 (DIARIES 블록 안에만 있음) -->
+        <div class="journal-aside-chapter-categories d-flex flex-column gap-1">
+            <label v-for="ctgr in chapterCategoryOptions" :key="ctgr.code"
+                   class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer">
+                <input class="form-check-input w-16px h-16px"
+                       type="checkbox"
+                       :checked="isChapterCategorySelected(ctgr.code)"
+                       @change="toggleChapterCategory(ctgr.code)">
+                <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+            </label>
+        </div>
+        <!-- B-3: DIARY LIFECYCLE 선택 -->
+        <div class="d-flex flex-column ps-3 gap-1">
+            <label for="diaryLifecycleFilter" class="text-muted mb-0">- DIARY LIFECYCLE</label>
+            <select id="diaryLifecycleFilter"
+                    class="form-select form-select-sm"
+                    v-model="store.diaryLifecycleKey"
+                    @change="store.fetchDays()">
+                <option value="">전체</option>
+                <option value="OPEN">진행 중</option>
+                <option value="PENDING">보류</option>
+                <option value="RESOLVED">완료</option>
             </select>
         </div>
-        <!-- B-3: DIARY KEYWORDS 입력 -->
+        <!-- B-4: DIARY KEYWORDS 입력 -->
         <div class="d-flex flex-column ps-3 gap-1">
             <label for="diaryFilterKeyword" class="text-muted mb-0">- DIARY KEYWORDS</label>
             <div class="d-flex gap-1">
@@ -768,7 +780,7 @@ const pinnedMnth = ref<number | null>(null);
                        v-model="store.diaryKeyword"
                        placeholder="일기 키워드" maxlength="200"
                        @keyup.enter="applyFilters">
-                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" disabled>
+                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3">
                     <i class="bi bi-funnel pe-0"></i>
                 </button>
             </div>
@@ -788,7 +800,20 @@ const pinnedMnth = ref<number | null>(null);
                    :checked="store.showDreams"
                    @change="toggleDreams">
         </div>
-        <!-- C-2: DREAM KEYWORDS 입력 -->
+        <!-- C-2: DREAM LIFECYCLE 선택 -->
+        <div class="d-flex flex-column ps-3 gap-1">
+            <label for="dreamLifecycleFilter" class="text-muted mb-0">- DREAM LIFECYCLE</label>
+            <select id="dreamLifecycleFilter"
+                    class="form-select form-select-sm"
+                    v-model="store.dreamLifecycleKey"
+                    @change="store.fetchDays()">
+                <option value="">전체</option>
+                <option value="OPEN">진행 중</option>
+                <option value="PENDING">보류</option>
+                <option value="RESOLVED">완료</option>
+            </select>
+        </div>
+        <!-- C-3: DREAM KEYWORDS 입력 -->
         <div class="d-flex flex-column ps-3 gap-1">
             <label for="dreamFilterKeyword" class="text-muted mb-0">- DREAM KEYWORDS</label>
             <div class="d-flex gap-1">
@@ -797,7 +822,7 @@ const pinnedMnth = ref<number | null>(null);
                        v-model="store.dreamKeyword"
                        placeholder="꿈 키워드" maxlength="200"
                        @keyup.enter="applyFilters">
-                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" disabled>
+                <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3">
                     <i class="bi bi-funnel pe-0"></i>
                 </button>
             </div>
@@ -805,7 +830,10 @@ const pinnedMnth = ref<number | null>(null);
     </div>
     <div class="separator"></div>
 
-    <!-- 블록 D: 고급 필터 아코디언 (Bootstrap accordion) — MISSING -->
+    <!-- 블록 D: ENTRY FILTER 레이블 -->
+    <div class="text-gray-900 fs-6 fw-bold mt-1">ENTRY FILTER</div>
+
+    <!-- 블록 E: 고급 필터 아코디언 (Bootstrap accordion) — MISSING -->
     <div class="accordion accordion-flush" id="journal_day_filter_accordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="journal_day_filter_heading_advanced">
@@ -834,18 +862,25 @@ const pinnedMnth = ref<number | null>(null);
 </div> <!-- end journal-day-aside-entry-filters-vue-root -->
 ```
 
+**부모-자식 배치 계약**:
+- `TAGCLOUD`는 엔트리 필터와 독립된 표시 토글로 둔다.
+- `DIARIES` 토글은 `CHAPTER CATEGORIES`, `DIARY LIFECYCLE`, `DIARY KEYWORDS`의 부모 항목이다.
+- `DREAMS` 토글은 `DREAM LIFECYCLE`, `DREAM KEYWORDS`의 부모 항목이다.
+- `DIARIES=false` 또는 `DREAMS=false`일 때 해당 하위 필터 값은 삭제하지 않고 보존하되, 하위 필터 UI는 렌더링하지 않는다.
+- `ENTRY FILTER` 레이블은 위 필터 묶음 아래에 표시한다.
+
 **엔트리 필터 Vue 상태 바인딩**:
 | Element | 레거시 ID | Vue 상태 |
 |---------|----------|---------|
 | TAGCLOUD 체크박스 | `#toggleTagCloud` | `store.showTagCloud` — ON 변경 시 `store.fetchTagCloud()` |
 | DIARIES 체크박스 | `#toggleDiaries` | `store.showDiaries` — 변경 시 `store.fetchDays()` |
-| CHAPTER CATEGORIES 체크박스 | `#toggleChapterCtgr` | `chapterCtgrEnabled: ref(true)` — false 시 `store.chapterCtgrCds = []` |
-| CHAPTER CATEGORIES 멀티셀렉트 | `#chapterCtgrFilter` | `store.chapterCtgrCds: string[]` — 변경 시 `store.fetchDays()` |
-| 챕터 옵션 목록 | `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` | `journalModalStore.chapterCategoryOptions` — `fetchChapterCategories()` 로 로드 |
-| `__ALL__` 선택 시 | 전체 선택 처리 | `store.chapterCtgrCds = []` (필터 없음으로 처리) |
+| CHAPTER CATEGORIES 항목 체크박스 | `.journal-aside-chapter-categories input[type=checkbox]` | `store.chapterCtgrCds: string[]` — `store.showDiaries=true` 시에만 표시, 변경 시 `store.fetchDays()` |
+| 챕터 옵션 목록 | `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` | `journalModalStore.chapterDiaryCategoryOptions` + `chapterNoteCategoryOptions` — `prefetchChapterCategories()` 로 로드 |
 | DREAMS 체크박스 | `#toggleDreams` | `store.showDreams` — 변경 시 `store.fetchDays()` |
-| 일기 키워드 | `#diaryFilterKeyword` | `store.diaryKeyword` — Enter 시 `store.fetchDays()` |
-| 꿈 키워드 | `#dreamFilterKeyword` | `store.dreamKeyword` — Enter 시 `store.fetchDays()` |
+| 일기 라이프사이클 | `#diaryLifecycleFilter` | `store.diaryLifecycleKey` — `store.showDiaries=true` 시에만 표시, 변경 시 `store.fetchDays()` |
+| 꿈 라이프사이클 | `#dreamLifecycleFilter` | `store.dreamLifecycleKey` — `store.showDreams=true` 시에만 표시, 변경 시 `store.fetchDays()` |
+| 일기 키워드 | `#diaryFilterKeyword` | `store.diaryKeyword` — `store.showDiaries=true` 시에만 표시, Enter 시 `store.fetchDays()` |
+| 꿈 키워드 | `#dreamFilterKeyword` | `store.dreamKeyword` — `store.showDreams=true` 시에만 표시, Enter 시 `store.fetchDays()` |
 
 ---
 

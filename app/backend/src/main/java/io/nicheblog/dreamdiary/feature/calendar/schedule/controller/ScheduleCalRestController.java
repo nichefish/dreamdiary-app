@@ -17,11 +17,17 @@ import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -99,5 +105,29 @@ public class ScheduleCalRestController
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(scheduleCalList));
+    }
+
+    /**
+     * 일정 > 전체 일정 (목록 VIEW) 데이터 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param searchParam 검색 조건을 담은 파라미터 객체
+     * @param page 페이지 번호 (0-base)
+     * @param size 페이지 크기
+     * @return {@link ResponseEntity} -- 처리 결과와 페이징 목록
+     */
+    @GetMapping(Url.SCHEDULE_LIST_AJAX)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> scheduleListAjax(
+            final ScheduleSearchParam searchParam,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "25") final int size
+    ) throws Exception {
+
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "bgnDt"));
+        final Page<ScheduleDto> pageResult = scheduleCalService.getScheduleListPage(searchParam, pageRequest);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
     }
 }

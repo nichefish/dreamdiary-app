@@ -14,16 +14,10 @@ import {
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/dashboard",
+    redirect: "/journal/weekly",
     component: () => import("@/layouts/default/DefaultLayout.vue"),
     meta: { middleware: "auth" },
     children: [
-      {
-        path: "/dashboard",
-        name: "dashboard",
-        component: () => import("@/views/Dashboard.vue"),
-        meta: { pageTitle: "대시보드", breadcrumbs: ["홈"] },
-      },
       {
         path: "/journal",
         component: () => import("@/views/journal/day/JournalDayLayout.vue"),
@@ -86,6 +80,24 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: "",
             name: "thread-list",
+            component: () => import("@/views/journal/thread/JournalThreadList.vue"),
+            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+          },
+          {
+            path: "new",
+            name: "thread-create",
+            component: () => import("@/views/journal/thread/JournalThreadList.vue"),
+            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+          },
+          {
+            path: ":id",
+            name: "thread-detail",
+            component: () => import("@/views/journal/thread/JournalThreadList.vue"),
+            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+          },
+          {
+            path: ":id/edit",
+            name: "thread-edit",
             component: () => import("@/views/journal/thread/JournalThreadList.vue"),
             meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
           },

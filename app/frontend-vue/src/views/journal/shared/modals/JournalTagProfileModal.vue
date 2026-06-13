@@ -167,9 +167,12 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/stores/attachableModal";
 import { useJournalStore } from "@/stores/journal";
+import { useRoute } from "vue-router";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
 const submitting = ref(false);
@@ -244,7 +247,7 @@ async function onSave() {
     if (result.rslt) {
       close();
       await swalAlert(result.message ?? "저장되었습니다.");
-      void journalStore.fetchDays();
+      void refreshJournalDaysForRoute(journalStore, route);
     } else {
       void swalAlert(result.message ?? "처리에 실패했습니다.");
     }
@@ -266,7 +269,7 @@ async function onDelete() {
     if (result.rslt) {
       close();
       await swalAlert(result.message ?? "삭제되었습니다.");
-      void journalStore.fetchDays();
+      void refreshJournalDaysForRoute(journalStore, route);
     } else {
       void swalAlert(result.message ?? "처리에 실패했습니다.");
     }

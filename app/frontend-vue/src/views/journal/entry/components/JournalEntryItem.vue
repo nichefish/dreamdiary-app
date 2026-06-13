@@ -7,6 +7,7 @@
     :data-imprtc="hasState('IMPRTC') ? 'Y' : 'N'"
     :data-refrnc="hasState('REFRNC') ? 'Y' : 'N'"
     :data-resolved="isResolved ? 'Y' : 'N'"
+    :data-else-dream="isElseDream ? 'Y' : 'N'"
   >
     <!--begin::순번-->
     <div class="d-none d-md-flex flex-column align-items-center pt-1 ps-2" style="width:56px; min-width:56px;">
@@ -31,9 +32,6 @@
       <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
         <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!악몽</span>
         <span v-if="hasState('HALLUC')" class="badge badge-light-secondary">!환각/현시</span>
-        <span v-if="entry.elseDreamYn === 'Y'" class="badge badge-light-secondary">
-          {{ entry.elseDreamerNm }} 꿈
-        </span>
         <span v-if="entry.title" class="fw-bold fs-7">{{ entry.title }}</span>
       </div>
       <!--end::꿈 상태 배지-->
@@ -181,7 +179,7 @@
           <!--end::이력-->
 
           <!--begin::관련 글 추가 (다른 사람 꿈 제외)-->
-          <div v-if="entry.elseDreamYn !== 'Y'" class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="!hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openRelated">
               관련 글 추가
               <i class="bi bi-link-45deg fs-8"></i>
@@ -314,8 +312,10 @@ import { useJournalModalStore } from "@/stores/journalModal";
 import { useAttachableModalStore } from "@/stores/attachableModal";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import type { JournalEntryDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
+import { hasDreamerName } from "@/utils/journalDream";
 import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
 
 const props = defineProps<{
@@ -355,6 +355,11 @@ const contentLabel = computed(() => {
 
 const lcKey = computed(() => props.entry.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
+/** 지정 꿈꾼(타인 꿈) — journal.scss 좌측 회색 이중선·RESOLVED 색상과 별도 */
+const isElseDream = computed(() => {
+  if (!(props.isDream || props.entry.contentType === "JOURNAL_DREAM")) return false;
+  return hasDreamerName(props.entry);
+});
 const hasHistory = computed(() => !!props.entry.history?.historyTriggeredAt);
 
 /** 클라이언트 임시 접힘 오버라이드. null=서버 상태 따름, true=강제 접힘, false=강제 펼침 */
@@ -495,19 +500,7 @@ function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
     });
   };
 
-  if (route.name === "journal-weekly") {
-    journalStore.setViewType("WEEKLY");
-    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
-    return;
-  }
-
-  if (route.name === "journal-monthly") {
-    journalStore.setViewType("LIST");
-    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
-    return;
-  }
-
-  void journalStore.fetchDays().then(afterFetch);
+  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
 }
 
 /** 라이프사이클 설정 (PUT /api/lifecycles) */

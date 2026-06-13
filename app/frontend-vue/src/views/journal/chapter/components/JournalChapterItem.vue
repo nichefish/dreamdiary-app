@@ -4,7 +4,10 @@
     <!--begin::챕터 헤더-->
     <div class="d-flex align-items-center mt-2">
       <!--begin::챕터 타입·카테고리 라벨 + 아이콘-->
-      <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
+      <div
+        class="d-flex-align-center fs-6 ps-1 ps-md-5 me-5 fw-bolder"
+        :class="isDreamChapter ? 'journal-dream-section-header' : 'text-gray-700'"
+      >
         <span class="me-2">
           {{ typeLabel }}<template v-if="chapter.categoryCode">:</template>
           <template v-if="chapter.categoryCode">
@@ -162,6 +165,7 @@ import axios from "axios";
 import { useTagContextMenuStore } from "@/stores/tagContextMenu";
 import { useJournalModalStore } from "@/stores/journalModal";
 import { useJournalStore } from "@/stores/journal";
+import { refreshJournalDaysForRoute } from "@/utils/journalDayRefresh";
 import type { JournalChapterDto } from "@/stores/journal";
 import { getWeekDayStr } from "@/utils/journalDate";
 import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
@@ -303,19 +307,7 @@ function scrollAfterFetch(stdrdDt = props.chapter.stdrdDt): void {
     });
   };
 
-  if (route.name === "journal-weekly") {
-    journalStore.setViewType("WEEKLY");
-    void journalStore.fetchDays({ viewType: "WEEKLY" }).then(afterFetch);
-    return;
-  }
-
-  if (route.name === "journal-monthly") {
-    journalStore.setViewType("LIST");
-    void journalStore.fetchDays({ viewType: "LIST" }).then(afterFetch);
-    return;
-  }
-
-  void journalStore.fetchDays().then(afterFetch);
+  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
 }
 
 /** 챕터 접힘 상태 토글 (서버 반영 후 목록 갱신 — ⋯ 메뉴 전용) */

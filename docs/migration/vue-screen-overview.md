@@ -10,8 +10,7 @@
 
 | Vue route | route name | Vue view | Layout | 구현 |
 |-----------|-----------|----------|--------|------|
-| `/` | — | redirect → `/dashboard` | DefaultLayout | — |
-| `/dashboard` | `dashboard` | `Dashboard.vue` | Default | ❌ placeholder |
+| `/` | — | redirect → `/journal/weekly` | DefaultLayout | — |
 | `/journal` | — | redirect → `/journal/weekly` | JournalLayout | — |
 | `/journal/weekly` | `journal-weekly` | `JournalDayWeekly.vue` | Journal | ✓ |
 | `/journal/monthly` | `journal-monthly` | `JournalDayMonthly.vue` | Journal | ✓ |
@@ -48,7 +47,6 @@ DefaultLayout
 ├── Navbar (검색 드롭다운 포함)
 ├── SidebarMenu (동적 서버 메뉴)
 └── <router-view>
-    ├── Dashboard.vue
     ├── JournalLayout          ← journal/* 전용 wrapper (aside 포함)
     │   ├── JournalWeekly / JournalMonthly / JournalCalendar / JournalMeta
     │   └── JournalAside (필터 패널)
@@ -102,7 +100,6 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 
 | 화면/기능 | 상태 | 비고 |
 |----------|------|------|
-| Dashboard | ❌ | placeholder 텍스트만 |
 | JournalCalendar | ❌ | `JournalDayViewToolbar` + 안내 텍스트만 |
 | JournalMeta 그래프 | ✓ | 컨텍스트 메뉴(검색/그래프로 보기/메타 설정), 최대 2메타·헤더 × 제거, 연도 전체, 한 차트 2선 |
 | JournalAside — CHAPTER CATEGORIES | ❌ | store(`chapterCtgrCds`) 존재, UI 없음 |

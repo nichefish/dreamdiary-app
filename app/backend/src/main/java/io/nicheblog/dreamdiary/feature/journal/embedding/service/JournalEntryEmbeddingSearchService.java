@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -192,6 +195,98 @@ public class JournalEntryEmbeddingSearchService {
                         .snippet(buildSnippet(entry.getKey().getEmbeddingText(), entry.getValue().matchedTokens()))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * person-meaning 질문에서 payload 태그에 인물 토큰이 직접 포함된 기록을 우선 검색합니다.
+     *
+     * <p>Dreamdiary 태그 계약상 인물 축 태그에는 canonical/surface 이름(예: 김민수)이 포함되므로,
+     * 본문 공출현보다 태그 매칭을 1순위 신호로 사용합니다.</p>
+     *
+     * @param personTokens 인물 focus 토큰 목록
+     * @param topK 반환할 최대 건수
+     * @return 태그 매칭 점수 내림차순 상위 결과
+     */
+    public List<RagSearchResult> searchByPersonTagsWithScore(final Collection<String> personTokens, final int topK) {
+        if (personTokens == null || personTokens.isEmpty() || metaCache.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final List<String> normalizedTokens = personTokens.stream()
+                .filter(StringUtils::isNotBlank)
+                .map(token -> StringUtils.lowerCase(StringUtils.deleteWhitespace(token)))
+                .distinct()
+                .collect(Collectors.toList());
+        if (normalizedTokens.isEmpty()) return Collections.emptyList();
+
+        return metaCache.values().stream()
+                .filter(entity -> AuthUtils.isCreatedBy(entity.getCreatedBy()))
+                .map(entity -> {
+                    final Map<String, Object> payload = readPayloadMap(entity);
+                    final String tagHaystack = normalizeHaystack(payloadString(payload, "tags"));
+                    if (StringUtils.isBlank(tagHaystack)) return null;
+
+                    int score = 0;
+                    final List<String> matchedTokens = new ArrayList<>();
+                    for (final String token : normalizedTokens) {
+                        if (!containsToken(tagHaystack, token)) continue;
+                        score += TAG_KEYWORD_WEIGHT;
+                        matchedTokens.add(token);
+                    }
+                    if (score <= 0) return null;
+                    return Map.entry(entity, Map.entry(score, matchedTokens));
+                })
+                .filter(Objects::nonNull)
+                .sorted((left, right) -> {
+                    final int scoreCompare = Integer.compare(right.getValue().getKey(), left.getValue().getKey());
+                    if (scoreCompare != 0) return scoreCompare;
+                    return Comparator.comparing(
+                                    JournalEntryEmbeddingEntity::getJournalDate,
+                                    Comparator.nullsLast(Comparator.naturalOrder())
+                            )
+                            .reversed()
+                            .compare(left.getKey(), right.getKey());
+                })
+                .limit(topK)
+                .map(entry -> RagSearchResult.builder()
+                        .entity(entry.getKey())
+                        .matchType(RagSearchResult.MATCH_TYPE_TAG)
+                        .score((double) entry.getValue().getKey())
+                        .matchedTokens(entry.getValue().getValue())
+                        .snippet(buildSnippet(entry.getKey().getEmbeddingText(), entry.getValue().getValue()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * entity catalog에 연결된 저널 엔트리 ID 목록으로 RAG source를 직접 조회합니다.
+     *
+     * <p>person-meaning 질문에서 벡터 점수가 낮아 누락된 직접 연결 기록을 보강할 때 사용합니다.</p>
+     *
+     * @param journalEntryIds 조회할 저널 엔트리 ID 목록
+     * @return 현재 사용자 소유이며 캐시에 존재하는 엔트리의 RAG 검색 결과
+     */
+    public List<RagSearchResult> findByJournalEntryIds(final Collection<Integer> journalEntryIds) {
+        if (journalEntryIds == null || journalEntryIds.isEmpty() || metaCache.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final List<RagSearchResult> results = new ArrayList<>();
+        for (final Integer journalEntryId : journalEntryIds) {
+            if (journalEntryId == null) continue;
+
+            final JournalEntryEmbeddingEntity entity = metaCache.get(journalEntryId);
+            if (entity == null || !AuthUtils.isCreatedBy(entity.getCreatedBy())) continue;
+
+            results.add(RagSearchResult.builder()
+                    .entity(entity)
+                    .matchType(RagSearchResult.MATCH_TYPE_ENTITY)
+                    .score(1.0D)
+                    .matchedTokens(List.of())
+                    .snippet(buildSnippet(entity.getEmbeddingText(), List.of()))
+                    .build());
+        }
+        return results;
     }
 
     /**

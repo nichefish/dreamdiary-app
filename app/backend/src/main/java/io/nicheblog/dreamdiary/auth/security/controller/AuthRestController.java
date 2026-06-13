@@ -3,23 +3,40 @@ package io.nicheblog.dreamdiary.auth.security.controller;
 import io.jsonwebtoken.JwtException;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
+import io.nicheblog.dreamdiary.auth.security.exception.AccountDormantException;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
+import io.nicheblog.dreamdiary.auth.security.exception.DupIdLoginException;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthUserDto;
+import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.LoginSuccessCacheWarmupEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogAnonymousEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -67,6 +84,8 @@ public class AuthRestController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
     private final DreamdiaryAuthenticationProvider authenticationProvider;
+    private final AuthPolicyQueryService authPolicyQueryService;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 인증 정보를 조회한다.
@@ -224,25 +243,74 @@ public class AuthRestController {
     @PermitAll
     @ResponseBody
     public ResponseEntity<AjaxResponse> loginApiAjax(
-            final @RequestBody LoginRequest body
-    ) {
+            final @RequestBody LoginRequest body,
+            final HttpServletRequest request,
+            final HttpServletResponse response
+    ) throws Exception {
         try {
             final UsernamePasswordAuthenticationToken token =
                     new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword());
             final Authentication auth = authenticationProvider.authenticate(token);
             final AuthInfo authInfo = (AuthInfo) auth.getPrincipal();
+            this.handleJsonLoginSuccess(request, response, authInfo);
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
         } catch (final AccountNeedsPwResetException e) {
+            final String errorMsg = this.getLoginFailureMsg(e);
+            this.publishLoginFailureLog(body.getUsername(), e, errorMsg);
             final Map<String, Object> resetMap = new HashMap<>();
             resetMap.put("username", body.getUsername());
             resetMap.put("needsPasswordReset", true);
             resetMap.put("passwordToken", e.getPasswordToken());
+            log.info("Vue login requires password reset. username: {}", body.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage(e.getMessage())).withMap(resetMap));
+                    .body(AjaxResponse.withAjaxResult(false, errorMsg).withMap(resetMap));
+        } catch (final CredentialsExpiredException e) {
+            final String errorMsg = this.getLoginFailureMsg(e);
+            this.publishLoginFailureLog(body.getUsername(), e, errorMsg);
+            final Map<String, Object> expiredMap = new HashMap<>();
+            expiredMap.put("username", body.getUsername());
+            expiredMap.put("isCredentialExpired", true);
+            log.info("Vue login requires password change. username: {} reason: credentialsExpired", body.getUsername());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AjaxResponse.withAjaxResult(false, errorMsg).withMap(expiredMap));
+        } catch (final DupIdLoginException e) {
+            final String errorMsg = this.getLoginFailureMsg(e);
+            final HttpSession session = request.getSession();
+            session.setAttribute("isDupIdLogin", body.getUsername());
+            final Map<String, Object> dupLoginMap = new HashMap<>();
+            dupLoginMap.put("username", body.getUsername());
+            dupLoginMap.put("isDupIdLogin", true);
+            log.info("Vue login requires duplicate-login confirmation. username: {}", body.getUsername());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AjaxResponse.withAjaxResult(false, errorMsg).withMap(dupLoginMap));
+        } catch (final BadCredentialsException e) {
+            String errorMsg = this.getLoginFailureMsg(e);
+            this.publishLoginFailureLog(body.getUsername(), e, errorMsg);
+            final AuthPolicyEntity rsAuthPolicyEntity = authPolicyQueryService.getDtlEntity();
+            final Integer loginAttemptLimit = rsAuthPolicyEntity.getLoginAttemptLimit();
+            final Integer newLoginFailCnt = authService.applyLoginFailCnt(body.getUsername());
+            if (newLoginFailCnt < loginAttemptLimit) {
+                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_CNT, new Object[]{loginAttemptLimit, newLoginFailCnt});
+            } else {
+                authService.lockAccount(body.getUsername());
+                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_LOCKED, new Object[]{newLoginFailCnt});
+            }
+            log.info("Vue login bad credentials. username: {} failCnt: {}", body.getUsername(), newLoginFailCnt);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AjaxResponse.withAjaxResult(false, errorMsg));
+        } catch (final AccountDormantException e) {
+            final String errorMsg = this.getLoginFailureMsg(e);
+            this.publishLoginFailureLog(body.getUsername(), e, errorMsg);
+            authService.lockAccount(body.getUsername());
+            log.info("Vue login dormant account locked. username: {}", body.getUsername());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AjaxResponse.withAjaxResult(false, errorMsg));
         } catch (final AuthenticationException e) {
-            log.warn("Vue login failed: {}", e.getMessage());
+            final String errorMsg = this.getLoginFailureMsg(e);
+            this.publishLoginFailureLog(body.getUsername(), e, errorMsg);
+            log.warn("Vue login failed. username: {} errorMsg: {}", body.getUsername(), errorMsg);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AjaxResponse.withAjaxResult(false, e.getMessage()));
+                    .body(AjaxResponse.withAjaxResult(false, errorMsg));
         } catch (final Exception e) {
             log.error("Vue login error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -280,5 +348,75 @@ public class AuthRestController {
     public static class LoginRequest {
         private String username;
         private String password;
+    }
+
+    /**
+     * Vue JSON 로그인 성공 후 Spring form-login 성공 핸들러와 동일한 부수효과를 적용한다.
+     *
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     * @param authInfo 인증 사용자 정보
+     */
+    private void handleJsonLoginSuccess(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final AuthInfo authInfo
+    ) {
+        request.removeAttribute(Constant.ERROR_MSG);
+        request.removeAttribute("isCredentialExpired");
+        request.removeAttribute("isDupIdLogin");
+        request.removeAttribute("needsPasswordReset");
+
+        authInfo.nullifyPasswordInfo();
+        final HttpSession session = request.getSession();
+        session.setAttribute("authInfo", authInfo);
+        session.setAttribute("remoteIp", AuthUtils.getRemoteIpAddr());
+
+        final String username = authInfo.getUsername();
+        authService.setLastLoginAt(username);
+        DupIdLoginManager.addKey(username);
+
+        publisher.publishAsyncEvent(new LogEvent(this, new LogParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN)));
+        publisher.publishAsyncEvent(new LoginSuccessCacheWarmupEvent(this, username));
+        HttpUtils.setInvalidateBrowserCacheHeader(response);
+        log.info("Vue login succeeded. username: {}", username);
+    }
+
+    /**
+     * 로그인 실패 로그를 저장한다.
+     *
+     * @param username 로그인 시도 계정명
+     * @param exception 인증 실패 예외
+     * @param errorMsg 사용자에게 반환할 오류 메시지
+     */
+    private void publishLoginFailureLog(
+            final String username,
+            final AuthenticationException exception,
+            final String errorMsg
+    ) {
+        if (exception instanceof InternalAuthenticationServiceException || exception instanceof DupIdLoginException) return;
+        publisher.publishAsyncEvent(new LogAnonymousEvent(this, new LogParam(username, false, errorMsg, ActvtyCtgr.LGN)));
+    }
+
+    /**
+     * Spring Security Exception 이름 또는 내부 메시지로 로그인 실패 메시지를 반환한다.
+     *
+     * @param e 예외 객체
+     * @return {@link String} -- 예외에 해당하는 에러 메시지
+     */
+    private String getLoginFailureMsg(final Exception e) {
+        if (e instanceof InternalAuthenticationServiceException) {
+            final InternalAuthenticationServiceException iae = (InternalAuthenticationServiceException) e;
+            if (StringUtils.isNotBlank(iae.getMessage())) {
+                return iae.getMessage();
+            }
+            final Throwable root = ExceptionUtils.getRootCause(e);
+            if (root != null && root != e && StringUtils.isNotBlank(root.getMessage())) {
+                return MessageUtils.getExceptionMsg(root);
+            }
+        }
+        final String fullExceptionNm = e.getClass().toString();
+        final String exceptionNm = fullExceptionNm.substring(fullExceptionNm.lastIndexOf('.') + 1);
+        return MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider." + exceptionNm);
     }
 }

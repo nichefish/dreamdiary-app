@@ -94,7 +94,10 @@ public interface AppUrl {
 
     /* ---------- */
 
-    String SCHEDULE_CAL = Prefix.APP + "/schedule/cal.do";
+    /** 일정 달력 화면 진입 (Vue SPA 리다이렉트 대상) */
+    String SCHEDULE_CAL = Prefix.APP + "/schedule/calendar.do";
+    /** 레거시 북마크·알림 링크 호환 */
+    String SCHEDULE_CAL_LEGACY = Prefix.APP + "/schedule/cal.do";
 
     String USER_SIGNUP_PAGE = Prefix.APP + "/user/signup/page.do";
 

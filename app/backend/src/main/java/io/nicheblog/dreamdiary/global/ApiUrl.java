@@ -175,6 +175,10 @@ public interface ApiUrl {
     /** AI 임베딩 관리 */
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_STATS = Prefix.API + "/admin/journal-entry-embeddings/stats";
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_SYNC = Prefix.API + "/admin/journal-entry-embeddings/sync";
+    String ADMIN_JOURNAL_ENTRY_EMBEDDING_REQUEUE_FAILED = Prefix.API + "/admin/journal-entry-embeddings/requeue-failed";
+    String ADMIN_JOURNAL_ENTRY_ENTITY_STATS = Prefix.API + "/admin/journal-entry-entities/stats";
+    String ADMIN_JOURNAL_ENTRY_ENTITY_SYNC = Prefix.API + "/admin/journal-entry-entities/sync";
+    String ADMIN_JOURNAL_ENTRY_ENTITY_REQUEUE_FAILED = Prefix.API + "/admin/journal-entry-entities/requeue-failed";
 
     /** (공통) 파일 */
     String FILE_DOWNLOAD_CHK_AJAX = Prefix.API + "/file/file-download-chk";
@@ -192,6 +196,8 @@ public interface ApiUrl {
     /* ---------- */
 
     String SCHEDULE_CAL_LIST_AJAX = Prefix.API + "/schedule/cal-list";
+    /** 일정 목록 VIEW (달력과 동일 필터·기간) */
+    String SCHEDULE_LIST_AJAX = Prefix.API + "/schedule/list";
     String SCHEDULE_BOOTSTRAP = Prefix.API + "/schedule/bootstrap";
     String SCHEDULE_REG_AJAX = Prefix.API + "/schedule/cal-reg";
     String SCHEDULE_DTL_AJAX = Prefix.API + "/schedule/cal-dtl";

@@ -173,6 +173,104 @@ public class MenuService
     }
 
     /**
+     * 등록 전처리. 신규 메뉴는 기존 트리 아래의 SUB 메뉴로만 등록한다.
+     *
+     * @param registDto 등록할 메뉴 DTO
+     */
+    @Override
+    public void preRegist(final MenuPostDto registDto) throws Exception {
+        this.normalizeAndValidateMenuLabel(registDto);
+        this.normalizeAndValidateUrl(registDto);
+
+        if (registDto.getParentMenuId() == null) {
+            log.warn("Menu registration without parent blocked. requestedMenuType={}", registDto.getMenuType());
+            throw new BusinessException("Parent menu is required.");
+        }
+
+        final MenuEntity parentMenu = this.findDtlEntity(registDto.getParentMenuId());
+        if (parentMenu == null) {
+            log.warn("Menu registration under missing parent blocked. parentMenuId={}", registDto.getParentMenuId());
+            throw new BusinessException("Target parent menu does not exist.");
+        }
+        if (!MenuType.MAIN.name().equals(parentMenu.getMenuType()) && !MenuType.SUB.name().equals(parentMenu.getMenuType())) {
+            log.warn("Menu registration under invalid parent type blocked. parentMenuId={}, parentMenuType={}",
+                    parentMenu.getId(), parentMenu.getMenuType());
+            throw new BusinessException("Target parent type does not allow sub menus.");
+        }
+        if (SubmenuExpandType.NO_SUB.name().equals(parentMenu.getSubmenuExpandType())
+                || SubmenuExpandType.BOARD.name().equals(parentMenu.getSubmenuExpandType())) {
+            log.warn("Menu registration under non-expandable parent blocked. parentMenuId={}, submenuExpandType={}",
+                    parentMenu.getId(), parentMenu.getSubmenuExpandType());
+            throw new BusinessException("Target parent does not allow sub menus.");
+        }
+
+        registDto.setMenuType(MenuType.SUB.name());
+        if (StringUtils.isBlank(registDto.getAdminYn())) {
+            registDto.setAdminYn("N");
+        }
+    }
+
+    /**
+     * 수정 전처리. 시스템 보호 메뉴 자체의 수정은 차단한다.
+     *
+     * @param postDto 수정할 메뉴 DTO
+     * @param modifyEntity 수정 대상 메뉴 엔티티
+     */
+    @Override
+    public void preModify(final MenuPostDto postDto, final MenuEntity modifyEntity) throws Exception {
+        this.normalizeAndValidateMenuLabel(postDto);
+        this.normalizeAndValidateUrl(postDto);
+
+        if ("Y".equals(modifyEntity.getProtectedYn())) {
+            log.warn("Protected menu modification blocked. menuId={}", modifyEntity.getId());
+            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+        }
+        if (StringUtils.isNotBlank(postDto.getMenuType()) && !Objects.equals(postDto.getMenuType(), modifyEntity.getMenuType())) {
+            log.warn("Menu type modification blocked. menuId={}, currentMenuType={}, requestedMenuType={}",
+                    modifyEntity.getId(), modifyEntity.getMenuType(), postDto.getMenuType());
+            throw new BusinessException("Menu type cannot be changed.");
+        }
+        if (!Objects.equals(postDto.getParentMenuId(), modifyEntity.getParentMenuId())) {
+            log.warn("Menu parent modification blocked outside tree move API. menuId={}, currentParentMenuId={}, requestedParentMenuId={}",
+                    modifyEntity.getId(), modifyEntity.getParentMenuId(), postDto.getParentMenuId());
+            throw new BusinessException(MessageUtils.getMessage("exception.MenuParentChangeBlockedException"));
+        }
+    }
+
+    /**
+     * 메뉴 라벨 필수 입력을 보장하고 저장 전 공백을 제거한다.
+     *
+     * @param postDto 등록/수정 요청 DTO
+     */
+    private void normalizeAndValidateMenuLabel(final MenuPostDto postDto) {
+        final String menuLabel = StringUtils.trimToNull(postDto.getMenuLabel());
+        if (menuLabel == null) {
+            log.warn("Menu label validation failed. menuId={}", postDto.getId());
+            throw new BusinessException("Menu label is required.");
+        }
+        postDto.setMenuLabel(menuLabel);
+    }
+
+    /**
+     * 최종 이동 메뉴는 URL 필수 입력을 보장하고, 확장형 메뉴는 URL을 저장하지 않는다.
+     *
+     * @param postDto 등록/수정 요청 DTO
+     */
+    private void normalizeAndValidateUrl(final MenuPostDto postDto) {
+        if (!SubmenuExpandType.NO_SUB.name().equals(postDto.getSubmenuExpandType())) {
+            postDto.setUrl("");
+            return;
+        }
+
+        final String url = StringUtils.trimToNull(postDto.getUrl());
+        if (url == null) {
+            log.warn("Menu URL validation failed. menuId={}, submenuExpandType={}", postDto.getId(), postDto.getSubmenuExpandType());
+            throw new BusinessException("Menu URL is required.");
+        }
+        postDto.setUrl(url);
+    }
+
+    /**
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
@@ -201,6 +299,12 @@ public class MenuService
                     .build();
         }
 
+        final MenuEntity menu = this.getDtlEntity(id);
+        if ("Y".equals(menu.getProtectedYn())) {
+            log.warn("Protected menu useYn change blocked. menuId={}", id);
+            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+        }
+
         return this.getSelf().setUse(id, patchDto.getUseYn());
     }
     
@@ -211,7 +315,7 @@ public class MenuService
      */
     @Override
     public void postSetUse(final MenuEntity updateEntity) {
-        if ("Y".equals(updateEntity.getAdminYn())) {
+        if (this.getIsMngrMenu(updateEntity.getId())) {
             EhCacheUtils.clearCache("mngrMenuList");
         } else {
             EhCacheUtils.clearCache("userMenuList");
@@ -264,13 +368,11 @@ public class MenuService
         if (targetParent == null) {
             throw new BusinessException("Target parent menu does not exist.");
         }
-        if ("Y".equals(targetParent.getProtectedYn())) {
-            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
-        }
         if (!MenuType.MAIN.name().equals(targetParent.getMenuType()) && !MenuType.SUB.name().equals(targetParent.getMenuType())) {
             throw new BusinessException("Target parent type is not movable.");
         }
-        if (SubmenuExpandType.NO_SUB.name().equals(targetParent.getSubmenuExpandType())) {
+        if (SubmenuExpandType.NO_SUB.name().equals(targetParent.getSubmenuExpandType())
+                || SubmenuExpandType.BOARD.name().equals(targetParent.getSubmenuExpandType())) {
             throw new BusinessException("Target parent does not allow sub menus.");
         }
         if (Objects.equals(movedMenu.getId(), targetParentMenuId) || this.isDescendantOf(targetParentMenuId, movedMenu.getId())) {
@@ -307,6 +409,9 @@ public class MenuService
 
         EhCacheUtils.clearCache("mngrMenuList");
         EhCacheUtils.clearCache("userMenuList");
+        EhCacheUtils.clearCache("isMngrMenu");
+        log.info("Menu tree moved. movedId={}, sourceParentMenuId={}, targetParentMenuId={}",
+                moveParam.getMovedId(), moveParam.getSourceParentMenuId(), moveParam.getTargetParentMenuId());
 
         return ServiceResponse.builder()
                 .rslt(true)
@@ -394,7 +499,7 @@ public class MenuService
 
         EhCacheUtils.clearCache("userMenuList");
         EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("isMngrMenu");
         EhCacheUtils.evictCacheByKey("menuByLabel", deletedDto.getMenuLabel());
     }
 }
-

@@ -12,7 +12,7 @@
 | 태그 클릭 컨텍스트 메뉴 | `tagContextMenu.ts` + `JournalTagContextMenu.vue` | ✓ |
 | 일자 카드 ⋯ 컨텍스트 메뉴 | `JournalDayCard.vue` — Metronic dropdown | ✓ |
 | 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
-| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 칩 × 클릭 시 자유 제거(제한 없음); 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴 | ✓코드 |
+| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴 | ✓코드 |
 | 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/삭제 | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 버튼 | `JournalChapterItem.vue` — `copyChapter()`, 날짜(요일)·카테고리·엔트리 전체 텍스트 클립보드 복사 | ✓ |
@@ -23,15 +23,16 @@
 | 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
 | Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
 | 챕터 카테고리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY_CTGR_CD`·`NOTE` 병합 체크박스, `store.chapterCtgrCds` → `fetchDays` | ✓ |
+| 일기/꿈 라이프사이클 필터 | `JournalAside.vue` — `store.diaryLifecycleKey` / `store.dreamLifecycleKey` → `fetchDays` 후 일기/꿈 각각 후처리 필터 | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
 | 어사이드 키워드 필터 | `JournalDayViewToolbar.vue`에만 있음; `JournalAside.vue` 어사이드에는 키워드 입력 없음 | ⚠ 툴바만 |
 | 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView. 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback | ✓ |
-| 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정 서버 반영 후 현재 route 기준 목록 재조회 → `#journal-day-{stdrdDt}` scrollIntoView | ✓ |
+| 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalDaysForRoute`(주간/월간/일간 route 분기) → `#journal-day-{stdrdDt}` scrollIntoView. **일간(`journal-daily`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, `POST /api/journal/chapter/{id}/move` 호출 후 `fetchDays` + 신 일자 scrollIntoView | ✓ |
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 수정/삭제/이동 거부 시 `msg.rslt.not-owner` (403) alert | ✓ |
-| 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. CSS `:has` + `:not(:has([data-resolved=\"N\"]))` 로 하위 엔트리 전체 resolved 여부를 집계해 접힘 하이라이트 표시. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
+| 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. CSS `:has` + `:not(:has([data-resolved=\"N\"]))` 로 하위 엔트리 전체 resolved 여부를 집계해 접힘 외곽 inset 표시. 접힘 바: 완료 1px 초록·중요 2px 빨강·참조 4px 노랑(엔트리 `$journal-paired-states` 와 동일). 단독 우선 중요>참조>완료; 중요+완료·중요+참조·삼중 조합 다중선. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러 | ✓ |
 
 ---
@@ -75,16 +76,15 @@ function toggleSort() {
 **목적**: 현재 조회 중인 연/월을 임시 저장하고, 나중에 그 시점으로 돌아올 수 있게 함.
 
 **트리거 A — 핀 고정** (`<i class="bi bi-bookmarks">`):
-1. `pinnedYy.value = store.yy`
-2. `pinnedMnth.value = store.mnth`
-3. UI 갱신: `#pinnedYy` → 저장된 연도, `#pinnedMnth` → 저장된 월 표시
+1. `asideStore.setPinpoint(store.yy, store.mnth)` — `localStorage` 동기 저장
+2. UI 갱신: 고정 연도·월 표시 (`asideStore.pinnedYy` / `pinnedMnth`)
 
 **트리거 B — 돌아가기** (`<i class="bi bi-reply-all">`):
-1. `if (pinnedYy.value && pinnedMnth.value)`
-2. `store.gotoYyMnth(pinnedYy.value, pinnedMnth.value)` 호출
+1. `if (asideStore.pinnedYy && asideStore.pinnedMnth)`
+2. `store.gotoYyMnth(...)` 호출
 3. 목록 재조회 (`store.fetchDays()` 내부 호출됨)
 
-**상태 저장 위치**: `JournalAside.vue` 로컬 ref (Pinia store 불필요 — 사이드바 범위 상태)
+**상태 저장 위치**: `useJournalAsideStore` + 브라우저 `localStorage` 키 `journal_day_pinpoint` (`{ yy, mnth }` JSON). 서버·계정 설정에 저장하지 않음. 새로고침·재방문 시 복원.
 
 **초기 표시**: `pinnedYy === null` → `<span id="pinnedYy">----</span>`, `<span id="pinnedMnth">--</span>`
 
@@ -92,34 +92,49 @@ function toggleSort() {
 
 ### 챕터 카테고리 필터 (Chapter Category Filter)
 
-**트리거**: CHAPTER CATEGORIES `<select multiple>` 항목 변경
+**트리거**: CHAPTER CATEGORIES 항목 체크박스 변경
 
 **레거시**: `data-journal-day-action="chapter-ctgr-select"` → `bridge.applySearchParamsAndReload({ chapterCtgrCds: [...] })`
 
 **Vue SPA 구현**:
 ```typescript
 // JournalAside.vue 또는 JournalAsideEntryFilters 컴포넌트 내
-function onChapterCtgrChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const selected = Array.from(select.selectedOptions).map(opt => opt.value);
-    if (selected.includes('__ALL__') || selected.length === 0) {
-        store.chapterCtgrCds = [];  // 필터 없음 = 전체 표시
+function toggleChapterCategory(code: string) {
+    if (store.chapterCtgrCds.includes(code)) {
+        store.chapterCtgrCds = store.chapterCtgrCds.filter((item) => item !== code);
     } else {
-        store.chapterCtgrCds = selected;
+        store.chapterCtgrCds = [...store.chapterCtgrCds, code];
     }
     void store.fetchDays();
 }
 ```
 
-**챕터 필터 활성화 토글** (`#toggleChapterCtgr`):
-- `checked=false` → `store.chapterCtgrCds = []` + `store.fetchDays()` (전체 표시)
-- `checked=true` → 현재 멀티셀렉트 값 적용
+**DIARIES 부모 토글과의 관계**:
+- 챕터 카테고리 필터는 `DIARIES` 하위 필터다.
+- `store.showDiaries=false` 동안 챕터 카테고리 필터 UI는 렌더링하지 않는다.
+- `DIARIES` OFF는 `store.chapterCtgrCds` 값을 삭제하지 않는다. 다시 ON으로 돌리면 기존 선택값이 그대로 적용된다.
 
-**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.prefetchChapterCategories()` 호출 후 일기·노트 코드 병합 (`JOURNAL_CHAPTER_CTGR_CD` 는 DB 마이그레이션으로 제거됨)
-
-**`__ALL__` 처리**: 첫 번째 `<option value="__ALL__">전체</option>` 선택 시 모든 챕터 표시
+**챕터 옵션 로드 타이밍**: `onMounted` 시 `journalModalStore.prefetchChapterCategories()` 호출 후 일기·노트 코드 병합 (`JOURNAL_CHAPTER_CTGR_CD` 는 DB 마이그레이션으로 제거됨). 동일 시점에 여러 컴포넌트가 호출하면 진행 중인 Promise를 공유해, 뒤따른 호출자도 실제 조회 완료 후 옵션을 병합한다.
 
 **store 반영**: `store.chapterCtgrCds: string[]` — `fetchDays` 에서 `chapterCtgrCds.length > 0` 이면 query param 포함
+
+---
+
+### 일기/꿈 라이프사이클 필터
+
+**목표**: 우측 ENTRY FILTER에서 일기와 꿈을 각각 라이프사이클 상태로 거른다.
+
+**Vue 구현**:
+- `store.diaryLifecycleKey`: 일기 전용 lifecycle 필터
+- `store.dreamLifecycleKey`: 꿈 전용 lifecycle 필터
+- 옵션: 전체(`""`), 진행 중(`OPEN`), 보류(`PENDING`), 완료(`RESOLVED`)
+- select 변경 즉시 `store.fetchDays()` 호출
+- 필터 초기화 시 두 값 모두 `""` 로 되돌림
+- 일기 LIFECYCLE은 `DIARIES` 하위 필터이며, `store.showDiaries=false` 동안 렌더링하지 않는다.
+- 꿈 LIFECYCLE은 `DREAMS` 하위 필터이며, `store.showDreams=false` 동안 렌더링하지 않는다.
+- 부모 토글 OFF는 하위 필터 값을 삭제하지 않는다. 다시 ON으로 돌리면 기존 값이 그대로 적용된다.
+
+**서버 반영**: `JournalDaySearchParam.diaryLifecycleKey` / `dreamLifecycleKey` 를 `JournalDayFilterHelper.filterInMemory()`에서 적용한다. 일기/꿈 키워드와는 AND 조건이며, `OPEN`은 값이 없거나 `OPEN`인 엔트리를 포함한다.
 
 ---
 
@@ -164,6 +179,7 @@ const weekRangeLabel = computed(() => {
 
 **주간 범위 레이블 클릭 → 날짜 선택기** (`openWeekPicker` / `onWeekPickerChange`):
 - 사이드바의 주간 범위 레이블(`MM-DD ~ MM-DD`)을 클릭하면 브라우저 네이티브 date picker 팝업.
+- 팝업 표시 기준일은 현재 `store.weekStartDt`(해당 주 월요일) — `:value` 바인딩 및 `openWeekPicker` 직전 `input.value` 동기화.
 - 날짜 선택 시 `getWeekStartDateStr(selectedDate)`로 해당 주 월요일 계산.
 - `store.weekStartDt`, `store.yy`, `store.mnth` 갱신 후 `await store.fetchDays()` 호출.
 - 목록 렌더 완료 후 선택한 날짜(`val`)에 해당하는 `#journal-day-{val}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
@@ -313,15 +329,16 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **레거시 출처**: `legacy/static/vue/feature/journal/day/components/JournalDayContextMenu.ts`
 
 **메뉴 구조**:
-- 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간 뷰 전용 용도)
+- 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간·캘린더·메타 등 전용; route `journal-weekly` 에서는 `v-if` 로 메뉴 미표시)
 - 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
-- `JournalDayDaily.vue` 로드 시 `stdrdDt`에서 `yy`·`mnth`를 파생해 `fetchDays`에 명시 전달 (스토어 기본값 현재 날짜가 백엔드 필터와 불일치하는 문제 방지)
+- JournalDayDaily.vue 로드·oute.query.stdrdDt watch: uildDailyFetchParams(stdrdDt) → etchDays({ viewType: DAILY, stdrdDt, yy, mnth }) (@/utils/journalDayRefresh.ts)
+- 일간 팝업(journal-daily)에서 저장·삭제·상태 변경·이력 복원 후 목록 갱신: efreshJournalDaysForRoute(store, route, fallbackStdrdDt?) — 주간/월간과 동일하게 route name 분기, 일간은 URL·fallback 기준일 유지
 - 날짜 이동(이전/다음)은 로컬 Date 생성자로 파싱 — `new Date(stdrdDt)`는 UTC로 파싱되어 Korea(UTC+9) 환경에서 날짜가 1일 밀리는 버그 발생
 - 중앙 날짜 표시: `<input type=date>` 클릭 시 브라우저 달력 피커 오픈, 선택 날짜로 `router.replace`하여 이동
 - 팝업 너비 1600px / 높이 1080px (`window.screen.availWidth/Height` 상한); left/top 제거하여 OS 기본 배치 사용
 - 수정 → `openReg()` (등록 모달 재활용, id 포함)
 - 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 접힘(COLLAPSED, `POST /api/states` 토글)
-  - 삭제 → `DELETE /api/journal/day/{id}` → 성공 알림 OK 이후 `journalStore.fetchDays()`
+  - 삭제 → `DELETE /api/journal/day/{id}` → 성공 알림 OK 이후 `refreshJournalDaysForRoute` (일간 포함 route 분기)
 
 **드롭다운**: Metronic `data-kt-menu-trigger="click"`, `data-kt-menu-placement="bottom-end"`
 
@@ -340,7 +357,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
   - 헤더: contentLabel (일기/꿈)
   - 수정 → `modalStore.openEntryModify(id)`
   - 이력 → `attachableStore.openHistory(contentType, id)`
-  - 관련 글 추가 (`elseDreamYn !== "Y"` 조건) → `attachableStore.openRelated(contentType, id)`
+  - 관련 글 추가 (지정 꿈꾼 이름 없을 때만 — `hasDreamerName(entry)` false) → `attachableStore.openRelated(contentType, id)`
   - 구분선
   - 라이프사이클 서브메뉴 (OPEN/PENDING/RESOLVED radio) → `PUT /api/lifecycles { id, contentType, lifecycleKey }`
   - 상태 서브메뉴 toggle → `POST /api/states { id, contentType, stateKey }`

@@ -80,9 +80,9 @@
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideFilterHeaderApp.ts`
 
-**현재 Vue 동등**: ❌ MISSING — `JournalAside.vue` 상단 필터 헤더 없음
+0**현재 Vue 동등**: ✓ 구현 완료 — `JournalAside.vue` 상단 `#journal_aside_header` + `#sortIcon` + `store.toggleSort()`
 
-**구현할 DOM 구조**:
+**Vue DOM 구조**:
 ```html
 <div id="journal_aside_header" class="card-header min-h-auto mb-5">
     <h3 class="card-title text-gray-900 fw-bold fs-3">
@@ -90,7 +90,6 @@
     </h3>
     <div class="card-toolbar">
         <a class="btn btn-sm btn-icon btn-color-gray-500 btn-light"
-           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
            title="정렬 변경" @click.prevent="toggleSort">
             <i class="bi bi-sort-numeric-up-alt fs-2 pe-0" id="sortIcon"></i>
         </a>
@@ -100,10 +99,10 @@
 
 **상태 / 액션**:
 ```typescript
-// journal.ts store에 추가 필요
 const sortOrder = ref<'ASC' | 'DESC'>('DESC');
 function toggleSort() {
-    sortOrder.value = sortOrder.value === 'DESC' ? 'ASC' : 'DESC';
+    sortOrder.value = sortOrder.value === 'ASC' ? 'DESC' : 'ASC';
+    localStorage.setItem('journal_day_sort', sortOrder.value);
     fetchDays();
 }
 ```
@@ -116,13 +115,13 @@ function toggleSort() {
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideYyMnthApp.ts`
 
-**현재 Vue 동등**: ✓ 구현완료 — 년/월 select + TODAY + 월 그리드 + 주간 네비게이터 + Pinpoint (`JournalAside.vue`)
+**현재 Vue 동등**: ✓ 구현완료 — 연도 select + 월 그리드/TODAY + 주간 네비게이터 + Pinpoint (`JournalAside.vue`)
 
 **3개 sub-block 요약**:
 
-**Sub-block 1 — 년·월 select + 이전/다음 화살표**:
-- 연도: `<select name="yy" id="yy">` — `v-model="store.yy"` (integer) — 2010년~현재 역순 목록
-- 월: `<select name="mnth" id="mnth">` — `v-model="store.mnth"` — 1~12 정수 목록
+**Sub-block 1 — 연도 select + 월 그리드 + 이전/다음 화살표**:
+- 연도: `<select class="form-select form-select-sm">` — `:value="store.yy"` / `onYyChange` — 2010년~현재 역순 목록
+- 월: 1~12 버튼 그리드 — `store.gotoYyMnth(store.yy, m)` 호출. 레거시 `<select id="mnth">` 구조는 쓰지 않는다.
 - 이전 월 화살표: `<i class="bi bi-caret-left fs-2">` — `store.navigateMonth(-1)` 호출
 - 다음 월 화살표: `<i class="bi bi-caret-right fs-2">` — `store.navigateMonth(1)` 호출
 - TODAY 버튼: `btn btn-sm btn-outline btn-light-info blink-slow` — `store.gotoToday()` 호출
@@ -140,10 +139,10 @@ const weekRangeLabel = ref<string>('----');
 
 **Sub-block 3 — Pinpoint** ✓ 구현:
 ```typescript
-const pinnedYy = ref<number | null>(null);
-const pinnedMnth = ref<number | null>(null);
-// pinpoint(): pinnedYy.value = store.yy; pinnedMnth.value = store.mnth
-// turnback(): if(pinnedYy && pinnedMnth) store.gotoYyMnth(pinnedYy, pinnedMnth)
+// useJournalAsideStore — pinnedYy/pinnedMnth + setPinpoint(yy, mnth)
+// localStorage journal_day_pinpoint: { yy, mnth } (서버 미저장)
+// pinpoint(): asideStore.setPinpoint(store.yy, store.mnth)
+// turnback(): store.gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth)
 ```
 
 HTML 요소:
@@ -159,7 +158,7 @@ HTML 요소:
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideEntryFiltersApp.ts`
 
-**현재 Vue 동등**: ⚠ 부분구현 — CHAPTER CATEGORIES 체크박스·고급필터 아코디언은 레거시 멀티셀렉트·토글과 DOM 상이
+**현재 Vue 동등**: ⚠ 부분구현 — TAGCLOUD/DIARIES/DREAMS, CHAPTER CATEGORIES, 일기·꿈 라이프사이클, 일기·꿈 키워드 필터는 구현. 고급필터 아코디언은 MISSING.
 
 **5개 블록 구조**:
 
@@ -170,19 +169,25 @@ HTML 요소:
 ```html
 <!-- B-1: DIARIES 토글 -->
 <input type="checkbox" id="toggleDiaries" :checked="store.showDiaries" @change="toggleDiaries">
-<!-- B-2: CHAPTER CATEGORIES (Vue: 체크박스 목록, 레거시: 멀티셀렉트) -->
+<!-- B-2: CHAPTER CATEGORIES 체크박스 목록 -->
 <div id="chapterCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
-    <div class="d-flex align-items-center justify-content-between">
-        <label class="text-muted mb-0">- CHAPTER CATEGORIES</label>
-        <input type="checkbox" id="toggleChapterCtgr" :checked="chapterCtgrEnabled" @change="toggleChapterCtgr">
-    </div>
-    <select id="chapterCtgrFilter" class="form-select form-select-sm w-100" multiple size="4"
-            title="Ctrl+클릭으로 여러 항목 선택" @change="onChapterCtgrChange">
-        <option value="__ALL__">전체</option>
-        <option v-for="ct in chapterCtgrOptions" :key="ct.code" :value="ct.code">[{{ ct.codeName }}]</option>
-    </select>
+    <label v-for="ctgr in chapterCategoryOptions" :key="ctgr.code"
+           class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer">
+        <input class="form-check-input w-16px h-16px"
+               type="checkbox"
+               :checked="isChapterCategorySelected(ctgr.code)"
+               @change="toggleChapterCategory(ctgr.code)">
+        <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+    </label>
 </div>
-<!-- B-3: 일기 키워드 입력 -->
+<!-- B-3: 일기 라이프사이클 선택 -->
+<select id="diaryLifecycleFilter" class="form-select form-select-sm" v-model="store.diaryLifecycleKey" @change="store.fetchDays()">
+    <option value="">전체</option>
+    <option value="OPEN">진행 중</option>
+    <option value="PENDING">보류</option>
+    <option value="RESOLVED">완료</option>
+</select>
+<!-- B-4: 일기 키워드 입력 -->
 <input id="diaryFilterKeyword" class="form-control form-control-sm" v-model="store.diaryKeyword" @keyup.enter="applyFilters">
 ```
 
@@ -190,15 +195,33 @@ HTML 요소:
 - 일기 전용: `GET /api/code/items?groupCode=JOURNAL_CHAPTER_DIARY_CTGR_CD`
 - 노트 전용: `GET /api/code/items?groupCode=JOURNAL_CHAPTER_NOTE_CTGR_CD`
 - `journalModalStore.prefetchChapterCategories()` — 두 그룹 병렬 조회, 세션 캐시. `JournalMonthly` / `JournalWeekly` / `JournalDaily` onMounted에서 선제 호출해 모달 오픈 시 로딩 없이 사용
+- 동시 호출 시 새 요청을 버리지 않고 진행 중인 Promise를 반환한다. Aside와 월간/주간 화면이 같은 시점에 호출해도 호출자는 동일한 조회 완료를 기다린 뒤 옵션을 병합한다.
 - `chapterType === "NOTE"` 이면 `chapterNoteCategoryOptions`, 그 외엔 `chapterDiaryCategoryOptions` 사용 (`JournalChapterRegistModal` computed `currentCategoryOptions`)
 - `chapterType` 변경 시 `categoryCode` 자동 초기화 (watch)
 - DB 마이그레이션: `JOURNAL_CHAPTER_CTGR_CD` → `JOURNAL_CHAPTER_DIARY_CTGR_CD`로 복사 후 기존 그룹 삭제 (`data-required-cd-mariadb.sql`)
 
 **챕터 선택 → store 연동**:
-- `__ALL__` 선택 시: `store.chapterCtgrCds = []` → `store.fetchDays()`
-- 일반 선택 시: 선택된 코드값 배열 → `store.chapterCtgrCds = selectedCodes` → `store.fetchDays()`
+- 체크박스 ON: 해당 코드가 `store.chapterCtgrCds` 에 없으면 추가 → `store.fetchDays()`
+- 체크박스 OFF: 해당 코드를 `store.chapterCtgrCds` 에서 제거 → `store.fetchDays()`
+- `DIARIES=false` 상태에서는 챕터 카테고리 필터 UI를 렌더링하지 않고 기존 선택값은 보존한다.
 
-**블록 C — DREAMS + 꿈 키워드**: 블록 B와 동일 구조, 챕터 카테고리 sub-block 없음
+**블록 C — DREAMS + 꿈 LIFECYCLE + 꿈 키워드**: 블록 B와 동일 구조, 챕터 카테고리 sub-block 없음
+- 꿈 LIFECYCLE select: `store.dreamLifecycleKey` — 변경 시 `store.fetchDays()`
+
+**부모 토글과 하위 필터 계약**:
+- `TAGCLOUD`는 엔트리 종류와 독립된 표시 토글이므로 DIARIES/DREAMS 하위에 두지 않는다.
+- `CHAPTER CATEGORIES`, 일기 LIFECYCLE, 일기 키워드는 `DIARIES` 토글 하위에 배치한다.
+- 꿈 LIFECYCLE, 꿈 키워드는 `DREAMS` 토글 하위에 배치한다.
+- 부모 토글이 OFF이면 해당 하위 필터 UI는 렌더링하지 않는다.
+- 부모 토글 OFF는 하위 필터 값을 삭제하지 않는다. 다시 ON으로 돌리면 기존 하위 필터 값이 그대로 적용된다.
+- `ENTRY FILTER` 레이블은 TAGCLOUD/DIARIES/DREAMS 필터 묶음 아래에 표시한다.
+
+**라이프사이클 필터**:
+- 일기 LIFECYCLE select: `store.diaryLifecycleKey`
+- 꿈 LIFECYCLE select: `store.dreamLifecycleKey`
+- 옵션: 전체(`""`), 진행 중(`OPEN`), 보류(`PENDING`), 완료(`RESOLVED`)
+- `OPEN`은 라이프사이클 값이 없거나 `OPEN`인 엔트리를 포함한다.
+- 일기/꿈 각각 독립적으로 적용하며, 기존 키워드 필터와 AND 조건으로 동작한다.
 
 **블록 D — 고급 필터 아코디언 (MISSING)**:
 ```html
@@ -392,15 +415,15 @@ interface TodoRow {
 
 **하위 컴포넌트**: `JournalChapterItem.vue`, `JournalEntryItem.vue`
 
-**데이터**: `JournalDayDto` (`stores/journal.ts`) — `journalChapterList`, `journalDreamList`, `tag`, `meta` 등
+**데이터**: `JournalDayDto` (`stores/journal.ts`) — `journalChapterList`, `journalDreamSectionList`, `tag`, `meta` 등
 
-**꿈 렌더링 분리**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 는 DREAM 챕터 안의 꿈 엔트리를 `journalDreamList` / `journalElseDreamList` 로 투영한다. 목록 응답과 Vue 상세 모달처럼 일반 챕터/꿈 목록을 분리해서 보여주는 응답은 `excludeDreamChapters()` 로 `journalChapterList` / `chapterList` 에서 DREAM 챕터를 제외한다. 따라서 `JournalDayCard.vue` 와 `JournalDayDtlModal.vue` 는 별도 프론트 필터 없이 응답 DTO를 그대로 렌더링한다.
+**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 가 DREAM 챕터 꿈을 `journalDreamSectionList`(`JournalDreamSectionDto`: `sectionKey`, `title`, `dreamerName`, `entries`) 로 내려준다. 내 꿈=`own`/「꿈」, 지정 꿈꾼=`dreamer:{이름}`/「{이름} 꿈」(동일 철자=한 섹션). 분류·묶음 SSOT는 `JournalDreamSectionHelper`·`JournalDreamerFieldHelper` 이다. Vue는 `journalDreamSectionList` 를 `JournalDreamVirtualSection.vue` 로만 렌더(프론트 재묶음 없음). 지정 꿈꾼 섹션에는 저널 꿈 등록 버튼 없음(내 꿈 `own` 만). 엔트리 본문에 꿈꾼 이름 배지 없음(섹션 헤더로 구분). `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력.
 
 **모달 연동**: `useJournalModalStore` — 일자/챕터/엔트리 등록·상세·수정
 
 **현재 Vue 동등**: ✓ 구현 완료 (레거시 `JournalDayMonthlyListApp` / 텔레포트 대체)
 
-**컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수
+**컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수. 「주간 뷰로 이동」은 route `journal-weekly` 에서 미표시(월간·캘린더·메타 등 전용).
 
 **일간 뷰 새 창 열기**: ✓ 구현 완료 — 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` 새 창 강제 (features 지정)
 
@@ -414,6 +437,7 @@ interface TodoRow {
 - root div: `class="journal-chapter-block"` + `:id="'journal-chapter-' + chapter.id"` — 챕터 등록/수정 후 저장 위치 스크롤 앵커
 - 외부 div: `class="journal-chapter-item"` + `:data-collapsed` — journal.scss `:has(.collapsed)` 선택자 연동
 - 콘텐츠 div: `:class="['journal-chapter-content', { 'collapsed': isCollapsed }]"` — `&.collapsed > * { display: none !important }` CSS 연동
+- 접힘 외곽 상태선: `journal.scss` — 하위 `data-imprtc`/`data-refrnc`/전체 `data-resolved` 집계. 펼침 엔트리 `::before` 이중·삼중선과 동일 inset(완료·중요·참조 조합)
 
 **챕터 태그 표시 규칙**: 챕터 태그는 하위 엔트리 태그를 집계한 요약이므로 **챕터가 접힌 상태일 때만 표시**.
 - `v-if="tagList.length > 0 && isCollapsed"` — 접힌 상태에서만 DOM에 마운트
@@ -445,11 +469,13 @@ interface TodoRow {
 **scss 클래스 바인딩**:
 - 외부 div: `itemClass` computed (contentType/isDream 기준) → `journal-dream-item` / `journal-note-item` / `journal-diary-item`
 - 콘텐츠 div: `contentClass` computed → `journal-dream-content` / `journal-note-content` / `journal-diary-content`
-- data 속성: `:data-imprtc`, `:data-refrnc`, `:data-resolved`, `:data-id` — journal.scss CSS 선택자 연동
+- data 속성: `:data-imprtc`, `:data-refrnc`, `:data-resolved`, `:data-else-dream`, `:data-id` — journal.scss CSS 선택자 연동. 타인 꿈(`hasDreamerName` → `data-else-dream="Y"`)은 RESOLVED 초록 1줄 대신 **회색 이중선**(slate 0/2px) 기본; RESOLVED·중요·참조는 그 뒤 4px·6px·8px inset 에 기존 색으로 추가(`$journal-else-dream-paired-states`)
 
 **우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/라이프사이클/상태/삭제)
 
 **엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + `htmlToPlainText(content)` (TinyMCE HTML → 평문, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음 — 레거시 `copy()` 동일)
+
+**본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-interpretation-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
 
 **클라이언트 접힘 토글**: 왼쪽 열 `#sortOrder` 아래 `bi-arrows-expand`/`bi-arrows-collapse` 버튼 — 서버 상태 무변경, `localCollapsedOverride ref`로 임시 제어
 
@@ -545,7 +571,11 @@ interface TodoRow {
 **현재 Vue 범위**:
 - `type`, `tagIds`, `tagName`, `searchKeywords` query 파싱
 - `GET /api/journal/entries` 조회
-- 결과 목록, 태그 목록, 키워드 검색/초기화
+- 결과 목록, 태그 목록, 키워드 검색/초기화, 정렬 전환
+- 고급 필터 토글 영역에서 유형(일기/꿈) 선택과 키워드 추가
+- 결과 전체 복사 버튼 — 레거시 `JournalEntrySearch.copy()` 포맷으로 클립보드 복사
+- 개별 결과 복사 버튼 — `JournalEntryItem.copyEntry()` 사용
+- TXT export 버튼 — `GET /api/journal/entries/export`
 - 결과별 수정/삭제 버튼
 - 결과 태그 클릭 컨텍스트 메뉴(`JournalTagContextMenu`)와 태그 프로필 모달(`JournalTagProfileModal`) 마운트
 - 검색 팝업 내부 태그 검색은 같은 창 query 갱신으로 반영
@@ -555,11 +585,7 @@ interface TodoRow {
 - 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
 
 **남은 legacy 동등성 확인 대상**:
-- 결과 전체 복사 버튼
-- 개별 결과 복사 버튼
-- TXT export 버튼
-- 정렬 전환
-- 고급 검색 영역의 키워드/태그 다중 입력 UX
+- 고급 검색 영역의 태그 직접 입력 UX
 
 ---
 
@@ -584,7 +610,7 @@ interface TodoRow {
 |---------|-----------|---------|---------|
 | `JournalDayViewToolbar` | `_journal_day_page_header.ftlh` (`header_btn_reg_modal`) + 탭 행 | ✓ `JournalDayViewToolbar.vue` | 완료 |
 | `JournalTagCloudHeader` | `_journal_day_tag_header.ftlh` | ✓ `JournalTagCloudHeader.vue` | 완료 |
-| `JournalAsideFilterHeader` | `JournalDayAsideFilterHeaderApp.ts` | ❌ MISSING (`JournalAside.vue`에 FILTER 헤더·정렬 없음) | 높음 |
+| `JournalAsideFilterHeader` | `JournalDayAsideFilterHeaderApp.ts` | ✓ `JournalAside.vue` (`#journal_aside_header` + 정렬 토글) | 완료 |
 | `JournalAsideYyMnthSection` | `JournalDayAsideYyMnthApp.ts` | ✓ `JournalAside.vue` (연/월/TODAY/Week/Pinpoint 모두 구현) | 완료 |
-| `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ⚠ 부분 (토글·키워드; CHAPTER·고급필터 없음) | 높음 |
+| `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ⚠ 부분 (토글·챕터·라이프사이클·키워드 구현; 고급필터 아코디언 없음) | 높음 |
 | `JournalAsideTodoCard` | `JournalDayAsideTodoCardApp.ts` | ❌ MISSING (할일 등록 버튼만; 목록 API 미연동) | 높음 |

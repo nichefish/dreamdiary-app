@@ -11,6 +11,7 @@ export interface MenuDto {
   id: number;
   parentMenuId?: number;
   menuType?: string;
+  managementType?: "MENU" | "BOARD" | string;
   menuName: string;
   menuLabel?: string;
   unreadCntNm?: string;
@@ -63,7 +64,6 @@ const menuSection = (
 
 const FALLBACK_USER_MENU_LIST: MenuDto[] = [
   menuSection(-100, "\ub2e4\uc774\uc5b4\ub9ac", [
-    menuItem(-101, "\ub300\uc2dc\ubcf4\ub4dc", "/dashboard", "bi-speedometer2"),
     menuItem(-102, "\uc6d4\uac04 \uc77c\uae30", "/journal/monthly", "bi-journal-text"),
     menuItem(-103, "\uc8fc\uac04 \uc77c\uae30", "/journal/weekly", "bi-calendar-week"),
     menuItem(-104, "\uc77c\uae30 \uce98\ub9b0\ub354", "/journal/calendar", "bi-calendar3"),
@@ -112,6 +112,14 @@ export const useMenuStore = defineStore("menu", () => {
     localStorage.setItem(MENU_MODE_LS_KEY, nextMode);
   }
 
+  /** 인증 해제 시 사이드바 메뉴 상태를 사용자 기본 모드로 되돌린다. */
+  function resetMenu() {
+    mode.value = "USER";
+    menuList.value = [];
+    loaded.value = false;
+    localStorage.setItem(MENU_MODE_LS_KEY, "USER");
+  }
+
   function resolveAllowedMode(requestedMode = mode.value): MenuMode {
     const authStore = useAuthStore();
     if (requestedMode === "MNGR" && !authStore.user?.isMngr) return "USER";
@@ -153,5 +161,5 @@ export const useMenuStore = defineStore("menu", () => {
     await fetchUserMenu();
   }
 
-  return { menuList, mode, loaded, fetchUserMenu, setMenuMode, refreshMenu };
+  return { menuList, mode, loaded, fetchUserMenu, setMenuMode, refreshMenu, resetMenu };
 });

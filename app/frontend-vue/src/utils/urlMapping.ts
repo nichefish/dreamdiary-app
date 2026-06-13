@@ -16,10 +16,8 @@ const URL_MAP: Record<string, string> = {
   "/app/journal/day/cal.do": "/journal/calendar",
   "/app/journal/day/meta.do": "/journal/meta",
   "/app/journal/thread/list.do": "/thread",
-  "/app/journal/thread/regist-form.do": "/thread",
-  "/app/journal/thread/detail.do": "/thread",
-  "/app/journal/thread/modify-form.do": "/thread",
   "/app/journal/annual/list.do": "/annual",
+  "/app/schedule/calendar.do": "/schedule",
   "/app/schedule/cal.do": "/schedule",
   "/app/admin/admin-page.do": "/admin",
   "/app/auth/policy/page.do": "/admin/auth-policy",
@@ -48,6 +46,23 @@ const mapJournalAnnualDetail = (pathname: string): string | null => {
   return match ? `/annual/${match[1]}` : null;
 };
 
+const mapJournalThreadPath = (pathname: string, searchParams: URLSearchParams): string | null => {
+  if (pathname === "/app/journal/thread/regist-form.do") return "/thread/new";
+
+  const id = searchParams.get("id");
+  if (!id) return null;
+
+  if (pathname === "/app/journal/thread/detail.do") {
+    return `/thread/${encodeURIComponent(id)}`;
+  }
+
+  if (pathname === "/app/journal/thread/modify-form.do") {
+    return `/thread/${encodeURIComponent(id)}/edit`;
+  }
+
+  return null;
+};
+
 /**
  * 백엔드 URL을 Vue Router 경로로 변환한다.
  * 매핑이 없으면 원본 URL을 반환한다.
@@ -66,6 +81,9 @@ export function toVuePath(url: string | undefined): string {
 
   const mappedAnnualDetailUrl = mapJournalAnnualDetail(parsedUrl.pathname);
   if (mappedAnnualDetailUrl) return mappedAnnualDetailUrl;
+
+  const mappedThreadUrl = mapJournalThreadPath(parsedUrl.pathname, parsedUrl.searchParams);
+  if (mappedThreadUrl) return mappedThreadUrl;
 
   const mappedPath = URL_MAP[parsedUrl.pathname];
   if (mappedPath) return mappedPath;
