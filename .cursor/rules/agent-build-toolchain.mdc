@@ -1,0 +1,38 @@
+---
+description: Agent shell에서 npm/Java PATH가 비어도 Gradle로 프론트 빌드·검증을 수행한다
+alwaysApply: true
+---
+
+# Agent 빌드 검증 (Gradle Node)
+
+Agent shell에는 종종 **PATH `npm`이 없다**. 이를 이유로 프론트 빌드 검증을 생략하지 말고, **루트 `build.gradle`의 `com.github.node-gradle.node` 플러그인**을 사용한다.
+
+## Vue SPA (`app/frontend-vue`)
+
+| 목적 | 명령 |
+|------|------|
+| 프로덕션 빌드 (type-check + vite build) | `./gradlew buildFrontend` |
+| `npm install`만 | `./gradlew npmInstall` |
+| `package.json` 스크립트 | `./gradlew npm_run_<script>` — 하이픈은 camelCase (`type-check` → `npm_run_type_check`, `build-only` → `npm_run_build_only`) |
+
+Gradle 설정 (`build.gradle`):
+
+- `node.version = '20.11.1'`, `npmVersion = '10.5.0'`, `download = true`
+- `nodeProjectDir = app/frontend-vue`
+- `buildFrontend` → `dependsOn npmInstall`, `args = ['run', 'build']`
+
+**금지**: "이 환경에는 npm이 없어 빌드를 못 돌렸습니다"만 보고하고 끝내기. 먼저 `./gradlew buildFrontend`를 시도한다.
+
+## 인코딩 게이트
+
+`npm run check:encoding`의 실체는 `scripts/check_encoding.py`이다. npm이 없으면:
+
+```bash
+python scripts/check_encoding.py
+```
+
+(Windows: `py -3 scripts/check_encoding.py`)
+
+## `gradlew` 실패 시
+
+`JAVA_HOME` 미설정 등으로 Gradle 자체가 실패하면 그때 환경 한계를 보고한다. **npm 부재만**으로 검증 생략은 하지 않는다.
