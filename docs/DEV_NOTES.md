@@ -144,7 +144,7 @@ pm run check:encoding과 동일).
 
 물리 경로 이전 현황:
 - Vue: `src/vendor/metronic` → `src/platform/metronic` (✓ 완료)
-- React: `src/_metronic` → `src/platform/metronic` (예정)
+- React: `src/_metronic` → `src/platform/metronic` (✓ 완료)
 
 - **Metronic asset**: CSS/SCSS, 폰트, 이미지, 아이콘, 데모 미디어 등 정적 자산. 예: `src/platform/metronic/assets/**`, `public/media/**`.
 - **Metronic runtime/core**: 앱이 직접 import하는 helper/plugin/service. 예: `@metronic/core/services/ApiService`, `@metronic/core/plugins/keenthemes`, `@metronic/core/helpers/assets`. public repo에서는 Metronic 원본 재배포 이슈로 git 미추적; **로컬 킷 복원 절차**로 채운다.
@@ -300,7 +300,7 @@ pm run check:encoding과 동일).
 
 | 범위 | 결정/기록 |
 |------|-----------|
-| Metronic platform 경계 | `platform/metronic` 을 UI platform kit 층으로 둔다(제품 도메인·npm vendor 아님). 킷 자체를 앱 루트로 만들지 않고 `app/layouts` adapter에서 감싼다. import는 `@metronic` alias. 장기적으로 demo source(`platform/metronic/components/**` 등)는 삭제 대상. 물리 이동: Vue `vendor/metronic` → `platform/metronic` (✓). React `_metronic` → `platform/metronic` (예정). |
+| Metronic platform 경계 | `platform/metronic` 을 UI platform kit 층으로 둔다(제품 도메인·npm vendor 아님). 킷 자체를 앱 루트로 만들지 않고 `app/layouts` adapter에서 감싼다. import는 `@metronic` alias. 장기적으로 demo source(`platform/metronic/components/**` 등)는 삭제 대상. 물리 이동: Vue `vendor/metronic` → `platform/metronic` (✓). React `_metronic` → `platform/metronic` (✓). |
 | 기본 레이아웃명 | `layout/default-layout`은 의미 중복이므로 `layouts/default`로 둔다. |
 | 첫 화면 메뉴 | 대시보드가 placeholder여도 기본 메뉴/사이드바가 있어야 한다. 이동 수단 없는 빈 화면은 마이그레이션 완료 상태가 아니다. |
 | 사용자/관리자 메뉴 | 메뉴는 1차원 하드코딩이 아니라 `GET /api/menus?mode=USER|MNGR` + `subMenuList` depth 기반이어야 한다. fallback 메뉴는 서버 실패 시 보조 수단으로만 둔다. |

@@ -1,16 +1,16 @@
 # 인증/사용자 화면 스펙 (Auth & User Screen Spec)
 
-> 라우트: `app/frontend-vue/src/app/router/index.ts`
-> 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
+> Vue 라우트: `app/frontend-vue/src/app/router/index.ts` / React 라우트: `app/frontend-react/src/router.tsx`
+> 전체 라우트 목록: `docs/migration/vue-screen-overview.md`, `docs/migration/react-screen-overview.md`
 
 ## 라우트·화면 매핑
 
-| 화면 | Vue route | Vue view | 레이아웃 | 구현 |
-|------|-----------|----------|---------|------|
-| 로그인 | `/sign-in` | `SignIn.vue` | AuthLayout | ✓ |
-| 계정 신청 | `/user/signup` | `UserSignupPage.vue` | AuthLayout | ✓ |
-| 계정 인증 결과 | `/auth/verify-result` | `VerifyResultPage.vue` | AuthLayout | ✓ |
-| 내 정보 | `/my` | `UserMyPage.vue` | DefaultLayout | ✓ |
+| 화면 | Vue route | Vue view | React view | 레이아웃 | Vue | React |
+|------|-----------|----------|------------|---------|-----|-------|
+| 로그인 | `/sign-in` | `SignIn.vue` | `SignInPage.tsx` | AuthLayout | ✓ | ✓ |
+| 계정 신청 | `/user/signup` | `UserSignupPage.vue` | — | AuthLayout | ✓ | ❌ |
+| 계정 인증 결과 | `/auth/verify-result` | `VerifyResultPage.vue` | — | AuthLayout | ✓ | ❌ |
+| 내 정보 | `/my` | `UserMyPage.vue` | — | DefaultLayout | ✓ | ❌ |
 
 > 계정 신청 승인 관리(`/user/signup/approval`)는 관리자 기능으로 `admin/screen-spec.md` 참조.
 
@@ -19,7 +19,12 @@
 ## 로그인 (`sign-in`)
 
 **Vue view**: `app/frontend-vue/src/features/auth/SignIn.vue`  
-**스토어**: `shared/auth/stores/auth.ts`
+**Vue 스토어**: `shared/auth/stores/auth.ts`
+
+**React view**: `app/frontend-react/src/features/auth/SignInPage.tsx`  
+**React 스토어**: `shared/auth/authStore.ts` (zustand)  
+**React 레이아웃**: `app/layouts/AuthLayout.tsx`  
+**Spring 서빙**: `/react-app/**` → `static/react-app/` SPA fallback (`WebMvcContextConfig`)
 
 **기능**:
 - ID/PW 폼 로그인 → `POST /api/auth/login`

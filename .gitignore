@@ -51,6 +51,7 @@ lerna-debug.log*
 
 # Vue SPA build output copied to Spring Boot
 /static/vue-app/
+/static/react-app/
 
 # Metronic Vue source dump / vendor-heavy original assets
 /app/frontend-vue/src/views/crafted/
@@ -76,6 +77,7 @@ lerna-debug.log*
 /app/frontend-vue/src/platform/metronic/
 
 /app/frontend-react/node_modules
+/app/frontend-react/src/platform/metronic/
 
 /legacy
 /metronic_vue_v8.2.1_demo1/
