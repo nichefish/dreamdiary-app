@@ -9,7 +9,7 @@
 
 **Source (Legacy)**: `legacy/templates/view/feature/journal/day/tag/_journal_day_tag_header.ftlh`
 
-**Vue 구현 완료**: `app/frontend-vue/src/views/journal/day/components/JournalTagCloudHeader.vue`
+**Vue 구현 완료**: `app/frontend-vue/src/features/journal/day/components/JournalTagCloudHeader.vue`
 
 **사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). `JournalDayDaily.vue` 에는 미포함 (일간 뷰는 태그클라우드 없음)
 
@@ -314,7 +314,7 @@ interface TodoRow {
 
 ### 22-1. `JournalDayViewToolbar` (저널 일자 뷰 상단 툴바)
 
-**Vue 구현 완료**: `app/frontend-vue/src/views/journal/day/components/JournalDayViewToolbar.vue`
+**Vue 구현 완료**: `app/frontend-vue/src/features/journal/day/components/JournalDayViewToolbar.vue`
 
 **레거시 출처**:
 - 본문 상단 탭 행: `journal_day_monthly.ftlh` / `journal_day_weekly.ftlh` — `nav-tabs-line` 4탭
@@ -409,13 +409,13 @@ interface TodoRow {
 
 ### 23. `JournalDayCard` (저널 일자 카드 — 목록 단위)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/day/components/JournalDayCard.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/day/components/JournalDayCard.vue`
 
 **사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue`, `JournalDayDaily.vue` — `v-for="day in store.dayList"`
 
 **하위 컴포넌트**: `JournalChapterItem.vue`, `JournalEntryItem.vue`
 
-**데이터**: `JournalDayDto` (`stores/journal.ts`) — `journalChapterList`, `journalDreamSectionList`, `tag`, `meta` 등
+**데이터**: `JournalDayDto` (`features/journal/stores/journal.ts`) — `journalChapterList`, `journalDreamSectionList`, `tag`, `meta` 등
 
 **꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 가 DREAM 챕터 꿈을 `journalDreamSectionList`(`JournalDreamSectionDto`: `sectionKey`, `title`, `dreamerName`, `entries`) 로 내려준다. 내 꿈=`own`/「꿈」, 지정 꿈꾼=`dreamer:{이름}`/「{이름} 꿈」(동일 철자=한 섹션). 분류·묶음 SSOT는 `JournalDreamSectionHelper`·`JournalDreamerFieldHelper` 이다. Vue는 `journalDreamSectionList` 를 `JournalDreamVirtualSection.vue` 로만 렌더(프론트 재묶음 없음). 지정 꿈꾼 섹션에는 저널 꿈 등록 버튼 없음(내 꿈 `own` 만). 엔트리 본문에 꿈꾼 이름 배지 없음(섹션 헤더로 구분). `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력.
 
@@ -431,7 +431,7 @@ interface TodoRow {
 
 ### 23-1. `JournalChapterItem` (저널 챕터 아이템)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/chapter/components/JournalChapterItem.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/chapter/components/JournalChapterItem.vue`
 
 **scss 클래스 바인딩**:
 - root div: `class="journal-chapter-block"` + `:id="'journal-chapter-' + chapter.id"` — 챕터 등록/수정 후 저장 위치 스크롤 앵커
@@ -462,7 +462,7 @@ interface TodoRow {
 
 ### 23-2. `JournalEntryItem` (저널 엔트리 아이템)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryItem.ts`
 
@@ -498,9 +498,9 @@ interface TodoRow {
 
 ### 23-3. `JournalTagContextMenu` (태그 클릭 컨텍스트 메뉴)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/shared/components/JournalTagContextMenu.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/shared/components/JournalTagContextMenu.vue`
 
-**Pinia 스토어**: `app/frontend-vue/src/stores/tagContextMenu.ts`
+**Pinia 스토어**: `app/frontend-vue/src/features/journal/stores/tagContextMenu.ts`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/day/services/journalDayTagContextMenuShell.ts`
 
@@ -526,9 +526,9 @@ interface TodoRow {
 
 ### 23-3a. `JournalMetaContextMenu` (메타 클릭 컨텍스트 메뉴)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/shared/components/JournalMetaContextMenu.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/shared/components/JournalMetaContextMenu.vue`
 
-**Pinia 스토어**: `app/frontend-vue/src/stores/metaContextMenu.ts`
+**Pinia 스토어**: `app/frontend-vue/src/features/journal/stores/metaContextMenu.ts`
 
 **동작**: 메타 VIEW 헤더 `#메타` 클릭 시 태그와 동일한 fixed 팝업. payload `{ metaId, name, ctgr, unit? }`.
 
@@ -548,7 +548,7 @@ interface TodoRow {
 
 ### 23-3b. `JournalMetaProfileModal` (메타 설정 모달)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/shared/modals/JournalMetaProfileModal.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/shared/modals/JournalMetaProfileModal.vue`
 
 **데이터**: `GET /api/journal/day/metas/{id}` → `journalModalStore.metaProfileModel` (이름·카테고리·단위·기록 수 등 조회·표시)
 
@@ -558,7 +558,7 @@ interface TodoRow {
 
 ### 23-4. `JournalEntrySearchPage` (저널 엔트리 검색 새 창)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/entry/JournalEntrySearchPage.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue`
 
 **Route**: `/journal/entry/search` (`/vue-app/journal/entry/search`로 접근)
 
@@ -591,7 +591,7 @@ interface TodoRow {
 
 ### 24. `JournalLayout` (저널 공통 레이아웃·모달 호스트)
 
-**Vue 구현**: `app/frontend-vue/src/views/journal/day/JournalDayLayout.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/day/JournalDayLayout.vue`
 
 **역할**: `<router-view>` + `JournalAside` + 저널·공통 attachable 모달 일괄 마운트
 

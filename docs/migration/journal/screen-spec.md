@@ -10,14 +10,14 @@
 ## Vue SPA 구현 현황 (소스 기준)
 
 > 레거시 FTL/브리지 설명은 아래 각 화면 절을 유지한다. **실제 동작·경로는 이 절과 `app/frontend-vue/src` 가 우선**한다.
-> 라우트: `app/frontend-vue/src/router/index.ts` · URL 매핑: `app/frontend-vue/src/utils/urlMapping.ts`
+> 라우트: `app/frontend-vue/src/app/router/index.ts` · URL 매핑: `app/frontend-vue/src/shared/utils/urlMapping.ts`
 
 ### 아키텍처 (수렴 후)
 
 | 축 | 레거시 | Vue SPA |
 |----|--------|---------|
 | 목록 렌더 | FTL `#journal_day_list_div` + `JournalDay*ListApp` 텔레포트/브리지 | `JournalDayCard.vue` + `useJournalStore.dayList` |
-| 상태 | `window.JOURNAL`, `JournalDayMonthlyApp.*` pending 큐 | Pinia `stores/journal.ts` |
+| 상태 | `window.JOURNAL`, `JournalDayMonthlyApp.*` pending 큐 | Pinia `features/journal/stores/journal.ts` |
 | 탭 전환 | `dF.JournalDayViewService.changeView(url)` | `router-link` (`journal-monthly` 등) |
 | 모달 | Bootstrap + 레거시 서비스 | `JournalDayLayout.vue` + `useJournalModalStore` |
 | 공통 첨부 | `CommentList.modal`, `FileGroupList.modal` | `useAttachableModalStore` |
@@ -1002,7 +1002,7 @@ type TodoRow = {
 
 - **Legacy screen**: `legacy/templates/view/feature/journal/entry/journal_entry_search.ftlh`
 - **Vue SPA route**: `/journal/entry/search` (`journal-entry-search`)
-- **Vue view**: `app/frontend-vue/src/views/journal/entry/JournalEntrySearchPage.vue`
+- **Vue view**: `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue`
 - **Layout**: `SystemLayout.vue` 하위 auth route. 새 창 검색 화면이므로 `DefaultLayout` 메뉴와 `JournalLayout` aside를 렌더링하지 않는다.
 - **Open pattern**: 태그 컨텍스트 메뉴의 `검색` 버튼에서 `window.open(...)`. 이미 이 검색 화면 안에 있는 경우에는 같은 창에서 route query를 갱신한다.
 

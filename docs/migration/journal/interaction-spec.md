@@ -6,7 +6,7 @@
 
 ## Vue SPA 구현 상태 (소스 기준)
 
-| 인터랙션 | `stores/journal.ts` / UI | 상태 |
+| 인터랙션 | `features/journal/stores/journal.ts` / UI | 상태 |
 |----------|---------------------------|------|
 | 정렬 토글 | `sortOrder` + `toggleSort` + localStorage 유지 + 프론트 역순 | ✓ |
 | 태그 클릭 컨텍스트 메뉴 | `tagContextMenu.ts` + `JournalTagContextMenu.vue` | ✓ |
@@ -324,7 +324,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 일자 카드 ⋯ 컨텍스트 메뉴 (JournalDayCard Context Menu)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/day/components/JournalDayCard.vue`
+**구현 파일**: `app/frontend-vue/src/features/journal/day/components/JournalDayCard.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/day/components/JournalDayContextMenu.ts`
 
@@ -346,7 +346,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 엔트리 ⋯ 컨텍스트 메뉴 (JournalEntryItem Context Menu)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryContextMenu.ts`
 
@@ -377,7 +377,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 엔트리 클라이언트 접힘 토글 (Entry Local Collapse Toggle)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
 
 **레거시 출처**: `JournalEntryItem.ts` 왼쪽 열 토글 버튼 + `journalEntryStateService.toggle()` (localStorage 기반, 서버 상태 무변경)
 
@@ -425,7 +425,7 @@ function toggleEntry(): void {
 
 ### 챕터 복사 버튼 (Chapter Copy)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/chapter/components/JournalChapterItem.vue`
+**구현 파일**: `app/frontend-vue/src/features/journal/chapter/components/JournalChapterItem.vue`
 
 **트리거**: 챕터 헤더 우측 복사 버튼 (`bi-copy`) 클릭
 
@@ -467,7 +467,7 @@ async function copyChapter(): Promise<void> {
 
 ### 엔트리 복사 버튼 (Entry Copy)
 
-**구현 파일**: `app/frontend-vue/src/views/journal/entry/components/JournalEntryItem.vue`
+**구현 파일**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
 
 **트리거**: 우측 액션 영역 복사 버튼 (`bi-copy`) 클릭 (댓글 버튼과 ⋯ 사이)
 
@@ -483,9 +483,9 @@ async function copyChapter(): Promise<void> {
 
 ### 헤더 검색 드롭다운 (Header Search Dropdown)
 
-**구현 파일**: `app/frontend-vue/src/layouts/default/components/search/Search.vue`
+**구현 파일**: `app/frontend-vue/src/app/layouts/default/components/search/Search.vue`
 
-**참고**: 이 파일은 `.gitignore` 경로(`/app/frontend-vue/src/layouts/default/components/search/`)에 포함되어 git 추적 대상이 아님.
+**참고**: 이 파일은 `.gitignore` 경로(`/app/frontend-vue/src/app/layouts/default/components/search/`)에 포함되어 git 추적 대상이 아님.
 
 **UI 구조**:
 - 일기/꿈 유형 버튼 (`btn-primary` / `btn-info`)

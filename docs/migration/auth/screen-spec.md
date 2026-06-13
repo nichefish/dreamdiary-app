@@ -1,6 +1,6 @@
 # 인증/사용자 화면 스펙 (Auth & User Screen Spec)
 
-> 라우트: `app/frontend-vue/src/router/index.ts`
+> 라우트: `app/frontend-vue/src/app/router/index.ts`
 > 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
 
 ## 라우트·화면 매핑
@@ -18,8 +18,8 @@
 
 ## 로그인 (`sign-in`)
 
-**Vue view**: `app/frontend-vue/src/views/auth/SignIn.vue`  
-**스토어**: `stores/auth.ts`
+**Vue view**: `app/frontend-vue/src/features/auth/SignIn.vue`  
+**스토어**: `shared/auth/stores/auth.ts`
 
 **기능**:
 - ID/PW 폼 로그인 → `POST /api/auth/login`
@@ -36,7 +36,7 @@
 
 ## 계정 신청 (`user-signup`)
 
-**Vue view**: `app/frontend-vue/src/views/auth/UserSignupPage.vue`
+**Vue view**: `app/frontend-vue/src/features/auth/UserSignupPage.vue`
 
 **기능**:
 - 신규 계정 신청 폼 (이름, 이메일, 비밀번호 등)
@@ -47,7 +47,7 @@
 
 ## 계정 인증 결과 (`auth-verify-result`)
 
-**Vue view**: `app/frontend-vue/src/views/auth/VerifyResultPage.vue`
+**Vue view**: `app/frontend-vue/src/features/auth/VerifyResultPage.vue`
 
 **기능**:
 - 이메일 인증 토큰 결과 표시 (레거시 `verify_success.ftlh` + `verify_failure.ftlh` 통합)
@@ -60,7 +60,7 @@
 
 - **Vue SPA**: `/my`
 - **Legacy file**: `legacy/templates/view/feature/user/my/user_my_page.ftlh`
-- **스토어**: `stores/userMy.ts`
+- **스토어**: `features/user/stores/userMy.ts`
 - **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목은 렌더링하지 않고 안내문과 새로고침 버튼만 표시
 
 ### Layout Structure
