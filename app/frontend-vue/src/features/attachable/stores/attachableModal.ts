@@ -1,6 +1,8 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { isAuthExpiredError } from "@/shared/utils/authError";
 
 // ---- 타입 정의 ----
 
@@ -131,7 +133,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param refId - 참조 게시물 번호
    * @param refContentType - 참조 콘텐츠 타입
    */
-  function openCommentRegist(refId: number, refContentType: string): void {
+  async function openCommentRegist(refId: number, refContentType: string): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     commentId.value = undefined;
     commentRefId.value = refId;
     commentRefContentType.value = refContentType;
@@ -144,6 +147,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param id - 수정할 댓글 번호
    */
   async function openCommentModify(id: number): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     commentRegistOpen.value = true;
     commentRegistLoading.value = true;
     commentContent.value = "";
@@ -183,6 +187,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
 
   /** 댓글 목록 모달을 연다. */
   async function openCommentList(refId: number | string, refContentType: string): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     commentListOpen.value = true;
     commentListLoading.value = true;
     commentList.value = [];
@@ -228,6 +233,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param id - 게시물 번호
    */
   async function openHistory(contentType: string, id: number | string): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     historyOpen.value = true;
     historyLoading.value = true;
     historyList.value = [];
@@ -246,7 +252,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       historyList.value = Array.isArray(rsltObj.historyList)
         ? (rsltObj.historyList as HistoryItem[])
         : [];
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       historyList.value = [];
     } finally {
       historyLoading.value = false;
@@ -268,7 +275,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         `/api/history/${historyContentType.value}/${historyPostId.value}/${historyId}/restore`
       );
       return res.data?.rslt === true;
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return false;
     }
   }
@@ -285,7 +293,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       const ok = res.data?.rslt === true;
       if (ok) historyList.value = historyList.value.filter((item) => item.id !== historyId);
       return ok;
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return false;
     }
   }
@@ -299,7 +308,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         `/api/history/${historyContentType.value}/${historyPostId.value}/clear`
       );
       return res.data?.rslt === true;
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return false;
     }
   }
@@ -336,7 +346,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param contentType - 출처 콘텐츠 타입
    * @param id - 출처 게시물 번호
    */
-  function openRelated(contentType: string, id: number): void {
+  async function openRelated(contentType: string, id: number): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     relatedSrcContentType.value = contentType;
     relatedSrcId.value = id;
     relatedRelationType.value = "REFERENCE";
@@ -395,7 +406,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
           content: String(item.content ?? item.markdownContent ?? "").trim(),
         }))
         .filter((item: RelatedTargetItem) => Number.isInteger(item.id) && item.id > 0);
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       relatedSearchResults.value = [];
     } finally {
       relatedSearching.value = false;
@@ -447,7 +459,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         }
       );
       return { rslt: res.data?.rslt === true, message: res.data?.message as string | undefined };
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return { rslt: false };
     }
   }
@@ -464,7 +477,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         rsltSts: res.data?.rsltSts as string | undefined,
         rsltObj: res.data?.rsltObj,
       };
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return { rslt: false };
     }
   }
@@ -478,7 +492,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         message: res.data?.message as string | undefined,
         rsltObj: res.data?.rsltObj,
       };
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return { rslt: false };
     }
   }
@@ -494,6 +509,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
 
   /** 태그 목록 모달을 연다. */
   async function openTagList(params: TagListParams = {}): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     tagListOpen.value = true;
     await loadTagList(params);
   }
@@ -516,7 +532,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         return;
       }
       tagGroupMap.value = normalizeTagGroupMap(res.data.rsltMap ?? {});
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       tagGroupMap.value = {};
     } finally {
       tagListLoading.value = false;
@@ -563,7 +580,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * 태그 프로필 모달을 연다.
    * @param payload - 열 때 채울 모델 데이터
    */
-  function openTagProfile(payload: Partial<TagProfileModel>): void {
+  async function openTagProfile(payload: Partial<TagProfileModel>): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     tagProfileModel.value = {
       id: String(payload.id ?? ""),
       categoryProfileId: String(payload.categoryProfileId ?? ""),
@@ -599,7 +617,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
           description: String(item.description ?? ""),
         }));
       }
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       console.error("[attachableModal] TEXT_CLASS_CD 로드 실패");
     }
   }
@@ -624,7 +643,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return { rslt: res.data?.rslt === true, message: res.data?.message as string | undefined };
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return { rslt: false };
     }
   }
@@ -640,7 +660,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         params: { contentType: m.contentType },
       });
       return { rslt: res.data?.rslt === true, message: res.data?.message as string | undefined };
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       return { rslt: false };
     }
   }
@@ -658,6 +679,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param fileGroupId - 파일 그룹 번호
    */
   async function openFileList(fileGroupId: string | number): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     fileListOpen.value = true;
     fileListLoading.value = true;
     fileList.value = [];
@@ -665,7 +687,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       const res = await axios.get("/api/file/file-account-list", { params: { fileGroupId } });
       if (!res.data?.rslt) return;
       fileList.value = Array.isArray(res.data.rsltList) ? (res.data.rsltList as FileRecord[]) : [];
-    } catch {
+    } catch (e: unknown) {
+      if (isAuthExpiredError(e)) throw e;
       fileList.value = [];
     } finally {
       fileListLoading.value = false;

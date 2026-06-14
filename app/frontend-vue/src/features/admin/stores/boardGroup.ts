@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 
 export interface BoardGroupRow {
@@ -104,16 +105,18 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
     }
   }
 
-  function openCreate() {
+  async function openCreate() {
+    if (!await assertAuthenticatedBeforeModal()) return;
     form.value = { ...EMPTY_FORM };
     modalOpen.value = true;
   }
 
   async function openEdit(id: number) {
-    modalOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     detailLoading.value = true;
     form.value = { ...EMPTY_FORM, id };
     try {
+      modalOpen.value = true;
       const res = await axios.get(`/api/board/groups/${id}`);
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "게시판 그룹을 불러오지 못했습니다.");
       form.value = normalizeForm(res.data?.rsltObj ?? {});

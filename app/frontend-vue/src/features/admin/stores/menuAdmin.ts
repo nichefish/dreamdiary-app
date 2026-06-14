@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalAlert } from "@/shared/utils/swal";
 
 export interface MenuNode {
@@ -132,7 +133,8 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     }
   }
 
-  function openSubCreate(parent: MenuNode) {
+  async function openSubCreate(parent: MenuNode) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     form.value = {
       ...EMPTY_FORM,
       parentMenuId: parent.id,
@@ -142,11 +144,12 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
   }
 
   async function openEdit(id: number) {
-    modalOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     saving.value = false;
     const res = await axios.get(`/api/menu/${id}`);
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴 상세를 불러오지 못했습니다.");
     form.value = cloneForm(res.data?.rsltObj ?? {});
+    modalOpen.value = true;
   }
 
   function closeModal() {

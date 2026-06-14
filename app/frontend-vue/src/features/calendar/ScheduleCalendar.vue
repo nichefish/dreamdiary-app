@@ -304,6 +304,7 @@ import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import type { CalendarOptions, DatesSetArg, EventClickArg } from "@fullcalendar/core";
 import { Modal } from "bootstrap";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import {
   useScheduleStore,
   queryRangeForMonth,
@@ -479,6 +480,7 @@ function toggleFilter(key: keyof ScheduleFilter, event: Event) {
 
 async function openListRow(row: ScheduleListRow) {
   if (row.scheduleCd === scheduleStore.bootstrap.vcatnCd || row.scheduleCd === scheduleStore.bootstrap.brthdyCd) return;
+  if (!await assertAuthenticatedBeforeModal()) return;
   try {
     detail.value = await scheduleStore.fetchDetail(row.id);
     detailModal?.show();
@@ -490,6 +492,7 @@ async function openListRow(row: ScheduleListRow) {
 async function onEventClick(arg: EventClickArg) {
   const scheduleCd = arg.event.groupId || "";
   if (scheduleCd === scheduleStore.bootstrap.vcatnCd || scheduleCd === scheduleStore.bootstrap.brthdyCd) return;
+  if (!await assertAuthenticatedBeforeModal()) return;
   try {
     detail.value = await scheduleStore.fetchDetail(arg.event.id);
     detailModal?.show();
@@ -511,7 +514,8 @@ function resetRegistForm(isPrivate: boolean, source?: ScheduleDetail) {
   showEndDate.value = registForm.scheduleCd !== scheduleStore.holyDayCode;
 }
 
-function openRegist(isPrivate: boolean) {
+async function openRegist(isPrivate: boolean) {
+  if (!await assertAuthenticatedBeforeModal()) return;
   resetRegistForm(isPrivate);
   registModal?.show();
 }
@@ -561,8 +565,9 @@ async function submitRegist() {
   }
 }
 
-function modifyDetail() {
+async function modifyDetail() {
   if (!detail.value) return;
+  if (!await assertAuthenticatedBeforeModal()) return;
   closeDetail();
   resetRegistForm(detail.value.privateYn === "Y", detail.value);
   registModal?.show();

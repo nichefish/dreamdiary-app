@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 
 export interface LogListRow {
   id: number;
@@ -154,6 +155,7 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
   }
 
   async function openDetail(id: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     detailOpen.value = true;
     detailLoading.value = true;
     try {
