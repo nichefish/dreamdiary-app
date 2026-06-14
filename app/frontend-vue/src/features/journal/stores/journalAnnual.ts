@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
 
 // ---- 타입 정의 ----
@@ -255,7 +256,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
   // ---- 결산 등록/수정 액션 ----
 
   /** 결산 등록 모달을 연다 (신규). */
-  function openRegist() {
+  async function openRegist() {
+    if (!await assertAuthenticatedBeforeModal()) return;
     registModel.value = {
       yy: new Date().getFullYear(),
       title: "",
@@ -270,10 +272,11 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    * @param yy - 결산 연도
    */
   async function openModify(yy: number) {
-    registOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     registLoading.value = true;
     registModel.value = null;
     try {
+      registOpen.value = true;
       const res = await axios.get(`/api/journal/annual/${yy}`);
       const dto: JournalAnnualDto = res.data?.rsltObj ?? {};
       registModel.value = {
@@ -462,7 +465,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    * @param journalAnnualId - 결산 ID
    * @param yy - 결산 연도 (refetch 시 사용)
    */
-  function openReviewRegist(journalAnnualId: number, yy?: number) {
+  async function openReviewRegist(journalAnnualId: number, yy?: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     reviewRegistModel.value = {
       journalAnnualId,
       yy,
@@ -478,10 +482,11 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    * @param id - 리뷰 ID
    */
   async function openReviewModify(id: number) {
-    reviewRegistOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     reviewRegistLoading.value = true;
     reviewRegistModel.value = null;
     try {
+      reviewRegistOpen.value = true;
       const res = await axios.get(`/api/journal/annual/review/${id}`);
       const dto: JournalAnnualReviewDto = res.data?.rsltObj ?? {};
       reviewRegistModel.value = {

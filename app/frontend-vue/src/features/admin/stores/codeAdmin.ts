@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalAlert } from "@/shared/utils/swal";
 
 export interface CodeGroupRow {
@@ -168,17 +169,19 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
     await fetchGroups(0);
   }
 
-  function openGroupCreate() {
+  async function openGroupCreate() {
+    if (!await assertAuthenticatedBeforeModal()) return;
     groupForm.value = { ...EMPTY_GROUP_FORM };
     groupModalOpen.value = true;
   }
 
   async function openGroupEdit(id: number) {
-    groupModalOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     groupSaving.value = false;
     const res = await axios.get(`/api/code/group/${id}`);
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "코드 그룹을 불러오지 못했습니다.");
     groupForm.value = normalizeGroupForm(res.data?.rsltObj ?? {});
+    groupModalOpen.value = true;
   }
 
   function closeGroupModal() {
@@ -238,6 +241,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
   }
 
   async function openDetail(id: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     detailOpen.value = true;
     detailLoading.value = true;
     try {
@@ -274,16 +278,18 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
     items.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
   }
 
-  function openItemCreate() {
+  async function openItemCreate() {
+    if (!await assertAuthenticatedBeforeModal()) return;
     itemForm.value = normalizeItemForm(undefined, detail.value?.groupCode ?? "");
     itemModalOpen.value = true;
   }
 
   async function openItemEdit(id: number) {
-    itemModalOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     const res = await axios.get("/api/code/item", { params: { id } });
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "상세 코드를 불러오지 못했습니다.");
     itemForm.value = normalizeItemForm(res.data?.rsltObj ?? {}, detail.value?.groupCode ?? "");
+    itemModalOpen.value = true;
   }
 
   function closeItemModal() {

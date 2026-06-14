@@ -119,6 +119,28 @@ public class AuthRestController {
     }
 
     /**
+     * Vue SPA modal/action preflight.
+     * Checks the current authenticated username without returning user details.
+     *
+     * @param request HTTP request
+     * @return {@link ResponseEntity} processing result
+     */
+    @GetMapping(Url.API_SESSION_PING)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> sessionPingAjax(
+            final HttpServletRequest request
+    ) {
+
+        try {
+            AuthUtils.requireLoginUsername();
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+        } catch (final Exception e) {
+            log.info("Session ping rejected. reason={}", e.getClass().getSimpleName());
+            return unauthorizedAndInvalidate(request);
+        }
+    }
+
+    /**
      * Refresh Token을 재발급한다.
      *
      * @param request HTTP 요청 객체

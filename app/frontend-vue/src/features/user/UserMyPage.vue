@@ -174,6 +174,7 @@ import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, reactive, ref } from "vue";
 import { Modal } from "bootstrap";
 import { useAuthStore } from "@/shared/auth/stores/auth";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useUserMyStore } from "@/features/user/stores/userMy";
 
 const store = useUserMyStore();
@@ -279,7 +280,8 @@ function resetPasswordForm() {
   passwordError.value = "";
 }
 
-function openPasswordModal() {
+async function openPasswordModal() {
+  if (!await assertAuthenticatedBeforeModal()) return;
   resetPasswordForm();
   passwordModal?.show();
 }

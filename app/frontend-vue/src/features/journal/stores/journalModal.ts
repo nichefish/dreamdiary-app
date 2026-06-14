@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import type { JournalDayDto, MetaDto } from "@/features/journal/stores/journal";
 import { formatLocalDateStr } from "@/features/journal/utils/journalDate";
 import { mergeTagifyListIntoCategoryMap } from "@/shared/utils/tagifyHelper";
@@ -184,6 +185,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param payload - 수정 시 기존 데이터, 신규 시 날짜 등 초기값
    */
   async function openDayRegist(payload?: JournalDayRegistModel) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     let merged: JournalDayRegistModel = {
       journalDatePrecision: "EXACT",
       diaryResolvedYn: "N",
@@ -244,6 +246,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param id - 저널 일자 ID
    */
   async function openDayDetail(id: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     dayDetailData.value = null;
     dayDetailOpen.value = true;
     dayDetailLoading.value = true;
@@ -312,7 +315,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * 챕터 등록/수정 모달을 연다.
    * @param payload - 수정 시 기존 챕터 데이터, 신규 시 journalDayId 등 초기값
    */
-  function openChapterRegist(payload?: JournalChapterRegistModel) {
+  async function openChapterRegist(payload?: JournalChapterRegistModel) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     chapterRegistModel.value = {
       chapterType: "DIARY",
       categoryCode: "",
@@ -342,6 +346,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param payload - 수정 시 식별자, 신규 시 refId 등 초기값
    */
   async function openInterpretationRegist(payload?: JournalInterpretationRegistModel): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     let merged: JournalInterpretationRegistModel = {
       ctgrCd: "",
       title: "",
@@ -395,6 +400,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     seed: { type: DayFilterSeedType; id: number | string; name: string; ctgr?: string },
     yy?: string
   ): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     filterModalOpen.value = true;
     filterModalLoading.value = true;
     filterModalPayload.value = null;
@@ -462,6 +468,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     ctgr?: string;
     unit?: string;
   }): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
     metaProfileOpen.value = true;
     metaProfileLoading.value = true;
     metaProfileModel.value = {
@@ -498,7 +505,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * 할일 등록/수정 모달을 연다.
    * @param payload - 수정 시 기존 데이터, 신규 시 yy/mnth 등 초기값
    */
-  function openTodoRegist(payload?: JournalTodoRegistModel) {
+  async function openTodoRegist(payload?: JournalTodoRegistModel) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     todoRegistModel.value = {
       categoryCode: "",
       title: "",
@@ -590,6 +598,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param payload - contentType, journalDayId, stdrdDt 등 초기값
    */
   async function openEntryRegist(payload: JournalEntryRegistModel) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     entryRegistOpen.value = true;
     entryRegistLoading.value = true;
     entryRegistModel.value = null;
@@ -625,6 +634,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     dreamerName?: string;
   }) {
     if (dreamEntryRegistOpening) return;
+    if (!await assertAuthenticatedBeforeModal()) return;
     dreamEntryRegistOpening = true;
     entryRegistOpen.value = true;
     entryRegistLoading.value = true;
@@ -663,6 +673,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * @param id - 엔트리 ID
    */
   async function openEntryModify(id: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     entryRegistOpen.value = true;
     entryRegistLoading.value = true;
     entryRegistModel.value = null;

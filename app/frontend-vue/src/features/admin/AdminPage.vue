@@ -320,6 +320,7 @@ import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { Modal } from "bootstrap";
 import { useAdminPageStore } from "@/features/admin/stores/adminPage";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import type { RoleRow } from "@/features/admin/types/adminPage.types";
 
 const store = useAdminPageStore();
@@ -499,6 +500,7 @@ async function runNotion() {
 }
 
 async function openCacheList() {
+  if (!await assertAuthenticatedBeforeModal()) return;
   await store.fetchCacheMap();
   cacheListModal?.show();
 }
@@ -508,6 +510,7 @@ function closeCacheList() {
 }
 
 async function openCacheDetail(cacheName: string, cacheKey: string) {
+  if (!await assertAuthenticatedBeforeModal()) return;
   await store.fetchCacheDetail(cacheName, cacheKey);
   cacheListModal?.hide();
   cacheDetailModal?.show();

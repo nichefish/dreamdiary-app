@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
 
 // ---- 타입 정의 ----
@@ -146,7 +147,8 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   // ---- 등록/수정 액션 ----
 
   /** 게시물 등록 모달을 연다 (신규). */
-  function openRegist() {
+  async function openRegist() {
+    if (!await assertAuthenticatedBeforeModal()) return;
     registModel.value = {
       contentType: boardKey.value,
       categoryCode: "",
@@ -162,10 +164,11 @@ export const useBoardPostStore = defineStore("boardPost", () => {
    * @param id - 게시물 ID
    */
   async function openModify(id: number) {
-    registOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     registLoading.value = true;
     registModel.value = null;
     try {
+      registOpen.value = true;
       const res = await axios.get(`/api/board/posts/${id}`);
       const dto: BoardPostDto = res.data?.rsltObj ?? {};
       registModel.value = {
@@ -260,6 +263,7 @@ export const useBoardPostStore = defineStore("boardPost", () => {
    * @param id - 게시물 ID
    */
   async function openDetail(id: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     detailOpen.value = true;
     detailLoading.value = true;
     detailModel.value = null;

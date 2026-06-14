@@ -2,6 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import type { RoleRow } from "@/features/admin/stores/adminPage";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalAlert } from "@/shared/utils/swal";
 
 export interface UserRoleRow {
@@ -346,6 +347,7 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
   }
 
   async function openDetail(id: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
     detailOpen.value = true;
     detailLoading.value = true;
     try {
@@ -362,17 +364,19 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     detail.value = null;
   }
 
-  function openCreate() {
+  async function openCreate() {
+    if (!await assertAuthenticatedBeforeModal()) return;
     form.value = emptyForm();
     formOpen.value = true;
   }
 
   async function openEdit(id: number) {
-    formOpen.value = true;
+    if (!await assertAuthenticatedBeforeModal()) return;
     saving.value = false;
     const res = await axios.get(`/api/users/${id}`);
     if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정 상세를 불러오지 못했습니다.");
     form.value = normalizeForm(res.data?.rsltObj ?? {});
+    formOpen.value = true;
   }
 
   function closeForm() {

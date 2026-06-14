@@ -21,6 +21,8 @@ public interface ApiUrl {
     String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
     String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
     String API_AUTH_INFO = Prefix.API + "/auth/get-auth-account";
+    /** Vue SPA authenticated action preflight. */
+    String API_SESSION_PING = Prefix.API + "/session/ping";
     /** Vue SPA용 JSON 로그인/로그아웃 */
     String API_AUTH_LOGIN = Prefix.API + "/auth/login";
     String API_AUTH_LGOUT_JSON = Prefix.API + "/auth/logout-json";
