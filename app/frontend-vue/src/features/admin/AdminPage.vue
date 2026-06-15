@@ -96,6 +96,38 @@
                 <span v-if="store.embeddingSyncRunning || store.embeddingStats.syncRunning" class="spinner-border spinner-border-sm me-1"></span>
                 {{ store.embeddingStats.syncRunning ? "Sync Running" : "Sync Entries" }}
               </button>
+              <button type="button" class="btn btn-sm btn-light-info" :disabled="store.embeddingQualityEvalRunning" @click="store.runEmbeddingQualityEval">
+                <span v-if="store.embeddingQualityEvalRunning" class="spinner-border spinner-border-sm me-1"></span>
+                Quality Eval
+              </button>
+            </div>
+          </div>
+
+          <div v-if="store.embeddingQualityEvalError" class="alert alert-warning py-2">
+            {{ store.embeddingQualityEvalError }}
+          </div>
+          <div v-if="store.embeddingQualityEvalReport" class="admin-quality-eval mb-4">
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+              <span class="badge" :class="store.embeddingQualityEvalReport.overallPassed ? 'badge-light-success' : 'badge-light-warning'">
+                {{ store.embeddingQualityEvalReport.recommendation }}
+              </span>
+              <span class="text-muted fs-8">{{ store.embeddingQualityEvalReport.embeddingModel }} · dim {{ store.embeddingQualityEvalReport.vectorDimension ?? "?" }} · {{ store.embeddingQualityEvalReport.elapsedMs }}ms</span>
+            </div>
+            <div class="fs-8 mb-3">{{ store.embeddingQualityEvalReport.summary }}</div>
+            <div v-for="suite in store.embeddingQualityEvalReport.suites" :key="suite.code" class="mb-3">
+              <div class="fw-semibold fs-8">
+                {{ suite.code }}
+                <span :class="suite.suitePassed ? 'text-success' : 'text-warning'">({{ suite.passedCount }}/{{ suite.passedCount + suite.failedCount }})</span>
+              </div>
+              <div class="text-muted fs-8">{{ suite.description }}</div>
+              <ul class="mb-0 ps-4 fs-8">
+                <li v-for="item in suite.cases.filter((c) => !c.passed)" :key="item.caseId">
+                  {{ item.caseId }}: {{ item.description }} — {{ item.detail || item.expectation }}
+                </li>
+              </ul>
+            </div>
+            <div v-if="store.embeddingQualityEvalReport.skippedSamples.length" class="fs-8 text-muted">
+              SKIPPED samples: {{ store.embeddingQualityEvalReport.skippedSamples.map((s) => `#${s.journalEntryId}`).join(", ") }}
             </div>
           </div>
 

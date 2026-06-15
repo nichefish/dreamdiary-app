@@ -67,6 +67,92 @@ export interface EmbeddingSyncJobStatus {
   errorMessage: string;
 }
 
+/** Admin embedding quality eval — single case row */
+export interface EmbeddingQualityEvalCase {
+  caseId: string;
+  description: string;
+  expectation: string;
+  passed: boolean;
+  metric: number | null;
+  comparisonMetric: number | null;
+  detail: string | null;
+}
+
+/** Admin embedding quality eval — suite summary */
+export interface EmbeddingQualityEvalSuite {
+  code: string;
+  description: string;
+  passCriteria: string;
+  passedCount: number;
+  failedCount: number;
+  suitePassed: boolean;
+  cases: EmbeddingQualityEvalCase[];
+}
+
+/** Admin embedding quality eval — SKIPPED sample */
+export interface EmbeddingSkippedSample {
+  journalEntryId: number | null;
+  errorMessage: string | null;
+}
+
+/** Admin embedding quality eval report */
+export interface EmbeddingQualityEvalReport {
+  embeddingModel: string;
+  embeddedCount: number;
+  cachedVectorCount: number;
+  vectorDimension: number | null;
+  skippedCount: number;
+  skippedSamples: EmbeddingSkippedSample[];
+  suites: EmbeddingQualityEvalSuite[];
+  overallPassed: boolean;
+  recommendation: string;
+  summary: string;
+  elapsedMs: number;
+}
+
+export function normalizeEmbeddingQualityEvalReport(
+  report: Partial<EmbeddingQualityEvalReport> | null | undefined
+): EmbeddingQualityEvalReport {
+  return {
+    embeddingModel: String(report?.embeddingModel ?? ""),
+    embeddedCount: Number(report?.embeddedCount ?? 0),
+    cachedVectorCount: Number(report?.cachedVectorCount ?? 0),
+    vectorDimension: report?.vectorDimension == null ? null : Number(report.vectorDimension),
+    skippedCount: Number(report?.skippedCount ?? 0),
+    skippedSamples: Array.isArray(report?.skippedSamples)
+      ? report!.skippedSamples.map((sample) => ({
+          journalEntryId: sample?.journalEntryId == null ? null : Number(sample.journalEntryId),
+          errorMessage: sample?.errorMessage == null ? null : String(sample.errorMessage),
+        }))
+      : [],
+    suites: Array.isArray(report?.suites)
+      ? report!.suites.map((suite) => ({
+          code: String(suite?.code ?? ""),
+          description: String(suite?.description ?? ""),
+          passCriteria: String(suite?.passCriteria ?? ""),
+          passedCount: Number(suite?.passedCount ?? 0),
+          failedCount: Number(suite?.failedCount ?? 0),
+          suitePassed: Boolean(suite?.suitePassed),
+          cases: Array.isArray(suite?.cases)
+            ? suite!.cases.map((item) => ({
+                caseId: String(item?.caseId ?? ""),
+                description: String(item?.description ?? ""),
+                expectation: String(item?.expectation ?? ""),
+                passed: Boolean(item?.passed),
+                metric: item?.metric == null ? null : Number(item.metric),
+                comparisonMetric: item?.comparisonMetric == null ? null : Number(item.comparisonMetric),
+                detail: item?.detail == null ? null : String(item.detail),
+              }))
+            : [],
+        }))
+      : [],
+    overallPassed: Boolean(report?.overallPassed),
+    recommendation: String(report?.recommendation ?? ""),
+    summary: String(report?.summary ?? ""),
+    elapsedMs: Number(report?.elapsedMs ?? 0),
+  };
+}
+
 export interface EntityQueueStats {
   total: number;
   queueRows: number;
