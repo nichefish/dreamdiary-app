@@ -152,3 +152,33 @@ final_score =
 ```
 
 초기에는 타입 가중치만 사용하고, 태그/상태/날짜 가중치는 ranking 고도화 단계에서 반영한다.
+
+## 품질 실측 (Quality Eval)
+
+한국어 의미 유사도가 현재 임베딩 모델에서 RAG에 쓸 만한지 빠르게 판단하는 운영 도구입니다. DB 네이티브 VECTOR 여부와 무관하게 **저장된 벡터·쿼리 임베딩 간 코사인**만 검증합니다.
+
+| 항목 | 값 |
+| --- | --- |
+| Endpoint | `GET /api/admin/journal-entry-embeddings/quality-eval` |
+| 권한 | `ROLE_MNGR` |
+| 전제 | Ollama 임베딩 API 가동 (`nomic-embed-text` 등) |
+
+### 스위트
+
+| 코드 | 내용 | 통과 기준 |
+| --- | --- | --- |
+| `PARAPHRASE` | 고정 한국어 paraphrase 10쌍 코사인 | 각 쌍 ≥ 0.72, 통과율 ≥ 80% |
+| `RELATED_DISTINCT` | anchor / related / unrelated 10삼중 | related−unrelated ≥ 0.05, 통과율 ≥ 80% |
+| `CORPUS_SELF_RANK` | 캐시된 저널 embedding_text 프로브 vs 자기·타 벡터 | self > bestOther, 통과율 ≥ 70% |
+
+### 권고값 (`recommendation`)
+
+| 값 | 의미 |
+| --- | --- |
+| `KEEP_MODEL` | 고정 시드·코퍼스 샘플 기준 유지 가능 |
+| `REVIEW_MODEL` | 한국어 모델 교체(bge-m3 등) 검토 |
+| `OLLAMA_UNAVAILABLE` | Ollama 미가동으로 실측 불가 |
+
+리포트에는 `SKIPPED` row 사유 샘플(최대 20건)도 포함됩니다.
+
+Admin UI **AI Embedding Backfill** 섹션의 **Quality Eval** 버튼으로 동일 API를 호출합니다.

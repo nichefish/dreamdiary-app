@@ -11,11 +11,26 @@ interface AjaxResponse<T = unknown> {
   rsltList?: T[];
 }
 
+export const MEMORY_LIMIT_OPTIONS = [25, 50, 100, 200] as const;
+export const DEFAULT_MEMORY_LIMIT = 50;
+
 export interface ChatSetting {
   id?: number;
   scope?: string;
   scopeKey?: string;
   recentMessageLimit: number;
+}
+
+export function normalizeRecentMessageLimit(value: unknown): number {
+  const parsed = Number(value);
+  if (
+    MEMORY_LIMIT_OPTIONS.includes(
+      parsed as (typeof MEMORY_LIMIT_OPTIONS)[number]
+    )
+  ) {
+    return parsed;
+  }
+  return DEFAULT_MEMORY_LIMIT;
 }
 
 export interface ChatSession {
@@ -92,7 +107,9 @@ export const useChatStore = defineStore("chat", () => {
   const isSettingSaving = ref(false);
   const lastError = ref("");
 
-  const setting = ref<ChatSetting>({ recentMessageLimit: 50 });
+  const setting = ref<ChatSetting>({
+    recentMessageLimit: DEFAULT_MEMORY_LIMIT,
+  });
   const sessions = ref<ChatSession[]>([]);
   const activeSessionId = ref<number | null>(null);
   const messages = ref<ChatMessage[]>([]);
@@ -221,10 +238,19 @@ export const useChatStore = defineStore("chat", () => {
     invalidSubscriptionId = "";
   }
 
+  function applySetting(nextSetting: ChatSetting): void {
+    setting.value = {
+      ...nextSetting,
+      recentMessageLimit: normalizeRecentMessageLimit(
+        nextSetting.recentMessageLimit
+      ),
+    };
+  }
+
   async function fetchSetting(): Promise<void> {
     const { data } = await ApiService.get("/chat/settings");
     const response = assertSuccess<ChatSetting>(data);
-    if (response.rsltObj) setting.value = response.rsltObj;
+    if (response.rsltObj) applySetting(response.rsltObj);
   }
 
   async function updateSetting(nextSetting: ChatSetting): Promise<void> {
@@ -232,7 +258,7 @@ export const useChatStore = defineStore("chat", () => {
     try {
       const { data } = await axios.patch("/chat/settings", nextSetting);
       const response = assertSuccess<ChatSetting>(data);
-      if (response.rsltObj) setting.value = response.rsltObj;
+      if (response.rsltObj) applySetting(response.rsltObj);
     } finally {
       isSettingSaving.value = false;
     }
@@ -402,7 +428,7 @@ export const useChatStore = defineStore("chat", () => {
     isWaitingResponse.value = false;
     isSessionLoading.value = false;
     isSettingSaving.value = false;
-    setting.value = { recentMessageLimit: 50 };
+    setting.value = { recentMessageLimit: DEFAULT_MEMORY_LIMIT };
     sessions.value = [];
     activeSessionId.value = null;
     messages.value = [];

@@ -7,6 +7,7 @@ import {
   emptyEntityQueueStats,
   normalizeEmbeddingStats,
   normalizeEmbeddingSyncJobStatus,
+  normalizeEmbeddingQualityEvalReport,
   normalizeEntityQueueStats,
   normalizeEntityQueueSyncResult,
   type AdminPageMeta,
@@ -14,6 +15,7 @@ import {
   type CacheMap,
   type EmbeddingStats,
   type EmbeddingSyncResult,
+  type EmbeddingQualityEvalReport,
   type EntityQueueStats,
   type EntityQueueSyncResult,
   type RoleRow,
@@ -25,6 +27,7 @@ export type {
   EmbeddingStats,
   EmbeddingSyncResult,
   EmbeddingSyncJobStatus,
+  EmbeddingQualityEvalReport,
   EntityQueueStats,
   EntityQueueSyncResult,
   CacheMap,
@@ -62,6 +65,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   const embeddingSyncRunning = ref(false);
   const embeddingRequeueRunning = ref(false);
   const embeddingSyncResult = ref<EmbeddingSyncResult | null>(null);
+  const embeddingQualityEvalRunning = ref(false);
+  const embeddingQualityEvalError = ref("");
+  const embeddingQualityEvalReport = ref<EmbeddingQualityEvalReport | null>(null);
   const entityQueueStats = ref<EntityQueueStats>(emptyEntityQueueStats());
   const entityQueueStatsLoading = ref(false);
   const entityQueueError = ref("");
@@ -179,6 +185,20 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     } finally {
       embeddingRequeueRunning.value = false;
       evaluateBackfillPolling();
+    }
+  }
+
+  async function runEmbeddingQualityEval() {
+    embeddingQualityEvalRunning.value = true;
+    embeddingQualityEvalError.value = "";
+    try {
+      const res = await axios.get("/api/admin/journal-entry-embeddings/quality-eval");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding quality eval failed");
+      embeddingQualityEvalReport.value = normalizeEmbeddingQualityEvalReport(res.data.rsltObj);
+    } catch (error) {
+      embeddingQualityEvalError.value = error instanceof Error ? error.message : "Embedding quality eval request failed";
+    } finally {
+      embeddingQualityEvalRunning.value = false;
     }
   }
 
@@ -300,6 +320,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingSyncRunning,
     embeddingRequeueRunning,
     embeddingSyncResult,
+    embeddingQualityEvalRunning,
+    embeddingQualityEvalError,
+    embeddingQualityEvalReport,
     entityQueueStats,
     entityQueueStatsLoading,
     entityQueueError,
@@ -315,6 +338,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     fetchEmbeddingStats,
     syncEmbeddingQueue,
     requeueFailedEmbeddingQueue,
+    runEmbeddingQualityEval,
     fetchEntityQueueStats,
     syncEntityQueue,
     requeueFailedEntityQueue,

@@ -139,6 +139,7 @@ Admin queue visibility is available through:
 - `GET /api/admin/journal-entry-embeddings/stats`
 - `POST /api/admin/journal-entry-embeddings/sync`
 - `POST /api/admin/journal-entry-embeddings/requeue-failed`
+- `GET /api/admin/journal-entry-embeddings/quality-eval` — 한국어 임베딩 품질 실측 (Ollama 필요). 상세: `JOURNAL_ENTRY_EMBEDDING_DESIGN.md` § 품질 실측
 - `GET /api/admin/journal-entry-entities/stats`
 - `POST /api/admin/journal-entry-entities/sync`
 - `POST /api/admin/journal-entry-entities/requeue-failed`
@@ -286,7 +287,31 @@ Modes:
 | `SUMMARY` | Summarize a set of records | wider top-K, compact source lines |
 | `SYNTHESIS` | Interpret patterns, meanings, symbols, emotional arcs, whole context | widest top-K, lower vector threshold, compact source lines |
 
-First-pass intent detection is heuristic-based. Words such as `의미`, `통섭`, `상징`, `패턴`, `흐름`, `반복`, `변화`, `전체 맥락`, and `해석` trigger `SYNTHESIS`.
+First-pass intent detection is heuristic-based. Words such as `의미`, `통섭`, `상징`, `패턴`, `흐름`, `반복`, `변화`, `전체 맥락`, `해석`, `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, and `어떤 느낌` trigger `SYNTHESIS`.
+
+Person-meaning hint detection (`isPersonMeaningQuery`) also treats `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, and `어떤 느낌` as person-centric synthesis signals. Example: `나는 민수님을 어떻게 생각하고 있니?` must route to `SYNTHESIS` + person-meaning tag-only retrieval, not `LOOKUP`.
+
+### Person-Stance Questions
+
+When a `SYNTHESIS` question is also a **first-person attitude** question (`isPersonAttitudeQuery`), the user is asking how *they* feel or think about someone in their journal — not for a third-person personality profile or workplace analysis.
+
+Detection requires all of:
+
+- a extracted person focus token (for example `민수` from `민수님`)
+- a first-person marker such as `나는`, `내가`, `나의`, or `내 `
+- an attitude hint such as `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, or `어떤 느낌`
+
+Example: `나는 민수님을 어떻게 생각하고 있니?`
+
+This path reuses person-meaning tag-only retrieval but changes prompt/scaffold/guard:
+
+- RAG intro text asks for attitude reflection, not symbolic role synthesis
+- `PERSON_STANCE_SCAFFOLD` replaces `PERSON_MEANING_SCAFFOLD` with four sections: 내 태도·정서, 반복 장면, 함께 묶인 축, 확정 불가
+- intent prompt requires 2nd-person mirroring (`네가 기록에 남긴 바로는`) and forbids HR/coaching tone, personality adjectives, and collaboration advice
+- hollow guard (`isHollowPersonStanceResponse`) rejects coaching/org-dynamics answers and third-person trait profiles even when co-occurring tags are cited; answers must include mirror markers (`네가`, `기록을 보면`, `마음`, etc.) plus tag/snippet evidence
+- degraded retries use `PERSON_STANCE_RETRY`; deterministic fallback uses `buildPersonStanceDeterministicFallback` and `responseMode=PERSON_STANCE_FALLBACK`
+
+Symbolic meaning questions such as `민수는 내 기록에서 어떤 의미야?` remain on the person-meaning scaffold, not person-stance.
 
 For `SYNTHESIS`, the prompt asks the model to connect:
 
@@ -308,7 +333,9 @@ For person meaning questions, the assistant must not infer real-world roles such
 
 When a `SYNTHESIS` question is also a person-meaning question, `ChatAIService` uses **tag-only retrieval** via `buildPersonMeaningTagOnlyRagContext(...)`. Only journal entries whose embedding payload tags contain a person focus token (substring match: `민수` within `#김민수`) become RAG sources.
 
-Person-meaning retrieval must **not** use keyword search, vector search, entity-catalog entry injection, or body-mention fallback sources.
+Person-meaning retrieval tries **tag-only search first** via `searchByPersonTagsWithScore(...)`. Person tokens are normalized with the same honorific/particle stripping as keyword search (`민수님` -> `민수`) so tags such as `#김민수` match.
+
+When tag-only retrieval returns zero rows, `ChatAIService` falls back to merged synthesis retrieval (keyword + vector + person-tag merge + entity boost). It must not tell the user to attach tags when tagged/body records already exist in the merged fallback results.
 
 When tag-only retrieval finds zero matches, the RAG context states that no tagged records exist and deterministic fallback tells the user to attach the person tag first. Body-only mentions are not used as a substitute.
 
@@ -382,6 +409,7 @@ The assistant response must follow these rules even if the session prompt is wea
 6. Keep the answer conversational and useful, not defensive.
 7. Do not assign a real-world relationship role to a person unless that role is directly present in retrieved records.
 8. For person/symbol meaning questions, separate confirmed appearance context, repeated axes, emotional function, and uncertain points.
+9. Do not expose RAG internal record indexes such as `[1]`, `[2]` in the saved assistant text. Cite by date, scene, or tag instead. The server strips leftover `[N]` / `[N] 기록` patterns after markdown removal.
 
 
 ### Person-Meaning Response Guard
@@ -389,11 +417,16 @@ The assistant response must follow these rules even if the session prompt is wea
 When a `SYNTHESIS` person-meaning question resolves `personFocus`, the server validates the assistant text after the language guard:
 
 1. A response is degraded when it leaks internal scaffold/meta field names (`role_axes_ko`, `repeated_tags`, machine-style section keys), or when it fails to cite tags/role axes from the current `PersonMeaningSnapshot`.
-2. Tags that do not contain the focused person token — including co-occurring scene tags on the same entry and app/meta tags such as `#dreamdiary` — are noise and do not count as valid evidence for repeated axes or guard citation.
+2. Tags that do not contain the focused person token — including co-occurring scene tags on the same entry and app/meta tags such as `#dreamdiary` — are noise for **repeated-axis** ranking only. Linked context tags (for example `[엠서클]#조직역동`) **do** count as hollow-guard evidence when cited by full tag or `#` stem.
 3. When no person tag or role axis exists in the current snapshot, a response that cites sanitized evidence snippets from the snapshot still passes the guard.
-4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_MEANING_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
-5. Degraded responses are replaced directly with `buildPersonMeaningDeterministicFallback(...)`; there is no second LLM retry for person-meaning.
-6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_MEANING_FALLBACK`, or `LANGUAGE_FALLBACK`.
+4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
+5. Degraded responses trigger **one** `PERSON_MEANING_RETRY` Ollama call with explicit tag/context citation instructions. Only if the retry is still hollow (or language-guard invalid) does the server replace the answer with `buildPersonMeaningDeterministicFallback(...)`.
+6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, or `LANGUAGE_FALLBACK`.
+7. `PERSON_MEANING_FALLBACK` must not stop at person-tag counts alone. It also aggregates **linked context tags** from the same tagged sources (for example `[엠서클]#조직역동`, `[엠서클]#김종순`) and **chapter categories** from embedding payload (`DYNAMICS`, `INTERACTION`) to explain how the person appears in the user's intentional classification axes.
+8. When entity-catalog role axes are unavailable in the person-meaning path, fallback/scaffold role text must use linked context tags + chapter categories instead of the misleading `entity catalog ... not extracted` boilerplate.
+9. Hollow-guard evidence accepts, in order: person tags (full tag or `#` stem), role axes, linked context tags (full tag or `#` stem), chapter category code/label, content-kind words (`꿈`/`일기`/`노트`), and sanitized snippet probes. Generic workplace buckets without these anchors remain hollow.
+10. `isDegradedPersonResponse(...)` also covers `LOOKUP` person-attitude questions (`isPersonMeaningQuery` + extracted person token). Answers that cite generic workplace buckets such as `조직 내` or `업무 협업` without `#`, `기록상`, `반복`, or `태그` evidence are retried once and may fall back to `PERSON_MEANING_FALLBACK`.
+11. `LOOKUP` questions with an extracted person token receive an additional intent prompt that forbids unsupported organizational role inference and internal `[N]` citations.
 ## Language Guard
 
 Prompt rules alone are not considered sufficient.

@@ -309,12 +309,12 @@
               <label class="chat-memory-select">
                 <span>대화 기억</span>
                 <select
-                  :value="chat.setting.recentMessageLimit"
+                  v-model.number="chat.setting.recentMessageLimit"
                   :disabled="chat.isSettingSaving"
                   @change="updateMemoryLimit"
                 >
                   <option
-                    v-for="option in memoryOptions"
+                    v-for="option in MEMORY_LIMIT_OPTIONS"
                     :key="option"
                     :value="option"
                   >
@@ -354,6 +354,7 @@ import { useAuthStore } from "@/shared/auth/stores/auth";
 import {
   type ChatMessage,
   type ChatSession,
+  MEMORY_LIMIT_OPTIONS,
   useChatStore,
 } from "@/features/chat/stores/chat";
 import { handleProfileImageError } from "@/shared/utils/profileImage";
@@ -362,7 +363,6 @@ const authStore = useAuthStore();
 const chat = useChatStore();
 const message = ref("");
 const messageList = ref<HTMLElement | null>(null);
-const memoryOptions = [25, 50, 100, 200];
 
 interface RagCountItem {
   name?: string;
