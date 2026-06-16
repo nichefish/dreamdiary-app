@@ -373,6 +373,8 @@ interface TodoRow {
 
 **저장 직전 처리**: 메타 입력 중인 draft는 `commitPendingDraft()` 로 확정 후 `tag.tagListStr`, `meta.metaListStr` 를 multipart form data에 포함한다. 태그 draft는 카테고리 선택/입력 단계가 모호할 수 있으므로 자동 확정하지 않는다.
 
+**메타 단위 안내**: `JournalDayRegistModal` 의 메타 라벨 옆 도움말 아이콘은 값 뒤에 단위를 붙이는 입력법(예: 30분, 2회, 5점, 72kg)을 안내한다. `TagifyEditor` 의 `metaMode` 메타 값 입력 placeholder는 대표 예시를 표시한다.
+
 **draft 정리**: 수정 모달 초기값 재로딩 또는 모달 닫기 시 남아 있는 Tagify draft 입력 UI는 취소한다.
 
 **현재 Vue 동등**: ✓ 구현 완료

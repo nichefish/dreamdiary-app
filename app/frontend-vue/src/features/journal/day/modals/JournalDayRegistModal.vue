@@ -137,6 +137,13 @@
               <div>
                 <label class="mb-2">
                   <span class="text-gray-700 fs-6 fw-bolder">메타</span>
+                  <i
+                    v-tooltip
+                    class="bi bi-question-circle text-muted ms-2 cursor-pointer"
+                    title="단위는 값 뒤에 붙여 입력합니다. 예: 30분, 2회, 5점, 72kg"
+                    aria-label="메타 단위 입력법"
+                    tabindex="0"
+                  ></i>
                 </label>
               </div>
               <div class="col-xl-12 text-sm-start" id="meta_div">

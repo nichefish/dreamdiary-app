@@ -41,7 +41,7 @@
           :id="idPrefix + '_value'"
           type="text"
           class="form-control form-control-sm form-control-solid w-200px"
-          placeholder="메타 값을 입력합니다"
+          placeholder="예: 30분 / 2회 / 5점"
           maxlength="500"
         />
       </div>
