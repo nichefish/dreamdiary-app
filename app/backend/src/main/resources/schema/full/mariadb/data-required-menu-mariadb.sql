@@ -126,3 +126,31 @@ WHERE P.menu_label = 'SCHEDULE' AND P.deleted_at IS NULL
 UPDATE menu SET url = '/app/schedule/calendar.do'
 WHERE menu_label = 'SCHEDULE_CAL' AND deleted_at IS NULL
   AND url = '/app/schedule/cal.do';
+
+-- 메뉴 breadcrumb 하단 표시 문구.
+UPDATE menu
+SET menu_description = CASE menu_label
+  WHEN 'ADMIN_PAGE' THEN '캐시, 외부 동기화, 권한, 임베딩 큐를 관리합니다.'
+  WHEN 'MENU_ADMIN' THEN '사이드바와 관리자 메뉴 트리를 관리합니다.'
+  WHEN 'CODE_ADMIN' THEN '분류 코드와 상세 코드를 관리합니다.'
+  WHEN 'BOARD_ADMIN' THEN '게시판 그룹과 카테고리 코드, 사용 여부, 노출 순서를 관리합니다.'
+  WHEN 'USER_ACCOUNT' THEN '사용자 계정과 권한을 관리합니다.'
+  WHEN 'USER_SIGNUP_APPROVAL' THEN '계정 신청 승인 요청을 확인하고 승인 또는 반려합니다.'
+  WHEN 'AUTH_POLICY' THEN '로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.'
+  WHEN 'LOG_LIST' THEN '실패, 지연, trace 흐름을 중심으로 운영 로그를 확인합니다.'
+  WHEN 'LOG_STATS_USER' THEN '사용자별 활동 로그 통계를 확인합니다.'
+  ELSE menu_description
+END
+WHERE menu_label IN (
+    'ADMIN_PAGE',
+    'MENU_ADMIN',
+    'CODE_ADMIN',
+    'BOARD_ADMIN',
+    'USER_ACCOUNT',
+    'USER_SIGNUP_APPROVAL',
+    'AUTH_POLICY',
+    'LOG_LIST',
+    'LOG_STATS_USER'
+  )
+  AND deleted_at IS NULL
+  AND (menu_description IS NULL OR menu_description = '');

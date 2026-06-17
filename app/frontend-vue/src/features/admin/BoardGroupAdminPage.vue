@@ -1,7 +1,6 @@
 <template>
   <div class="board-group-page">
     <div class="board-group-toolbar">
-      <div class="text-muted fs-7">게시판 그룹과 카테고리 코드, 사용 여부, 노출 순서를 관리합니다.</div>
       <div class="board-group-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
           <i class="bi bi-arrow-clockwise"></i>
@@ -384,6 +383,10 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.board-group-toolbar {
+  justify-content: flex-end;
 }
 
 .board-group-search {

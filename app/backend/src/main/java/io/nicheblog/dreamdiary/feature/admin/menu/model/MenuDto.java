@@ -57,6 +57,10 @@ public class MenuDto
     @Size(max = 100)
     private String menuLabel;
 
+    /** 메뉴 breadcrumb 하단에 표시할 설명 */
+    @Size(max = 1000)
+    private String menuDescription;
+
     /** 미열람 카운트 이름 (model) */
     @Size(max = 100)
     private String unreadCntNm;

@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS menu (
     admin_yn CHAR(1) DEFAULT 'N' COMMENT '관리자 메뉴 여부 (Y/N)',
     menu_name VARCHAR(200) COMMENT '메뉴명',
     menu_label VARCHAR(200) COMMENT '메뉴 라벨 (약어표시)',
+    menu_description VARCHAR(1000) COMMENT '메뉴 설명',
     url VARCHAR(500) COMMENT '연결 URL',
     icon VARCHAR(1000) COMMENT '아이콘',
     unread_cnt_nm VARCHAR(200) COMMENT '미열람 카운트 이름 (model)',

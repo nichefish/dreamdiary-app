@@ -1,7 +1,6 @@
 <template>
   <div class="menu-admin-page">
     <div class="menu-admin-toolbar">
-      <div class="text-muted fs-7">사이드바와 관리자 메뉴 트리를 관리합니다.</div>
       <div class="menu-admin-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchTree">
           <i class="bi bi-arrow-clockwise"></i>
@@ -125,6 +124,17 @@
                         <input id="menuLabel" v-model.trim="store.form.menuLabel" type="text" class="form-control form-control-solid" maxlength="100" required />
                       </div>
                     </div>
+                  </div>
+
+                  <div class="menu-admin-form-row">
+                    <label for="menuDescription" class="form-label">메뉴 설명</label>
+                    <textarea
+                      id="menuDescription"
+                      v-model.trim="store.form.menuDescription"
+                      class="form-control form-control-solid"
+                      rows="3"
+                      maxlength="1000"
+                    ></textarea>
                   </div>
 
                   <div class="menu-admin-form-row">
@@ -320,7 +330,7 @@ onMounted(async () => {
 }
 
 .menu-admin-toolbar {
-  justify-content: space-between;
+  justify-content: flex-end;
   flex-wrap: wrap;
 }
 

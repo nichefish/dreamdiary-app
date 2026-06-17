@@ -30,7 +30,7 @@
         class="d-flex align-items-stretch justify-content-between flex-lg-grow-1"
         id="kt_app_header_wrapper"
       >
-        <!--begin::breadcrumb — 헤더 좌측, route.meta.breadcrumbs 기반 현재 경로 표시-->
+        <!--begin::breadcrumb — 헤더 좌측, 서버 메뉴 트리 기반 현재 경로와 설명 표시-->
         <PageBreadcrumb />
         <!--end::breadcrumb-->
         <KTHeaderNavbar />

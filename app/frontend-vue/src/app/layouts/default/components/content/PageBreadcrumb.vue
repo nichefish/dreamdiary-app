@@ -8,7 +8,7 @@
     sidebar 폭만큼 자동 오프셋되어 breadcrumb 이 sidebar 뒤에 가려지지 않는다.
     현재 경로와 매칭되는 메뉴가 없는 경우(로그인·에러 페이지 등)에는 렌더링하지 않는다.
   -->
-  <div v-if="breadcrumbItems.length" class="page-breadcrumb d-flex align-items-center">
+  <div v-if="breadcrumbItems.length" class="page-breadcrumb d-flex flex-column justify-content-center">
     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-6 m-0">
       <!--begin::Home-->
       <li class="breadcrumb-item">
@@ -31,6 +31,9 @@
         <!--end::Item-->
       </template>
     </ul>
+    <div v-if="menuDescription" class="page-breadcrumb-description">
+      {{ menuDescription }}
+    </div>
   </div>
   <!--end::PageBreadcrumb-->
 </template>
@@ -43,6 +46,11 @@ import { toVuePath } from "@/shared/utils/urlMapping";
 
 interface BreadcrumbItem {
   name: string;
+}
+
+interface BreadcrumbMatch {
+  items: BreadcrumbItem[];
+  description: string;
 }
 
 function normalizePath(path: string): string {
@@ -63,7 +71,7 @@ function findMenuBreadcrumb(
   currentPath: string,
   currentFullPath: string,
   parentItems: BreadcrumbItem[] = []
-): BreadcrumbItem[] | null {
+): BreadcrumbMatch | null {
   for (const menu of menuList) {
     const isPassThroughMain = menu.menuType === "MAIN" && (menu.subMenuList?.length ?? 0) > 0;
     const currentItems = isPassThroughMain
@@ -71,7 +79,10 @@ function findMenuBreadcrumb(
       : [...parentItems, { name: menu.menuName }];
 
     if (menu.url && isSameRoute(toVuePath(menu.url), currentPath, currentFullPath)) {
-      return currentItems;
+      return {
+        items: currentItems,
+        description: menu.menuDescription?.trim() ?? "",
+      };
     }
 
     const childMatch = findMenuBreadcrumb(menu.subMenuList ?? [], currentPath, currentFullPath, currentItems);
@@ -88,13 +99,16 @@ export default defineComponent({
     const route = useRoute();
     const menuStore = useMenuStore();
 
-    /** 메뉴 트리의 현재 route 매칭 결과를 breadcrumb 로 표시한다. */
-    const breadcrumbItems = computed(() =>
-      findMenuBreadcrumb(menuStore.menuList, route.path, route.fullPath) ?? []
+    /** 메뉴 트리의 현재 route 매칭 결과를 breadcrumb 와 설명으로 표시한다. */
+    const breadcrumbMatch = computed(() =>
+      findMenuBreadcrumb(menuStore.menuList, route.path, route.fullPath)
     );
+    const breadcrumbItems = computed(() => breadcrumbMatch.value?.items ?? []);
+    const menuDescription = computed(() => breadcrumbMatch.value?.description ?? "");
 
     return {
       breadcrumbItems,
+      menuDescription,
     };
   },
 });
@@ -105,5 +119,20 @@ export default defineComponent({
   /* 헤더 높이(74px) 내에서 세로 중앙 정렬, 내비게이션 아이콘과 시각적 여백 확보 */
   padding: 0 0.25rem;
   min-width: 0;
+}
+
+.page-breadcrumb-description {
+  display: -webkit-box;
+  max-width: min(720px, 70vw);
+  max-height: 2.4em;
+  margin-top: 0.25rem;
+  color: var(--bs-gray-500);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 </style>

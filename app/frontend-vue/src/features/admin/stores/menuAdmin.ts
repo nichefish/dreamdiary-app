@@ -15,6 +15,7 @@ export interface MenuNode {
   adminYn?: string;
   menuName?: string;
   menuLabel?: string;
+  menuDescription?: string;
   icon?: string;
   unreadCntNm?: string;
   url?: string;
@@ -31,6 +32,7 @@ export interface MenuForm {
   upperMenuNm: string;
   menuName: string;
   menuLabel: string;
+  menuDescription: string;
   icon: string;
   unreadCntEnabled: boolean;
   unreadCntNm: string;
@@ -52,6 +54,7 @@ const EMPTY_FORM: MenuForm = {
   upperMenuNm: "",
   menuName: "",
   menuLabel: "",
+  menuDescription: "",
   icon: "",
   unreadCntEnabled: false,
   unreadCntNm: "",
@@ -79,6 +82,7 @@ function cloneForm(row?: Partial<MenuNode>): MenuForm {
     upperMenuNm: row?.upperMenuNm ?? "",
     menuName: row?.menuName ?? "",
     menuLabel: row?.menuLabel ?? "",
+    menuDescription: row?.menuDescription ?? "",
     icon: row?.icon ?? "",
     unreadCntEnabled: Boolean(row?.unreadCntNm),
     unreadCntNm: row?.unreadCntNm ?? "",
@@ -94,6 +98,7 @@ function toFormData(form: MenuForm): FormData {
   if (form.parentMenuId != null) fd.append("parentMenuId", String(form.parentMenuId));
   fd.append("menuName", form.menuName.trim());
   fd.append("menuLabel", form.menuLabel.trim());
+  fd.append("menuDescription", form.menuDescription.trim());
   fd.append("icon", form.icon.trim());
   fd.append("unreadCntNm", form.unreadCntEnabled ? form.unreadCntNm.trim() : "");
   fd.append("submenuExpandType", form.submenuExpandType);
