@@ -1,7 +1,6 @@
 <template>
   <div class="auth-policy-page">
     <div class="auth-policy-toolbar">
-      <div class="text-muted fs-7">로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.</div>
       <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
         <i class="bi bi-arrow-clockwise"></i>
       </button>
@@ -202,7 +201,7 @@ onMounted(async () => {
 .auth-policy-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
 }
 

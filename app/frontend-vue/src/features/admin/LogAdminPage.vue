@@ -1,9 +1,6 @@
 <template>
   <div class="log-admin-page">
     <div class="log-admin-toolbar">
-      <div class="text-muted fs-7">
-        {{ isStatsView ? "사용자별 활동 로그 통계를 확인합니다." : "실패, 지연, trace 흐름을 중심으로 운영 로그를 확인합니다." }}
-      </div>
       <div class="log-admin-actions">
         <RouterLink class="btn btn-sm" :class="!isStatsView ? 'btn-primary' : 'btn-light-primary'" to="/admin/log">
           <i class="bi bi-list-ul"></i>
@@ -453,6 +450,10 @@ watch(isStatsView, async (next) => {
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.log-admin-toolbar {
+  justify-content: flex-end;
 }
 
 .log-admin-search {

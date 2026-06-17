@@ -1,7 +1,6 @@
 <template>
   <div class="user-admin-page">
     <div class="user-admin-toolbar">
-      <div class="text-muted fs-7">사용자 계정과 권한을 관리합니다.</div>
       <div class="user-admin-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchUsers(store.currentPage)">
           <i class="bi bi-arrow-clockwise"></i>
@@ -566,6 +565,10 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.user-admin-toolbar {
+  justify-content: flex-end;
 }
 
 .user-admin-search {

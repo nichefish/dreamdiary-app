@@ -14,6 +14,7 @@ export interface MenuDto {
   managementType?: "MENU" | "BOARD" | string;
   menuName: string;
   menuLabel?: string;
+  menuDescription?: string;
   unreadCntNm?: string;
   url: string;
   icon: string;

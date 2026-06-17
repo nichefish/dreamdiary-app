@@ -3,7 +3,7 @@
 > 라우트: `app/frontend-vue/src/app/router/index.ts`
 > 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
 > 모든 관리자 화면은 `DefaultLayout` 하위, `MNGR` 권한 필요.
-> 관리자 화면 본문 상단은 breadcrumb와 중복되는 화면 제목을 렌더링하지 않고, 필요한 안내문과 액션 버튼만 표시한다.
+> 관리자 화면 본문 상단은 breadcrumb와 중복되는 화면 제목·설명문을 렌더링하지 않는다. 화면 설명은 `menu.menu_description`을 SSOT로 삼아 공통 breadcrumb 하단에 표시하고, 본문 상단에는 필요한 액션 버튼만 표시한다.
 
 ## 라우트·화면 매핑
 
@@ -28,7 +28,7 @@
 
 **기능**:
 - 운영 도구 모음 (캐시 관리, 임베딩 백필 등)
-- 본문 상단 안내문과 새로고침 버튼 표시
+- 본문 상단 새로고침 버튼 표시. 화면 설명은 `ADMIN_PAGE` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 캐시 목록 조회 → `GET /api/cache/cache-active-map`
 - 캐시 초기화 → `POST /api/cache/cache-evict` / `POST /api/cache-clear`
 - AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`, `POST /api/admin/journal-entry-embeddings/requeue-failed`
@@ -54,7 +54,7 @@
 **스토어**: `features/admin/stores/authPolicy.ts`
 
 **기능**:
-- 본문 상단 안내문과 새로고침 버튼 표시
+- 본문 상단 새로고침 버튼 표시. 화면 설명은 `AUTH_POLICY` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 인증 정책 단건 조회/수정 (싱글톤)
 - IP 허용 정책, 허용 IP 목록 CRUD
 - `GET /api/auth/policy` → 현재 정책 조회
@@ -68,7 +68,7 @@
 **스토어**: `features/admin/stores/boardGroup.ts`
 
 **기능**:
-- 본문 상단 안내문과 새로고침/등록 버튼 표시
+- 본문 상단 새로고침/등록 버튼 표시. 화면 설명은 `BOARD_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 게시판 그룹 목록/등록/수정/삭제
 - 사용/미사용 토글
 - 드래그로 정렬 순서 변경
@@ -82,7 +82,7 @@
 **스토어**: `features/admin/stores/codeAdmin.ts`
 
 **기능**:
-- 본문 상단 안내문과 새로고침/분류 코드 등록 버튼 표시
+- 본문 상단 새로고침/분류 코드 등록 버튼 표시. 화면 설명은 `CODE_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 분류 코드(code_group) 목록/등록/수정/삭제
 - 분류 코드별 상세 코드(code_item) 목록/등록/삭제
 - 상세 코드 정렬 순서 변경
@@ -98,7 +98,7 @@
 **스토어**: `features/admin/stores/menuAdmin.ts`
 
 **기능**:
-- 본문 상단 안내문과 새로고침 버튼 표시
+- 본문 상단 새로고침 버튼 표시. 화면 설명은 `MENU_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 메뉴 트리 2컬럼 구조 (사용자 메뉴 / 관리자 메뉴)
 - 메뉴 등록/수정/삭제
 - 하위 메뉴 추가, 사용 여부 토글
@@ -107,6 +107,7 @@
 - 관리자/사용자 메뉴 여부는 최상위 `MAIN` 메뉴의 `adminYn`으로만 판정한다. 개별 메뉴 등록/수정 폼은 `adminYn`을 직접 토글하거나 저장하지 않는다.
 - 하위 메뉴를 다른 최상위 메뉴 계열로 이동하면 백엔드는 최상위 메뉴 기준 관리자/사용자 판정 캐시(`isMngrMenu`)를 무효화한다.
 - 메뉴 등록/수정 모달은 사용 여부 토글과 상위 메뉴 읽기 전용 필드를 입력 높이 기준으로 세로 정렬한다. `메뉴명`과 필수 `메뉴 라벨`은 기본 정보 row 안에서 병렬 입력으로 배치한다. `URL`은 `submenuExpandType=NO_SUB`일 때만 표시하고 필수로 받으며, 그 외 확장형 메뉴는 저장 시 URL을 빈 값으로 정규화한다. `미열람 카운트`는 스위치와 조건부 입력을 한 줄로 배치하며, 스위치 ON이면 카운트 이름 입력을 필수로 받는다.
+- 메뉴 등록/수정 모달은 선택 메뉴의 `menuDescription`을 `메뉴 설명` textarea로 관리한다. 저장된 설명은 sidebar 메뉴 API 응답에 포함되고, 현재 route에 매칭된 메뉴의 설명이 공통 breadcrumb 하단에 표시된다. 설명이 비어 있으면 breadcrumb 하단 설명 영역은 렌더링하지 않는다.
 - `protectedYn=Y`는 메뉴 자체의 수정·사용여부 변경·삭제와 자기 자신 드래그 이동을 막는 시스템 보호 의미다. 보호 메뉴는 drag source와 sibling drop target이 되지 않지만, 보호 메뉴 아래에도 하위 메뉴를 추가하거나 다른 하위 메뉴를 이동할 수 있다.
 - `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. 메뉴 관리에서는 행 컨텍스트 메뉴를 숨기고 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시한다. BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
 - 메뉴 트리 행의 액션은 `...` 컨텍스트 메뉴로 제공한다. 메뉴 항목은 하위 메뉴 추가, 수정, 사용/미사용 전환, 삭제이며 각 항목은 시스템 보호 상태에 따라 비활성화한다.
@@ -123,7 +124,7 @@
 **스토어**: `features/admin/stores/userAdmin.ts`
 
 **기능**:
-- 본문 상단 안내문과 새로고침/계정 등록 버튼 표시
+- 본문 상단 새로고침/계정 등록 버튼 표시. 화면 설명은 `USER_ACCOUNT` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
 - 계정 삭제 (본인 계정 삭제 불가)
@@ -140,7 +141,7 @@
 **스토어**: `features/admin/stores/logAdmin.ts`
 
 **기능**:
-- 본문 상단 안내문과 목록/통계 전환 버튼 표시
+- 본문 상단 목록/통계 전환 버튼 표시. 화면 설명은 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 운영 로그 목록/검색/상세 모달
 - `/admin/log` → 전체 로그 관측 뷰 (`isStatsView = false`)
 - `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`, ⚠ placeholder)

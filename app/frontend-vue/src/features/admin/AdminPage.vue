@@ -1,7 +1,6 @@
 <template>
   <div class="admin-page">
     <div class="admin-toolbar">
-      <div class="text-muted fs-7">캐시, 외부 동기화, 권한, 임베딩 큐를 관리합니다.</div>
       <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.bootstrapLoading" @click="reload">
         <i class="bi bi-arrow-clockwise"></i>
       </button>
@@ -608,7 +607,7 @@ onUnmounted(() => {
 .admin-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
 }
 

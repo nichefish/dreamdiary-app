@@ -1,7 +1,6 @@
 <template>
   <div class="code-admin-page">
     <div class="code-admin-toolbar">
-      <div class="text-muted fs-7">분류 코드와 상세 코드를 관리합니다.</div>
       <div class="code-admin-actions">
         <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchGroups(store.currentPage)">
           <i class="bi bi-arrow-clockwise"></i>
@@ -489,6 +488,10 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.code-admin-toolbar {
+  justify-content: flex-end;
 }
 
 .code-admin-search {

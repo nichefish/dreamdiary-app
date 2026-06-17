@@ -66,12 +66,12 @@
 - **Vue SPA**: `/my`
 - **Legacy file**: `legacy/templates/view/feature/user/my/user_my_page.ftlh`
 - **스토어**: `features/user/stores/userMy.ts`
-- **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목은 렌더링하지 않고 안내문과 새로고침 버튼만 표시
+- **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목·설명문은 렌더링하지 않고 새로고침 버튼만 표시
 
 ### Layout Structure
 
 - 레이아웃: `layout_default.ftlh` (사이드바 없음)
-- 툴바: 안내문과 새로고침 버튼
+- 툴바: 새로고침 버튼
 - 메인 영역:
   - Vue 마운트 루트: `#user_my_app`
   - 컨텐츠 div: `#user_my_page_div` (Vue `UserMyPageApp` 텔레포트 대상)
