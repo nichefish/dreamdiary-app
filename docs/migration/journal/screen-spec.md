@@ -291,6 +291,7 @@
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
 | 결산 등록 | 툴바 버튼 | `dF.JournalAnnual` 서비스 | 결산 등록 모달 오픈 |
+| 전체 결산 갱신 | annual aside `전체 결산 갱신` 버튼 | `dF.JournalAnnual.makeTotalAnnualAjax()` | `POST /api/journal/annual/make-total` 호출 후 성공 알림, 결산 목록과 전체 꿈 통계 재조회 |
 | 결산 카드 클릭 | 목록 카드 클릭 | `JournalAnnualListItem` Vue 내부 | 결산 상세 페이지 이동 |
 | 태그 클릭 | 태그 배지 클릭 | `dF.JournalDayTagService.select(...)` | 태그 상세 모달 |
 | 연도 필터 변경 | annual aside select 변경 | Vue store | 연도 필터가 키워드 필터보다 우선하며 AND 조건으로 결합하지 않음 |
@@ -312,6 +313,7 @@
 ### Special behaviors
 
 - 결산 등록 후 목록 갱신: `JournalAnnualListApp.init() + listAjax()` (레거시 IIFE 동등)
+- 전체 결산 갱신 후 목록 갱신: 레거시 `blockUIReload()`와 달리 Vue SPA에서는 `JournalAnnualStore.makeTotalAnnual()` 성공 알림 후 `fetchList()`와 `fetchTotal()`을 재호출해 현재 화면의 목록/총 집계를 갱신한다.
 - `preloadJournalDayTagService.js` 별도 적재 (태그 클릭 시 `dF.JournalDayTagService.select` 호출 대비)
 - 꿈 아이콘: `bi bi-moon-stars fs-4`
 - Vue SPA 목록 필터 우선순위:
