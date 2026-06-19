@@ -44,6 +44,12 @@
 
       <div class="separator"></div>
 
+      <button type="button" class="btn btn-sm btn-primary w-100" :disabled="store.syncing" @click="makeTotalAnnual">
+        <span v-if="store.syncing" class="spinner-border spinner-border-sm me-1" role="status"></span>
+        <i v-else class="bi bi-arrow-repeat me-1"></i>
+        전체 결산 갱신
+      </button>
+
       <button type="button" class="btn btn-sm btn-light-primary w-100" @click="store.openRegist()">
         <i class="bi bi-plus-circle me-1"></i>
         결산 등록
@@ -72,5 +78,10 @@ function applyListFilters() {
 
 function clearListFilters() {
   void store.clearListFilters();
+}
+
+/** 전체 결산 갱신 버튼 클릭 처리 */
+function makeTotalAnnual() {
+  void store.makeTotalAnnual();
 }
 </script>

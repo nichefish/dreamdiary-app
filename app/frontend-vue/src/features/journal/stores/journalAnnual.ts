@@ -139,6 +139,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
   const registModel = ref<JournalAnnualRegistModel | null>(null);
   /** 등록/수정 처리 중 여부 */
   const submitting = ref(false);
+  /** 전체 결산 갱신 처리 중 여부 */
+  const syncing = ref(false);
 
   // ---- 상세 페이지 ----
 
@@ -265,6 +267,35 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       tag: { tagListStrWithCtgr: "" },
     };
     registOpen.value = true;
+  }
+
+  /**
+   * 전체 연도 결산 정보를 서버 기준으로 재생성한다.
+   * POST /api/journal/annual/make-total
+   */
+  async function makeTotalAnnual(): Promise<boolean> {
+    if (syncing.value) {
+      console.warn("[JournalAnnual] makeTotalAnnual skipped because sync is already running");
+      return false;
+    }
+    syncing.value = true;
+    try {
+      const res = await axios.post("/api/journal/annual/make-total");
+      if (res.data?.rslt) {
+        await swalAlert(res.data?.message ?? "처리되었습니다.");
+        await Promise.all([fetchList(), fetchTotal()]);
+        return true;
+      }
+      console.warn("[JournalAnnual] makeTotalAnnual failed", res.data);
+      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      return false;
+    } catch (e: unknown) {
+      console.error("[JournalAnnual] makeTotalAnnual request failed", e);
+      void swalRequestError(e);
+      return false;
+    } finally {
+      syncing.value = false;
+    }
   }
 
   /**
@@ -592,7 +623,9 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     registLoading,
     registModel,
     submitting,
+    syncing,
     openRegist,
+    makeTotalAnnual,
     openModify,
     closeRegist,
     submitRegist,
