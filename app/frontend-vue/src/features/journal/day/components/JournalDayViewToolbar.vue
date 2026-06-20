@@ -5,7 +5,7 @@
     <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1">
       <li class="nav-item">
         <router-link
-          :to="{ name: 'journal-weekly' }"
+          :to="weeklyRoute"
           class="nav-link px-6 cursor-pointer"
           exact-active-class="active"
         >
@@ -15,7 +15,7 @@
       </li>
       <li class="nav-item">
         <router-link
-          :to="{ name: 'journal-monthly' }"
+          :to="monthlyRoute"
           class="nav-link px-6 cursor-pointer"
           exact-active-class="active"
         >
@@ -25,7 +25,7 @@
       </li>
       <li class="nav-item">
         <router-link
-          :to="{ name: 'journal-calendar' }"
+          :to="calendarRoute"
           class="nav-link px-6 cursor-pointer"
           exact-active-class="active"
         >
@@ -35,7 +35,7 @@
       </li>
       <li class="nav-item">
         <router-link
-          :to="{ name: 'journal-meta' }"
+          :to="metaRoute"
           class="nav-link px-6 cursor-pointer"
           exact-active-class="active"
         >
@@ -111,17 +111,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { resolveWeekStartDt } from "@/features/journal/utils/journalDate";
+import { assertAuthenticatedBeforePopup } from "@/shared/auth/popupAuth";
 
 /** 툴바 전체검색 전용 로컬 키워드 — store.diaryKeyword/dreamKeyword(필터)와 분리 */
 const localDiaryKw = ref("");
 const localDreamKw = ref("");
 
 const modalStore = useJournalModalStore();
+const journalStore = useJournalStore();
+const route = useRoute();
+const router = useRouter();
+
+const monthlyQuery = computed(() => ({
+  yy: String(journalStore.yy),
+  mnth: String(journalStore.mnth),
+}));
+const weeklyQuery = computed(() => ({
+  weekStartDt: journalStore.weekStartDt || resolveWeekStartDt({ yy: journalStore.yy, mnth: journalStore.mnth }),
+}));
+const weeklyRoute = computed(() => ({ name: "journal-weekly", query: weeklyQuery.value }));
+const monthlyRoute = computed(() => ({ name: "journal-monthly", query: monthlyQuery.value }));
+const calendarRoute = computed(() => ({ name: "journal-calendar", query: monthlyQuery.value }));
+const metaRoute = computed(() => ({ name: "journal-meta", query: monthlyQuery.value }));
 
 /** 전체검색: 새 창으로 /vue-app/journal/entry/search 열기 (base = import.meta.env.BASE_URL) */
-function openSearchTab(type: "DIARY" | "DREAM", keyword: string): void {
+async function openSearchTab(type: "DIARY" | "DREAM", keyword: string): Promise<void> {
+  if (!await assertAuthenticatedBeforePopup(router, route)) return;
   const params = new URLSearchParams({ type });
   if (keyword.trim()) params.set("searchKeywords", keyword.trim());
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");

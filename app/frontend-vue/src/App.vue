@@ -17,7 +17,7 @@ const authStore = useAuthStore();
 const route = useRoute();
 
 /** 팝업 전용 라우트(검색 팝업 등)에서는 AI 챗 숨김 */
-const isPopup = computed(() => route.name === "journal-entry-search");
+const isPopup = computed(() => ["journal-entry-search", "journal-daily"].includes(String(route.name)));
 
 onMounted(() => {
   document.body.classList.remove("page-loading");

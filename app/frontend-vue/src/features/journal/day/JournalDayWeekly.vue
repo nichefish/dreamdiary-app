@@ -52,6 +52,7 @@ import { onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { resolveWeekStartDt } from "@/features/journal/utils/journalDate";
 import JournalDayCard from "./components/JournalDayCard.vue";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
 import JournalTagCloudHeader from "./components/JournalTagCloudHeader.vue";
@@ -62,24 +63,35 @@ const route = useRoute();
 
 function loadWeeklyView(): void {
   store.setViewType("WEEKLY");
-  void store.fetchDays({ viewType: "WEEKLY" });
+  const weekStartDt = getQueryString(route.query.weekStartDt);
+  const stdrdDt = getQueryString(route.query.stdrdDt);
+  if (weekStartDt || stdrdDt) {
+    store.weekStartDt = weekStartDt || resolveWeekStartDt({ stdrdDt });
+  }
+  void store.fetchDays({ viewType: "WEEKLY", weekStartDt: store.weekStartDt, stdrdDt });
   if (store.showTagCloud) {
     void store.fetchTagCloud();
   }
 }
 
+/** URL query 의 주간 기간 상태를 단일 문자열로 복원한다. */
+function getQueryString(value: unknown): string | undefined {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return typeof raw === "string" && raw.trim() ? raw.trim() : undefined;
+}
+
 onMounted(() => {
-  loadWeeklyView();
   /* 챕터 카테고리를 화면 로드 시점에 미리 캐시해 모달 오픈 시 로딩 없이 사용한다. */
   void modalStore.prefetchChapterCategories();
 });
 
 watch(
-  () => route.name,
-  (name) => {
-    if (name === "journal-weekly") {
+  () => route.fullPath,
+  () => {
+    if (route.name === "journal-weekly") {
       loadWeeklyView();
     }
-  }
+  },
+  { immediate: true },
 );
 </script>

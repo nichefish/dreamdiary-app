@@ -217,7 +217,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **툴바 전체검색 (`JournalDayViewToolbar.vue`)**
 - 로컬 `ref`(`localDiaryKw` / `localDreamKw`) 사용 — `store.diaryKeyword/dreamKeyword`(필터 상태)와 완전 분리
-- 검색 버튼 클릭 / Enter → `openSearchTab(type, keyword)` → `window.open(/vue-app/journal/entry/search?type=...&searchKeywords=..., journal-entry-search-{type}, "width=1960,height=1440,top=0,left=270")` 새 창 (태그 컨텍스트 메뉴와 동일 방식, 같은 타입 재검색 시 창 재사용)
+- 검색 버튼 클릭 / Enter → `assertAuthenticatedBeforePopup(router, route)` 로 현재 세션을 먼저 확인한다. 세션이 풀렸으면 새 창을 열지 않고 현재 화면에서 로그인 복귀 안내를 표시한다.
+- 인증 확인 성공 시 `openSearchTab(type, keyword)` → `window.open(/vue-app/journal/entry/search?type=...&searchKeywords=..., journal-entry-search-{type}, "width=1960,height=1440,top=0,left=270")` 새 창 (태그 컨텍스트 메뉴와 동일 방식, 같은 타입 재검색 시 창 재사용)
 - BASE_URL: `import.meta.env.BASE_URL` (vite config `base: "/vue-app/"`)
 
 **어사이드 현재결과 필터 (`JournalAside.vue`)**
@@ -308,6 +309,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - `JOURNAL_DIARY`: 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds={tagId}&tagName={name}`
 - `JOURNAL_DREAM`: 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds={tagId}&tagName={name}`
 - 단, 현재 route가 `journal-entry-search`인 검색 팝업 내부에서는 새 창을 다시 열지 않고 같은 창의 query를 `router.replace(...)`로 갱신한다. 검색 페이지는 `route.fullPath` watch로 즉시 재조회한다.
+- 검색 팝업 외부에서 새 창을 열기 전에는 `assertAuthenticatedBeforePopup(router, route)` 로 현재 세션을 확인한다. 세션이 풀렸으면 새 창을 열지 않고 현재 화면에서 로그인 복귀 안내를 표시한다.
 
 **태그 설정 액션**:
 - `GET /api/tags/{tagId}/profile?contentType=...` 로 기존 프로필 조회
@@ -528,23 +530,25 @@ async function copyChapter(): Promise<void> {
 
 ### AI 챗 숨김 (`App.vue`)
 
-팝업 라우트(`journal-entry-search`)에서는 `AppChat`을 렌더하지 않는다.
+팝업 라우트(`journal-entry-search`, `journal-daily`)에서는 `AppChat`을 렌더하지 않는다.
 
 ```typescript
 // App.vue
-const isPopup = computed(() => route.name === "journal-entry-search");
+const isPopup = computed(() => ["journal-entry-search", "journal-daily"].includes(String(route.name)));
 // template: <AppChat v-if="authStore.isAuthenticated && !isPopup" />
 ```
 
+### 팝업 직접 진입 세션 만료 처리 (`router/index.ts`, `sessionExpired.ts`)
+
+팝업 전용 보호 라우트(`journal-entry-search`, `journal-daily`)는 인증이 없을 때 로그인 화면을 팝업 내부에 렌더하지 않는다. 라우터 가드는 `confirmSessionExpired(to.name)`을 호출해 레거시처럼 창 닫기 확인 alert를 표시하고, 확인 시 `window.close()`를 호출한 뒤 현재 route 이동은 `next(false)`로 중단한다.
+
 ### 401 세션 만료 처리 (`main.ts`)
 
-팝업 라우트에서 401 응답 시 로그인 화면 이동 대신 창 닫기 확인 다이얼로그를 표시한다.
+팝업 라우트에서 401 응답 시 로그인 화면 이동 대신 창 닫기 확인 다이얼로그를 표시한다. 일반 보호 라우트에서 라우터 가드가 미인증을 감지한 경우도 같은 `confirmSessionExpired` alert를 거친 뒤, 확인 시에만 `/sign-in?sessionExpired=Y&redirect=...`로 이동한다.
 
 ```typescript
-const isPopup = router.currentRoute.value.name === "journal-entry-search";
-if (isPopup) {
-  // "세션이 만료되었습니다. 창을 닫겠습니까?" → window.close()
-} else {
-  // 기존: "로그인 화면으로 이동하시겠습니까?" → router.push({ name: "sign-in" })
+const confirmed = await confirmSessionExpired(route.name);
+if (confirmed && !isAuthPopupRoute(route.name)) {
+  await router.push(buildSessionExpiredSignInRoute(route.fullPath));
 }
 ```

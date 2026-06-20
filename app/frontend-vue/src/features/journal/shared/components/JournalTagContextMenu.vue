@@ -26,6 +26,7 @@ import axios from "axios";
 import { useTagContextMenuStore, type TagContextMenuPayload } from "@/features/journal/stores/tagContextMenu";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
+import { assertAuthenticatedBeforePopup } from "@/shared/auth/popupAuth";
 
 const store = useTagContextMenuStore();
 const journalModalStore = useJournalModalStore();
@@ -35,7 +36,7 @@ const router = useRouter();
 
 const menuEl = ref<HTMLElement | null>(null);
 
-function onSearch(): void {
+async function onSearch(): Promise<void> {
   const payload = { ...store.payload };
   store.close();
 
@@ -44,10 +45,10 @@ function onSearch(): void {
     return;
   }
 
-  openEntrySearchPopup(payload);
+  await openEntrySearchPopup(payload);
 }
 
-function openEntrySearchPopup(payload: TagContextMenuPayload): void {
+async function openEntrySearchPopup(payload: TagContextMenuPayload): Promise<void> {
   const newType = payload.contentType === "JOURNAL_DREAM" ? "DREAM" : "DIARY";
   const newTagId = String(payload.tagId);
 
@@ -73,6 +74,8 @@ function openEntrySearchPopup(payload: TagContextMenuPayload): void {
     });
     return;
   }
+
+  if (!await assertAuthenticatedBeforePopup(router, route)) return;
 
   /* 외부: 새 팝업 창 열기 */
   const params = new URLSearchParams({ type: newType, tagIds: newTagId });

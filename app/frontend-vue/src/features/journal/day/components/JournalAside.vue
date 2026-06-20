@@ -46,11 +46,11 @@
       <template v-if="store.viewType !== 'WEEKLY'">
         <!--begin::월 이동 컨트롤-->
         <div class="d-flex align-items-center justify-content-between">
-          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateMonth(-1)">
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
           <span class="fw-bold fs-6">{{ store.mnth }}월</span>
-          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateMonth(1)">
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
         </div>
@@ -63,7 +63,7 @@
             :key="m"
             type="button"
             :class="['btn btn-sm', m === store.mnth ? 'btn-primary' : 'btn-light']"
-            @click="store.gotoYyMnth(store.yy, m)"
+            @click="gotoYyMnth(store.yy, m)"
           >
             {{ m }}월
           </button>
@@ -76,7 +76,7 @@
       <template v-else>
         <!--begin::주간 범위 + 이동-->
         <div class="d-flex align-items-center justify-content-between position-relative">
-          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateWeek(-1)">
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateWeek(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
           <span
@@ -92,7 +92,7 @@
             tabindex="-1"
             @change="onWeekPickerChange"
           />
-          <button type="button" class="btn btn-sm btn-icon btn-light" @click="store.navigateWeek(1)">
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateWeek(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
         </div>
@@ -118,7 +118,7 @@
       <!--end::주 내비게이션-->
 
       <!--begin::TODAY 버튼-->
-      <button type="button" class="btn btn-sm btn-light-primary w-100" @click="store.gotoToday()">
+      <button type="button" class="btn btn-sm btn-light-primary w-100" @click="gotoToday">
         TODAY
       </button>
       <!--end::TODAY 버튼-->
@@ -339,6 +339,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { formatLocalDateStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalAsideStore } from "@/features/journal/stores/journalAside";
@@ -347,6 +348,8 @@ import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 const store = useJournalStore();
 const asideStore = useJournalAsideStore();
 const modalStore = useJournalModalStore();
+const route = useRoute();
+const router = useRouter();
 
 const currentYear = new Date().getFullYear();
 const yyOptions = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);
@@ -439,11 +442,9 @@ async function onWeekPickerChange(e: Event): Promise<void> {
   const val = (e.target as HTMLInputElement).value;
   if (!val) return;
   const newWeekStart = getWeekStartDateStr(val);
-  const d = new Date(newWeekStart + "T12:00:00");
-  store.weekStartDt = newWeekStart;
-  store.yy = d.getFullYear();
-  store.mnth = d.getMonth() + 1;
-  await store.fetchDays();
+  const synced = await syncWeeklyRouteOrFetch(newWeekStart);
+  if (!synced) return;
+  selectedDt.value = val;
   await nextTick();
   const el = document.getElementById(`journal-day-${val}`);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -457,12 +458,69 @@ function pinpoint(): void {
 /** 고정한 년/월로 되돌리기 */
 function turnback(): void {
   if (asideStore.pinnedYy == null || asideStore.pinnedMnth == null) return;
-  store.gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth);
+  void gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth);
 }
 
 function onYyChange(e: Event) {
   const val = Number((e.target as HTMLSelectElement).value);
-  store.gotoYyMnth(val, store.mnth);
+  void gotoYyMnth(val, store.mnth);
+}
+
+/** 월간 기간 상태를 URL query 에 반영한다. */
+async function syncMonthlyRouteOrFetch(yy: number, mnth: number): Promise<boolean> {
+  if (route.name === "journal-monthly") {
+    const failure = await router.replace({ name: "journal-monthly", query: { yy: String(yy), mnth: String(mnth) } });
+    return !failure;
+  }
+  store.yy = yy;
+  store.mnth = mnth;
+  await store.fetchDays();
+  return true;
+}
+
+/** 주간 기간 상태를 URL query 에 반영한다. */
+async function syncWeeklyRouteOrFetch(weekStartDt: string): Promise<boolean> {
+  if (route.name === "journal-weekly") {
+    const failure = await router.replace({ name: "journal-weekly", query: { weekStartDt } });
+    return !failure;
+  }
+  const d = new Date(weekStartDt + "T12:00:00");
+  store.weekStartDt = weekStartDt;
+  store.yy = d.getFullYear();
+  store.mnth = d.getMonth() + 1;
+  await store.fetchDays();
+  return true;
+}
+
+async function navigateMonth(delta: number): Promise<void> {
+  let nextMnth = store.mnth + delta;
+  let nextYy = store.yy;
+  if (nextMnth < 1) { nextMnth = 12; nextYy -= 1; }
+  if (nextMnth > 12) { nextMnth = 1; nextYy += 1; }
+  await syncMonthlyRouteOrFetch(nextYy, nextMnth);
+}
+
+async function gotoYyMnth(yy: number, mnth: number): Promise<void> {
+  await syncMonthlyRouteOrFetch(yy, mnth);
+}
+
+async function navigateWeek(delta: number): Promise<void> {
+  const base = new Date((store.weekStartDt || formatLocalDateStr(new Date())) + "T12:00:00");
+  base.setDate(base.getDate() + delta * 7);
+  const weekStartDt = formatLocalDateStr(base);
+  const synced = await syncWeeklyRouteOrFetch(weekStartDt);
+  if (synced) selectedDt.value = weekStartDt;
+}
+
+async function gotoToday(): Promise<void> {
+  const today = new Date();
+  if (store.viewType === "WEEKLY") {
+    const weekStartDt = getWeekStartDateStr(formatLocalDateStr(today));
+    const synced = await syncWeeklyRouteOrFetch(weekStartDt);
+    if (synced) selectedDt.value = formatLocalDateStr(today);
+    return;
+  }
+  await syncMonthlyRouteOrFetch(today.getFullYear(), today.getMonth() + 1);
 }
 
 function toggleDiaries() {
