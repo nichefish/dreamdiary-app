@@ -132,7 +132,7 @@ journal entry save/modify/content update
 
 This means `personFocus` and `topRoles` are eventually consistent. Immediately after a journal entry write, AI chat can briefly observe the previous entity summary until the queued worker finishes processing that entry.
 
-Server startup enqueues the same embedding queue sync job as Admin `Sync Entries` when `dreamdiary.embedding.sync-on-startup=true` (default). Vector generation still runs asynchronously via the embedding worker scheduler after queue rows exist.
+Server startup enqueues the same embedding queue sync job as Admin `Sync Entries` when `app.journal.embedding.sync-on-startup=true` (default). Vector generation still runs asynchronously via the embedding worker scheduler after queue rows exist.
 
 Admin queue visibility is available through:
 

@@ -32,7 +32,7 @@
 - 캐시 목록 조회 → `GET /api/cache/cache-active-map`
 - 캐시 초기화 → `POST /api/cache/cache-evict` / `POST /api/cache-clear`
 - AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`, `POST /api/admin/journal-entry-embeddings/requeue-failed`
-  - 서버 기동 시 `dreamdiary.embedding.sync-on-startup`(기본 `true`)이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`)
+  - 서버 기동 시 `app.journal.embedding.sync-on-startup`(기본 `true`)이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`)
   - `total` = active journal entry count (Entries baseline)
   - `queueRows` / `unqueuedEntries` = queue table row count / entries not yet queued
   - progress bars use entry coverage (`embedded/total`, `synced/total`)

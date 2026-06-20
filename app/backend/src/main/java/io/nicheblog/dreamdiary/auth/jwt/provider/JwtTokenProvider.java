@@ -47,11 +47,11 @@ public class JwtTokenProvider {
     private final AuthenticationHelper authenticationHelper;
     private final AuthSessionPolicyService authSessionPolicyService;
 
-    @Value("${spring.jwt.secret}")
+    @Value("${app.auth.jwt.secret}")
     private String secretKey;
 
-    @Value("${spring.jwt.token-validity-seconds:3600}")
-    private long tokenValiditySeconds;
+    @Value("${app.auth.jwt.signup-token-ttl-seconds:3600}")
+    private long signupTokenTtlSeconds;
 
     @PostConstruct
     protected void init() {
@@ -83,7 +83,7 @@ public class JwtTokenProvider {
         claims.put("roles", roles);
         final Date now = DateUtils.getCurrDate();
         
-        final long tokenValidMillisecond = 1000L * tokenValiditySeconds;
+        final long tokenValidMillisecond = 1000L * signupTokenTtlSeconds;
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)

@@ -19,15 +19,15 @@ public class JournalEntryEntityScheduler {
     private final JournalEntryEntityWorker journalEntryEntityWorker;
     private final JournalEntryEntityQueueService journalEntryEntityQueueService;
 
-    @Value("${dreamdiary.entity.worker.batch-size:20}")
+    @Value("${app.journal.entity.worker.batch-size:20}")
     private Integer batchSize;
 
     /**
      * Trigger the worker only when pending entity-sync rows exist.
      */
     @Scheduled(
-            fixedDelayString = "${dreamdiary.entity.worker.fixed-delay-ms:20000}",
-            initialDelayString = "${dreamdiary.entity.worker.initial-delay-ms:10000}"
+            fixedDelayString = "${app.journal.entity.worker.fixed-delay-ms:20000}",
+            initialDelayString = "${app.journal.entity.worker.initial-delay-ms:10000}"
     )
     public void processPendingEntityJobs() {
         final long pendingCount = journalEntryEntityQueueService.countPending();

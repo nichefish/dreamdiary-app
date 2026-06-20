@@ -171,7 +171,7 @@ public class AuthRestController {
             final String accessToken = jwtTokenProvider.createAccessToken(authInfo.getUsername(), roles);
 
             CookieUtils.setJwtCookie(accessToken, authSessionPolicyService.getSessionTimeoutSecondsAsInt());
-            CookieUtils.setRefreshTokenCookie(refreshResult.getRefreshToken(), (int) refreshTokenService.getRefreshTokenValiditySeconds());
+            CookieUtils.setRefreshTokenCookie(refreshResult.getRefreshToken(), (int) refreshTokenService.getRefreshTokenTtlSeconds());
             if (response != null) response.setHeader("Authorization", "Bearer " + accessToken);
 
             final HttpSession session = request.getSession(false);

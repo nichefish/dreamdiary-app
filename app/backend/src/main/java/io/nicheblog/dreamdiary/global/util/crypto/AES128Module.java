@@ -25,7 +25,7 @@ import java.util.Base64.Encoder;
 class AES128Module {
 
     // 비밀키 선언 16바이트
-    @Value("${aes128.secret-key:0000000000000000}")
+    @Value("${app.crypto.aes128.secret-key:0000000000000000}")
     private static String secretKey;
 
     /**

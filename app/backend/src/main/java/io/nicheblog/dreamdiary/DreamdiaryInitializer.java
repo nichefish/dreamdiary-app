@@ -51,10 +51,10 @@ public class DreamdiaryInitializer
     private final ReleaseHistoryService releaseHistoryService;
     private final JournalEntryEmbeddingSyncJobService journalEntryEmbeddingSyncJobService;
 
-    @Value("${system.init-temp-pw:}")
+    @Value("${app.auth.initial-admin-password:}")
     public String SYSTEM_INIT_TEMP_PW;
 
-    @Value("${dreamdiary.embedding.sync-on-startup:true}")
+    @Value("${app.journal.embedding.sync-on-startup:true}")
     private boolean embeddingSyncOnStartup;
 
     /**

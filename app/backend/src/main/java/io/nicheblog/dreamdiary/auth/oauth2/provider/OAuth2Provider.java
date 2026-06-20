@@ -78,7 +78,7 @@ public class OAuth2Provider {
         // HTTP 쿠키에 JWT 저장
         // HttpServletResponse 응답 헤더에 JWT 세팅
         CookieUtils.setJwtCookie(accessToken, authSessionPolicyService.getSessionTimeoutSecondsAsInt());
-        CookieUtils.setRefreshTokenCookie(refreshToken, (int) refreshTokenService.getRefreshTokenValiditySeconds());
+        CookieUtils.setRefreshTokenCookie(refreshToken, (int) refreshTokenService.getRefreshTokenTtlSeconds());
         final HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
         if (response != null) response.setHeader("Authorization", "Bearer " + accessToken);
 

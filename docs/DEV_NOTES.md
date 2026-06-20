@@ -33,6 +33,15 @@ pm run check:encoding과 동일).
 
 ---
 
+## 설정 네임스페이스
+
+- `spring.*` 아래에는 Spring Boot/Spring Security가 직접 해석하는 공식 설정만 둔다. 앱 코드가 임의로 읽는 커스텀 설정은 `spring.*`에 새로 추가하지 않는다.
+- DreamDiary 앱 런타임 설정은 `app.*`로 수렴한다. 인증 커스텀 설정은 `app.auth.*`를 사용한다.
+- 외부 연동 커스텀 설정은 `app.integration.*`를 사용한다.
+- JWT 직접 발급 설정은 `app.auth.jwt.*`, refresh token 유지 시간은 `app.auth.refresh-token.*`에 둔다. 사용자 체감 세션 유지 시간처럼 재기동 없이 바뀌어야 하는 정책은 yml/env가 아니라 `auth_policy`를 SSOT로 둔다.
+
+---
+
 ## 패키지 구조
 
 - "패키지는 파일 묶음이 아니라 책임 경계다."

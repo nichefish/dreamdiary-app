@@ -19,7 +19,7 @@ import java.util.List;
  * @author nichefish
  */
 @Component
-@ConfigurationProperties(prefix = "api.jandi")
+@ConfigurationProperties(prefix = "app.integration.jandi")
 @Getter
 @Setter
 public class JandiProperties {

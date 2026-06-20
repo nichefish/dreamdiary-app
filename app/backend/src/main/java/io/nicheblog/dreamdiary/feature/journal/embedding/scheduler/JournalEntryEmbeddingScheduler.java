@@ -19,15 +19,15 @@ public class JournalEntryEmbeddingScheduler {
     private final JournalEntryEmbeddingWorker journalEntryEmbeddingWorker;
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
 
-    @Value("${dreamdiary.embedding.worker.batch-size:20}")
+    @Value("${app.journal.embedding.worker.batch-size:20}")
     private Integer batchSize;
 
     /**
      * 대기 중인 임베딩 작업이 있으면 설정된 배치 크기로 비동기 워커를 실행한다.
      */
     @Scheduled(
-            fixedDelayString = "${dreamdiary.embedding.worker.fixed-delay-ms:60000}",
-            initialDelayString = "${dreamdiary.embedding.worker.initial-delay-ms:15000}"
+            fixedDelayString = "${app.journal.embedding.worker.fixed-delay-ms:60000}",
+            initialDelayString = "${app.journal.embedding.worker.initial-delay-ms:15000}"
     )
     public void processPendingEmbeddings() {
         final long pendingCount = journalEntryEmbeddingQueueService.countPending();
