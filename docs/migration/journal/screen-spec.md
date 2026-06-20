@@ -156,6 +156,8 @@
 
 **레이아웃 전역 툴바** (`_journal_day_page_header.ftlh` 나머지): 고급필터·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ❌ MISSING (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
+**인증 만료 후 복귀**: 월간 VIEW 의 현재 기간은 URL query `yy`/`mnth`가 SSOT다. 월 이동, 연도 변경, 월 버튼, TODAY, Pinpoint 되돌리기는 `/journal/monthly?yy=YYYY&mnth=M` 형태로 주소를 갱신하며, 세션 만료로 로그인 화면에 이동할 때 해당 `fullPath`를 `redirect`로 넘긴다. 로그인 성공 후 동일 query로 복귀하면 `JournalDayMonthly`가 query를 store에 복원한 뒤 목록과 태그 클라우드를 조회한다.
+
 ### Data Displayed
 
 `JournalDayMonthlyListApp` Vue 앱이 `#journal_day_list_div`에 렌더한다.
@@ -243,6 +245,8 @@
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
 | 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` `reg-modal` | `JournalDayRegistModal` 신규 등록 (`openDayRegist()`) |
+
+**인증 만료 후 복귀**: 주간 VIEW 의 현재 기간은 URL query `weekStartDt`가 SSOT다. 주 이동, 날짜 선택기, TODAY는 `/journal/weekly?weekStartDt=YYYY-MM-DD` 형태로 주소를 갱신하며, 세션 만료로 로그인 화면에 이동할 때 해당 `fullPath`를 `redirect`로 넘긴다. `stdrdDt` query 로 진입한 기존 링크는 해당 날짜가 포함된 주의 `weekStartDt`로 해석해 조회한다.
 
 ### Data Displayed
 

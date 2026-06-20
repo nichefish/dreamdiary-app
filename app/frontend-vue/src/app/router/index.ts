@@ -6,6 +6,11 @@ import {
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useConfigStore } from "@/shared/config/stores/config";
 import {
+  buildSessionExpiredSignInRoute,
+  confirmSessionExpired,
+  isAuthPopupRoute,
+} from "@/shared/auth/sessionExpired";
+import {
   clearRuntimePending,
   markRuntimePending,
   reportRuntimeError,
@@ -280,7 +285,11 @@ const router = createRouter({
   },
 });
 
-router.beforeEach(async (to, from, next) => {
+function isPopupProtectedRoute(name: unknown): boolean {
+  return ["journal-entry-search", "journal-daily"].includes(String(name));
+}
+
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
   const configStore = useConfigStore();
 
@@ -296,7 +305,19 @@ router.beforeEach(async (to, from, next) => {
       if (authStore.isAuthenticated) {
         next();
       } else {
-        next({ name: "sign-in" });
+        if (isPopupProtectedRoute(to.name) || isAuthPopupRoute(to.name)) {
+          console.warn("[router] popup route blocked by expired auth", { path: to.fullPath });
+          await confirmSessionExpired(to.name);
+          next(false);
+          return;
+        }
+        console.warn("[router] protected route blocked by expired auth", { path: to.fullPath });
+        const confirmed = await confirmSessionExpired(to.name);
+        if (confirmed) {
+          next(buildSessionExpiredSignInRoute(to.fullPath));
+          return;
+        }
+        next(false);
       }
     } else {
       next();

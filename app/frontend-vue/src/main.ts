@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { Tooltip } from "bootstrap";
 import axios from "axios";
-import Swal from "sweetalert2/dist/sweetalert2.js";
 import App from "./App.vue";
 
 /*
@@ -10,7 +9,7 @@ TIP: To get started with clean router change path to @/router/clean.ts.
  */
 import router from "./app/router";
 import { AuthExpiredError } from "@/shared/utils/authError";
-import { useAuthStore } from "@/shared/auth/stores/auth";
+import { handleSessionExpired } from "@/shared/auth/sessionExpired";
 import {
   clearRuntimePending,
   reportRuntimeError,
@@ -22,55 +21,13 @@ import {
  * 동시에 여러 요청이 401 로 실패해도 대화상자는 한 번만 뜬다.
  * 각 catch 블록에서 isAuthExpiredError() 로 판별해 일반 오류 alert 를 억제한다.
  */
-let authExpiredDialogShowing = false;
-const SESSION_EXPIRED_QUERY = { sessionExpired: "Y" };
 axios.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
     const status = (error as { response?: { status?: number }; config?: { url?: string } })?.response?.status;
     const url = (error as { response?: { status?: number }; config?: { url?: string } })?.config?.url ?? "";
     if (status === 401 && !url.includes("/api/auth/")) {
-      if (!authExpiredDialogShowing) {
-        authExpiredDialogShowing = true;
-        try {
-          const isPopup = router.currentRoute.value.name === "journal-entry-search";
-          const authStore = useAuthStore();
-          authStore.purgeAuth();
-
-          if (isPopup) {
-            /* 팝업 라우트: 로그인 이동 대신 창 닫기 안내 */
-            const result = await Swal.fire({
-              icon: "warning",
-              title: "로그인이 풀렸습니다",
-              text: "현재 검색 창에서는 더 이상 저장/조회할 수 없습니다. 창을 닫을까요?",
-              showCancelButton: true,
-              confirmButtonText: "창 닫기",
-              cancelButtonText: "그대로 두기",
-            });
-            if (result.isConfirmed) window.close();
-          } else {
-            const result = await Swal.fire({
-              icon: "warning",
-              title: "인증이 만료되었습니다",
-              text: "인증이 만료되었습니다. 로그인 화면으로 돌아가시겠습니까?",
-              showCancelButton: true,
-              confirmButtonText: "로그인 화면으로 돌아가기",
-              cancelButtonText: "현재 화면에 머무르기",
-            });
-            if (result.isConfirmed) {
-              void router.push({
-                name: "sign-in",
-                query: {
-                  ...SESSION_EXPIRED_QUERY,
-                  redirect: router.currentRoute.value.fullPath,
-                },
-              });
-            }
-          }
-        } finally {
-          authExpiredDialogShowing = false;
-        }
-      }
+      await handleSessionExpired(router);
       return Promise.reject(new AuthExpiredError());
     }
     return Promise.reject(error);

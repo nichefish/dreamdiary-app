@@ -62,24 +62,36 @@ const route = useRoute();
 
 function loadMonthlyView(): void {
   store.setViewType("LIST");
-  void store.fetchDays({ viewType: "LIST" });
+  const yy = parsePositiveInt(route.query.yy);
+  const mnth = parsePositiveInt(route.query.mnth);
+  if (yy) store.yy = yy;
+  if (mnth && mnth >= 1 && mnth <= 12) store.mnth = mnth;
+  void store.fetchDays({ viewType: "LIST", yy: store.yy, mnth: store.mnth });
   if (store.showTagCloud) {
     void store.fetchTagCloud();
   }
 }
 
+/** URL query 의 월간 기간 상태를 숫자로 복원한다. */
+function parsePositiveInt(value: unknown): number | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (typeof raw !== "string" || !/^\d+$/.test(raw)) return null;
+  const parsed = Number(raw);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
 onMounted(() => {
-  loadMonthlyView();
   /* 챕터 카테고리를 화면 로드 시점에 미리 캐시해 모달 오픈 시 로딩 없이 사용한다. */
   void modalStore.prefetchChapterCategories();
 });
 
 watch(
-  () => route.name,
-  (name) => {
-    if (name === "journal-monthly") {
+  () => route.fullPath,
+  () => {
+    if (route.name === "journal-monthly") {
       loadMonthlyView();
     }
   },
+  { immediate: true },
 );
 </script>
