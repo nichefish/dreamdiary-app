@@ -128,7 +128,6 @@ spring:
     jwt:
         secret: ${JWT_SECRET}
         token-validity-seconds: 3600
-        access-token-validity-seconds: 900
         refresh-token-validity-seconds: 1209600
 
     security:

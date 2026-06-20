@@ -35,6 +35,9 @@ public class AuthPolicyQueryDto
     /** 계정 잠금 지속 시간(분) */
     private Integer accountLockDurationMinutes;
 
+    /** 사용자 체감 로그인 유지 시간(분) */
+    private Integer sessionTimeoutMinutes;
+
     /** 비밀번호 변경 주기(일) */
     private Integer passwordChangeCycleDays;
 

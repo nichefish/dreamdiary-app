@@ -43,6 +43,11 @@ public class AuthPolicyDto
     @Max(value = 9999)
     private Integer accountLockDurationMinutes;
 
+    /** 사용자 체감 로그인 유지 시간(분) */
+    @Positive
+    @Max(value = 10080)
+    private Integer sessionTimeoutMinutes;
+
     /** 비밀번호 변경 주기(일) */
     @Positive
     @Max(value = 365)

@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.auth.oauth2.handler;
 import io.nicheblog.dreamdiary.auth.oauth2.provider.OAuth2Provider;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
@@ -48,6 +49,7 @@ public class OAuth2AuthenticationSuccessHandler
 
     private final OAuth2Provider oAuth2provider;
     private final AuthService authService;
+    private final AuthSessionPolicyService authSessionPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -75,6 +77,7 @@ public class OAuth2AuthenticationSuccessHandler
             // // 사용자 정보 세션에 추가
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
+            authSessionPolicyService.applyToSession(session);
             session.setAttribute("authInfo", authInfo);
             session.setAttribute("remoteIp", AuthUtils.getRemoteIpAddr());
 

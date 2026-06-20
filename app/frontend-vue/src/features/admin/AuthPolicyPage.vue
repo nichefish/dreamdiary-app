@@ -92,6 +92,7 @@ const form = reactive<AuthPolicy>({
   loginAttemptLimit: null,
   loginAttemptWindowMinutes: null,
   accountLockDurationMinutes: null,
+  sessionTimeoutMinutes: null,
   passwordChangeCycleDays: null,
   passwordResetTokenExpiryMinutes: null,
 });
@@ -131,6 +132,13 @@ const fields: FieldDef[] = [
     notice: "로그인 실패 제한 초과 후 잠금이 유지되는 시간입니다.",
     unit: "분",
     max: 9999,
+  },
+  {
+    key: "sessionTimeoutMinutes",
+    label: "로그인 유지 시간",
+    notice: "Spring 세션 idle timeout과 JWT access token 만료 및 쿠키 유지 시간에 함께 적용됩니다.",
+    unit: "분",
+    max: 10080,
   },
   {
     key: "passwordResetTokenExpiryMinutes",

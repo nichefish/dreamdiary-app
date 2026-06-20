@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -44,6 +45,7 @@ public class LoginSuccessHandler
 
     private final AuthService authService;
     private final HttpSession session;
+    private final AuthSessionPolicyService authSessionPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -72,6 +74,7 @@ public class LoginSuccessHandler
         // 사용자 정보 세션에 추가
         final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
         authInfo.nullifyPasswordInfo();
+        authSessionPolicyService.applyToSession(session);
         session.setAttribute("authInfo", authInfo);
         session.setAttribute("remoteIp", AuthUtils.getRemoteIpAddr());
 

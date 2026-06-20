@@ -56,6 +56,7 @@
 **기능**:
 - 본문 상단 새로고침 버튼 표시. 화면 설명은 `AUTH_POLICY` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 인증 정책 단건 조회/수정 (싱글톤)
+- `sessionTimeoutMinutes`: 사용자 체감 로그인 유지 시간(분). `HttpSession#setMaxInactiveInterval`, JWT access token `exp`, JWT 쿠키 max-age, JWT 검증의 `issuedAt + policyTimeout` 기준에 함께 적용
 - IP 허용 정책, 허용 IP 목록 CRUD
 - `GET /api/auth/policy` → 현재 정책 조회
 - `PUT /api/auth/policy` → 정책 수정

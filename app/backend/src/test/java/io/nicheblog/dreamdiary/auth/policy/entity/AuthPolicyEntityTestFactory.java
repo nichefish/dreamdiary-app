@@ -23,6 +23,7 @@ public class AuthPolicyEntityTestFactory {
                 .loginAttemptLimit(5)
                 .loginAttemptWindowMinutes(10)
                 .accountLockDurationMinutes(30)
+                .sessionTimeoutMinutes(60)
                 .passwordChangeCycleDays(30)
                 .inactiveLockDays(30)
                 .passwordResetTokenExpiryMinutes(30)

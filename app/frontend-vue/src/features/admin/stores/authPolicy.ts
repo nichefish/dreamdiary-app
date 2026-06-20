@@ -9,6 +9,7 @@ export interface AuthPolicy {
   loginAttemptLimit: number | null;
   loginAttemptWindowMinutes: number | null;
   accountLockDurationMinutes: number | null;
+  sessionTimeoutMinutes: number | null;
   passwordChangeCycleDays: number | null;
   passwordResetTokenExpiryMinutes: number | null;
 }
@@ -20,6 +21,7 @@ const EMPTY_POLICY: AuthPolicy = {
   loginAttemptLimit: null,
   loginAttemptWindowMinutes: null,
   accountLockDurationMinutes: null,
+  sessionTimeoutMinutes: null,
   passwordChangeCycleDays: null,
   passwordResetTokenExpiryMinutes: null,
 };
