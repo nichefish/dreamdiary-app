@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetExcept
 import io.nicheblog.dreamdiary.auth.security.exception.DupIdLoginException;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthUserDto;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
@@ -85,6 +86,7 @@ public class AuthRestController {
     private final RefreshTokenService refreshTokenService;
     private final DreamdiaryAuthenticationProvider authenticationProvider;
     private final AuthPolicyQueryService authPolicyQueryService;
+    private final AuthSessionPolicyService authSessionPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -168,12 +170,15 @@ public class AuthRestController {
 
             final String accessToken = jwtTokenProvider.createAccessToken(authInfo.getUsername(), roles);
 
-            CookieUtils.setJwtCookie(accessToken, (int) jwtTokenProvider.getAccessTokenValiditySeconds());
+            CookieUtils.setJwtCookie(accessToken, authSessionPolicyService.getSessionTimeoutSecondsAsInt());
             CookieUtils.setRefreshTokenCookie(refreshResult.getRefreshToken(), (int) refreshTokenService.getRefreshTokenValiditySeconds());
             if (response != null) response.setHeader("Authorization", "Bearer " + accessToken);
 
             final HttpSession session = request.getSession(false);
-            if (session != null) session.setAttribute("jwt", accessToken);
+            if (session != null) {
+                authSessionPolicyService.applyToSession(session);
+                session.setAttribute("jwt", accessToken);
+            }
 
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
         } catch (final JwtException | AuthenticationException e) {
@@ -391,6 +396,7 @@ public class AuthRestController {
 
         authInfo.nullifyPasswordInfo();
         final HttpSession session = request.getSession();
+        authSessionPolicyService.applyToSession(session);
         session.setAttribute("authInfo", authInfo);
         session.setAttribute("remoteIp", AuthUtils.getRemoteIpAddr());
 

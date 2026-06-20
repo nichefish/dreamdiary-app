@@ -7,9 +7,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -45,16 +45,13 @@ public class JwtTokenProvider {
 
     private final AuthService authService;
     private final AuthenticationHelper authenticationHelper;
+    private final AuthSessionPolicyService authSessionPolicyService;
 
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
     @Value("${spring.jwt.token-validity-seconds:3600}")
     private long tokenValiditySeconds;
-
-    @Getter
-    @Value("${spring.jwt.access-token-validity-seconds:900}")
-    private long accessTokenValiditySeconds;
 
     @PostConstruct
     protected void init() {
@@ -110,7 +107,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + 1000L * accessTokenValiditySeconds))
+                .setExpiration(new Date(now.getTime() + 1000L * authSessionPolicyService.getSessionTimeoutSeconds()))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
@@ -220,8 +217,15 @@ public class JwtTokenProvider {
     public Boolean validateToken(final String token) {
         try {
             final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            final Claims body = claims.getBody();
+            final Date now = new Date();
+            final Date issuedAt = body.getIssuedAt();
+            if (issuedAt == null) return false;
 
-            return !claims.getBody().getExpiration().before(new Date());
+            final Date tokenExpiresAt = body.getExpiration();
+            final Date policyExpiresAt = new Date(issuedAt.getTime() + 1000L * authSessionPolicyService.getSessionTimeoutSeconds());
+
+            return !tokenExpiresAt.before(now) && !policyExpiresAt.before(now);
         } catch (final Exception e) {
             return false;
         }

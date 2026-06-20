@@ -107,6 +107,7 @@ cF.ajax.request(url, options, callback, continueBlock?)
 
 - 인터셉터에서 401 처리 후 `AuthExpiredError` sentinel(`utils/authError.ts`)을 throw 해 각 catch 블록의 일반 오류 alert 가 중복으로 뜨지 않도록 억제한다.
 - 라우터 가드(`router/index.ts`)가 `verifyAuth()` 이후 미인증 상태를 감지한 경우에도 같은 `confirmSessionExpired()`를 거친다. 일반 보호 라우트는 확인 시 `buildSessionExpiredSignInRoute(to.fullPath)`로 이동하고, 팝업 보호 라우트는 alert 후 `next(false)`로 로그인 화면 렌더를 막는다.
+- 사용자 체감 로그인 유지 시간은 `auth_policy.session_timeout_minutes` 단일 정책으로 관리한다. 서버는 이 값을 Spring Session max inactive interval, JWT access token `exp`, JWT 쿠키 max-age에 적용하고, JWT 검증 시에도 `issuedAt + policyTimeout`을 넘으면 만료로 처리한다. 정책값이 없거나 조회 실패 시 기존 `server.servlet.session.timeout` 설정을 fallback으로 사용한다.
 - 각 컴포넌트 submit/delete catch 에서 `isAuthExpiredError(e)` 판별 후 해당하면 즉시 return.
 - 저장·삭제·복원처럼 결과값으로 후속 알림을 분기하는 store action은 `AuthExpiredError`를 `{ rslt: false }` 또는 `false`로 변환하지 않고 재throw한다. 호출부는 인증 만료일 때 전역 401 안내만 남기고, 실제 처리 실패일 때만 실패 알림을 표시한다.
 - 인증이 필요한 Vue SPA 모달은 `shared/auth/sessionPing.ts`의 `assertAuthenticatedBeforeModal()`을 먼저 호출한 뒤 모달 open 플래그 또는 Bootstrap `show()`를 실행한다. 이 핑은 `/api/session/ping`을 호출하며, 로그인 세션이 풀려 있으면 전역 401 인터셉터가 즉시 세션 만료 안내를 표시하고 모달은 열지 않는다. 로그인 화면의 비밀번호 변경 모달처럼 비로그인 상태에서 열려야 하는 auth 모달은 선행 핑 대상에서 제외한다.

@@ -206,6 +206,7 @@ public class DreamdiaryInitializer
                 .loginAttemptLimit(5)
                 .loginAttemptWindowMinutes(10)
                 .accountLockDurationMinutes(30)
+                .sessionTimeoutMinutes(60)
                 .passwordChangeCycleDays(90)
                 .inactiveLockDays(90)
                 .passwordResetTokenExpiryMinutes(30)

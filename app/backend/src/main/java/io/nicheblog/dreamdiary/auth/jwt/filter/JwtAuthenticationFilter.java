@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.auth.jwt.filter;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.config.WebSecurityAdapter;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -40,6 +41,7 @@ public class JwtAuthenticationFilter
         extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthSessionPolicyService authSessionPolicyService;
 
     /**
      * JWT 인증을 위한 필터입니다.
@@ -84,6 +86,7 @@ public class JwtAuthenticationFilter
             // 세션에 authInfo 저장
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
+            authSessionPolicyService.applyToSession(session);
             session.setAttribute("authInfo", authInfo);
         } catch (final AuthenticationException e) {
             log.error("Authentication failed: {}", e.getMessage());

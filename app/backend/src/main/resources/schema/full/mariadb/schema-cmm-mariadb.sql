@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS auth_policy (
     login_attempt_limit INT COMMENT '로그인 시도 제한 횟수',
     login_attempt_window_minutes INT COMMENT '로그인 시도 누적 시간 창(분)',
     account_lock_duration_minutes INT COMMENT '계정 잠금 지속 시간(분)',
+    session_timeout_minutes INT COMMENT '사용자 체감 로그인 유지 시간(분)',
     password_change_cycle_days INT COMMENT '패스워드 변경 주기(일)',
     inactive_lock_days INT COMMENT '미로그인 시 잠금 일수',
     password_reset_token_expiry_minutes INT COMMENT '비밀번호 재설정 토큰 만료 시간(분)',
