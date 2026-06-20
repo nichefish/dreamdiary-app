@@ -39,7 +39,7 @@ public class LoginPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리 (로그 적재용)
 
-    @Value("${remember-me.param}")
+    @Value("${app.auth.remember-me.param}")
     private String REMEMBER_ME_PARAM;
 
     /**

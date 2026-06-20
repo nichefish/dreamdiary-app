@@ -46,9 +46,9 @@ public class HolydayKasiApiService {
         return context.getBean(this.getClass());
     }
 
-    @Value("${api.kasi.serviceKey}")
+    @Value("${app.integration.kasi.service-key}")
     private String serviceKey;
-    @Value("${api.kasi.api-url}")
+    @Value("${app.integration.kasi.api-url}")
     private String serviceUrl;
 
     /**
@@ -151,4 +151,3 @@ public class HolydayKasiApiService {
         return isSuccess;
     }
 }
-

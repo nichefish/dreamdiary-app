@@ -70,7 +70,7 @@ public class UserService
     private static final Base64.Encoder BASE64_URL = Base64.getUrlEncoder().withoutPadding();
 
     /** 관리자 '비밀번호 초기화' 시 적용할 임시 비밀번호(평문) — 초기 설치와 동일 설정 사용 */
-    @Value("${system.init-temp-pw:}")
+    @Value("${app.auth.initial-admin-password:}")
     private String systemInitTempPw;
 
     /**

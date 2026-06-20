@@ -50,19 +50,19 @@ spring:
         password: ${ELASTIC_PASSWORD}
         uris: ${ELASTIC_URIS}
 
-#jandi messenger properties
-api:
-    jandi:
-        teamId: ${JANDI_TEAM_ID}
-        topics:
-            - name: NOTICE
-              id:  ${JANDI_TOPIC_NOTICE}
-            - name: SCHEDULE
-              id: ${JANDI_TOPIC_SCHEDULE}
-            - name: TEST
-              id: ${TEST}
-
 app:
+    #jandi messenger properties
+    integration:
+        jandi:
+            team-id: ${JANDI_TEAM_ID}
+            topics:
+                - name: NOTICE
+                  id:  ${JANDI_TOPIC_NOTICE}
+                - name: SCHEDULE
+                  id: ${JANDI_TOPIC_SCHEDULE}
+                - name: TEST
+                  id: ${TEST}
+
     logging:
         service-entry:
             enabled: ${SERVICE_ENTRY_LOG_ENABLED:false}

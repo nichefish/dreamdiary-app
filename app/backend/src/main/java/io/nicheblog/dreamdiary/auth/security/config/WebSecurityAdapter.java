@@ -32,6 +32,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import java.time.Duration;
+
 /**
  * WebSecurityAdapter
  * <pre>
@@ -65,10 +67,12 @@ public class WebSecurityAdapter {
     private String API_DOCS_PATH;
     @Value("${springdoc.swagger-ui.path:/swagger-ui.html}")
     private String SWAGGER_UI_PATH;
-    @Value("${remember-me.key}")
+    @Value("${app.auth.remember-me.key}")
     private String REMEMBER_ME_KEY;
-    @Value("${remember-me.param}")
+    @Value("${app.auth.remember-me.param}")
     private String REMEMBER_ME_PARAM;
+    @Value("${app.auth.remember-me.token-ttl-days:30}")
+    private long rememberMeTokenTtlDays;
 
     /**
      * Security 필터 자체를 타지 않도록 제외할 경로 정의
@@ -168,7 +172,7 @@ public class WebSecurityAdapter {
         http.rememberMe()
                 .key(REMEMBER_ME_KEY)
                 .rememberMeParameter(REMEMBER_ME_PARAM)
-                .tokenValiditySeconds(86400 * 30)
+                .tokenValiditySeconds((int) Duration.ofDays(rememberMeTokenTtlDays).getSeconds())
                 .userDetailsService(authService)
                 .authenticationSuccessHandler(webLoginSuccessHandler);
 

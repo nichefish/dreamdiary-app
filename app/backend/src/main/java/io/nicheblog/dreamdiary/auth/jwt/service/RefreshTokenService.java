@@ -41,8 +41,8 @@ public class RefreshTokenService {
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Getter
-    @Value("${spring.jwt.refresh-token-validity-seconds:1209600}")
-    private long refreshTokenValiditySeconds;
+    @Value("${app.auth.refresh-token.ttl-seconds:1209600}")
+    private long refreshTokenTtlSeconds;
 
     @Getter
     @RequiredArgsConstructor
@@ -138,7 +138,7 @@ public class RefreshTokenService {
 
         user.setRefreshTokenHash(refreshTokenHash);
         user.setRefreshTokenIssuedAt(now);
-        user.setRefreshTokenExpiresAt(new Date(now.getTime() + refreshTokenValiditySeconds * 1000L));
+        user.setRefreshTokenExpiresAt(new Date(now.getTime() + refreshTokenTtlSeconds * 1000L));
         userRepository.saveAndFlush(user);
 
         return refreshToken;

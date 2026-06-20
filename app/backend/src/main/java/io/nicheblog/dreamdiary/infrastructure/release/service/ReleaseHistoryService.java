@@ -39,7 +39,7 @@ public class ReleaseHistoryService {
     private final ActiveProfile activeProfile;
     private final Environment environment;
 
-    @Value("${release-history.max-list-size:50}")
+    @Value("${app.release-history.max-list-size:50}")
     private Integer maxListSize;
 
     /**
