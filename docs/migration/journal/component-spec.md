@@ -492,8 +492,8 @@ interface TodoRow {
 **⋯ 메뉴 API**:
 | 액션 | 엔드포인트 |
 |------|-----------|
-| 라이프사이클 설정 | `PUT /api/lifecycles { id, contentType, lifecycleKey }` |
-| 상태 토글 | `POST /api/states { id, contentType, stateKey }` |
+| 라이프사이클 설정 | `PUT /api/lifecycles { id, contentType, lifecycleKey, cacheContext }` |
+| 상태 토글 | `POST /api/states { id, contentType, stateKey, cacheContext }` |
 | 삭제 | `DELETE /api/journal/entry/{id}` |
 
 ---
