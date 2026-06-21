@@ -1,10 +1,12 @@
 package io.nicheblog.dreamdiary;
 
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingSyncJobService;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserRoleDto;
@@ -22,7 +24,6 @@ import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -50,12 +51,8 @@ public class DreamdiaryInitializer
     private final ApplicationEventPublisherWrapper publisher;
     private final ReleaseHistoryService releaseHistoryService;
     private final JournalEntryEmbeddingSyncJobService journalEntryEmbeddingSyncJobService;
-
-    @Value("${app.auth.initial-admin-password:}")
-    public String SYSTEM_INIT_TEMP_PW;
-
-    @Value("${app.journal.embedding.sync-on-startup:true}")
-    private boolean embeddingSyncOnStartup;
+    private final JournalProperties journalProperties;
+    private final AuthProperties authProperties;
 
     /**
      * 프로그램 최초 구동시 수행할 로직.
@@ -150,7 +147,7 @@ public class DreamdiaryInitializer
         final UserDto systemAcnt = UserDto.builder()
                 .nickname(Constant.SYSTEM_ACNT_NM)
                 .username(Constant.SYSTEM_ACNT)
-                .password(SYSTEM_INIT_TEMP_PW)
+                .password(authProperties.getInitialAdminPassword())
                 .userRoles(List.of(userRole))
                 .createdBy(Constant.SYSTEM_ACNT)
                 .build();
@@ -223,7 +220,7 @@ public class DreamdiaryInitializer
      * 이미 RUNNING이면 중복 시작하지 않는다.</p>
      */
     private void queueEmbeddingSyncOnStartup() {
-        if (!embeddingSyncOnStartup) {
+        if (!journalProperties.getEmbedding().getSyncOnStartup()) {
             log.info("Startup task skipped. task=journalEntryEmbeddingSync reason=disabled");
             return;
         }

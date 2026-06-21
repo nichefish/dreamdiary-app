@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.account.service;
 
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
@@ -19,7 +20,6 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +62,7 @@ public class UserService
     }
 
     private final AuthPolicyQueryService authPolicyQueryService;
+    private final AuthProperties authProperties;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final SecureRandom secureRandom = new SecureRandom();
@@ -70,8 +71,9 @@ public class UserService
     private static final Base64.Encoder BASE64_URL = Base64.getUrlEncoder().withoutPadding();
 
     /** 관리자 '비밀번호 초기화' 시 적용할 임시 비밀번호(평문) — 초기 설치와 동일 설정 사용 */
-    @Value("${app.auth.initial-admin-password:}")
-    private String systemInitTempPw;
+    private String getInitialAdminPassword() {
+        return authProperties.getInitialAdminPassword();
+    }
 
     /**
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long id와 별도로 String username)
@@ -159,10 +161,11 @@ public class UserService
         final UserEntity retrievedEntity = this.getDtlEntity(key);
         if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
-        if (StringUtils.isBlank(systemInitTempPw)) {
+        final String initialAdminPassword = this.getInitialAdminPassword();
+        if (StringUtils.isBlank(initialAdminPassword)) {
             throw new IllegalStateException("msg.user.pw.init-temp-pw.not-set");
         }
-        retrievedEntity.setPassword(passwordEncoder.encode(systemInitTempPw));
+        retrievedEntity.setPassword(passwordEncoder.encode(initialAdminPassword));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
         retrievedEntity.acntStus.setPasswordToken(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());

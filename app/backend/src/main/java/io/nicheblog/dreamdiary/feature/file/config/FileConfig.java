@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.file.config;
 
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -17,14 +17,10 @@ import java.util.Set;
  * @author nichefish
  */
 @Configuration
+@RequiredArgsConstructor
 public class FileConfig {
 
-    @Value("${app.file.allowed-extensions:jpg|jpeg|gif|png|bmp|webp|wav|mp3|mp4|txt|csv|tsv|json|xls|xlsx|doc|docx|ppt|pptx|hwp|pdf}")
-    private String allowedExtensionsStr;
-    @Value("${app.file.allowed-mime-types:image/jpeg|image/png|image/gif|image/bmp|image/webp|application/pdf|application/msword|application/vnd.ms-excel|application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|application/vnd.openxmlformats-officedocument.presentationml.presentation|application/zip|application/x-rar-compressed|application/x-7z-compressed|text/plain|text/csv}")
-    private String allowedMimeTypesStr;
-    @Value("${app.file.image-extensions:jpg|jpeg|png|gif|bmp|webp|svg}")
-    private String imageExtensionsStr;
+    private final FileProperties fileProperties;
 
     @Getter
     private Set<String> allowedExtensions;
@@ -38,8 +34,8 @@ public class FileConfig {
      */
     @PostConstruct
     public void init() {
-        allowedExtensions = CmmUtils.parseToSet(allowedExtensionsStr, "|");
-        allowedMimeTypes = CmmUtils.parseToSet(allowedMimeTypesStr, "|");
-        imageExtensions = CmmUtils.parseToSet(imageExtensionsStr, "|");
+        allowedExtensions = CmmUtils.parseToSet(fileProperties.getAllowedExtensions(), "|");
+        allowedMimeTypes = CmmUtils.parseToSet(fileProperties.getAllowedMimeTypes(), "|");
+        imageExtensions = CmmUtils.parseToSet(fileProperties.getImageExtensions(), "|");
     }
 }
