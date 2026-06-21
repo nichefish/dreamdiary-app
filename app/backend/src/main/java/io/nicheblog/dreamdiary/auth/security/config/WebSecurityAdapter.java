@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.config;
 
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.jwt.filter.JwtAuthenticationFilter;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationFailureHandler;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationSuccessHandler;
@@ -62,17 +63,12 @@ public class WebSecurityAdapter {
     private final SessionRegistry sessionRegistry;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthPolicyQueryService authPolicyQueryService;
+    private final AuthProperties authProperties;
 
     @Value("${springdoc.api-docs.path:/v3/api-docs}")
     private String API_DOCS_PATH;
     @Value("${springdoc.swagger-ui.path:/swagger-ui.html}")
     private String SWAGGER_UI_PATH;
-    @Value("${app.auth.remember-me.key}")
-    private String REMEMBER_ME_KEY;
-    @Value("${app.auth.remember-me.param}")
-    private String REMEMBER_ME_PARAM;
-    @Value("${app.auth.remember-me.token-ttl-days:30}")
-    private long rememberMeTokenTtlDays;
 
     /**
      * Security 필터 자체를 타지 않도록 제외할 경로 정의
@@ -170,9 +166,9 @@ public class WebSecurityAdapter {
 
         // remember-me 관련 (쿠키 기반 장기 로그인)
         http.rememberMe()
-                .key(REMEMBER_ME_KEY)
-                .rememberMeParameter(REMEMBER_ME_PARAM)
-                .tokenValiditySeconds((int) Duration.ofDays(rememberMeTokenTtlDays).getSeconds())
+                .key(authProperties.getRememberMe().getKey())
+                .rememberMeParameter(authProperties.getRememberMe().getParam())
+                .tokenValiditySeconds((int) Duration.ofDays(authProperties.getRememberMe().getTokenTtlDays()).getSeconds())
                 .userDetailsService(authService)
                 .authenticationSuccessHandler(webLoginSuccessHandler);
 

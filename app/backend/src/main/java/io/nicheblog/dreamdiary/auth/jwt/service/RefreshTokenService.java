@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.jwt.service;
 
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
@@ -7,7 +8,6 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,11 +38,12 @@ public class RefreshTokenService {
     private static final Base64.Decoder BASE64_URL_DECODER = Base64.getUrlDecoder();
 
     private final UserRepository userRepository;
+    private final AuthProperties authProperties;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    @Getter
-    @Value("${app.auth.refresh-token.ttl-seconds:1209600}")
-    private long refreshTokenTtlSeconds;
+    public long getRefreshTokenTtlSeconds() {
+        return authProperties.getRefreshToken().getTtlSeconds();
+    }
 
     @Getter
     @RequiredArgsConstructor
@@ -138,7 +139,7 @@ public class RefreshTokenService {
 
         user.setRefreshTokenHash(refreshTokenHash);
         user.setRefreshTokenIssuedAt(now);
-        user.setRefreshTokenExpiresAt(new Date(now.getTime() + refreshTokenTtlSeconds * 1000L));
+        user.setRefreshTokenExpiresAt(new Date(now.getTime() + this.getRefreshTokenTtlSeconds() * 1000L));
         userRepository.saveAndFlush(user);
 
         return refreshToken;

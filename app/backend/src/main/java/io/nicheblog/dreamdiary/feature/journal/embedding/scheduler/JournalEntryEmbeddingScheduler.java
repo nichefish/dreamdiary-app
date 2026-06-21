@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.scheduler;
 
+import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingWorker;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +18,7 @@ public class JournalEntryEmbeddingScheduler {
 
     private final JournalEntryEmbeddingWorker journalEntryEmbeddingWorker;
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
-
-    @Value("${app.journal.embedding.worker.batch-size:20}")
-    private Integer batchSize;
+    private final JournalProperties journalProperties;
 
     /**
      * 대기 중인 임베딩 작업이 있으면 설정된 배치 크기로 비동기 워커를 실행한다.
@@ -36,6 +34,7 @@ public class JournalEntryEmbeddingScheduler {
             return;
         }
 
+        final Integer batchSize = journalProperties.getEmbedding().getWorker().getBatchSize();
         log.info("Journal entry embedding scheduler tick. pending={}, batchSize={}", pendingCount, batchSize);
         journalEntryEmbeddingWorker.processPendingBatchAsync(batchSize);
     }

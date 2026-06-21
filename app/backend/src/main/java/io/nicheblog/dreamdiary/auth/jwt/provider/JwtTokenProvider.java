@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
@@ -13,7 +14,6 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,16 +46,13 @@ public class JwtTokenProvider {
     private final AuthService authService;
     private final AuthenticationHelper authenticationHelper;
     private final AuthSessionPolicyService authSessionPolicyService;
+    private final AuthProperties authProperties;
 
-    @Value("${app.auth.jwt.secret}")
     private String secretKey;
-
-    @Value("${app.auth.jwt.signup-token-ttl-seconds:3600}")
-    private long signupTokenTtlSeconds;
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
+        secretKey = Base64.getEncoder().encodeToString(authProperties.getJwt().getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -83,7 +80,7 @@ public class JwtTokenProvider {
         claims.put("roles", roles);
         final Date now = DateUtils.getCurrDate();
         
-        final long tokenValidMillisecond = 1000L * signupTokenTtlSeconds;
+        final long tokenValidMillisecond = 1000L * authProperties.getJwt().getSignupTokenTtlSeconds();
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)

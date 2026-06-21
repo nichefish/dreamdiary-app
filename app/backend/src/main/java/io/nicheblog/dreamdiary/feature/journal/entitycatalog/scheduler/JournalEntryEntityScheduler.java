@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal.entitycatalog.scheduler;
 
+import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityQueueService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityWorker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +18,7 @@ public class JournalEntryEntityScheduler {
 
     private final JournalEntryEntityWorker journalEntryEntityWorker;
     private final JournalEntryEntityQueueService journalEntryEntityQueueService;
-
-    @Value("${app.journal.entity.worker.batch-size:20}")
-    private Integer batchSize;
+    private final JournalProperties journalProperties;
 
     /**
      * Trigger the worker only when pending entity-sync rows exist.
@@ -36,6 +34,7 @@ public class JournalEntryEntityScheduler {
             return;
         }
 
+        final Integer batchSize = journalProperties.getEntity().getWorker().getBatchSize();
         log.info("Journal entry entity scheduler tick. pending={}, batchSize={}", pendingCount, batchSize);
         journalEntryEntityWorker.processPendingBatchAsync(batchSize);
     }
