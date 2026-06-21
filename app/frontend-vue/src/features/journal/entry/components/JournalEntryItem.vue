@@ -8,6 +8,9 @@
     :data-refrnc="hasState('REFRNC') ? 'Y' : 'N'"
     :data-resolved="isResolved ? 'Y' : 'N'"
     :data-else-dream="isElseDream ? 'Y' : 'N'"
+    :data-stdrd-dt="entry.stdrdDt"
+    :data-yy="entryCacheYy"
+    :data-mnth="entryCacheMnth"
   >
     <!--begin::순번-->
     <div class="d-none d-md-flex flex-column align-items-center pt-1 ps-2" style="width:56px; min-width:56px;">
@@ -314,7 +317,7 @@ import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
-import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
 
@@ -332,6 +335,12 @@ const attachableStore = useAttachableModalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();
 const route = useRoute();
+
+interface JournalCacheContext {
+  yy?: number;
+  mnth?: number;
+  weekStartDt?: string;
+}
 
 /** 엔트리 타입별 외부 item 클래스 (journal.scss 의 data-* 셀렉터 연동) */
 const itemClass = computed(() => {
@@ -387,6 +396,51 @@ const dreamTagProfileList = computed(() => {
 const relatedList = computed(() => props.entry.relatedContentList ?? []);
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const interpretationList = computed(() => props.entry.journalInterpretationList ?? []);
+
+function parseCacheNumber(value: unknown): number | undefined {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function resolveEntryYy(): number | undefined {
+  const stdrdDt = props.entry.stdrdDt?.trim();
+  if (stdrdDt && stdrdDt.length >= 4) return parseCacheNumber(stdrdDt.slice(0, 4));
+  return parseCacheNumber(journalStore.yy);
+}
+
+function resolveEntryMnth(): number | undefined {
+  const stdrdDt = props.entry.stdrdDt?.trim();
+  if (stdrdDt && stdrdDt.length >= 7) return parseCacheNumber(stdrdDt.slice(5, 7));
+  return parseCacheNumber(journalStore.mnth);
+}
+
+function resolveEntryWeekStartDt(): string | undefined {
+  const weekStartDt = journalStore.weekStartDt?.trim();
+  if (weekStartDt) return weekStartDt;
+  const stdrdDt = props.entry.stdrdDt?.trim();
+  return stdrdDt ? getWeekStartDateStr(stdrdDt) : undefined;
+}
+
+const entryCacheYy = computed(() => resolveEntryYy());
+const entryCacheMnth = computed(() => resolveEntryMnth());
+
+function resolveJournalCacheContext(): JournalCacheContext {
+  const cacheContext: JournalCacheContext = {};
+  const yy = entryCacheYy.value;
+  const mnth = entryCacheMnth.value;
+  const weekStartDt = resolveEntryWeekStartDt();
+  if (yy != null) cacheContext.yy = yy;
+  if (mnth != null) cacheContext.mnth = mnth;
+  if (weekStartDt) cacheContext.weekStartDt = weekStartDt;
+  if (Object.keys(cacheContext).length === 0) {
+    console.warn("[journal] missing cache context for entry state update", {
+      id: props.entry.id,
+      contentType: props.entry.contentType,
+      stdrdDt: props.entry.stdrdDt,
+    });
+  }
+  return cacheContext;
+}
 
 /** 라이프사이클 옵션 (OPEN/PENDING/RESOLVED) */
 const lifecycleOptions = [
@@ -511,6 +565,7 @@ async function setLifecycle(lifecycleKey: string): Promise<void> {
       id: props.entry.id,
       contentType: props.entry.contentType,
       lifecycleKey,
+      cacheContext: resolveJournalCacheContext(),
     });
     if (res.data?.rslt) {
       scrollAfterFetch();
@@ -531,6 +586,7 @@ async function toggleState(stateKey: string): Promise<void> {
       id: props.entry.id,
       contentType: props.entry.contentType,
       stateKey,
+      cacheContext: resolveJournalCacheContext(),
     });
     if (res.data?.rslt) {
       scrollAfterFetch();

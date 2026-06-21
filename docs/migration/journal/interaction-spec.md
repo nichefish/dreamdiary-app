@@ -361,8 +361,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
   - 이력 → `attachableStore.openHistory(contentType, id)`
   - 관련 글 추가 (지정 꿈꾼 이름 없을 때만 — `hasDreamerName(entry)` false) → `attachableStore.openRelated(contentType, id)`
   - 구분선
-  - 라이프사이클 서브메뉴 (OPEN/PENDING/RESOLVED radio) → `PUT /api/lifecycles { id, contentType, lifecycleKey }`
-  - 상태 서브메뉴 toggle → `POST /api/states { id, contentType, stateKey }`
+  - 라이프사이클 서브메뉴 (OPEN/PENDING/RESOLVED radio) → `PUT /api/lifecycles { id, contentType, lifecycleKey, cacheContext }`
+  - 상태 서브메뉴 toggle → `POST /api/states { id, contentType, stateKey, cacheContext }`
     - IMPRTC(중요), REFRNC(참조) — 공통
     - NHTMR(악몽), HALLUC(환각/현시) — 꿈 전용 (`isDream`)
     - COLLAPSED(접기) — 공통
