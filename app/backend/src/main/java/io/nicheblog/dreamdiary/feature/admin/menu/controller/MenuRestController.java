@@ -77,14 +77,15 @@ public class MenuRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> userMenuListAjax(
-            @RequestParam(value = "mode", defaultValue = "USER") final String mode
+            @RequestParam(value = "mode", defaultValue = "USER") final String mode,
+            @RequestParam(value = "includeHidden", defaultValue = "false") final boolean includeHidden
     ) throws Exception {
 
         final boolean mngrModeRequested = Code.AUTH_MNGR.equals(mode);
         final boolean canUseMngrMode = AuthUtils.hasAuthority(Constant.ROLE_MNGR);
         final List<MenuDto> menuList = mngrModeRequested && canUseMngrMode
-                ? menuService.getMngrMenuList()
-                : menuService.getUserMenuList();
+                ? (includeHidden ? menuService.getMngrMenuMetaList() : menuService.getMngrMenuList())
+                : (includeHidden ? menuService.getUserMenuMetaList() : menuService.getUserMenuList());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

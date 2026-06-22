@@ -74,6 +74,10 @@ public class MenuPostDto
     @Pattern(regexp = "^[YN]$")
     private String useYn;
 
+    /** 사이드바 표시 여부 (Y/N) */
+    @Pattern(regexp = "^[YN]$")
+    private String sidebarVisibleYn;
+
     /** 아이콘 (bootstrap icon 또는 font-awesome) TODO: svg? */
     private String icon;
 

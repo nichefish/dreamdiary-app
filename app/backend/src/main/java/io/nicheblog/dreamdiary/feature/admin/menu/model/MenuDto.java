@@ -100,6 +100,10 @@ public class MenuDto
     @Builder.Default
     private String protectedYn = "N";
 
+    /** 사이드바 표시 여부 (Y/N) */
+    @Builder.Default
+    private String sidebarVisibleYn = "Y";
+
     /** 셀프 참조 :: 상위메뉴 조회 */
     private MenuDto upperMenu;
     /** 셀프 참조 :: 상위메뉴명 */

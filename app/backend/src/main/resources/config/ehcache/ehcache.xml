@@ -41,6 +41,8 @@
     <!-- 硫붾돱 -->
     <cache alias="userMenuList" uses-template="defaultTemplate" />
     <cache alias="mngrMenuList" uses-template="defaultTemplate" />
+    <cache alias="userMenuMetaList" uses-template="defaultTemplate" />
+    <cache alias="mngrMenuMetaList" uses-template="defaultTemplate" />
     <cache alias="menuByLabel" uses-template="defaultTemplate" />
     <cache alias="isMngrMenu" uses-template="defaultTemplate" />
 

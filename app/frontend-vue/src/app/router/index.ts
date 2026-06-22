@@ -302,7 +302,6 @@ function isUserMenuRoute(path: string): boolean {
     path === "/thread" ||
     path.startsWith("/thread/") ||
     path === "/schedule" ||
-    path === "/my" ||
     path === "/board" ||
     path.startsWith("/board/")
   );

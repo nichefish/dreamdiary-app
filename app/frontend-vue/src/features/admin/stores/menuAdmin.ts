@@ -20,6 +20,7 @@ export interface MenuNode {
   unreadCntNm?: string;
   url?: string;
   protectedYn?: string;
+  sidebarVisibleYn?: string;
   submenuExpandType?: string;
   submenuExpandTypeName?: string;
   upperMenuNm?: string;
@@ -39,6 +40,7 @@ export interface MenuForm {
   submenuExpandType: string;
   url: string;
   useYn: string;
+  sidebarVisibleYn: string;
 }
 
 export interface SubmenuExpandOption {
@@ -61,6 +63,7 @@ const EMPTY_FORM: MenuForm = {
   submenuExpandType: "NO_SUB",
   url: "",
   useYn: "Y",
+  sidebarVisibleYn: "Y",
 };
 
 const SUBMENU_EXPAND_OPTIONS: SubmenuExpandOption[] = [
@@ -89,6 +92,7 @@ function cloneForm(row?: Partial<MenuNode>): MenuForm {
     submenuExpandType: row?.submenuExpandType ?? "NO_SUB",
     url: row?.url ?? "",
     useYn: yn(row?.useYn) === "Y" ? "Y" : "N",
+    sidebarVisibleYn: yn(row?.sidebarVisibleYn ?? "Y") === "Y" ? "Y" : "N",
   };
 }
 
@@ -104,6 +108,7 @@ function toFormData(form: MenuForm): FormData {
   fd.append("submenuExpandType", form.submenuExpandType);
   fd.append("url", form.submenuExpandType === "NO_SUB" ? form.url.trim() : "");
   fd.append("useYn", yn(form.useYn));
+  fd.append("sidebarVisibleYn", yn(form.sidebarVisibleYn ?? "Y"));
   return fd;
 }
 

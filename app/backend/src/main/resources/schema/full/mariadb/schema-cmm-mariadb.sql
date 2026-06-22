@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS menu (
     unread_cnt_nm VARCHAR(200) COMMENT '미열람 카운트 이름 (model)',
     submenu_expand_type VARCHAR(50) COMMENT '하위메뉴 확장 유형',
     protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부',
+    sidebar_visible_yn CHAR(1) DEFAULT 'Y' COMMENT '사이드바 표시 여부',
     -- STATE
     sort_order INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',

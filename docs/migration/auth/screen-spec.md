@@ -66,12 +66,13 @@
 - **Vue SPA**: `/my`
 - **Legacy file**: `legacy/templates/view/feature/user/my/user_my_page.ftlh`
 - **스토어**: `features/user/stores/userMy.ts`
-- **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목·설명문은 렌더링하지 않고 새로고침 버튼만 표시
+- **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목·설명문 및 별도 새로고침 버튼은 렌더링하지 않고 프로필 정보 카드부터 표시
+- **메뉴 모드**: `/my` 진입은 사용자/관리자 메뉴 모드를 전환하지 않는다. 관리자 모드에서 프로필 메뉴로 들어오면 관리자 사이드바를 유지하고, 사용자 모드에서 들어오면 사용자 사이드바를 유지한다.
 
 ### Layout Structure
 
 - 레이아웃: `layout_default.ftlh` (사이드바 없음)
-- 툴바: 새로고침 버튼
+- 툴바: 별도 툴바 없음. `/my` 화면 진입 시 사용자 정보를 조회하고, 프로필 이미지 변경/삭제 후에는 내부적으로 사용자 정보와 인증 상태를 갱신한다.
 - 메인 영역:
   - Vue 마운트 루트: `#user_my_app`
   - 컨텐츠 div: `#user_my_page_div` (Vue `UserMyPageApp` 텔레포트 대상)

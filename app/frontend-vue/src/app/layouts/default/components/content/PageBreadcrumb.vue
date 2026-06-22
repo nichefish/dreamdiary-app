@@ -2,7 +2,7 @@
   <!--begin::PageBreadcrumb-->
   <!--
     레이아웃 공통 breadcrumb 컴포넌트.
-      메뉴 store 의 menuList 를 읽어
+      메뉴 store 의 menuMetaList 를 읽어
     헤더 흰 띠(#kt_app_header_wrapper) 좌측에 현재 경로를 표시한다.
     헤더는 LayoutService 가 data-kt-app-sidebar-push-header=true 를 body 에 설정하므로
     sidebar 폭만큼 자동 오프셋되어 breadcrumb 이 sidebar 뒤에 가려지지 않는다.
@@ -100,9 +100,10 @@ export default defineComponent({
     const menuStore = useMenuStore();
 
     /** 메뉴 트리의 현재 route 매칭 결과를 breadcrumb 와 설명으로 표시한다. */
-    const breadcrumbMatch = computed(() =>
-      findMenuBreadcrumb(menuStore.menuList, route.path, route.fullPath)
-    );
+    const breadcrumbMatch = computed(() => {
+      const menuMetaList = menuStore.menuMetaList.length ? menuStore.menuMetaList : menuStore.menuList;
+      return findMenuBreadcrumb(menuMetaList, route.path, route.fullPath);
+    });
     const breadcrumbItems = computed(() => breadcrumbMatch.value?.items ?? []);
     const menuDescription = computed(() => breadcrumbMatch.value?.description ?? "");
 

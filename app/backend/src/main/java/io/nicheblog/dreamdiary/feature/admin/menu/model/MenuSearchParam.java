@@ -43,4 +43,9 @@ public class MenuSearchParam
     @Size(min = 1, max = 1)
     @Pattern(regexp = "^[YN]$")
     private String adminYn;
+
+    /** 사이드바 표시 여부 (Y/N) */
+    @Size(min = 1, max = 1)
+    @Pattern(regexp = "^[YN]$")
+    private String sidebarVisibleYn;
 }

@@ -84,6 +84,42 @@
           />
         </ol>
       </section>
+
+      <section class="menu-admin-column menu-admin-column--system">
+        <div class="menu-admin-column-header">
+          <div>
+            <div class="menu-admin-column-title">
+              <i class="bi bi-eye-slash"></i>
+              숨김·시스템 메뉴
+            </div>
+            <div class="text-muted fs-8">사이드바에는 표시하지 않는 화면/권한/메타 메뉴</div>
+          </div>
+          <span class="badge badge-light-secondary">{{ hiddenMenuRows.length }}</span>
+        </div>
+
+        <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
+        <div v-if="store.loading" class="menu-admin-loading">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          불러오는 중
+        </div>
+        <ol v-else class="menu-admin-tree">
+          <li v-if="!hiddenMenuRows.length" class="menu-admin-empty">등록된 숨김·시스템 메뉴가 없습니다.</li>
+          <MenuAdminTreeNode
+            v-for="(row, index) in hiddenMenuRows"
+            :key="row.id"
+            :node="row"
+            :index="index"
+            :sibling-count="hiddenMenuRows.length"
+            :sort-saving="store.sortSaving"
+            @add-child="store.openSubCreate"
+            @edit="openEdit"
+            @toggle-use="toggleUse"
+            @delete-node="deleteMenu"
+            @child-drag-start="onChildDragStart"
+            @child-drop="onChildDrop"
+          />
+        </ol>
+      </section>
     </div>
 
     <template v-if="store.modalOpen">
@@ -102,6 +138,14 @@
                     <div class="form-check form-switch form-check-custom form-check-solid">
                       <input id="useYn" class="form-check-input cursor-pointer" type="checkbox" :checked="store.form.useYn === 'Y'" @change="onUseYnChange" />
                       <label class="form-check-label ms-3" for="useYn">{{ store.form.useYn === "Y" ? "사용" : "미사용" }}</label>
+                    </div>
+                  </div>
+
+                  <div class="menu-admin-form-row">
+                    <label for="sidebarVisibleYn" class="form-label">사이드바 표시</label>
+                    <div class="form-check form-switch form-check-custom form-check-solid">
+                      <input id="sidebarVisibleYn" class="form-check-input cursor-pointer" type="checkbox" :checked="store.form.sidebarVisibleYn === 'Y'" @change="onSidebarVisibleYnChange" />
+                      <label class="form-check-label ms-3" for="sidebarVisibleYn">{{ store.form.sidebarVisibleYn === "Y" ? "표시" : "숨김" }}</label>
                     </div>
                   </div>
 
@@ -201,10 +245,38 @@ import MenuAdminTreeNode from "@/features/admin/MenuAdminTreeNode.vue";
 import { useMenuAdminStore, type MenuNode, type MenuTargetMode } from "@/features/admin/stores/menuAdmin";
 
 const store = useMenuAdminStore();
-const userMenuRows = computed(() => store.rows.filter((row) => store.getMenuTargetMode(row) === "USER"));
-const adminMenuRows = computed(() => store.rows.filter((row) => store.getMenuTargetMode(row) === "MNGR"));
+const userMenuRows = computed(() => store.rows
+  .filter((row) => sidebarVisible(row) && store.getMenuTargetMode(row) === "USER")
+  .map((row) => withVisibleChildren(row)));
+const adminMenuRows = computed(() => store.rows
+  .filter((row) => sidebarVisible(row) && store.getMenuTargetMode(row) === "MNGR")
+  .map((row) => withVisibleChildren(row)));
+const hiddenMenuRows = computed(() => collectHiddenMenus(store.rows));
 const mainDrag = ref<{ targetMode: MenuTargetMode; index: number } | null>(null);
 const childDrag = ref<{ parentId: number; index: number } | null>(null);
+
+function sidebarVisible(row: MenuNode): boolean {
+  return String(row.sidebarVisibleYn ?? "Y").toUpperCase() === "Y";
+}
+
+function withVisibleChildren(row: MenuNode): MenuNode {
+  return {
+    ...row,
+    subMenuList: (row.subMenuList ?? []).filter(sidebarVisible).map((child) => withVisibleChildren(child)),
+  };
+}
+
+function collectHiddenMenus(rows: MenuNode[]): MenuNode[] {
+  const hiddenRows: MenuNode[] = [];
+  rows.forEach((row) => {
+    if (!sidebarVisible(row)) {
+      hiddenRows.push({ ...row });
+      return;
+    }
+    hiddenRows.push(...collectHiddenMenus(row.subMenuList ?? []));
+  });
+  return hiddenRows;
+}
 
 async function openEdit(id: number) {
   try {
@@ -248,6 +320,10 @@ async function submit() {
 
 function onUseYnChange(event: Event) {
   store.form.useYn = (event.target as HTMLInputElement).checked ? "Y" : "N";
+}
+
+function onSidebarVisibleYnChange(event: Event) {
+  store.form.sidebarVisibleYn = (event.target as HTMLInputElement).checked ? "Y" : "N";
 }
 
 function onUnreadCntEnabledChange(event: Event) {
@@ -363,6 +439,10 @@ onMounted(async () => {
   border: 1px solid var(--bs-gray-200);
   border-radius: 8px;
   background: var(--bs-gray-100);
+}
+
+.menu-admin-column--system {
+  grid-column: 1 / -1;
 }
 
 .menu-admin-column-header,

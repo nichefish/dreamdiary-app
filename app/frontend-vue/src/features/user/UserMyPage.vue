@@ -1,11 +1,5 @@
 <template>
   <div class="user-my-page">
-    <div class="user-my-toolbar">
-      <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
-        <i class="bi bi-arrow-clockwise"></i>
-      </button>
-    </div>
-
     <div class="card post">
       <div class="card-body">
         <div v-if="store.loading" class="user-my-loading">
@@ -336,13 +330,6 @@ onMounted(async () => {
 .user-my-page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.user-my-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
   gap: 1rem;
 }
 
