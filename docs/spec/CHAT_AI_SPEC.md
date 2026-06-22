@@ -306,11 +306,12 @@ Example: `나는 원빈님을 어떻게 생각하고 있니?`
 
 This path reuses person-meaning tag-only retrieval but changes prompt/scaffold/guard:
 
-- RAG intro text asks for attitude reflection, not symbolic role synthesis
-- `PERSON_STANCE_SCAFFOLD` replaces `PERSON_MEANING_SCAFFOLD` with four sections: 내 태도·정서, 반복 장면, 함께 묶인 축, 확정 불가
-- intent prompt requires 2nd-person mirroring (`네가 기록에 남긴 바로는`) and forbids HR/coaching tone, personality adjectives, and collaboration advice
-- hollow guard (`isHollowPersonStanceResponse`) rejects coaching/org-dynamics answers and third-person trait profiles even when co-occurring tags are cited; answers must include mirror markers (`네가`, `기록을 보면`, `마음`, etc.) plus tag/snippet evidence
-- degraded retries use `PERSON_STANCE_RETRY`; deterministic fallback uses `buildPersonStanceDeterministicFallback` and `responseMode=PERSON_STANCE_FALLBACK`
+- RAG intro text asks for attitude **pattern synthesis** (repeat axes, linked context, record types), not episode recap or symbolic role synthesis
+- `PERSON_STANCE_SCAFFOLD` replaces `PERSON_MEANING_SCAFFOLD`. Internal material includes interpretive lead, repeat axes, linked context, role axes, record types, and brief evidence scenes; the **user-facing answer** must use four sections: (1) 내 태도·정서 (2) 반복 패턴 (3) 함께 묶인 축 (4) 확정 불가
+- Attitude interpretation = integrating repeat axes/context/types, **not** long event narration or ungrounded psych labels (불신·거리감·방어적 등)
+- intent prompt requires 2nd-person mirroring, axis citation when scaffold material exists, and forbids HR/coaching tone, personality adjectives, collaboration advice, and episode-only answers
+- hollow guard (`isHollowPersonStanceResponse`) rejects coaching/advisory tone (`고려할 수 있습니다`, `이해하기 위해서는`), record evasion/neutralization (`명시적으로 표현되지 않`, `중립적 또는 평온`), third-person trait profiles, linked-tag-only answers when person-focus tags exist, ungrounded psych labels, heavy episode narration, and other-behavior reports; strong mirror markers (`네가`, `기록을 보면`, `기록에 남긴`, `내 태도`, etc.) are required — `당신` alone is insufficient
+- degraded retries use `PERSON_STANCE_RETRY` (full snapshot + 4-section shape); deterministic fallback uses `buildPersonStanceDeterministicFallback` and `responseMode=PERSON_STANCE_FALLBACK`
 
 Symbolic meaning questions such as `원빈은 내 기록에서 어떤 의미야?` remain on the person-meaning scaffold, not person-stance.
 
