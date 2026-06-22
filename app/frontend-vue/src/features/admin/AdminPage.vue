@@ -1,8 +1,31 @@
 <template>
   <div class="admin-page">
     <div class="admin-toolbar">
-      <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.bootstrapLoading" @click="reload">
+      <button type="button" class="btn btn-sm btn-light-primary" :disabled="reloadDisabled" @click="reload">
         <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+
+    <div class="admin-tabs nav nav-tabs nav-line-tabs" role="tablist" aria-label="사이트 관리 구분">
+      <button
+        type="button"
+        class="nav-link"
+        :class="{ active: activeTab === 'general' }"
+        role="tab"
+        :aria-selected="activeTab === 'general'"
+        @click="selectTab('general')"
+      >
+        일반 관리
+      </button>
+      <button
+        type="button"
+        class="nav-link"
+        :class="{ active: activeTab === 'ai' }"
+        role="tab"
+        :aria-selected="activeTab === 'ai'"
+        @click="selectTab('ai')"
+      >
+        AI 관리
       </button>
     </div>
 
@@ -17,8 +40,8 @@
       </div>
     </div>
 
-    <div class="admin-layout">
-      <section class="card post">
+    <div class="admin-layout" :class="{ 'admin-layout-ai': activeTab === 'ai' }">
+      <section v-if="activeTab === 'general'" class="card post">
         <div class="card-body">
           <h3 class="admin-section-title">운영 도구</h3>
 
@@ -75,13 +98,13 @@
         </div>
       </section>
 
-      <section class="card post">
+      <section v-if="activeTab === 'ai'" class="card post">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
             <div>
               <h3 class="admin-section-title mb-1">AI Embedding Backfill</h3>
               <div class="text-muted fs-8">Total은 활성 저널 entry 수입니다. Embedded는 그중 벡터화 완료 entry 수입니다.</div>
-              <div class="text-muted fs-8 mt-1">Sync Entries 후 벡터 생성은 서버 워커가 백그라운드에서 처리합니다. 이 페이지를 떠나도 됩니다.</div>
+              <div class="text-muted fs-8 mt-1">Sync Entries 후 벡터 생성은 서버 워커가 백그라운드에서 처리합니다.</div>
             </div>
             <div class="admin-tool-actions">
               <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.embeddingStatsLoading" @click="store.fetchEmbeddingStats">
@@ -201,13 +224,13 @@
         </div>
       </section>
 
-      <section class="card post">
+      <section v-if="activeTab === 'ai'" class="card post">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
             <div>
               <h3 class="admin-section-title mb-1">Entity Queue Backfill</h3>
               <div class="text-muted fs-8">Total은 활성 저널 entry 수입니다. Synced는 entity catalog 동기화가 끝난 entry 수입니다.</div>
-              <div class="text-muted fs-8 mt-1">Sync Entries 후 entity 추출은 서버 워커가 백그라운드에서 처리합니다. 이 페이지를 떠나도 됩니다.</div>
+              <div class="text-muted fs-8 mt-1">Sync Entries 후 entity 추출은 서버 워커가 백그라운드에서 처리합니다.</div>
             </div>
             <div class="admin-tool-actions">
               <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.entityQueueStatsLoading" @click="store.fetchEntityQueueStats">
@@ -266,7 +289,7 @@
         </div>
       </section>
 
-      <section class="card post admin-role-card">
+      <section v-if="activeTab === 'general'" class="card post admin-role-card">
         <div class="card-body">
           <h3 class="admin-section-title">권한 정보</h3>
           <div class="table-responsive">
@@ -374,13 +397,17 @@
 
 <script setup lang="ts">
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { Modal } from "bootstrap";
 import { useAdminPageStore } from "@/features/admin/stores/adminPage";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import type { RoleRow } from "@/features/admin/types/adminPage.types";
 
 const store = useAdminPageStore();
+type AdminTab = "general" | "ai";
+const route = useRoute();
+const router = useRouter();
 const holydayYy = ref(String(new Date().getFullYear()));
 const notionDataType = ref("PAGE");
 const notionDataId = ref("");
@@ -391,6 +418,12 @@ let cacheDetailModal: Modal | null = null;
 let statsTimer: number | undefined;
 const BACKGROUND_SYNC_NOTE = "큐 등록 후 처리는 서버에서 백그라운드로 계속됩니다. 이 페이지를 떠나도 됩니다.";
 
+const activeTab = computed<AdminTab>(() => (route.query.tab === "ai" ? "ai" : "general"));
+const reloadDisabled = computed(() =>
+  activeTab.value === "ai"
+    ? store.embeddingStatsLoading || store.entityQueueStatsLoading
+    : store.bootstrapLoading
+);
 const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
 const ollamaHealthBadgeClass = computed(() => {
   const status = store.ollamaHealth?.status ?? "DOWN";
@@ -541,8 +574,16 @@ function displayCacheKey(cacheKey: string): string {
 }
 
 async function reload() {
-  await Promise.all([store.fetchBootstrap(), store.fetchEmbeddingStats(), store.fetchEntityQueueStats()]);
+  if (activeTab.value === "ai") {
+    await Promise.all([store.fetchEmbeddingStats(), store.fetchEntityQueueStats()]);
+    return;
+  }
+  await store.fetchBootstrap();
   holydayYy.value = String(store.meta.currYy);
+}
+
+async function selectTab(tab: AdminTab) {
+  await router.replace({ query: { ...route.query, tab } });
 }
 
 async function syncHolyday() {
@@ -624,6 +665,10 @@ onMounted(async () => {
   }, 30000);
 });
 
+watch(activeTab, () => {
+  void reload();
+});
+
 onUnmounted(() => {
   if (statsTimer) window.clearInterval(statsTimer);
 });
@@ -647,6 +692,10 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
   gap: 1rem;
+}
+
+.admin-layout-ai {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .admin-role-card {
