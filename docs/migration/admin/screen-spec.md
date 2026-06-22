@@ -27,24 +27,32 @@
 **스토어**: `features/admin/stores/adminPage.ts` / **타입**: `features/admin/types/adminPage.types.ts`
 
 **기능**:
-- 운영 도구 모음 (캐시 관리, 임베딩 백필 등)
+- 사이트 관리 본문 상단에는 `일반 관리` / `AI 관리` 탭을 표시한다.
+  - 기본 진입(`/admin`)은 `일반 관리` 탭이다.
+  - `AI 관리` 탭은 `/admin?tab=ai`, `일반 관리` 탭은 `/admin?tab=general` query로 상태를 유지한다.
 - 본문 상단 새로고침 버튼 표시. 화면 설명은 `ADMIN_PAGE` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
+- `일반 관리` 탭:
+  - 운영 도구 모음 (캐시 관리, 공휴일 동기화, Notion 요청)
+  - 권한 정보 표시
+  - 일반 관리 탭의 새로고침 버튼은 bootstrap 데이터(권한/meta)를 다시 조회한다.
 - 캐시 목록 조회 → `GET /api/cache/cache-active-map`
 - 캐시 초기화 → `POST /api/cache/cache-evict` / `POST /api/cache-clear`
-- AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`, `POST /api/admin/journal-entry-embeddings/requeue-failed`
+- `AI 관리` 탭:
+  - AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`, `POST /api/admin/journal-entry-embeddings/requeue-failed`
+  - Entity Queue Backfill → `GET /api/admin/journal-entry-entities/stats`, `POST /api/admin/journal-entry-entities/sync`, `POST /api/admin/journal-entry-entities/requeue-failed`
+  - `GET /api/admin/ollama/health` 상태를 AI 관리 탭의 Embedding 섹션 상단에 표시한다.
+  - AI 관리 탭의 새로고침 버튼은 embedding/entity stats를 다시 조회한다.
+  - AI 관리 탭은 AI Embedding Backfill / Entity Queue Backfill 카드를 5:5 컬럼으로 배치한다.
   - 서버 기동 시 `app.journal.embedding.sync-on-startup`(기본 `true`)이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`)
   - `total` = active journal entry count (Entries baseline)
   - `queueRows` / `unqueuedEntries` = queue table row count / entries not yet queued
   - progress bars use entry coverage (`embedded/total`, `synced/total`)
-- Entity Queue Backfill → `GET /api/admin/journal-entry-entities/stats`, `POST /api/admin/journal-entry-entities/sync`, `POST /api/admin/journal-entry-entities/requeue-failed`
-  - same `total` semantics as embedding stats
 - Embedding/Entity 백필은 서버 스케줄러·워커에서 비동기 처리한다. Admin 화면을 떠나도 작업은 계속된다.
-  - `syncRunning` / pending / processing 중이면 상단 백그라운드 안내 배너 표시
-  - 각 Backfill 섹션 부제에 "페이지를 떠나도 됨" 안내
+  - `syncRunning` / pending / processing 중이면 탭과 무관하게 상단 백그라운드 안내 배너 표시
+  - "페이지를 떠나도 됨" 안내는 중복 노출하지 않고 상단 백그라운드 안내 배너에만 표시
   - Sync 성공 alert에 백그라운드 처리 문구 포함
   - Entity 섹션에 pending/processing 시 worker 상태 패널 표시 (Embedding과 동일 패턴)
   - `adminPage` store가 backfill 활성 시 5초 폴링을 유지하며, AdminPage unmount 후에도 SPA 내 다른 화면으로 이동해도 stats 갱신이 계속된다
-- 권한 정보 표시
 
 ---
 
