@@ -91,8 +91,9 @@ public class WebSecurityAdapter {
                 // 비밀번호 만료시 비밀번호 변경 화면
                 .antMatchers(Url.API_AUTH_LGN_PW_CHG)
                 // 신규계정 신청 화면/기능 전체 접근 (+아이디 중복 체크)
+                // 계정 신청 등록 API는 관리자 목록 조회와 같은 URL을 쓰므로 SecurityContext 생성을 위해 FilterChain을 통과한다.
+                // 비로그인 POST 접근은 아래 authorizeRequests()의 /api/** permitAll 계약으로 유지한다.
                 .antMatchers(Url.USER_SIGNUP_PAGE)
-                .antMatchers(Url.USER_SIGNUP_REQUESTS)
                 .antMatchers(Url.USERS_DUPLICATE_USERNAME_CHECK)
                 .antMatchers(Url.USERS_DUPLICATE_EMAIL_CHECK);
     }
