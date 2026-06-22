@@ -5,6 +5,7 @@ import {
 } from "vue-router";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useConfigStore } from "@/shared/config/stores/config";
+import { useMenuStore, type MenuMode } from "@/shared/menu/stores/menu";
 import {
   buildSessionExpiredSignInRoute,
   confirmSessionExpired,
@@ -289,6 +290,43 @@ function isPopupProtectedRoute(name: unknown): boolean {
   return ["journal-entry-search", "journal-daily"].includes(String(name));
 }
 
+function isManagerMenuRoute(path: string): boolean {
+  return path === "/admin" || path.startsWith("/admin/") || path === "/user/signup/approval";
+}
+
+function isUserMenuRoute(path: string): boolean {
+  return (
+    path.startsWith("/journal/") ||
+    path === "/annual" ||
+    path.startsWith("/annual/") ||
+    path === "/thread" ||
+    path.startsWith("/thread/") ||
+    path === "/schedule" ||
+    path === "/my" ||
+    path === "/board" ||
+    path.startsWith("/board/")
+  );
+}
+
+function resolveMenuModeForRoute(path: string): MenuMode | null {
+  if (isManagerMenuRoute(path)) return "MNGR";
+  if (isUserMenuRoute(path)) return "USER";
+  return null;
+}
+
+async function syncMenuModeForRoute(path: string) {
+  const authStore = useAuthStore();
+  const nextMode = resolveMenuModeForRoute(path);
+  if (!nextMode) return;
+  if (nextMode === "MNGR" && !authStore.user?.isMngr) return;
+
+  const menuStore = useMenuStore();
+  if (menuStore.mode === nextMode) return;
+
+  console.info("[router] sync menu mode for route", { path, nextMode });
+  await menuStore.setMenuMode(nextMode);
+}
+
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
   const configStore = useConfigStore();
@@ -303,6 +341,7 @@ router.beforeEach(async (to, _from, next) => {
     const requiresAuth = to.matched.some((r) => r.meta.middleware === "auth");
     if (requiresAuth) {
       if (authStore.isAuthenticated) {
+        await syncMenuModeForRoute(to.path);
         next();
       } else {
         if (isPopupProtectedRoute(to.name) || isAuthPopupRoute(to.name)) {
