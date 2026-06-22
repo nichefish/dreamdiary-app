@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.controller;
 
+import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingStatsDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncJobStatusDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQualityEvalService;
@@ -29,6 +30,7 @@ public class JournalEntryEmbeddingAdminRestController {
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
     private final JournalEntryEmbeddingSyncJobService journalEntryEmbeddingSyncJobService;
     private final JournalEntryEmbeddingQualityEvalService journalEntryEmbeddingQualityEvalService;
+    private final OllamaClient ollamaClient;
 
     /**
      * 임베딩 큐의 전체/대기/처리/완료 건수와 진행률을 조회한다.
@@ -69,6 +71,19 @@ public class JournalEntryEmbeddingAdminRestController {
     public ResponseEntity<AjaxResponse> requeueFailed() {
         final long requeued = journalEntryEmbeddingQueueService.requeueFailed();
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(requeued));
+    }
+
+    /**
+     * 로컬 Ollama 런타임 가용성을 점검합니다. 자동 기동은 하지 않습니다.
+     *
+     * @return Ollama health DTO
+     */
+    @GetMapping(Url.ADMIN_OLLAMA_HEALTH)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> getOllamaHealth() {
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS)
+                .withObj(ollamaClient.checkHealth()));
     }
 
     /**

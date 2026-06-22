@@ -179,6 +179,7 @@ public interface ApiUrl {
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_SYNC = Prefix.API + "/admin/journal-entry-embeddings/sync";
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_REQUEUE_FAILED = Prefix.API + "/admin/journal-entry-embeddings/requeue-failed";
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_QUALITY_EVAL = Prefix.API + "/admin/journal-entry-embeddings/quality-eval";
+    String ADMIN_OLLAMA_HEALTH = Prefix.API + "/admin/ollama/health";
     String ADMIN_JOURNAL_ENTRY_ENTITY_STATS = Prefix.API + "/admin/journal-entry-entities/stats";
     String ADMIN_JOURNAL_ENTRY_ENTITY_SYNC = Prefix.API + "/admin/journal-entry-entities/sync";
     String ADMIN_JOURNAL_ENTRY_ENTITY_REQUEUE_FAILED = Prefix.API + "/admin/journal-entry-entities/requeue-failed";

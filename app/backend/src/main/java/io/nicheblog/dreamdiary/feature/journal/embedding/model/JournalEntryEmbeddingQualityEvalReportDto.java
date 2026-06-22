@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.model;
 
+import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
 import lombok.Builder;
 import lombok.Value;
 
@@ -31,6 +32,9 @@ public class JournalEntryEmbeddingQualityEvalReportDto {
 
     /** SKIPPED 사유 샘플 (최대 20건) */
     List<JournalEntryEmbeddingSkippedSampleDto> skippedSamples;
+
+    /** 실측 시점 Ollama health (선행 핑) */
+    OllamaHealthDto ollamaHealth;
 
     /** 서브 스위트 결과 */
     List<JournalEntryEmbeddingQualityEvalSuiteDto> suites;
