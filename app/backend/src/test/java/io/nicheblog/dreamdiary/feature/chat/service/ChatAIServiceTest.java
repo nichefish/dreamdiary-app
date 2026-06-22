@@ -715,8 +715,8 @@ class ChatAIServiceTest {
         );
 
         assertTrue(prompt.contains("PERSON_STANCE_SCAFFOLD"));
-        assertTrue(prompt.contains("\uD0DC\uB3C4"));
-        assertTrue(prompt.contains("\uD611\uC5C5"));
+        assertTrue(prompt.contains("\uB124\uAC00 \uAE30\uB85D\uC5D0 \uB0A8\uAE34"));
+        assertTrue(prompt.contains("\uACE0\uB824\uD560 \uC218 \uC788"));
     }
 
     /**
@@ -733,12 +733,107 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildSyntheticPersonMeaningRagContext();
+        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
 
         final boolean degraded = (boolean) method.invoke(
                 service,
                 "\uC6D0\uBE48\uB2D8\uC740 \uB9E4\uC6B0 \uC5F4\uC131\uC801\uC774\uACE0 \uC8FC\uB3D9\uC801\uC778 \uC778\uBB3C\uC785\uB2C8\uB2E4. "
                         + "\uC870\uC9C1 \uC5ED\uB3D9\uC131\uC5D0\uC11C \uC911\uC694\uD55C \uC5ED\uD560\uC744 \uD558\uBA70 \uD611\uC5C5 \uAD00\uACC4\uB97C \uC720\uC9C0\uD558\uB294 \uAC83\uC774 \uC911\uC694\uD560 \uAC83 \uAC19\uC2B5\uB2C8\uB2E4.",
+                ragContext,
+                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+        );
+
+        assertTrue(degraded);
+    }
+
+    /**
+     * 태그·축이 있는데 사건 나열·심리 라벨만 있는 person-stance 답변은 degraded로 감지해야 합니다.
+     */
+    @Test
+    void isDegradedPersonResponse_shouldFlagEpisodeNarrationWithoutAxisCitation() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonResponse",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final String episodeResponse =
+                "\uB124\uAC00 \uAE30\uB85D\uC5D0 \uB0A8\uAE34 \uBC14\uB85C\uB294, \uC6D0\uBE48\uB2D8\uC5D0 \uB300\uD55C \uD0DC\uB3C4\uB294 \uADF8\uB9AC \uAE0D\uC815\uC801\uC774\uC9C0 \uC54A\uC544 \uBCF4\uC778\uB2E4. "
+                        + "\uD1F4\uADFC \uC2DC\uAC04\uC774\uC5C8\uB294\uB370 PDF \uD30C\uC2F1 \uC774\uC57C\uAE30\uB97C \uB098\uB204\uB294 \uB3D9\uC548 \uB2E8\uAC00\uAC00 \uC548 \uB098\uC62C \uAC83 \uAC19\uB2E4\uACE0 \uB9D0\uD588\uB2E4. "
+                        + "\uADF8\uB7EC\uC790 \uC6D0\uBE48\uB2D8\uC740 \uBC29\uC5B4\uC801\uC73C\uB85C \uB300\uB2F5\uD588\uACE0, \uD2B9\uD788 \uB124 \uB9C8\uC74C\uC5D0\uB294 \uBD88\uC2E0\uACFC \uAC70\uB9AC\uAC10\uC774 \uC788\uB294 \uAC83 \uAC19\uB2E4. "
+                        + "\uC5B4\uC918\uB4E0 \uC774\uB294 \uAE30\uB85D\uC5D0 \uB0A8\uAE34 \uB300\uD654\uB9CC\uC73C\uB85C \uCD94\uB860\uD55C \uAC83\uC774\uB2E4.";
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                episodeResponse,
+                ragContext,
+                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+        );
+
+        assertTrue(degraded);
+    }
+
+    /**
+     * person-stance 답변이 태그·축을 인용하면 episode-only 거부 대상이 아니어야 합니다.
+     */
+    @Test
+    void isDegradedPersonResponse_shouldAcceptAxisGroundedStanceAnswer() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonResponse",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final String groundedResponse =
+                "\uB124\uAC00 \uAE30\uB85D\uC5D0 \uB0A8\uAE34 \uBC14\uB85C\uB294, \uC6D0\uBE48\uC5D0 \uB300\uD55C \uB9C8\uC74C\uC740 #\uC870\uC9C1\uC5ED\uB3D9 \uCD95\uC5D0\uC11C \uC790\uC8FC \uAE34\uC7A5\uACFC \uC6B0\uB824\uAC00 \uBC18\uBCF5\uB3FC. "
+                        + "(1) \uB0B4 \uD0DC\uB3C4\uB7\u00B7\uC815\uC11C: \uAE30\uB85D\uC744 \uBCF4\uBA74 \uC6B0\uB824\uAC00 \uB4DC\uB7EC\uB0A8. "
+                        + "(2) \uBC18\uBCF5 \uD328\uD134: \uC5C5\uBB34 \uB17C\uC758 \uC7A5\uBA74\uC5D0\uC11C \uB2F5\uC774 \uC5B4\uAE38\uB9AC\uB294 \uBAA8\uC2B5\uC774 \uBC18\uBCF5. "
+                        + "(3) \uD568\uAED8 \uBB36\uC778 \uCD95: #\uAE40\uC6D0\uBE48, #\uC870\uC9C1\uC5ED\uB3D9. "
+                        + "(4) \uD655\uC815 \uBD88\uAC00: \uC0C1\uB300 \uC131\uACA9\uC740 \uAE30\uB85D\uC5D0 \uC5C6\uC74C.";
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                groundedResponse,
+                ragContext,
+                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+        );
+
+        assertFalse(degraded);
+    }
+
+    /**
+     * 조언·회피·중립화·연결 태그만 인용한 person-stance 답변은 degraded로 감지해야 합니다.
+     */
+    @Test
+    void isDegradedPersonResponse_shouldFlagAdvisoryEvasionAnswer() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonResponse",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final String advisoryResponse =
+                "dreamdiary \uAE30\uB85D\uC744 \uD1B5\uD574 \uC54C \uC218 \uC788\uB294 \uBC14\uB85C, \uB2F9\uC2E0\uC740 \uC6D0\uBE48\uB2D8\uACFC \uD568\uAED8 \uC77C\uD558\uBA74\uC11C \uB2E4\uC591\uD55C \uC0C1\uD669\uC5D0\uC11C \uAD50\uB958\uB97C \uAC00\uC9D1\uB2C8\uB2E4. "
+                        + "\uADF8\uB7EC\uB098 \uC9C1\uC811\uC801\uC778 \uD3C9\uAC00\uB098 \uC2EC\uB9AC \uC0C1\uD0DC\uB294 \uBA85\uD655\uD788 \uB098\uD0C0\uB098\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. "
+                        + "\uC774\uB7EC\uD55C \uAD00\uACC4\uB97C \uB354 \uAE4A\uAC8C \uC774\uD574\uD558\uAE30 \uC704\uD574\uC11C\uB294 \uBA87 \uAC00\uC9C0 \uC810\uC744 \uACE0\uB824\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4: "
+                        + "\uC0C1\uD638\uC791\uC6A9 \uD328\uD134: #\uC870\uC9C1\uC5ED\uB3D9 \uCD95\uC5D0 \uBB36\uC5EC \uC788\uC2B5\uB2C8\uB2E4. "
+                        + "\uD655\uC815 \uBD88\uAC00: \uB2F9\uC2E0\uC758 \uC0DD\uAC01\uC774\uB098 \uAC10\uC815\uC740 \uBA85\uC2DC\uC801\uC73C\uB85C \uD45C\uD604\uB418\uC9C0 \uC54A\uACE0, \uC911\uB립\uC801 \uB610\uB294 \uD3C9\uC628\uD55C \uD0DC\uB3C4\uB97C \uC720\uC9C0\uD558\uACE0 \uC788\uB294 \uAC83\uC73C\uB85C \uBCF4\uC785\uB2C8\uB2E4.";
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                advisoryResponse,
                 ragContext,
                 "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
         );

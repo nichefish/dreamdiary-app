@@ -130,7 +130,32 @@ public class ChatAIService {
             "role_axes_ko", "roleaxesko", "repeated_tags", "PERSON_MEANING_SCAFFOLD",
             "1_\uBC18\uBCF5\uCD95", "2_\uC5ED\uD560\uAE30\uB2A5", "3_\uAE30\uB85D\uC720\uD615",
             "4_\uADFC\uAC70\uC7A5\uBA74\uD78C\uD2B8", "5_\uD655\uC815\uBD88\uAC00", "entity catalog",
-            "PERSON_STANCE_SCAFFOLD", "1_\uB0B4\uD0DC\uB3C4", "2_\uBC18\uBCF5\uC7A5\uBA74"
+            "PERSON_STANCE_SCAFFOLD", "1_\uB0B4\uD0DC\uB3C4", "2_\uBC18\uBCF5\uD328\uD134", "5_\uADFC\uAC70\uC7A5\uBA74"
+    };
+    /** person-stance 답변에서 근거 없이 쓰이면 분석 실패로 보는 심리 라벨 */
+    private static final String[] PERSON_STANCE_PSYCH_LABEL_MARKERS = {
+            "\uBD88\uC2E0", "\uAC70\uB9AC\uAC10", "\uBC29\uC5B4\uC801", "\uC758\uC2EC",
+            "\uBD88\uD3B8", "\uC2EC\uB9AC", "\uBC29\uC5B4\uC801\uC778"
+    };
+    /** person-stance 답변에서 금지하는 조언·검사·회피 표현 */
+    private static final String[] PERSON_STANCE_ADVISORY_MARKERS = {
+            "\uACE0\uB824\uD560 \uC218 \uC788", "\uC774\uD574\uD558\uAE30 \uC704\uD574\uC11C\uB294",
+            "\uBA87 \uAC00\uC9C0 \uC810\uC744", "\uB354 \uAE4A\uAC8C \uC774\uD574",
+            "\uC0C1\uD638\uC791\uC6A9 \uD328\uD134", "\uAC1C\uC778\uC801 \uBC18\uC751",
+            "\uD568\uAED8 \uBB36\uC778 \uC778\uBB3C"
+    };
+    /** person-stance 답변에서 기록 회피·중립화로 판단하는 표현 */
+    private static final String[] PERSON_STANCE_EVASION_MARKERS = {
+            "\uBA85\uD655\uD788 \uB098\uD0C0\uB098\uC9C0 \uC54A",
+            "\uBA85\uC2DC\uC801\uC73C\uB85C \uD45C\uD604\uB418\uC9C0 \uC54A",
+            "\uC9C1\uC811\uC801\uC778 \uD3C9\uAC00\uB098 \uC2EC\uB9AC \uC0C1\uD0DC\uB294",
+            "\uD3C9\uAC00\uB294 \uC5B4\uB835", "\uD655\uC2E4\uD55C \uD3C9\uAC00\uB294 \uC5B4\uB835",
+            "\uC911\uB9BD\uC801 \uB610\uB294 \uD3C9\uC628", "\uC911\uB9BD\uC801\uC774\uAC70\uB098 \uD3C9\uC628"
+    };
+    /** person-stance 비춤 문장에 필요한 강한 1·2인칭·기록 근거 표현 */
+    private static final String[] PERSON_STANCE_STRONG_MIRROR_MARKERS = {
+            "\uB124\uAC00", "\uAE30\uB85D\uC744 \uBCF4\uBA74", "\uAE30\uB85D\uC5D0 \uB0A8\uAE34",
+            "\uC801\uC5B4 \uB454", "\uC801\uC5B4\uB454", "\uB0B4 \uD0DC\uB3C4", "\uB0B4 \uB9C8\uC74C"
     };
     private final ChatMessageService chatMessageService;
     private final ChatSessionService chatSessionService;
@@ -614,7 +639,7 @@ public class ChatAIService {
         final StringBuilder sb = new StringBuilder();
         sb.append("RAG_INTENT: ").append(intent.name()).append('\n');
         if (isPersonAttitudeQuery(queryText)) {
-            sb.append("아래 기록은 네가 이 인물에 대해 적어 둔 정서·장면 재료입니다. 상대 성격 평가가 아니라 내 태도·느낌을 비춰 주세요.\n\n");
+            sb.append("아래 기록은 네가 이 인물에 대해 적어 둔 정서·패턴 재료입니다. 사건 줄거리가 아니라 반복 축·연결 맥락·기록 유형으로 내 태도를 통합해 비춰 주세요.\n\n");
         } else {
             sb.append("아래 기록 묶음은 통섭을 위한 재료입니다. 단일 기록만 보지 말고 반복, 변화, 연결을 함께 보세요.\n\n");
         }
@@ -843,39 +868,85 @@ public class ChatAIService {
             final RagTimelineSummary timelineSummary
     ) {
         sb.append("## PERSON_STANCE_SCAFFOLD\n");
-        sb.append("아래 4개 항목 순서로 답하세요. '네가 기록에 남긴 바로는' 관점으로, 상대 성격 평가가 아니라 내 태도·정서를 비춰주세요.\n");
-        sb.append("금지: 열성적·주도적 같은 성격 단정, 조직·협업 조언, HR/코칭 톤.\n\n");
+        sb.append("아래 4개 항목 순서로 답하세요. '네가 기록에 남긴 바로는' 관점으로, 상대 성격 평가가 아니라 내 태도·정서 패턴을 비춰 주세요.\n");
+        sb.append("태도 해석은 사건 나열·에피소드 재현이 아니라, 반복 축·연결 맥락·기록 유형·역할 축으로 통합한 패턴입니다.\n");
+        sb.append("금지: 열성적·주도적 같은 성격 단정, 조직·협업 조언, HR/코칭 톤, 근거 없는 심리 라벨(불신·거리감·방어적 등), 긴 사건 줄거리.\n");
+        sb.append("답변 제목은 '(1) 내 태도·정서' '(2) 반복 패턴' '(3) 함께 묶인 축' '(4) 확정 불가' 형태로 쓰고, 근거 장면은 각 항목에 한 줄 이하로만 덧붙이세요.\n\n");
 
+        final Map<String, Integer> scaffoldContentKindCountMap = new LinkedHashMap<>();
+        if (entitySummary != null && entitySummary.contentKindCountMap() != null) {
+            scaffoldContentKindCountMap.putAll(entitySummary.contentKindCountMap());
+        } else if (timelineSummary != null && !timelineSummary.contentKindCountMap().isEmpty()) {
+            scaffoldContentKindCountMap.putAll(timelineSummary.contentKindCountMap());
+        }
+        final List<String> scaffoldRoleAxesKo = entitySummary == null
+                ? List.of()
+                : formatPersonRoleAxes(entitySummary.roleCountMap());
         final PersonMeaningContextAggregates contextAggregates =
                 buildPersonMeaningContextAggregates(focusedResults, personFocus);
+        final String interpretiveLead = buildPersonStanceInterpretiveLead(
+                resolvePersonFocusTarget(personFocus),
+                focusedTagCountMap != null ? focusedTagCountMap : Map.of(),
+                scaffoldRoleAxesKo,
+                scaffoldContentKindCountMap,
+                contextAggregates.linkedContextTagCountMap(),
+                contextAggregates.chapterCategoryCountMap()
+        );
+        if (StringUtils.isNotBlank(interpretiveLead)) {
+            sb.append("해석 시드: ").append(interpretiveLead).append('\n');
+        }
 
         sb.append("1_내태도·정서: ");
-        if (focusedResults != null && !focusedResults.isEmpty()) {
-            sb.append(sanitizePersonMeaningSnippet(focusedResults.get(0), personFocus));
+        if (focusedTagCountMap != null && !focusedTagCountMap.isEmpty()) {
+            sb.append("반복 인물 태그 ").append(formatTopTags(focusedTagCountMap, 6));
+        } else if (!scaffoldRoleAxesKo.isEmpty()) {
+            sb.append("역할 축 ").append(String.join(", ", scaffoldRoleAxesKo));
         } else {
-            sb.append("(직접 인용 스니펫 없음 - 아래 반복 축으로만 서술)");
+            sb.append("(아래 반복 맥락·근거 장면으로만 서술)");
         }
         sb.append('\n');
 
-        sb.append("2_반복장면: ");
-        if (focusedResults != null && !focusedResults.isEmpty()) {
-            final int hintLimit = Math.min(2, focusedResults.size());
-            for (int i = 0; i < hintLimit; i++) {
-                if (i > 0) sb.append(" | ");
-                final RagSearchResult result = focusedResults.get(i);
-                if (result != null && result.getEntity() != null) {
-                    sb.append(result.getEntity().getJournalDate()).append(' ');
-                }
-                sb.append(sanitizePersonMeaningSnippet(focusedResults.get(i), personFocus));
-            }
-        } else {
-            sb.append("(장면 정보 없음)");
+        sb.append("2_반복패턴: ");
+        boolean hasRepeatPattern = false;
+        if (!contextAggregates.linkedContextTagCountMap().isEmpty()) {
+            sb.append("연결 맥락 ").append(formatTopTags(contextAggregates.linkedContextTagCountMap(), 6));
+            hasRepeatPattern = true;
+        }
+        if (!contextAggregates.chapterCategoryCountMap().isEmpty()) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("챕터 ").append(formatChapterCategorySpread(contextAggregates.chapterCategoryCountMap()));
+            hasRepeatPattern = true;
+        }
+        if (!scaffoldRoleAxesKo.isEmpty()) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("역할 축 ").append(String.join(", ", scaffoldRoleAxesKo));
+            hasRepeatPattern = true;
+        }
+        if (entitySummary != null
+                && (StringUtils.isNotBlank(entitySummary.firstDate()) || StringUtils.isNotBlank(entitySummary.lastDate()))) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("기간 ")
+                    .append(StringUtils.defaultIfBlank(entitySummary.firstDate(), "?"))
+                    .append(" ~ ")
+                    .append(StringUtils.defaultIfBlank(entitySummary.lastDate(), "?"));
+            hasRepeatPattern = true;
+        } else if (timelineSummary != null
+                && (StringUtils.isNotBlank(timelineSummary.firstDate()) || StringUtils.isNotBlank(timelineSummary.lastDate()))) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("기간 ")
+                    .append(StringUtils.defaultIfBlank(timelineSummary.firstDate(), "?"))
+                    .append(" ~ ")
+                    .append(StringUtils.defaultIfBlank(timelineSummary.lastDate(), "?"));
+            hasRepeatPattern = true;
+        }
+        if (!hasRepeatPattern) {
+            sb.append("(반복 맥락 정보 없음)");
         }
         sb.append('\n');
 
         sb.append("3_함께묶인축: ");
         if (focusedTagCountMap != null && !focusedTagCountMap.isEmpty()) {
-            sb.append(formatTopTags(focusedTagCountMap, 4));
+            sb.append(formatTopTags(focusedTagCountMap, 6));
         } else {
             sb.append("(인물 태그 없음)");
         }
@@ -884,7 +955,31 @@ public class ChatAIService {
         }
         sb.append('\n');
 
-        sb.append("4_확정불가: 실제 직장 관계·직함·상대 성격은 기록에 직접 나올 때만 말하고, 없으면 확인 안 됨으로 명시\n\n");
+        sb.append("4_기록유형: ");
+        if (!scaffoldContentKindCountMap.isEmpty()) {
+            sb.append(formatContentKindSpread(scaffoldContentKindCountMap));
+        } else {
+            sb.append("(기록 유형 정보 없음)");
+        }
+        sb.append('\n');
+
+        sb.append("5_근거장면(짧게): ");
+        if (focusedResults != null && !focusedResults.isEmpty()) {
+            final int hintLimit = Math.min(2, focusedResults.size());
+            for (int i = 0; i < hintLimit; i++) {
+                if (i > 0) sb.append(" | ");
+                final RagSearchResult result = focusedResults.get(i);
+                if (result != null && result.getEntity() != null) {
+                    sb.append(result.getEntity().getJournalDate()).append(' ');
+                }
+                sb.append(StringUtils.abbreviate(sanitizePersonMeaningSnippet(focusedResults.get(i), personFocus), 120));
+            }
+        } else {
+            sb.append("(장면 정보 없음)");
+        }
+        sb.append('\n');
+
+        sb.append("6_확정불가: 실제 직장 관계·직함·상대 성격은 기록에 직접 나올 때만 말하고, 없으면 확인 안 됨으로 명시\n\n");
     }
 
     /**
@@ -1445,11 +1540,16 @@ public class ChatAIService {
             return String.join("\n",
                     "PERSON_STANCE_SCAFFOLD 블록이 있으면 그 4개 항목 순서를 답의 골격으로 우선 사용하세요.",
                     "이 질문은 내가 특정 인물을 어떻게 느끼고/생각하는지 묻는 태도·자기인식 질문입니다.",
-                    "답은 2인칭(당신/네)으로, 내 저널에 드러난 나의 정서·거리감·반복 패턴을 비춰 주세요.",
-                    "금지: 상대방 성격 평가(열성적·주도적 등), 직장/조직 역동 해석, 협업·관계 유지 조언, HR/코칭 톤.",
+                    "첫 문장은 반드시 '네가 기록에 남긴 바로는' 또는 '기록을 보면, 네가 …' 형태로 시작하세요.",
+                    "답은 2인칭(네)으로, 내 저널에 드러난 나의 정서·거리감·반복 패턴을 비춰 주세요. '당신은 ~함께 일하면서' 같은 일반 관계 설명은 금지입니다.",
+                    "태도 해석은 사건 나열·에피소드 재현이 아니라 스캐폴드의 반복 축·연결 맥락·역할 축·기록 유형을 연결한 패턴입니다.",
+                    "스캐폴드의 인물 태그(질문 대상 이름이 들어간 태그)를 최소 하나 인용하세요. 연결 맥락 태그만으로는 부족합니다.",
+                    "금지: '고려할 수 있습니다', '이해하기 위해서는', '명시적으로 표현되지 않', '중립적 또는 평온' 같은 조언·회피·중립화.",
+                    "금지: 상대방 성격·행동 관찰 보고서, 다른 인물(지연 등) 중심 답변, HR/코칭 톤, 근거 없는 심리 라벨.",
                     "태그는 내가 의도적으로 붙인 해석 축으로만 언급하고, 조직 맥락 태그만으로 상대 성격을 단정하지 마세요.",
-                    "단정하지 말고 '기록을 보면', '네가 적어 둔 장면으로는'처럼 근거의 한계를 드러내세요.",
-                    "[1], [2] 같은 기록 번호 대신 날짜나 장면 표현으로 인용하세요."
+                    "단정하지 말고 근거의 한계를 드러내되, 기록에 내 정서·태도 단서가 있으면 '없다'고 말하지 마세요.",
+                    "[1], [2] 같은 기록 번호 대신 날짜나 장면 표현으로 인용하세요.",
+                    "내부 필드명이나 섹션 키(1_내태도·정서 등)를 답변 문장에 그대로 쓰지 마세요."
             );
         }
         if (intent == RagIntent.SYNTHESIS) {
@@ -1695,10 +1795,82 @@ public class ChatAIService {
      */
     private boolean isHollowPersonStanceResponse(final String response, final RagContext ragContext) {
         if (isPersonStanceCoachingTone(response)) return true;
+        if (isPersonStanceAdvisoryTone(response)) return true;
+        if (isPersonStanceRecordEvasion(response)) return true;
         if (isThirdPersonPersonalityProfile(response)) return true;
         if (isGenericPersonBucketHallucination(response)) return true;
         if (!hasPersonStanceMirrorMarkers(response)) return true;
-        return !hasPersonMeaningEvidence(response, ragContext);
+        if (!hasPersonStanceAnalyticEvidence(response, ragContext)) return true;
+        if (isPersonStanceUngroundedPsychLabel(response, ragContext)) return true;
+        if (isPersonStanceEpisodeNarrationHeavy(response, ragContext)) return true;
+        return isPersonStanceOtherBehaviorFocus(response, ragContext);
+    }
+
+    /**
+     * person-stance 답변이 태그·역할 축·연결 맥락 등 집계 근거를 인용했는지 확인합니다.
+     *
+     * <p>스냅샷에 축 재료가 있으면 스니펫 인용만으로는 통과하지 못합니다.</p>
+     */
+    private boolean hasPersonStanceAnalyticEvidence(final String response, final RagContext ragContext) {
+        if (StringUtils.isBlank(response) || ragContext == null || ragContext.personFocus() == null) {
+            return false;
+        }
+
+        final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext);
+        final boolean hasAxisMaterial = !snapshot.repeatedTagCountMap().isEmpty()
+                || !snapshot.roleAxesKo().isEmpty()
+                || !snapshot.linkedContextTagCountMap().isEmpty()
+                || !snapshot.chapterCategoryCountMap().isEmpty()
+                || !snapshot.contentKindCountMap().isEmpty();
+        if (!hasAxisMaterial) {
+            return hasPersonMeaningEvidence(response, ragContext);
+        }
+
+        if (!snapshot.repeatedTagCountMap().isEmpty()) {
+            if (citesPersonMeaningTagEvidence(response, snapshot.repeatedTagCountMap())) {
+                return true;
+            }
+            if (citesPersonMeaningRoleAxisEvidence(response, snapshot.roleAxesKo())) return true;
+            if (citesPersonMeaningChapterCategoryEvidence(response, snapshot.chapterCategoryCountMap())) return true;
+            return citesPersonMeaningContentKindEvidence(response, snapshot.contentKindCountMap());
+        }
+
+        if (citesPersonMeaningTagEvidence(response, snapshot.repeatedTagCountMap())) return true;
+        if (citesPersonMeaningRoleAxisEvidence(response, snapshot.roleAxesKo())) return true;
+        if (citesPersonMeaningTagEvidence(response, snapshot.linkedContextTagCountMap())) return true;
+        if (citesPersonMeaningChapterCategoryEvidence(response, snapshot.chapterCategoryCountMap())) return true;
+        return citesPersonMeaningContentKindEvidence(response, snapshot.contentKindCountMap());
+    }
+
+    /**
+     * 집계 근거 없이 심리 라벨만 덧붙인 person-stance 답변을 감지합니다.
+     */
+    private boolean isPersonStanceUngroundedPsychLabel(final String response, final RagContext ragContext) {
+        if (StringUtils.isBlank(response)) return false;
+        if (!StringUtils.containsAny(response, PERSON_STANCE_PSYCH_LABEL_MARKERS)) return false;
+        return !hasPersonStanceAnalyticEvidence(response, ragContext);
+    }
+
+    /**
+     * 스니펫 줄거리만 길게 풀고 패턴·축 인용이 없는 person-stance 답변을 감지합니다.
+     */
+    private boolean isPersonStanceEpisodeNarrationHeavy(final String response, final RagContext ragContext) {
+        if (StringUtils.isBlank(response) || ragContext == null) return false;
+
+        final int length = StringUtils.length(response);
+        if (length < 280) return false;
+
+        int episodeMarkers = 0;
+        for (final String marker : new String[]{
+                "\uADF8\uB7EC\uC790", "\uD2B9\uD788", "\uC5B4\uC918\uB4E0",
+                "\uADF8 \uD6C4", "\uB2F9\uC2DC", "\uC774\uC5B4", "\uBA54\uB274"
+        }) {
+            if (StringUtils.contains(response, marker)) episodeMarkers++;
+        }
+        if (episodeMarkers < 2 && length < 420) return false;
+        return !hasPersonStanceAnalyticEvidence(response, ragContext)
+                || isPersonStanceAdvisoryTone(response)
+                || isPersonStanceRecordEvasion(response);
     }
 
     /**
@@ -1707,9 +1879,40 @@ public class ChatAIService {
     private boolean isPersonStanceCoachingTone(final String response) {
         if (StringUtils.isBlank(response)) return false;
         return StringUtils.containsAny(response,
-                "협업", "협력", "관계를 유지", "관계를 이어",
-                "활용하", "중요할 것", "도움이 됩",
-                "조직 역동", "코칭", "열정을 활용");
+                "\uD611\uC5C5", "\uD611\uB825", "\uAD00\uACC4\uB97C \uC720\uC9C0", "\uAD00\uACC4\uB97C \uC774\uC5B4",
+                "\uD65C\uC6A9\uD558", "\uC911\uC694\uD560 \uAC83", "\uB3C4\uC6C0\uC774 \uB429",
+                "\uC870\uC9C1 \uC5ED\uB3D9", "\uCF54\uCE6D", "\uC5F4\uC815\uC744 \uD65C\uC6A9");
+    }
+
+    /**
+     * 관계 조언·검사 목록형 person-stance 답변을 감지합니다.
+     */
+    private boolean isPersonStanceAdvisoryTone(final String response) {
+        if (StringUtils.isBlank(response)) return false;
+        return StringUtils.containsAny(response, PERSON_STANCE_ADVISORY_MARKERS);
+    }
+
+    /**
+     * 기록에 내 태도가 없다고 회피하거나 중립으로 뭉개는 person-stance 답변을 감지합니다.
+     */
+    private boolean isPersonStanceRecordEvasion(final String response) {
+        if (StringUtils.isBlank(response)) return false;
+        return StringUtils.containsAny(response, PERSON_STANCE_EVASION_MARKERS);
+    }
+
+    /**
+     * 상대 행동 묘사가 중심이고 내 태도·정서 비춤이 빠진 person-stance 답변을 감지합니다.
+     */
+    private boolean isPersonStanceOtherBehaviorFocus(final String response, final RagContext ragContext) {
+        if (StringUtils.isBlank(response) || ragContext == null || ragContext.personFocus() == null) {
+            return false;
+        }
+        final boolean describesOtherBehavior = StringUtils.containsAny(response,
+                "\uD589\uB3D9\uD558\uB294\uC9C0", "\uC5B4\uB5BB\uAC8C \uD589\uB3D9",
+                "\uBD99\uC5B4\uC11C", "\uB057\uC774\uB294 \uBAA8\uC2B5", "\uAC00\uB2A5\uC131\uC774 \uB192");
+        if (!describesOtherBehavior) return false;
+        return !StringUtils.containsAny(response, PERSON_STANCE_STRONG_MIRROR_MARKERS)
+                || isPersonStanceRecordEvasion(response);
     }
 
     /**
@@ -1729,10 +1932,7 @@ public class ChatAIService {
      */
     private boolean hasPersonStanceMirrorMarkers(final String response) {
         if (StringUtils.isBlank(response)) return false;
-        return StringUtils.containsAny(response,
-                "네가", "당신", "기록을 보면", "기록상",
-                "적어 둔", "적어둔", "느껴지", "느낌이",
-                "마음이", "정서");
+        return StringUtils.containsAny(response, PERSON_STANCE_STRONG_MIRROR_MARKERS);
     }
 
     /**
@@ -1826,17 +2026,40 @@ public class ChatAIService {
     private String buildPersonStanceRetryPrompt(final RagContext ragContext) {
         final StringBuilder sb = new StringBuilder();
         sb.append("\n\n## PERSON_STANCE_RETRY\n");
-        sb.append("직전 답은 상대 성격 평가나 조직·협업 조언이라 거부되었습니다. 다시 작성하세요.\n");
-        sb.append("답은 '네가 기록에 남긴 바로는' 관점으로, 내 태도·정서·거리감을 비춰주세요.\n");
-        sb.append("금지: 열성적·주도적 성격 단정, 조직 해석, 협업 조언.\n");
+        sb.append("직전 답은 사건 나열·조언·회피·중립화·축 인용 누락·상대 행동 보고서 등으로 거부되었습니다. 다시 작성하세요.\n");
+        sb.append("답은 '(1) 내 태도·정서' '(2) 반복 패턴' '(3) 함께 묶인 축' '(4) 확정 불가' 순서로, 패턴·축 중심으로 짧게 작성하세요.\n");
+        sb.append("스캐폴드의 태그·역할 축·연결 맥락·기록 유형 중 최소 하나를 문장 안에 인용하세요. 긴 에피소드 재현은 금지입니다.\n");
+        sb.append("첫 문장은 반드시 '네가 기록에 남긴 바로는'로 시작하세요.\n");
+        sb.append("금지: 고려할 수 있습니다, 이해하기 위해서는, 명시적으로 표현되지 않, 중립적 또는 평온, 상대 행동 관찰 보고서, 다른 인물 중심 답변.\n");
+        sb.append("금지: 열성적·주도적 성격 단정, 조직 해석, 협업 조언, 근거 없는 불신·거리감·방어적 같은 심리 라벨.\n");
 
         if (ragContext != null && ragContext.personFocus() != null) {
             final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext);
-            if (!snapshot.evidenceSnippets().isEmpty()) {
-                sb.append("근거 장면: ").append(String.join(" | ", snapshot.evidenceSnippets())).append('\n');
+            final String interpretiveLead = buildPersonStanceInterpretiveLead(
+                    resolvePersonFocusTarget(ragContext.personFocus()),
+                    snapshot.repeatedTagCountMap(),
+                    snapshot.roleAxesKo(),
+                    snapshot.contentKindCountMap(),
+                    snapshot.linkedContextTagCountMap(),
+                    snapshot.chapterCategoryCountMap()
+            );
+            if (StringUtils.isNotBlank(interpretiveLead)) {
+                sb.append("해석 시드: ").append(interpretiveLead).append('\n');
             }
             if (!snapshot.repeatedTagCountMap().isEmpty()) {
-                sb.append("인물 태그: ").append(formatTopTags(snapshot.repeatedTagCountMap(), 4)).append('\n');
+                sb.append("인물 태그: ").append(formatTopTags(snapshot.repeatedTagCountMap(), 6)).append('\n');
+            }
+            if (!snapshot.linkedContextTagCountMap().isEmpty()) {
+                sb.append("연결 맥락: ").append(formatTopTags(snapshot.linkedContextTagCountMap(), 4)).append('\n');
+            }
+            if (!snapshot.roleAxesKo().isEmpty()) {
+                sb.append("역할 축: ").append(String.join(", ", snapshot.roleAxesKo())).append('\n');
+            }
+            if (!snapshot.contentKindCountMap().isEmpty()) {
+                sb.append("기록 유형: ").append(formatContentKindSpread(snapshot.contentKindCountMap())).append('\n');
+            }
+            if (!snapshot.evidenceSnippets().isEmpty()) {
+                sb.append("근거 장면(짧게만): ").append(String.join(" | ", snapshot.evidenceSnippets())).append('\n');
             }
         }
         return sb.toString();
@@ -2314,6 +2537,34 @@ public class ChatAIService {
     }
 
     /**
+     * person-stance 해석 리드 문단을 규칙 기반으로 조립합니다.
+     *
+     * <p>person-meaning 리드와 동일한 집계를 쓰되, 1인칭 태도 비춤 관점으로 문장을 고정합니다.</p>
+     */
+    private String buildPersonStanceInterpretiveLead(
+            final String target,
+            final Map<String, Integer> repeatedTagCountMap,
+            final List<String> roleAxesKo,
+            final Map<String, Integer> contentKindCountMap,
+            final Map<String, Integer> linkedContextTagCountMap,
+            final Map<String, Integer> chapterCategoryCountMap
+    ) {
+        final String meaningLead = buildPersonMeaningInterpretiveLead(
+                target,
+                repeatedTagCountMap,
+                roleAxesKo,
+                contentKindCountMap,
+                linkedContextTagCountMap,
+                chapterCategoryCountMap
+        );
+        if (StringUtils.isBlank(meaningLead)) return "";
+        if (StringUtils.startsWith(meaningLead, "기록상 ")) {
+            return "네가 기록에 남긴 태도로 보면, " + meaningLead.substring("기록상 ".length());
+        }
+        return "네가 기록에 남긴 태도로 보면, " + meaningLead;
+    }
+
+    /**
      * DREAM/DIARY/NOTE 비중을 person-meaning 리드 문장으로 변환합니다.
      */
     private String formatPersonMeaningContentKindHint(final Map<String, Integer> contentKindCountMap) {
@@ -2444,31 +2695,73 @@ public class ChatAIService {
         final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext);
         final StringBuilder sb = new StringBuilder();
 
-        sb.append("기록을 보면, 네가 ").append(target).append("을(를) 대하는 마음은 이렇게 반복돼 보여.\n\n");
+        final String interpretiveLead = buildPersonStanceInterpretiveLead(
+                target,
+                snapshot.repeatedTagCountMap(),
+                snapshot.roleAxesKo(),
+                snapshot.contentKindCountMap(),
+                snapshot.linkedContextTagCountMap(),
+                snapshot.chapterCategoryCountMap()
+        );
+        if (StringUtils.isNotBlank(interpretiveLead)) {
+            sb.append(interpretiveLead).append("\n\n");
+        } else {
+            sb.append("네가 기록에 남긴 바로는, ").append(target).append("에 대한 내 태도는 이렇게 패턴이 보여.\n\n");
+        }
+
+        sb.append("(1) 내 태도·정서: ");
+        if (!snapshot.repeatedTagCountMap().isEmpty()) {
+            sb.append("반복 인물 태그 ").append(formatTopTags(snapshot.repeatedTagCountMap(), 6));
+        } else if (!snapshot.roleAxesKo().isEmpty()) {
+            sb.append("역할 축 ").append(String.join(", ", snapshot.roleAxesKo()));
+        } else {
+            sb.append("기록에 드러난 정서 패턴");
+        }
+        sb.append('\n');
+
+        sb.append("(2) 반복 패턴: ");
+        boolean hasRepeatPattern = false;
+        if (!snapshot.linkedContextTagCountMap().isEmpty()) {
+            sb.append("연결 맥락 ").append(formatTopTags(snapshot.linkedContextTagCountMap(), 4));
+            hasRepeatPattern = true;
+        }
+        if (!snapshot.chapterCategoryCountMap().isEmpty()) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("챕터 ").append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()));
+            hasRepeatPattern = true;
+        }
+        if (!snapshot.roleAxesKo().isEmpty()) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("역할 축 ").append(String.join(", ", snapshot.roleAxesKo()));
+            hasRepeatPattern = true;
+        }
+        if (StringUtils.isNotBlank(snapshot.firstDate()) || StringUtils.isNotBlank(snapshot.lastDate())) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("기간 ")
+                    .append(StringUtils.defaultIfBlank(snapshot.firstDate(), "?"))
+                    .append(" ~ ")
+                    .append(StringUtils.defaultIfBlank(snapshot.lastDate(), "?"));
+            hasRepeatPattern = true;
+        }
+        if (!hasRepeatPattern) {
+            sb.append("반복 맥락 정보가 충분하지 않음");
+        }
+        sb.append('\n');
+
+        sb.append("(3) 함께 묶인 축: ");
+        if (!snapshot.repeatedTagCountMap().isEmpty()) {
+            sb.append(formatTopTags(snapshot.repeatedTagCountMap(), 6));
+        } else {
+            sb.append("인물 태그 정보 없음");
+        }
+        sb.append('\n');
+
+        sb.append("(4) 확정 불가: 상대의 성격이나 조직 역할은 기록에 직접 적힌 표현이 없으면 알 수 없어.\n");
 
         if (!snapshot.evidenceSnippets().isEmpty()) {
-            sb.append("내가 기록에 남긴 장면: ");
-            for (int i = 0; i < snapshot.evidenceSnippets().size(); i++) {
-                if (i > 0) sb.append(" / ");
-                sb.append(snapshot.evidenceSnippets().get(i));
-            }
-            sb.append('\n');
+            sb.append("\n근거 장면(짧게): ").append(String.join(" / ", snapshot.evidenceSnippets()));
         }
 
-        if (!snapshot.repeatedTagCountMap().isEmpty()) {
-            sb.append("내가 붙인 축: ").append(formatTopTags(snapshot.repeatedTagCountMap(), 6)).append('\n');
-            sb.append("(이 태그는 네가 의도적으로 붙인 ").append(target).append(" 관련 축이야.)\n");
-        }
-
-        if (!snapshot.linkedContextTagCountMap().isEmpty()) {
-            sb.append("같은 장면 맥락: ").append(formatTopTags(snapshot.linkedContextTagCountMap(), 4)).append('\n');
-        }
-
-        if (!snapshot.contentKindCountMap().isEmpty()) {
-            sb.append("기록 유형: ").append(formatContentKindSpread(snapshot.contentKindCountMap())).append('\n');
-        }
-
-        sb.append("\n이건 확정이 아니라 기록에 남아 드러난 패턴이야. 상대의 성격이나 조직 역할은 기록에 직접 적힌 표현이 없으면 알 수 없어.");
         return sb.toString().trim();
     }
 
