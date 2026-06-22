@@ -101,6 +101,26 @@ public class MenuService
                 .menuType(MenuType.MAIN.name())
                 .adminYn("N")
                 .useYn("Y")
+                .sidebarVisibleYn("Y")
+                .build());
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
+
+        return this.filterSidebarVisible(this.getListDto(searchParamMap, sort));
+    }
+
+    /**
+     * 사이드바에 표시하지 않는 시스템 메뉴까지 포함한 사용자 메뉴 메타 조회.
+     * 화면 breadcrumb/설명 원천으로 사용하며, 사이드바 렌더링에는 사용하지 않는다.
+     *
+     * @return {@link List} 사용자 메뉴 메타 목록
+     */
+    @Transactional(readOnly = true)
+    @Cacheable(value="userMenuMetaList")
+    public List<MenuDto> getUserMenuMetaList() throws Exception {
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
+                .menuType(MenuType.MAIN.name())
+                .adminYn("N")
+                .useYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
@@ -119,10 +139,70 @@ public class MenuService
                 .menuType(MenuType.MAIN.name())
                 .adminYn("Y")
                 .useYn("Y")
+                .sidebarVisibleYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.getListDto(searchParamMap, sort);
+        return this.filterSidebarVisible(this.getListDto(searchParamMap, sort));
+    }
+
+    /**
+     * 사이드바에 표시하지 않는 시스템 메뉴까지 포함한 관리자 메뉴 메타 조회.
+     * 화면 breadcrumb/설명 원천으로 사용하며, 사이드바 렌더링에는 사용하지 않는다.
+     *
+     * @return {@link List} 관리자 메뉴 메타 목록
+     */
+    @Transactional(readOnly = true)
+    @Cacheable(value="mngrMenuMetaList")
+    public List<MenuDto> getMngrMenuMetaList() throws Exception {
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
+                .menuType(MenuType.MAIN.name())
+                .adminYn("Y")
+                .useYn("Y")
+                .build());
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
+
+        final List<MenuDto> menuList = this.getListDto(searchParamMap, sort);
+        this.addSharedHiddenUserMenuMeta(menuList);
+        return menuList;
+    }
+
+    private List<MenuDto> filterSidebarVisible(final List<MenuDto> menuList) {
+        if (CollectionUtils.isEmpty(menuList)) return menuList;
+
+        final List<MenuDto> filtered = new ArrayList<>();
+        for (final MenuDto menu : menuList) {
+            final MenuDto filteredMenu = filterSidebarVisible(menu);
+            if (filteredMenu != null) filtered.add(filteredMenu);
+        }
+        return filtered;
+    }
+
+    private MenuDto filterSidebarVisible(final MenuDto menu) {
+        if (menu == null) return null;
+        if (!"Y".equals(menu.getSidebarVisibleYn())) return null;
+
+        final List<MenuDto> subMenuList = menu.getSubMenuList();
+        if (CollectionUtils.isNotEmpty(subMenuList)) {
+            menu.setSubMenuList(this.filterSidebarVisible(subMenuList));
+        }
+        return menu;
+    }
+
+    /**
+     * 관리자 메뉴 모드에서도 공통 계정 화면 breadcrumb 메타를 사용할 수 있도록 숨김 사용자 메뉴를 메타 목록에 포함한다.
+     *
+     * @param menuList 관리자 메뉴 메타 목록
+     */
+    private void addSharedHiddenUserMenuMeta(final List<MenuDto> menuList) throws Exception {
+        if (menuList == null) return;
+        final MenuDto userMyMenu = this.getSelf().getMenuByLabel(SiteMenu.USER_MY);
+        if (userMyMenu == null) return;
+        if (!"Y".equals(userMyMenu.getProtectedYn()) || !"N".equals(userMyMenu.getSidebarVisibleYn())) {
+            log.warn("Shared user menu meta is not protected hidden. menuLabel={}, protectedYn={}, sidebarVisibleYn={}",
+                    userMyMenu.getMenuLabel(), userMyMenu.getProtectedYn(), userMyMenu.getSidebarVisibleYn());
+        }
+        menuList.add(userMyMenu);
     }
 
     /**
@@ -170,6 +250,8 @@ public class MenuService
     public void postRegist(final MenuDto updatedDto) throws Exception {
         EhCacheUtils.clearCache("userMenuList");
         EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("userMenuMetaList");
+        EhCacheUtils.clearCache("mngrMenuMetaList");
     }
 
     /**
@@ -207,6 +289,9 @@ public class MenuService
         registDto.setMenuType(MenuType.SUB.name());
         if (StringUtils.isBlank(registDto.getAdminYn())) {
             registDto.setAdminYn("N");
+        }
+        if (StringUtils.isBlank(registDto.getSidebarVisibleYn())) {
+            registDto.setSidebarVisibleYn("Y");
         }
     }
 
@@ -279,6 +364,8 @@ public class MenuService
     public void postModify(final MenuPostDto postDto, final MenuDto updatedDto) throws Exception {
         EhCacheUtils.clearCache("userMenuList");
         EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("userMenuMetaList");
+        EhCacheUtils.clearCache("mngrMenuMetaList");
         EhCacheUtils.clearCache("isMngrMenu");
         EhCacheUtils.evictCacheByKey("menuByLabel", updatedDto.getMenuLabel());
     }
@@ -317,8 +404,10 @@ public class MenuService
     public void postSetUse(final MenuEntity updateEntity) {
         if (this.getIsMngrMenu(updateEntity.getId())) {
             EhCacheUtils.clearCache("mngrMenuList");
+            EhCacheUtils.clearCache("mngrMenuMetaList");
         } else {
             EhCacheUtils.clearCache("userMenuList");
+            EhCacheUtils.clearCache("userMenuMetaList");
         }
         EhCacheUtils.evictCacheByKey("isMngrMenu", updateEntity.getId().toString());
         EhCacheUtils.evictCacheByKey("menuByLabel", updateEntity.getMenuLabel());
@@ -331,6 +420,8 @@ public class MenuService
     public void postSortOrder(final List<MenuSortOrderDto> sortOrders) {
         EhCacheUtils.clearCache("mngrMenuList");
         EhCacheUtils.clearCache("userMenuList");
+        EhCacheUtils.clearCache("mngrMenuMetaList");
+        EhCacheUtils.clearCache("userMenuMetaList");
     }
 
     /**
@@ -409,6 +500,8 @@ public class MenuService
 
         EhCacheUtils.clearCache("mngrMenuList");
         EhCacheUtils.clearCache("userMenuList");
+        EhCacheUtils.clearCache("mngrMenuMetaList");
+        EhCacheUtils.clearCache("userMenuMetaList");
         EhCacheUtils.clearCache("isMngrMenu");
         log.info("Menu tree moved. movedId={}, sourceParentMenuId={}, targetParentMenuId={}",
                 moveParam.getMovedId(), moveParam.getSourceParentMenuId(), moveParam.getTargetParentMenuId());
@@ -499,6 +592,8 @@ public class MenuService
 
         EhCacheUtils.clearCache("userMenuList");
         EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("userMenuMetaList");
+        EhCacheUtils.clearCache("mngrMenuMetaList");
         EhCacheUtils.clearCache("isMngrMenu");
         EhCacheUtils.evictCacheByKey("menuByLabel", deletedDto.getMenuLabel());
     }

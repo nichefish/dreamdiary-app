@@ -33,7 +33,7 @@
         <!--begin::breadcrumb — 헤더 좌측, 서버 메뉴 트리 기반 현재 경로와 설명 표시-->
         <PageBreadcrumb />
         <!--end::breadcrumb-->
-        <KTHeaderNavbar />
+        <KTHeaderNavbar class="ms-auto" />
       </div>
       <!--end::Header wrapper-->
     </div>

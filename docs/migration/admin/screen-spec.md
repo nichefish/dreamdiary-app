@@ -108,20 +108,20 @@
 
 **기능**:
 - 본문 상단 새로고침 버튼 표시. 화면 설명은 `MENU_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
-- 메뉴 트리 2컬럼 구조 (사용자 메뉴 / 관리자 메뉴)
+- 메뉴 트리 2컬럼 구조 (사용자 메뉴 / 관리자 메뉴)를 유지하고, `sidebarVisibleYn=N` 메뉴는 하단 `숨김·시스템 메뉴` 섹션으로 분리 표시한다.
 - 메뉴 등록/수정/삭제
 - 하위 메뉴 추가, 사용 여부 토글
 - 드래그로 순서 변경
 - 신규 메뉴는 기존 트리의 하위 메뉴로만 등록한다. 메인 메뉴 등록 버튼과 메뉴 유형 입력은 제공하지 않으며, 백엔드는 신규 등록을 `SUB`로 고정하고 상위 메뉴를 필수 검증한다. 신규 `MAIN`은 시드/마이그레이션으로만 추가한다.
 - 관리자/사용자 메뉴 여부는 최상위 `MAIN` 메뉴의 `adminYn`으로만 판정한다. 개별 메뉴 등록/수정 폼은 `adminYn`을 직접 토글하거나 저장하지 않는다.
 - 하위 메뉴를 다른 최상위 메뉴 계열로 이동하면 백엔드는 최상위 메뉴 기준 관리자/사용자 판정 캐시(`isMngrMenu`)를 무효화한다.
-- 메뉴 등록/수정 모달은 사용 여부 토글과 상위 메뉴 읽기 전용 필드를 입력 높이 기준으로 세로 정렬한다. `메뉴명`과 필수 `메뉴 라벨`은 기본 정보 row 안에서 병렬 입력으로 배치한다. `URL`은 `submenuExpandType=NO_SUB`일 때만 표시하고 필수로 받으며, 그 외 확장형 메뉴는 저장 시 URL을 빈 값으로 정규화한다. `미열람 카운트`는 스위치와 조건부 입력을 한 줄로 배치하며, 스위치 ON이면 카운트 이름 입력을 필수로 받는다.
+- 메뉴 등록/수정 모달은 사용 여부와 사이드바 표시 여부 토글, 상위 메뉴 읽기 전용 필드를 입력 높이 기준으로 세로 정렬한다. `sidebarVisibleYn=N`은 메뉴 테이블과 breadcrumb/권한/화면 메타 원천에는 남기되 사이드바 트리 렌더링에서 제외한다. `메뉴명`과 필수 `메뉴 라벨`은 기본 정보 row 안에서 병렬 입력으로 배치한다. `URL`은 `submenuExpandType=NO_SUB`일 때만 표시하고 필수로 받으며, 그 외 확장형 메뉴는 저장 시 URL을 빈 값으로 정규화한다. `미열람 카운트`는 스위치와 조건부 입력을 한 줄로 배치하며, 스위치 ON이면 카운트 이름 입력을 필수로 받는다.
 - 메뉴 등록/수정 모달은 선택 메뉴의 `menuDescription`을 `메뉴 설명` textarea로 관리한다. 저장된 설명은 sidebar 메뉴 API 응답에 포함되고, 현재 route에 매칭된 메뉴의 설명이 공통 breadcrumb 하단에 표시된다. 설명이 비어 있으면 breadcrumb 하단 설명 영역은 렌더링하지 않는다.
 - `protectedYn=Y`는 메뉴 자체의 수정·사용여부 변경·삭제와 자기 자신 드래그 이동을 막는 시스템 보호 의미다. 보호 메뉴는 drag source와 sibling drop target이 되지 않지만, 보호 메뉴 아래에도 하위 메뉴를 추가하거나 다른 하위 메뉴를 이동할 수 있다.
 - `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. 메뉴 관리에서는 행 컨텍스트 메뉴를 숨기고 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시한다. BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
 - 메뉴 트리 행의 액션은 `...` 컨텍스트 메뉴로 제공한다. 메뉴 항목은 하위 메뉴 추가, 수정, 사용/미사용 전환, 삭제이며 각 항목은 시스템 보호 상태에 따라 비활성화한다.
 - `submenuExpandType=NO_SUB`는 해당 메뉴가 하위 메뉴를 생성하거나 이동받을 수 없는 leaf 메뉴임을 의미한다. `submenuExpandType=BOARD`도 게시판 관리 소유 메뉴이므로 하위 메뉴 추가 액션과 상위 메뉴 후보, 트리 이동 대상 부모에서 제외한다.
-- 메뉴 트리의 보호 아이콘은 Bootstrap tooltip을 `v-tooltip` directive로 활성화한다. `protectedYn=Y` 메뉴는 `bi-shield-lock text-warning`와 `시스템 보호 메뉴`로 표시하며 아이콘 hover cursor는 도움말(`help`)이다.
+- 메뉴 트리의 보호/숨김 아이콘은 Bootstrap tooltip을 `v-tooltip` directive로 활성화한다. `protectedYn=Y` 메뉴는 `bi-shield-lock text-warning`와 `시스템 보호 메뉴`로 표시하며, `sidebarVisibleYn=N` 메뉴는 `bi-eye-slash text-muted`와 `사이드바 숨김 메뉴`로 표시한다. 아이콘 hover cursor는 도움말(`help`)이다.
 - 하위 메뉴 등록/수정 모달의 상위 메뉴는 호출한 부모 또는 기존 부모를 읽기 전용으로 표시한다. 상위 메뉴 변경은 트리 드래그 앤 드롭과 `PUT /api/menus/tree` 전용이며, 일반 수정 API는 `parentMenuId` 변경 요청을 거부한다.
 - API: `GET /api/menus`, `POST/GET/PATCH/DELETE /api/menu(s)/{id}`, `PUT /api/menus/sort-orders`, `PUT /api/menus/tree`
 

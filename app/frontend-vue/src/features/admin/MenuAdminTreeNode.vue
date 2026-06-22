@@ -22,6 +22,7 @@
           <div class="menu-admin-node-name">
             <span>{{ node.menuName || "-" }}</span>
             <i v-if="protectedY" v-tooltip class="bi bi-shield-lock text-warning menu-admin-status-icon" title="시스템 보호 메뉴"></i>
+            <i v-if="!sidebarVisibleY" v-tooltip class="bi bi-eye-slash text-muted menu-admin-status-icon" title="사이드바 숨김 메뉴"></i>
           </div>
           <div class="menu-admin-node-meta">
             <span>{{ node.menuLabel || "-" }}</span>
@@ -116,6 +117,7 @@ const children = computed(() => props.node.subMenuList ?? []);
 const isMain = computed(() => props.node.menuType === "MAIN");
 const useY = computed(() => yn(props.node.useYn));
 const protectedY = computed(() => yn(props.node.protectedYn));
+const sidebarVisibleY = computed(() => yn(props.node.sidebarVisibleYn ?? "Y"));
 const canDragHandle = computed(() => !props.sortSaving && !protectedY.value);
 const boardManaged = computed(() => props.node.managementType === "BOARD");
 const canAddChild = computed(() => !boardManaged.value && props.node.submenuExpandType !== "NO_SUB");
@@ -131,7 +133,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [props.node.id, props.node.useYn, props.node.protectedYn, props.node.managementType, props.node.submenuExpandType],
+  () => [props.node.id, props.node.useYn, props.node.protectedYn, props.node.sidebarVisibleYn, props.node.managementType, props.node.submenuExpandType],
   () => {
     void refreshMenuComponents();
   }

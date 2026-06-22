@@ -93,6 +93,12 @@ public class MenuEntity
     @Comment("시스템 보호 여부 (Y/N)")
     private String protectedYn = "N";
 
+    /** 사이드바 표시 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "sidebar_visible_yn")
+    @Comment("사이드바 표시 여부 (Y/N)")
+    private String sidebarVisibleYn = "Y";
+
     /** 하위메뉴 확장유형 */
     @Column(name = "submenu_expand_type")
     @Comment("하위메뉴 확장유형")

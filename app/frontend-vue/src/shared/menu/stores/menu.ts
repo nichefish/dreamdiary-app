@@ -23,6 +23,7 @@ export interface MenuDto {
   dirYn: string;
   useYn: string;
   adminYn?: string;
+  sidebarVisibleYn?: string;
   subMenuList: MenuDto[];
 }
 
@@ -73,8 +74,12 @@ const FALLBACK_USER_MENU_LIST: MenuDto[] = [
     menuItem(-107, "\uc2a4\ub808\ub4dc", "/thread", "bi-chat-square-text"),
     menuItem(-108, "\uc77c\uc815", "/schedule", "bi-calendar-check"),
   ]),
+];
+
+const FALLBACK_USER_MENU_META_LIST: MenuDto[] = [
+  ...FALLBACK_USER_MENU_LIST,
   menuSection(-300, "\uacc4\uc815", [
-    menuItem(-301, "\ub0b4 \uc815\ubcf4", "/my", "bi-person-circle"),
+    { ...menuItem(-301, "\ub0b4 \uc815\ubcf4", "/my", "bi-person-circle"), sidebarVisibleYn: "N" },
   ]),
 ];
 
@@ -92,8 +97,16 @@ const FALLBACK_MNGR_MENU_LIST: MenuDto[] = [
   ]),
 ];
 
+const FALLBACK_MNGR_MENU_META_LIST: MenuDto[] = [
+  ...FALLBACK_MNGR_MENU_LIST,
+  { ...menuItem(-301, "\ub0b4 \uc815\ubcf4", "/my", "bi-person-circle"), sidebarVisibleYn: "N" },
+];
+
 const fallbackMenus = (mode: MenuMode): MenuDto[] =>
   mode === "MNGR" ? FALLBACK_MNGR_MENU_LIST : FALLBACK_USER_MENU_LIST;
+
+const fallbackMenuMeta = (mode: MenuMode): MenuDto[] =>
+  mode === "MNGR" ? FALLBACK_MNGR_MENU_META_LIST : FALLBACK_USER_MENU_META_LIST;
 
 const normalizeMode = (mode?: string | null): MenuMode =>
   mode === "MNGR" ? "MNGR" : "USER";
@@ -105,6 +118,7 @@ const normalizeMode = (mode?: string | null): MenuMode =>
  */
 export const useMenuStore = defineStore("menu", () => {
   const menuList = ref<MenuDto[]>([]);
+  const menuMetaList = ref<MenuDto[]>([]);
   const mode = ref<MenuMode>(normalizeMode(localStorage.getItem(MENU_MODE_LS_KEY)));
   const loaded = ref(false);
 
@@ -117,6 +131,7 @@ export const useMenuStore = defineStore("menu", () => {
   function resetMenu() {
     mode.value = "USER";
     menuList.value = [];
+    menuMetaList.value = [];
     loaded.value = false;
     localStorage.setItem(MENU_MODE_LS_KEY, "USER");
   }
@@ -128,7 +143,7 @@ export const useMenuStore = defineStore("menu", () => {
   }
 
   /**
-   * 사용자 사이드바 메뉴를 서버에서 조회한다.
+   * 사용자 사이드바 메뉴와 화면 메타 메뉴를 서버에서 조회한다.
    * 이미 로드된 경우 재요청하지 않는다.
    */
   async function fetchUserMenu() {
@@ -136,14 +151,23 @@ export const useMenuStore = defineStore("menu", () => {
     const allowedMode = resolveAllowedMode();
     applyMode(allowedMode);
     try {
-      const { data } = await ApiService.query("/api/menus", {
-        params: { mode: allowedMode },
-      });
+      const [{ data }, metaResponse] = await Promise.all([
+        ApiService.query("/api/menus", {
+          params: { mode: allowedMode },
+        }),
+        ApiService.query("/api/menus", {
+          params: { mode: allowedMode, includeHidden: true },
+        }),
+      ]);
       // 변경: AjaxResponse 필드명 rsltList (기존 data.list 는 항상 undefined → fallback만 사용되던 결함)
       const list = Array.isArray(data.rsltList) ? data.rsltList : [];
       menuList.value = data.rslt && list.length > 0 ? list : fallbackMenus(allowedMode);
+      const metaData = metaResponse.data;
+      const metaList = Array.isArray(metaData.rsltList) ? metaData.rsltList : [];
+      menuMetaList.value = metaData.rslt && metaList.length > 0 ? metaList : fallbackMenuMeta(allowedMode);
     } catch (e) {
       menuList.value = fallbackMenus(allowedMode);
+      menuMetaList.value = fallbackMenuMeta(allowedMode);
       console.error("메뉴 로딩 실패", e);
     }
     loaded.value = true;
@@ -159,8 +183,9 @@ export const useMenuStore = defineStore("menu", () => {
     applyMode(resolveAllowedMode(nextMode));
     loaded.value = false;
     menuList.value = [];
+    menuMetaList.value = [];
     await fetchUserMenu();
   }
 
-  return { menuList, mode, loaded, fetchUserMenu, setMenuMode, refreshMenu, resetMenu };
+  return { menuList, menuMetaList, mode, loaded, fetchUserMenu, setMenuMode, refreshMenu, resetMenu };
 });
