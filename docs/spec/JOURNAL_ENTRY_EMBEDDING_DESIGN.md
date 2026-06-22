@@ -161,7 +161,18 @@ final_score =
 | --- | --- |
 | Endpoint | `GET /api/admin/journal-entry-embeddings/quality-eval` |
 | 권한 | `ROLE_MNGR` |
-| 전제 | Ollama 임베딩 API 가동 (`nomic-embed-text` 등) |
+| 전제 | Ollama 임베딩 API 가동 (`nomic-embed-text` 등). 실행 전 `GET /api/admin/ollama/health`로 선행 핑 |
+
+### Ollama health
+
+| 항목 | 값 |
+| --- | --- |
+| Endpoint | `GET /api/admin/ollama/health` |
+| 권한 | `ROLE_MNGR` |
+| 동작 | `GET /api/tags`로 연결·필수 모델(`qwen2.5:7b`, `nomic-embed-text`) 설치 여부만 확인. **자동 `ollama serve`는 하지 않음** |
+| `status` | `UP` (연결+모델 준비), `DEGRADED` (연결됐으나 모델 누락), `DOWN` (연결 불가) |
+
+Quality Eval 리포트에는 실측 시점 `ollamaHealth`가 포함됩니다. health가 `DOWN`/`DEGRADED`(임베딩 모델 미설치)이면 스위트는 실행하지 않고 `OLLAMA_UNAVAILABLE`과 구체적 `summary`를 반환합니다.
 
 ### 스위트
 
@@ -177,8 +188,8 @@ final_score =
 | --- | --- |
 | `KEEP_MODEL` | 고정 시드·코퍼스 샘플 기준 유지 가능 |
 | `REVIEW_MODEL` | 한국어 모델 교체(bge-m3 등) 검토 |
-| `OLLAMA_UNAVAILABLE` | Ollama 미가동으로 실측 불가 |
+| `OLLAMA_UNAVAILABLE` | Ollama 미가동·임베딩 모델 누락으로 실측 불가 (`ollamaHealth`·`summary` 참고) |
 
 리포트에는 `SKIPPED` row 사유 샘플(최대 20건)도 포함됩니다.
 
-Admin UI **AI Embedding Backfill** 섹션의 **Quality Eval** 버튼으로 동일 API를 호출합니다.
+Admin UI **AI Embedding Backfill** 섹션의 **Refresh** 시 Ollama 상태 배너를 함께 갱신하고, **Quality Eval** 버튼으로 동일 API를 호출합니다.

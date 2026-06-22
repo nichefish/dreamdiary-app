@@ -1,15 +1,19 @@
 package io.nicheblog.dreamdiary.feature.chat.client;
 
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
+import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * 로컬 Ollama 서버와 통신하는 채팅/임베딩 클라이언트입니다.
@@ -22,8 +26,11 @@ import java.util.Locale;
 @Log4j2
 public class OllamaClient {
 
-    private static final String OLLAMA_CHAT_URL = "http://localhost:11434/api/chat";
-    private static final String OLLAMA_EMBEDDING_URL = "http://localhost:11434/api/embeddings";
+    private static final String OLLAMA_BASE_URL = "http://localhost:11434";
+    private static final String OLLAMA_CHAT_URL = OLLAMA_BASE_URL + "/api/chat";
+    private static final String OLLAMA_EMBEDDING_URL = OLLAMA_BASE_URL + "/api/embeddings";
+    private static final String OLLAMA_TAGS_URL = OLLAMA_BASE_URL + "/api/tags";
+    private static final int INSTALLED_MODEL_SAMPLE_LIMIT = 12;
     private static final String CHAT_MODEL = "qwen2.5:7b";
     private static final String EMBEDDING_MODEL = "nomic-embed-text";
 
@@ -133,12 +140,123 @@ public class OllamaClient {
     }
 
     /**
+     * Ollama {@code /api/tags}로 런타임 가용성을 점검합니다.
+     *
+     * <p>자동 기동은 하지 않으며, 연결·필수 모델 설치 여부만 반환합니다.</p>
+     *
+     * @return Ollama health DTO
+     */
+    public OllamaHealthDto checkHealth() {
+        final long start = System.currentTimeMillis();
+        try {
+            final ResponseEntity<OllamaTagsResponse> response =
+                    restTemplate.getForEntity(OLLAMA_TAGS_URL, OllamaTagsResponse.class);
+            final OllamaTagsResponse body = response.getBody();
+            final List<String> installedModels = extractInstalledModelNames(body);
+            final boolean chatModelReady = hasInstalledModel(installedModels, CHAT_MODEL);
+            final boolean embeddingModelReady = hasInstalledModel(installedModels, EMBEDDING_MODEL);
+            final String status = resolveHealthStatus(true, chatModelReady, embeddingModelReady);
+            return OllamaHealthDto.builder()
+                    .status(status)
+                    .reachable(true)
+                    .baseUrl(OLLAMA_BASE_URL)
+                    .chatModelRequired(CHAT_MODEL)
+                    .embeddingModelRequired(EMBEDDING_MODEL)
+                    .chatModelReady(chatModelReady)
+                    .embeddingModelReady(embeddingModelReady)
+                    .installedModels(installedModels)
+                    .errorMessage(buildHealthWarningMessage(chatModelReady, embeddingModelReady))
+                    .latencyMs(System.currentTimeMillis() - start)
+                    .build();
+        } catch (final RestClientException exception) {
+            log.warn("Ollama health check failed. baseUrl={}, error={}", OLLAMA_BASE_URL, exception.getMessage());
+            return OllamaHealthDto.builder()
+                    .status("DOWN")
+                    .reachable(false)
+                    .baseUrl(OLLAMA_BASE_URL)
+                    .chatModelRequired(CHAT_MODEL)
+                    .embeddingModelRequired(EMBEDDING_MODEL)
+                    .chatModelReady(false)
+                    .embeddingModelReady(false)
+                    .installedModels(List.of())
+                    .errorMessage(StringUtils.abbreviate(StringUtils.defaultString(exception.getMessage()), 240))
+                    .latencyMs(System.currentTimeMillis() - start)
+                    .build();
+        }
+    }
+
+    /**
+     * 임베딩·품질 실측에 Ollama가 준비됐는지 확인합니다.
+     */
+    public boolean isReadyForEmbedding() {
+        final OllamaHealthDto health = checkHealth();
+        return health.isReachable() && health.isEmbeddingModelReady();
+    }
+
+    /**
      * 현재 임베딩 생성에 사용하는 Ollama 모델명을 반환합니다.
      *
      * @return 임베딩 모델명
      */
     public String getEmbeddingModel() {
         return EMBEDDING_MODEL;
+    }
+
+    /**
+     * 현재 chat에 사용하는 Ollama 모델명을 반환합니다.
+     */
+    public String getChatModel() {
+        return CHAT_MODEL;
+    }
+
+    /**
+     * Ollama base URL을 반환합니다.
+     */
+    public String getBaseUrl() {
+        return OLLAMA_BASE_URL;
+    }
+
+    private List<String> extractInstalledModelNames(final OllamaTagsResponse body) {
+        if (body == null || body.getModels() == null) return List.of();
+        return body.getModels().stream()
+                .map(OllamaTagsResponse.ModelSummary::getName)
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .limit(INSTALLED_MODEL_SAMPLE_LIMIT)
+                .collect(Collectors.toList());
+    }
+
+    private boolean hasInstalledModel(final List<String> installedModels, final String requiredModel) {
+        if (installedModels == null || installedModels.isEmpty() || StringUtils.isBlank(requiredModel)) {
+            return false;
+        }
+        return installedModels.stream().anyMatch(name -> modelNameMatches(name, requiredModel));
+    }
+
+    private boolean modelNameMatches(final String installedName, final String requiredModel) {
+        if (StringUtils.isBlank(installedName) || StringUtils.isBlank(requiredModel)) return false;
+        final String normalizedInstalled = StringUtils.trim(installedName);
+        final String normalizedRequired = StringUtils.trim(requiredModel);
+        if (StringUtils.equalsIgnoreCase(normalizedInstalled, normalizedRequired)) return true;
+        return StringUtils.startsWithIgnoreCase(normalizedInstalled, normalizedRequired + ":");
+    }
+
+    private String resolveHealthStatus(
+            final boolean reachable,
+            final boolean chatModelReady,
+            final boolean embeddingModelReady
+    ) {
+        if (!reachable) return "DOWN";
+        if (chatModelReady && embeddingModelReady) return "UP";
+        return "DEGRADED";
+    }
+
+    private String buildHealthWarningMessage(final boolean chatModelReady, final boolean embeddingModelReady) {
+        if (chatModelReady && embeddingModelReady) return null;
+        final List<String> missing = new ArrayList<>();
+        if (!chatModelReady) missing.add(CHAT_MODEL);
+        if (!embeddingModelReady) missing.add(EMBEDDING_MODEL);
+        return "missing models: " + String.join(", ", missing);
     }
 
     /**

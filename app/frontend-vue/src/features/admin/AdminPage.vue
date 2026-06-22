@@ -102,6 +102,29 @@
             </div>
           </div>
 
+          <div v-if="store.ollamaHealthError" class="alert alert-warning py-2">
+            {{ store.ollamaHealthError }}
+          </div>
+          <div v-else-if="store.ollamaHealth" class="admin-ollama-health mb-4">
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-1">
+              <span class="badge" :class="ollamaHealthBadgeClass">Ollama {{ store.ollamaHealth.status }}</span>
+              <span class="text-muted fs-8">{{ store.ollamaHealth.baseUrl }} · {{ store.ollamaHealth.latencyMs }}ms</span>
+            </div>
+            <div class="fs-8 text-muted">
+              Chat {{ store.ollamaHealth.chatModelRequired }}
+              <span :class="store.ollamaHealth.chatModelReady ? 'text-success' : 'text-warning'">
+                ({{ store.ollamaHealth.chatModelReady ? "ready" : "missing" }})
+              </span>
+              · Embed {{ store.ollamaHealth.embeddingModelRequired }}
+              <span :class="store.ollamaHealth.embeddingModelReady ? 'text-success' : 'text-warning'">
+                ({{ store.ollamaHealth.embeddingModelReady ? "ready" : "missing" }})
+              </span>
+            </div>
+            <div v-if="store.ollamaHealth.errorMessage" class="fs-8 text-warning mt-1">
+              {{ store.ollamaHealth.errorMessage }}
+            </div>
+          </div>
+
           <div v-if="store.embeddingQualityEvalError" class="alert alert-warning py-2">
             {{ store.embeddingQualityEvalError }}
           </div>
@@ -126,7 +149,10 @@
               </ul>
             </div>
             <div v-if="store.embeddingQualityEvalReport.skippedSamples.length" class="fs-8 text-muted">
-              SKIPPED samples: {{ store.embeddingQualityEvalReport.skippedSamples.map((s) => `#${s.journalEntryId}`).join(", ") }}
+              SKIPPED samples:
+              <span v-for="(sample, index) in store.embeddingQualityEvalReport.skippedSamples" :key="sample.journalEntryId ?? index">
+                <template v-if="index > 0">, </template>#{{ sample.journalEntryId }}<template v-if="sample.errorMessage"> ({{ sample.errorMessage }})</template>
+              </span>
             </div>
           </div>
 
@@ -366,6 +392,12 @@ let statsTimer: number | undefined;
 const BACKGROUND_SYNC_NOTE = "큐 등록 후 처리는 서버에서 백그라운드로 계속됩니다. 이 페이지를 떠나도 됩니다.";
 
 const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
+const ollamaHealthBadgeClass = computed(() => {
+  const status = store.ollamaHealth?.status ?? "DOWN";
+  if (status === "UP") return "badge-light-success";
+  if (status === "DEGRADED") return "badge-light-warning";
+  return "badge-light-danger";
+});
 const embeddingFailedRequeueDisabled = computed(
   () => store.embeddingRequeueRunning || store.embeddingStats.failed <= 0
 );

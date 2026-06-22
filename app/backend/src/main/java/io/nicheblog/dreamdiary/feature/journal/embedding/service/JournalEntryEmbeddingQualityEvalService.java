@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 
 import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingQualityEvalCaseDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingQualityEvalReportDto;
@@ -91,7 +92,25 @@ public class JournalEntryEmbeddingQualityEvalService {
         final Integer vectorDimension = resolveVectorDimension();
 
         final List<JournalEntryEmbeddingSkippedSampleDto> skippedSamples = loadSkippedSamples();
+        final OllamaHealthDto ollamaHealth = ollamaClient.checkHealth();
         final List<JournalEntryEmbeddingQualityEvalSuiteDto> suites = new ArrayList<>();
+
+        if (!isOllamaReadyForEval(ollamaHealth)) {
+            return JournalEntryEmbeddingQualityEvalReportDto.builder()
+                    .embeddingModel(ollamaClient.getEmbeddingModel())
+                    .embeddedCount(embeddedCount)
+                    .cachedVectorCount(cachedVectorCount)
+                    .vectorDimension(vectorDimension)
+                    .skippedCount(skippedCount)
+                    .skippedSamples(skippedSamples)
+                    .ollamaHealth(ollamaHealth)
+                    .suites(List.of())
+                    .overallPassed(false)
+                    .recommendation("OLLAMA_UNAVAILABLE")
+                    .summary(buildOllamaUnavailableSummary(ollamaHealth))
+                    .elapsedMs(System.currentTimeMillis() - start)
+                    .build();
+        }
 
         boolean ollamaAvailable = true;
         try {
@@ -100,12 +119,12 @@ public class JournalEntryEmbeddingQualityEvalService {
             suites.add(runCorpusSelfRankSuite());
         } catch (final OllamaEvalUnavailableException e) {
             ollamaAvailable = false;
-            log.warn("Embedding quality eval aborted: {}", e.getMessage());
+            log.warn("Embedding quality eval aborted after health passed: {}", e.getMessage());
         }
 
         final boolean overallPassed = ollamaAvailable && suites.stream().allMatch(JournalEntryEmbeddingQualityEvalSuiteDto::isSuitePassed);
         final String recommendation = resolveRecommendation(ollamaAvailable, suites);
-        final String summary = buildSummary(ollamaAvailable, overallPassed, suites, recommendation);
+        final String summary = buildSummary(ollamaAvailable, overallPassed, suites, recommendation, ollamaHealth);
 
         return JournalEntryEmbeddingQualityEvalReportDto.builder()
                 .embeddingModel(ollamaClient.getEmbeddingModel())
@@ -114,12 +133,32 @@ public class JournalEntryEmbeddingQualityEvalService {
                 .vectorDimension(vectorDimension)
                 .skippedCount(skippedCount)
                 .skippedSamples(skippedSamples)
+                .ollamaHealth(ollamaHealth)
                 .suites(suites)
                 .overallPassed(overallPassed)
                 .recommendation(recommendation)
                 .summary(summary)
                 .elapsedMs(System.currentTimeMillis() - start)
                 .build();
+    }
+
+    private boolean isOllamaReadyForEval(final OllamaHealthDto ollamaHealth) {
+        return ollamaHealth != null && ollamaHealth.isReachable() && ollamaHealth.isEmbeddingModelReady();
+    }
+
+    private String buildOllamaUnavailableSummary(final OllamaHealthDto ollamaHealth) {
+        if (ollamaHealth == null) {
+            return "Ollama 상태를 확인하지 못했습니다.";
+        }
+        if (!ollamaHealth.isReachable()) {
+            return "Ollama에 연결하지 못했습니다 (" + ollamaHealth.getBaseUrl() + "). "
+                    + StringUtils.defaultIfBlank(ollamaHealth.getErrorMessage(), "서버 프로세스와 같은 호스트에서 Ollama를 실행하세요.");
+        }
+        if (!ollamaHealth.isEmbeddingModelReady()) {
+            return "Ollama는 응답하지만 임베딩 모델 " + ollamaHealth.getEmbeddingModelRequired()
+                    + " 이(가) 없습니다. ollama pull " + ollamaHealth.getEmbeddingModelRequired() + " 후 다시 시도하세요.";
+        }
+        return "Ollama 임베딩 API를 사용할 수 없습니다.";
     }
 
     private JournalEntryEmbeddingQualityEvalSuiteDto runParaphraseSuite() {
@@ -378,10 +417,11 @@ public class JournalEntryEmbeddingQualityEvalService {
             final boolean ollamaAvailable,
             final boolean overallPassed,
             final List<JournalEntryEmbeddingQualityEvalSuiteDto> suites,
-            final String recommendation
+            final String recommendation,
+            final OllamaHealthDto ollamaHealth
     ) {
         if (!ollamaAvailable) {
-            return "Ollama 임베딩 API에 연결하지 못해 실측을 완료하지 못했습니다.";
+            return buildOllamaUnavailableSummary(ollamaHealth);
         }
         if (overallPassed) {
             return "고정 시드·코퍼스 샘플 기준 현재 모델(" + ollamaClient.getEmbeddingModel() + ") 유지 가능.";

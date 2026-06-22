@@ -140,6 +140,7 @@ Admin queue visibility is available through:
 - `POST /api/admin/journal-entry-embeddings/sync`
 - `POST /api/admin/journal-entry-embeddings/requeue-failed`
 - `GET /api/admin/journal-entry-embeddings/quality-eval` — 한국어 임베딩 품질 실측 (Ollama 필요). 상세: `JOURNAL_ENTRY_EMBEDDING_DESIGN.md` § 품질 실측
+- `GET /api/admin/ollama/health` — 로컬 Ollama 연결·필수 모델 점검 (자동 기동 없음). 상세: `JOURNAL_ENTRY_EMBEDDING_DESIGN.md` § Ollama health
 - `GET /api/admin/journal-entry-entities/stats`
 - `POST /api/admin/journal-entry-entities/sync`
 - `POST /api/admin/journal-entry-entities/requeue-failed`

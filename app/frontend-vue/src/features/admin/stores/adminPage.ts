@@ -10,6 +10,7 @@ import {
   normalizeEmbeddingQualityEvalReport,
   normalizeEntityQueueStats,
   normalizeEntityQueueSyncResult,
+  normalizeOllamaHealth,
   type AdminPageMeta,
   type CacheDetail,
   type CacheMap,
@@ -18,6 +19,7 @@ import {
   type EmbeddingQualityEvalReport,
   type EntityQueueStats,
   type EntityQueueSyncResult,
+  type OllamaHealth,
   type RoleRow,
 } from "@/features/admin/types/adminPage.types";
 
@@ -68,6 +70,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   const embeddingQualityEvalRunning = ref(false);
   const embeddingQualityEvalError = ref("");
   const embeddingQualityEvalReport = ref<EmbeddingQualityEvalReport | null>(null);
+  const ollamaHealth = ref<OllamaHealth | null>(null);
+  const ollamaHealthError = ref("");
   const entityQueueStats = ref<EntityQueueStats>(emptyEntityQueueStats());
   const entityQueueStatsLoading = ref(false);
   const entityQueueError = ref("");
@@ -129,13 +133,27 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     }
   }
 
+  async function fetchOllamaHealth() {
+    ollamaHealthError.value = "";
+    try {
+      const res = await axios.get("/api/admin/ollama/health");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Ollama health request failed");
+      ollamaHealth.value = normalizeOllamaHealth(res.data.rsltObj);
+    } catch (error) {
+      ollamaHealthError.value = error instanceof Error ? error.message : "Ollama health request failed";
+    }
+  }
+
   async function fetchEmbeddingStats() {
     embeddingStatsLoading.value = true;
     embeddingStatsError.value = "";
     try {
-      const res = await axios.get("/api/admin/journal-entry-embeddings/stats");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding stats request failed");
-      embeddingStats.value = normalizeEmbeddingStats(res.data.rsltObj);
+      const [statsRes] = await Promise.all([
+        axios.get("/api/admin/journal-entry-embeddings/stats"),
+        fetchOllamaHealth(),
+      ]);
+      if (!statsRes.data?.rslt) throw new Error(statsRes.data?.message ?? "Embedding stats request failed");
+      embeddingStats.value = normalizeEmbeddingStats(statsRes.data.rsltObj);
       embeddingSyncResult.value = embeddingStats.value.syncResult;
     } catch (error) {
       embeddingStatsError.value = error instanceof Error ? error.message : "Embedding stats request failed";
@@ -323,6 +341,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingQualityEvalRunning,
     embeddingQualityEvalError,
     embeddingQualityEvalReport,
+    ollamaHealth,
+    ollamaHealthError,
     entityQueueStats,
     entityQueueStatsLoading,
     entityQueueError,
@@ -336,6 +356,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     yearOptions,
     fetchBootstrap,
     fetchEmbeddingStats,
+    fetchOllamaHealth,
     syncEmbeddingQueue,
     requeueFailedEmbeddingQueue,
     runEmbeddingQualityEval,

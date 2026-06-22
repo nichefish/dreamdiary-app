@@ -67,6 +67,40 @@ export interface EmbeddingSyncJobStatus {
   errorMessage: string;
 }
 
+/** Admin Ollama runtime health */
+export interface OllamaHealth {
+  status: string;
+  reachable: boolean;
+  baseUrl: string;
+  chatModelRequired: string;
+  embeddingModelRequired: string;
+  chatModelReady: boolean;
+  embeddingModelReady: boolean;
+  installedModels: string[];
+  errorMessage: string | null;
+  latencyMs: number;
+}
+
+export function normalizeOllamaHealth(
+  health: Partial<OllamaHealth> | null | undefined
+): OllamaHealth | null {
+  if (health == null) return null;
+  return {
+    status: String(health.status ?? "DOWN"),
+    reachable: Boolean(health.reachable),
+    baseUrl: String(health.baseUrl ?? ""),
+    chatModelRequired: String(health.chatModelRequired ?? ""),
+    embeddingModelRequired: String(health.embeddingModelRequired ?? ""),
+    chatModelReady: Boolean(health.chatModelReady),
+    embeddingModelReady: Boolean(health.embeddingModelReady),
+    installedModels: Array.isArray(health.installedModels)
+      ? health.installedModels.map((name) => String(name ?? ""))
+      : [],
+    errorMessage: health.errorMessage == null ? null : String(health.errorMessage),
+    latencyMs: Number(health.latencyMs ?? 0),
+  };
+}
+
 /** Admin embedding quality eval — single case row */
 export interface EmbeddingQualityEvalCase {
   caseId: string;
@@ -103,6 +137,7 @@ export interface EmbeddingQualityEvalReport {
   vectorDimension: number | null;
   skippedCount: number;
   skippedSamples: EmbeddingSkippedSample[];
+  ollamaHealth: OllamaHealth | null;
   suites: EmbeddingQualityEvalSuite[];
   overallPassed: boolean;
   recommendation: string;
@@ -125,6 +160,7 @@ export function normalizeEmbeddingQualityEvalReport(
           errorMessage: sample?.errorMessage == null ? null : String(sample.errorMessage),
         }))
       : [],
+    ollamaHealth: normalizeOllamaHealth(report?.ollamaHealth as Partial<OllamaHealth> | null | undefined),
     suites: Array.isArray(report?.suites)
       ? report!.suites.map((suite) => ({
           code: String(suite?.code ?? ""),

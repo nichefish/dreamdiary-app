@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 
 import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingQualityEvalReportDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingQualityEvalSuiteDto;
@@ -41,6 +42,7 @@ class JournalEntryEmbeddingQualityEvalServiceTest {
     void setUp() {
         service = new JournalEntryEmbeddingQualityEvalService(repository, searchService, ollamaClient);
         when(ollamaClient.getEmbeddingModel()).thenReturn("nomic-embed-text");
+        when(ollamaClient.checkHealth()).thenReturn(healthyOllamaHealth());
         when(repository.countByEmbeddingStatus("EMBEDDED")).thenReturn(100L);
         when(repository.countByEmbeddingStatus("SKIPPED")).thenReturn(1L);
         when(repository.findAllByEmbeddingStatus("SKIPPED")).thenReturn(List.of(
@@ -114,13 +116,39 @@ class JournalEntryEmbeddingQualityEvalServiceTest {
      */
     @Test
     void runEval_shouldReportOllamaUnavailable() {
-        when(ollamaClient.embed(anyString())).thenThrow(new IllegalStateException("connection refused"));
-        when(searchService.sampleCachedJournalEntryIds(12)).thenReturn(List.of());
+        when(ollamaClient.checkHealth()).thenReturn(OllamaHealthDto.builder()
+                .status("DOWN")
+                .reachable(false)
+                .baseUrl("http://localhost:11434")
+                .chatModelRequired("qwen2.5:7b")
+                .embeddingModelRequired("nomic-embed-text")
+                .chatModelReady(false)
+                .embeddingModelReady(false)
+                .installedModels(List.of())
+                .errorMessage("connection refused")
+                .latencyMs(6L)
+                .build());
 
         final JournalEntryEmbeddingQualityEvalReportDto report = service.runEval();
 
         assertFalse(report.isOverallPassed());
         assertEquals("OLLAMA_UNAVAILABLE", report.getRecommendation());
         assertTrue(report.getSuites().isEmpty());
+        assertFalse(report.getOllamaHealth().isReachable());
+        assertTrue(report.getSummary().contains("연결"));
+    }
+
+    private static OllamaHealthDto healthyOllamaHealth() {
+        return OllamaHealthDto.builder()
+                .status("UP")
+                .reachable(true)
+                .baseUrl("http://localhost:11434")
+                .chatModelRequired("qwen2.5:7b")
+                .embeddingModelRequired("nomic-embed-text")
+                .chatModelReady(true)
+                .embeddingModelReady(true)
+                .installedModels(List.of("nomic-embed-text:latest", "qwen2.5:7b"))
+                .latencyMs(3L)
+                .build();
     }
 }
