@@ -111,6 +111,47 @@
         </button>
       </div>
       <!--end::키워드 입력-->
+      <!--begin::태그 입력-->
+      <div class="d-flex align-items-center gap-2 mt-3">
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">태그</span>
+        <input
+          v-model="tagInput"
+          type="text"
+          class="form-control form-control-sm journal-entry-search-input"
+          placeholder="태그를 선택하세요"
+          maxlength="100"
+          list="journal-entry-search-tag-options"
+          autocomplete="off"
+          @focus="ensureTagSelectorData()"
+          @keydown.enter.prevent="addTagFromInput"
+        />
+        <datalist id="journal-entry-search-tag-options">
+          <option
+            v-for="tagName in tagNameOptions"
+            :key="tagName"
+            :value="tagName"
+          />
+        </datalist>
+        <button type="button" class="btn btn-sm btn-light-primary w-100px" @click="addTagFromInput">
+          + 추가
+        </button>
+      </div>
+      <div v-if="tagCategoryChoices.length > 0" class="d-flex align-items-center gap-2 mt-2" style="padding-left: 60px;">
+        <span class="text-muted fs-8">카테고리 선택</span>
+        <button
+          v-for="ctgr in tagCategoryChoices"
+          :key="ctgr"
+          type="button"
+          class="btn btn-xs btn-light-primary"
+          @click="selectTagCategory(ctgr)"
+        >
+          {{ ctgr || "미분류" }}
+        </button>
+        <button type="button" class="btn btn-xs btn-light-secondary" @click="cancelTagCategoryChoice">
+          취소
+        </button>
+      </div>
+      <!--end::태그 입력-->
     </div>
     <!--end::고급 필터 아코디언-->
 
@@ -179,7 +220,7 @@
  * JournalEntryItem 을 그대로 사용해 저널 일자 목록과 동일한 UI·컨텍스트 메뉴 제공.
  * 레거시 journal_entry_search_module.ts 의 멀티키워드·멀티태그 AND 검색을 Vue SPA 로 재현.
  */
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -212,6 +253,7 @@ interface SearchTagDto {
   id?: number | string;
   tagId?: number | string;
   name?: string;
+  ctgr?: string;
 }
 
 const route = useRoute();
@@ -221,6 +263,12 @@ const journalStore = useJournalStore();
 const entries = ref<JournalEntryDto[]>([]);
 const loading = ref(false);
 const keywordInput = ref("");
+const tagInput = ref("");
+const tagCategoryMap = ref<Record<string, string[]>>({});
+const tagCatalog = ref<SearchTagDto[]>([]);
+const tagSelectorLoadedType = ref("");
+const pendingTagName = ref("");
+const tagCategoryChoices = ref<string[]>([]);
 const showAdvanced = ref(false);
 
 const type = ref("DIARY");
@@ -232,6 +280,8 @@ const searchKeywords = ref<string[]>([]);
 const tagLabelMap = ref<Record<string, string>>({});
 
 const resultLabel = ref("0건");
+
+const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
 
 /** route query 를 파싱해 로컬 ref 에 반영한다. */
 function syncFromRoute(): void {
@@ -294,6 +344,108 @@ async function hydrateMissingTagNames(): Promise<void> {
   } catch {
     // 태그명 표시에 실패해도 tagIds 검색 자체는 유지한다.
   }
+}
+
+async function ensureTagSelectorData(): Promise<void> {
+  const requestedType = type.value;
+  if (tagSelectorLoadedType.value === requestedType) return;
+
+  try {
+    const [categoryRes, tagRes] = await Promise.all([
+      axios.get("/api/journal/entry/tag/categories", { params: { type: requestedType } }),
+      axios.get("/api/journal/entry/tags", { params: { type: requestedType } }),
+    ]);
+    if (requestedType !== type.value) return;
+    tagCatalog.value = (tagRes.data?.rsltList ?? []) as SearchTagDto[];
+    tagCategoryMap.value = mergeCatalogIntoCategoryMap(
+      normalizeCategoryMap(categoryRes.data?.rsltMap ?? categoryRes.data?.rsltObj),
+      tagCatalog.value,
+    );
+    tagCatalog.value.forEach((tag) => cacheTagName(tag.id ?? tag.tagId, tag.name));
+    tagSelectorLoadedType.value = requestedType;
+  } catch {
+    console.warn("[JournalEntrySearchPage] tag selector data load failed.", { type: requestedType });
+  }
+}
+
+function mergeCatalogIntoCategoryMap(baseMap: Record<string, string[]>, catalog: SearchTagDto[]): Record<string, string[]> {
+  const next: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(baseMap)) {
+    next[tagName] = [...categories];
+  }
+  catalog.forEach((tag) => {
+    const name = String(tag.name ?? "").trim();
+    if (!name) return;
+    const ctgr = String(tag.ctgr ?? "");
+    const categories = next[name] ? [...next[name]] : [];
+    if (!categories.includes(ctgr)) categories.push(ctgr);
+    next[name] = categories;
+  });
+  return next;
+}
+
+function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const out: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
+    if (!Array.isArray(categories)) continue;
+    out[tagName] = categories.map((c) => String(c ?? "")).filter((c) => c.length > 0);
+  }
+  return out;
+}
+
+function normalizeTagName(raw: string): string {
+  return raw.trim().replace(/\s+/g, "_");
+}
+
+function findKnownTagName(input: string): string {
+  const normalized = normalizeTagName(input);
+  if (tagCategoryMap.value[normalized]) return normalized;
+  return tagNameOptions.value.find((name) => name.toLowerCase() === normalized.toLowerCase()) ?? normalized;
+}
+
+async function addTagFromInput(): Promise<void> {
+  await ensureTagSelectorData();
+  const tagName = findKnownTagName(tagInput.value);
+  const categories = tagCategoryMap.value[tagName] ?? [];
+  if (!tagName || categories.length === 0) {
+    void swalAlert("기존 태그에서 선택하세요.");
+    return;
+  }
+  if (categories.length === 1) {
+    addTagByNameAndCategory(tagName, categories[0]);
+    return;
+  }
+  pendingTagName.value = tagName;
+  tagCategoryChoices.value = categories;
+}
+
+function selectTagCategory(ctgr: string): void {
+  addTagByNameAndCategory(pendingTagName.value, ctgr);
+}
+
+function cancelTagCategoryChoice(): void {
+  pendingTagName.value = "";
+  tagCategoryChoices.value = [];
+}
+
+function addTagByNameAndCategory(tagName: string, ctgr: string): void {
+  const matchedTag = tagCatalog.value.find((tag) =>
+    String(tag.name ?? "") === tagName && String(tag.ctgr ?? "") === ctgr
+  );
+  const tagId = matchedTag?.id ?? matchedTag?.tagId;
+  if (tagId === undefined || tagId === null) {
+    console.warn("[JournalEntrySearchPage] selected tag id not found.", { tagName, ctgr });
+    void swalAlert("선택한 태그 정보를 찾을 수 없습니다.");
+    return;
+  }
+
+  const nextTagId = String(tagId);
+  cacheTagName(nextTagId, tagName);
+  tagInput.value = "";
+  cancelTagCategoryChoice();
+  if (tagIds.value.includes(nextTagId)) return;
+  pushQuery({ tagIds: [...tagIds.value, nextTagId] });
 }
 
 async function fetchEntryDetail(entryId: number | string): Promise<JournalEntryDto | null> {
@@ -387,6 +539,8 @@ function toggleSort(): void {
 
 /** 유형 변경 (키워드·태그 유지) */
 function changeType(newType: string): void {
+  tagInput.value = "";
+  cancelTagCategoryChoice();
   pushQuery({ type: newType });
 }
 

@@ -307,8 +307,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **검색 액션**:
 - `JOURNAL_DAY`: `journalModalStore.openDayFilterModal({ type: 'tag', id: tagId, name, ctgr })` 으로 일자 필터 모달(메타+태그 통합) 오픈
-- `JOURNAL_DIARY`: 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds={tagId}&tagName={name}`
-- `JOURNAL_DREAM`: 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds={tagId}&tagName={name}`
+- `JOURNAL_DIARY`: 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds={tagId}`
+- `JOURNAL_DREAM`: 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds={tagId}`
 - 단, 현재 route가 `journal-entry-search`인 검색 팝업 내부에서는 새 창을 다시 열지 않고 같은 창의 query를 `router.replace(...)`로 갱신한다. 검색 페이지는 `route.fullPath` watch로 즉시 재조회한다.
 - 검색 팝업 외부에서 새 창을 열기 전에는 `assertAuthenticatedBeforePopup(router, route)` 로 현재 세션을 확인한다. 세션이 풀렸으면 새 창을 열지 않고 현재 화면에서 로그인 복귀 안내를 표시한다.
 
@@ -511,15 +511,15 @@ async function copyChapter(): Promise<void> {
 
 **컨트롤 바 (1행)**: 고급 필터 토글 | 초기화 | 정렬 토글(asc/desc) | 검색 || 전체 복사 | TXT 내보내기 | 키워드 배지들 | 태그 배지들 | 결과 건수
 
-**고급 필터 아코디언**: 유형 토글(일기/꿈) + 키워드 입력 + 추가 버튼. `v-show` 로 토글.
+**고급 필터 아코디언**: 유형 토글(일기/꿈) + 키워드 입력 + 추가 버튼 + 태그 입력 + 추가 버튼. `v-show` 로 토글.
 
 **멀티키워드 AND 검색**: 키워드는 `searchKeywords[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 키워드 제거 후 URL replace → 자동 재조회.
 
-**멀티태그 AND 검색**: 태그는 `tagIds[]` + `tagNames[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 태그 제거. `tagNames[]` 은 기존 단일 `tagName` 파라미터와 하위호환.
+**멀티태그 AND 검색**: 태그는 `tagIds[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 태그 제거. 팝업 고급 필터에서 태그를 직접 입력할 때는 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 조회해 자동완성 후보를 제공하고, 태그명+카테고리로 특정 태그 ID를 확정한 뒤 `tagIds[]`에 추가한다. 같은 이름에 여러 카테고리가 있으면 카테고리 선택 버튼을 먼저 표시한다.
 
 **태그 컨텍스트 메뉴에서 태그 추가** (`JournalTagContextMenu.vue`):
-- 팝업 외부: 새 창 열기 (`tagIds`, `tagNames` 파라미터)
-- 팝업 내부 (`route.name === "journal-entry-search"`): 기존 `tagIds`/`tagNames` 배열에 APPEND (중복 무시) → `router.replace()`
+- 팝업 외부: 새 창 열기 (`tagIds` 파라미터)
+- 팝업 내부 (`route.name === "journal-entry-search"`): 기존 `tagIds` 배열에 APPEND (중복 무시) → `router.replace()`
 
 **TXT 내보내기**: `GET /api/journal/entries/export?type=...&sort=...&tagIds=...&searchKeywords=...`
 
