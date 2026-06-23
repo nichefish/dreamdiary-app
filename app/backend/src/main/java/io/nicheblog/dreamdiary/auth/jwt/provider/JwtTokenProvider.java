@@ -94,7 +94,7 @@ public class JwtTokenProvider {
      *
      * @param username 사용자 계정명
      * @param roles 권한
-     * @return {@link String} -- ?앹꽦??JWT ?좏겙 臾몄옄??
+     * @return {@link String} -- 생성된 JWT 토큰 문자열
      */
     public String createAccessToken(final String username, final List<String> roles) {
         final Claims claims = Jwts.claims().setSubject(username);
