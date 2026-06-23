@@ -64,6 +64,7 @@ public class UserService
     private final AuthPolicyQueryService authPolicyQueryService;
     private final AuthProperties authProperties;
     private final PasswordEncoder passwordEncoder;
+    private final UserPasswordHistoryService userPasswordHistoryService;
     private final RoleRepository roleRepository;
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -165,12 +166,14 @@ public class UserService
         if (StringUtils.isBlank(initialAdminPassword)) {
             throw new IllegalStateException("msg.user.pw.init-temp-pw.not-set");
         }
+        final String previousPasswordHash = retrievedEntity.getPassword();
         retrievedEntity.setPassword(passwordEncoder.encode(initialAdminPassword));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
         retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
+        userPasswordHistoryService.recordPasswordChange(updatedEntity, previousPasswordHash);
 
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getId() != null)

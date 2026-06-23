@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS auth_policy (
     account_lock_duration_minutes INT COMMENT '계정 잠금 지속 시간(분)',
     session_timeout_minutes INT COMMENT '사용자 체감 로그인 유지 시간(분)',
     password_change_cycle_days INT COMMENT '패스워드 변경 주기(일)',
+    password_history_count INT DEFAULT 2 COMMENT '최근 비밀번호 재사용 제한 개수',
     inactive_lock_days INT COMMENT '미로그인 시 잠금 일수',
     password_reset_token_expiry_minutes INT COMMENT '비밀번호 재설정 토큰 만료 시간(분)',
     duplicate_login_allowed_yn CHAR(1) DEFAULT 'N' COMMENT 'Duplicate login allowed Y/N',
@@ -123,6 +124,15 @@ CREATE TABLE IF NOT EXISTS auth_policy (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '인증 정책';
+
+CREATE TABLE IF NOT EXISTS user_password_history (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 비밀번호 이력 ID',
+    user_id INT NOT NULL COMMENT '사용자 고유 ID',
+    password_hash VARCHAR(64) NOT NULL COMMENT '이전 비밀번호 해시',
+    changed_at DATETIME NOT NULL COMMENT '비밀번호 변경 일시',
+    FOREIGN KEY(user_id) REFERENCES user (id),
+    INDEX idx_user_password_history_user_changed_at (user_id, changed_at)
+) COMMENT = '사용자 비밀번호 이력';
 
 -- -----------------------
 

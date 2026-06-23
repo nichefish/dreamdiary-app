@@ -45,7 +45,7 @@
                 v-model.number="form[field.key]"
                 type="number"
                 class="form-control form-control-solid text-end"
-                :min="1"
+                :min="field.min ?? 1"
                 :max="field.max"
                 required
               />
@@ -80,6 +80,7 @@ interface FieldDef {
   label: string;
   notice: string;
   unit: string;
+  min?: number;
   max: number;
 }
 
@@ -94,6 +95,7 @@ const form = reactive<AuthPolicy>({
   accountLockDurationMinutes: null,
   sessionTimeoutMinutes: null,
   passwordChangeCycleDays: null,
+  passwordHistoryCount: null,
   passwordResetTokenExpiryMinutes: null,
 });
 
@@ -125,6 +127,14 @@ const fields: FieldDef[] = [
     notice: "비밀번호 변경 경고 또는 변경 유도 기준이 되는 일수입니다.",
     unit: "일",
     max: 365,
+  },
+  {
+    key: "passwordHistoryCount",
+    label: "비밀번호 이력 제한",
+    notice: "최근 N개 비밀번호 재사용을 막습니다. 0이면 검사하지 않습니다.",
+    unit: "개",
+    min: 0,
+    max: 24,
   },
   {
     key: "accountLockDurationMinutes",
@@ -168,8 +178,9 @@ watch(
 function validate(): boolean {
   for (const field of fields) {
     const value = form[field.key];
-    if (value == null || Number.isNaN(Number(value)) || Number(value) < 1 || Number(value) > field.max) {
-      void swalAlert(`${field.label} 값은 1부터 ${field.max} 사이여야 합니다.`);
+    const min = field.min ?? 1;
+    if (value == null || Number.isNaN(Number(value)) || Number(value) < min || Number(value) > field.max) {
+      void swalAlert(`${field.label} 값은 ${min}부터 ${field.max} 사이여야 합니다.`);
       return false;
     }
   }

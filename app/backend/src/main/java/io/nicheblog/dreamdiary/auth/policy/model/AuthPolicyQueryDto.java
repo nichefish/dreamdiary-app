@@ -41,6 +41,9 @@ public class AuthPolicyQueryDto
     /** 비밀번호 변경 주기(일) */
     private Integer passwordChangeCycleDays;
 
+    /** Password history reuse limit count */
+    private Integer passwordHistoryCount;
+
     /** 미로그인 시 잠금 일수 */
     private Integer inactiveLockDays;
 
