@@ -80,9 +80,9 @@ public class ChatAIService {
             "DYNAMICS", "\uC5ED\uB3D9",
             "INTERACTION", "\uC0C1\uD638\uC791\uC6A9"
     );
-    /** ?몃Ъ focus ?좏겙 理쒖냼 湲몄씠 */
+    /** person focus 토큰 최소 길이 */
     private static final int PERSON_FOCUS_MIN_TOKEN_LENGTH = 2;
-    /** ?몃Ъ ?의? 吏덈Ц ?먯꽌 person focus瑜? ?명똿?섎뒗 臾몄옣 ?ы듃 */
+    /** person-meaning 질문에서 person focus를 감지하는 문장 힌트 */
     private static final String[] PERSON_FOCUS_HINTS = {
             "\uB0B4 \uAE30\uB85D", "\uAE30\uB85D\uC5D0\uC11C",
             "\uC5B4\uB5A4 \uC758\uBBF8", "\uBB34\uC2A8 \uC758\uBBF8",
@@ -92,7 +92,7 @@ public class ChatAIService {
             "\uC5B4\uB5BB\uAC8C \uC0DD\uAC01", "\uC0DD\uAC01\uD558\uACE0",
             "\uC5B4\uB5A4 \uAC10\uC815", "\uC5B4\uB5A4 \uB9C8\uC74C", "\uC5B4\uB5A4 \uB290\uB08C"
     };
-    /** person focus ?좏겙 異붿텧 ???쒖쇅??遺덉슜??*/
+    /** person focus 토큰 추출 시 제외할 불용어 */
     private static final Set<String> PERSON_FOCUS_STOPWORDS = Set.of(
             "\uB098\uB294", "\uB108\uB294", "\uB0B4", "\uB098", "\uAE30\uB85D",
             "dreamdiary", "Dreamdiary", "AI",
@@ -669,7 +669,7 @@ public class ChatAIService {
     }
 
     /**
-     * ?몃Ъ ?섎? 吏덈Ц?먯꽌 吏곸젒 ?몃?瑜?援щ텇?섎뒗 source瑜? ?곗꽑 ?댁꽍?섍쾶 蹂댁“ 釉붾줉??異붽??⑸땲??.
+     * person-meaning 질문에서 직접 인물 단서를 구분하는 보조 블록을 추가합니다.
      */
     private void appendPersonFocusBlock(
             final StringBuilder sb,
@@ -1096,7 +1096,7 @@ public class ChatAIService {
     }
 
     /**
-     * ?듭꽠 ?몃Ъ 吏덈Ц?댁? ?ㅼ떤 source?먯꽌 諛섎났?섎뒗 ?먮쫫 異?瑜?鍮좎묬?섏빞 ?섎뒗 寃쎌슦 person focus瑜?援ъ꽦?⑸땲??.
+     * 통섭 인물 질문에서 여러 source에 반복되는 인물 축을 좁혀야 할 때 person focus를 구성합니다.
      */
     private PersonFocus resolvePersonFocus(
             final String queryText,
@@ -1123,7 +1123,7 @@ public class ChatAIService {
     }
 
     /**
-     * query媛 person-centric synthesis吏덈Ц?몄? ?뺤씤?⑸땲??.
+     * query가 person-centric synthesis 질문인지 확인합니다.
      */
     private boolean isPersonMeaningQuery(final String queryText) {
         final String text = StringUtils.defaultString(queryText);
@@ -1152,7 +1152,7 @@ public class ChatAIService {
     }
 
     /**
-     * person focus 濡? 留먰쓣 留? token ??異붿텧?⑸땲??.
+     * person focus로 삼을 후보 token을 추출합니다.
      */
     private List<String> extractPersonFocusTokens(final String queryText) {
         final String normalized = StringUtils.defaultString(queryText).replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]+", " ");
@@ -1218,7 +1218,7 @@ public class ChatAIService {
     }
 
     /**
-     * person focus 媛 ?곸꽦?섏씠 source瑜? ?곗꽑 ?몃Ъ 洹쇨굅濡? ?좎젹?⑸땲??.
+     * person focus 관련성이 높은 source를 우선 근거로 쓰도록 정렬합니다.
      */
     private List<RagSearchResult> prioritizeResultsForPersonFocus(
             final List<RagSearchResult> results,
@@ -1254,7 +1254,7 @@ public class ChatAIService {
     }
 
     /**
-     * source媛 person focus ?좏겙???ы븿?섎뒗吏 ?뺤씤?⑸땲??.
+     * source가 person focus 토큰을 포함하는지 확인합니다.
      */
     private boolean mentionsPersonFocus(final RagSearchResult result, final PersonFocus personFocus) {
         if (personFocus == null) return false;
@@ -1273,7 +1273,7 @@ public class ChatAIService {
     }
 
     /**
-     * source ?띿뒪?몄? person token???ы븿?섎뒗吏 ?뺤씤?⑸땲??.
+     * source 텍스트가 person token을 포함하는지 확인합니다.
      */
     private boolean mentionsPersonTokens(final RagSearchResult result, final List<String> tokens) {
         if (result == null || result.getEntity() == null || tokens == null || tokens.isEmpty()) return false;
@@ -1289,7 +1289,7 @@ public class ChatAIService {
     }
 
     /**
-     * KEYWORD 留ㅼ묶 source?먯꽌 person token?댁? 紐낆떆?곸쑝濡?踰킮???섎뒗吏 移댁슫?⑸땲??.
+     * KEYWORD 매칭 source에서 person token이 직접 매칭되는 횟수를 계산합니다.
      */
     private Integer countDirectPersonTokenMatches(final RagSearchResult result, final PersonFocus personFocus) {
         if (result == null || personFocus == null || result.getMatchedTokens() == null) return 0;
@@ -1304,7 +1304,7 @@ public class ChatAIService {
     }
 
     /**
-     * person focus source 留ㅼ묶??蹂댁“ ?띿뒪?몃? ?섏쓽濡?紐⑥쑝?덈떎.
+     * person focus source 매칭에 사용할 보조 텍스트를 수집합니다.
      */
     private String buildPersonFocusSourceText(final RagSearchResult result) {
         if (result == null || result.getEntity() == null) return "";
@@ -1323,7 +1323,7 @@ public class ChatAIService {
     }
 
     /**
-     * source ?띿뒪?몃? person focus 寃???⑹슜鐏??쇰줈 異붽??⑸땲??.
+     * source 텍스트를 person focus 검색용 문자열에 추가합니다.
      */
     private void appendSourcePart(final StringBuilder sb, final Object value) {
         final String text = StringUtils.defaultString(value == null ? null : String.valueOf(value));
@@ -1333,14 +1333,14 @@ public class ChatAIService {
     }
 
     /**
-     * ?몃Ъ ?좏겙??濡쒓렇/湲곕줉 ?띿뒪?몃줈?쒕룄 ?뺤씤 媛?ν븳 由ы꽣?쒕? ?뺤씤?⑸땲??.
+     * person 토큰이 로그/기록 텍스트에서도 확인 가능한 리터럴인지 확인합니다.
      */
     private boolean containsReadablePersonToken(final String token) {
         return token.matches(".*[\\p{IsAlphabetic}\\p{IsDigit}].*");
     }
 
     /**
-     * ?ㅼ쭊 議곗궗瑜?諛쒓껄???쒗꽍 ?몃?濡??깅???먯쓽 ?좏겙?쇰줈 媛볥?섏떎.
+     * 흔한 조사를 제거해 해석 대상 이름의 토큰으로 정규화합니다.
      */
     private String stripTrailingJosa(final String token) {
         if (StringUtils.length(token) < PERSON_FOCUS_MIN_TOKEN_LENGTH) return token;
@@ -2892,7 +2892,7 @@ public class ChatAIService {
     }
 
     /**
-     * ?몃Ъ ?의? 吏덈Ц?먯꽌 ?곗꽑 source瑜? ?뺣젹?섎뒗 ?ㅼ썙??留ㅼ묶 ?뺣낫.
+     * person-meaning 질문에서 우선 source를 정렬하는 데 쓰는 키워드 매칭 정보.
      */
     private record PersonFocus(
             String primaryToken,

@@ -7,18 +7,18 @@
                             http://www.ehcache.org/schema/ehcache-107-ext-3.7.xsd">
 
     <cache-template name="defaultTemplate">
-        <!-- 罹먯떆 留뚮즺湲곌컙 ?ㅼ젙 -->
+        <!-- 캐시 만료기간 설정 -->
         <expiry>
             <!-- unit : nanos, micros, millis, seconds, minutes, hours, days -->
             <ttl unit="days">1</ttl>
         </expiry>
         <resources>
-            <!-- 罹먯떆??理쒕? 紐?媛쒓퉴吏 ??ν븷吏 ?ㅼ젙 -->
+            <!-- 캐시에 최대 몇 개까지 저장할지 설정 -->
             <heap unit="entries">9999</heap>
         </resources>
     </cache-template>
 
-    <!-- alias??@Cacheable(value = "codes", key="#codeGrp")?먯꽌 value 媛믪쑝濡??ъ슜 -->
+    <!-- alias는 @Cacheable(value = "codes", key="#codeGrp")에서 value 값으로 사용 -->
 
     <cache alias="defaultCache">
         <expiry>

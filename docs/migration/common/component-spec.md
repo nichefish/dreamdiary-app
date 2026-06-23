@@ -36,6 +36,7 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 | 스레드 목록 행 | `JournalThreadList.vue` 인라인 | 동일 | `useJournalThreadStore` |
 | 페이지네이션 | 목록 Vue 인라인 + `shared/utils/paginationDataService.ts` | `Pagination` / `_pagination.ftlh` | 서버 JSON script 태그 호환 유틸만 존재, `Pagination.vue` 없음 |
 | 페이지 breadcrumb | `app/layouts/default/components/content/PageBreadcrumb.vue` | 레거시 메뉴 경로 표시 | `useMenuStore.menuMetaList` + `toVuePath(menu.url)` 기준 현재 route와 매칭되는 메뉴 트리를 표시. `menuMetaList`가 비어 있으면 로딩 전 fallback으로 `menuList`를 사용한다. 매칭된 메뉴의 `menuDescription`이 있으면 breadcrumb 하단에 설명을 표시하고, 비어 있으면 설명 영역을 렌더링하지 않는다. `route.meta.breadcrumbs/pageTitle`를 표시 원천으로 쓰지 않는다. |
+| Footer | `app/layouts/default/components/footer/Footer.vue` | 레거시 footer | `2024©` tooltip은 프로젝트 기간(`2024.03.20 ~ (진행중)`), 사이트 링크 tooltip은 작업인원(`nysnyari`)을 표시한다. |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
 | 앱 런타임 상태 | `shared/components/system/AppRuntimeStatus.vue` + `shared/utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
 

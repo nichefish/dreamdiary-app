@@ -10,7 +10,7 @@
           data-bs-toggle="tooltip"
           data-bs-placement="top"
           data-bs-dismiss="click"
-          title="?�로?�트 기간: &#10;2024.03.20 ~ (진행�?"
+          title="프로젝트 기간: &#10;2024.03.20 ~ (진행중)"
         >2024©</span>
         <a
           href="/"
@@ -18,7 +18,7 @@
           data-bs-toggle="tooltip"
           data-bs-placement="top"
           data-bs-dismiss="click"
-          title="?�업?�원: &#10;nysnyari"
+          title="작업인원: &#10;nysnyari"
         >dreamdiary.nicheblog.io</a>
       </div>
       <!--end::Copyright-->
