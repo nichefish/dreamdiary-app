@@ -35,6 +35,7 @@
 - 로그인 실패 응답이 `isDupIdLogin`이면 중복 로그인 확인 다이얼로그 표시 후 확인 시 재로그인, 취소 시 `/api/auth/expire-session` 호출
 - 로그인 실패 응답이 `isCredentialExpired` 또는 `needsPasswordReset`이면 로그인 비밀번호 변경 모달 오픈
 - 로그인 비밀번호 변경 모달 저장 → `POST /api/auth/login-pw-chg`
+- 로그인 비밀번호 변경은 `auth_policy.password_history_count` 기준으로 현재 비밀번호와 최근 이력 재사용을 막는다. 정책값 기본은 `2`이며, `0`이면 재사용 검사를 수행하지 않는다.
 - 로그인 성공 → `/journal/weekly` 리다이렉트
 
 ---

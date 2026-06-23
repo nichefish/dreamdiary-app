@@ -11,6 +11,7 @@ export interface AuthPolicy {
   accountLockDurationMinutes: number | null;
   sessionTimeoutMinutes: number | null;
   passwordChangeCycleDays: number | null;
+  passwordHistoryCount: number | null;
   passwordResetTokenExpiryMinutes: number | null;
 }
 
@@ -23,6 +24,7 @@ const EMPTY_POLICY: AuthPolicy = {
   accountLockDurationMinutes: null,
   sessionTimeoutMinutes: null,
   passwordChangeCycleDays: null,
+  passwordHistoryCount: null,
   passwordResetTokenExpiryMinutes: null,
 };
 

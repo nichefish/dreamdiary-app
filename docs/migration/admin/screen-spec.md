@@ -65,6 +65,7 @@
 - 본문 상단 새로고침 버튼 표시. 화면 설명은 `AUTH_POLICY` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 인증 정책 단건 조회/수정 (싱글톤)
 - `sessionTimeoutMinutes`: 사용자 체감 로그인 유지 시간(분). `HttpSession#setMaxInactiveInterval`, JWT access token `exp`, JWT 쿠키 max-age, JWT 검증의 `issuedAt + policyTimeout` 기준에 함께 적용
+- `passwordHistoryCount`: 최근 비밀번호 재사용 제한 개수. 기본값은 `2`이며, `0`이면 현재 비밀번호/이전 비밀번호 이력 재사용 검사를 수행하지 않는다.
 - IP 허용 정책, 허용 IP 목록 CRUD
 - `GET /api/auth/policy` → 현재 정책 조회
 - `PUT /api/auth/policy` → 정책 수정
@@ -137,7 +138,7 @@
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
 - 계정 삭제 (본인 계정 삭제 불가)
-- 비밀번호 초기화
+- 비밀번호 초기화. 초기화 전 비밀번호 해시는 `user_password_history`에 기록되어 `auth_policy.password_history_count` 재사용 제한에 포함된다.
 - 중복 체크 (아이디/이메일)
 - 엑셀 다운로드
 - API: `GET/POST /api/users`, `GET/POST/DELETE /api/users/{id}`, `POST .../password-reset`, `GET .../xlsx-download`
