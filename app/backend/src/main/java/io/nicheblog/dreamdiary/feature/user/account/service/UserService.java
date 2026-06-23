@@ -167,7 +167,7 @@ public class UserService
         }
         retrievedEntity.setPassword(passwordEncoder.encode(initialAdminPassword));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
-        retrievedEntity.acntStus.setPasswordToken(null);
+        retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
@@ -187,7 +187,7 @@ public class UserService
         final String passwordToken = this.generatePasswordResetToken();
 
         if (user.acntStus == null) user.acntStus = UserStateEntity.builder().build();
-        user.acntStus.setPasswordToken(this.hashPasswordResetToken(passwordToken));
+        user.acntStus.setPasswordResetTokenHash(this.hashPasswordResetToken(passwordToken));
         user.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         repository.saveAndFlush(user);
 

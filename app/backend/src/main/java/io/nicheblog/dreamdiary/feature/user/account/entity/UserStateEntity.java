@@ -94,9 +94,9 @@ public class UserStateEntity {
     private String needsPasswordReset = "N";
 
     /** 패스워드 리셋 토큰 해시 */
-    @Column(name = "password_token", length = 64)
+    @Column(name = "password_reset_token_hash", length = 64)
     @Comment("패스워드 리셋 토큰 해시")
-    private String passwordToken;
+    private String passwordResetTokenHash;
 
     /** 패스워드 리셋 토큰 발급 시각 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
