@@ -697,7 +697,9 @@
 
 ### 16.2 엔트리 검색 화면
 
-엔트리 검색 화면은 일기와 꿈을 각각 검색하는 전용 화면이다. route query는 `type=DIARY|DREAM`, `tagIds`, `tagName`, `searchKeywords`를 기준으로 복원할 수 있어야 한다.
+엔트리 검색 화면은 일기와 꿈을 각각 검색하는 전용 화면이다. route query는 `type=DIARY|DREAM`, `tagIds`, `searchKeywords`를 기준으로 복원할 수 있어야 한다.
+
+검색 팝업의 고급 필터에서 태그를 직접 입력하면 현재 타입의 기존 태그 categoryMap과 태그 목록을 사용해 자동완성 후보를 제공한다. 사용자는 태그명과 카테고리로 특정 태그를 확정하며, 확정 결과는 새 문자열 검색 조건이 아니라 기존 `tagIds` 조건으로 검색된다.
 
 상단에는:
 

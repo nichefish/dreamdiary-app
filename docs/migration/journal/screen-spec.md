@@ -1018,14 +1018,14 @@ type TodoRow = {
 |-------|------|
 | `type=DIARY` | 일기 검색 |
 | `type=DREAM` | 꿈 검색 |
-| `tagIds=N` | 태그 ID 기반 검색 |
-| `tagName=...` | 화면 표시용 태그명 |
+| `tagIds=N` | 태그 ID 기반 검색. 검색 팝업의 태그 직접 입력은 기존 태그 자동완성/카테고리 선택으로 특정 태그 ID를 확정한 뒤 이 파라미터에 추가한다. |
 | `searchKeywords=...` | 키워드 검색 |
 
 ### Data Contract
 
 - 목록 API: `GET /api/journal/entries`
 - 파라미터: `type`, `tagIds`, `searchKeywords`
+- 고급 필터: 유형 토글, 키워드 입력, 태그 입력. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다.
 - 응답: `AjaxResponse.rsltList` (`JournalEntryDto[]`)
 - `type=DREAM` 응답의 태그 항목은 사용자별 꿈 태그 프로필 본문이 있으면 `tag.list[].profileContent`를 포함한다. 검색 결과 행은 `JournalEntryItem`을 통해 꿈 엔트리 본문 아래에 해당 프로필을 표시한다.
 
