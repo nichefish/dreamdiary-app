@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS user_state (
     lock_expires_at DATETIME COMMENT '계정 잠금 만료 시각',
     password_changed_at DATETIME COMMENT '비밀번호 변경 일시',
     needs_password_reset CHAR(1) DEFAULT 'N' COMMENT '패스워드 변경 필요 여부 (Y/N)',
-    password_token VARCHAR(64) COMMENT '패스워드 리셋 토큰 해시',
+    password_reset_token_hash VARCHAR(64) COMMENT '패스워드 리셋 토큰 해시',
     password_reset_token_issued_at DATETIME COMMENT '패스워드 리셋 토큰 발급 시각',
     -- CONSTRAINT
     FOREIGN KEY(user_id) REFERENCES user (id)

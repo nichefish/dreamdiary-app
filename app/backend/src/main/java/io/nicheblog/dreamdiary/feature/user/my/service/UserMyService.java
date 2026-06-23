@@ -66,7 +66,7 @@ public class UserMyService {
         this.validatePasswordResetTokenIfNeeded(retrievedEntity, param.getPasswordToken());
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
-        retrievedEntity.acntStus.setPasswordToken(null);
+        retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
@@ -128,7 +128,7 @@ public class UserMyService {
         // 2. 맞으면 비밀번호 업데이트
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
-        retrievedEntity.acntStus.setPasswordToken(null);
+        retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
@@ -185,7 +185,7 @@ public class UserMyService {
         if (user == null || user.acntStus == null) return;
         if (!"Y".equals(user.acntStus.getNeedsPasswordReset())) return;
 
-        if (StringUtils.isBlank(passwordToken) || StringUtils.isBlank(user.acntStus.getPasswordToken())) {
+        if (StringUtils.isBlank(passwordToken) || StringUtils.isBlank(user.acntStus.getPasswordResetTokenHash())) {
             throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
         }
         if (!this.isPasswordResetTokenWindowValid(user.acntStus.getPasswordResetTokenIssuedAt())) {
@@ -195,7 +195,7 @@ public class UserMyService {
         final String hashed = userService.hashPasswordResetToken(passwordToken);
         if (!MessageDigest.isEqual(
                 hashed.getBytes(StandardCharsets.UTF_8),
-                user.acntStus.getPasswordToken().getBytes(StandardCharsets.UTF_8)
+                user.acntStus.getPasswordResetTokenHash().getBytes(StandardCharsets.UTF_8)
         )) {
             throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
         }
