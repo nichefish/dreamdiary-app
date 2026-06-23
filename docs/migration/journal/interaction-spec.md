@@ -265,6 +265,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 1. 서버는 로그인 사용자 기준으로 같은 `journalDate`의 활성 저널 일자가 있는지 확인한다.
 2. 중복이면 기존 데이터를 수정으로 전환하지 않고 `rslt=false`, `msg.journal.day.duplicate` 메시지로 응답한다.
 3. 모달은 저장 성공 처리를 진행하지 않고 서버 메시지를 표시한다.
+4. 신규 등록 성공 시 서버는 `JournalDayBootstrapService`로 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. 이미 DIARY 챕터가 있으면 추가 생성하지 않는다.
 
 ---
 

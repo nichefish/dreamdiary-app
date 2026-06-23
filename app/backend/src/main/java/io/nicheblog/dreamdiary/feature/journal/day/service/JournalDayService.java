@@ -71,6 +71,7 @@ public class JournalDayService
     private final JournalCacheEvictWorker journalCacheEvictWorker;
     private final JournalInterpretationQueryService journalInterpretationQueryService;
     private final LifecycleService lifecycleService;
+    private final JournalDayBootstrapService journalDayBootstrapService;
 
     private final ApplicationContext context;
     private JournalDayService getSelf() {
@@ -269,6 +270,7 @@ public class JournalDayService
      */
     @Override
     public void postRegist(final JournalDayDto updatedDto) throws Exception {
+        journalDayBootstrapService.ensureDefaultSummaryDiary(updatedDto.getId());
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_DAY);
     }
