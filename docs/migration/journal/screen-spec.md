@@ -139,7 +139,7 @@
 | 메타 탭 | `<a>` | `.nav-link.px-6.cursor-pointer` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 (Vue) |
 | 탭 라벨 | text | — | — | `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW` |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 등록 버튼; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
-| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex` |
+| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex`. 신규 등록 성공 시 서버가 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. |
 | 키워드 검색 | include | `_journal_day_keyword_search.ftlh` | 검색 파라미터 | 팝업 형태 — SPA ❌ MISSING |
 | 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부. 일자/일기/꿈 태그 행의 목록 시작 x좌표는 동일해야 하며, `꿈 태그` 라벨 길이 차이로 들여쓰기 차이가 생기면 안 된다. |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayMonthlyListApp` 마운트 대상 |
