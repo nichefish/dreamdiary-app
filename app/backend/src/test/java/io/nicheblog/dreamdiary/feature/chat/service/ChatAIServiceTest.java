@@ -145,7 +145,8 @@ class ChatAIServiceTest {
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
         );
         method.setAccessible(true);
 
@@ -153,7 +154,12 @@ class ChatAIServiceTest {
         final String hollowResponse =
                 "\uC6D0\uBE48\uC740 \uD300 \uAD00\uACC4\uC640 \uC804\uB7B5\uC801 \uD589\uB3D9 \uCE21\uBA74\uC5D0\uC11C \uC790\uC8FC \uB4F1\uC7A5\uD569\uB2C8\uB2E4.";
 
-        final boolean hollow = (boolean) method.invoke(service, hollowResponse, ragContext);
+        final boolean hollow = (boolean) method.invoke(
+                service,
+                hollowResponse,
+                ragContext,
+                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+        );
 
         assertTrue(hollow);
     }
@@ -167,7 +173,8 @@ class ChatAIServiceTest {
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
         );
         method.setAccessible(true);
 
@@ -175,7 +182,12 @@ class ChatAIServiceTest {
         final String leakedResponse =
                 "\uC5ED\uD560 \uCD95 roleaxesko: \uD300 \uB3D9\uB8CC \uBC18\uBCF5 \uCD95 repeated_tags: #dreamdiary";
 
-        final boolean hollow = (boolean) method.invoke(service, leakedResponse, ragContext);
+        final boolean hollow = (boolean) method.invoke(
+                service,
+                leakedResponse,
+                ragContext,
+                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+        );
 
         assertTrue(hollow);
     }
@@ -189,14 +201,20 @@ class ChatAIServiceTest {
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
         );
         method.setAccessible(true);
 
         final Object ragContext = buildTestRagContext("\uC6D0\uBE48");
         final String noisyResponse = "\uC6D0\uBE48\uC740 #dreamdiary \uD0DC\uADF8\uC640 \uAD00\uB828\uB418\uC5B4 \uB4F1\uC7A5\uD569\uB2C8\uB2E4.";
 
-        final boolean hollow = (boolean) method.invoke(service, noisyResponse, ragContext);
+        final boolean hollow = (boolean) method.invoke(
+                service,
+                noisyResponse,
+                ragContext,
+                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+        );
 
         assertTrue(hollow);
     }
@@ -333,7 +351,8 @@ class ChatAIServiceTest {
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
         );
         method.setAccessible(true);
 
@@ -342,7 +361,12 @@ class ChatAIServiceTest {
                 "\uAE30\uB85D\uC0C1 \uC6D0\uBE48\uC740 [\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9 \uD0DC\uADF8\uAC00 \uC790\uC8FC \uAC19\uC774 \uBD99\uB294 "
                         + "DYNAMICS \uC77C\uAE30\uC5D0\uC11C \uC870\uC9C1 \uC5ED\uB3D9 \uB9E5\uB77D\uC758 \uC778\uBB3C\uB85C \uBC18\uBCF5\uB3FC.";
 
-        final boolean hollow = (boolean) method.invoke(service, interpretiveResponse, ragContext);
+        final boolean hollow = (boolean) method.invoke(
+                service,
+                interpretiveResponse,
+                ragContext,
+                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+        );
 
         assertFalse(hollow);
     }
@@ -794,7 +818,7 @@ class ChatAIServiceTest {
         final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
         final String groundedResponse =
                 "\uB124\uAC00 \uAE30\uB85D\uC5D0 \uB0A8\uAE34 \uBC14\uB85C\uB294, \uC6D0\uBE48\uC5D0 \uB300\uD55C \uB9C8\uC74C\uC740 #\uC870\uC9C1\uC5ED\uB3D9 \uCD95\uC5D0\uC11C \uC790\uC8FC \uAE34\uC7A5\uACFC \uC6B0\uB824\uAC00 \uBC18\uBCF5\uB3FC. "
-                        + "(1) \uB0B4 \uD0DC\uB3C4\uB7\u00B7\uC815\uC11C: \uAE30\uB85D\uC744 \uBCF4\uBA74 \uC6B0\uB824\uAC00 \uB4DC\uB7EC\uB0A8. "
+                        + "(1) \uB0B4 \uD0DC\uB3C4\u00B7\uC815\uC11C: \uAE30\uB85D\uC744 \uBCF4\uBA74 \uC6B0\uB824\uAC00 \uB4DC\uB7EC\uB0A8. "
                         + "(2) \uBC18\uBCF5 \uD328\uD134: \uC5C5\uBB34 \uB17C\uC758 \uC7A5\uBA74\uC5D0\uC11C \uB2F5\uC774 \uC5B4\uAE38\uB9AC\uB294 \uBAA8\uC2B5\uC774 \uBC18\uBCF5. "
                         + "(3) \uD568\uAED8 \uBB36\uC778 \uCD95: #\uAE40\uC6D0\uBE48, #\uC870\uC9C1\uC5ED\uB3D9. "
                         + "(4) \uD655\uC815 \uBD88\uAC00: \uC0C1\uB300 \uC131\uACA9\uC740 \uAE30\uB85D\uC5D0 \uC5C6\uC74C.";
@@ -829,7 +853,7 @@ class ChatAIServiceTest {
                         + "\uADF8\uB7EC\uB098 \uC9C1\uC811\uC801\uC778 \uD3C9\uAC00\uB098 \uC2EC\uB9AC \uC0C1\uD0DC\uB294 \uBA85\uD655\uD788 \uB098\uD0C0\uB098\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. "
                         + "\uC774\uB7EC\uD55C \uAD00\uACC4\uB97C \uB354 \uAE4A\uAC8C \uC774\uD574\uD558\uAE30 \uC704\uD574\uC11C\uB294 \uBA87 \uAC00\uC9C0 \uC810\uC744 \uACE0\uB824\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4: "
                         + "\uC0C1\uD638\uC791\uC6A9 \uD328\uD134: #\uC870\uC9C1\uC5ED\uB3D9 \uCD95\uC5D0 \uBB36\uC5EC \uC788\uC2B5\uB2C8\uB2E4. "
-                        + "\uD655\uC815 \uBD88\uAC00: \uB2F9\uC2E0\uC758 \uC0DD\uAC01\uC774\uB098 \uAC10\uC815\uC740 \uBA85\uC2DC\uC801\uC73C\uB85C \uD45C\uD604\uB418\uC9C0 \uC54A\uACE0, \uC911\uB립\uC801 \uB610\uB294 \uD3C9\uC628\uD55C \uD0DC\uB3C4\uB97C \uC720\uC9C0\uD558\uACE0 \uC788\uB294 \uAC83\uC73C\uB85C \uBCF4\uC785\uB2C8\uB2E4.";
+                        + "\uD655\uC815 \uBD88\uAC00: \uB2F9\uC2E0\uC758 \uC0DD\uAC01\uC774\uB098 \uAC10\uC815\uC740 \uBA85\uC2DC\uC801\uC73C\uB85C \uD45C\uD604\uB418\uC9C0 \uC54A\uACE0, \uC911\uB9BD\uC801 \uB610\uB294 \uD3C9\uC628\uD55C \uD0DC\uB3C4\uB97C \uC720\uC9C0\uD558\uACE0 \uC788\uB294 \uAC83\uC73C\uB85C \uBCF4\uC785\uB2C8\uB2E4.";
 
         final boolean degraded = (boolean) method.invoke(
                 service,

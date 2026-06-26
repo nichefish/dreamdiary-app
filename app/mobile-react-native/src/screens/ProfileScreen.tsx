@@ -65,16 +65,19 @@ export function ProfileScreen() {
   const [loggingOut, setLoggingOut]     = useState(false);
   const [statsLoading, setStatsLoading] = useState(true);
   const [stats, setStats]               = useState<MonthStats>({ days: 0, dreams: 0, diaries: 0 });
+  const [statsError, setStatsError]     = useState<string | null>(null);
 
   /** 이번 달 통계 로드 */
   const loadStats = useCallback(async () => {
     setStatsLoading(true);
+    setStatsError(null);
     try {
       const ym  = currentYearMonth();
       const res = await getMonthlyJournalDays(ym);
       setStats(calcMonthStats(res.rsltList ?? []));
-    } catch {
-      // 통계 로드 실패 시 조용히 무시 (0 유지)
+    } catch (e) {
+      console.error("[ProfileScreen] monthly stats load failed", e);
+      setStatsError(e instanceof Error ? e.message : "이번 달 통계를 불러오지 못했습니다.");
     } finally {
       setStatsLoading(false);
     }
@@ -138,6 +141,17 @@ export function ProfileScreen() {
           <Text style={styles.statsTitle}>{monthLabel} 기록</Text>
           {statsLoading ? (
             <ActivityIndicator color={colors.accent} style={styles.statsLoading} />
+          ) : statsError != null ? (
+            <View style={styles.statsError}>
+              <Text style={styles.statsErrorText}>{statsError}</Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => { void loadStats(); }}
+                style={styles.statsRetryButton}
+              >
+                <Text style={styles.statsRetryButtonText}>다시 시도</Text>
+              </Pressable>
+            </View>
           ) : (
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
@@ -237,6 +251,10 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   statsLoading: { paddingVertical: 12 },
+  statsError: { alignItems: "center", gap: 8, paddingVertical: 4 },
+  statsErrorText: { color: "#C0392B", fontSize: 13, textAlign: "center" },
+  statsRetryButton: { paddingHorizontal: 12, paddingVertical: 7 },
+  statsRetryButtonText: { color: colors.accent, fontSize: 13, fontWeight: "700" },
   statsRow: {
     flexDirection: "row",
     alignItems: "center",

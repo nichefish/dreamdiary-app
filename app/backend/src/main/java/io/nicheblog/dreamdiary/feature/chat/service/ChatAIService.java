@@ -289,8 +289,9 @@ public class ChatAIService {
      */
     public void cancelChat(final Integer sessionId) {
         if (sessionId == null) return;
+        chatSessionService.getMySessionEntity(sessionId);
         cancelFlags.computeIfAbsent(sessionId, k -> new AtomicBoolean(false)).set(true);
-        log.info("AI response cancel requested. sessionId={}", sessionId);
+        log.info("AI response cancel requested after ownership validation. sessionId={}", sessionId);
     }
 
     /**

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.filter;
 
+import io.nicheblog.dreamdiary.auth.security.handler.SecurityErrorResponseWriter;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.event.LogAnonymousEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
@@ -33,6 +34,7 @@ public class AjaxSessionTimeoutFilter
     private FilterConfig filterConfig;
 
     protected final ApplicationEventPublisher publisher;
+    private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
@@ -58,19 +60,31 @@ public class AjaxSessionTimeoutFilter
         } catch (final AuthenticationException e) {
             // (Ajax 요청에 대해서만 처리)
             if (HttpUtils.isAjaxRequest(request)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);     // 401
+                securityErrorResponseWriter.write(
+                        response,
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        MessageUtils.getMessage("msg.auth.login-required")
+                );
                 // 로그 관련 처리
                 final LogParam logParam = new LogParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
                 publisher.publishEvent(new LogAnonymousEvent(this, logParam));
+                return;
             }
+            throw e;
         } catch (final AccessDeniedException e) {
             // (Ajax 요청에 대해서만 처리)
             if (HttpUtils.isAjaxRequest(request)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);        // 403
+                securityErrorResponseWriter.write(
+                        response,
+                        HttpServletResponse.SC_FORBIDDEN,
+                        MessageUtils.getExceptionMsg(e)
+                );
                 // 로그 관련 처리
                 final LogParam logParam = new LogParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
                 publisher.publishEvent(new LogAnonymousEvent(this, logParam));
+                return;
             }
+            throw e;
         }
     }
 

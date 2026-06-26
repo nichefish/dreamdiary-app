@@ -131,7 +131,7 @@ export class ChatStompClient {
   private subscribeToSessionInvalid(): void {
     if (this.invalidSubscriptionId) return;
     this.invalidSubscriptionId = "chat-session-invalid";
-    this.subscribe("/topic/session-invalid", this.invalidSubscriptionId);
+    this.subscribe("/user/queue/session-invalid", this.invalidSubscriptionId);
   }
 
   private handleFrame(rawFrame: string): void {
@@ -149,7 +149,7 @@ export class ChatStompClient {
     }
 
     if (frame.command === "MESSAGE") {
-      if (frame.headers.destination === "/topic/session-invalid") {
+      if (frame.headers.subscription === this.invalidSubscriptionId) {
         this.options.onSessionInvalid?.();
         return;
       }

@@ -306,8 +306,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { isAuthExpiredError } from "@/shared/utils/authError";
+import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
 import { ref, computed, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
@@ -573,8 +572,7 @@ async function setLifecycle(lifecycleKey: string): Promise<void> {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
   } catch (e: unknown) {
-    if (isAuthExpiredError(e)) return;
-    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e);
   }
 }
 
@@ -594,8 +592,7 @@ async function toggleState(stateKey: string): Promise<void> {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
   } catch (e: unknown) {
-    if (isAuthExpiredError(e)) return;
-    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e);
   }
 }
 
@@ -614,8 +611,7 @@ async function deleteEntry(): Promise<void> {
       void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
     }
   } catch (e: unknown) {
-    if (isAuthExpiredError(e)) return;
-    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e);
   }
 }
 </script>

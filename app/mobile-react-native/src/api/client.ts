@@ -64,6 +64,15 @@ async function parseResponse(response: Response) {
   return text.length > 0 ? text : null;
 }
 
+/** 구조화된 API 오류 응답에서 사용자에게 표시할 서버 메시지만 추출한다. */
+function getResponseErrorMessage(responseBody: unknown, status: number): string {
+  if (responseBody && typeof responseBody === "object" && !Array.isArray(responseBody)) {
+    const message = (responseBody as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim().length > 0) return message;
+  }
+  return `요청 처리 중 오류가 발생했습니다. (${status})`;
+}
+
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { query, headers, body, captureAccessToken, ...init } = options;
   // FormData 전송 시 Content-Type 을 직접 지정하지 않는다.
@@ -90,11 +99,12 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   const responseBody = await parseResponse(response);
 
   if (!response.ok) {
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
       void clearAccessToken();
       _onUnauthorized?.();
     }
-    throw new ApiError(`DreamDiary API request failed: ${response.status}`, response.status, responseBody);
+    console.error("[API] Request failed", { path, status: response.status, responseBody });
+    throw new ApiError(getResponseErrorMessage(responseBody, response.status), response.status, responseBody);
   }
 
   return responseBody as T;

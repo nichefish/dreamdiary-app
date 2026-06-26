@@ -85,8 +85,9 @@ export function InterpretationScreen({ route, navigation }: Props) {
     try {
       const res = await getInterpretations(entry.id);
       setItems(res.rsltList ?? []);
-    } catch {
-      setError("해석 목록을 불러오지 못했습니다.");
+    } catch (e) {
+      console.error("[InterpretationScreen] interpretation list load failed", { entryId: entry.id }, e);
+      setError(e instanceof Error ? e.message : "해석 목록을 불러오지 못했습니다.");
     } finally {
       setLoading(false);
     }

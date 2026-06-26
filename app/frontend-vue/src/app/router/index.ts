@@ -16,6 +16,7 @@ import {
   markRuntimePending,
   reportRuntimeError,
 } from "@/shared/utils/appRuntimeStatus";
+import { isAuthVerificationError } from "@/shared/utils/authError";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -362,7 +363,10 @@ router.beforeEach(async (to, _from, next) => {
     }
   } catch (error) {
     clearRuntimePending();
-    reportRuntimeError(error, "router-before-each", "화면 이동 중 오류가 발생했습니다");
+    const title = isAuthVerificationError(error)
+      ? "인증 상태를 확인하는 중 오류가 발생했습니다."
+      : "화면 이동 중 오류가 발생했습니다";
+    reportRuntimeError(error, "router-before-each", title);
     next(false);
   }
 });

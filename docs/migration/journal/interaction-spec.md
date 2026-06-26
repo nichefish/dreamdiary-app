@@ -547,6 +547,10 @@ const isPopup = computed(() => ["journal-entry-search", "journal-daily"].include
 
 팝업 라우트에서 401 응답 시 로그인 화면 이동 대신 창 닫기 확인 다이얼로그를 표시한다. 일반 보호 라우트에서 라우터 가드가 미인증을 감지한 경우도 같은 `confirmSessionExpired` alert를 거친 뒤, 확인 시에만 `/sign-in?sessionExpired=Y&redirect=...`로 이동한다.
 
+저널 등록·수정·삭제·상태 변경 요청이 401 이외의 HTTP 오류로 실패하면 `swalRequestError()`가 오류를 기록하고 응답 JSON의 `message`를 우선 표시한다. 서버 메시지가 없을 때만 `요청 처리 중 오류가 발생했습니다.`를 표시하며, 401의 `AuthExpiredError`는 전역 안내와 중복되지 않도록 별도 alert를 띄우지 않는다.
+
+검색·목록·메타 조회 실패는 실제 빈 결과와 구분한다. 직전 성공 데이터와 결과 건수를 보존하면서 오류를 기록·표시하고, 일자/엔트리/스레드의 상세·수정용 조회가 실패하면 불완전한 모델로 모달을 열지 않는다.
+
 ```typescript
 const confirmed = await confirmSessionExpired(route.name);
 if (confirmed && !isAuthPopupRoute(route.name)) {

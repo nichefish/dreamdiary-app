@@ -339,9 +339,9 @@ public class AuthRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(AjaxResponse.withAjaxResult(false, errorMsg));
         } catch (final Exception e) {
-            log.error("Vue login error: {}", e.getMessage());
+            log.error("Vue login internal error. username={}", body.getUsername(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("msg.auth.login-processing-error")));
         }
     }
 

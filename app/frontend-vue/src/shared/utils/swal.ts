@@ -40,5 +40,6 @@ export async function swalAlert(text: string): Promise<void> {
  */
 export async function swalRequestError(error: unknown, text = "요청 처리 중 오류가 발생했습니다."): Promise<void> {
   if (isAuthExpiredError(error)) return;
+  console.error("[swalRequestError] API request failed", error);
   await swalAlert(getAjaxResponseMessage(error) ?? text);
 }

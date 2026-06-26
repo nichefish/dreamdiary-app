@@ -1,7 +1,8 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import ApiService from "@metronic/core/services/ApiService";
-import type { AxiosError } from "axios";
+import axios, { type AxiosError } from "axios";
+import { AuthVerificationError, isAuthVerificationError } from "@/shared/utils/authError";
 import { resolveProfileImageUrl } from "@/shared/utils/profileImage";
 import { preloadCategoryMaps, useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useMenuStore } from "@/shared/menu/stores/menu";
@@ -27,6 +28,11 @@ export interface LoginActionState {
   isDupIdLogin?: boolean;
   needsPasswordReset?: boolean;
   passwordToken?: string;
+}
+
+function resolveServerMessage(error: AxiosError<{ message?: string }>): string | undefined {
+  const serverMsg = error.response?.data?.message;
+  return typeof serverMsg === "string" && serverMsg.length > 0 ? serverMsg : undefined;
 }
 
 /**
@@ -106,6 +112,10 @@ export const useAuthStore = defineStore("auth", () => {
         throw new Error(data.message);
       }
     } catch (e) {
+      if (isAuthVerificationError(e)) {
+        errors.value = [e.message];
+        throw e;
+      }
       const axiosErr = e as AxiosError<{ message?: string; rsltMap?: unknown }>;
       const serverData = axiosErr.response?.data;
       if (!serverData) throw e;
@@ -141,8 +151,19 @@ export const useAuthStore = defineStore("auth", () => {
       } else {
         purgeAuth();
       }
-    } catch {
-      purgeAuth();
+    } catch (e) {
+      if (axios.isAxiosError<{ message?: string }>(e)) {
+        const status = e.response?.status;
+        if (status === 401) {
+          purgeAuth();
+          return;
+        }
+        throw new AuthVerificationError(
+          resolveServerMessage(e) ?? "인증 상태를 확인하는 중 오류가 발생했습니다.",
+          status
+        );
+      }
+      throw new AuthVerificationError("인증 상태를 확인하는 중 오류가 발생했습니다.");
     }
   }
 

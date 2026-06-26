@@ -33,6 +33,15 @@ It must help the user continue thinking with their own journal data, but it must
 | RAG search result | `RagSearchResult` | Internal retrieval DTO carrying entity, match type, score, matched tokens, and snippet |
 | RAG intent | `RagIntent` | Classifies retrieval mode as `LOOKUP`, `SUMMARY`, or `SYNTHESIS` |
 
+### Authentication Boundary
+
+- `GET /chat` is the only public HTTP route under `/chat`; `WebSocketAuthInterceptor` validates its JWT or existing Principal during the WebSocket handshake.
+- Chat settings, sessions, and message REST routes under `/chat/**` require an authenticated Spring Security context and return the common JSON 401 response when unauthenticated.
+- Message history has one ownership-scoped route: `GET /chat/sessions/{sessionId}/messages`. The former general search route `GET /chat/messages` is removed because it did not establish session ownership and had no client caller.
+- STOMP send and cancel handlers use the authenticated handshake session attributes.
+- STOMP cancel validates ownership through `ChatSessionService` before changing the session cancellation flag.
+- Session expiration notifications use the authenticated user's `/user/queue/session-invalid` destination. They must never be broadcast through a shared topic because one user's destroyed session must not invalidate another user's chat UI.
+
 ## Message Flow
 
 ```text

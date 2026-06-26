@@ -375,8 +375,8 @@ export const useJournalStore = defineStore("journal", () => {
       const res = await axios.get("/api/journal/day/metas");
       metaList.value = res.data?.rsltList ?? [];
     } catch (e: unknown) {
+      console.error("[journal] fetchMetas failed", e);
       metaError.value = "메타 목록을 불러오지 못했습니다.";
-      metaList.value = [];
     } finally {
       metaLoading.value = false;
     }

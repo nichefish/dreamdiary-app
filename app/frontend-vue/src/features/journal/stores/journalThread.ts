@@ -117,9 +117,9 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       totalElements.value = pageResult?.totalElements ?? 0;
       totalPages.value = pageResult?.totalPages ?? 0;
       currentPage.value = pageResult?.number ?? 0;
-    } catch {
+    } catch (e: unknown) {
+      console.error("[journalThread] fetchList failed", { page }, e);
       error.value = "스레드 목록을 불러오지 못했습니다.";
-      threadList.value = [];
     } finally {
       loading.value = false;
     }
@@ -160,9 +160,11 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         content: dto.content ?? "",
         tag: { tagListStrWithCtgr: dto.tag?.tagListStrWithCtgr ?? "" },
       };
-    } catch {
+    } catch (e: unknown) {
+      console.error("[journalThread] openRegist failed", { id }, e);
       registModel.value = null;
       registOpen.value = false;
+      void swalRequestError(e, "스레드 정보를 불러오지 못했습니다.");
     } finally {
       registLoading.value = false;
     }
@@ -246,9 +248,11 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     try {
       const res = await axios.get(`/api/journal/threads/${id}`);
       detailModel.value = res.data?.rsltObj ?? null;
-    } catch {
+    } catch (e: unknown) {
+      console.error("[journalThread] openDetail failed", { id }, e);
       detailModel.value = null;
       detailOpen.value = false;
+      void swalRequestError(e, "스레드 상세를 불러오지 못했습니다.");
     } finally {
       detailLoading.value = false;
     }
