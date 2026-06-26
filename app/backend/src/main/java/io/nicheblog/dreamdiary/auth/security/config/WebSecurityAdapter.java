@@ -10,6 +10,8 @@ import io.nicheblog.dreamdiary.auth.security.handler.AjaxAwareAuthenticationEntr
 import io.nicheblog.dreamdiary.auth.security.handler.LoginFailureHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.LoginSuccessHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.LogoutHandler;
+import io.nicheblog.dreamdiary.auth.security.matcher.PublicApiRequestMatcher;
+import io.nicheblog.dreamdiary.auth.security.matcher.WebSocketHandshakeRequestMatcher;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -64,6 +66,8 @@ public class WebSecurityAdapter {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthPolicyQueryService authPolicyQueryService;
     private final AuthProperties authProperties;
+    private final PublicApiRequestMatcher publicApiRequestMatcher;
+    private final WebSocketHandshakeRequestMatcher webSocketHandshakeRequestMatcher;
 
     @Value("${springdoc.api-docs.path:/v3/api-docs}")
     private String API_DOCS_PATH;
@@ -138,19 +142,24 @@ public class WebSecurityAdapter {
                 // static resource 전체 접근
                 .antMatchers(Constant.STATIC_PATHS)
                 .permitAll()
-                // API 접근 전체 허용 (현재는 인증 적용하지 않음)
-                // TODO: inbound API 쪽에 토큰 인증 적용하기
-                .antMatchers("/api/**")
+                // 공개 API는 경로와 HTTP 메서드를 함께 검사한다.
+                .requestMatchers(publicApiRequestMatcher)
                 .permitAll()
+                // 그 외 API는 인증 사용자만 접근한다.
+                .antMatchers("/api/**")
+                .authenticated()
                 // OAUTH2 인증 관련 페이지
                 .antMatchers("/oauth2/authorization/**", "/login/oauth2/code/**")
                 .permitAll()
                 // Swagger/OpenAPI docs and UI resources
                 .antMatchers(API_DOCS_PATH, API_DOCS_PATH + "/**", SWAGGER_UI_PATH, "/swagger-ui/**")
                 .permitAll()
-                // WebSocket 엔드포인트에 대한 접근 허용
-                .antMatchers("/chat/**")
+                // WebSocket 엔드포인트에 대한 접근 허용. 실제 인증은 핸드셰이크 인터셉터가 처리한다.
+                .requestMatchers(webSocketHandshakeRequestMatcher)
                 .permitAll()
+                // 채팅 설정·세션·메시지 REST API는 로그인 사용자만 접근한다.
+                .antMatchers("/chat/**")
+                .authenticated()
                 // 로그인 화면 i18n catalog json
                 // 변경 전: /i18n/** 경로는 anyRequest().authenticated()에 걸려 401 가능
                 // 변경 후: /i18n/** 경로는 비인증 접근 허용

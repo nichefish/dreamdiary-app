@@ -28,6 +28,8 @@
 
 **기능**:
 - ID/PW 폼 로그인 → `POST /api/auth/login`
+- POST /api/auth/login internal server errors return HTTP 500 with a login-scoped error message and must not be classified as login-required/session-expired.
+- Vue auth verification treats only HTTP 401 from `/api/auth/get-auth-account` as unauthenticated/session-expired; HTTP 403, HTTP 500, and network failures surface as auth verification/runtime errors and must not purge auth state as a login-required diagnosis.
 - Google OAuth2 소셜 로그인 → `/oauth2/authorization/google` (팝업)
 - Naver OAuth2 소셜 로그인 → `/oauth2/authorization/naver` (팝업)
 - 로그인 실패 메시지 표시

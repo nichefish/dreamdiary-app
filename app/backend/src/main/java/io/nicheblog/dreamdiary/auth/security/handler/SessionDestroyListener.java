@@ -44,7 +44,12 @@ public class SessionDestroyListener
             DupIdLoginManager.removeKey(username);
 
             // WebSocket 메시지로 세션 종료 알림 전송
-            messagingTemplate.convertAndSend("/topic/session-invalid", "Your session has expired, please log in again.");
+            messagingTemplate.convertAndSendToUser(
+                    username,
+                    "/queue/session-invalid",
+                    "Your session has expired, please log in again."
+            );
+            log.info("Session invalid notification sent. username={}", username);
         }
     }
 }

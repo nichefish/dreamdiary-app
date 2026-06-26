@@ -41,7 +41,10 @@ export interface JournalDay {
   journalDreamSectionList?: JournalDreamSection[];
 }
 
-/** 일자 DTO 에서 모든 꿈 엔트리를 펼친다 */
-export function dreamEntriesFromDay(day: JournalDay | undefined): JournalEntry[] {
+/**
+ * 일자 DTO 에서 모든 꿈 엔트리를 펼친다.
+ * @param day 조회된 일자 DTO. 일자 데이터가 없는 null/undefined이면 빈 목록을 반환한다.
+ */
+export function dreamEntriesFromDay(day: JournalDay | null | undefined): JournalEntry[] {
   return (day?.journalDreamSectionList ?? []).flatMap((section) => section.entries ?? []);
 }

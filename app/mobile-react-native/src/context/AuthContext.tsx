@@ -5,7 +5,7 @@ import {
   logout as apiLogout,
   refreshAccessToken
 } from "../api/dreamDiaryApi";
-import { setUnauthorizedHandler } from "../api/client";
+import { ApiError, setUnauthorizedHandler } from "../api/client";
 import {
   clearAccessToken,
   hydrateAccessTokenFromSecureStore
@@ -17,8 +17,10 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   /** 앱 시작 시 기존 세션·SecureStore 토큰 확인 중 */
   isLoading: boolean;
+  authError: string | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  retryAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -26,12 +28,15 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   /**
    * 기존 세션(쿠키) 유효 여부 확인 — 앱 시작 시 1회 호출.
    * SecureStore 토큰 hydrate 후 refresh 로 JWT 갱신(WebSocket·REST Authorization).
    */
   const checkAuth = useCallback(async () => {
+    setIsLoading(true);
+    setAuthError(null);
     try {
       await hydrateAccessTokenFromSecureStore();
       const data = await getAuthAccount();
@@ -47,9 +52,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         await clearAccessToken();
       }
-    } catch {
+    } catch (e) {
       setUser(null);
-      await clearAccessToken();
+      if (e instanceof ApiError && e.status === 401) {
+        await clearAccessToken();
+        return;
+      }
+      const status = e instanceof ApiError ? e.status : undefined;
+      setAuthError(
+        status === 403
+          ? "현재 계정으로는 인증 상태를 확인할 권한이 없습니다."
+          : "인증 상태를 확인하는 중 오류가 발생했습니다."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -59,11 +73,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     void checkAuth();
   }, [checkAuth]);
 
-  // 401/403 응답 시 client.ts 가 이 핸들러를 호출 → 자동 로그아웃
+  // 401 응답 시 client.ts 가 이 핸들러를 호출 → 자동 로그아웃
   useEffect(() => {
     return setUnauthorizedHandler(() => {
       void clearAccessToken();
       setUser(null);
+      setAuthError(null);
     });
   }, []);
 
@@ -87,7 +102,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: user !== null, isLoading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated: user !== null, isLoading, authError, login, logout, retryAuth: checkAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );

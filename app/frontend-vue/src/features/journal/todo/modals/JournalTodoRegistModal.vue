@@ -146,8 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { isAuthExpiredError } from "@/shared/utils/authError";
+import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import RichEditor from "@/shared/ui/editor/RichEditor.vue";
@@ -241,8 +240,7 @@ async function submit() {
       void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
     }
   } catch (e: unknown) {
-    if (isAuthExpiredError(e)) return;
-    void swalAlert("요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e);
   } finally {
     submitting.value = false;
   }

@@ -56,7 +56,8 @@ export function AIChatScreen({ navigation }: Props) {
   const [sessionsLoading, setSessionsLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [sessionsError, setSessionsError] = useState<string | null>(null);
+  const [messagesError, setMessagesError] = useState<string | null>(null);
 
   const handleIncomingMessage = useCallback((msg: ChatMessage) => {
     setMessages((prev) => {
@@ -96,12 +97,13 @@ export function AIChatScreen({ navigation }: Props) {
 
   const loadSessions = useCallback(async () => {
     setSessionsLoading(true);
-    setError(null);
+    setSessionsError(null);
     try {
       const res = await getChatSessions();
       setSessions(res.rsltList ?? []);
-    } catch {
-      setError("세션 목록을 불러오지 못했습니다.");
+    } catch (e) {
+      console.error("[AIChatScreen] session list load failed", e);
+      setSessionsError(e instanceof Error ? e.message : "세션 목록을 불러오지 못했습니다.");
     } finally {
       setSessionsLoading(false);
     }
@@ -109,12 +111,14 @@ export function AIChatScreen({ navigation }: Props) {
 
   const loadMessages = useCallback(async (sid: number) => {
     setMessagesLoading(true);
+    setMessagesError(null);
     try {
       const res = await getChatMessages(sid);
       setMessages(res.rsltList ?? []);
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: false }), 50);
-    } catch {
-      setMessages([]);
+    } catch (e) {
+      console.error("[AIChatScreen] message list load failed", { sessionId: sid }, e);
+      setMessagesError(e instanceof Error ? e.message : "메시지 목록을 불러오지 못했습니다.");
     } finally {
       setMessagesLoading(false);
     }
@@ -259,9 +263,16 @@ export function AIChatScreen({ navigation }: Props) {
           <View style={styles.center}>
             <ActivityIndicator size="large" color={colors.accent} />
           </View>
-        ) : error != null ? (
+        ) : sessionsError != null ? (
           <View style={styles.center}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorText}>{sessionsError}</Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => { void loadSessions(); }}
+              style={styles.retryButton}
+            >
+              <Text style={styles.retryButtonText}>다시 시도</Text>
+            </Pressable>
           </View>
         ) : currentId === null ? (
           <View style={styles.center}>
@@ -286,9 +297,32 @@ export function AIChatScreen({ navigation }: Props) {
               keyboardShouldPersistTaps="handled"
               onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
             >
-              {messagesLoading ? (
+              {messagesError != null && messages.length > 0 && (
+                <View style={styles.messageErrorRow}>
+                  <Text style={styles.errorText}>{messagesError}</Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => { void loadMessages(currentId); }}
+                    style={styles.retryButton}
+                  >
+                    <Text style={styles.retryButtonText}>다시 시도</Text>
+                  </Pressable>
+                </View>
+              )}
+              {messagesLoading && messages.length === 0 ? (
                 <View style={styles.center}>
                   <ActivityIndicator color={colors.accent} />
+                </View>
+              ) : messagesError != null && messages.length === 0 ? (
+                <View style={styles.center}>
+                  <Text style={styles.errorText}>{messagesError}</Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => { void loadMessages(currentId); }}
+                    style={styles.retryButton}
+                  >
+                    <Text style={styles.retryButtonText}>다시 시도</Text>
+                  </Pressable>
                 </View>
               ) : messages.length === 0 ? (
                 <View style={styles.center}>
@@ -408,6 +442,9 @@ const styles = StyleSheet.create({
     paddingVertical: 48
   },
   errorText: { color: "#C0392B", fontSize: 14 },
+  messageErrorRow: { alignItems: "center", gap: 8, paddingVertical: 8 },
+  retryButton: { paddingHorizontal: 12, paddingVertical: 7 },
+  retryButtonText: { color: colors.accent, fontSize: 13, fontWeight: "700" },
   emptyText: { color: colors.secondaryText, fontSize: 15, fontWeight: "600" },
   createButton: {
     backgroundColor: colors.accent,

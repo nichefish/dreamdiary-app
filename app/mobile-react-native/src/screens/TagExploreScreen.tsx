@@ -152,9 +152,9 @@ export function TagExploreScreen() {
         { id: "diary", label: "일기 태그", tags: diaryTags, entryType: "DIARY" },
         { id: "dream", label: "꿈 태그", tags: dreamTags, entryType: "DREAM" }
       ]);
-    } catch {
-      setError("태그 목록을 불러오지 못했습니다.");
-      setSections([]);
+    } catch (e) {
+      console.error("[TagExploreScreen] tag sections load failed", { yy, mnth }, e);
+      setError(e instanceof Error ? e.message : "태그 목록을 불러오지 못했습니다.");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -177,9 +177,9 @@ export function TagExploreScreen() {
     try {
       const res = await searchJournalDaysByTag(tagId, year);
       setDayResults(res.rsltList ?? []);
-    } catch {
-      setDayResults([]);
-      setResultError("일자 결과를 불러오지 못했습니다.");
+    } catch (e) {
+      console.error("[TagExploreScreen] day tag results load failed", { tagId, year }, e);
+      setResultError(e instanceof Error ? e.message : "일자 결과를 불러오지 못했습니다.");
     } finally {
       setResultsLoading(false);
     }
@@ -192,9 +192,9 @@ export function TagExploreScreen() {
     try {
       const res = await searchEntries({ tagIds: [tagId], type });
       setResults(res.rsltList ?? []);
-    } catch {
-      setResults([]);
-      setResultError("엔트리 결과를 불러오지 못했습니다.");
+    } catch (e) {
+      console.error("[TagExploreScreen] entry tag results load failed", { tagId, type }, e);
+      setResultError(e instanceof Error ? e.message : "엔트리 결과를 불러오지 못했습니다.");
     } finally {
       setResultsLoading(false);
     }

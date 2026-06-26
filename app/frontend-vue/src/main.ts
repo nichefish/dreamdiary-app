@@ -21,12 +21,24 @@ import {
  * 동시에 여러 요청이 401 로 실패해도 대화상자는 한 번만 뜬다.
  * 각 catch 블록에서 isAuthExpiredError() 로 판별해 일반 오류 alert 를 억제한다.
  */
+function isAuthApiUrl(url: string): boolean {
+  return url.includes("/api/auth/");
+}
+
+function isSessionExpiredPayload(data: unknown): boolean {
+  if (!data) return true;
+  if (typeof data !== "object" || Array.isArray(data)) return false;
+  const body = data as { error?: unknown; message?: unknown };
+  return body.error === "Unauthenticated" || body.message === "로그인이 필요합니다.";
+}
+
 axios.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
-    const status = (error as { response?: { status?: number }; config?: { url?: string } })?.response?.status;
+    const status = (error as { response?: { status?: number; data?: unknown }; config?: { url?: string } })?.response?.status;
+    const data = (error as { response?: { status?: number; data?: unknown }; config?: { url?: string } })?.response?.data;
     const url = (error as { response?: { status?: number }; config?: { url?: string } })?.config?.url ?? "";
-    if (status === 401 && !url.includes("/api/auth/")) {
+    if (status === 401 && !isAuthApiUrl(url) && isSessionExpiredPayload(data)) {
       await handleSessionExpired(router);
       return Promise.reject(new AuthExpiredError());
     }

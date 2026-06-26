@@ -5,6 +5,7 @@ import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import type { JournalDayDto, MetaDto } from "@/features/journal/stores/journal";
 import { formatLocalDateStr } from "@/features/journal/utils/journalDate";
 import { mergeTagifyListIntoCategoryMap } from "@/shared/utils/tagifyHelper";
+import { swalRequestError } from "@/shared/utils/swal";
 
 // ---- categoryMap (앱 세션 SSOT: 로그인·마운트 시 preload 1회, 저장 시 Tagify JSON 병합 — 무효화·모달 오픈 재조회 없음) ----
 
@@ -214,8 +215,10 @@ export const useJournalModalStore = defineStore("journalModal", () => {
             meta: { metaListStr: metaCmpstn?.metaListStr ?? "" },
           };
         }
-      } catch {
-        console.error("[journalModal] openDayRegist 상세 조회 실패 id=", payload.id);
+      } catch (e: unknown) {
+        console.error("[journalModal] openDayRegist 상세 조회 실패 id=", payload.id, e);
+        void swalRequestError(e, "저널 일자 정보를 불러오지 못했습니다.");
+        return;
       }
     }
     dayRegistModel.value = merged;
@@ -253,8 +256,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     try {
       const res = await axios.get(`/api/journal/day/${id}`);
       dayDetailData.value = res.data?.rsltObj ?? null;
-    } catch {
+    } catch (e: unknown) {
+      console.error("[journalModal] openDayDetail failed", { id }, e);
       dayDetailData.value = null;
+      dayDetailOpen.value = false;
+      void swalRequestError(e, "저널 일자 상세를 불러오지 못했습니다.");
     } finally {
       dayDetailLoading.value = false;
     }
@@ -437,8 +443,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         yearOptions,
         list: daysRes.data?.rsltList ?? [],
       };
-    } catch {
+    } catch (e: unknown) {
+      console.error("[journalModal] openDayFilterModal failed", { tagId: seed.id, yy }, e);
       filterModalPayload.value = null;
+      filterModalOpen.value = false;
+      void swalRequestError(e, "태그 검색 결과를 불러오지 못했습니다.");
     } finally {
       filterModalLoading.value = false;
     }
@@ -659,9 +668,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         tag: { tagListStrWithCtgr: "" },
         chapterList: [],
       };
-    } catch {
+    } catch (e: unknown) {
+      console.error("[journalModal] openDreamEntryRegist failed", { journalDayId: params.journalDayId }, e);
       entryRegistModel.value = null;
       entryRegistOpen.value = false;
+      void swalRequestError(e, "꿈 등록 정보를 불러오지 못했습니다.");
     } finally {
       entryRegistLoading.value = false;
       dreamEntryRegistOpening = false;
@@ -696,9 +707,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         hydrateEntryChapterOptions(merged),
       ]);
       entryRegistModel.value = merged;
-    } catch {
+    } catch (e: unknown) {
+      console.error("[journalModal] openEntryModify failed", { entryId: id }, e);
       entryRegistModel.value = null;
       entryRegistOpen.value = false;
+      void swalRequestError(e, "엔트리 정보를 불러오지 못했습니다.");
     } finally {
       entryRegistLoading.value = false;
     }

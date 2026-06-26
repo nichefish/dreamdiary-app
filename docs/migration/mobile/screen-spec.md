@@ -24,12 +24,13 @@
 ```
 앱 시작
   └─ AuthContext.mount
-        ├─ setUnauthorizedHandler 등록 (401/403 → 자동 로그아웃)
+        ├─ setUnauthorizedHandler 등록 (401 → 자동 로그아웃)
         └─ GET /api/auth/get-auth-account
               ├─ 성공(세션 있음) → isAuthenticated = true → MainTabs 진입
-              └─ 실패(401 등)   → isAuthenticated = false → LoginScreen 표시
+              ├─ 실패(401)      → isAuthenticated = false → LoginScreen 표시
+              └─ 실패(403/5xx/네트워크) → authError 표시 → 다시 시도 버튼 제공
 
-세션 만료 (API 401/403)
+세션 만료 (API 401)
   └─ client.ts _onUnauthorized 콜백 호출
         → AuthContext setUser(null)
         → AppNavigator 가 isAuthenticated 변경 감지 → LoginScreen 자동 전환
@@ -145,7 +146,7 @@ RootStack (headerShown: false)
 | 꿈 엔트리 스타일 | 보라색 배경(`#F5EEF8`), 텍스트(`#6C3483`), 좌측 테두리(`#8E44AD`) |
 | 일반 엔트리 스타일 | `colors.surface` 배경, 기본 텍스트 컬러 |
 | 빈 상태 | 오늘: "오늘은 아직 기록이 없습니다." + 「빠른 기록」/FAB 힌트 / 과거: "이 날의 기록이 없습니다." |
-| 오류 상태 | 빨간 오류 텍스트 |
+| 오류 상태 | 빨간 오류 텍스트. 서버 `message`를 우선 표시하고 조회 실패 시 직전 성공 일자 데이터를 유지 |
 | 로딩 상태 | ActivityIndicator (large) |
 | 빠른 기록 | `atToday` 시 `QuickCapturePanel` (접기/펼치기) |
 | FAB (기록 추가) | 우하단 고정 원형 `+` 버튼 — 탭 시 선택 날짜 기준 `AddEntry` push |
@@ -215,14 +216,14 @@ JournalDay
 **데이터 흐름** (`GET /api/journal/days?viewType=MONTHLY&stdrdDt=YYYY-MM-01`)
 - 월별 JournalDay 목록 수신 → `journalChapterList`/`journalDreamList` 비어있지 않으면 도트 표시
 - 월 변경 시 재조회, 탭 포커스 시 재조회
-- API 오류 시 조용히 실패 (도트 없는 빈 달력 표시)
+- API 오류 시 해당 월의 도트를 정상 빈 결과로 표시하지 않고 오류 문구와 `다시 시도` 버튼을 표시한다. 마지막 성공 월 데이터는 상태에 보존하지만 선택 월과 일치할 때만 도트 계산에 사용한다.
 
 **날짜 탭 → DayView 이동**
 - `navigation.navigate("DayView", { date: "YYYY-MM-DD" })`
 - 오늘 포함 과거 날짜만 탭 가능
 
 > **참고**: 백엔드 `viewType=MONTHLY` 지원 여부에 따라 도트 표시가 동작하지 않을 수 있음.
-> API 오류 시 달력 자체는 정상 렌더링됨 (도트만 없음).
+> API 오류 시 달력 날짜 그리드는 유지하고 오류 문구와 재시도 동작을 제공한다. 도트는 조회 성공이 확인된 월에만 표시한다.
 
 ---
 
@@ -303,7 +304,10 @@ JournalDay
 - 모든 요청: `credentials: "include"` (JWT 쿠키 자동 첨부)
 - FormData 전송 시 Content-Type 헤더 생략 (fetch가 boundary 자동 설정)
 - query 옵션의 값이 string[]이면 key[0]=v0&key[1]=v1 형태로 변환 (Spring MVC List 바인딩 대응)
-- 401/403 → `_onUnauthorized` 콜백 호출 → AuthContext 자동 로그아웃
+- 401 → `_onUnauthorized` 콜백 호출 → AuthContext 자동 로그아웃
+- 403 remains an ApiError/access-denied response and must not invoke `_onUnauthorized` or automatic logout.
+- HTTP 오류는 경로·상태·응답 본문을 콘솔에 기록하고, 구조화된 응답의 비어 있지 않은 `message`를 `ApiError.message`로 사용한다. 서버 메시지가 없을 때만 상태코드가 포함된 공통 요청 실패 문구를 사용한다.
+- Today·검색·태그·해석·채팅 조회 catch는 오류 컨텍스트를 콘솔에 기록하고 `ApiError.message`를 화면 오류 상태에 전달한다. 같은 조회 조건의 실패는 직전 성공 데이터를 빈 배열로 덮지 않는다. 태그 조건 전환처럼 이전 결과가 다른 조건의 데이터인 경우에는 결과를 초기화하되 오류 상태를 함께 표시해 실제 0건과 구분한다.
 
 ### 텍스트 유틸 (`src/utils/text.ts`)
 - `stripHtml(html)`: HTML 태그 + `&nbsp;` 제거, trim
@@ -345,7 +349,7 @@ JournalDay
 | AI 대화 버튼 | `rootNav.navigate("AiChat")` push |
 | 로그아웃 버튼 | Alert 확인 후 `AuthContext.logout()` → 자동 LoginScreen 전환 |
 | 이번 달 통계 | 기록 일수 / 꿈 기록 / 일기 카운트 — `getMonthlyJournalDays` 호출 후 집계 |
-| 통계 로딩 | ActivityIndicator (통계 카드 내), 실패 시 0 유지 (조용히 무시) |
+| 통계 로딩 | ActivityIndicator (통계 카드 내). 실패 시 숫자를 0으로 표시하지 않고 서버 오류 메시지와 `다시 시도` 버튼 표시 |
 | 로딩 상태 | 로그아웃 중 ActivityIndicator (버튼 내) |
 
 **내비게이션**
@@ -390,7 +394,7 @@ JournalDay
 | 결과 카드 | 타입 뱃지 + 날짜(`stdrdDt`) + 제목 + 본문 미리보기 140자 |
 | 결과 카드 탭 | `navigation.navigate("EntryDetail", { entry, isDream })` |
 | 빈 결과 | "검색 결과가 없습니다." |
-| 오류 상태 | 빨간 오류 텍스트 |
+| 오류 상태 | 빨간 오류 텍스트. 서버 `message`를 우선 표시하고 검색 실패를 빈 결과로 오인하지 않도록 직전 성공 결과를 유지 |
 | 로딩 상태 | 검색 버튼 내 ActivityIndicator |
 
 **API** (`GET /api/journal/entries`)
@@ -451,6 +455,8 @@ JournalDay
 | AI 아바타 | 28×28 보라 원형 `AI` 레이블 |
 | 입력·전송 | multiline TextInput + 「전송」 / 응답 대기 시 「중단」 |
 
+- 세션·메시지 목록 조회 실패는 별도 `sessionsError`/`messagesError` 상태로 서버 `message`를 표시하고 `다시 시도` 버튼을 제공한다. 메시지 재조회 실패는 현재 세션과 직전 성공 메시지를 유지하며, 세션 목록 오류가 아닌 메시지 영역 오류로 표시한다.
+
 **API** (REST)
 - `GET /chat/sessions` — 내 세션 목록
 - `POST /chat/sessions` (JSON) — 새 세션 생성
@@ -463,7 +469,7 @@ JournalDay
 
 **WebSocket (STOMP 1.2)** — `src/api/chatStomp.ts`, `src/hooks/useChatStomp.ts`
 - 연결: `ws(s)://{API_HOST}/chat` — 핸드셰이크 `Authorization: Bearer {accessToken}` (`src/auth/accessToken.ts`, login/refresh 응답 헤더에서 저장). 쿠키 `jwt` 폴백은 서버 `JwtTokenProvider.resolveToken(ServerHttpRequest)` 지원
-- CONNECT 후 구독: `/topic/chat/session/{sessionId}`, `/topic/session-invalid`
+- CONNECT 후 구독: `/topic/chat/session/{sessionId}`, `/user/queue/session-invalid` (현재 로그인 사용자 전용 세션 만료 알림)
 - 전송: `/app/chat/session/{sessionId}/send` (text/plain 본문)
 - 취소: `/app/chat/session/{sessionId}/cancel`
 - MESSAGE 수신 → `rsltObj` ChatMessage append (웹 `chat.ts` 와 동일 프레이밍)

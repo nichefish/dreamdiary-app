@@ -224,7 +224,7 @@ import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { swalAlert } from "@/shared/utils/swal";
+import { swalAlert, swalRequestError } from "@/shared/utils/swal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
@@ -311,9 +311,9 @@ async function loadEntries(): Promise<void> {
     hydrateTagNamesFromEntries(entries.value);
     void hydrateMissingTagNames();
     resultLabel.value = `${entries.value.length}건`;
-  } catch {
-    entries.value = [];
-    resultLabel.value = "0건";
+  } catch (e: unknown) {
+    console.error("[JournalEntrySearchPage] entry search failed", e);
+    void swalRequestError(e, "검색 결과를 불러오지 못했습니다.");
   } finally {
     loading.value = false;
     void reinitMetronicAfterDom();
@@ -452,7 +452,9 @@ async function fetchEntryDetail(entryId: number | string): Promise<JournalEntryD
   try {
     const res = await axios.get(`/api/journal/entry/${entryId}`);
     return res.data?.rsltObj ?? null;
-  } catch {
+  } catch (e: unknown) {
+    console.error("[JournalEntrySearchPage] entry detail load failed", { entryId }, e);
+    void swalRequestError(e, "엔트리 상세를 불러오지 못했습니다.");
     return null;
   }
 }

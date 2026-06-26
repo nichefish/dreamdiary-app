@@ -152,7 +152,7 @@ export const useChatStore = defineStore("chat", () => {
   function subscribeToSessionInvalid(): void {
     if (invalidSubscriptionId) return;
     invalidSubscriptionId = "chat-session-invalid";
-    subscribe("/topic/session-invalid", invalidSubscriptionId);
+    subscribe("/user/queue/session-invalid", invalidSubscriptionId);
   }
 
   function websocketUrl(): string {
@@ -187,7 +187,7 @@ export const useChatStore = defineStore("chat", () => {
     }
 
     if (frame.command === "MESSAGE") {
-      if (frame.headers.destination === "/topic/session-invalid") {
+      if (frame.headers.subscription === invalidSubscriptionId) {
         reset();
         return;
       }
