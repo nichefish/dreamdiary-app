@@ -60,7 +60,7 @@ public class JournalDayTagRestController
 
         final Map<String, List<String>> tagCategoryMap = myJournalDayTagService.getMyTagCategoryMap();
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagCategoryMap));
     }
@@ -81,7 +81,7 @@ public class JournalDayTagRestController
 
         final List<TagDto> tagList = myJournalDayTagService.getMySizedTagList(toTagQuery(searchParam));
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(tagList));
     }
@@ -102,7 +102,7 @@ public class JournalDayTagRestController
 
         final Map<String, List<TagDto>> tagGroupMap = myJournalDayTagService.getMySizedTagGroupMap(toTagQuery(searchParam));
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagGroupMap));
     }
@@ -122,7 +122,7 @@ public class JournalDayTagRestController
 
         final List<Integer> yyList = myJournalDayTagService.getMyYyListByTagId(tagId);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(yyList));
     }
@@ -145,7 +145,7 @@ public class JournalDayTagRestController
         searchParam.setTagId(tagId);
         final List<JournalDayDto> journalDayList = myJournalDayQueryService.getMyListDtoByTagIdEnriched(searchParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(journalDayList));
     }

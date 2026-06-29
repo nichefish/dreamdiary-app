@@ -41,7 +41,7 @@ public class CodeItemRestController extends BaseControllerImpl {
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder").and(Sort.by(Sort.Direction.ASC, "code"));
         final List<CodeItemDto> codeItemList = codeItemService.getListDto(searchParam, sort);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(codeItemList));
     }
 
@@ -51,7 +51,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeItemRegAjax(final @Valid CodeItemDto codeItemDto) throws Exception {
         final ServiceResponse result = codeItemService.regist(codeItemDto);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
@@ -61,7 +61,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeItemMdfAjax(final @Valid CodeItemDto codeItemDto) throws Exception {
         final ServiceResponse result = codeItemService.modify(codeItemDto);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
@@ -71,7 +71,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeItemDtlAjax(final @RequestParam("id") Integer id) throws Exception {
         final CodeItemDto codeItemDto = codeItemService.getDtlDto(id);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(codeItemDto));
     }
 
@@ -81,7 +81,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeItemDelAjax(final @RequestParam("id") Integer id) throws Exception {
         final ServiceResponse result = codeItemService.delete(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
         return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
     }
 
@@ -91,7 +91,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeItemSortOrdrAjax(final @RequestBody CodeItemParam codeItemParam) throws Exception {
         final ServiceResponse result = codeItemService.sortOrder(codeItemParam.getSortOrders());
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 }

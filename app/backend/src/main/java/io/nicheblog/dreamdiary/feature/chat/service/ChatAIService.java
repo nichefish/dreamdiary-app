@@ -196,7 +196,7 @@ public class ChatAIService {
                 "/topic/chat/session/" + sessionId,
                 AjaxResponse.fromResponseWithObj(
                         userResult,
-                        MessageUtils.RSLT_SUCCESS
+                        MessageUtils.getMessage("common.result.success")
                 )
         );
 
@@ -272,7 +272,7 @@ public class ChatAIService {
                 "/topic/chat/session/" + sessionId,
                 AjaxResponse.fromResponseWithObj(
                         aiResult,
-                        MessageUtils.RSLT_SUCCESS
+                        MessageUtils.getMessage("common.result.success")
                 )
         );
 

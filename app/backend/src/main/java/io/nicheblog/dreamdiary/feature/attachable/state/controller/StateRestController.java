@@ -53,12 +53,12 @@ public class StateRestController
 
         final ServiceResponse result = stateService.toggle(stateToggle);
         if (!Boolean.TRUE.equals(result.getRslt())) {
-            final String failMsg = result.getMessage() != null ? result.getMessage() : MessageUtils.RSLT_FAILURE;
+            final String failMsg = result.getMessage() != null ? result.getMessage() : MessageUtils.getMessage("common.result.failure");
             return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, failMsg));
         }
 
         final String rsltSts = result.getRsltSts();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         final AjaxResponse response = AjaxResponse.fromResponseWithObj(result, rsltMsg);
         response.setRsltSts(rsltSts);

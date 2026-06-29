@@ -83,7 +83,7 @@ public class ScheduleCalRestController
                 .toList()
         );
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(payload));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(payload));
     }
 
     /**
@@ -102,7 +102,7 @@ public class ScheduleCalRestController
 
         final List<BaseCalDto> scheduleCalList = scheduleCalService.getScheduleTotalCalList(searchParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(scheduleCalList));
     }
@@ -128,6 +128,6 @@ public class ScheduleCalRestController
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "bgnDt"));
         final Page<ScheduleDto> pageResult = scheduleCalService.getScheduleListPage(searchParam, pageRequest);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(pageResult));
     }
 }

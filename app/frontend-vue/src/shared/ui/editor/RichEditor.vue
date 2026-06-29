@@ -183,6 +183,7 @@ async function handleImageUpload(event: Event): Promise<void> {
     fd.append("file", file);
     const res = await fetch("/api/file/file-upload", {
       method: "POST",
+      headers: { "Accept-Language": window.localStorage.getItem("dreamdiary_locale") || "ko" },
       body: fd,
     });
     const data = await res.json();

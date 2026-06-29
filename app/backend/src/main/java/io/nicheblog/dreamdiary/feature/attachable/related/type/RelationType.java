@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable.related.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +14,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum RelationType {
+public enum RelationType implements LocalizedEnum {
 
     REFERENCE("REFERENCE", "참조"),
     EXTENSION("EXTENSION", "확장"),

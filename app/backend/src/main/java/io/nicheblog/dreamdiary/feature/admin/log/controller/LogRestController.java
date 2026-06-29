@@ -54,7 +54,7 @@ public class LogRestController
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         final Page<LogQueryDto> pageResult = logQueryService.getPageDto(searchParam, pageRequest);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(pageResult));
     }
 
     /**
@@ -69,6 +69,6 @@ public class LogRestController
 
         final LogQueryDto rsDto = logQueryService.getDtlDto(id);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(rsDto));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(rsDto));
     }
 }

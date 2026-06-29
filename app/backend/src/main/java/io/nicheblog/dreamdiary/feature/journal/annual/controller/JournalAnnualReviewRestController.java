@@ -55,7 +55,7 @@ public class JournalAnnualReviewRestController
         // 객체 조회 및 모델에 추가
         final JournalAnnualReviewDto retrievedDto = journalAnnualReviewService.getDtlDto(id);
         final boolean isSuccess = (retrievedDto.getId() != null);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -79,7 +79,7 @@ public class JournalAnnualReviewRestController
         final boolean isModify = id != null;
         if (isModify) journalAnnualReview.setId(id);
         final ServiceResponse result = isModify ? journalAnnualReviewService.modify(journalAnnualReview, request) : journalAnnualReviewService.regist(journalAnnualReview, request);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -99,7 +99,7 @@ public class JournalAnnualReviewRestController
     ) throws Exception {
 
         final ServiceResponse result = journalAnnualReviewService.delete(id);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

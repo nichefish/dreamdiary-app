@@ -60,6 +60,6 @@ public class AdminPageController
         payload.put("meta", meta);
         payload.put("roleList", roleList);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(payload));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(payload));
     }
 }

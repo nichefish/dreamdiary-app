@@ -75,6 +75,18 @@
       </select>
     </div>
     <!--end::User mode-->
+    <!--begin::Language toggle-->
+    <div class="app-navbar-item ms-1 ms-md-3">
+      <button
+        type="button"
+        class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-30px h-30px w-md-40px h-md-40px"
+        :title="locale === 'ko' ? 'Switch to English' : '한국어로 전환'"
+        @click="toggleLocale"
+      >
+        <span class="fs-4">{{ locale === 'ko' ? '🇰🇷' : '🇺🇸' }}</span>
+      </button>
+    </div>
+    <!--end::Language toggle-->
     <!--begin::User menu-->
     <div class="app-navbar-item ms-1 ms-md-4" id="kt_header_user_menu_toggle">
       <!--begin::Menu wrapper-->
@@ -126,6 +138,7 @@ import KTUserMenu from "@/app/layouts/default/components/menus/UserAccountMenu.v
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useMenuStore, type MenuMode } from "@/shared/menu/stores/menu";
 import { useThemeStore } from "@/shared/theme/stores/theme";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export default defineComponent({
   name: "header-navbar",
@@ -138,6 +151,7 @@ export default defineComponent({
     const authStore = useAuthStore();
     const menuStore = useMenuStore();
     const store = useThemeStore();
+    const localeStore = useLocaleStore();
 
     const themeMode = computed(() => store.mode);
     const menuMode = computed(() => menuStore.mode);
@@ -147,6 +161,10 @@ export default defineComponent({
     );
     const toggleThemeMode = () => {
       store.setThemeMode(themeMode.value === "light" ? "dark" : "light");
+    };
+    const locale = computed(() => localeStore.locale);
+    const toggleLocale = () => {
+      localeStore.setLocale(localeStore.locale === "ko" ? "en" : "ko");
     };
     const onMenuModeChange = async (event: Event) => {
       const nextMode = (event.target as HTMLSelectElement).value as MenuMode;
@@ -162,6 +180,8 @@ export default defineComponent({
       handleProfileImageError,
       profileImageUrl,
       getAssetPath,
+      locale,
+      toggleLocale,
     };
   },
 });

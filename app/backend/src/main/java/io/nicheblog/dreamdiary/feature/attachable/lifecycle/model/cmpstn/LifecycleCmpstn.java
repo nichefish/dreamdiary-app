@@ -43,7 +43,7 @@ public class LifecycleCmpstn
         if (key == null) return null;
         return LifecycleCmpstn.builder()
                 .lifecycleKey(key.key)
-                .lifecycleDesc(key.desc)
+                .lifecycleDesc(key.getLabel())
                 .build();
     }
 

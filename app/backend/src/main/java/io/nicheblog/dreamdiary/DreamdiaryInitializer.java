@@ -115,7 +115,7 @@ public class DreamdiaryInitializer
             } catch (final UsernameNotFoundException e) {
                 // 시스템 계정 부재시 등록:: 메소드 분리
                 isSuccess = this.regSystemAcnt();
-                rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+                rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
                 log.info("Startup action completed. resource=systemAccount status={} detail={}", isSuccess ? "created" : "failed", rsltMsg);
             }
         } catch (final Exception e) {
@@ -178,7 +178,7 @@ public class DreamdiaryInitializer
             }
             // 인증 정책 부재시 등록:: 메소드 분리
             isSuccess = this.regAuthPolicy();
-            rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+            rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
             log.info("Startup action completed. resource=authPolicy status={} detail={}", isSuccess ? "created" : "failed", rsltMsg);
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);

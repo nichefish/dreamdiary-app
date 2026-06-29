@@ -57,7 +57,7 @@ public class AuthPageController
 
             return "redirect:/vue-app/auth/verify-result?status=success";
         } catch (final Exception e) {
-            final String rsltMsg = StringUtils.defaultIfBlank(MessageUtils.getExceptionMsg(e), "인증 링크를 다시 확인해주세요.");
+            final String rsltMsg = StringUtils.defaultIfBlank(MessageUtils.getExceptionMsg(e), MessageUtils.getMessage("auth.verify.link-invalid"));
             final String encodedMessage = UriUtils.encodeQueryParam(rsltMsg, StandardCharsets.UTF_8);
 
             return "redirect:/vue-app/auth/verify-result?status=failure&message=" + encodedMessage;

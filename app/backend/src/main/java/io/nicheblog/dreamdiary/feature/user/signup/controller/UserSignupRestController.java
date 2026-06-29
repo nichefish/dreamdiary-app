@@ -99,7 +99,7 @@ public class UserSignupRestController
 
         final ServiceResponse result = userSignupService.cf(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -123,7 +123,7 @@ public class UserSignupRestController
 
         final ServiceResponse result = userSignupService.uncf(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -161,7 +161,7 @@ public class UserSignupRestController
         rsltObj.put("pendingList", pendingList);
         rsltObj.put("recentList", recentList);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(rsltObj));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(rsltObj));
     }
 
     /**

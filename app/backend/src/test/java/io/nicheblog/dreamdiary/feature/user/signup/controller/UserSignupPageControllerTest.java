@@ -124,7 +124,7 @@ class UserSignupPageControllerTest {
     @Test
     @WithMockUser(username = "mngr-test", authorities = "ROLE_MNGR")
     public void testUserCfAjax() throws Exception {
-        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS)).build();
+        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage("common.result.success")).build();
         when(userSignupService.cf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_SIGNUP_REQUEST_APPROVAL.replace("{id}", "123")))
@@ -135,7 +135,7 @@ class UserSignupPageControllerTest {
     @Test
     @WithMockUser(username = "mngr-test", authorities = "ROLE_MNGR")
     public void testUserUncfAjax() throws Exception {
-        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS)).build();
+        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage("common.result.success")).build();
         when(userSignupService.uncf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_SIGNUP_REQUEST_REJECTION.replace("{id}", "123")))

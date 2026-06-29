@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -8,7 +9,7 @@ import lombok.RequiredArgsConstructor;
  * @author nichefish
  */
 @RequiredArgsConstructor
-public enum Mdfable {
+public enum Mdfable implements LocalizedEnum {
 
     REGSTR("등록자"),
     MNGR("관리자"),

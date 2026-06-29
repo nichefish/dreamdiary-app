@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -43,15 +44,8 @@ public class MessageUtils {
     @PostConstruct
     private void init() {
         messageSource = autowiredMessageSource;
-        response = autowiredResponse;
-        RSLT_SUCCESS = getMessage("common.result.success");
-        RSLT_FAILURE = getMessage("common.result.failure");
-        RSLT_EMPTY = getMessage("common.result.empty");
-    }
+        response = autowiredResponse;    }
 
-    public static String RSLT_SUCCESS;
-    public static String RSLT_FAILURE;
-    public static String RSLT_EMPTY;
 
     public static final String RSLT_EXCEPTION = "exception";
 
@@ -73,7 +67,7 @@ public class MessageUtils {
     public static String getMessage(final String code) throws NoSuchMessageException {
         // test환경에서의 난해성 때문에 bean 주입 환경 외에는 예외 리턴 처리
         if (messageSource == null) return null;
-        return messageSource.getMessage(code, null, code, Locale.KOREAN);
+        return messageSource.getMessage(code, null, code, LocaleContextHolder.getLocale());
     }
 
     /**
@@ -86,7 +80,7 @@ public class MessageUtils {
      */
     public static String getMessage(final String code, final @Nullable Object[] args) throws NoSuchMessageException {
         if (messageSource == null) return code;
-        return messageSource.getMessage(code, args, code, Locale.KOREAN);
+        return messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale());
     }
 
     /**

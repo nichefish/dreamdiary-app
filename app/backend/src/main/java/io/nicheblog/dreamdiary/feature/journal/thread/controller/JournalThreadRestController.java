@@ -67,7 +67,7 @@ public class JournalThreadRestController
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         final Page<JournalThreadDto> pageResult = journalThreadService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(pageResult));
     }
@@ -91,7 +91,7 @@ public class JournalThreadRestController
         final boolean isRegist = (journalThread.getKey() == null);
         final ServiceResponse result = isRegist ? journalThreadService.regist(journalThread, request) : journalThreadService.modify(journalThread, request);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -113,7 +113,7 @@ public class JournalThreadRestController
 
         final JournalThreadDto retrievedDto = journalThreadService.viewDetailPage(key);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -134,7 +134,7 @@ public class JournalThreadRestController
 
         final ServiceResponse result = journalThreadService.delete(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

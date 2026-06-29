@@ -27,7 +27,7 @@ public class HistoryController {
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
         final BaseAttachableDto retrievedDto = myHistoryFacade.getMyHistoryTarget(resolvedContentType, id);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(retrievedDto));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(retrievedDto));
     }
 
     @PostMapping(value = {Url.HISTORY_RESTORE})
@@ -40,7 +40,7 @@ public class HistoryController {
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
         final BaseAttachableDto restoredDto = myHistoryFacade.restoreMyHistory(resolvedContentType, id, historyId);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(restoredDto));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(restoredDto));
     }
 
     @DeleteMapping(value = {Url.HISTORY})
@@ -53,7 +53,7 @@ public class HistoryController {
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
         final boolean deleted = myHistoryFacade.deleteMyHistory(resolvedContentType, id, historyId);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure")));
     }
 
     @DeleteMapping(value = {Url.HISTORY_CLEAR})
@@ -65,6 +65,6 @@ public class HistoryController {
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
         final boolean deleted = myHistoryFacade.deleteAllMyHistory(resolvedContentType, id);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure")));
     }
 }

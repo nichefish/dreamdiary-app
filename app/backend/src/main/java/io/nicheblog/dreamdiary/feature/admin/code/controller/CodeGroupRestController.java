@@ -44,7 +44,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     ) throws Exception {
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "sortOrder"));
         final Page<CodeGroupDto> pageResult = codeGroupService.getPageDto(searchParam, pageRequest);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(pageResult));
     }
 
     @PostMapping(value = {Url.CODE_GROUPS})
@@ -53,7 +53,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeGroupRegAjax(final @Valid CodeGroupDto codeGroupDto) throws Exception {
         final ServiceResponse result = codeGroupService.regist(codeGroupDto);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
@@ -64,7 +64,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
         codeGroupDto.setId(id);
         final ServiceResponse result = codeGroupService.modify(codeGroupDto);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
@@ -74,7 +74,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeGroupDtlAjax(final @PathVariable("id") Integer id) throws Exception {
         final CodeGroupDto codeGroup = codeGroupService.getDtlDto(id);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(codeGroup));
     }
 
@@ -84,7 +84,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeGroupPatchAjax(final @PathVariable("id") Integer id, final @RequestBody CodeGroupPatchDto patchDto) throws Exception {
         final ServiceResponse result = codeGroupService.patch(id, patchDto);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
@@ -94,7 +94,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> codeGroupDelAjax(final @PathVariable("id") Integer id) throws Exception {
         final ServiceResponse result = codeGroupService.delete(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
     }
 }
