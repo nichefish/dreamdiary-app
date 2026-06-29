@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +14,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum ChapterType {
+public enum ChapterType implements LocalizedEnum {
 
     DIARY("DIARY", "일기"),
     DREAM("DREAM", "꿈"),

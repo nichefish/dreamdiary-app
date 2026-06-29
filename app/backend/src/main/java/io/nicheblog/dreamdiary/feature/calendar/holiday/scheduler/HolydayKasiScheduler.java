@@ -49,7 +49,7 @@ public class HolydayKasiScheduler {
         try {
             // 기존 정보 (API로 받아온 휴일) 삭제 후 재등록
             isSuccess = holydayKasiApiService.procHolydayList(DateUtils.getCurrYyStr());
-            rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+            rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);

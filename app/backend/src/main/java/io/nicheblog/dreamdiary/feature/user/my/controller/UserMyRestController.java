@@ -55,7 +55,7 @@ public class UserMyRestController
         final String loginUsername = AuthUtils.getLoginUsername();
         final UserDto retrievedDto = userService.getDtlDto(loginUsername);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(retrievedDto));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(retrievedDto));
     }
 
     /**
@@ -73,7 +73,7 @@ public class UserMyRestController
     ) throws Exception {
 
         final boolean isSuccess = userMyService.uploadProflImg(request);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -92,7 +92,7 @@ public class UserMyRestController
     ) throws Exception {
 
         final boolean isSuccess = userMyService.removeProflImg();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -113,7 +113,7 @@ public class UserMyRestController
 
         final String loginUsername = AuthUtils.getLoginUsername();
         final boolean isSuccess = userMyService.myPwCf(loginUsername, currPw);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -133,7 +133,7 @@ public class UserMyRestController
     ) throws Exception {
 
         final boolean isSuccess = userMyService.myPwChg(pwChgParam);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

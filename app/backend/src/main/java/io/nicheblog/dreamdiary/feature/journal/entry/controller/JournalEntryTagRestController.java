@@ -99,7 +99,7 @@ public class JournalEntryTagRestController
      */
     private ResponseEntity<AjaxResponse> tagCategoryMapAjax(final ContentType contentType) throws Exception {
         final Map<String, List<String>> tagCategoryMap = journalEntryMyTagService.getMyTagCategoryMap(contentType);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withMap(tagCategoryMap));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withMap(tagCategoryMap));
     }
 
     /**
@@ -117,7 +117,7 @@ public class JournalEntryTagRestController
         final List<TagDto> tagList = searchParam.hasWeekStartDt() || searchParam.hasYyMnth()
                 ? journalEntryMyTagService.getMySizedTagList(toTagQuery(searchParam, contentType))
                 : journalEntryMyTagService.getMyTagList(contentType);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withList(tagList));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(tagList));
     }
 
     /**
@@ -133,7 +133,7 @@ public class JournalEntryTagRestController
             final ContentType contentType
     ) throws Exception {
         final Map<String, List<TagDto>> tagGroupMap = journalEntryMyTagService.getMySizedTagGroupMap(toTagQuery(searchParam, contentType));
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withMap(tagGroupMap));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withMap(tagGroupMap));
     }
 
     /**

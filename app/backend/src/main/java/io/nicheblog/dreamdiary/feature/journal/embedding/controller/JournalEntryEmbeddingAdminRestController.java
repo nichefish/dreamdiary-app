@@ -43,7 +43,7 @@ public class JournalEntryEmbeddingAdminRestController {
     public ResponseEntity<AjaxResponse> getStats() {
         final JournalEntryEmbeddingStatsDto stats = journalEntryEmbeddingQueueService.getStats()
                 .withSyncStatus(journalEntryEmbeddingSyncJobService.getStatus());
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(stats));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(stats));
     }
 
     /**
@@ -57,7 +57,7 @@ public class JournalEntryEmbeddingAdminRestController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> sync() throws Exception {
         final JournalEntryEmbeddingSyncJobStatusDto status = journalEntryEmbeddingSyncJobService.startSync();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(status));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(status));
     }
 
     /**
@@ -70,7 +70,7 @@ public class JournalEntryEmbeddingAdminRestController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> requeueFailed() {
         final long requeued = journalEntryEmbeddingQueueService.requeueFailed();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(requeued));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(requeued));
     }
 
     /**
@@ -82,7 +82,7 @@ public class JournalEntryEmbeddingAdminRestController {
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> getOllamaHealth() {
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS)
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
                 .withObj(ollamaClient.checkHealth()));
     }
 
@@ -97,7 +97,7 @@ public class JournalEntryEmbeddingAdminRestController {
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> runQualityEval() {
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS)
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
                 .withObj(journalEntryEmbeddingQualityEvalService.runEval()));
     }
 }

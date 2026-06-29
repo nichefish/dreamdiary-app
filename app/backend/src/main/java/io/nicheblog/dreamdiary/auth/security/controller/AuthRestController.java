@@ -124,14 +124,14 @@ public class AuthRestController {
             final Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
             final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
 
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo)));
         } catch (final JwtException | AuthenticationException e) {
             return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
             // 그 외 일반적인 예외 처리
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("common.result.failure")));
         }
     }
 
@@ -150,7 +150,7 @@ public class AuthRestController {
 
         try {
             AuthUtils.requireLoginUsername();
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
         } catch (final Exception e) {
             log.info("Session ping rejected. reason={}", e.getClass().getSimpleName());
             return unauthorizedAndInvalidate(request);
@@ -195,13 +195,13 @@ public class AuthRestController {
                 session.setAttribute("jwt", accessToken);
             }
 
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
         } catch (final JwtException | AuthenticationException e) {
             return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("common.result.failure")));
         }
     }
 
@@ -221,7 +221,7 @@ public class AuthRestController {
     ) throws Exception {
 
         final boolean isSuccess = userMyService.loginPwChg(userPwChgParam);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -244,7 +244,7 @@ public class AuthRestController {
         final HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -295,7 +295,7 @@ public class AuthRestController {
             final Authentication auth = authenticationProvider.authenticate(token);
             final AuthInfo authInfo = (AuthInfo) auth.getPrincipal();
             this.handleJsonLoginSuccess(request, response, authInfo);
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo)));
         } catch (final AccountNeedsPwResetException e) {
             final String errorMsg = this.getLoginFailureMsg(e);
             this.publishLoginFailureLog(body.getUsername(), e, errorMsg);
@@ -378,7 +378,7 @@ public class AuthRestController {
         CookieUtils.deleteRefreshTokenCookie();
         final HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -419,7 +419,7 @@ public class AuthRestController {
         authService.setLastLoginAt(username);
         DupIdLoginManager.addKey(username);
 
-        publisher.publishAsyncEvent(new LogEvent(this, new LogParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN)));
+        publisher.publishAsyncEvent(new LogEvent(this, new LogParam(true, MessageUtils.getMessage("common.result.success"), ActvtyCtgr.LGN)));
         publisher.publishAsyncEvent(new LoginSuccessCacheWarmupEvent(this, username));
         HttpUtils.setInvalidateBrowserCacheHeader(response);
         log.info("Vue login succeeded. username: {}", username);

@@ -47,7 +47,7 @@ public class RelatedContentRestController
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
         final List<RelatedContentDto> relatedList = myRelatedContentService.getMyListDto(resolvedContentType, id);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withList(relatedList));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(relatedList));
     }
 
     @PostMapping(value = {Url.RELATEDS})
@@ -67,7 +67,7 @@ public class RelatedContentRestController
                 .rsltObj(savedDto)
                 .build();
 
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.getMessage("common.result.success")));
     }
 
     @DeleteMapping(value = {Url.RELATED})
@@ -77,6 +77,6 @@ public class RelatedContentRestController
             final @PathVariable("relatedContentId") Integer relatedContentId
     ) {
         final boolean deleted = myRelatedContentService.deleteMyRelation(relatedContentId);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure")));
     }
 }

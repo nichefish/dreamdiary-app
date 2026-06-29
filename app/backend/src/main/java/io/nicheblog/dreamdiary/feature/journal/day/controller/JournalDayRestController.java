@@ -74,7 +74,7 @@ public class JournalDayRestController
             case SEARCH -> myJournalDayQueryService.getMyListDtoByMetaIdEnriched(searchParam);
         };
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList((List<?>) list));
     }
@@ -112,7 +112,7 @@ public class JournalDayRestController
             throw e;
         }
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         final AjaxResponse ajax = AjaxResponse.fromResponseWithObj(result, rsltMsg);
         if (Boolean.TRUE.equals(isSuccess)) {
@@ -138,7 +138,7 @@ public class JournalDayRestController
 
         final JournalDayDto retrievedDto = myJournalDayQueryService.getMyDtlDtoEnriched(id);
         final boolean isSuccess = (retrievedDto.getId() != null);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -158,7 +158,7 @@ public class JournalDayRestController
     ) throws Exception {
 
         final ServiceResponse result = journalDayService.delete(id);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

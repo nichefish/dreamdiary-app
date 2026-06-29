@@ -25,20 +25,12 @@ function isAuthApiUrl(url: string): boolean {
   return url.includes("/api/auth/");
 }
 
-function isSessionExpiredPayload(data: unknown): boolean {
-  if (!data) return true;
-  if (typeof data !== "object" || Array.isArray(data)) return false;
-  const body = data as { error?: unknown; message?: unknown };
-  return body.error === "Unauthenticated" || body.message === "로그인이 필요합니다.";
-}
-
 axios.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
-    const status = (error as { response?: { status?: number; data?: unknown }; config?: { url?: string } })?.response?.status;
-    const data = (error as { response?: { status?: number; data?: unknown }; config?: { url?: string } })?.response?.data;
+    const status = (error as { response?: { status?: number }; config?: { url?: string } })?.response?.status;
     const url = (error as { response?: { status?: number }; config?: { url?: string } })?.config?.url ?? "";
-    if (status === 401 && !isAuthApiUrl(url) && isSessionExpiredPayload(data)) {
+    if (status === 401 && !isAuthApiUrl(url)) {
       await handleSessionExpired(router);
       return Promise.reject(new AuthExpiredError());
     }
@@ -49,7 +41,7 @@ import ElementPlus from "element-plus";
 import i18n from "@metronic/core/plugins/i18n";
 
 //imports for app initialization
-import ApiService from "@metronic/core/services/ApiService";
+import ApiService, { applyLocaleHeader } from "@metronic/core/services/ApiService";
 import LayoutService from "@metronic/core/services/LayoutService";
 import { initApexCharts } from "@metronic/core/plugins/apexcharts";
 import { initInlineSvg } from "@metronic/core/plugins/inline-svg";
@@ -75,6 +67,7 @@ app.use(router);
 app.use(ElementPlus);
 
 ApiService.init(app);
+applyLocaleHeader();
 initApexCharts(app);
 initKtIcon(app);
 initInlineSvg(app);

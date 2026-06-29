@@ -61,7 +61,7 @@ public class CommentRestController
         final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort);
         final Page<CommentDto> commentList = commentService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(commentList.getContent()));
     }
@@ -85,7 +85,7 @@ public class CommentRestController
         final boolean isReg = (comment.getKey() == null);
         final ServiceResponse result = isReg ? commentService.regist(comment, request) : commentService.modify(comment, request);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -106,7 +106,7 @@ public class CommentRestController
 
         final CommentDto rsDto = commentService.getDtlDto(key);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(rsDto));
     }
@@ -126,7 +126,7 @@ public class CommentRestController
     ) throws Exception {
 
         final ServiceResponse result = commentService.delete(id);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

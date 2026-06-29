@@ -36,7 +36,7 @@ public class JournalEntryEntityAdminRestController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> getStats() {
         final JournalEntryEntityQueueStatsDto stats = journalEntryEntityQueueService.getStats();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(stats));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(stats));
     }
 
     /**
@@ -50,7 +50,7 @@ public class JournalEntryEntityAdminRestController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> sync() throws Exception {
         final JournalEntryEntityQueueSyncResultDto result = journalEntryEntityQueueService.syncWithJournalEntries();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(result));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(result));
     }
 
     /**
@@ -63,6 +63,6 @@ public class JournalEntryEntityAdminRestController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> requeueFailed() {
         final long requeued = journalEntryEntityQueueService.requeueFailed();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(requeued));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(requeued));
     }
 }

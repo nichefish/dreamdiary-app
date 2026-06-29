@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -8,7 +9,7 @@ import lombok.RequiredArgsConstructor;
  * @author nichefish
  */
 @RequiredArgsConstructor
-public enum Auth {
+public enum Auth implements LocalizedEnum {
 
     USER("USER", "ROLE_USER", "사용자"),
     MNGR("MNGR", "ROLE_MNGR", "관리자"),

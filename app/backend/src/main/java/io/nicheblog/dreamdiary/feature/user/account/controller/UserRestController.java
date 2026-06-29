@@ -60,7 +60,7 @@ public class UserRestController
         final PageRequest pageRequest = PageRequest.of(page, size, sort);
         final Page<UserDto> pageResult = userService.getPageDto(searchParam, pageRequest);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(pageResult));
     }
 
     /**
@@ -73,7 +73,7 @@ public class UserRestController
             final @PathVariable("id") Integer id
     ) throws Exception {
         final UserDto user = userService.getDtlDto(id);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(user != null, MessageUtils.RSLT_SUCCESS).withObj(user));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(user != null, MessageUtils.getMessage("common.result.success")).withObj(user));
     }
 
     /**
@@ -131,7 +131,7 @@ public class UserRestController
     ) throws Exception {
         final ServiceResponse result = userService.regist(user);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -146,7 +146,7 @@ public class UserRestController
         user.setId(id);
         final ServiceResponse result = userService.modify(user);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -167,7 +167,9 @@ public class UserRestController
 
         final ServiceResponse result = userService.passwordReset(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS_PW_RESET : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess
+                ? MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS_PW_RESET)
+                : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -196,7 +198,7 @@ public class UserRestController
 
         final ServiceResponse result = userService.delete(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

@@ -66,7 +66,7 @@ public class JournalAnnualRestController
 
         final List<JournalAnnualDto> journalAnnualList = myJournalAnnualService.getMyListDto(searchParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(journalAnnualList));
     }
@@ -87,7 +87,7 @@ public class JournalAnnualRestController
 
         final JournalAnnualDto retrievedDto = myJournalAnnualService.getMyDetailDtoByYy(yy);
         final boolean isSuccess = (retrievedDto.getId() != null);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -107,7 +107,7 @@ public class JournalAnnualRestController
 
         final JournalAnnualDto totalAnnual = myJournalAnnualService.getMyTotalAnnual();
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(totalAnnual));
     }
@@ -133,7 +133,7 @@ public class JournalAnnualRestController
         searchParam.resolveStates(showImprtc, showRefrnc);
         final List<JournalEntryDto> journalEntryYyAnnualStatedListByUser = journalEntryMyViewService.getMyAnnualList(searchParam, ContentType.JOURNAL_DIARY);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(journalEntryYyAnnualStatedListByUser));
     }
@@ -159,7 +159,7 @@ public class JournalAnnualRestController
         searchParam.resolveStates(showImprtc, showRefrnc);
         final List<JournalEntryDto> imprtcDreamList = journalEntryMyViewService.getMyAnnualList(searchParam, ContentType.JOURNAL_DREAM);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(imprtcDreamList));
     }
@@ -181,7 +181,7 @@ public class JournalAnnualRestController
 
         final List<TagDto> tagList = journalAnnualTagResolver.resolveTagList(yy, type);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(tagList));
     }
@@ -201,7 +201,7 @@ public class JournalAnnualRestController
     ) throws Exception {
 
         final boolean isSuccess = myJournalAnnualService.makeMyYyAnnual(yy);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -220,7 +220,7 @@ public class JournalAnnualRestController
     ) throws Exception {
 
         final boolean isSuccess = myJournalAnnualService.makeMyTotalYyAnnual();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -240,7 +240,7 @@ public class JournalAnnualRestController
     ) throws Exception {
 
         final boolean isSuccess = journalAnnualService.dreamCompt(id);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -262,7 +262,7 @@ public class JournalAnnualRestController
 
         journalAnnual.setYy(yy);
         final ServiceResponse result = journalAnnualService.modify(journalAnnual);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

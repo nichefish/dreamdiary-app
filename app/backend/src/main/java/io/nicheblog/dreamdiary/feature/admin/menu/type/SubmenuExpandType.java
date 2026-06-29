@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.AllArgsConstructor;
 
 /**
@@ -9,7 +10,7 @@ import lombok.AllArgsConstructor;
  * @author nichefish
  */
 @AllArgsConstructor
-public enum SubmenuExpandType {
+public enum SubmenuExpandType implements LocalizedEnum {
     EXTEND("우측으로 확장"),
     LIST("하단에 목록 표시"),
     NO_SUB("하위메뉴 없음"),

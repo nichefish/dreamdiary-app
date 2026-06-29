@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.annual.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.AllArgsConstructor;
 
 /**
@@ -9,7 +10,7 @@ import lombok.AllArgsConstructor;
  * @author nichefish
  */
 @AllArgsConstructor
-public enum JournalAnnualTy {
+public enum JournalAnnualTy implements LocalizedEnum {
     DREAM("꿈"),
     DIARY("일기");
 

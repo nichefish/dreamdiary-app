@@ -10,8 +10,11 @@ import io.nicheblog.dreamdiary.feature.attachable.state.policy.AttachableContent
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.spec.StateSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -101,16 +104,13 @@ public class StateService
         if (stateToggle.getContentType() == null || stateToggle.getStateKey() == null) {
             return ServiceResponse.builder()
                     .rslt(false)
-                    .message("contentType 또는 stateKey가 비어 있습니다.")
+                    .message(MessageUtils.getMessage("state.error.missing-params"))
                     .build();
         }
         if (!AttachableContentStatePolicy.isAllowed(stateToggle.getContentType(), stateToggle.getStateKey())) {
             return ServiceResponse.builder()
                     .rslt(false)
-                    .message(String.format(
-                            "해당 컨텐츠 타입에서 허용하지 않는 상태입니다. (contentType=%s, stateKey=%s)",
-                            stateToggle.getContentType().key,
-                            stateToggle.getStateKey().key))
+                    .message(MessageUtils.getMessage("state.error.not-allowed", new Object[]{stateToggle.getContentType().key, stateToggle.getStateKey().key}))
                     .build();
         }
 

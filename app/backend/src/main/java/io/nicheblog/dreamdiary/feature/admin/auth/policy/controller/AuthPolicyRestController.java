@@ -58,7 +58,7 @@ public class AuthPolicyRestController
 
         final AuthPolicyDto dto = authPolicyService.getDtlDto();
         final boolean isSuccess = dto != null && dto.getId() != null;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(dto));
     }
@@ -79,7 +79,7 @@ public class AuthPolicyRestController
 
         final ServiceResponse result = authPolicyService.regist(authPolicy);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

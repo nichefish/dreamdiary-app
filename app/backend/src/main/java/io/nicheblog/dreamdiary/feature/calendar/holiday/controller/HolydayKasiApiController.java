@@ -64,7 +64,7 @@ public class HolydayKasiApiController
         // 기존 정보 (API로 받아온 휴일) 삭제 후 재등록
         final String yyStr = !StringUtils.isEmpty(yy) ? yy : DateUtils.getCurrYyStr();
         final boolean isSuccess = holydayKasiApiService.resyncHolyday(yyStr);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

@@ -39,6 +39,8 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 | Footer | `app/layouts/default/components/footer/Footer.vue` | 레거시 footer | `2024©` tooltip은 프로젝트 기간(`2024.03.20 ~ (진행중)`), 사이트 링크 tooltip은 작업인원(`nysnyari`)을 표시한다. |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
 | 앱 런타임 상태 | `shared/components/system/AppRuntimeStatus.vue` + `shared/utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
+| 언어 토글 (Navbar) | `app/layouts/default/components/header/Navbar.vue` — 국기 버튼(🇰🇷/🇺🇸), 프로필 아이콘 좌측 | — | `useLocaleStore.setLocale()` ko↔en 토글. `locale` computed → 현재 locale 표시 |
+| 언어 토글 (로그인) | `features/auth/SignIn.vue` — 로그인 패널 우상단 국기 버튼 | — | `localeStore.setLocale()` + `localeStore.t()` 카탈로그로 화면 텍스트 전환 |
 
 화면 위치/제목/설명 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title 또는 메뉴 설명을 별도로 렌더링하지 않고, 필요한 액션 버튼만 둔다.
 

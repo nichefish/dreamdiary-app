@@ -52,7 +52,7 @@ public class ChatController {
     public ResponseEntity<AjaxResponse> getChatSettings() {
         final ChatSettingDto setting = chatSettingService.getMySetting();
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(setting));
     }
 
     /**
@@ -68,7 +68,7 @@ public class ChatController {
     ) {
         final ChatSettingDto setting = chatSettingService.modifyMySetting(settingDto);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(setting));
     }
 
     /**
@@ -81,7 +81,7 @@ public class ChatController {
     public ResponseEntity<AjaxResponse> getAdminChatSettings() {
         final ChatSettingDto setting = chatSettingService.getAdminSetting();
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(setting));
     }
 
     /**
@@ -97,7 +97,7 @@ public class ChatController {
     ) {
         final ChatSettingDto setting = chatSettingService.modifyAdminSetting(settingDto);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(setting));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(setting));
     }
 
     /**
@@ -110,7 +110,7 @@ public class ChatController {
     public ResponseEntity<AjaxResponse> getChatSessions() {
         final List<ChatSessionDto> sessionList = chatSessionService.getMySessions();
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withList(sessionList));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(sessionList));
     }
 
     /**
@@ -126,7 +126,7 @@ public class ChatController {
     ) {
         final ChatSessionDto createdSession = chatSessionService.create(sessionDto);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(createdSession));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(createdSession));
     }
 
     /**
@@ -142,7 +142,7 @@ public class ChatController {
     ) {
         chatSessionService.delete(sessionId);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -163,7 +163,7 @@ public class ChatController {
         chatSessionService.getMySessionEntity(sessionId);
         final List<ChatMessageDto> messageList = chatMessageService.getSessionMessages(sessionId);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withList(messageList));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(messageList));
     }
 
     /**

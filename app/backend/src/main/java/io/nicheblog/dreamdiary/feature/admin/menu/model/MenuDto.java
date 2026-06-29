@@ -135,7 +135,9 @@ public class MenuDto
         if (this.submenuExpandTypeName != null && !this.submenuExpandTypeName.isBlank()) {
             return this.submenuExpandTypeName;
         }
-        return SubmenuExpandType.getDesc(this.submenuExpandType);
+        if (this.submenuExpandType == null || this.submenuExpandType.isBlank()) return null;
+        try { return SubmenuExpandType.valueOf(this.submenuExpandType).getLabel(); }
+        catch (final IllegalArgumentException e) { return null; }
     }
 
     /**

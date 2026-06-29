@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.calendar.schedule.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.AllArgsConstructor;
 
 /**
@@ -9,7 +10,7 @@ import lombok.AllArgsConstructor;
  * @author nichefish
  */
 @AllArgsConstructor
-public enum ScheduleType {
+public enum ScheduleType implements LocalizedEnum {
     HOLYDAY("공휴일"),
     CEREMONY("행사"),
     TLCMMT("재택근무"),

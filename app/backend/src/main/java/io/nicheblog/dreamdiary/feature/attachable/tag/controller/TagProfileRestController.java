@@ -46,7 +46,7 @@ public class TagProfileRestController
     ) throws Exception {
         final TagProfileDto tagProfile = tagProfileService.getDtoByRefOrNew(tagId, contentType);
         return ResponseEntity.ok(
-                AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS)
+                AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
                         .withObj(tagProfile)
         );
     }
@@ -66,7 +66,7 @@ public class TagProfileRestController
         if (Boolean.TRUE.equals(result.getRslt())) {
             tagProfileService.evictTagCloudCaches(tagProfile.getContentType());
         }
-        final String rsltMsg = result.getRslt() ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = result.getRslt() ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -83,14 +83,14 @@ public class TagProfileRestController
         // 변경 후: /tags/{tagId}/profile?contentType=... 형태로 삭제 가능
         final TagProfileDto existing = tagProfileService.getDtoByTagIdAndContentType(tagId, contentType).orElse(null);
         if (existing == null || existing.getId() == null) {
-            final ServiceResponse emptyResult = new ServiceResponse(false, MessageUtils.RSLT_EMPTY);
-            return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(emptyResult, MessageUtils.RSLT_EMPTY));
+            final ServiceResponse emptyResult = new ServiceResponse(false, MessageUtils.getMessage("common.result.empty"));
+            return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(emptyResult, MessageUtils.getMessage("common.result.empty")));
         }
 
         final ServiceResponse result = tagProfileService.delete(existing.getId());
         if (Boolean.TRUE.equals(result.getRslt())) {
             tagProfileService.evictTagCloudCaches(contentType);
         }
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.getMessage("common.result.success")));
     }
 }

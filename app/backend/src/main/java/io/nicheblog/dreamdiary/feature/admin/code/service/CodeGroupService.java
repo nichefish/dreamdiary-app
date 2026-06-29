@@ -5,8 +5,11 @@ import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupDto;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupPatchDto;
 import io.nicheblog.dreamdiary.feature.admin.code.spec.CodeGroupSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeGroupEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeGroupRepository;
 import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
@@ -102,7 +105,7 @@ public class CodeGroupService
         if (StringUtils.isEmpty(patchDto.getUseYn())) {
             return ServiceResponse.builder()
                     .rslt(false)
-                    .message("변경할 항목이 없습니다.")
+                    .message(MessageUtils.getMessage("common.result.no-changes"))
                     .build();
         }
 

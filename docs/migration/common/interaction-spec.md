@@ -33,6 +33,15 @@
 - Pinia 스토어의 `visible` / `open*` 함수 + Bootstrap 5 모달 컴포넌트.
 - 게시판 상세: 레거시 `CustomEvent('board-post:open-detail-modal')` 대신 `useBoardPostStore.openDetail(id)`.
 
+### 언어(Locale) 전환
+
+- `shared/i18n/stores/locale.ts` (`useLocaleStore`) — Pinia store, `localStorage("dreamdiary_locale")` 에 `ko`/`en` 저장.
+- 전환 시 `axios.defaults.headers.common["Accept-Language"]` 갱신 → 이후 모든 axios 요청에 반영.
+- 서버는 `AcceptHeaderLocaleResolver`(Spring MVC) 로 `Accept-Language` 헤더를 읽어 `LocaleContextHolder` locale 설정 → `MessageUtils.getMessage()` 응답 메시지 다국어 반환.
+- 앱 초기 로드 시 `applyLocaleHeader()` (`ApiService.ts`) 가 localStorage 값을 읽어 axios 헤더를 초기화한다.
+- 로그인 화면(`SignIn.vue`): 국기 버튼(🇰🇷/🇺🇸) — `localeStore.setLocale()` 호출, 화면 텍스트 `localeStore.t()` 카탈로그로 전환.
+- 앱 헤더 Navbar: 국기 버튼 클릭 → ko↔en 토글. UI 텍스트 전체 i18n 적용은 별도 작업.
+
 ### 라우팅·메뉴
 
 - `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`).
@@ -102,7 +111,7 @@ cF.ajax.request(url, options, callback, continueBlock?)
 
 | 상태코드 | 처리 방식 |
 |---------|----------|
-| 401 Unauthorized | `shared/auth/sessionExpired.ts`의 `confirmSessionExpired()` 다이얼로그 사용. 일반 라우트는 확인 시 `/sign-in?sessionExpired=Y&redirect=현재 fullPath` 이동, 취소 시 현재 화면 유지. 팝업 라우트(`journal-entry-search`, `journal-daily`)는 로그인 화면 이동 대신 창 닫기 확인을 표시하고 확인 시 `window.close()` 호출. 동시에 여러 요청이 401 로 실패해도 대화상자는 1회만 표시(`authExpiredDialogShowing` 플래그). `/api/auth/` 경로는 제외(auth 스토어에서 직접 처리). |
+| 401 Unauthorized | 응답 문구나 locale과 무관하게 HTTP 상태만으로 미인증을 판정하고 `shared/auth/sessionExpired.ts`의 `confirmSessionExpired()` 다이얼로그를 사용한다. 일반 라우트는 확인 시 `/sign-in?sessionExpired=Y&redirect=현재 fullPath` 이동, 취소 시 현재 화면 유지. 팝업 라우트(`journal-entry-search`, `journal-daily`)는 로그인 화면 이동 대신 창 닫기 확인을 표시하고 확인 시 `window.close()` 호출. 동시에 여러 요청이 401 로 실패해도 대화상자는 1회만 표시(`authExpiredDialogShowing` 플래그). `/api/auth/` 경로는 제외(auth 스토어에서 직접 처리). |
 | 403 Forbidden | 권한 오류로 유지한다. 전역 401 인터셉터의 세션 만료 다이얼로그나 로그인 화면 이동으로 분류하지 않고, 호출부의 서버 메시지 alert 또는 `/403` access denied 화면으로 처리한다. |
 | 그 외 | Vue 저널의 변경·주요 조회 요청은 `swalRequestError()`가 구조화된 Axios 응답의 `message`를 우선 표시하고, 메시지가 없을 때만 작업별 또는 공통 요청 실패 문구를 표시한다. 그 밖의 컴포넌트/스토어는 각 catch 블록에서 개별 처리한다. |
 

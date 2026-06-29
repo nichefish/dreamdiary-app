@@ -53,7 +53,7 @@ public class LifecycleDto
         if (lifecycleKey == null) return null;
         return LifecycleDto.builder()
                 .lifecycleKey(lifecycleKey.key)
-                .lifecycleDesc(lifecycleKey.desc)
+                .lifecycleDesc(lifecycleKey.getLabel())
                 .build();
     }
 }

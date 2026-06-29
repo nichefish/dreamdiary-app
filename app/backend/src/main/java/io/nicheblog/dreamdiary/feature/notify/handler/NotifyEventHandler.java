@@ -54,7 +54,7 @@ public class NotifyEventHandler {
             // title
             final String title = result.getTitle();
             // msg
-            final String msg = "새로운 글이 등록되었습니다.";
+            final String msg = MessageUtils.getMessage("notify.post.registered");
             // url
             final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DETAIL + "?" + param;
@@ -89,7 +89,7 @@ public class NotifyEventHandler {
                 title = "[" + scheduleTyNm + "] " + result.getBgnDt() + " / " + prtcpntStr + " : " + result.getScheduleNm();
             }
             // msg
-            final String msg = "새로운 일정이 등록되었습니다.";
+            final String msg = MessageUtils.getMessage("notify.schedule.registered");
             // url
             final String param = Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.SCHEDULE_CAL + "?" + param;

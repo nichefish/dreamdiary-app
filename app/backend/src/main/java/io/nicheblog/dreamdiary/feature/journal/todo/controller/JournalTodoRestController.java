@@ -58,7 +58,7 @@ public class JournalTodoRestController
 
         final List<JournalTodoDto> journalTodoList = myJournalTodoService.getMyListDtoWithCache(searchParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(journalTodoList));
     }
@@ -86,7 +86,7 @@ public class JournalTodoRestController
         if (isModify) journalTodo.setId(id);
         final ServiceResponse result = isModify ? journalTodoService.modify(journalTodo) : journalTodoService.regist(journalTodo);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -107,7 +107,7 @@ public class JournalTodoRestController
 
         final JournalTodoDto retrievedDto = myJournalTodoService.getMyDetailDtoWithCache(id);
         final boolean isSuccess = (retrievedDto.getId() != null);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -128,7 +128,7 @@ public class JournalTodoRestController
 
         final ServiceResponse result = journalTodoService.delete(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

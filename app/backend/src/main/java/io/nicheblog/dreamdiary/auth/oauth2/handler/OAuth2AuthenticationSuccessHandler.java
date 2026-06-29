@@ -88,7 +88,7 @@ public class OAuth2AuthenticationSuccessHandler
             DupIdLoginManager.addKey(username);
 
             // 로그인 로그 남기기
-            final LogParam logParam = new LogParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN);
+            final LogParam logParam = new LogParam(true, MessageUtils.getMessage("common.result.success"), ActvtyCtgr.LGN);
             publisher.publishAsyncEvent(new LogEvent(this, logParam));
 
             // 로그인 성공시 브라우저 캐시 초기화 처리

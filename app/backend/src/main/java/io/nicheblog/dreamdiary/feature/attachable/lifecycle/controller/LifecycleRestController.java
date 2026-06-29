@@ -45,10 +45,10 @@ public class LifecycleRestController {
 
         final ServiceResponse result = lifecycleService.set(lifecycleSet);
         if (!Boolean.TRUE.equals(result.getRslt())) {
-            final String failMsg = result.getMessage() != null ? result.getMessage() : MessageUtils.RSLT_FAILURE;
+            final String failMsg = result.getMessage() != null ? result.getMessage() : MessageUtils.getMessage("common.result.failure");
             return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, failMsg));
         }
 
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.getMessage("common.result.success")));
     }
 }

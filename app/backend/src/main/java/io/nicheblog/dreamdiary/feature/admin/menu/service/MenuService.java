@@ -382,7 +382,7 @@ public class MenuService
         if (StringUtils.isEmpty(patchDto.getUseYn())) {
             return ServiceResponse.builder()
                     .rslt(false)
-                    .message("변경할 항목이 없습니다.")
+                    .message(MessageUtils.getMessage("common.result.no-changes"))
                     .build();
         }
 
