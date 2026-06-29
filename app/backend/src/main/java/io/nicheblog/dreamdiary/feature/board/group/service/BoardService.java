@@ -153,7 +153,7 @@ public class BoardService
     @Transactional(readOnly = true)
     public BoardEntity getDtlEntityByBoardKey(final String boardKey) {
         return repository.findByBoardKey(boardKey)
-                .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+                .orElseThrow(() -> new EntityNotFoundException());
     }
 
     /**
@@ -227,13 +227,13 @@ public class BoardService
         registDto.setBoardKey(boardKey);
         if (ReservedStructuralBoard.isStructuralReservedKey(boardKey)) {
             log.warn("Board preRegist rejected: structural reserved board_key not allowed via admin regist. key={}", boardKey);
-            throw new IllegalStateException("msg.board.group.board-key.reserved-forbidden");
+            throw new IllegalStateException("board.group.board-key.reserved-forbidden");
         }
         if (repository.findByBoardKey(boardKey).isEmpty()) {
             return;
         }
         log.warn("Board preRegist rejected: board_key already exists. key={}", boardKey);
-        throw new IllegalStateException("msg.board.group.board-key.duplicate");
+        throw new IllegalStateException("board.group.board-key.duplicate");
     }
 
     /**
@@ -256,13 +256,13 @@ public class BoardService
         if (ReservedStructuralBoard.isStructuralReservedKey(boardKey) && !boardKey.equals(existingKey)) {
             log.warn("Board preModify rejected: cannot assign structural reserved board_key. key={}, existingKey={}", boardKey,
                     existingKey);
-            throw new IllegalStateException("msg.board.group.board-key.reserved-forbidden");
+            throw new IllegalStateException("board.group.board-key.reserved-forbidden");
         }
         repository.findByBoardKey(boardKey).ifPresent(other -> {
             if (!Objects.equals(other.getId(), postDto.getKey())) {
                 final String msgKey = ReservedStructuralBoard.isStructuralReservedKey(boardKey)
-                        ? "msg.board.group.board-key.reserved-in-use"
-                        : "msg.board.group.board-key.duplicate";
+                        ? "board.group.board-key.reserved-in-use"
+                        : "board.group.board-key.duplicate";
                 log.warn("Board preModify rejected: board_key conflicts with another row. key={}, thisId={}, otherId={}, reservedStructural={}",
                         boardKey, postDto.getKey(), other.getId(), ReservedStructuralBoard.isStructuralReservedKey(boardKey));
                 throw new IllegalStateException(msgKey);

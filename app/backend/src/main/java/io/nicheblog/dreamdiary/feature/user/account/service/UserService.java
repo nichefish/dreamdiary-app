@@ -99,7 +99,7 @@ public class UserService
     public UserEntity getDtlEntity(final String username) throws Exception {
         final Optional<UserEntity> retrievedWrapper = repository.findByUsername(username);
 
-        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException("exception.UsernameNotFoundException")));
+        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException()));
     }
 
     /* ----- */
@@ -160,11 +160,11 @@ public class UserService
     public ServiceResponse passwordReset(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (retrievedEntity == null) throw new EntityNotFoundException();
 
         final String initialAdminPassword = this.getInitialAdminPassword();
         if (StringUtils.isBlank(initialAdminPassword)) {
-            throw new IllegalStateException("msg.user.pw.init-temp-pw.not-set");
+            throw new IllegalStateException("user.pw.init-temp-pw.not-set");
         }
         final String previousPasswordHash = retrievedEntity.getPassword();
         retrievedEntity.setPassword(passwordEncoder.encode(initialAdminPassword));
@@ -258,7 +258,7 @@ public class UserService
     public ServiceResponse userLock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (retrievedEntity == null) throw new EntityNotFoundException();
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setLockedYn("Y");
@@ -277,7 +277,7 @@ public class UserService
     public ServiceResponse userUnlock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (retrievedEntity == null) throw new EntityNotFoundException();
 
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");

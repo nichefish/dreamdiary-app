@@ -58,13 +58,13 @@ public class OAuth2Provider {
     public AuthInfo authenticate(final OAuth2AuthenticationToken authentication) throws AuthenticationException {
 
         final String email = authentication.getPrincipal().getAttribute("email");
-        if (StringUtils.isEmpty(email)) throw new SecurityException("msg.user.email.invalid");
+        if (StringUtils.isEmpty(email)) throw new SecurityException("user.email.invalid");
 
         final AuthInfo authInfo = authService.loadUserByEmail(email);
 
         // 인증 객체 생성
         final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-        if (!isValidated) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+        if (!isValidated) throw new AuthenticationFailureException();
         final UsernamePasswordAuthenticationToken authToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장

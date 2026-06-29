@@ -248,7 +248,7 @@ public class BaseExceptionHandler {
                 request,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "general",
-                MessageUtils.getMessage("msg.rslt.exception")
+                MessageUtils.getMessage("common.result.exception")
         );
     }
 }

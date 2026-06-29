@@ -74,6 +74,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class AuthRestController {
+    private static final java.util.Map<String, String> AUTH_EXCEPTION_MSG_KEYS =
+            java.util.Map.ofEntries(
+                java.util.Map.entry("BadCredentialsException",                    "auth.bad-credentials"),
+                java.util.Map.entry("LockedException",                            "auth.account-locked"),
+                java.util.Map.entry("DisabledException",                          "auth.account-disabled"),
+                java.util.Map.entry("AccountExpiredException",                    "auth.account-expired"),
+                java.util.Map.entry("CredentialsExpiredException",                "auth.credentials-expired"),
+                java.util.Map.entry("UsernameNotFoundException",                  "auth.username-not-found"),
+                java.util.Map.entry("InternalAuthenticationServiceException",     "auth.internal-service-error"),
+                java.util.Map.entry("AccountDormantException",                    "auth.account-dormant"),
+                java.util.Map.entry("AccountNeedsPwResetException",               "auth.account-needs-pw-reset"),
+                java.util.Map.entry("AccountNotCfException",                      "auth.account-not-confirmed"),
+                java.util.Map.entry("IpNotAllowedException",                      "auth.ip-not-allowed"),
+                java.util.Map.entry("DupIdLoginException",                        "auth.dup-id-login")
+            );
 
     @Getter
     private final String baseUrl = Url.APP_AUTH_LGN_FORM;
@@ -341,7 +356,7 @@ public class AuthRestController {
         } catch (final Exception e) {
             log.error("Vue login internal error. username={}", body.getUsername(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("msg.auth.login-processing-error")));
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("auth.login-processing-error")));
         }
     }
 
@@ -443,8 +458,9 @@ public class AuthRestController {
                 return MessageUtils.getExceptionMsg(root);
             }
         }
-        final String fullExceptionNm = e.getClass().toString();
-        final String exceptionNm = fullExceptionNm.substring(fullExceptionNm.lastIndexOf('.') + 1);
-        return MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider." + exceptionNm);
+        final String exceptionNm = e.getClass().getSimpleName();
+        final String msgKey = AUTH_EXCEPTION_MSG_KEYS.getOrDefault(exceptionNm, "auth.bad-credentials");
+        return MessageUtils.getMessage(msgKey);
     }
 }
+

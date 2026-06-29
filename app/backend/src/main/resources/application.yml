@@ -104,8 +104,8 @@ spring:
     messages:
         basename: messages/messages
         encoding: UTF-8
-        use-code-as-default-message: true
-        fallback-to-system-locale: true
+        use-code-as-default-message: false
+        fallback-to-system-locale: false
 
     mail:
         default-encoding: UTF-8

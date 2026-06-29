@@ -124,7 +124,7 @@ public class UserSignupService {
     @Transactional
     public ServiceResponse cf(final Integer key) throws Exception {
         final UserSignupRequestEntity req =
-                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException());
         if (!"PENDING".equals(req.getStatus())) {
             return ServiceResponse.builder().rslt(false).build();
         }
@@ -160,7 +160,7 @@ public class UserSignupService {
      @Transactional
     public ServiceResponse uncf(final Integer key) throws Exception {
         final UserSignupRequestEntity req =
-                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException());
         req.setStatus("REJECTED");
         req.setRejectedAt(DateUtils.getCurrDate());
         final UserSignupRequestEntity updatedEntity = userSignupRequestRepository.saveAndFlush(req);
@@ -177,7 +177,7 @@ public class UserSignupService {
     public ServiceResponse cfByUsername(final String username) throws Exception {
         final Optional<UserSignupRequestEntity> reqWrapper =
                 userSignupRequestRepository.findTopByUsernameAndStatusOrderByCreatedAtDesc(username, "PENDING");
-        if (reqWrapper.isEmpty()) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (reqWrapper.isEmpty()) throw new EntityNotFoundException();
         return this.cf(reqWrapper.get().getId());
     }
 }

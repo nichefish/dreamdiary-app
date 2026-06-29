@@ -143,7 +143,7 @@ public final class JournalDayFilterHelper {
 
             hiddenMap.put(ctgrKey, JournalChapterCtgrHintDto.builder()
                     .categoryCode(categoryCode)
-                    .categoryName(StringUtils.defaultIfBlank(chapter.getCategoryName(), categoryCode.isEmpty() ? MessageUtils.getMessage("txt.ctgr.none", null) : categoryCode))
+                    .categoryName(StringUtils.defaultIfBlank(chapter.getCategoryName(), categoryCode.isEmpty() ? MessageUtils.getMessage("journal.category.none", null) : categoryCode))
                     .build());
         }
 

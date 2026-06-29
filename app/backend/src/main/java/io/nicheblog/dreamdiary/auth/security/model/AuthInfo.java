@@ -132,7 +132,7 @@ public class AuthInfo
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (CollectionUtils.isEmpty(this.roles)) {
-            throw new AuthenticationServiceException(MessageUtils.getMessage("msg.user.auth.empty"));
+            throw new AuthenticationServiceException(MessageUtils.getMessage("user.auth.empty"));
         }
 
         return this.roles.stream()

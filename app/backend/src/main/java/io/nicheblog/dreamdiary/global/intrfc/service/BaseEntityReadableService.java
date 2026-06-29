@@ -169,7 +169,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      * @return {@link Entity} -- 조회된 객체
      */
     default Entity getDtlEntity(final Key key) throws Exception {
-        return getRepository().findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+        return getRepository().findById(key).orElseThrow(() -> new EntityNotFoundException());
     }
 
     /**

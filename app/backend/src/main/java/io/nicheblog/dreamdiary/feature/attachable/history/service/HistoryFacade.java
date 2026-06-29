@@ -78,7 +78,7 @@ public class HistoryFacade {
         final Dto currentDto = strategy.getOwnedDto(username, key, contentType);
         final Optional<HistoryDto> history = historyService.getHistory(currentDto.getAttachableKey(), historyId);
         if (history.isEmpty()) {
-            throw new IllegalArgumentException("msg.history.restore.empty");
+            throw new IllegalArgumentException("history.restore.empty");
         }
 
         return strategy.updtContent(key, history.get().getContent(), HistoryType.RESTORE, historyId, contentType);

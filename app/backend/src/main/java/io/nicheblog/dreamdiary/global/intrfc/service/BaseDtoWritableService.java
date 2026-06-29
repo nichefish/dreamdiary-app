@@ -176,7 +176,7 @@ public interface BaseDtoWritableService<PostDto extends BaseCrudDto & Identifiab
         final ServiceResponse response = new ServiceResponse();
 
         final Entity deleteEntity = this.getDtlEntity(key);
-        if (deleteEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException.to-delete");
+        if (deleteEntity == null) throw new EntityNotFoundException("this.to-delete");
 
         final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);
 

@@ -58,14 +58,14 @@ public class LifecycleService {
         if (lifecycleSet.getContentType() == null || lifecycleSet.getLifecycleKey() == null) {
             return ServiceResponse.builder()
                     .rslt(false)
-                    .message(MessageUtils.getMessage("msg.lifecycle.required"))
+                    .message(MessageUtils.getMessage("lifecycle.required"))
                     .build();
         }
         if (!AttachableContentLifecyclePolicy.isAllowed(lifecycleSet.getContentType(), lifecycleSet.getLifecycleKey())) {
             return ServiceResponse.builder()
                     .rslt(false)
                     .message(MessageUtils.getMessage(
-                            "msg.lifecycle.not-allowed",
+                            "lifecycle.not-allowed",
                             new Object[]{
                                     lifecycleSet.getContentType().key,
                                     lifecycleSet.getLifecycleKey().key

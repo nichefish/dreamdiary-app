@@ -91,7 +91,7 @@ public class UserRestController
 
         final Boolean isUsernameDup = userService.usernameDupChck(username);
         final boolean isSuccess = !isUsernameDup;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.id.usable" : "msg.user.id.duplicated");
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.id.usable" : "user.id.duplicated");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -111,7 +111,7 @@ public class UserRestController
 
         final Boolean isEmailDup = userService.emailDupChck(email);
         final boolean isSuccess = !isEmailDup;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.email.usable" : "msg.user.email.duplicated");
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.email.usable" : "user.email.duplicated");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -190,7 +190,7 @@ public class UserRestController
         // 내 정보인지 비교 :: "내 정보는 삭제할 수 없습니다."
         final boolean isMyInfo = AuthUtils.isMyInfo(user.getUsername());
         if (isMyInfo) {
-            final String rsltMsg = MessageUtils.getMessage("msg.user.id.delete-own-denied");
+            final String rsltMsg = MessageUtils.getMessage("user.id.delete-own-denied");
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, rsltMsg));
         }
 

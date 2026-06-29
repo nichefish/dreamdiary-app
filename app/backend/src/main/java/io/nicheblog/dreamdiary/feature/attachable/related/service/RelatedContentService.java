@@ -156,7 +156,7 @@ public class RelatedContentService {
 
         final String requiredCreatedBy = AuthUtils.requireUsername(createdBy);
         if (!AuthUtils.isCreatedBy(requiredCreatedBy)) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
         repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), requiredCreatedBy);
@@ -165,10 +165,10 @@ public class RelatedContentService {
     @Transactional
     public boolean delete(final Integer relatedContentId) {
         final RelatedContentEntity entity = repository.findById(relatedContentId)
-                .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException.to-delete"));
+                .orElseThrow(() -> new EntityNotFoundException("this.to-delete"));
 
         if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
         repository.delete(entity);
@@ -222,10 +222,10 @@ public class RelatedContentService {
     private String requireOwnedContent(final BaseAttachableKey refKey) {
         final String createdBy = this.resolveCreatedBy(refKey);
         if (StringUtils.isBlank(createdBy)) {
-            throw new EntityNotFoundException("exception.EntityNotFoundException.to-read");
+            throw new EntityNotFoundException("this.to-read");
         }
         if (!AuthUtils.isCreatedBy(createdBy)) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return createdBy;
     }

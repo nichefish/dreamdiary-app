@@ -53,7 +53,7 @@ public class DreamdiaryApplication {
             setDotEnvPropertiesByFileNm("config/env/.env");
             // 프로필 기반 .env.${profile} 프로퍼티 로드 (시점이 맞지 않기 떄문에 .yml 강제 파싱)
             final String profile = YmlLoader.loadSpringProfile();
-            if (profile == null) throw new IllegalStateException(MessageUtils.getMessage("msg.rslt.profile-not-set"));
+            if (profile == null) throw new IllegalStateException(MessageUtils.getMessage("common.result.profile-not-set"));
 
             setDotEnvPropertiesByFileNm("config/env/.env." + profile);
             log.info("Boot environment prepared. application={} profile={} port={}", "dreamdiary", profile, resolveServerPort());

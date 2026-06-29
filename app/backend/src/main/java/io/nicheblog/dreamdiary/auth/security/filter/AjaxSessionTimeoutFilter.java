@@ -63,7 +63,7 @@ public class AjaxSessionTimeoutFilter
                 securityErrorResponseWriter.write(
                         response,
                         HttpServletResponse.SC_UNAUTHORIZED,
-                        MessageUtils.getMessage("msg.auth.login-required")
+                        MessageUtils.getMessage("auth.login-required")
                 );
                 // 로그 관련 처리
                 final LogParam logParam = new LogParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);

@@ -60,7 +60,7 @@ public class AuthService
     @Transactional(readOnly = true)
     public AuthInfo loadUserByUsername(final String username) throws UsernameNotFoundException {
         final Optional<UserEntity> rsWrapper = userRepository.findByUsername(username);
-        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
+        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException(null);
         final UserEntity rsUser = rsWrapper.get();
 
         // TODO: 사용자 프로필 정보 존재여부 체크
@@ -83,7 +83,7 @@ public class AuthService
      */
     public AuthInfo loadUserByEmail(final String email) throws Exception {
         final Optional<UserEntity> rsWrapper = userRepository.findByEmail(email);
-        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
+        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException(null);
         final UserEntity rsUser = rsWrapper.get();
 
         final AuthInfo authInfo = authInfoMapstruct.toDto(rsUser);
