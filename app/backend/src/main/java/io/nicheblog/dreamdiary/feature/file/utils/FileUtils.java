@@ -103,7 +103,7 @@ public class FileUtils
 
     public static void ensureDirectory(final String path) throws IOException {
         final File directory = new File(path);
-        if (!directory.exists() && !directory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
+        if (!directory.exists() && !directory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.result.mkdir-failed"));
         log.info("Startup check completed. resource=directory path={} status=ready", path);
     }
 
@@ -207,7 +207,7 @@ public class FileUtils
 
             return rslt.getId();
         } catch (final Exception e) {
-            MessageUtils.alertMessageByKey("msg.file.upload.failure");
+            MessageUtils.alertMessageByKey("file.upload.failure");
         }
         return fileGroupId;
     }
@@ -289,7 +289,7 @@ public class FileUtils
             os.flush();
         } catch (final IOException e) {
             log.error("파일 다운로드 중 오류 발생: {}", e.getMessage(), e);
-            throw new IOException("msg.file.download.failure", e);
+            throw new IOException("file.download.failure", e);
         }
     }
 

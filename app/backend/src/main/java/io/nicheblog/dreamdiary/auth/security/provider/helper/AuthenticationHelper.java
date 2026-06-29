@@ -60,7 +60,7 @@ public class AuthenticationHelper {
     public Boolean validateAuth(final Authentication authentication, final AuthInfo authInfo) throws Exception {
 
         // 계정 존재여부 체크
-        if (authentication == null || authInfo == null) throw new InternalAuthenticationServiceException("exception.Exception");
+        if (authentication == null || authInfo == null) throw new InternalAuthenticationServiceException(null);
 
         // 중복 로그인 '확인'(기존 아이디 끊기) 후 들어왔을 시 바로 패스 :: 메소드 분리
         final String username = authentication.getName();
@@ -68,7 +68,7 @@ public class AuthenticationHelper {
 
         // password 일치여부 체크
         final String password = (String) authentication.getCredentials();
-        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException("exception.BadCredentialsException");
+        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException(null);
 
         authInfo.nullifyPasswordInfo();
         return this.validateAuth(authInfo);
@@ -82,7 +82,7 @@ public class AuthenticationHelper {
      * @return {@link Boolean} -- 인증 체크 성공 여부
      */
     public Boolean validateAuth(final AuthInfo authInfo) throws Exception {
-        if (authInfo == null) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
+        if (authInfo == null) throw new UsernameNotFoundException(null);
 
         final String username = authInfo.getUsername();
 

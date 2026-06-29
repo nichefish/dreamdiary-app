@@ -90,7 +90,7 @@ public class DreamdiaryInitializer
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
-            final LogParam logParam = LogParam.forSystem(true, MessageUtils.getMessage("msg.rslt.system-restarted"), ActvtyCtgr.SYSTEM);
+            final LogParam logParam = LogParam.forSystem(true, MessageUtils.getMessage("common.result.system-restarted"), ActvtyCtgr.SYSTEM);
             publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         log.info("Application initialization completed. profile={}", activeProfile.getActive());

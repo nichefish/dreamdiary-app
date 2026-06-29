@@ -100,13 +100,13 @@ public class JournalDayRestController
 
         final boolean isReg = id == null;
         if (isReg && myJournalDayService.dupChck(journalDay)) {
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("msg.journal.day.duplicate")));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("journal.day.duplicate")));
         }
         final ServiceResponse result;
         try {
             result = isReg ? journalDayService.regist(journalDay) : journalDayService.modify(journalDay);
         } catch (final IllegalStateException e) {
-            if ("msg.journal.day.duplicate".equals(e.getMessage())) {
+            if ("journal.day.duplicate".equals(e.getMessage())) {
                 return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage(e.getMessage())));
             }
             throw e;

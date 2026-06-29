@@ -79,7 +79,7 @@ public class JournalThreadService
     @Override
     public void preModify(final JournalThreadDto modifyDto, final JournalThreadEntity modifyEntity) throws Exception {
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 
@@ -108,7 +108,7 @@ public class JournalThreadService
     @Override
     public void preDelete(final JournalThreadDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 }

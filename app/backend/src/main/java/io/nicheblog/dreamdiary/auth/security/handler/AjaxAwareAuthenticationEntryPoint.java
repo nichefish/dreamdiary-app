@@ -45,7 +45,7 @@ public class AjaxAwareAuthenticationEntryPoint
             final AuthenticationException authException
     ) throws IOException {
 
-        final String loginRequiredMessage = MessageUtils.getMessage("msg.auth.login-required");
+        final String loginRequiredMessage = MessageUtils.getMessage("auth.login-required");
         if (HttpUtils.isAjaxRequest(request)) {
             // Ajax 요청은 클라이언트 공통 핸들러에서 처리할 수 있도록 JSON으로 내려보낸다.
             // @see commons.js

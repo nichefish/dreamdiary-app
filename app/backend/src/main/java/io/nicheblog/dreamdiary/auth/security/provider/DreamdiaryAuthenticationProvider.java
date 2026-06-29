@@ -66,9 +66,9 @@ public class DreamdiaryAuthenticationProvider
 
         // 인증 객체 생성
         final Boolean isValidated = authenticationHelper.validateAuth(authentication, authInfo);
-        if (!isValidated) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+        if (!isValidated) throw new AuthenticationFailureException();
         if (CollectionUtils.isEmpty(authInfo.getRoles())) {
-            throw new InternalAuthenticationServiceException(MessageUtils.getMessage("msg.user.auth.empty"));
+            throw new InternalAuthenticationServiceException(MessageUtils.getMessage("user.auth.empty"));
         }
         final UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
 

@@ -154,7 +154,7 @@ public class JournalAnnualService
     @Override
     public void preModify(final JournalAnnualDto modifyDto, final JournalAnnualEntity modifyEntity) throws Exception {
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 
@@ -168,7 +168,7 @@ public class JournalAnnualService
     public JournalAnnualDto getAnnualDetailByUser(final String username, final Integer key) throws Exception {
         final JournalAnnualDto retrieved = this.getSelf().getDtlDto(key);
         if (retrieved != null && !retrieved.getIsCreatedBy(username)) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return retrieved;
     }
@@ -197,7 +197,7 @@ public class JournalAnnualService
     public boolean dreamCompt(final Integer key) throws Exception {
         final JournalAnnualEntity retrievedEntity = this.getDtlEntity(key);
         if (!AuthUtils.isCreatedBy(retrievedEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         retrievedEntity.setDreamComptYn("Y");
         repository.save(retrievedEntity);
@@ -222,7 +222,7 @@ public class JournalAnnualService
     @Override
     public void preDelete(final JournalAnnualDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 }

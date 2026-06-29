@@ -43,7 +43,7 @@ public class CmmController {
     ) {
 
         final Map<String, String> urlMap = Url.getUrlMap();
-        final String rsltMsg = MessageUtils.getMessage("msg.common.success");
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, rsltMsg).withMap(urlMap));
     }
 
@@ -58,7 +58,7 @@ public class CmmController {
     ) {
 
         final Map<String, String> constantMap = Constant.getConstantMap();
-        final String rsltMsg = MessageUtils.getMessage("msg.common.success");
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, rsltMsg).withMap(constantMap));
     }
 
@@ -73,7 +73,7 @@ public class CmmController {
     ) {
 
         // TODO: releaseInfo 등 포함하기
-        final String rsltMsg = MessageUtils.getMessage("msg.common.success");
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, rsltMsg).withObj(serverInfo));
     }
 
@@ -93,7 +93,7 @@ public class CmmController {
         final Map<String, Object> payload = new HashMap<>();
         payload.put("latestDeploy", latestDeploy);
         payload.put("histories", histories);
-        final String rsltMsg = MessageUtils.getMessage("msg.common.success");
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, rsltMsg).withMap(payload));
     }
 }

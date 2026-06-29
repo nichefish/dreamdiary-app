@@ -211,7 +211,7 @@ public class JournalDayService
         final JournalDayEntity retrievedEntity = this.getDtlEntity(key);
         final JournalDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsCreatedBy(username)) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(username)) throw new NotAuthorizedException("common.result.access-not-authorized");
 
         return retrieved;
     }
@@ -257,7 +257,7 @@ public class JournalDayService
     public void preRegist(final JournalDayDto registDto) throws Exception {
         final String username = AuthUtils.getLoginUsername();
         if (StringUtils.isNotBlank(username) && this.dupChckByUser(username, registDto)) {
-            throw new IllegalStateException("msg.journal.day.duplicate");
+            throw new IllegalStateException("journal.day.duplicate");
         }
         // 기간 필드 세팅:: 메소드 분리
         this.setPeriodFields(registDto);
@@ -284,7 +284,7 @@ public class JournalDayService
     @Override
     public void preModify(final JournalDayDto modifyDto, final JournalDayEntity modifyEntity) throws Exception {
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         modifyDto.setPrevWeekStartDt(DateUtils.asStr(modifyEntity.getWeekStartDt(), DatePtn.DATE));
         // 기간 필드 세팅:: 메소드 분리
@@ -323,7 +323,7 @@ public class JournalDayService
     @Override
     public void preDelete(final JournalDayDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 
@@ -349,7 +349,7 @@ public class JournalDayService
         final JournalDayDto deleted = journalDayMapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return deleted;
     }

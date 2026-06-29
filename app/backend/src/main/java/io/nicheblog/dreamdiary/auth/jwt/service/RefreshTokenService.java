@@ -63,7 +63,7 @@ public class RefreshTokenService {
     public String issue(final String username) {
         if (StringUtils.isBlank(username)) throw new IllegalArgumentException("username is required.");
         final UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
+                .orElseThrow(() -> new AuthenticationFailureException());
         return issueForUser(user);
     }
 
@@ -78,28 +78,28 @@ public class RefreshTokenService {
     @Transactional
     public RefreshResult rotate(final String refreshToken) {
         if (StringUtils.isBlank(refreshToken)) {
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final String username = extractUsername(refreshToken);
         final UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
+                .orElseThrow(() -> new AuthenticationFailureException());
 
         if (user.getRefreshTokenHash() == null || user.getRefreshTokenExpiresAt() == null) {
             revoke(user);
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final Date now = DateUtils.getCurrDate();
         if (user.getRefreshTokenExpiresAt().before(now)) {
             revoke(user);
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final String hashed = hashToken(refreshToken);
         if (!secureEquals(hashed, user.getRefreshTokenHash())) {
             revoke(user);
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final String newToken = issueForUser(user);
@@ -166,18 +166,18 @@ public class RefreshTokenService {
      */
     private String extractUsername(final String refreshToken) {
         final int idx = refreshToken.indexOf(DELIMITER);
-        if (idx <= 0) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+        if (idx <= 0) throw new AuthenticationFailureException();
 
         final String encodedUser = refreshToken.substring(0, idx);
         try {
             final byte[] decoded = BASE64_URL_DECODER.decode(encodedUser);
             final String username = new String(decoded, StandardCharsets.UTF_8);
             if (StringUtils.isBlank(username)) {
-                throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+                throw new AuthenticationFailureException();
             }
             return username;
         } catch (final IllegalArgumentException e) {
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
     }
 

@@ -135,11 +135,11 @@ public class JwtTokenProvider {
 
         try {
             final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-            if (!isValidated) throw new SecurityException(MessageUtils.getMessage("msg.rslt.authentication-failed"));
+            if (!isValidated) throw new SecurityException(MessageUtils.getMessage("common.result.authentication-failed"));
         } catch (final Exception e) {
             log.error(e);
             // TODO: 더 정밀한 예외 처리 필요
-            // throw new SecurityException(MessageUtils.getMessage("msg.rslt.authentication-failed"));
+            // throw new SecurityException(MessageUtils.getMessage("common.result.authentication-failed"));
         }
 
         return authInfo.getAuthToken();

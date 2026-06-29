@@ -91,7 +91,7 @@ public class JournalAnnualReviewService
     @Override
     public void preModify(final JournalAnnualReviewDto modifyDto, final JournalAnnualReviewEntity modifyEntity) throws Exception {
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 
@@ -103,7 +103,7 @@ public class JournalAnnualReviewService
     @Override
     public void preDelete(final JournalAnnualReviewDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 

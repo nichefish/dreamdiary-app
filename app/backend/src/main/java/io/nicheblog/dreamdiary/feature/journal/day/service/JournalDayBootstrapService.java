@@ -42,15 +42,15 @@ public class JournalDayBootstrapService {
     public void ensureDefaultSummaryDiary(final Integer journalDayId) throws Exception {
         if (journalDayId == null) {
             log.warn("Journal day bootstrap skipped. journalDayId is null.");
-            throw new BusinessException("msg.journal.day.not-found");
+            throw new BusinessException("journal.day.not-found");
         }
 
         final JournalDayEntity day = journalDayRepository.findById(journalDayId)
-                .orElseThrow(() -> new BusinessException("msg.journal.day.not-found"));
+                .orElseThrow(() -> new BusinessException("journal.day.not-found"));
         if (!AuthUtils.isCreatedBy(day.getCreatedBy())) {
             log.warn("Journal day bootstrap ownership check failed. journalDayId={}, createdBy={}, loginUsername={}",
                     journalDayId, day.getCreatedBy(), AuthUtils.getLoginUsername());
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
         if (journalChapterRepository.findFirstByJournalDayIdAndChapterType(journalDayId, ChapterType.DIARY).isPresent()) {

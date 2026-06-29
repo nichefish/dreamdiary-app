@@ -104,7 +104,7 @@ public class JwtAuthenticationFilter
             securityErrorResponseWriter.write(
                     response,
                     HttpServletResponse.SC_UNAUTHORIZED,
-                    MessageUtils.getMessage("msg.auth.login-required")
+                    MessageUtils.getMessage("auth.login-required")
             );
             return; // 필터 체인 중단
         } catch (final Exception e) {
@@ -112,7 +112,7 @@ public class JwtAuthenticationFilter
             securityErrorResponseWriter.write(
                     response,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    MessageUtils.getMessage("msg.rslt.exception")
+                    MessageUtils.getMessage("common.result.exception")
             );
             return; // 필터 체인 중단
         }

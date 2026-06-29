@@ -48,6 +48,21 @@ import javax.servlet.http.HttpSession;
 public class LoginFailureHandler
         extends SimpleUrlAuthenticationFailureHandler
         implements AuthenticationFailureHandler {
+    private static final java.util.Map<String, String> AUTH_EXCEPTION_MSG_KEYS =
+            java.util.Map.ofEntries(
+                java.util.Map.entry("BadCredentialsException",                    "auth.bad-credentials"),
+                java.util.Map.entry("LockedException",                            "auth.account-locked"),
+                java.util.Map.entry("DisabledException",                          "auth.account-disabled"),
+                java.util.Map.entry("AccountExpiredException",                    "auth.account-expired"),
+                java.util.Map.entry("CredentialsExpiredException",                "auth.credentials-expired"),
+                java.util.Map.entry("UsernameNotFoundException",                  "auth.username-not-found"),
+                java.util.Map.entry("InternalAuthenticationServiceException",     "auth.internal-service-error"),
+                java.util.Map.entry("AccountDormantException",                    "auth.account-dormant"),
+                java.util.Map.entry("AccountNeedsPwResetException",               "auth.account-needs-pw-reset"),
+                java.util.Map.entry("AccountNotCfException",                      "auth.account-not-confirmed"),
+                java.util.Map.entry("IpNotAllowedException",                      "auth.ip-not-allowed"),
+                java.util.Map.entry("DupIdLoginException",                        "auth.dup-id-login")
+            );
 
     private final AuthService authService;
     private final AuthPolicyQueryService authPolicyQueryService;
@@ -137,8 +152,9 @@ public class LoginFailureHandler
                 return MessageUtils.getExceptionMsg(root);
             }
         }
-        final String fullExceptionNm = e.getClass().toString();
-        final String exceptionNm = fullExceptionNm.substring(fullExceptionNm.lastIndexOf('.') + 1);
-        return MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider." + exceptionNm);
+        final String exceptionNm = e.getClass().getSimpleName();
+        final String msgKey = AUTH_EXCEPTION_MSG_KEYS.getOrDefault(exceptionNm, "auth.bad-credentials");
+        return MessageUtils.getMessage(msgKey);
     }
 }
+

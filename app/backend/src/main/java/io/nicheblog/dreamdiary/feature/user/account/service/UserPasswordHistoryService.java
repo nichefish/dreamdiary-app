@@ -53,7 +53,7 @@ public class UserPasswordHistoryService {
 
         if (StringUtils.isNotBlank(user.getPassword()) && passwordEncoder.matches(newPassword, user.getPassword())) {
             log.warn("Password history validation rejected current password reuse. userId={}", user.getId());
-            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.history-reused"));
+            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.history-reused"));
         }
 
         final List<UserPasswordHistoryEntity> histories = userPasswordHistoryRepository.findByUserIdOrderByChangedAtDescIdDesc(user.getId());
@@ -64,7 +64,7 @@ public class UserPasswordHistoryService {
                 .anyMatch(passwordHash -> passwordEncoder.matches(newPassword, passwordHash));
         if (reused) {
             log.warn("Password history validation rejected recent password reuse. userId={}, passwordHistoryCount={}", user.getId(), passwordHistoryCount);
-            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.history-reused"));
+            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.history-reused"));
         }
     }
 

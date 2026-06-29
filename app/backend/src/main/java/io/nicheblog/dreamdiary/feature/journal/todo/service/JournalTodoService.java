@@ -91,7 +91,7 @@ public class JournalTodoService
     @Override
     public void preModify(final JournalTodoDto modifyDto, final JournalTodoEntity modifyEntity) throws Exception {
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 
@@ -128,7 +128,7 @@ public class JournalTodoService
         final JournalTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalTodoDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("common.result.access-not-authorized");
         return retrieved;
     }
 
@@ -140,7 +140,7 @@ public class JournalTodoService
     @Override
     public void preDelete(final JournalTodoDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 

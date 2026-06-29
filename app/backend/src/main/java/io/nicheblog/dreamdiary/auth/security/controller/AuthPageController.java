@@ -47,13 +47,13 @@ public class AuthPageController
             final @PathVariable("token") String token
     ) {
         try {
-            if (StringUtils.isEmpty(token)) throw new AuthenticationFailureException("msg.auth.verify.token.empty");
-            if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("msg.auth.verify.token.expired");
+            if (StringUtils.isEmpty(token)) throw new AuthenticationFailureException("auth.verify.token.empty");
+            if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("auth.verify.token.expired");
 
             final String username = jwtTokenProvider.getUsernameFromToken(token);
             // 계정 승인 처리
             final boolean approved = userSignupService.cfByUsername(username).getRslt();
-            if (!approved) throw new AlreadyAuthenticatedException("msg.auth.verify.request.not-approvable");
+            if (!approved) throw new AlreadyAuthenticatedException("auth.verify.request.not-approvable");
 
             return "redirect:/vue-app/auth/verify-result?status=success";
         } catch (final Exception e) {

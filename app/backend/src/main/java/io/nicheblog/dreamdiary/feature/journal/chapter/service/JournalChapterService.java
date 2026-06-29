@@ -105,7 +105,7 @@ public class JournalChapterService
         final JournalChapterEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalChapterDto retrieved = mapstruct.toDto(retrievedEntity);
         if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return retrieved;
     }
@@ -121,7 +121,7 @@ public class JournalChapterService
             registDto.setChapterType(ChapterType.DIARY);
         }
         if (registDto.getChapterType() == ChapterType.DREAM) {
-            throw new BusinessException("msg.journal.chapter.dream-auto-only");
+            throw new BusinessException("journal.chapter.dream-auto-only");
         }
         applyNewChapterSortOrderAndDefaultCategory(registDto);
     }
@@ -167,9 +167,9 @@ public class JournalChapterService
     @Transactional
     public ServiceResponse registAutoDreamChapter(final Integer journalDayId) throws Exception {
         final JournalDayEntity day = journalDayRepository.findById(journalDayId)
-                .orElseThrow(() -> new BusinessException("msg.journal.day.not-found"));
+                .orElseThrow(() -> new BusinessException("journal.day.not-found"));
         if (!AuthUtils.isCreatedBy(day.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
         final JournalChapterEntity existing = repository.findFirstByJournalDayIdAndChapterType(journalDayId, ChapterType.DREAM).orElse(null);
@@ -186,7 +186,7 @@ public class JournalChapterService
 
         final JournalChapterDto registDto = new JournalChapterDto();
         registDto.setJournalDayId(journalDayId);
-        registDto.setTitle(MessageUtils.getMessage("txt.dream", null));
+        registDto.setTitle(MessageUtils.getMessage("common.dream", null));
         preRegistDreamChapterAuto(registDto);
 
         final JournalChapterEntity registEntity = mapstruct.toEntity(registDto);
@@ -267,14 +267,14 @@ public class JournalChapterService
                     AuthUtils.getLoginUsername(),
                     principal == null ? "null" : principal.getClass().getName()
             );
-            throw new NotAuthorizedException("msg.rslt.not-owner");
+            throw new NotAuthorizedException("common.result.not-owner");
         }
         if (modifyEntity.getChapterType() == ChapterType.DREAM) {
             if (modifyDto.getChapterType() != null && modifyDto.getChapterType() != ChapterType.DREAM) {
-                throw new BusinessException("msg.journal.chapter.dream-type-locked");
+                throw new BusinessException("journal.chapter.dream-type-locked");
             }
         } else if (modifyDto.getChapterType() == ChapterType.DREAM) {
-            throw new BusinessException("msg.journal.chapter.dream-auto-only");
+            throw new BusinessException("journal.chapter.dream-auto-only");
         }
         final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
         modifyDto.setIsSortOrderChanged(isSortOrderChanged);
@@ -307,7 +307,7 @@ public class JournalChapterService
     @Override
     public void preDelete(final JournalChapterDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.not-owner");
+            throw new NotAuthorizedException("common.result.not-owner");
         }
     }
 
@@ -336,7 +336,7 @@ public class JournalChapterService
         final JournalChapterDto deleted = journalChapterMapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.not-owner");
+            throw new NotAuthorizedException("common.result.not-owner");
         }
         return deleted;
     }
@@ -429,11 +429,11 @@ public class JournalChapterService
         final JournalChapterEntity chapterEntity = this.getDtlEntity(id);
         // 권한 체크
         if (!AuthUtils.isCreatedBy(chapterEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.not-owner");
+            throw new NotAuthorizedException("common.result.not-owner");
         }
         // DREAM 챕터 이동 불가
         if (chapterEntity.getChapterType() == ChapterType.DREAM) {
-            throw new BusinessException("msg.journal.chapter.dream-type-locked");
+            throw new BusinessException("journal.chapter.dream-type-locked");
         }
 
         final Integer oldJournalDayId = chapterEntity.getJournalDayId();
@@ -450,7 +450,7 @@ public class JournalChapterService
             journalDayService.regist(newDayDto);
             targetDay = journalDayRepository.findByJournalDate(journalDate, username);
             if (targetDay == null) {
-                throw new BusinessException("msg.journal.day.not-found");
+                throw new BusinessException("journal.day.not-found");
             }
         }
 
