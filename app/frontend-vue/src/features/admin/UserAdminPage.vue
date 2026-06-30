@@ -7,7 +7,7 @@
         </button>
         <button type="button" class="btn btn-sm btn-primary" @click="store.openCreate">
           <i class="bi bi-plus-lg"></i>
-          계정 등록
+          {{ t('user.admin.register') }}
         </button>
       </div>
     </div>
@@ -21,11 +21,11 @@
               type="search"
               class="form-control form-control-solid"
               maxlength="200"
-              placeholder="아이디 검색"
+              :placeholder="t('user.admin.search.placeholder')"
               @keyup.enter="store.fetchUsers(0)"
             />
             <select v-model="store.roleKey" class="form-select form-select-solid user-admin-role-filter">
-              <option value="">전체 권한</option>
+              <option value="">{{ t('user.admin.search.role.all') }}</option>
               <option v-for="role in store.activeRoles" :key="role.roleKey" :value="role.roleKey">{{ role.roleName }}</option>
             </select>
             <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchUsers(0)">
@@ -33,35 +33,35 @@
             </button>
           </div>
           <select :value="store.pageSize" class="form-select form-select-solid user-admin-page-size" @change="onPageSizeChange">
-            <option :value="10">10개</option>
-            <option :value="25">25개</option>
-            <option :value="50">50개</option>
+            <option :value="10">{{ t('common.page-size.10') }}</option>
+            <option :value="25">{{ t('common.page-size.25') }}</option>
+            <option :value="50">{{ t('common.page-size.50') }}</option>
           </select>
         </div>
 
         <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
         <div v-if="store.loading" class="user-admin-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
 
         <div v-else class="table-responsive">
           <table class="table align-middle table-row-dashed fs-small gy-4 mb-0">
             <thead>
               <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                <th class="text-center hidden-table">번호</th>
-                <th>계정</th>
-                <th class="hidden-table">권한</th>
-                <th class="hidden-table">소속</th>
-                <th class="hidden-table">직급</th>
-                <th>이메일</th>
-                <th class="text-center">상태</th>
-                <th class="text-center user-admin-manage-col">관리</th>
+                <th class="text-center hidden-table">{{ t('board.group.list.number') }}</th>
+                <th>{{ t('user.admin.list.col.account') }}</th>
+                <th class="hidden-table">{{ t('log.col.role') }}</th>
+                <th class="hidden-table">{{ t('user.emplym.affiliation') }}</th>
+                <th class="hidden-table">{{ t('user.emplym.rank') }}</th>
+                <th>{{ t('user.admin.list.col.email') }}</th>
+                <th class="text-center">{{ t('common.status') }}</th>
+                <th class="text-center user-admin-manage-col">{{ t('board.group.list.manage') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="!store.rows.length">
-                <td colspan="8" class="text-center text-muted py-8">조회된 계정이 없습니다.</td>
+                <td colspan="8" class="text-center text-muted py-8">{{ t('user.admin.list.empty') }}</td>
               </tr>
               <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" :class="{ 'bg-light': row.isMe }" @click="openDetail(row.id)">
                 <td class="text-center hidden-table text-gray-600">{{ row.rnum }}</td>
@@ -87,15 +87,15 @@
                 </td>
                 <td class="text-center">
                   <span class="badge" :class="isLocked(row) ? 'badge-light-danger' : 'badge-light-success'">
-                    {{ isLocked(row) ? "잠김" : "사용" }}
+                    {{ isLocked(row) ? t('user.list.locked') : t('status.use') }}
                   </span>
                 </td>
                 <td class="text-center" @click.stop>
                   <div class="user-admin-actions justify-content-center">
-                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" title="수정" @click="openEdit(row.id)">
+                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.mdf')" @click="openEdit(row.id)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" title="삭제" :disabled="row.isMe" @click="deleteUser(row)">
+                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.del')" :disabled="row.isMe" @click="deleteUser(row)">
                       <i class="bi bi-trash"></i>
                     </button>
                   </div>
@@ -106,7 +106,7 @@
         </div>
       </div>
       <div class="card-footer user-admin-footer">
-        <span class="text-muted fs-8">총 {{ formatNumber(store.totalElements) }}건</span>
+        <span class="text-muted fs-8">{{ t('board.group.pagination.total-format').replace('{0}', formatNumber(store.totalElements)) }}</span>
         <div v-if="pageNumbers.length" class="pagination mb-0">
           <button type="button" class="page-link" :disabled="store.currentPage <= 0" @click="store.fetchUsers(0)">
             <i class="previous"></i>
@@ -138,13 +138,13 @@
         <div class="modal-dialog modal-xl">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">계정 상세</h5>
+              <h5 class="modal-title">{{ t('user.admin.detail.title') }}</h5>
               <button type="button" class="btn-close" @click="store.closeDetail"></button>
             </div>
             <div class="modal-body">
               <div v-if="store.detailLoading" class="user-admin-loading">
                 <span class="spinner-border spinner-border-sm me-2"></span>
-                불러오는 중
+                {{ t('common.loading') }}
               </div>
               <template v-else-if="store.detail">
                 <div class="user-admin-detail-head">
@@ -161,67 +161,67 @@
                   <div class="user-admin-actions">
                     <button type="button" class="btn btn-sm btn-light-warning" @click="passwordReset(store.detail.id)">
                       <i class="bi bi-key"></i>
-                      비밀번호 초기화
+                      {{ t('user.admin.detail.reset-password') }}
                     </button>
                     <button type="button" class="btn btn-sm btn-light-primary" @click="openEdit(store.detail.id)">
                       <i class="bi bi-pencil-square"></i>
-                      수정
+                      {{ t('common.mdf') }}
                     </button>
                   </div>
                 </div>
 
                 <div class="user-admin-detail-grid">
                   <div>
-                    <span>권한</span>
+                    <span>{{ t('log.col.role') }}</span>
                     <strong>{{ roleNames(store.detail) }}</strong>
                   </div>
                   <div>
-                    <span>이메일</span>
+                    <span>{{ t('user.admin.list.col.email') }}</span>
                     <strong>{{ store.detail.email || "-" }}</strong>
                   </div>
                   <div>
-                    <span>연락처</span>
+                    <span>{{ t('user.admin.detail.col.contact') }}</span>
                     <strong>{{ store.detail.phoneNumber || "-" }}</strong>
                   </div>
                   <div>
-                    <span>상태</span>
-                    <strong>{{ isLocked(store.detail) ? "잠김" : "사용" }}</strong>
+                    <span>{{ t('common.status') }}</span>
+                    <strong>{{ isLocked(store.detail) ? t('user.list.locked') : t('status.use') }}</strong>
                   </div>
                   <div>
-                    <span>소속</span>
+                    <span>{{ t('user.emplym.affiliation') }}</span>
                     <strong>{{ [store.detail.cmpyNm, store.detail.teamNm].filter(Boolean).join(" / ") || "-" }}</strong>
                   </div>
                   <div>
-                    <span>직급</span>
+                    <span>{{ t('user.emplym.rank') }}</span>
                     <strong>{{ store.detail.rankNm || "-" }}</strong>
                   </div>
                   <div>
-                    <span>접속 IP 제한</span>
-                    <strong>{{ store.detail.useAllowedIp ? allowedIps(store.detail) || "사용" : "미사용" }}</strong>
+                    <span>{{ t('user.admin.detail.col.allowed-ip') }}</span>
+                    <strong>{{ store.detail.useAllowedIp ? allowedIps(store.detail) || t('status.use') : t('status.unuse') }}</strong>
                   </div>
                   <div>
-                    <span>등록</span>
+                    <span>{{ t('common.reg') }}</span>
                     <strong>{{ [store.detail.createdBy, store.detail.createdAt].filter(Boolean).join(" / ") || "-" }}</strong>
                   </div>
                 </div>
                 <div class="user-admin-detail-block">
-                  <h4>계정 설명</h4>
+                  <h4>{{ t('user.form.account-description') }}</h4>
                   <pre>{{ store.detail.content || "-" }}</pre>
                 </div>
                 <div class="user-admin-detail-split">
                   <div class="user-admin-detail-block">
-                    <h4>프로필</h4>
+                    <h4>{{ t('user.admin.detail.section.profile') }}</h4>
                     <pre>{{ profileText(store.detail) }}</pre>
                   </div>
                   <div class="user-admin-detail-block">
-                    <h4>인사정보</h4>
+                    <h4>{{ t('user.admin.detail.section.employment') }}</h4>
                     <pre>{{ emplymText(store.detail) }}</pre>
                   </div>
                 </div>
               </template>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-light" @click="store.closeDetail">닫기</button>
+              <button type="button" class="btn btn-sm btn-light" @click="store.closeDetail">{{ t('common.close') }}</button>
             </div>
           </div>
         </div>
@@ -235,31 +235,31 @@
           <div class="modal-content">
             <form @submit.prevent="submit">
               <div class="modal-header">
-                <h5 class="modal-title">{{ store.isEdit ? "계정 수정" : "계정 등록" }}</h5>
+                <h5 class="modal-title">{{ store.isEdit ? t('user.admin.modal.title.edit') : t('user.admin.register') }}</h5>
                 <button type="button" class="btn-close" @click="store.closeForm"></button>
               </div>
               <div class="modal-body">
                 <div class="user-admin-form">
                   <div class="user-admin-form-row">
-                    <label for="username" class="form-label required">아이디</label>
+                    <label for="username" class="form-label required">{{ t('user.form.username') }}</label>
                     <div class="user-admin-inline">
                       <input id="username" v-model.trim="store.form.username" type="text" class="form-control form-control-solid" maxlength="16" :readonly="store.isEdit" required />
-                      <button v-if="!store.isEdit" type="button" class="btn btn-sm btn-light-primary" @click="checkUsername">중복확인</button>
+                      <button v-if="!store.isEdit" type="button" class="btn btn-sm btn-light-primary" @click="checkUsername">{{ t('user.form.dup-check') }}</button>
                     </div>
                   </div>
 
                   <div v-if="!store.isEdit" class="user-admin-form-row">
-                    <label for="password" class="form-label required">비밀번호</label>
+                    <label for="password" class="form-label required">{{ t('user.form.password') }}</label>
                     <input id="password" v-model="store.form.password" type="password" class="form-control form-control-solid" maxlength="20" autocomplete="new-password" required />
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label for="nickname" class="form-label required">표시이름</label>
+                    <label for="nickname" class="form-label required">{{ t('user.form.nickname') }}</label>
                     <input id="nickname" v-model.trim="store.form.nickname" type="text" class="form-control form-control-solid" maxlength="20" required />
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label class="form-label required">권한</label>
+                    <label class="form-label required">{{ t('user.form.role') }}</label>
                     <div class="user-admin-role-options">
                       <label v-for="role in store.activeRoles" :key="role.roleKey" class="form-check form-check-custom form-check-solid">
                         <input v-model="store.form.roleKeyList" class="form-check-input" type="checkbox" :value="role.roleKey" />
@@ -269,26 +269,26 @@
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label class="form-label required">이메일</label>
+                    <label class="form-label required">{{ t('user.form.email') }}</label>
                     <div class="user-admin-email">
                       <input v-model.trim="store.form.emailId" type="text" class="form-control form-control-solid" maxlength="64" required />
                       <span>@</span>
                       <input v-model.trim="store.form.emailDomain" type="text" class="form-control form-control-solid" maxlength="100" required />
-                      <button type="button" class="btn btn-sm btn-light-primary" @click="checkEmail">중복확인</button>
+                      <button type="button" class="btn btn-sm btn-light-primary" @click="checkEmail">{{ t('user.form.dup-check') }}</button>
                     </div>
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label for="phoneNumber" class="form-label">연락처</label>
+                    <label for="phoneNumber" class="form-label">{{ t('user.form.contact') }}</label>
                     <input id="phoneNumber" v-model.trim="store.form.phoneNumber" type="text" class="form-control form-control-solid" maxlength="20" />
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label for="useAllowedIp" class="form-label">접속 IP 제한</label>
+                    <label for="useAllowedIp" class="form-label">{{ t('user.form.allowed-ip-restrict') }}</label>
                     <div>
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input id="useAllowedIp" v-model="store.form.useAllowedIp" class="form-check-input cursor-pointer" type="checkbox" />
-                        <label class="form-check-label ms-3" for="useAllowedIp">{{ store.form.useAllowedIp ? "사용" : "미사용" }}</label>
+                        <label class="form-check-label ms-3" for="useAllowedIp">{{ store.form.useAllowedIp ? t('status.use') : t('status.unuse') }}</label>
                       </div>
                       <input
                         v-if="store.form.useAllowedIp"
@@ -296,93 +296,93 @@
                         type="text"
                         class="form-control form-control-solid mt-3"
                         maxlength="500"
-                        placeholder="쉼표로 구분"
+                        :placeholder="t('user.admin.form.ip-placeholder')"
                       />
                     </div>
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label for="content" class="form-label">계정 설명</label>
+                    <label for="content" class="form-label">{{ t('user.form.account-description') }}</label>
                     <textarea id="content" v-model.trim="store.form.content" class="form-control form-control-solid" rows="4" maxlength="1000"></textarea>
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label for="hasProfile" class="form-label">프로필</label>
+                    <label for="hasProfile" class="form-label">{{ t('user.admin.form.profile') }}</label>
                     <div>
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input id="hasProfile" v-model="store.form.hasProfile" class="form-check-input cursor-pointer" type="checkbox" />
-                        <label class="form-check-label ms-3" for="hasProfile">{{ store.form.hasProfile ? "입력" : "미입력" }}</label>
+                        <label class="form-check-label ms-3" for="hasProfile">{{ store.form.hasProfile ? t('user.admin.form.input.yes') : t('user.admin.form.input.no') }}</label>
                       </div>
                       <div v-if="store.form.hasProfile" class="user-admin-subform mt-3">
-                        <input v-model="store.form.profile.brthdy" type="date" class="form-control form-control-solid" aria-label="생년월일" />
+                        <input v-model="store.form.profile.brthdy" type="date" class="form-control form-control-solid" :aria-label="t('user.profile.birth-date')" />
                         <label class="form-check form-check-custom form-check-solid">
                           <input v-model="store.form.profile.lunarYn" class="form-check-input" type="checkbox" />
-                          <span class="form-check-label">음력</span>
+                          <span class="form-check-label">{{ t('user.profile.lunar') }}</span>
                         </label>
-                        <textarea v-model.trim="store.form.profile.proflCn" class="form-control form-control-solid" rows="3" maxlength="1000" placeholder="프로필 설명"></textarea>
+                        <textarea v-model.trim="store.form.profile.proflCn" class="form-control form-control-solid" rows="3" maxlength="1000" :placeholder="t('user.admin.form.profile.content.placeholder')"></textarea>
                       </div>
                     </div>
                   </div>
 
                   <div class="user-admin-form-row">
-                    <label for="hasEmplym" class="form-label">인사정보</label>
+                    <label for="hasEmplym" class="form-label">{{ t('user.admin.form.employment') }}</label>
                     <div>
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input id="hasEmplym" v-model="store.form.hasEmplym" class="form-check-input cursor-pointer" type="checkbox" />
-                        <label class="form-check-label ms-3" for="hasEmplym">{{ store.form.hasEmplym ? "입력" : "미입력" }}</label>
+                        <label class="form-check-label ms-3" for="hasEmplym">{{ store.form.hasEmplym ? t('user.admin.form.input.yes') : t('user.admin.form.input.no') }}</label>
                       </div>
                       <div v-if="store.form.hasEmplym" class="user-admin-subform mt-3">
-                        <input v-model.trim="store.form.emplym.userNm" type="text" class="form-control form-control-solid" maxlength="50" placeholder="이름" />
+                        <input v-model.trim="store.form.emplym.userNm" type="text" class="form-control form-control-solid" maxlength="50" :placeholder="t('user.emplym.name-placeholder')" />
                         <select v-model="store.form.emplym.cmpyCd" class="form-select form-select-solid">
-                          <option value="">회사 선택</option>
+                          <option value="">{{ t('user.admin.form.select.company') }}</option>
                           <option v-for="opt in store.cmpyOptions" :key="opt.code" :value="opt.code">{{ opt.codeName }}</option>
                         </select>
                         <select v-model="store.form.emplym.teamCd" class="form-select form-select-solid">
-                          <option value="">팀 선택</option>
+                          <option value="">{{ t('user.admin.form.select.team') }}</option>
                           <option v-for="opt in store.teamOptions" :key="opt.code" :value="opt.code">{{ opt.codeName }}</option>
                         </select>
                         <select v-model="store.form.emplym.emplymCd" class="form-select form-select-solid">
-                          <option value="">재직구분 선택</option>
+                          <option value="">{{ t('user.admin.form.select.employment-type') }}</option>
                           <option v-for="opt in store.emplymOptions" :key="opt.code" :value="opt.code">{{ opt.codeName }}</option>
                         </select>
                         <select v-model="store.form.emplym.rankCd" class="form-select form-select-solid">
-                          <option value="">직급 선택</option>
+                          <option value="">{{ t('user.admin.form.select.rank') }}</option>
                           <option v-for="opt in store.rankOptions" :key="opt.code" :value="opt.code">{{ opt.codeName }}</option>
                         </select>
                         <div class="user-admin-email">
-                          <input v-model.trim="store.form.emplym.emplymEmailId" type="text" class="form-control form-control-solid" maxlength="64" placeholder="업무 이메일" />
+                          <input v-model.trim="store.form.emplym.emplymEmailId" type="text" class="form-control form-control-solid" maxlength="64" :placeholder="t('user.signup.work-email')" />
                           <span>@</span>
                           <input v-model.trim="store.form.emplym.emplymEmailDomain" type="text" class="form-control form-control-solid" maxlength="100" placeholder="domain" />
                         </div>
-                        <input v-model.trim="store.form.emplym.emplymPhoneNumber" type="text" class="form-control form-control-solid" maxlength="20" placeholder="업무 연락처" />
+                        <input v-model.trim="store.form.emplym.emplymPhoneNumber" type="text" class="form-control form-control-solid" maxlength="20" :placeholder="t('user.admin.form.emplym.phone.label')" />
                         <div class="user-admin-inline flex-wrap">
-                          <input v-model="store.form.emplym.ecnyDt" type="date" class="form-control form-control-solid user-admin-date" aria-label="입사일" />
+                          <input v-model="store.form.emplym.ecnyDt" type="date" class="form-control form-control-solid user-admin-date" :aria-label="t('user.emplym.join-date')" />
                           <label class="form-check form-check-custom form-check-solid">
                             <input v-model="store.form.emplym.apntcYn" class="form-check-input" type="checkbox" />
-                            <span class="form-check-label">수습</span>
+                            <span class="form-check-label">{{ t('user.emplym.probation.active') }}</span>
                           </label>
                           <label class="form-check form-check-custom form-check-solid">
                             <input v-model="store.form.emplym.retireYn" class="form-check-input" type="checkbox" />
-                            <span class="form-check-label">퇴사</span>
+                            <span class="form-check-label">{{ t('user.emplym.retired') }}</span>
                           </label>
-                          <input v-if="store.form.emplym.retireYn" v-model="store.form.emplym.retireDt" type="date" class="form-control form-control-solid user-admin-date" aria-label="퇴사일" />
+                          <input v-if="store.form.emplym.retireYn" v-model="store.form.emplym.retireDt" type="date" class="form-control form-control-solid user-admin-date" :aria-label="t('user.emplym.retired-date')" />
                         </div>
                         <div class="user-admin-inline">
-                          <input v-model.trim="store.form.emplym.acntBank" type="text" class="form-control form-control-solid" maxlength="40" placeholder="은행" />
-                          <input v-model.trim="store.form.emplym.acntNo" type="text" class="form-control form-control-solid" maxlength="40" placeholder="계좌번호" />
+                          <input v-model.trim="store.form.emplym.acntBank" type="text" class="form-control form-control-solid" maxlength="40" :placeholder="t('user.emplym.bank')" />
+                          <input v-model.trim="store.form.emplym.acntNo" type="text" class="form-control form-control-solid" maxlength="40" :placeholder="t('user.emplym.account-number')" />
                         </div>
-                        <textarea v-model.trim="store.form.emplym.emplymCn" class="form-control form-control-solid" rows="3" maxlength="1000" placeholder="인사정보 설명"></textarea>
+                        <textarea v-model.trim="store.form.emplym.emplymCn" class="form-control form-control-solid" rows="3" maxlength="1000" :placeholder="t('user.admin.form.emplym.content.placeholder')"></textarea>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-light" @click="store.closeForm">닫기</button>
+                <button type="button" class="btn btn-sm btn-light" @click="store.closeForm">{{ t('common.close') }}</button>
                 <button type="submit" class="btn btn-sm btn-primary" :disabled="store.saving">
                   <span v-if="store.saving" class="spinner-border spinner-border-sm me-1"></span>
                   <i v-else class="bi bi-check-lg"></i>
-                  저장
+                  {{ t('common.save') }}
                 </button>
               </div>
             </form>
@@ -395,6 +395,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
@@ -402,6 +403,7 @@ import { useUserAdminStore, type UserRow } from "@/features/admin/stores/userAdm
 
 const route = useRoute();
 const store = useUserAdminStore();
+const { t } = useLocaleStore();
 
 const pageNumbers = computed(() => {
   if (store.totalPages <= 1) return [];
@@ -431,7 +433,7 @@ function allowedIps(row: UserRow): string {
 function profileText(row: UserRow): string {
   if (!row.profile) return "-";
   return [
-    row.profile.brthdy ? `생년월일: ${row.profile.brthdy}${row.profile.lunarYn === "Y" ? " (음력)" : ""}` : "",
+    row.profile.brthdy ? `${t("user.profile.birth-date")}: ${row.profile.brthdy}${row.profile.lunarYn === "Y" ? ` (${t("user.profile.lunar")})` : ""}` : "",
     row.profile.proflCn || "",
   ].filter(Boolean).join("\n") || "-";
 }
@@ -439,13 +441,13 @@ function profileText(row: UserRow): string {
 function emplymText(row: UserRow): string {
   if (!row.emplym) return "-";
   return [
-    row.emplym.userNm ? `이름: ${row.emplym.userNm}` : "",
+    row.emplym.userNm ? `${t("user.emplym.name-placeholder")}: ${row.emplym.userNm}` : "",
     [row.emplym.cmpyNm, row.emplym.teamNm, row.emplym.rankNm].filter(Boolean).join(" / "),
-    row.emplym.emplymEmail ? `업무 이메일: ${row.emplym.emplymEmail}` : "",
-    row.emplym.emplymPhoneNumber ? `업무 연락처: ${row.emplym.emplymPhoneNumber}` : "",
-    row.emplym.ecnyDt ? `입사일: ${row.emplym.ecnyDt}` : "",
-    row.emplym.retireYn === "Y" ? `퇴사일: ${row.emplym.retireDt || "-"}` : "",
-    row.emplym.acntBank || row.emplym.acntNo ? `급여계좌: ${[row.emplym.acntBank, row.emplym.acntNo].filter(Boolean).join(" ")}` : "",
+    row.emplym.emplymEmail ? `${t("user.signup.work-email")}: ${row.emplym.emplymEmail}` : "",
+    row.emplym.emplymPhoneNumber ? `${t("user.admin.form.emplym.phone.label")}: ${row.emplym.emplymPhoneNumber}` : "",
+    row.emplym.ecnyDt ? `${t("user.emplym.join-date")}: ${row.emplym.ecnyDt}` : "",
+    row.emplym.retireYn === "Y" ? `${t("user.emplym.retired-date")}: ${row.emplym.retireDt || "-"}` : "",
+    row.emplym.acntBank || row.emplym.acntNo ? `${t("user.admin.info.payroll-account")}: ${[row.emplym.acntBank, row.emplym.acntNo].filter(Boolean).join(" ")}` : "",
     row.emplym.emplymCn || "",
   ].filter(Boolean).join("\n") || "-";
 }
@@ -458,7 +460,7 @@ async function openDetail(id: number) {
   try {
     await store.openDetail(id);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "계정 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("user.admin.detail.load.failure"));
   }
 }
 
@@ -466,69 +468,69 @@ async function openEdit(id: number) {
   try {
     await store.openEdit(id);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "계정 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("user.admin.detail.load.failure"));
   }
 }
 
 async function submit() {
   if (!store.form.username.trim() || !store.form.nickname.trim()) {
-    void swalAlert("아이디와 표시이름을 입력해주세요.");
+    void swalAlert(t("user.admin.validate.username-nickname.required"));
     return;
   }
   if (!store.isEdit && !store.form.password.trim()) {
-    void swalAlert("비밀번호를 입력해주세요.");
+    void swalAlert(t("user.admin.validate.password.required"));
     return;
   }
   if (!store.form.emailId.trim() || !store.form.emailDomain.trim()) {
-    void swalAlert("이메일을 입력해주세요.");
+    void swalAlert(t("user.admin.validate.email.required"));
     return;
   }
   if (!store.form.roleKeyList.length) {
-    void swalAlert("권한을 하나 이상 선택해주세요.");
+    void swalAlert(t("user.admin.validate.role.required"));
     return;
   }
   try {
     await store.submit();
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "계정을 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("user.admin.save.failure"));
   }
 }
 
 async function passwordReset(id: number) {
-  if (!await swalConfirm("비밀번호를 초기화할까요?")) return;
+  if (!await swalConfirm(t("user.admin.reset-password.confirm"))) return;
   try {
     void swalAlert(await store.passwordReset(id));
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "비밀번호를 초기화하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("user.admin.reset-password.failure"));
   }
 }
 
 async function deleteUser(row: UserRow) {
-  if (!await swalConfirm(`${row.username} 계정을 삭제할까요?`)) return;
+  if (!await swalConfirm(t("user.admin.delete.confirm").replace("{username}", row.username))) return;
   try {
     await store.deleteUser(row.id);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "계정을 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("user.admin.delete.failure"));
   }
 }
 
 async function checkUsername() {
   if (!store.form.username.trim()) {
-    void swalAlert("아이디를 입력해주세요.");
+    void swalAlert(t("user.admin.validate.username.required"));
     return;
   }
   const result = await store.usernameDuplicateCheck(store.form.username.trim());
-  void swalAlert(result.message || (result.ok ? "사용 가능한 아이디입니다." : "이미 사용 중인 아이디입니다."));
+  void swalAlert(result.message || (result.ok ? t("user.admin.dup-check.username.usable") : t("user.admin.dup-check.username.duplicated")));
 }
 
 async function checkEmail() {
   const email = `${store.form.emailId.trim()}@${store.form.emailDomain.trim()}`;
   if (!store.form.emailId.trim() || !store.form.emailDomain.trim()) {
-    void swalAlert("이메일을 입력해주세요.");
+    void swalAlert(t("user.admin.validate.email.required"));
     return;
   }
   const result = await store.emailDuplicateCheck(email);
-  void swalAlert(result.message || (result.ok ? "사용 가능한 이메일입니다." : "이미 사용 중인 이메일입니다."));
+  void swalAlert(result.message || (result.ok ? t("user.admin.dup-check.email.usable") : t("user.admin.dup-check.email.duplicated")));
 }
 
 onMounted(async () => {

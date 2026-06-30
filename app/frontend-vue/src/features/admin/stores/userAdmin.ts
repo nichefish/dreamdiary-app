@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import type { RoleRow } from "@/features/admin/stores/adminPage";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
 
 export interface UserRoleRow {
@@ -259,6 +260,7 @@ function toFormData(form: UserForm): FormData {
 }
 
 export const useUserAdminStore = defineStore("userAdmin", () => {
+  const { t } = useLocaleStore();
   const rows = ref<UserRow[]>([]);
   const totalElements = ref(0);
   const totalPages = ref(0);
@@ -324,7 +326,7 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
       if (roleKey.value) params.roleKey = roleKey.value;
 
       const res = await axios.get("/api/users", { params });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정 목록을 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.list.load.failure"));
       const pageResult = res.data?.rsltObj ?? {};
       rows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
       totalElements.value = Number(pageResult.totalElements ?? 0);
@@ -332,7 +334,7 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
       currentPage.value = Number(pageResult.number ?? targetPage);
       pageSize.value = Number(pageResult.size ?? pageSize.value);
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "계정 목록을 불러오지 못했습니다.";
+      error.value = e instanceof Error ? e.message : t("user.admin.list.load.failure");
       rows.value = [];
       totalElements.value = 0;
       totalPages.value = 0;
@@ -352,7 +354,7 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     detailLoading.value = true;
     try {
       const res = await axios.get(`/api/users/${id}`);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정 상세를 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.detail.load.failure"));
       detail.value = res.data?.rsltObj ?? null;
     } finally {
       detailLoading.value = false;
@@ -374,7 +376,7 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     if (!await assertAuthenticatedBeforeModal()) return;
     saving.value = false;
     const res = await axios.get(`/api/users/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정 상세를 불러오지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.detail.load.failure"));
     form.value = normalizeForm(res.data?.rsltObj ?? {});
     formOpen.value = true;
   }
@@ -397,9 +399,9 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
       const res = await axios.post(url, toFormData(form.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정을 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.save.failure"));
       closeForm();
-      const message = res.data?.message ?? "저장되었습니다.";
+      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchUsers(id == null ? 0 : currentPage.value);
       if (detail.value?.id === id) await openDetail(id);
@@ -411,8 +413,8 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
 
   async function passwordReset(id: number) {
     const res = await axios.post(`/api/users/${id}/password-reset`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "비밀번호를 초기화하지 못했습니다.");
-    return res.data?.message ?? "비밀번호가 초기화되었습니다.";
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.reset-password.failure"));
+    return res.data?.message ?? t("user.admin.reset-password.success");
   }
 
   /**
@@ -422,10 +424,10 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
    */
   async function deleteUser(id: number) {
     const res = await axios.delete(`/api/users/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "계정을 삭제하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.delete.failure"));
     if (detail.value?.id === id) closeDetail();
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
-    const message = res.data?.message ?? "삭제되었습니다.";
+    const message = res.data?.message ?? t("common.result.deleted");
     await swalAlert(message);
     await fetchUsers(nextPage);
     return message;

@@ -308,7 +308,7 @@ public class MenuService
 
         if ("Y".equals(modifyEntity.getProtectedYn())) {
             log.warn("Protected menu modification blocked. menuId={}", modifyEntity.getId());
-            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+            throw new BusinessException(MessageUtils.getMessage("exception.menu-protected"));
         }
         if (StringUtils.isNotBlank(postDto.getMenuType()) && !Objects.equals(postDto.getMenuType(), modifyEntity.getMenuType())) {
             log.warn("Menu type modification blocked. menuId={}, currentMenuType={}, requestedMenuType={}",
@@ -318,7 +318,7 @@ public class MenuService
         if (!Objects.equals(postDto.getParentMenuId(), modifyEntity.getParentMenuId())) {
             log.warn("Menu parent modification blocked outside tree move API. menuId={}, currentParentMenuId={}, requestedParentMenuId={}",
                     modifyEntity.getId(), modifyEntity.getParentMenuId(), postDto.getParentMenuId());
-            throw new BusinessException(MessageUtils.getMessage("exception.MenuParentChangeBlockedException"));
+            throw new BusinessException(MessageUtils.getMessage("exception.menu-parent-change-blocked"));
         }
     }
 
@@ -389,7 +389,7 @@ public class MenuService
         final MenuEntity menu = this.getDtlEntity(id);
         if ("Y".equals(menu.getProtectedYn())) {
             log.warn("Protected menu useYn change blocked. menuId={}", id);
-            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+            throw new BusinessException(MessageUtils.getMessage("exception.menu-protected"));
         }
 
         return this.getSelf().setUse(id, patchDto.getUseYn());
@@ -444,7 +444,7 @@ public class MenuService
             throw new BusinessException("Only sub menus can be moved.");
         }
         if ("Y".equals(movedMenu.getProtectedYn())) {
-            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+            throw new BusinessException(MessageUtils.getMessage("exception.menu-protected"));
         }
         if (!Objects.equals(movedMenu.getParentMenuId(), moveParam.getSourceParentMenuId())) {
             throw new BusinessException("Menu tree is stale. Reload and try again.");
@@ -569,7 +569,7 @@ public class MenuService
     public void preRemove(final MenuEntity deleteEntity) throws Exception {
         if ("Y".equals(deleteEntity.getProtectedYn())) {
             // 하위 메뉴 중 하나라도 보호라면 전체 롤백
-            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+            throw new BusinessException(MessageUtils.getMessage("exception.menu-protected"));
         }
     }
 

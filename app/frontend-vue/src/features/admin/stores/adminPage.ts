@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import {
   DEFAULT_ADMIN_PAGE_META,
   emptyEmbeddingStats,
@@ -57,6 +58,7 @@ function isBackfillWorkActive(
 }
 
 export const useAdminPageStore = defineStore("adminPage", () => {
+  const { t } = useLocaleStore();
   const meta = ref<AdminPageMeta>({ ...DEFAULT_ADMIN_PAGE_META });
   const roles = ref<RoleRow[]>([]);
   const bootstrapLoading = ref(false);
@@ -270,13 +272,13 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     const fd = new FormData();
     fd.append("yy", yy);
     const res = await axios.post("/api/holyday/get-holyday-account.do", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "휴일 정보를 동기화하지 못했습니다.");
-    return res.data?.message ?? "처리되었습니다.";
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.holyday.sync.failure"));
+    return res.data?.message ?? t("common.result.processed");
   }
 
   async function fetchNotion(dataType: string, dataId: string) {
     const res = await axios.get("/api/notion/notion.do", { params: { dataType, dataId } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "Notion 요청에 실패했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.notion.failure"));
     return res.data;
   }
 
@@ -304,7 +306,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     const fd = new FormData();
     fd.append("cacheName", cacheName);
     const res = await axios.post("/api/cache/cache-clear-by-nm", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "캐시를 삭제하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.cache.delete.failure"));
     const next = { ...cacheMap.value };
     delete next[cacheName];
     cacheMap.value = next;
@@ -315,7 +317,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     fd.append("cacheName", cacheName);
     fd.append("cacheKey", cacheKey);
     const res = await axios.post("/api/cache/cache-evict", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "캐시 항목을 삭제하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.cache.item.delete.failure"));
     const cache = { ...(cacheMap.value[cacheName] ?? {}) };
     delete cache[cacheKey];
     cacheMap.value = { ...cacheMap.value, [cacheName]: cache };
@@ -323,9 +325,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
 
   async function clearAllCaches() {
     const res = await axios.post("/api/cache-clear");
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "전체 캐시를 삭제하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.cache.all.delete.failure"));
     cacheMap.value = {};
-    return res.data?.message ?? "처리되었습니다.";
+    return res.data?.message ?? t("common.result.processed");
   }
 
   return {

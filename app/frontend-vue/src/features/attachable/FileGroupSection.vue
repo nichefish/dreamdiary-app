@@ -3,8 +3,8 @@
   <div class="row">
     <div>
       <label class="mb-2">
-        <span class="text-gray-700 fs-6 fw-bolder">첨부파일</span>
-        <span class="text-gray-500 fs-9 mx-2">※ 첨부파일은 개별 50MB, 최대 100MB까지 업로드 가능합니다.</span>
+        <span class="text-gray-700 fs-6 fw-bolder">{{ t('attach.label') }}</span>
+        <span class="text-gray-500 fs-9 mx-2">{{ t('attach.section.size-limit') }}</span>
       </label>
       <!--
        * formFile: 파일 추가 트리거 전용 input (name 없음, 실제 업로드 대상 아님).
@@ -28,7 +28,7 @@
             @click.prevent="fileDownload(file.fileGroupId, file.id)"
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="파일을 다운로드합니다."
+            :title="t('attach.download.tooltip')"
           >
             {{ file.orgnFileNm }} ({{ file.fileSize }}byte)
           </a>
@@ -37,8 +37,8 @@
             @click="deleteExistingFile(file.id)"
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="파일을 삭제합니다."
-          >삭제</div>
+            :title="t('attach.delete.tooltip')"
+          >{{ t('common.del') }}</div>
           <!--atchCtrl :: CRUD — deleted 시 'D', 유지 시 'R'-->
           <input
             type="hidden"
@@ -73,15 +73,15 @@
             data-bs-toggle="tooltip"
             data-bs-placement="top"
             data-bs-dismiss="click"
-            title="파일을 삭제합니다."
-          >삭제</button>
+            :title="t('attach.delete.tooltip')"
+          >{{ t('common.del') }}</button>
         </div>
       </div>
       <!--end::새로 추가된 파일 목록-->
     </div>
     <!--begin::빈 상태 표시-->
     <div v-if="!hasAnyFile" id="emptyFileListDiv" class="text-muted fs-9 col-xl-10 mb-8">
-      첨부된 파일이 없습니다.
+      {{ t('attach.section.empty') }}
     </div>
     <!--end::빈 상태 표시-->
   </div>
@@ -89,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { ref, computed, nextTick } from "vue";
 import type { FileRecord } from "@/features/attachable/stores/attachableModal";
@@ -96,6 +97,7 @@ import type { FileRecord } from "@/features/attachable/stores/attachableModal";
 interface NewFileItem { idx: number; name: string; }
 interface ExistingFileItem extends FileRecord { deleted: boolean; }
 
+const { t } = useLocaleStore();
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 const props = withDefaults(
@@ -130,7 +132,7 @@ function onFileChange(idx: number, input: HTMLInputElement): void {
   if (!input.value) { removeNewFile(idx); return; }
   const file = input.files?.[0];
   if (file && file.size > MAX_FILE_SIZE) {
-    void swalAlert("파일 크기는 50MB를 초과할 수 없습니다.");
+    void swalAlert(t("attach.validate.size-limit"));
     input.value = "";
     removeNewFile(idx);
     return;
@@ -147,13 +149,13 @@ function removeNewFile(idx: number): void {
 
 /** 새로 추가된 파일 삭제 확인 후 제거 */
 async function deleteNewFile(idx: number): Promise<void> {
-  if (!await swalConfirm("파일을 삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("attach.delete.confirm"))) return;
   removeNewFile(idx);
 }
 
 /** 기존 파일 삭제 플래그(atchCtrl=D) 세팅 */
 async function deleteExistingFile(fileId: number): Promise<void> {
-  if (!await swalConfirm("파일을 삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("attach.delete.confirm"))) return;
   const file = existingList.value.find((f) => f.id === fileId);
   if (file) file.deleted = true;
 }

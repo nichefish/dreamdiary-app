@@ -23,7 +23,10 @@ public class JournalDreamSectionDto {
     /** 접힘·등록 초기값 키 ({@code own} 또는 {@code dreamer:{name}}) */
     private String sectionKey;
 
-    /** 헤더 라벨 (예: 꿈, 형 꿈) */
+    /**
+     * 헤더 라벨 (예: 꿈, 형 꿈).
+     * <p>요청 locale에 따라 서버 메시지 카탈로그에서 조립한다.</p>
+     */
     private String title;
 
     /** 꿈꾼 이름 — 내 꿈 섹션은 null */

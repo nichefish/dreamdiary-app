@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { isAuthExpiredError } from "@/shared/utils/authError";
 
 // ---- 타입 정의 ----
@@ -112,6 +113,7 @@ export interface TagProfileModel {
 // ---- 스토어 ----
 
 export const useAttachableModalStore = defineStore("attachableModal", () => {
+  const { t } = useLocaleStore();
 
   // ---- 댓글 등록/수정 모달 ----
 
@@ -428,22 +430,22 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   async function saveRelated(): Promise<{ rslt: boolean; message?: string }> {
     relatedValidationMsg.value = "";
     if (!relatedTargetContentType.value) {
-      relatedValidationMsg.value = "대상 글 유형을 선택해 주세요.";
+      relatedValidationMsg.value = t("related-content.validate.target-content-type");
       return { rslt: false };
     }
     if (!relatedSelectedTarget.value) {
-      relatedValidationMsg.value = "검색 결과에서 연결할 글을 선택해 주세요.";
+      relatedValidationMsg.value = t("related-content.validate.target");
       return { rslt: false };
     }
     if (
       relatedTargetContentType.value === relatedSrcContentType.value
       && relatedSelectedTarget.value.id === relatedSrcId.value
     ) {
-      relatedValidationMsg.value = "현재 글 자신과는 연결할 수 없습니다.";
+      relatedValidationMsg.value = t("related-content.validate.self");
       return { rslt: false };
     }
     if (!relatedRelationType.value) {
-      relatedValidationMsg.value = "관련 유형을 선택해 주세요.";
+      relatedValidationMsg.value = t("related-content.validate.relation-type");
       return { rslt: false };
     }
     try {
@@ -628,7 +630,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    */
   async function saveTagProfile(): Promise<{ rslt: boolean; message?: string }> {
     const m = tagProfileModel.value;
-    if (!m.tagId) return { rslt: false, message: "tagId가 없습니다." };
+    if (!m.tagId) return { rslt: false, message: t("attachable.tag.profile.tag-id.missing") };
     try {
       const fd = new FormData();
       if (m.id) fd.append("id", m.id);
@@ -654,7 +656,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    */
   async function deleteTagProfile(): Promise<{ rslt: boolean; message?: string }> {
     const m = tagProfileModel.value;
-    if (!m.tagId) return { rslt: false, message: "tagId가 없습니다." };
+    if (!m.tagId) return { rslt: false, message: t("attachable.tag.profile.tag-id.missing") };
     try {
       const res = await axios.delete(`/api/tags/${m.tagId}/profile`, {
         params: { contentType: m.contentType },

@@ -45,6 +45,10 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 화면 위치/제목/설명 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title 또는 메뉴 설명을 별도로 렌더링하지 않고, 필요한 액션 버튼만 둔다.
 
 `useAttachableModalStore` (`features/attachable/stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
+`RelatedContentAddModal.vue`의 제목·필드·옵션·검색 상태·검증·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
+`JournalTagProfileModal.vue`의 제목·필드·선택지·버튼·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장·삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
+`JournalTagListModal.vue`의 제목·빈 상태·분류·버튼·태그별 일자 목록 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
+`CommentRegistModal.vue`의 제목·필드·버튼·검증·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 등록·수정 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
 ---
 
@@ -315,6 +319,18 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 **클릭 동작**: `FileGroupList.modal(fileGroupId)` — 파일 목록 모달 호출
 
 **현재 Vue 동등**: 미존재 (MISSING). 각 Vue 컴포넌트 내부에서 조건부 렌더로 처리 가능.
+
+### 7-1. `FileGroupDetail` (읽기 전용 첨부파일 상세)
+
+**Vue 컴포넌트**: `app/frontend-vue/src/features/attachable/FileGroupDetail.vue`
+
+**상태**: 구현 완료 (✓)
+
+**동작 계약**:
+- `files`가 존재하고 비어 있지 않을 때만 첨부파일 상세 영역을 렌더링한다.
+- 영역 라벨과 다운로드 툴팁은 각각 `attach.label`, `attach.download.tooltip` i18n 키를 사용한다.
+- 각 파일은 원본 파일명과 바이트 단위 파일 크기를 표시한다.
+- 파일 클릭 시 `/api/file/file-download.do?fileGroupId={fileGroupId}&fileId={fileId}`를 새 창으로 열어 다운로드한다.
 
 ---
 
@@ -778,10 +794,10 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 
 | attachable 영역 | Vue 기준 |
 |-----------------|----------|
-| 댓글 등록/수정 | `useAttachableModalStore.openCommentRegist/openCommentModify` + `CommentRegModal.vue` |
+| 댓글 등록/수정 | `useAttachableModalStore.openCommentRegist/openCommentModify` + `CommentRegistModal.vue` |
 | 댓글 목록 | `openCommentList` + `CommentListModal.vue` |
 | 이력 | `openHistory` + `HistoryModal.vue`. 각 이력 카드에 텍스트 복사 버튼 구현 완료 |
-| 관련글 추가 | `openRelatedContentAdd` + `RelatedContentAddModal.vue` |
+| 관련글 추가 | `openRelated` + `RelatedContentAddModal.vue` |
 | 태그 목록 | `openTagList` + `JournalTagListModal.vue` |
 | 태그 프로필 | `openTagProfile` + `JournalTagProfileModal.vue` |
 | 파일 그룹 | `FileGroup` 계열 컴포넌트로 흡수한다. FTLH가 owner인 상태를 최종 상태로 보지 않는다. |

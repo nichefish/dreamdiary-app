@@ -2,6 +2,7 @@
 
 > Vue 라우트: `app/frontend-vue/src/app/router/index.ts` / React 라우트: `app/frontend-react/src/router.tsx`
 > 전체 라우트 목록: `docs/migration/vue-screen-overview.md`, `docs/migration/react-screen-overview.md`
+> 인증/사용자 Vue store의 API 결과 메시지는 서버 `message`를 우선 사용하고, 서버 메시지가 없을 때는 현재 locale의 클라이언트 카탈로그 메시지를 fallback으로 사용한다.
 
 ## 라우트·화면 매핑
 
@@ -50,6 +51,7 @@
 - 신규 계정 신청 폼 (이름, 이메일, 비밀번호 등)
 - 신청 완료 → `POST /api/user/signup-requests`
 - 신청 완료 후 안내 메시지 표시
+- **i18n**: 화면 내 모든 UI 텍스트는 `useLocaleStore.t()` 카탈로그 키로 표시 (`user.signup.*`, `user.form.*`, `user.profile.*`, `user.emplym.*`). 관련 messages_ko/en.properties 키 일괄 정의 완료.
 
 ---
 
@@ -61,6 +63,7 @@
 - 이메일 인증 토큰 결과 표시 (레거시 `verify_success.ftlh` + `verify_failure.ftlh` 통합)
 - `?status=success` → "인증이 완료되었습니다"
 - `?status=failure&message=...` → "인증에 실패했습니다" + 메시지
+- **i18n**: 화면 내 모든 UI 텍스트는 `useLocaleStore.t()` 카탈로그 키로 표시 (`auth.verify.*`). 관련 messages_ko/en.properties 키 일괄 정의 완료.
 
 ---
 

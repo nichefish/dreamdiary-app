@@ -6,7 +6,7 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">저널 일자 조회</h5>
+          <h5 class="modal-title">{{ t("journal.day.detail.modal.title") }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
         <!--end::Modal Header-->
@@ -30,8 +30,8 @@
                 <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">
                   ({{ day.journalDateWeekDay }})
                 </span>
-                <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">APPROXIMATE</span>
-                <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">UNKNOWN</span>
+                <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.approximate") }}</span>
+                <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.unknown") }}</span>
                 <span class="fs-7 ms-4 text-muted" v-html="day.weather"></span>
               </span>
               <span v-if="day.holydayNm" class="ms-3 fs-6 fw-normal text-muted">{{ day.holydayNm }}</span>
@@ -76,21 +76,21 @@
               <!--end::꿈 목록-->
               <div v-if="journalChapterList.length === 0 && journalDreamSectionList.length === 0"
                    class="text-muted py-5 text-center">
-                내용이 없습니다.
+                {{ t("common.content.empty") }}
               </div>
             </div>
             <!--end::챕터 목록-->
           </template>
           <!--end::내용-->
 
-          <div v-else class="text-muted py-10 text-center">데이터를 불러오지 못했습니다.</div>
+          <div v-else class="text-muted py-10 text-center">{{ t("common.data.load-failure") }}</div>
         </div>
         <!--end::Modal Body-->
 
         <!--begin::Modal Footer-->
         <div class="modal-footer">
           <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="close">{{ t("common.close") }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -105,10 +105,12 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
 import JournalDreamVirtualSection from "../../dream/components/JournalDreamVirtualSection.vue";
 
 const modalStore = useJournalModalStore();
+const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;

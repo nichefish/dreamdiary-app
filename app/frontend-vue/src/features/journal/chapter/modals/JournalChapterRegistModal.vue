@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">저널 챕터 등록/수정</h5>
+          <h5 class="modal-title">{{ t("journal.chapter.modal.title") }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -26,7 +26,7 @@
             <div class="row d-flex mb-8">
               <div class="col-2">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">날짜</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t("common.date") }}</span>
                 </label>
               </div>
               <div class="col-4 fs-6 d-flex align-items-center gap-2">
@@ -49,7 +49,7 @@
                   @click="moveChapter"
                 >
                   <span v-if="moving" class="spinner-border spinner-border-sm me-1" role="status"></span>
-                  챕터 일자 변경
+                  {{ t("journal.chapter.move.btn") }}
                 </button>
               </div>
               <!--end::챕터 일자 변경-->
@@ -60,8 +60,8 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">제목</span>
-                  <span class="text-gray-500 fs-9 ms-2">(최대 100자)</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t("common.title") }}</span>
+                  <span class="text-gray-500 fs-9 ms-2">{{ t("common.max-length.format").replace("{0}", "100") }}</span>
                 </label>
               </div>
               <div class="col-lg-2">
@@ -69,21 +69,21 @@
                 <template v-if="isModifyDream">
                   <input type="hidden" name="chapterType" value="DREAM" />
                   <div class="form-control form-control-solid form-control-sm d-flex align-items-center min-h-40px">
-                    <span class="fw-bolder">꿈</span>
-                    <span class="text-muted fs-8 ms-2">(자동)</span>
+                    <span class="fw-bolder">{{ t("journal.chapter.type.dream") }}</span>
+                    <span class="text-muted fs-8 ms-2">({{ t("journal.chapter.dream-auto-label") }})</span>
                   </div>
                 </template>
                 <!--begin::일반 챕터 유형 선택-->
                 <template v-else>
                   <select name="chapterType" id="chapterType" class="form-select form-select-solid" v-model="model.chapterType">
-                    <option value="DIARY">일기</option>
-                    <option value="NOTE">노트</option>
+                    <option value="DIARY">{{ t("journal.chapter.type.diary") }}</option>
+                    <option value="NOTE">{{ t("journal.chapter.type.note") }}</option>
                   </select>
                 </template>
               </div>
               <div class="col-lg-2">
                 <select name="categoryCode" id="categoryCode" class="form-select form-select-solid" v-model="model.categoryCode">
-                  <option value="">-- 카테고리 선택 --</option>
+                  <option value="">{{ t("common.category.select") }}</option>
                   <option
                     v-for="ctgr in currentCategoryOptions"
                     :key="ctgr.code"
@@ -98,7 +98,7 @@
                   id="title"
                   class="form-control"
                   v-model="model.title"
-                  placeholder="제목"
+                  :placeholder="t('common.title')"
                   maxlength="100"
                 />
               </div>
@@ -112,7 +112,7 @@
                   min="1"
                   max="99"
                   v-model="model.sortOrder"
-                  placeholder="순서"
+                  :placeholder="t('common.order')"
                   maxlength="3"
                 />
               </div>
@@ -133,15 +133,15 @@
               @click="submit"
             >
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t("common.save") }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
-              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
               @click="requestSafeClose"
-            >닫기</button>
+            >{{ t("common.close") }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -162,9 +162,11 @@ import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -318,10 +320,10 @@ async function moveChapter(): Promise<void> {
   if (!model.value?.id || !moveTargetDt.value) return;
   const fallbackChapterId = model.value.id;
   if (moveTargetDt.value === model.value.stdrdDt) {
-    void swalAlert("이미 해당 일자에 속해 있습니다.");
+    void swalAlert(t("journal.chapter.move.same-date"));
     return;
   }
-  const confirmed = await swalConfirm(`챕터를 ${moveTargetDt.value} 일자로 이동하시겠습니까?`);
+  const confirmed = await swalConfirm(t("journal.chapter.move.confirm").replace("{0}", moveTargetDt.value));
   if (!confirmed) return;
 
   moving.value = true;
@@ -335,13 +337,13 @@ async function moveChapter(): Promise<void> {
       const targetDt = moveTargetDt.value;
       const savedChapterId = resolveSavedChapterId(res.data ?? {}, fallbackChapterId);
       close();
-      await swalAlert(res.data?.message ?? "처리되었습니다.");
+      await swalAlert(res.data?.message ?? t("common.result.processed"));
       refreshCurrentDayView(savedChapterId, targetDt);
     } else {
-      void swalAlert(res.data?.message ?? "일자 이동에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("journal.chapter.move.failure"));
     }
   } catch (e: unknown) {
-    void swalRequestError(e, "요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e, t("common.error.processing"));
   } finally {
     moving.value = false;
   }
@@ -353,7 +355,7 @@ async function submit() {
   const wasModify = isModify.value;
   const fallbackChapterId = model.value.id;
   const fallbackDate = model.value.stdrdDt;
-  const confirmed = await swalConfirm(wasModify ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(wasModify ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
 
   submitting.value = true;
@@ -378,13 +380,13 @@ async function submit() {
       const savedChapterId = resolveSavedChapterId(res.data ?? {}, fallbackChapterId);
       const savedDate = resolveSavedDate(res.data ?? {}, fallbackDate);
       close();
-      await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
+      await swalAlert(res.data?.message ?? (wasModify ? t("common.result.modified") : t("common.result.registered")));
       refreshCurrentDayView(savedChapterId, savedDate);
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
-    void swalRequestError(e, "요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e, t("common.error.processing"));
   } finally {
     submitting.value = false;
   }

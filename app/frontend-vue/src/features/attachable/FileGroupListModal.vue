@@ -6,7 +6,7 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">첨부파일</h5>
+          <h5 class="modal-title">{{ t('attach.label') }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
         <!--end::Modal Header-->
@@ -43,7 +43,7 @@
                 </td>
               </tr>
               <tr v-if="!attachableStore.fileListLoading && attachableStore.fileList.length === 0">
-                <td colspan="3" class="text-center text-muted py-5">첨부파일이 없습니다.</td>
+                <td colspan="3" class="text-center text-muted py-5">{{ t('attach.modal.empty') }}</td>
               </tr>
             </tbody>
           </table>
@@ -54,7 +54,7 @@
         <!--begin::Modal Footer-->
         <div class="modal-footer">
           <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="close">{{ t('common.close') }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -66,10 +66,12 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { ref, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 
+const { t } = useLocaleStore();
 const attachableStore = useAttachableModalStore();
 
 const modalEl = ref<HTMLElement | null>(null);

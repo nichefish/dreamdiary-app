@@ -4,17 +4,17 @@
       <div class="card-body">
         <div v-if="store.loading" class="user-my-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
 
         <div class="user-my-summary">
           <div class="user-my-avatar">
             <img v-if="user.profileImageUrl" :src="user.profileImageUrl" alt="" />
             <i v-else class="fas fa-user-circle"></i>
-            <button type="button" class="btn btn-sm btn-icon btn-light-primary user-my-avatar__edit" title="프로필 이미지 업로드" @click="openFilePicker">
+            <button type="button" class="btn btn-sm btn-icon btn-light-primary user-my-avatar__edit" :title="t('user.my.upload-profile-image.tooltip')" @click="openFilePicker">
               <i class="bi bi-pencil"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-icon btn-light-danger user-my-avatar__remove" title="프로필 이미지 삭제" @click="removeProfileImage">
+            <button type="button" class="btn btn-sm btn-icon btn-light-danger user-my-avatar__remove" :title="t('user.my.remove-profile-image.tooltip')" @click="removeProfileImage">
               <i class="bi bi-x"></i>
             </button>
             <input ref="fileInput" type="file" class="d-none" accept=".png,.jpg,.jpeg,image/png,image/jpeg" @change="uploadProfileImage" />
@@ -35,7 +35,7 @@
 
           <button type="button" class="btn btn-sm btn-secondary" @click="openPasswordModal">
             <i class="bi bi-key"></i>
-            비밀번호 변경
+            {{ t('user.my.password-change') }}
           </button>
         </div>
       </div>
@@ -45,21 +45,21 @@
       <div class="card-body">
         <div class="user-my-grid">
           <section class="user-my-section">
-            <h4>계정</h4>
+            <h4>{{ t('user.my.section.account') }}</h4>
             <dl>
               <div>
-                <dt>이메일</dt>
+                <dt>{{ t('user.admin.list.col.email') }}</dt>
                 <dd>{{ fallback(user.email) }}</dd>
               </div>
               <div>
-                <dt>연락처</dt>
+                <dt>{{ t('user.admin.detail.col.contact') }}</dt>
                 <dd>{{ fallback(user.phoneNumber) }}</dd>
               </div>
               <div>
-                <dt>접속 IP 제한</dt>
+                <dt>{{ t('user.admin.detail.col.allowed-ip') }}</dt>
                 <dd>
                   <span :class="store.hasAllowedIp ? 'badge-light-primary' : 'badge-light'" class="badge">
-                    {{ store.hasAllowedIp ? "사용" : "미사용" }}
+                    {{ store.hasAllowedIp ? t('status.use') : t('status.unuse') }}
                   </span>
                   <span v-if="store.hasAllowedIp" class="ms-2 text-muted">
                     {{ allowedIpText }}
@@ -70,52 +70,52 @@
           </section>
 
           <section class="user-my-section">
-            <h4>프로필</h4>
+            <h4>{{ t('user.admin.detail.section.profile') }}</h4>
             <dl>
               <div>
-                <dt>생년월일</dt>
+                <dt>{{ t('user.profile.birth-date') }}</dt>
                 <dd>{{ fallback(user.profile?.brthdy) }}</dd>
               </div>
               <div>
-                <dt>음력 여부</dt>
-                <dd>{{ user.profile?.lunarYn === "Y" ? "음력" : "양력" }}</dd>
+                <dt>{{ t('user.my.detail.lunar-yn') }}</dt>
+                <dd>{{ user.profile?.lunarYn === "Y" ? t('user.profile.lunar') : t('user.profile.solar') }}</dd>
               </div>
               <div>
-                <dt>소개</dt>
+                <dt>{{ t('user.my.detail.intro') }}</dt>
                 <dd class="user-my-preline">{{ fallback(user.profile?.proflCn) }}</dd>
               </div>
             </dl>
           </section>
 
           <section class="user-my-section user-my-section--wide">
-            <h4>인사 정보</h4>
+            <h4>{{ t('user.my.section.employment') }}</h4>
             <dl>
               <div>
-                <dt>이름</dt>
+                <dt>{{ t('user.emplym.name-placeholder') }}</dt>
                 <dd>{{ fallback(user.emplym?.userNm) }}</dd>
               </div>
               <div>
-                <dt>소속</dt>
+                <dt>{{ t('user.emplym.affiliation') }}</dt>
                 <dd>{{ affiliationText }}</dd>
               </div>
               <div>
-                <dt>직급</dt>
+                <dt>{{ t('user.emplym.rank') }}</dt>
                 <dd>{{ rankText }}</dd>
               </div>
               <div>
-                <dt>입사/퇴사</dt>
+                <dt>{{ t('user.my.detail.join-retire') }}</dt>
                 <dd>{{ joinRetireText }}</dd>
               </div>
               <div>
-                <dt>업무 이메일</dt>
+                <dt>{{ t('user.signup.work-email') }}</dt>
                 <dd>{{ fallback(user.emplym?.emplymEmail) }}</dd>
               </div>
               <div>
-                <dt>업무 연락처</dt>
+                <dt>{{ t('user.admin.form.emplym.phone.label') }}</dt>
                 <dd>{{ fallback(user.emplym?.emplymPhoneNumber) }}</dd>
               </div>
               <div>
-                <dt>급여 계좌</dt>
+                <dt>{{ t('user.my.detail.payroll-account') }}</dt>
                 <dd>{{ payrollText }}</dd>
               </div>
             </dl>
@@ -128,23 +128,23 @@
       <div class="modal-dialog modal-md">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">비밀번호 변경</h5>
+            <h5 class="modal-title">{{ t('user.my.password-change') }}</h5>
             <button type="button" class="btn-close" @click="closePasswordModal"></button>
           </div>
           <div class="modal-body">
             <div v-if="passwordError" class="alert alert-danger py-3">{{ passwordError }}</div>
             <form class="form" @submit.prevent="submitPasswordChange">
               <div class="mb-4">
-                <label for="currPw" class="form-label required">현재 비밀번호</label>
+                <label for="currPw" class="form-label required">{{ t('user.my.current-password') }}</label>
                 <input id="currPw" v-model="passwordForm.currPw" type="password" class="form-control form-control-solid" maxlength="20" autocomplete="current-password" />
               </div>
               <div class="mb-4">
-                <label for="newPw" class="form-label required">새 비밀번호</label>
+                <label for="newPw" class="form-label required">{{ t('user.my.new-password') }}</label>
                 <input id="newPw" v-model="passwordForm.newPw" type="password" class="form-control form-control-solid" maxlength="20" autocomplete="new-password" />
-                <div class="form-text">영문, 숫자, 특수문자를 조합해 입력하세요.</div>
+                <div class="form-text">{{ t('user.my.pw-change.form.desc') }}</div>
               </div>
               <div>
-                <label for="newPwCf" class="form-label required">새 비밀번호 확인</label>
+                <label for="newPwCf" class="form-label required">{{ t('user.my.new-password-confirm') }}</label>
                 <input id="newPwCf" v-model="passwordForm.newPwCf" type="password" class="form-control form-control-solid" maxlength="20" autocomplete="new-password" />
               </div>
             </form>
@@ -152,9 +152,9 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-sm btn-primary" :disabled="submittingPassword" @click="submitPasswordChange">
               <span v-if="submittingPassword" class="spinner-border spinner-border-sm me-1"></span>
-              저장
+              {{ t('common.save') }}
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="closePasswordModal">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="closePasswordModal">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -163,6 +163,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, reactive, ref } from "vue";
 import { Modal } from "bootstrap";
@@ -171,6 +172,7 @@ import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useUserMyStore } from "@/features/user/stores/userMy";
 
 const store = useUserMyStore();
+const { t } = useLocaleStore();
 const authStore = useAuthStore();
 
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -199,12 +201,12 @@ const affiliationText = computed(() => {
 
 const rankText = computed(() => {
   const rank = user.value.emplym?.rankNm || "-";
-  return user.value.emplym?.apntcYn === "Y" ? `${rank} (수습)` : rank;
+  return user.value.emplym?.apntcYn === "Y" ? `${rank} (${t("user.emplym.probation.active")})` : rank;
 });
 
 const joinRetireText = computed(() => {
   const joinDate = user.value.emplym?.ecnyDt || "-";
-  if (user.value.emplym?.retireYn === "Y") return `${joinDate} / 퇴사 ${user.value.emplym?.retireDt || "-"}`;
+  if (user.value.emplym?.retireYn === "Y") return `${joinDate} / ${t("user.emplym.retired")} ${user.value.emplym?.retireDt || "-"}`;
   return joinDate;
 });
 
@@ -242,27 +244,27 @@ async function uploadProfileImage(event: Event) {
 
   const extOk = /\.(png|jpe?g)$/i.test(file.name);
   if (!extOk || !file.type.startsWith("image/")) {
-    void swalAlert("PNG 또는 JPG 이미지만 업로드할 수 있습니다.");
+    void swalAlert(t("user.my.profile-image.format.invalid"));
     return;
   }
 
   try {
     await store.uploadProfileImage(file);
     await Promise.all([reload(), authStore.verifyAuth()]);
-    void swalAlert("프로필 이미지가 변경되었습니다.");
+    void swalAlert(t("user.my.profile-image.change.success"));
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "프로필 이미지를 변경하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("user.my.profile-image.change.failure"));
   }
 }
 
 async function removeProfileImage() {
-  if (!await swalConfirm("프로필 이미지를 삭제할까요?")) return;
+  if (!await swalConfirm(t("user.my.profile-image.delete.confirm"))) return;
   try {
     await store.removeProfileImage();
     await Promise.all([reload(), authStore.verifyAuth()]);
-    void swalAlert("프로필 이미지가 삭제되었습니다.");
+    void swalAlert(t("user.my.profile-image.delete.success"));
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "프로필 이미지를 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("user.my.profile-image.delete.failure"));
   }
 }
 
@@ -285,15 +287,15 @@ function closePasswordModal() {
 
 function validatePasswordForm(): boolean {
   if (!passwordForm.currPw || !passwordForm.newPw || !passwordForm.newPwCf) {
-    passwordError.value = "필수 값을 입력하세요.";
+    passwordError.value = t("user.my.validate.required");
     return false;
   }
   if (passwordForm.newPw !== passwordForm.newPwCf) {
-    passwordError.value = "새 비밀번호 확인 값이 일치하지 않습니다.";
+    passwordError.value = t("user.my.validate.pw-confirm.mismatch");
     return false;
   }
   if (passwordForm.newPw.length < 8) {
-    passwordError.value = "새 비밀번호는 8자 이상 입력하세요.";
+    passwordError.value = t("user.my.validate.pw.min-length");
     return false;
   }
   passwordError.value = "";
@@ -302,7 +304,7 @@ function validatePasswordForm(): boolean {
 
 async function submitPasswordChange() {
   if (!validatePasswordForm()) return;
-  if (!await swalConfirm("비밀번호를 변경할까요?")) return;
+  if (!await swalConfirm(t("user.my.pw-change.confirm"))) return;
 
   submittingPassword.value = true;
   try {
@@ -312,9 +314,9 @@ async function submitPasswordChange() {
       newPw: passwordForm.newPw,
     });
     closePasswordModal();
-    void swalAlert("비밀번호가 변경되었습니다.");
+    void swalAlert(t("user.my.pw-change.success"));
   } catch (error) {
-    passwordError.value = error instanceof Error ? error.message : "비밀번호를 변경하지 못했습니다.";
+    passwordError.value = error instanceof Error ? error.message : t("user.my.pw-change.failure");
   } finally {
     submittingPassword.value = false;
   }

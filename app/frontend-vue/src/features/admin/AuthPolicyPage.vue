@@ -10,15 +10,15 @@
       <div class="card-body">
         <div v-if="store.loading" class="auth-policy-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
 
         <form class="auth-policy-form" @submit.prevent="save">
           <div class="auth-policy-row">
             <div>
-              <label for="duplicateLoginAllowedYn" class="form-label fw-bold">중복 로그인 허용</label>
+              <label for="duplicateLoginAllowedYn" class="form-label fw-bold">{{ t('auth.policy.dup-login.label') }}</label>
               <div class="text-muted fs-8">
-                켜면 같은 계정으로 여러 브라우저나 기기에서 동시에 로그인할 수 있습니다. 변경 후 서버 재시작 시 보안 정책에 반영됩니다.
+              {{ t('auth.policy.dup-login.notice') }}
               </div>
             </div>
             <div class="auth-policy-toggle">
@@ -29,7 +29,7 @@
                   class="form-check-input"
                   type="checkbox"
                 />
-                <span class="form-check-label">{{ duplicateLoginAllowed ? "허용" : "차단" }}</span>
+                <span class="form-check-label">{{ duplicateLoginAllowed ? t("common.allow") : t("common.block") }}</span>
               </label>
             </div>
           </div>
@@ -60,7 +60,7 @@
           <button type="button" class="btn btn-sm btn-primary" :disabled="store.saving" @click="save">
             <span v-if="store.saving" class="spinner-border spinner-border-sm me-1"></span>
             <i v-else class="bi bi-pencil-square"></i>
-            저장
+            {{ t('common.save') }}
           </button>
         </div>
       </div>
@@ -70,6 +70,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, watch } from "vue";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert, swalConfirm } from "@/shared/utils/swal";
 import { useAuthPolicyStore, type AuthPolicy } from "@/features/admin/stores/authPolicy";
 
@@ -85,6 +86,7 @@ interface FieldDef {
 }
 
 const store = useAuthPolicyStore();
+const { t } = useLocaleStore();
 
 const form = reactive<AuthPolicy>({
   id: null,
@@ -99,65 +101,65 @@ const form = reactive<AuthPolicy>({
   passwordResetTokenExpiryMinutes: null,
 });
 
-const fields: FieldDef[] = [
+const fields = computed<FieldDef[]>(() => [
   {
     key: "inactiveLockDays",
-    label: "미로그인 계정 잠금",
-    notice: "해당 일수 동안 로그인하지 않은 계정을 자동 잠금 처리합니다.",
-    unit: "일",
+    label: t("auth.policy.inactive-lock.label"),
+    notice: t("auth.policy.inactive-lock.notice"),
+    unit: t("common.unit.day"),
     max: 365,
   },
   {
     key: "loginAttemptLimit",
-    label: "로그인 실패 제한",
-    notice: "실패 집계 시간 안에서 허용할 로그인 실패 횟수입니다.",
-    unit: "회",
+    label: t("auth.policy.login-attempt-limit.label"),
+    notice: t("auth.policy.login-attempt-limit.notice"),
+    unit: t("common.unit.count"),
     max: 999,
   },
   {
     key: "loginAttemptWindowMinutes",
-    label: "로그인 실패 집계 시간",
-    notice: "로그인 실패 횟수를 누적해서 판단하는 시간 범위입니다.",
-    unit: "분",
+    label: t("auth.policy.login-attempt-window.label"),
+    notice: t("auth.policy.login-attempt-window.notice"),
+    unit: t("common.unit.minute"),
     max: 999,
   },
   {
     key: "passwordChangeCycleDays",
-    label: "비밀번호 변경 주기",
-    notice: "비밀번호 변경 경고 또는 변경 유도 기준이 되는 일수입니다.",
-    unit: "일",
+    label: t("auth.policy.password-change-cycle.label"),
+    notice: t("auth.policy.password-change-cycle.notice"),
+    unit: t("common.unit.day"),
     max: 365,
   },
   {
     key: "passwordHistoryCount",
-    label: "비밀번호 이력 제한",
-    notice: "최근 N개 비밀번호 재사용을 막습니다. 0이면 검사하지 않습니다.",
-    unit: "개",
+    label: t("auth.policy.password-history.label"),
+    notice: t("auth.policy.password-history.notice"),
+    unit: t("common.unit.item"),
     min: 0,
     max: 24,
   },
   {
     key: "accountLockDurationMinutes",
-    label: "계정 잠금 지속 시간",
-    notice: "로그인 실패 제한 초과 후 잠금이 유지되는 시간입니다.",
-    unit: "분",
+    label: t("auth.policy.account-lock-duration.label"),
+    notice: t("auth.policy.account-lock-duration.notice"),
+    unit: t("common.unit.minute"),
     max: 9999,
   },
   {
     key: "sessionTimeoutMinutes",
-    label: "로그인 유지 시간",
-    notice: "Spring 세션 idle timeout과 JWT access token 만료 및 쿠키 유지 시간에 함께 적용됩니다.",
-    unit: "분",
+    label: t("auth.policy.session-timeout.label"),
+    notice: t("auth.policy.session-timeout.notice"),
+    unit: t("common.unit.minute"),
     max: 10080,
   },
   {
     key: "passwordResetTokenExpiryMinutes",
-    label: "비밀번호 재설정 토큰 만료",
-    notice: "관리자 초기화 또는 재설정 링크가 유효한 시간입니다.",
-    unit: "분",
+    label: t("auth.policy.password-reset-expiry.label"),
+    notice: t("auth.policy.password-reset-expiry.notice"),
+    unit: t("common.unit.minute"),
     max: 10080,
   },
-];
+]);
 
 const duplicateLoginAllowed = computed({
   get: () => form.duplicateLoginAllowedYn === "Y",
@@ -176,11 +178,11 @@ watch(
 );
 
 function validate(): boolean {
-  for (const field of fields) {
+  for (const field of fields.value) {
     const value = form[field.key];
     const min = field.min ?? 1;
     if (value == null || Number.isNaN(Number(value)) || Number(value) < min || Number(value) > field.max) {
-      void swalAlert(`${field.label} 값은 ${min}부터 ${field.max} 사이여야 합니다.`);
+      void swalAlert(t("auth.policy.validate.range").replace("{label}", field.label).replace("{min}", String(min)).replace("{max}", String(field.max)));
       return false;
     }
   }
@@ -195,13 +197,13 @@ async function reload() {
 
 async function save() {
   if (!validate()) return;
-  if (!await swalConfirm("인증 정책을 저장할까요?")) return;
+  if (!await swalConfirm(t("auth.policy.save.confirm"))) return;
 
   try {
     const message = await store.savePolicy({ ...form });
     void swalAlert(message);
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "인증 정책을 저장하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("auth.policy.save.failure"));
   }
 }
 

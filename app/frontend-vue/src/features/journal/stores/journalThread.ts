@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 // ---- 타입 정의 ----
 
@@ -51,6 +52,8 @@ export interface JournalThreadRegistModel {
 // ---- 스토어 ----
 
 export const useJournalThreadStore = defineStore("journalThread", () => {
+  const { t } = useLocaleStore();
+
   // ---- 목록 ----
 
   /** 스레드 목록 */
@@ -119,7 +122,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       currentPage.value = pageResult?.number ?? 0;
     } catch (e: unknown) {
       console.error("[journalThread] fetchList failed", { page }, e);
-      error.value = "스레드 목록을 불러오지 못했습니다.";
+      error.value = t("journal.thread.list.load.failure");
     } finally {
       loading.value = false;
     }
@@ -164,7 +167,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       console.error("[journalThread] openRegist failed", { id }, e);
       registModel.value = null;
       registOpen.value = false;
-      void swalRequestError(e, "스레드 정보를 불러오지 못했습니다.");
+      void swalRequestError(e, t("journal.thread.modify.load.failure"));
     } finally {
       registLoading.value = false;
     }
@@ -201,11 +204,11 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       });
       if (res.data?.rslt) {
         closeRegist();
-        await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
+        await swalAlert(res.data?.message ?? (wasModify ? t("common.result.modified") : t("common.result.registered")));
         void fetchList(0);
         return true;
       }
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -221,15 +224,15 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
    * @param id - 스레드 ID
    */
   async function deleteThread(id: number) {
-    const confirmed = await swalConfirm("스레드를 삭제하시겠습니까?");
+    const confirmed = await swalConfirm(t("journal.thread.delete.confirm"));
     if (!confirmed) return;
     try {
       const res = await axios.delete(`/api/journal/threads/${id}`);
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? "삭제되었습니다.");
+        await swalAlert(res.data?.message ?? t("common.result.deleted"));
         void fetchList(0);
       } else {
-        void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+        void swalAlert(res.data?.message ?? t("journal.thread.delete.failure"));
       }
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -252,7 +255,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       console.error("[journalThread] openDetail failed", { id }, e);
       detailModel.value = null;
       detailOpen.value = false;
-      void swalRequestError(e, "스레드 상세를 불러오지 못했습니다.");
+      void swalRequestError(e, t("journal.thread.detail.load.failure"));
     } finally {
       detailLoading.value = false;
     }

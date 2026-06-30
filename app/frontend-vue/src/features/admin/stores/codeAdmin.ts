@@ -2,6 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
 
 export interface CodeGroupRow {
@@ -114,6 +115,7 @@ function toItemFormData(form: CodeItemForm): FormData {
 }
 
 export const useCodeAdminStore = defineStore("codeAdmin", () => {
+  const { t } = useLocaleStore();
   const rows = ref<CodeGroupRow[]>([]);
   const totalElements = ref(0);
   const totalPages = ref(0);
@@ -152,7 +154,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       if (keyword.value.trim()) params.searchKeyword = keyword.value.trim();
 
       const res = await axios.get("/api/code/groups", { params });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "코드 그룹 목록을 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.list.load.failure"));
       const pageResult = res.data?.rsltObj ?? {};
       rows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
       totalElements.value = Number(pageResult.totalElements ?? 0);
@@ -160,7 +162,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       currentPage.value = Number(pageResult.number ?? targetPage);
       pageSize.value = Number(pageResult.size ?? pageSize.value);
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "코드 그룹 목록을 불러오지 못했습니다.";
+      error.value = e instanceof Error ? e.message : t("admin.code.group.list.load.failure");
       rows.value = [];
       totalElements.value = 0;
       totalPages.value = 0;
@@ -184,7 +186,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
     if (!await assertAuthenticatedBeforeModal()) return;
     groupSaving.value = false;
     const res = await axios.get(`/api/code/group/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "코드 그룹을 불러오지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.load.failure"));
     groupForm.value = normalizeGroupForm(res.data?.rsltObj ?? {});
     groupModalOpen.value = true;
   }
@@ -208,9 +210,9 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       const res = await axios.post(url, toGroupFormData(groupForm.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "코드 그룹을 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.save.failure"));
       closeGroupModal();
-      const message = res.data?.message ?? "저장되었습니다.";
+      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchGroups(wasCreate ? 0 : currentPage.value);
       if (detail.value?.id === id) await openDetail(id);
@@ -223,10 +225,10 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
   async function toggleGroupUse(row: CodeGroupRow) {
     const nextUseYn = yn(row.useYn) === "Y" ? "N" : "Y";
     const res = await axios.patch(`/api/code/group/${row.id}`, { useYn: nextUseYn });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "사용 여부를 변경하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.use-yn.change.failure"));
     await fetchGroups(currentPage.value);
     if (detail.value?.id === row.id) await openDetail(row.id);
-    return res.data?.message ?? "변경되었습니다.";
+    return res.data?.message ?? t("common.result.changed");
   }
 
   /**
@@ -236,10 +238,10 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
    */
   async function deleteGroup(id: number) {
     const res = await axios.delete(`/api/code/group/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "코드 그룹을 삭제하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.delete.failure"));
     if (detail.value?.id === id) closeDetail();
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
-    const message = res.data?.message ?? "삭제되었습니다.";
+    const message = res.data?.message ?? t("common.result.deleted");
     await swalAlert(message);
     await fetchGroups(nextPage);
     return message;
@@ -251,7 +253,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
     detailLoading.value = true;
     try {
       const res = await axios.get(`/api/code/group/${id}`);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "코드 그룹 상세를 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.detail.load.failure"));
       const group = (res.data?.rsltObj ?? {}) as CodeGroupRow;
       detail.value = group;
       if (Array.isArray(group.codeItems)) {
@@ -279,7 +281,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       return;
     }
     const res = await axios.get("/api/code/items", { params: { groupCode: targetGroupCode } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "상세 코드 목록을 불러오지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.list.load.failure"));
     items.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
   }
 
@@ -292,7 +294,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
   async function openItemEdit(id: number) {
     if (!await assertAuthenticatedBeforeModal()) return;
     const res = await axios.get("/api/code/item", { params: { id } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "상세 코드를 불러오지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.detail.load.failure"));
     itemForm.value = normalizeItemForm(res.data?.rsltObj ?? {}, detail.value?.groupCode ?? "");
     itemModalOpen.value = true;
   }
@@ -315,11 +317,11 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       const res = await axios.post(url, toItemFormData(itemForm.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "상세 코드를 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.save.failure"));
       const groupId = detail.value?.id;
       const groupCode = itemForm.value.groupCode;
       closeItemModal();
-      const message = res.data?.message ?? "저장되었습니다.";
+      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       if (groupId) await openDetail(groupId);
       else await fetchItems(groupCode);
@@ -337,8 +339,8 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
    */
   async function deleteItem(id: number) {
     const res = await axios.delete("/api/code/item", { params: { id } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "상세 코드를 삭제하지 못했습니다.");
-    const message = res.data?.message ?? "삭제되었습니다.";
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.delete.failure"));
+    const message = res.data?.message ?? t("common.result.deleted");
     await swalAlert(message);
     if (detail.value?.id) await openDetail(detail.value.id);
     await fetchGroups(currentPage.value);
@@ -364,9 +366,9 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
         sortOrder: idx + 1,
       }));
       const res = await axios.put("/api/code/items/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "정렬 순서를 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.order.failure"));
       await fetchItems(detail.value.groupCode);
-      return res.data?.message ?? "정렬 순서가 저장되었습니다.";
+      return res.data?.message ?? t("common.result.sort-order-saved");
     } finally {
       itemSortSaving.value = false;
     }

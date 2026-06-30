@@ -9,7 +9,7 @@
     >
       <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--search" @click="onSearch">
         <i class="bi bi-search"></i>
-        <span>검색</span>
+        <span>{{ t("common.search") }}</span>
       </button>
       <button
         type="button"
@@ -18,11 +18,11 @@
         @click="onViewGraph"
       >
         <i class="bi bi-graph-up"></i>
-        <span>{{ alreadyOnGraph ? "그래프에 표시 중" : "그래프로 보기" }}</span>
+        <span>{{ alreadyOnGraph ? t("journal.meta.graph.displaying") : t("journal.meta.graph.view") }}</span>
       </button>
       <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--configure" @click="onSettings">
         <i class="bi bi-gear"></i>
-        <span>메타 설정</span>
+        <span>{{ t("journal.meta.profile.modal.title") }}</span>
       </button>
     </div>
   </Teleport>
@@ -35,10 +35,12 @@ import { useMetaContextMenuStore } from "@/features/journal/stores/metaContextMe
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { swalAlert } from "@/shared/utils/swal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useMetaContextMenuStore();
 const journalStore = useJournalStore();
 const journalModalStore = useJournalModalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const menuEl = ref<HTMLElement | null>(null);
@@ -70,7 +72,7 @@ function onViewGraph(): void {
     unit: payload.unit,
   });
   if (!added) {
-    void swalAlert("그래프에는 최대 2개의 메타만 표시할 수 있습니다. 목록 옆 X로 하나를 제거한 뒤 다시 시도하세요.");
+    void swalAlert(t("journal.meta.graph.limit"));
   }
 }
 

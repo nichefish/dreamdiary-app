@@ -13,7 +13,7 @@
           class="menu-admin-node-icon"
           :class="{ 'is-drag-disabled': !canDragHandle }"
           :draggable="canDragHandle"
-          :title="canDragHandle ? '끌어서 순서 변경' : '시스템 보호 메뉴'"
+          :title="canDragHandle ? t('menu.tree.drag-handle') : t('menu.tree.protected')"
           @dragstart.stop="handleDragStart"
           @dragend="handleDragEnd"
           v-html="node.icon || fallbackIcon"
@@ -21,8 +21,8 @@
         <div>
           <div class="menu-admin-node-name">
             <span>{{ node.menuName || "-" }}</span>
-            <i v-if="protectedY" v-tooltip class="bi bi-shield-lock text-warning menu-admin-status-icon" title="시스템 보호 메뉴"></i>
-            <i v-if="!sidebarVisibleY" v-tooltip class="bi bi-eye-slash text-muted menu-admin-status-icon" title="사이드바 숨김 메뉴"></i>
+            <i v-if="protectedY" v-tooltip class="bi bi-shield-lock text-warning menu-admin-status-icon" :title="t('menu.tree.protected')"></i>
+            <i v-if="!sidebarVisibleY" v-tooltip class="bi bi-eye-slash text-muted menu-admin-status-icon" :title="t('menu.tree.sidebar-hidden')"></i>
           </div>
           <div class="menu-admin-node-meta">
             <span>{{ node.menuLabel || "-" }}</span>
@@ -32,7 +32,7 @@
       </div>
       <RouterLink v-if="boardManaged" class="menu-admin-node-link" to="/admin/board-group">
         <i class="bi bi-box-arrow-up-right"></i>
-        <span>게시판 관리로 이동</span>
+        <span>{{ t('menu.tree.go-to-board') }}</span>
       </RouterLink>
       <div v-if="!boardManaged" class="menu-admin-node-actions">
         <button
@@ -41,27 +41,27 @@
           data-bs-toggle="dropdown"
           data-bs-auto-close="true"
           aria-expanded="false"
-          title="메뉴 작업"
+          :title="t('menu.tree.actions')"
         >
           <i class="bi bi-three-dots-vertical"></i>
         </button>
         <div class="dropdown-menu menu-admin-node-menu dropdown-menu-end">
           <button v-if="canAddChild" type="button" class="dropdown-item" @click="$emit('add-child', node)">
             <i class="bi bi-plus-lg"></i>
-            <span>하위 메뉴 추가</span>
+            <span>{{ t('menu.tree.add-submenu') }}</span>
           </button>
           <button type="button" class="dropdown-item" :disabled="protectedY" @click="$emit('edit', node.id)">
             <i class="bi bi-pencil-square"></i>
-            <span>수정</span>
+            <span>{{ t('menu.tree.edit') }}</span>
           </button>
           <button type="button" class="dropdown-item" :disabled="protectedY" @click="$emit('toggle-use', node)">
             <i :class="useY ? 'bi bi-x-lg' : 'bi bi-check2'"></i>
-            <span>{{ useY ? "미사용 처리" : "사용 처리" }}</span>
+            <span>{{ useY ? t('menu.tree.use-yn.disable') : t('menu.tree.use-yn.enable') }}</span>
           </button>
           <div class="dropdown-divider"></div>
           <button type="button" class="dropdown-item text-danger" :disabled="protectedY" @click="$emit('delete-node', node)">
             <i class="bi bi-trash"></i>
-            <span>삭제</span>
+            <span>{{ t('menu.tree.delete') }}</span>
           </button>
         </div>
       </div>
@@ -89,9 +89,12 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { reinitializeComponents } from "@metronic/core/plugins/keenthemes";
 import type { MenuNode } from "@/features/admin/stores/menuAdmin";
+
+const { t } = useLocaleStore();
 
 const props = defineProps<{
   node: MenuNode;

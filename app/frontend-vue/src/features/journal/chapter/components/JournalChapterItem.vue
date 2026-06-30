@@ -14,7 +14,7 @@
             <span v-if="chapter.categoryName" style="color:#287D94;">{{ chapter.categoryName }}</span>
             <span class="text-muted fs-8 me-1">{{ chapter.categoryCode }}</span>
           </template>
-          <span v-if="!canManageChapter" class="badge badge-light-danger fs-8 ms-1">타인 작성</span>
+          <span v-if="!canManageChapter" class="badge badge-light-danger fs-8 ms-1">{{ t("journal.chapter.other-author") }}</span>
         </span>
         <i class="bi fs-4" :class="iconClass"></i>
       </div>
@@ -37,7 +37,7 @@
         <button
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ms-2 px-3 cursor-pointer"
-          title="복사"
+          :title="t('common.copy')"
           @click="copyChapter"
         >
           <i class="bi bi-copy p-0"></i>
@@ -47,7 +47,7 @@
         <button
           type="button"
           class="btn btn-sm btn-outline btn-light-primary ps-3 pe-2"
-          title="TXT보내기"
+          :title="t('common.export-text')"
           @click="exportChapter"
         >
           <i class="fas fa-download"></i>
@@ -59,18 +59,18 @@
             class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
             data-kt-menu-trigger="click"
             data-kt-menu-placement="bottom-end"
-            title="메뉴"
+            :title="t('common.menu')"
           >
             <i class="ki-solid ki-dots-horizontal fs-2x"></i>
           </button>
           <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
             <div class="menu-item px-3">
-              <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">저널 챕터</div>
+              <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t("journal.chapter.label") }}</div>
             </div>
             <!--begin::수정-->
             <div class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="openChapterModify">
-                수정
+                {{ t("common.edit") }}
                 <i class="bi bi-pencil-square fs-8"></i>
               </div>
             </div>
@@ -78,7 +78,7 @@
             <!--begin::상태 서브메뉴-->
             <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
               <a href="#" class="menu-link px-3" @click.prevent>
-                <span class="menu-title">상태</span>
+                <span class="menu-title">{{ t("common.status") }}</span>
                 <span class="menu-arrow"></span>
               </a>
               <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -91,7 +91,7 @@
                         :checked="serverCollapsed"
                         @click.prevent="toggleCollapsedState"
                       />
-                      <span class="form-check-label text-muted fs-7">접힘</span>
+                      <span class="form-check-label text-muted fs-7">{{ t("journal.chapter.collapsed") }}</span>
                     </label>
                   </div>
                 </div>
@@ -102,7 +102,7 @@
             <!--begin::삭제-->
             <div class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3 text-danger" @click="deleteChapter">
-                삭제
+                {{ t("common.delete") }}
                 <i class="bi bi-trash text-danger p-0 fs-8"></i>
               </div>
             </div>
@@ -139,7 +139,7 @@
           :is-dream="chapter.chapterType === 'DREAM'"
           :force-collapsed="localCollapsedOverride"
         />
-        <div v-if="entryList.length === 0 && !isCollapsed" class="text-muted fs-8 ps-5 py-2">등록된 항목이 없습니다.</div>
+        <div v-if="entryList.length === 0 && !isCollapsed" class="text-muted fs-8 ps-5 py-2">{{ t("journal.chapter.empty") }}</div>
       </div>
       <!--begin::접힘 시 태그 요약 (챕터 접힌 상태에서만 표시)-->
       <div v-if="tagList.length > 0 && isCollapsed" class="journal-chapter-tags d-flex flex-wrap gap-1 ps-5 py-1">
@@ -168,6 +168,7 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import type { JournalChapterDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
 
 const props = withDefaults(defineProps<{
@@ -180,6 +181,7 @@ const props = withDefaults(defineProps<{
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
 const tagContextMenuStore = useTagContextMenuStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 /** 서버 COLLAPSED 상태 (⋯ 메뉴 접힘 스위치·목록 재조회 반영) */
@@ -214,15 +216,15 @@ const isNoteChapter = computed(() => props.chapter.chapterType === "NOTE");
 /** 소유권 없을 때 안내 후 중단 */
 function guardChapterOwner(): boolean {
   if (canManageChapter.value) return true;
-  void swalAlert("본인이 작성한 챕터만 변경할 수 있습니다.");
+  void swalAlert(t("journal.chapter.owner-only"));
   return false;
 }
 
 const entryRegistIcon = computed(() => (isDreamChapter.value ? "bi-moon-stars" : "bi-book"));
 const entryRegistLabel = computed(() => {
-  if (isDreamChapter.value) return "저널 꿈 등록";
-  if (isNoteChapter.value) return "저널 노트 등록";
-  return "저널 일기 등록";
+  if (isDreamChapter.value) return t("journal.dream.reg");
+  if (isNoteChapter.value) return t("journal.note.reg");
+  return t("journal.diary.reg");
 });
 const entryRegistTitle = computed(() => entryRegistLabel.value);
 
@@ -233,9 +235,9 @@ const iconClass = computed(() => {
 });
 
 const typeLabel = computed(() => {
-  if (props.chapter.chapterType === "DREAM") return "꿈";
-  if (props.chapter.chapterType === "NOTE") return "노트";
-  return "일기";
+  if (props.chapter.chapterType === "DREAM") return t("journal.chapter.type.dream");
+  if (props.chapter.chapterType === "NOTE") return t("journal.chapter.type.note");
+  return t("journal.chapter.type.diary");
 });
 
 const entryList = computed(() => props.chapter.journalEntryList ?? []);
@@ -338,17 +340,17 @@ async function deleteChapter(): Promise<void> {
   if (!guardChapterOwner()) return;
   if (!props.chapter.id) return;
   const stdrdDt = props.chapter.stdrdDt;
-  if (!await swalConfirm("챕터를 삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("journal.chapter.delete.confirm"))) return;
   try {
     const res = await axios.delete(`/api/journal/chapter/${props.chapter.id}`);
     if (res.data?.rslt) {
-      await swalAlert(res.data?.message ?? "삭제되었습니다.");
+      await swalAlert(res.data?.message ?? t("common.result.deleted"));
       scrollAfterFetch(stdrdDt);
     } else {
-      void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("journal.chapter.delete.failure"));
     }
   } catch (e: unknown) {
-    void swalRequestError(e, "요청 처리 중 오류가 발생했습니다.");
+    void swalRequestError(e, t("common.error.processing"));
   }
 }
 
@@ -391,9 +393,9 @@ async function copyChapter(): Promise<void> {
   const text = lines.join("\n").trim();
   try {
     await navigator.clipboard.writeText(text);
-    void swalAlert("클립보드에 복사되었습니다.");
+    void swalAlert(t("common.copy.success"));
   } catch {
-    void swalAlert("복사에 실패했습니다.");
+    void swalAlert(t("common.copy.failure"));
   }
 }
 </script>

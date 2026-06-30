@@ -4,6 +4,7 @@
 > 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
 > 모든 관리자 화면은 `DefaultLayout` 하위, `MNGR` 권한 필요.
 > 관리자 화면 본문 상단은 breadcrumb와 중복되는 화면 제목·설명문을 렌더링하지 않는다. 화면 설명은 `menu.menu_description`을 SSOT로 삼아 공통 breadcrumb 하단에 표시하고, 본문 상단에는 필요한 액션 버튼만 표시한다.
+> 관리자 화면의 API 결과 메시지는 서버 `message`를 우선 표시하고, 서버 메시지가 없을 때는 현재 locale의 클라이언트 카탈로그 메시지를 fallback으로 표시한다. 메뉴 확장 방식 선택지도 현재 locale 변경에 반응해 갱신한다.
 
 ## 라우트·화면 매핑
 

@@ -5,6 +5,7 @@ import axios, { type AxiosError } from "axios";
 import { AuthVerificationError, isAuthVerificationError } from "@/shared/utils/authError";
 import { resolveProfileImageUrl } from "@/shared/utils/profileImage";
 import { preloadCategoryMaps, useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useMenuStore } from "@/shared/menu/stores/menu";
 
 /**
@@ -43,6 +44,7 @@ function resolveServerMessage(error: AxiosError<{ message?: string }>): string |
  * - 로그아웃: POST /api/auth/logout-json → 쿠키 삭제
  */
 export const useAuthStore = defineStore("auth", () => {
+  const { t } = useLocaleStore();
   const user = ref<AuthUser | null>(null);
   const isAuthenticated = ref(false);
   const errors = ref<string[]>([]);
@@ -107,7 +109,7 @@ export const useAuthStore = defineStore("auth", () => {
       if (data.rslt) {
         await verifyAuth();
       } else {
-        errors.value = [data.message ?? "로그인에 실패했습니다."];
+        errors.value = [data.message ?? t("auth.login.failure")];
         setLoginAction(data.rsltMap);
         throw new Error(data.message);
       }
@@ -120,7 +122,7 @@ export const useAuthStore = defineStore("auth", () => {
       const serverData = axiosErr.response?.data;
       if (!serverData) throw e;
       const serverMsg = serverData?.message;
-      errors.value = [serverMsg ?? "로그인에 실패했습니다."];
+      errors.value = [serverMsg ?? t("auth.login.failure")];
       setLoginAction(serverData?.rsltMap);
       throw e;
     }
@@ -159,11 +161,11 @@ export const useAuthStore = defineStore("auth", () => {
           return;
         }
         throw new AuthVerificationError(
-          resolveServerMessage(e) ?? "인증 상태를 확인하는 중 오류가 발생했습니다.",
+          resolveServerMessage(e) ?? t("auth.verification.failure"),
           status
         );
       }
-      throw new AuthVerificationError("인증 상태를 확인하는 중 오류가 발생했습니다.");
+      throw new AuthVerificationError(t("auth.verification.failure"));
     }
   }
 

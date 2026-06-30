@@ -15,7 +15,7 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">태그 프로필</h5>
+          <h5 class="modal-title">{{ t("attachable.tag.profile.modal.title") }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
         <!--end::Modal Header-->
@@ -54,7 +54,7 @@
                 >
                   <label for="tagCategoryTextClassCd" class="form-label fw-bold">
                     <span :class="categoryTextClass">{{ hasTagCategory ? '[' + model.ctgr + ']' : '' }}</span>
-                    카테고리 태그 색상
+                    {{ t("attachable.tag.profile.category-tag-color") }}
                   </label>
                   <select
                     id="tagCategoryTextClassCd"
@@ -73,7 +73,7 @@
                     </option>
                   </select>
                   <div v-if="!hasTagCategory" class="fs-8 text-muted mt-1 fw-bold">
-                    이 태그는 카테고리가 없어 설정할 수 없습니다.
+                    {{ t("attachable.tag.profile.no-category-guide") }}
                   </div>
                 </div>
                 <!--end::카테고리 태그 색상-->
@@ -82,7 +82,7 @@
                 <div class="col-6 mb-4">
                   <label for="tagTextClassCd" class="form-label fw-bold">
                     <span :class="tagTextClass"><span>#</span>{{ model.name }}</span>
-                    개별 태그 색상
+                    {{ t("attachable.tag.profile.individual-tag-color") }}
                   </label>
                   <select
                     id="tagTextClassCd"
@@ -105,14 +105,14 @@
               </div>
 
               <!--begin::프로필-->
-              <label for="tagProfileCn" class="form-label fw-bold">프로필</label>
+              <label for="tagProfileCn" class="form-label fw-bold">{{ t("attachable.tag.profile.profile") }}</label>
               <textarea
                 id="tagProfileCn"
                 v-model="model.content"
                 name="content"
                 class="form-control"
                 rows="10"
-                placeholder="이 태그가 각 콘텐츠 타입에서 어떤 의미인지 메모합니다."
+                :placeholder="t('attachable.tag.profile.profile-placeholder')"
               ></textarea>
               <!--end::프로필-->
             </form>
@@ -129,11 +129,11 @@
               class="btn btn-sm btn-light-danger"
               data-bs-toggle="tooltip"
               data-bs-placement="top"
-              title="항목을 삭제합니다."
+              :title="t('common.delete.tooltip')"
               :disabled="submitting"
               @click="onDelete"
             >
-              <i class="bi bi-trash"></i>삭제
+              <i class="bi bi-trash"></i>{{ t("common.delete") }}
             </button>
             <span v-else></span>
             <div class="d-flex justify-content-end ms-auto">
@@ -144,10 +144,10 @@
                 @click="onSave"
               >
                 <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-                <i class="bi bi-check2"></i>저장
+                <i class="bi bi-check2"></i>{{ t("common.save") }}
               </button>
               <button type="button" class="btn btn-sm btn-light ms-2" @click="close">
-                닫기
+                {{ t("common.close") }}
               </button>
             </div>
           </div>
@@ -166,11 +166,13 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -199,7 +201,9 @@ const tagSelectClass = computed(() =>
   `form-select form-select-solid ${tagTextClass.value}`.trim()
 );
 const tagDefaultLabel = computed(() =>
-  hasTagCategory.value ? "카테고리와 동일 (상속)" : "기본 (카테고리 없음)"
+  hasTagCategory.value
+    ? t("attachable.tag.profile.same-as-category")
+    : t("attachable.tag.profile.default-no-category")
 );
 
 onMounted(() => {
@@ -238,17 +242,17 @@ function close() {
 
 /** 태그 프로필 저장 */
 async function onSave() {
-  const confirmed = await swalConfirm("저장하시겠습니까?");
+  const confirmed = await swalConfirm(t("common.confirm.save"));
   if (!confirmed) return;
   submitting.value = true;
   try {
     const result = await attachableStore.saveTagProfile();
     if (result.rslt) {
       close();
-      await swalAlert(result.message ?? "저장되었습니다.");
+      await swalAlert(result.message ?? t("common.result.saved"));
       void refreshJournalDaysForRoute(journalStore, route);
     } else {
-      void swalAlert(result.message ?? "처리에 실패했습니다.");
+      void swalAlert(result.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -259,17 +263,17 @@ async function onSave() {
 
 /** 태그 프로필 삭제 */
 async function onDelete() {
-  const confirmed = await swalConfirm("삭제하시겠습니까?");
+  const confirmed = await swalConfirm(t("common.confirm.del"));
   if (!confirmed) return;
   submitting.value = true;
   try {
     const result = await attachableStore.deleteTagProfile();
     if (result.rslt) {
       close();
-      await swalAlert(result.message ?? "삭제되었습니다.");
+      await swalAlert(result.message ?? t("common.result.deleted"));
       void refreshJournalDaysForRoute(journalStore, route);
     } else {
-      void swalAlert(result.message ?? "처리에 실패했습니다.");
+      void swalAlert(result.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);

@@ -6,7 +6,7 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">저널 스레드 조회</h5>
+          <h5 class="modal-title">{{ t("journal.thread.detail.modal.title") }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
         <!--end::Modal Header-->
@@ -58,7 +58,7 @@
 
             <!--begin::댓글 영역 (TODO: 댓글 연동 예정)-->
             <div class="separator separator-dashed border-gray-200 my-6"></div>
-            <div class="text-muted fs-7 text-center py-3">(댓글 기능은 추후 연동 예정)</div>
+            <div class="text-muted fs-7 text-center py-3">{{ t("journal.thread.comment.pending") }}</div>
             <!--end::댓글 영역-->
           </div>
         </div>
@@ -67,7 +67,7 @@
         <!--begin::Modal Footer-->
         <div class="modal-footer">
           <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="close">{{ t("common.close") }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -82,8 +82,10 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalThreadStore();
+const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;

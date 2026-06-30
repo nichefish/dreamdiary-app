@@ -17,9 +17,19 @@ function readStoredLocale(): SupportedLocale {
 export const useLocaleStore = defineStore("locale", () => {
   const locale = ref<SupportedLocale>(readStoredLocale());
   const catalog = ref<Catalog>({});
+  const loadedLocale = ref<SupportedLocale | null>(null);
 
   async function loadCatalog(): Promise<void> {
-    catalog.value = await i18nCatalogService.load(locale.value);
+    const targetLocale = locale.value;
+    catalog.value = await i18nCatalogService.load(targetLocale);
+    loadedLocale.value = targetLocale;
+  }
+
+  /** 현재 locale의 catalog가 아직 준비되지 않았을 때만 로드한다. */
+  async function ensureCatalog(): Promise<void> {
+    if (loadedLocale.value === locale.value) return;
+    console.info("[locale] loading catalog before route navigation", { locale: locale.value });
+    await loadCatalog();
   }
 
   /** locale을 변경하고 catalog 재로드 및 axios Accept-Language 헤더를 갱신한다. */
@@ -35,5 +45,5 @@ export const useLocaleStore = defineStore("locale", () => {
     return i18nCatalogService.t(catalog.value, key);
   }
 
-  return { locale, catalog, loadCatalog, setLocale, t };
+  return { locale, catalog, loadCatalog, ensureCatalog, setLocale, t };
 });

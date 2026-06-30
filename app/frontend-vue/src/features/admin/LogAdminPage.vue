@@ -4,18 +4,18 @@
       <div class="log-admin-actions">
         <RouterLink class="btn btn-sm" :class="!isStatsView ? 'btn-primary' : 'btn-light-primary'" to="/admin/log">
           <i class="bi bi-list-ul"></i>
-          로그 목록
+          {{ t('log.tab.list') }}
         </RouterLink>
         <RouterLink class="btn btn-sm" :class="isStatsView ? 'btn-primary' : 'btn-light-primary'" to="/admin/log/stats-user">
           <i class="bi bi-bar-chart"></i>
-          사용자별 통계
+          {{ t('log.tab.user-stats') }}
         </RouterLink>
       </div>
     </div>
 
     <template v-if="isStatsView">
       <div class="alert alert-secondary mb-0">
-        사용자별 로그 통계는 현재 연결된 데이터가 있으면 그대로 표시합니다.
+        {{ t('log.user-stats.notice') }}
       </div>
       <div class="card post">
         <div class="card-body">
@@ -23,23 +23,23 @@
             <table class="table align-middle table-row-dashed fs-small gy-4 mb-0">
               <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                  <th class="text-center hidden-table">번호</th>
-                  <th>사용자</th>
-                  <th class="hidden-table">권한</th>
-                  <th class="text-center">활동수</th>
+                  <th class="text-center hidden-table">{{ t('code.group.list.number') }}</th>
+                  <th>{{ t('log.col.user') }}</th>
+                  <th class="hidden-table">{{ t('log.col.role') }}</th>
+                  <th class="text-center">{{ t('log.col.count') }}</th>
                   <th class="hidden-table">URL</th>
-                  <th class="text-center hidden-table">결과</th>
+                  <th class="text-center hidden-table">{{ t('log.col.result') }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-if="!store.statsRows.length">
-                  <td colspan="6" class="text-center text-muted py-8">표시할 사용자별 로그 통계 데이터가 없습니다.</td>
+                  <td colspan="6" class="text-center text-muted py-8">{{ t('log.user-stats.empty') }}</td>
                 </tr>
                 <tr v-for="(row, index) in store.statsRows" :key="`${row.username ?? 'anonymous'}-${index}`">
                   <td class="text-center hidden-table text-gray-600">{{ row.rnum ?? index + 1 }}</td>
                   <td>
                     <div class="log-admin-primary">
-                      <strong>{{ row.userNm || row.username || "비회원" }}</strong>
+                      <strong>{{ row.userNm || row.username || t('log.user-stats.guest') }}</strong>
                       <span>{{ row.username || "-" }}</span>
                     </div>
                   </td>
@@ -50,7 +50,7 @@
                   </td>
                   <td class="text-center hidden-table">
                     <span class="badge" :class="isSuccess(row.rslt) ? 'badge-light-success' : 'badge-light-danger'">
-                      {{ isSuccess(row.rslt) ? "성공" : "실패" }}
+                      {{ isSuccess(row.rslt) ? t('log.result.success') : t('log.result.failure') }}
                     </span>
                   </td>
                 </tr>
@@ -64,19 +64,19 @@
     <template v-else>
       <div class="log-admin-metrics">
         <div class="log-admin-metric">
-          <span>전체</span>
+          <span>{{ t('log.summary.total') }}</span>
           <strong>{{ formatNumber(store.totalElements) }}</strong>
         </div>
         <div class="log-admin-metric danger">
-          <span>현재 페이지 실패</span>
+          <span>{{ t('log.summary.page-failure') }}</span>
           <strong>{{ formatNumber(store.pageFailureCount) }}</strong>
         </div>
         <div class="log-admin-metric warning">
-          <span>현재 페이지 느림</span>
+          <span>{{ t('log.summary.page-slow') }}</span>
           <strong>{{ formatNumber(store.pageSlowCount) }}</strong>
         </div>
         <div class="log-admin-metric">
-          <span>평균 응답</span>
+          <span>{{ t('log.summary.avg-response') }}</span>
           <strong>{{ formatNumber(store.pageAvgDurationMs) }} ms</strong>
         </div>
       </div>
@@ -88,43 +88,43 @@
               <select v-model="store.searchType" class="form-select form-select-solid log-admin-search-type">
                 <option value="requestUri">URI</option>
                 <option value="traceId">Trace</option>
-                <option value="username">사용자</option>
-                <option value="message">메시지</option>
-                <option value="signature">핸들러</option>
+                <option value="username">{{ t('log.col.user') }}</option>
+                <option value="message">{{ t('log.search.by-message') }}</option>
+                <option value="signature">{{ t('log.col.handler') }}</option>
               </select>
               <input
                 v-model.trim="store.keyword"
                 type="search"
                 class="form-control form-control-solid"
                 maxlength="200"
-                placeholder="검색어"
+                :placeholder="t('log.search.placeholder')"
                 @keyup.enter="store.fetchLogs(0)"
               />
               <select v-model="store.resultFilter" class="form-select form-select-solid log-admin-result">
-                <option value="">전체 결과</option>
-                <option value="true">성공</option>
-                <option value="false">실패</option>
+                <option value="">{{ t('log.search.result.all') }}</option>
+                <option value="true">{{ t('log.result.success') }}</option>
+                <option value="false">{{ t('log.result.failure') }}</option>
               </select>
               <label class="form-check form-check-sm form-check-custom form-check-solid log-admin-check">
                 <input v-model="store.slowOnly" class="form-check-input" type="checkbox" @change="store.fetchLogs(0)" />
-                <span class="form-check-label">느림</span>
+                <span class="form-check-label">{{ t('log.search.slow') }}</span>
               </label>
               <label class="form-check form-check-sm form-check-custom form-check-solid log-admin-check">
                 <input v-model="store.exceptionOnly" class="form-check-input" type="checkbox" @change="store.fetchLogs(0)" />
-                <span class="form-check-label">예외</span>
+                <span class="form-check-label">{{ t('log.badge.exception') }}</span>
               </label>
               <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchLogs(0)">
                 <i class="bi bi-search"></i>
               </button>
               <button type="button" class="btn btn-sm btn-light" :disabled="store.loading" @click="store.clearFilters">
-                초기화
+                {{ t('log.search.reset') }}
               </button>
             </div>
             <div class="log-admin-actions">
               <select :value="store.pageSize" class="form-select form-select-solid log-admin-page-size" @change="onPageSizeChange">
-                <option :value="10">10개</option>
-                <option :value="25">25개</option>
-                <option :value="50">50개</option>
+                <option :value="10">{{ t('common.page-size.10') }}</option>
+                <option :value="25">{{ t('common.page-size.25') }}</option>
+                <option :value="50">{{ t('common.page-size.50') }}</option>
               </select>
               <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchLogs(store.currentPage)">
                 <i class="bi bi-arrow-clockwise"></i>
@@ -135,7 +135,7 @@
           <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
           <div v-if="store.loading" class="log-admin-loading">
             <span class="spinner-border spinner-border-sm me-2"></span>
-            불러오는 중
+            {{ t('common.loading') }}
           </div>
 
           <div v-else class="log-admin-observe">
@@ -143,18 +143,18 @@
               <table class="table align-middle table-row-dashed fs-small gy-4 mb-0">
                 <thead>
                   <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                    <th>시간</th>
-                    <th>결과</th>
-                    <th>요청</th>
+                    <th>{{ t('log.col.time') }}</th>
+                    <th>{{ t('log.col.result') }}</th>
+                    <th>{{ t('log.col.request') }}</th>
                     <th>URI</th>
-                    <th class="hidden-table">사용자</th>
+                    <th class="hidden-table">{{ t('log.col.user') }}</th>
                     <th>Trace</th>
-                    <th class="text-end">상세</th>
+                    <th class="text-end">{{ t('log.col.detail') }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-if="!store.rows.length">
-                    <td colspan="7" class="text-center text-muted py-8">조회된 로그가 없습니다.</td>
+                    <td colspan="7" class="text-center text-muted py-8">{{ t('log.list.empty') }}</td>
                   </tr>
                   <tr
                     v-for="row in store.rows"
@@ -168,9 +168,9 @@
                     <td class="log-admin-time">{{ row.logDt || "-" }}</td>
                     <td>
                       <span class="badge" :class="isSuccess(row.rslt, row.success) ? 'badge-light-success' : 'badge-light-danger'">
-                        {{ isSuccess(row.rslt, row.success) ? "성공" : "실패" }}
+                        {{ isSuccess(row.rslt, row.success) ? t('log.result.success') : t('log.result.failure') }}
                       </span>
-                      <span v-if="row.exceptionNm" class="badge badge-light-danger ms-1">예외</span>
+                      <span v-if="row.exceptionNm" class="badge badge-light-danger ms-1">{{ t('log.badge.exception') }}</span>
                     </td>
                     <td>
                       <div class="log-admin-request">
@@ -200,7 +200,7 @@
                     </td>
                     <td class="text-end">
                       <button type="button" class="btn btn-sm btn-light-primary" @click="openDetail(row.id)">
-                        보기
+                        {{ t('log.action.view') }}
                       </button>
                     </td>
                   </tr>
@@ -211,7 +211,7 @@
             <aside class="log-admin-flow">
               <div class="log-admin-flow-head">
                 <div>
-                  <span>Trace 흐름</span>
+                  <span>{{ t('log.trace.title') }}</span>
                   <strong>{{ shortTrace(store.selectedTraceId) }}</strong>
                 </div>
                 <button
@@ -220,14 +220,14 @@
                   :disabled="!store.selectedTraceId"
                   @click="store.filterByTrace(store.selectedTraceId)"
                 >
-                  이 trace만
+                  {{ t('log.trace.filter') }}
                 </button>
               </div>
               <div v-if="!store.selectedTraceId" class="text-muted fs-7">
-                목록에서 trace 값을 선택하면 같은 요청 흐름이 여기에 묶여 보입니다.
+                {{ t('log.trace.hint') }}
               </div>
               <div v-else-if="!store.selectedTraceRows.length" class="text-muted fs-7">
-                현재 페이지에 같은 trace 로그가 없습니다.
+                {{ t('log.trace.empty') }}
               </div>
               <button
                 v-for="row in store.selectedTraceRows"
@@ -245,7 +245,7 @@
           </div>
         </div>
         <div class="card-footer log-admin-footer">
-          <span class="text-muted fs-8">총 {{ formatNumber(store.totalElements) }}건</span>
+          <span class="text-muted fs-8">{{ t('board.group.pagination.total-format').replace('{0}', formatNumber(store.totalElements)) }}</span>
           <div v-if="pageNumbers.length" class="pagination mb-0">
             <button type="button" class="page-link" :disabled="store.currentPage <= 0" @click="store.fetchLogs(0)">
               <i class="previous"></i>
@@ -278,13 +278,13 @@
         <div class="modal-dialog modal-xl">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">로그 상세</h5>
+              <h5 class="modal-title">{{ t('log.detail.title') }}</h5>
               <button type="button" class="btn-close" @click="store.closeDetail"></button>
             </div>
             <div class="modal-body">
               <div v-if="store.detailLoading" class="log-admin-loading">
                 <span class="spinner-border spinner-border-sm me-2"></span>
-                불러오는 중
+                {{ t('common.loading') }}
               </div>
               <template v-else-if="store.detail">
                 <div class="log-admin-detail-grid">
@@ -293,23 +293,23 @@
                     <strong>{{ store.detail.traceId || "-" }}</strong>
                   </div>
                   <div>
-                    <span>핸들러</span>
+                    <span>{{ t('log.col.handler') }}</span>
                     <strong>{{ store.detail.signature || "-" }}</strong>
                   </div>
                   <div>
-                    <span>사용자</span>
+                    <span>{{ t('log.col.user') }}</span>
                     <strong>{{ store.detail.logUserNm || store.detail.username || "-" }}</strong>
                   </div>
                   <div>
-                    <span>일시</span>
+                    <span>{{ t('log.col.time-full') }}</span>
                     <strong>{{ store.detail.logDt || "-" }}</strong>
                   </div>
                   <div>
-                    <span>요청</span>
+                    <span>{{ t('log.col.request') }}</span>
                     <strong>{{ store.detail.httpMethod || "-" }} {{ store.detail.httpStatus ?? "-" }}</strong>
                   </div>
                   <div>
-                    <span>소요시간</span>
+                    <span>{{ t('log.col.duration') }}</span>
                     <strong>{{ store.detail.durationMs != null ? `${formatNumber(store.detail.durationMs)} ms` : "-" }}</strong>
                   </div>
                   <div>
@@ -325,25 +325,25 @@
                     <strong>{{ store.detail.referer || "-" }}</strong>
                   </div>
                   <div>
-                    <span>결과</span>
-                    <strong>{{ isSuccess(store.detail.rslt, store.detail.success) ? "성공" : "실패" }}</strong>
+                    <span>{{ t('log.col.result') }}</span>
+                    <strong>{{ isSuccess(store.detail.rslt, store.detail.success) ? t('log.result.success') : t('log.result.failure') }}</strong>
                   </div>
                 </div>
 
                 <div class="log-admin-detail-block">
-                  <h4>파라미터</h4>
+                  <h4>{{ t('log.detail.section.params') }}</h4>
                   <pre>{{ store.detail.param || "-" }}</pre>
                 </div>
                 <div class="log-admin-detail-block">
-                  <h4>내용</h4>
+                  <h4>{{ t('log.detail.section.content') }}</h4>
                   <pre>{{ store.detail.content || "-" }}</pre>
                 </div>
                 <div class="log-admin-detail-block">
-                  <h4>결과 메시지</h4>
+                  <h4>{{ t('log.detail.section.result-msg') }}</h4>
                   <pre>{{ store.detail.rsltMsg || "-" }}</pre>
                 </div>
                 <div v-if="store.detail.exceptionNm || store.detail.exceptionMsg" class="log-admin-detail-block">
-                  <h4>예외</h4>
+                  <h4>{{ t('log.badge.exception') }}</h4>
                   <pre>{{ [store.detail.exceptionNm, store.detail.exceptionMsg].filter(Boolean).join("\n") }}</pre>
                 </div>
               </template>
@@ -355,9 +355,9 @@
                 :disabled="!store.detail?.traceId"
                 @click="store.filterByTrace(store.detail?.traceId)"
               >
-                이 trace만 보기
+                {{ t('log.detail.trace-filter') }}
               </button>
-              <button type="button" class="btn btn-sm btn-light" @click="store.closeDetail">닫기</button>
+              <button type="button" class="btn btn-sm btn-light" @click="store.closeDetail">{{ t('common.close') }}</button>
             </div>
           </div>
         </div>
@@ -368,6 +368,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
@@ -375,6 +376,7 @@ import { useLogAdminStore, type LogListRow } from "@/features/admin/stores/logAd
 
 const route = useRoute();
 const store = useLogAdminStore();
+const { t } = useLocaleStore();
 
 const isStatsView = computed(() => route.name === "log-stats-user");
 
@@ -414,7 +416,7 @@ async function openDetail(id: number) {
   try {
     await store.openDetail(id);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "로그 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("log.detail.load.failure"));
   }
 }
 

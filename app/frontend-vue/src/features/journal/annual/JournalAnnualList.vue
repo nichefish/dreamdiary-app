@@ -8,15 +8,15 @@
         <div class="d-flex-between fs-5">
           <div class="d-flex fs-5">
             <div class="text-gray-700 d-flex-center me-5">
-              <span class="fw-bold me-2">총 꿈 기록</span>
+              <span class="fw-bold me-2">{{ t('journal.annual.total.dream-record') }}</span>
               <i class="bi bi-moon-stars fs-4 me-2"></i>
               <template v-if="store.totalLoading">
                 <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
               </template>
               <template v-else-if="store.totalAnnual">
-                (<span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamDayCnt ?? 0 }}</span>일
+                (<span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamDayCnt ?? 0 }}</span>{{ t('common.unit.day') }}
                 /
-                <span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamCnt ?? 0 }}</span>건)
+                <span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamCnt ?? 0 }}</span>{{ t('common.unit.count') }})
               </template>
             </div>
           </div>
@@ -37,7 +37,7 @@
 
     <!--begin::빈 목록-->
     <div v-else-if="!store.annualList.length" class="text-center text-muted py-10 fs-6">
-      결산 데이터가 없습니다.
+      {{ t('journal.annual.list.empty') }}
     </div>
     <!--end::빈 목록-->
 
@@ -59,7 +59,7 @@
                 </template>
                 <template v-else>
                   <span class="fs-5 fw-bolder me-0">{{ annual.yy }}</span>
-                  년 결산
+                  {{ t('journal.closing-by-year') }}
                 </template>
                 <i class="bi bi-pencil-square fs-4 ms-1"></i>
               </a>
@@ -70,7 +70,7 @@
             <div class="col fs-5">
               <div class="d-flex justify-content-start">
                 <div class="text-gray-700 d-flex-center me-5">
-                  <span class="fw-bold me-2">꿈</span>
+                  <span class="fw-bold me-2">{{ t('journal.annual.diary-count') }}</span>
                   <template v-if="annual.dreamComptYn === 'Y'">
                     <span class="cursor-help">
                       <i class="bi bi-moon-stars-fill fs-4 me-2 text-success"></i>
@@ -80,9 +80,9 @@
                   <template v-else>
                     <span><i class="bi bi-moon-stars fs-4 me-2"></i></span>
                   </template>
-                  (<span class="text-info fw-bold mx-1">{{ annual.dreamDayCnt }}</span>일
+                  (<span class="text-info fw-bold mx-1">{{ annual.dreamDayCnt }}</span>{{ t('common.unit.day') }}
                   /
-                  <span class="text-info fw-bold mx-1">{{ annual.dreamCnt }}</span>건)
+                  <span class="text-info fw-bold mx-1">{{ annual.dreamCnt }}</span>{{ t('common.unit.count') }})
                 </div>
               </div>
               <!--begin::마크다운 본문-->
@@ -124,24 +124,24 @@
                   class="btn btn-sm btn-icon journal-annual-action-btn"
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
-                  title="메뉴"
+                  :title="t('journal.annual.menu.tooltip')"
                 >
                   <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                 </button>
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
                   <div class="menu-item px-3">
-                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">저널 결산</div>
+                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t('journal.annual.menu.category') }}</div>
                   </div>
                   <div class="menu-item px-3 my-1">
                     <div class="menu-link flex-stack px-3" @click="gotoDetail(annual.yy!)">
-                      상세로 이동
+                      {{ t('journal.annual.go-to-detail') }}
                       <i class="bi bi-arrow-right fs-8"></i>
                     </div>
                   </div>
                   <div class="separator my-2"></div>
                   <div class="menu-item px-3 my-1">
                     <div class="menu-link flex-stack px-3" @click="openModify(annual.yy!)">
-                      수정
+                      {{ t('common.mdf') }}
                       <i class="bi bi-pencil-square fs-8"></i>
                     </div>
                   </div>
@@ -165,9 +165,11 @@ import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
 import type { JournalAnnualDto } from "@/features/journal/stores/journalAnnual";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const router = useRouter();
 const store = useJournalAnnualStore();
+const { t } = useLocaleStore();
 
 onMounted(() => {
   void store.fetchList();

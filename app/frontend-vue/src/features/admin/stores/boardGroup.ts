@@ -2,6 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 
 export interface BoardGroupRow {
@@ -58,6 +59,7 @@ function normalizeForm(row?: Partial<BoardGroupRow>): BoardGroupForm {
 }
 
 export const useBoardGroupStore = defineStore("boardGroup", () => {
+  const { t } = useLocaleStore();
   const rows = ref<BoardGroupRow[]>([]);
   const totalElements = ref(0);
   const totalPages = ref(0);
@@ -87,7 +89,7 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
       if (keyword.value.trim()) params.searchKeyword = keyword.value.trim();
 
       const res = await axios.get("/api/board/groups", { params });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "게시판 그룹 목록을 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.list.load.failure"));
 
       const pageResult = res.data?.rsltObj ?? {};
       rows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
@@ -96,7 +98,7 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
       currentPage.value = Number(pageResult.number ?? targetPage);
       pageSize.value = Number(pageResult.size ?? pageSize.value);
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "게시판 그룹 목록을 불러오지 못했습니다.";
+      error.value = e instanceof Error ? e.message : t("board.group.list.load.failure");
       rows.value = [];
       totalElements.value = 0;
       totalPages.value = 0;
@@ -118,11 +120,11 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
     try {
       modalOpen.value = true;
       const res = await axios.get(`/api/board/groups/${id}`);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "게시판 그룹을 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.detail.load.failure"));
       form.value = normalizeForm(res.data?.rsltObj ?? {});
     } catch (e) {
       modalOpen.value = false;
-      void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 불러오지 못했습니다.");
+      void swalAlert(e instanceof Error ? e.message : t("board.group.detail.load.failure"));
     } finally {
       detailLoading.value = false;
     }
@@ -147,9 +149,9 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
       const res = await axios.post(url, payload, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "게시판 그룹을 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.save.failure"));
       closeModal();
-      const message = res.data?.message ?? "저장되었습니다.";
+      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchList(wasCreate ? 0 : currentPage.value);
       return message;
@@ -162,9 +164,9 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
     const currentlyUse = String(row.useYn).toUpperCase() === "Y";
     const url = currentlyUse ? `/api/board/groups/${row.id}/unuse` : `/api/board/groups/${row.id}/use`;
     const res = await axios.post(url);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "사용 여부를 변경하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.use-yn.change.failure"));
     await fetchList(currentPage.value);
-    return res.data?.message ?? "변경되었습니다.";
+    return res.data?.message ?? t("common.result.changed");
   }
 
   /**
@@ -174,9 +176,9 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
    */
   async function deleteBoard(id: number) {
     const res = await axios.delete(`/api/board/groups/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "게시판 그룹을 삭제하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.delete.failure"));
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
-    const message = res.data?.message ?? "삭제되었습니다.";
+    const message = res.data?.message ?? t("common.result.deleted");
     await swalAlert(message);
     await fetchList(nextPage);
     return message;
@@ -200,9 +202,9 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
         sortOrder: pageOffset + idx,
       }));
       const res = await axios.put("/api/board/groups/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "정렬 순서를 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.order.failure"));
       await fetchList(currentPage.value);
-      return res.data?.message ?? "정렬 순서가 저장되었습니다.";
+      return res.data?.message ?? t("common.result.sort-order-saved");
     } finally {
       sortSaving.value = false;
     }

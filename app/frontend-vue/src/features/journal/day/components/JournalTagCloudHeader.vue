@@ -6,7 +6,7 @@
           <b>{{ row.label }} :</b>
         </div>
         <div class="col flex-grow-1">
-          <span v-if="store.tagCloudLoading" class="text-muted fs-7">로딩 중...</span>
+          <span v-if="store.tagCloudLoading" class="text-muted fs-7">{{ t("common.loading") }}...</span>
           <span v-else-if="row.tags.length === 0" class="text-muted fs-7">-</span>
           <span v-else class="d-flex flex-wrap align-items-center">
             <button
@@ -36,32 +36,34 @@ import { computed, watch } from "vue";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import type { TagCloudItem } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalStore();
 const tagContextMenuStore = useTagContextMenuStore();
+const { t } = useLocaleStore();
 
 const rows = computed(() => [
   {
     id: "journal_day_tag_header",
-    label: "일자 태그",
+    label: t("journal.tag-cloud.day"),
     tags: store.tagCloud.dayTagList,
-    tooltip: "태그 메뉴",
+    tooltip: t("journal.tag-cloud.menu.tooltip"),
     hasSeparator: true,
     contentType: "JOURNAL_DAY",
   },
   {
     id: "journal_diary_tag_header",
-    label: "일기 태그",
+    label: t("journal.tag-cloud.diary"),
     tags: store.tagCloud.diaryTagList,
-    tooltip: "태그 메뉴",
+    tooltip: t("journal.tag-cloud.menu.tooltip"),
     hasSeparator: true,
     contentType: "JOURNAL_DIARY",
   },
   {
     id: "journal_dream_tag_header",
-    label: "꿈 태그",
+    label: t("journal.tag-cloud.dream"),
     tags: store.tagCloud.dreamTagList,
-    tooltip: "태그 메뉴",
+    tooltip: t("journal.tag-cloud.menu.tooltip"),
     hasSeparator: false,
     contentType: "JOURNAL_DREAM",
   },

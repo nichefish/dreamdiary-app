@@ -10,7 +10,7 @@
         @click="store.openRegist()"
       >
         <i class="bi bi-plus fs-5 pe-1"></i>
-        등록
+        {{ t('common.register') }}
       </button>
     </div>
     <!--end::목록 헤더 툴바-->
@@ -27,15 +27,15 @@
         <table v-else class="table align-middle table-row-dashed fs-small gy-5 table-fixed hoverTable mb-3">
           <thead>
             <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-              <th class="text-center wb-keepall w-10 hidden-table">번호</th>
-              <th class="col-lg-9 col-9 text-center wb-keepall">제목</th>
-              <th class="col-lg-1 text-center wb-keepall hidden-table">첨부</th>
-              <th class="col-lg-1 text-center wb-keepall hidden-table">관리</th>
+              <th class="text-center wb-keepall w-10 hidden-table">{{ t('board.group.list.number') }}</th>
+              <th class="col-lg-9 col-9 text-center wb-keepall">{{ t('common.title') }}</th>
+              <th class="col-lg-1 text-center wb-keepall hidden-table">{{ t('board.post.list.col.attach') }}</th>
+              <th class="col-lg-1 text-center wb-keepall hidden-table">{{ t('board.group.list.manage') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="!store.postList.length">
-              <td colspan="4" class="text-center text-muted py-6 fs-7">등록된 게시물이 없습니다.</td>
+              <td colspan="4" class="text-center text-muted py-6 fs-7">{{ t('board.post.list.empty') }}</td>
             </tr>
             <tr
               v-for="post in store.postList"
@@ -52,7 +52,7 @@
                   v-if="post.comment && post.comment.cnt"
                   type="button"
                   class="btn btn-link text-muted ms-2 fs-8 p-0 align-baseline"
-                  title="댓글 목록"
+                  :title="t('board.post.list.comment-list.tooltip')"
                   @click.stop="openCommentList(post)"
                 >[{{ post.comment.cnt }}]</button>
                 <!--begin::태그-->
@@ -76,7 +76,7 @@
                   <button
                     type="button"
                     class="btn btn-sm btn-icon btn-light-primary"
-                    title="수정"
+                    :title="t('common.mdf')"
                     @click.stop="store.openModify(post.id!)"
                   >
                     <i class="bi bi-pencil fs-7"></i>
@@ -84,7 +84,7 @@
                   <button
                     type="button"
                     class="btn btn-sm btn-icon btn-light-danger"
-                    title="삭제"
+                    :title="t('common.del')"
                     @click.stop="store.deletePost(post.id!)"
                   >
                     <i class="bi bi-trash fs-7"></i>
@@ -119,12 +119,14 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useBoardPostStore } from "@/features/board/stores/boardPost";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import type { BoardPostDto } from "@/features/board/stores/boardPost";
 
+const { t } = useLocaleStore();
 const route = useRoute();
 const store = useBoardPostStore();
 const attachableStore = useAttachableModalStore();
