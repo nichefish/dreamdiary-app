@@ -8,6 +8,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 
 /** 계정 신청 행 DTO */
@@ -21,6 +22,7 @@ export interface SignupRequestRow {
 }
 
 export const useUserSignupStore = defineStore("userSignup", () => {
+  const { t } = useLocaleStore();
   /** 승인 대기 목록 */
   const pendingList = ref<SignupRequestRow[]>([]);
   /** 최근 신청 목록 */
@@ -54,7 +56,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
    * @param id 신청 식별자
    */
   async function approve(id: number): Promise<boolean> {
-    const confirmed = await swalConfirm("승인하시겠습니까?");
+    const confirmed = await swalConfirm(t("common.confirm.cf"));
     if (!confirmed) return false;
     try {
       const res = await axios.post(`/api/user/signup-requests/${id}/approval`);
@@ -64,7 +66,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
         if (target) target.status = "APPROVED";
         return true;
       }
-      void swalAlert(res.data?.message || "처리에 실패했습니다.");
+      void swalAlert(res.data?.message || t("common.result.failure"));
       return false;
     } catch (e) {
       console.error("[userSignup] approve 실패", e);
@@ -78,7 +80,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
    * @param id 신청 식별자
    */
   async function reject(id: number): Promise<boolean> {
-    const confirmed = await swalConfirm("반려하시겠습니까?");
+    const confirmed = await swalConfirm(t("user.signup.approval.reject.confirm"));
     if (!confirmed) return false;
     try {
       const res = await axios.post(`/api/user/signup-requests/${id}/rejection`);
@@ -88,7 +90,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
         if (target) target.status = "REJECTED";
         return true;
       }
-      void swalAlert(res.data?.message || "처리에 실패했습니다.");
+      void swalAlert(res.data?.message || t("common.result.failure"));
       return false;
     } catch (e) {
       console.error("[userSignup] reject 실패", e);
@@ -113,7 +115,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
     } catch (e: unknown) {
       const msg =
         (e as { response?: { data?: { message?: string } } })?.response?.data?.message ??
-        "처리 중 오류가 발생했습니다.";
+        t("common.result.exception");
       return { ok: false, message: msg };
     } finally {
       submitting.value = false;

@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export interface UserMyRole {
   roleKey: string;
@@ -66,6 +67,7 @@ const EMPTY_USER: UserMyUser = {
 };
 
 export const useUserMyStore = defineStore("userMy", () => {
+  const { t } = useLocaleStore();
   const user = ref<UserMyUser>({ ...EMPTY_USER });
   const loading = ref(false);
 
@@ -92,12 +94,12 @@ export const useUserMyStore = defineStore("userMy", () => {
     const res = await axios.post("/api/user/my/upload-profl-img", fd, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "프로필 이미지를 변경하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.my.profile-image.change.failure"));
   }
 
   async function removeProfileImage() {
     const res = await axios.post("/api/user/my/remove-profl-img");
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "프로필 이미지를 삭제하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.my.profile-image.delete.failure"));
   }
 
   async function changePassword(payload: PasswordChangePayload) {
@@ -106,7 +108,7 @@ export const useUserMyStore = defineStore("userMy", () => {
     fd.append("currPw", payload.currPw);
     fd.append("newPw", payload.newPw);
     const res = await axios.post("/api/user/my/pw-chg", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "비밀번호를 변경하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.my.pw-change.failure"));
   }
 
   return {

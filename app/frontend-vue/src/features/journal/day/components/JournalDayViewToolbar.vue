@@ -10,7 +10,7 @@
           exact-active-class="active"
         >
           <span class="nav-icon"><i class="bi bi-calendar-week"></i></span>
-          <span class="nav-text">주간 VIEW</span>
+          <span class="nav-text">{{ t('journal.day.toolbar.view.weekly') }}</span>
         </router-link>
       </li>
       <li class="nav-item">
@@ -20,7 +20,7 @@
           exact-active-class="active"
         >
           <span class="nav-icon"><i class="bi bi-view-stacked"></i></span>
-          <span class="nav-text">월간 VIEW</span>
+          <span class="nav-text">{{ t('journal.day.toolbar.view.monthly') }}</span>
         </router-link>
       </li>
       <li class="nav-item">
@@ -30,7 +30,7 @@
           exact-active-class="active"
         >
           <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
-          <span class="nav-text">달력 VIEW</span>
+          <span class="nav-text">{{ t('journal.day.toolbar.view.calendar') }}</span>
         </router-link>
       </li>
       <li class="nav-item">
@@ -40,7 +40,7 @@
           exact-active-class="active"
         >
           <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span>
-          <span class="nav-text">메타 VIEW</span>
+          <span class="nav-text">{{ t('journal.day.toolbar.view.meta') }}</span>
         </router-link>
       </li>
     </ul>
@@ -54,7 +54,7 @@
           v-model="localDiaryKw"
           type="text"
           class="form-control form-control-sm form-control-solid"
-          placeholder="일기 키워드 검색"
+          :placeholder="t('journal.diary.keyword.search')"
           maxlength="200"
           style="min-width: 130px;"
           @keyup.enter="openSearchTab('DIARY', localDiaryKw)"
@@ -62,7 +62,7 @@
         <button
           type="button"
           class="btn btn-sm btn-icon btn-light"
-          title="일기 전체 검색 (새 탭)"
+          :title="t('journal.day.toolbar.search.diary.tooltip')"
           @click="openSearchTab('DIARY', localDiaryKw)"
         >
           <i class="bi bi-search fs-7"></i>
@@ -75,7 +75,7 @@
           v-model="localDreamKw"
           type="text"
           class="form-control form-control-sm form-control-solid"
-          placeholder="꿈 키워드 검색"
+          :placeholder="t('journal.dream.keyword.search')"
           maxlength="200"
           style="min-width: 130px;"
           @keyup.enter="openSearchTab('DREAM', localDreamKw)"
@@ -83,7 +83,7 @@
         <button
           type="button"
           class="btn btn-sm btn-icon btn-light"
-          title="꿈 전체 검색 (새 탭)"
+          :title="t('journal.day.toolbar.search.dream.tooltip')"
           @click="openSearchTab('DREAM', localDreamKw)"
         >
           <i class="bi bi-search fs-7"></i>
@@ -97,11 +97,11 @@
       <button
         type="button"
         class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer text-nowrap"
-        title="저널 일자 등록"
+        :title="t('journal.day.toolbar.register')"
         @click="openDayRegist"
       >
         <i class="bi bi-calendar-plus fs-4 pe-1"></i>
-        저널 일자 등록
+        {{ t('journal.day.toolbar.register') }}
       </button>
       <!--end::저널 일자 등록 버튼-->
     </div>
@@ -117,6 +117,7 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { resolveWeekStartDt } from "@/features/journal/utils/journalDate";
 import { assertAuthenticatedBeforePopup } from "@/shared/auth/popupAuth";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 /** 툴바 전체검색 전용 로컬 키워드 — store.diaryKeyword/dreamKeyword(필터)와 분리 */
 const localDiaryKw = ref("");
@@ -124,6 +125,7 @@ const localDreamKw = ref("");
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
 

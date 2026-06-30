@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">{{ isModify ? '저널 할일 수정' : '저널 할일 등록' }}</h5>
+          <h5 class="modal-title">{{ isModify ? t('journal.todo.modify.modal.title') : t('journal.todo.regist.modal.title') }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -27,12 +27,12 @@
             <div class="row d-flex mb-8">
               <div class="col-2">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">날짜</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('journal.day.field.date') }}</span>
                 </label>
               </div>
               <div class="col-4 fs-6">
                 <i class="bi bi-calendar3"></i>
-                {{ model.yy }}년 {{ model.mnth }}월
+                {{ formatTodoMonth(model.yy, model.mnth) }}
               </div>
             </div>
             <!--end::날짜-->
@@ -41,14 +41,14 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">제목</span>
-                  <span class="text-gray-500 fs-9 ms-2">(최대 50자)</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.title') }}</span>
+                  <span class="text-gray-500 fs-9 ms-2">{{ t('journal.field.title-max-50') }}</span>
                 </label>
               </div>
               <div class="col-lg-2">
                 <!--begin::카테고리 (dead UI 보존)-->
                 <select name="categoryCode" id="categoryCode" class="form-select form-select-solid" v-model="model.categoryCode">
-                  <option value="">-- 카테고리 선택 --</option>
+                  <option value="">{{ t('journal.todo.category.placeholder') }}</option>
                 </select>
                 <!--end::카테고리-->
               </div>
@@ -59,7 +59,7 @@
                   id="title"
                   class="form-control form-control-solid"
                   v-model="model.title"
-                  placeholder="제목을 입력하세요."
+                  :placeholder="t('journal.todo.title.placeholder')"
                   maxlength="50"
                   required
                 />
@@ -71,7 +71,7 @@
                   id="sortOrder"
                   class="form-control form-control-solid"
                   v-model.number="model.sortOrder"
-                  placeholder="순서"
+                  :placeholder="t('journal.todo.sort-order.placeholder')"
                 />
               </div>
             </div>
@@ -81,7 +81,7 @@
             <div class="row mb-4">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2" for="content">
-                  <span class="text-gray-700 fs-6 fw-bolder">내용</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.content') }}</span>
                 </label>
               </div>
               <div class="col-12">
@@ -94,8 +94,8 @@
             <div class="row mb-3">
               <div>
                 <label for="tagListStr" class="mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">태그</span>
-                  <span class="text-gray-500 fs-9 mx-2">([카테고리]태그명 형식)</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.tag') }}</span>
+                  <span class="text-gray-500 fs-9 mx-2">{{ t('journal.todo.tag.format-guide') }}</span>
                 </label>
               </div>
               <div class="col-xl-12">
@@ -106,7 +106,7 @@
                   autocomplete="off"
                   maxlength="500"
                   v-model="tagListStrWithCtgr"
-                  placeholder="태그 입력"
+                  :placeholder="t('journal.todo.tag.placeholder')"
                 />
               </div>
             </div>
@@ -126,15 +126,15 @@
               @click="submit"
             >
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t('common.save') }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
-              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
               @click="requestSafeClose"
-            >닫기</button>
+            >{{ t('common.close') }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -156,9 +156,11 @@ import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -202,15 +204,22 @@ function close() {
   modalStore.closeTodoRegist();
 }
 
+/** 현재 locale의 년월 표시 형식으로 할일 대상 월을 조립한다. */
+function formatTodoMonth(yy?: number | string, mnth?: number | string): string {
+  return t("journal.todo.date.format")
+    .replace("{0}", String(yy ?? ""))
+    .replace("{1}", String(mnth ?? ""));
+}
+
 /** 등록/수정 처리 */
 async function submit() {
   if (!model.value) return;
   if (!model.value.title) {
-    void swalAlert("제목을 입력해 주세요.");
+    void swalAlert(t("journal.todo.title.required"));
     return;
   }
 
-  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify.value ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
 
   submitting.value = true;
@@ -234,10 +243,10 @@ async function submit() {
 
     if (res.data?.rslt) {
       close();
-      await swalAlert(res.data?.message ?? (isModify.value ? "수정되었습니다." : "등록되었습니다."));
+      await swalAlert(res.data?.message ?? (isModify.value ? t("common.result.modified") : t("common.result.registered")));
       void refreshJournalDaysForRoute(journalStore, route);
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);

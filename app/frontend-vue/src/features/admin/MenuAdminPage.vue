@@ -14,9 +14,9 @@
           <div>
             <div class="menu-admin-column-title">
               <i class="bi bi-people-fill"></i>
-              사용자 화면
+              {{ t('menu.tab.user') }}
             </div>
-            <div class="text-muted fs-8">일반 사용자에게 노출되는 메뉴</div>
+            <div class="text-muted fs-8">{{ t('menu.tab.user.desc') }}</div>
           </div>
           <span class="badge badge-light-primary">{{ userMenuRows.length }}</span>
         </div>
@@ -24,10 +24,10 @@
         <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
         <div v-if="store.loading" class="menu-admin-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
         <ol v-else class="menu-admin-tree">
-          <li v-if="!userMenuRows.length" class="menu-admin-empty">등록된 사용자 화면 메뉴가 없습니다.</li>
+          <li v-if="!userMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.user.empty') }}</li>
           <MenuAdminTreeNode
             v-for="(row, index) in userMenuRows"
             :key="row.id"
@@ -52,9 +52,9 @@
           <div>
             <div class="menu-admin-column-title">
               <i class="bi bi-person-gear"></i>
-              관리자 화면
+              {{ t('menu.tab.admin') }}
             </div>
-            <div class="text-muted fs-8">관리자에게 노출되는 운영 메뉴</div>
+            <div class="text-muted fs-8">{{ t('menu.tab.admin.desc') }}</div>
           </div>
           <span class="badge badge-light-info">{{ adminMenuRows.length }}</span>
         </div>
@@ -62,10 +62,10 @@
         <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
         <div v-if="store.loading" class="menu-admin-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
         <ol v-else class="menu-admin-tree">
-          <li v-if="!adminMenuRows.length" class="menu-admin-empty">등록된 관리자 화면 메뉴가 없습니다.</li>
+          <li v-if="!adminMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.admin.empty') }}</li>
           <MenuAdminTreeNode
             v-for="(row, index) in adminMenuRows"
             :key="row.id"
@@ -90,9 +90,9 @@
           <div>
             <div class="menu-admin-column-title">
               <i class="bi bi-eye-slash"></i>
-              숨김·시스템 메뉴
+              {{ t('menu.tab.hidden') }}
             </div>
-            <div class="text-muted fs-8">사이드바에는 표시하지 않는 화면/권한/메타 메뉴</div>
+            <div class="text-muted fs-8">{{ t('menu.tab.hidden.desc') }}</div>
           </div>
           <span class="badge badge-light-secondary">{{ hiddenMenuRows.length }}</span>
         </div>
@@ -100,10 +100,10 @@
         <div v-if="store.error" class="alert alert-warning py-2">{{ store.error }}</div>
         <div v-if="store.loading" class="menu-admin-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
         <ol v-else class="menu-admin-tree">
-          <li v-if="!hiddenMenuRows.length" class="menu-admin-empty">등록된 숨김·시스템 메뉴가 없습니다.</li>
+          <li v-if="!hiddenMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.hidden.empty') }}</li>
           <MenuAdminTreeNode
             v-for="(row, index) in hiddenMenuRows"
             :key="row.id"
@@ -128,50 +128,50 @@
           <div class="modal-content">
             <form @submit.prevent="submit">
               <div class="modal-header">
-                <h5 class="modal-title">{{ store.isEdit ? "메뉴 수정" : "하위 메뉴 등록" }}</h5>
+                <h5 class="modal-title">{{ store.isEdit ? t('menu.modal.title.edit') : t('menu.modal.title.register') }}</h5>
                 <button type="button" class="btn-close" @click="store.closeModal"></button>
               </div>
               <div class="modal-body">
                 <div class="menu-admin-form">
                   <div class="menu-admin-form-row">
-                    <label for="useYn" class="form-label">사용 여부</label>
+                    <label for="useYn" class="form-label">{{ t('board.group.form.use-yn') }}</label>
                     <div class="form-check form-switch form-check-custom form-check-solid">
                       <input id="useYn" class="form-check-input cursor-pointer" type="checkbox" :checked="store.form.useYn === 'Y'" @change="onUseYnChange" />
-                      <label class="form-check-label ms-3" for="useYn">{{ store.form.useYn === "Y" ? "사용" : "미사용" }}</label>
+                      <label class="form-check-label ms-3" for="useYn">{{ store.form.useYn === "Y" ? t('status.use') : t('status.unuse') }}</label>
                     </div>
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label for="sidebarVisibleYn" class="form-label">사이드바 표시</label>
+                    <label for="sidebarVisibleYn" class="form-label">{{ t('menu.form.sidebar-visible') }}</label>
                     <div class="form-check form-switch form-check-custom form-check-solid">
                       <input id="sidebarVisibleYn" class="form-check-input cursor-pointer" type="checkbox" :checked="store.form.sidebarVisibleYn === 'Y'" @change="onSidebarVisibleYnChange" />
-                      <label class="form-check-label ms-3" for="sidebarVisibleYn">{{ store.form.sidebarVisibleYn === "Y" ? "표시" : "숨김" }}</label>
+                      <label class="form-check-label ms-3" for="sidebarVisibleYn">{{ store.form.sidebarVisibleYn === "Y" ? t('menu.form.sidebar-visible.show') : t('menu.form.sidebar-visible.hide') }}</label>
                     </div>
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label class="form-label required">상위 메뉴</label>
+                    <label class="form-label required">{{ t('menu.form.parent') }}</label>
                     <div class="form-control form-control-solid menu-admin-readonly-field">
                       {{ store.form.upperMenuNm || "-" }}
                     </div>
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label class="form-label">기본 정보</label>
+                    <label class="form-label">{{ t('menu.form.basic-info') }}</label>
                     <div class="menu-admin-form-pair">
                       <div>
-                        <label for="menuName" class="form-label required">메뉴명</label>
+                        <label for="menuName" class="form-label required">{{ t('menu.form.name') }}</label>
                         <input id="menuName" v-model.trim="store.form.menuName" type="text" class="form-control form-control-solid" maxlength="200" required />
                       </div>
                       <div>
-                        <label for="menuLabel" class="form-label required">메뉴 라벨</label>
+                        <label for="menuLabel" class="form-label required">{{ t('menu.form.label') }}</label>
                         <input id="menuLabel" v-model.trim="store.form.menuLabel" type="text" class="form-control form-control-solid" maxlength="100" required />
                       </div>
                     </div>
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label for="menuDescription" class="form-label">메뉴 설명</label>
+                    <label for="menuDescription" class="form-label">{{ t('menu.form.description') }}</label>
                     <textarea
                       id="menuDescription"
                       v-model.trim="store.form.menuDescription"
@@ -182,7 +182,7 @@
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label for="submenuExpandType" class="form-label required">하위메뉴 표시</label>
+                    <label for="submenuExpandType" class="form-label required">{{ t('menu.form.submenu-expand') }}</label>
                     <select id="submenuExpandType" v-model="store.form.submenuExpandType" class="form-select form-select-solid" required>
                       <option v-for="opt in store.submenuExpandOptions" :key="opt.code" :value="opt.code">{{ opt.codeName }}</option>
                     </select>
@@ -194,11 +194,11 @@
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label for="unreadCntNm" class="form-label">미열람 카운트</label>
+                    <label for="unreadCntNm" class="form-label">{{ t('menu.form.unread-count') }}</label>
                     <div class="menu-admin-unread-row">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input id="unreadCntEnabled" v-model="store.form.unreadCntEnabled" class="form-check-input cursor-pointer" type="checkbox" @change="onUnreadCntEnabledChange" />
-                        <label class="form-check-label ms-3" for="unreadCntEnabled">{{ store.form.unreadCntEnabled ? "사용" : "미사용" }}</label>
+                        <label class="form-check-label ms-3" for="unreadCntEnabled">{{ store.form.unreadCntEnabled ? t('status.use') : t('status.unuse') }}</label>
                       </div>
                       <input
                         v-if="store.form.unreadCntEnabled"
@@ -213,7 +213,7 @@
                   </div>
 
                   <div class="menu-admin-form-row">
-                    <label for="icon" class="form-label">아이콘</label>
+                    <label for="icon" class="form-label">{{ t('menu.form.icon') }}</label>
                     <div class="menu-admin-icon-editor">
                       <div class="menu-admin-icon-preview" v-html="store.form.icon || '<i class=&quot;bi bi-app&quot;></i>'"></div>
                       <textarea id="icon" v-model.trim="store.form.icon" class="form-control form-control-solid" rows="4" maxlength="1000"></textarea>
@@ -225,9 +225,9 @@
                 <button type="submit" class="btn btn-sm btn-primary" :disabled="store.saving">
                   <span v-if="store.saving" class="spinner-border spinner-border-sm me-1"></span>
                   <i v-else class="bi bi-check-lg"></i>
-                  저장
+                  {{ t('common.save') }}
                 </button>
-                <button type="button" class="btn btn-sm btn-light" @click="store.closeModal">닫기</button>
+                <button type="button" class="btn btn-sm btn-light" @click="store.closeModal">{{ t('common.close') }}</button>
               </div>
             </form>
           </div>
@@ -239,12 +239,14 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, ref } from "vue";
 import MenuAdminTreeNode from "@/features/admin/MenuAdminTreeNode.vue";
 import { useMenuAdminStore, type MenuNode, type MenuTargetMode } from "@/features/admin/stores/menuAdmin";
 
 const store = useMenuAdminStore();
+const { t } = useLocaleStore();
 const userMenuRows = computed(() => store.rows
   .filter((row) => sidebarVisible(row) && store.getMenuTargetMode(row) === "USER")
   .map((row) => withVisibleChildren(row)));
@@ -282,39 +284,39 @@ async function openEdit(id: number) {
   try {
     await store.openEdit(id);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "메뉴 상세를 불러오지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("menu.detail.load.failure"));
   }
 }
 
 async function submit() {
   if (!store.form.menuName.trim()) {
-    void swalAlert("메뉴명을 입력해주세요.");
+    void swalAlert(t("menu.validate.name.required"));
     return;
   }
   if (!store.form.menuLabel.trim()) {
-    void swalAlert("메뉴 라벨을 입력해주세요.");
+    void swalAlert(t("menu.validate.label.required"));
     return;
   }
   if (!store.form.submenuExpandType) {
-    void swalAlert("하위메뉴 표시 방식을 선택해주세요.");
+    void swalAlert(t("menu.validate.submenu-expand.required"));
     return;
   }
   if (store.form.submenuExpandType === "NO_SUB" && !store.form.url.trim()) {
-    void swalAlert("URL을 입력해주세요.");
+    void swalAlert(t("menu.validate.url.required"));
     return;
   }
   if (store.form.parentMenuId == null) {
-    void swalAlert("상위 메뉴를 선택해주세요.");
+    void swalAlert(t("menu.validate.parent.required"));
     return;
   }
   if (store.form.unreadCntEnabled && !store.form.unreadCntNm.trim()) {
-    void swalAlert("미열람 카운트 이름을 입력해주세요.");
+    void swalAlert(t("menu.validate.unread-count.required"));
     return;
   }
   try {
     await store.submit();
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "메뉴를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("menu.save.failure"));
   }
 }
 
@@ -333,20 +335,20 @@ function onUnreadCntEnabledChange(event: Event) {
 }
 
 async function toggleUse(row: MenuNode) {
-  if (!await swalConfirm(`${row.menuName ?? "메뉴"} 사용 여부를 변경할까요?`)) return;
+  if (!await swalConfirm(t("menu.use-yn.confirm").replace("{menuName}", row.menuName ?? t("menu.default-name")))) return;
   try {
     void swalAlert(await store.toggleUse(row));
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "메뉴 상태를 변경하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("menu.use-yn.change.failure"));
   }
 }
 
 async function deleteMenu(row: MenuNode) {
-  if (!await swalConfirm(`${row.menuName ?? "메뉴"}를 삭제할까요? 하위 메뉴도 함께 삭제됩니다.`)) return;
+  if (!await swalConfirm(t("menu.delete.confirm").replace("{menuName}", row.menuName ?? t("menu.default-name")))) return;
   try {
     await store.deleteMenu(row.id);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "메뉴를 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("menu.delete.failure"));
   }
 }
 
@@ -358,7 +360,7 @@ async function onMainDrop(targetMode: MenuTargetMode, targetIndex: number) {
     const message = await store.reorderMainWithinGroup(targetMode, drag.index, targetIndex);
     if (message) void swalAlert(message);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "메인 메뉴 순서를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("menu.order.main.failure"));
     await store.fetchTree();
   }
 }
@@ -376,7 +378,7 @@ async function onChildDrop(parent: MenuNode, targetIndex: number) {
     const message = await store.reorderSub(parent, drag.index, targetIndex);
     if (message) void swalAlert(message);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "하위 메뉴 순서를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("menu.order.sub.failure"));
     await store.fetchTree();
   }
 }

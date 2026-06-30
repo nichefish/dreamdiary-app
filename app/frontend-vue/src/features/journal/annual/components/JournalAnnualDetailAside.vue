@@ -1,7 +1,7 @@
 <template>
   <div class="journal-annual-aside card card-reset card-p-0 p-5">
     <div class="d-flex justify-content-end mb-2">
-      <button type="button" class="btn btn-sm btn-icon btn-light" title="필터 패널 닫기" @click="emit('close')">
+      <button type="button" class="btn btn-sm btn-icon btn-light" :title="t('journal.annual.filter.panel-close.tooltip')" @click="emit('close')">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
@@ -41,11 +41,11 @@
               v-model="store.diaryKeyword"
               type="text"
               class="form-control form-control-sm"
-              placeholder="일기 키워드"
+              :placeholder="t('journal.annual.filter.diary-keyword.placeholder')"
               maxlength="200"
               @keyup.enter="applyEntryFilters"
             />
-            <button type="button" class="btn btn-sm btn-icon btn-light" title="일기 키워드 필터 적용" @click="applyEntryFilters">
+            <button type="button" class="btn btn-sm btn-icon btn-light" :title="t('journal.annual.filter.diary-keyword.apply.tooltip')" @click="applyEntryFilters">
               <i class="bi bi-funnel fs-7"></i>
             </button>
           </div>
@@ -58,18 +58,18 @@
               v-model="store.dreamKeyword"
               type="text"
               class="form-control form-control-sm"
-              placeholder="꿈 키워드"
+              :placeholder="t('journal.annual.filter.dream-keyword.placeholder')"
               maxlength="200"
               @keyup.enter="applyEntryFilters"
             />
-            <button type="button" class="btn btn-sm btn-icon btn-light" title="꿈 키워드 필터 적용" @click="applyEntryFilters">
+            <button type="button" class="btn btn-sm btn-icon btn-light" :title="t('journal.annual.filter.dream-keyword.apply.tooltip')" @click="applyEntryFilters">
               <i class="bi bi-funnel fs-7"></i>
             </button>
           </div>
         </div>
 
         <button type="button" class="btn btn-sm btn-light w-100" @click="clearEntryFilters">
-          필터 초기화
+          {{ t('journal.annual.filter.reset') }}
         </button>
       </div>
 
@@ -77,7 +77,7 @@
 
       <button type="button" class="btn btn-sm btn-light-primary w-100" @click="store.openRegist()">
         <i class="bi bi-plus-circle me-1"></i>
-        결산 등록
+        {{ t('journal.annual.register') }}
       </button>
     </div>
   </div>
@@ -87,9 +87,11 @@
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const emit = defineEmits<{ close: [] }>();
 const store = useJournalAnnualStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
 

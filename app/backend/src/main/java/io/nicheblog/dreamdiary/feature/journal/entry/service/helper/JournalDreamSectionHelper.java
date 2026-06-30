@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service.helper;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDreamSectionDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,12 +18,14 @@ import java.util.function.Consumer;
 
 /**
  * 꿈 가상 섹션 조립·순회.
+ * <p>화면 제목은 요청 locale의 메시지 카탈로그에서 조립한다.</p>
  */
 @UtilityClass
 public class JournalDreamSectionHelper {
 
     private static final String OWN_SECTION_KEY = "own";
-    private static final String OWN_SECTION_TITLE = "꿈";
+    private static final String OWN_SECTION_TITLE_KEY = "common.dream";
+    private static final String NAMED_SECTION_TITLE_KEY = "journal.dream.section.named";
     private static final Collator KOREAN_COLLATOR = Collator.getInstance(Locale.KOREAN);
 
     /**
@@ -40,7 +43,7 @@ public class JournalDreamSectionHelper {
         if (CollectionUtils.isNotEmpty(ownDreamEntries)) {
             sections.add(JournalDreamSectionDto.builder()
                     .sectionKey(OWN_SECTION_KEY)
-                    .title(OWN_SECTION_TITLE)
+                    .title(MessageUtils.getMessage(OWN_SECTION_TITLE_KEY, null))
                     .dreamerName(null)
                     .entries(new ArrayList<>(ownDreamEntries))
                     .build());
@@ -60,7 +63,7 @@ public class JournalDreamSectionHelper {
                 .sorted(KOREAN_COLLATOR)
                 .forEach(dreamerName -> sections.add(JournalDreamSectionDto.builder()
                         .sectionKey("dreamer:" + dreamerName)
-                        .title(dreamerName + " 꿈")
+                        .title(MessageUtils.getMessage(NAMED_SECTION_TITLE_KEY, new Object[]{dreamerName}))
                         .dreamerName(dreamerName)
                         .entries(byDreamerName.get(dreamerName))
                         .build()));

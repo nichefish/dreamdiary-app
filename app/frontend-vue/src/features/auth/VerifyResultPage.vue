@@ -7,12 +7,12 @@
         </div>
         <h1 class="verify-result-title">{{ title }}</h1>
         <p class="verify-result-message">{{ message }}</p>
-        <p v-if="isSuccess" class="text-muted fs-8 mb-0">잠시 후 로그인 화면으로 이동합니다.</p>
+        <p v-if="isSuccess" class="text-muted fs-8 mb-0">{{ t('auth.verify.redirect-notice') }}</p>
       </div>
       <div class="card-footer verify-result-footer">
         <button type="button" class="btn btn-sm btn-light-primary" @click="goSignIn">
           <i class="bi bi-box-arrow-in-right"></i>
-          로그인으로 이동
+          {{ t('auth.verify.go-to-login') }}
         </button>
       </div>
     </div>
@@ -22,16 +22,18 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useLocaleStore();
 let redirectTimer: number | undefined;
 
 const isSuccess = computed(() => route.query.status === "success");
-const title = computed(() => (isSuccess.value ? "인증이 완료되었습니다" : "인증에 실패했습니다"));
+const title = computed(() => (isSuccess.value ? t("auth.verify.success.title") : t("auth.verify.failure.title")));
 const message = computed(() => {
-  if (isSuccess.value) return "계정 인증이 정상적으로 처리되었습니다.";
-  return String(route.query.message || "인증 링크를 다시 확인해주세요.");
+  if (isSuccess.value) return t("auth.verify.success.message");
+  return String(route.query.message || t("auth.verify.link-invalid"));
 });
 
 function goSignIn() {

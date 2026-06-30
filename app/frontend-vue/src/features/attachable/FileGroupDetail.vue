@@ -2,7 +2,7 @@
   <!--begin::첨부파일 상세 (읽기 전용)-->
   <template v-if="files && files.length > 0">
     <div class="d-flex flex-stack flex-wrap mb-3 bg-light">
-      <div class="col-xl-1 col-form-label fs-6 fw-bold px-5">첨부파일</div>
+      <div class="col-xl-1 col-form-label fs-6 fw-bold px-5">{{ t('attach.label') }}</div>
       <div class="col-xl-11 my-3">
         <div v-for="file in files" :key="file.id" class="row my-1">
           <div class="col-xl-8" :id="'itemContainer' + file.id">
@@ -12,7 +12,7 @@
               data-bs-toggle="tooltip"
               data-bs-placement="top"
               data-bs-dismiss="click"
-              title="파일을 다운로드합니다."
+              :title="t('attach.download.tooltip')"
             >
               <i class="fas fa-file-download fs-15 me-1"></i>
               {{ file.orgnFileNm }}({{ file.fileSize }}byte)
@@ -27,6 +27,9 @@
 
 <script setup lang="ts">
 import type { FileRecord } from "@/features/attachable/stores/attachableModal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+
+const { t } = useLocaleStore();
 
 defineProps<{ files: FileRecord[] }>();
 

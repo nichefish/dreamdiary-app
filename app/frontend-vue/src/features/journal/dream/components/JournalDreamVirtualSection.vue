@@ -12,17 +12,17 @@
           v-if="isOwnDreamSection"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-          title="저널 꿈 등록"
+          :title="t('journal.dream.reg')"
           @click="$emit('open-regist', '')"
         >
           <i class="bi bi-moon-stars fs-4 pe-1"></i>
-          저널 꿈 등록
+          {{ t("journal.dream.reg") }}
         </button>
         <button
           v-if="showCopyExport"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ms-2 px-3 cursor-pointer"
-          title="복사"
+          :title="t('common.copy')"
           @click="$emit('copy-section', section.entries)"
         >
           <i class="bi bi-copy p-0"></i>
@@ -31,7 +31,7 @@
           v-if="showCopyExport"
           type="button"
           class="btn btn-sm btn-outline btn-light-primary ps-3 pe-2"
-          title="TXT보내기"
+          :title="t('common.export-text')"
           @click="$emit('export-day')"
         >
           <i class="fas fa-download"></i>
@@ -68,6 +68,9 @@ import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
 import { computed } from "vue";
 import type { JournalDreamSectionDto } from "@/features/journal/utils/journalDream";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+
+const { t } = useLocaleStore();
 
 const props = defineProps<{
   section: JournalDreamSectionDto;

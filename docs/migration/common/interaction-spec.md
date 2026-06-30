@@ -39,6 +39,7 @@
 - 전환 시 `axios.defaults.headers.common["Accept-Language"]` 갱신 → 이후 모든 axios 요청에 반영.
 - 서버는 `AcceptHeaderLocaleResolver`(Spring MVC) 로 `Accept-Language` 헤더를 읽어 `LocaleContextHolder` locale 설정 → `MessageUtils.getMessage()` 응답 메시지 다국어 반환.
 - 앱 초기 로드 시 `applyLocaleHeader()` (`ApiService.ts`) 가 localStorage 값을 읽어 axios 헤더를 초기화한다.
+- 라우터 `beforeEach`는 인증 상태 확인과 화면 마운트보다 먼저 `localeStore.ensureCatalog()`를 호출한다. 같은 locale의 catalog가 이미 준비됐으면 재요청하지 않으며, 직접 URL 진입·새로고침에서도 번역 키 대신 현재 locale 메시지를 표시한다.
 - 로그인 화면(`SignIn.vue`): 국기 버튼(🇰🇷/🇺🇸) — `localeStore.setLocale()` 호출, 화면 텍스트 `localeStore.t()` 카탈로그로 전환.
 - 앱 헤더 Navbar: 국기 버튼 클릭 → ko↔en 토글. UI 텍스트 전체 i18n 적용은 별도 작업.
 

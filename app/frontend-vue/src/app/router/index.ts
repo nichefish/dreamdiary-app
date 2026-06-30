@@ -5,6 +5,7 @@ import {
 } from "vue-router";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useConfigStore } from "@/shared/config/stores/config";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useMenuStore, type MenuMode } from "@/shared/menu/stores/menu";
 import {
   buildSessionExpiredSignInRoute,
@@ -330,12 +331,14 @@ async function syncMenuModeForRoute(path: string) {
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
   const configStore = useConfigStore();
+  const localeStore = useLocaleStore();
 
   markRuntimePending("화면 이동 중입니다.");
   try {
     document.title = `${to.meta.pageTitle ?? ""} - ${import.meta.env.VITE_APP_NAME}`;
     configStore.resetLayoutConfig();
 
+    await localeStore.ensureCatalog();
     await authStore.verifyAuth();
 
     const requiresAuth = to.matched.some((r) => r.meta.middleware === "auth");

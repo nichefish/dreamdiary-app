@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title fw-bold">관련 글 추가</h5>
+          <h5 class="modal-title fw-bold">{{ t("related-content.modal.title") }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -20,50 +20,50 @@
         <div class="modal-body px-5 py-6">
           <!--begin::출처 표시-->
           <div class="rounded bg-light-primary text-primary px-4 py-3 fs-7 mb-4">
-            현재 글: {{ srcLabel }} #{{ attachableStore.relatedSrcId }}
+            {{ t("related-content.current-post") }}: {{ srcLabel }} #{{ attachableStore.relatedSrcId }}
           </div>
           <!--end::출처-->
 
           <!--begin::관련 유형 + 대상 유형 + 검색-->
           <div class="row g-3 mb-4">
             <div class="col-md-4">
-              <label class="form-label fw-semibold text-gray-700">관련 유형</label>
+              <label class="form-label fw-semibold text-gray-700">{{ t("related-content.relation-type") }}</label>
               <select v-model="attachableStore.relatedRelationType" class="form-select form-select-solid">
-                <option value="REFERENCE">참조</option>
-                <option value="EXTENSION">확장</option>
-                <option value="PARALLEL">병렬</option>
-                <option value="CAUSE">원인</option>
+                <option value="REFERENCE">{{ t("enum.relation-type.reference") }}</option>
+                <option value="EXTENSION">{{ t("enum.relation-type.extension") }}</option>
+                <option value="PARALLEL">{{ t("enum.relation-type.parallel") }}</option>
+                <option value="CAUSE">{{ t("enum.relation-type.cause") }}</option>
               </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label fw-semibold text-gray-700">대상 글 유형</label>
+              <label class="form-label fw-semibold text-gray-700">{{ t("related-content.target-content-type") }}</label>
               <select
                 v-model="attachableStore.relatedTargetContentType"
                 class="form-select form-select-solid"
                 @change="attachableStore.onRelatedTargetTypeChange()"
               >
-                <option value="JOURNAL_DIARY">일기</option>
-                <option value="JOURNAL_DREAM">꿈</option>
+                <option value="JOURNAL_DIARY">{{ t("related-content.content-type.diary") }}</option>
+                <option value="JOURNAL_DREAM">{{ t("related-content.content-type.dream") }}</option>
               </select>
             </div>
             <div class="col-md-4 d-flex align-items-end">
-              <button type="button" class="btn btn-light-account w-100" @click="search">검색</button>
+              <button type="button" class="btn btn-light-account w-100" @click="search">{{ t("common.search") }}</button>
             </div>
           </div>
           <!--end::관련 유형 + 대상 유형 + 검색-->
 
           <!--begin::키워드 입력-->
           <div class="mb-4">
-            <label class="form-label fw-semibold text-gray-700">검색 키워드</label>
+            <label class="form-label fw-semibold text-gray-700">{{ t("related-content.search.keyword") }}</label>
             <input
               type="text"
               v-model="attachableStore.relatedKeyword"
               class="form-control form-control-solid"
               maxlength="100"
-              placeholder="제목이나 내용 키워드를 입력해 주세요."
+              :placeholder="t('related-content.search.placeholder')"
               @keydown="onKeydown"
             />
-            <div class="text-muted fs-8 mt-2">검색 결과를 클릭하면 연결 대상이 선택됩니다.</div>
+            <div class="text-muted fs-8 mt-2">{{ t("related-content.search.guide") }}</div>
           </div>
           <!--end::키워드 입력-->
 
@@ -84,7 +84,7 @@
             </div>
           </div>
           <div v-else class="rounded border border-dashed border-gray-300 px-4 py-3 text-muted fs-7 mb-4">
-            아직 선택한 글이 없습니다.
+            {{ t("related-content.selected.empty") }}
           </div>
           <!--end::선택된 대상-->
 
@@ -102,7 +102,7 @@
             v-if="attachableStore.relatedSearching"
             class="rounded border border-dashed border-gray-300 px-4 py-3 text-muted fs-7 mb-4"
           >
-            <span class="spinner-border spinner-border-sm me-2"></span>검색 중입니다.
+            <span class="spinner-border spinner-border-sm me-2"></span>{{ t("related-content.search.loading") }}
           </div>
           <!--end::검색 중-->
 
@@ -112,7 +112,7 @@
               v-if="attachableStore.relatedSearchResults.length === 0"
               class="rounded border border-dashed border-gray-300 px-4 py-3 text-muted fs-7 mb-4"
             >
-              검색 결과가 없습니다.
+              {{ t("common.search.rslt.empty") }}
             </div>
             <div v-for="item in attachableStore.relatedSearchResults" :key="item.id" class="mb-3">
               <button
@@ -131,7 +131,7 @@
                     #{{ item.id }}<span v-if="item.stdrdDt"> | {{ item.stdrdDt }}</span>
                   </span>
                 </div>
-                <div class="text-muted fs-7">{{ toPreviewText(item.content) || '미리보기가 없습니다.' }}</div>
+                <div class="text-muted fs-7">{{ toPreviewText(item.content) || t("related-content.preview.empty") }}</div>
               </button>
             </div>
           </template>
@@ -139,13 +139,13 @@
 
           <!--begin::메모-->
           <div>
-            <label class="form-label fw-semibold text-gray-700">메모</label>
+            <label class="form-label fw-semibold text-gray-700">{{ t("related-content.memo") }}</label>
             <textarea
               v-model="attachableStore.relatedReason"
               class="form-control form-control-solid"
               rows="3"
               maxlength="255"
-              placeholder="왜 연결하는지 간단히 적어 둘 수 있습니다."
+              :placeholder="t('related-content.memo.placeholder')"
             ></textarea>
           </div>
           <!--end::메모-->
@@ -162,15 +162,15 @@
               @click="save"
             >
               <span v-if="saving" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t("common.save") }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
-              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '취소'"
+              :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.cancel')"
               @click="requestSafeClose"
-            >취소</button>
+            >{{ t("common.cancel") }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -188,11 +188,13 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -203,17 +205,15 @@ const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() =>
 });
 
 /** 콘텐츠 타입 → 한글 레이블 */
-const CONTENT_TYPE_LABEL: Record<string, string> = {
-  JOURNAL_DIARY: "일기",
-  JOURNAL_DREAM: "꿈",
-};
-
+/** 변경: 위 기존 한글 전용 계약을 현재 locale catalog 레이블로 확장한다. */
 const srcLabel = computed(() =>
-  CONTENT_TYPE_LABEL[attachableStore.relatedSrcContentType] ?? attachableStore.relatedSrcContentType
+  contentTypeLabel(attachableStore.relatedSrcContentType)
 );
 
 function contentTypeLabel(contentType: string): string {
-  return CONTENT_TYPE_LABEL[contentType] ?? contentType;
+  if (contentType === "JOURNAL_DIARY") return t("related-content.content-type.diary");
+  if (contentType === "JOURNAL_DREAM") return t("related-content.content-type.dream");
+  return contentType;
 }
 
 /**
@@ -276,7 +276,7 @@ async function save() {
     const result = await attachableStore.saveRelated();
     if (result.rslt) {
       close();
-      await swalAlert(result.message ?? "저장되었습니다.");
+      await swalAlert(result.message ?? t("common.result.saved"));
       void refreshJournalDaysForRoute(journalStore, route);
     } else if (result.message) {
       void swalAlert(result.message);

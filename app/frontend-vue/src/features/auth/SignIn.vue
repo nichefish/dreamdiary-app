@@ -449,7 +449,7 @@ async function confirmDuplicateLoginAndRetry(): Promise<void> {
 
 /** 마운트 시 catalog 로드 및 쿼리 파라미터에 따라 안내 메시지를 표시한다. */
 onMounted(async () => {
-  await localeStore.loadCatalog();
+  await localeStore.ensureCatalog();
   if (passwordChangeModalEl.value) passwordChangeModal = new Modal(passwordChangeModalEl.value, { backdrop: "static", keyboard: false });
   if (route.query.dupLoginAt === "Y") {
     errorMsgLines.value = [t("auth.dup-login.logged-out")];

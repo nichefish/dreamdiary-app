@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">댓글</h5>
+          <h5 class="modal-title">{{ t('comment.modal.title') }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
 
@@ -12,7 +12,7 @@
             <span class="spinner-border text-primary" role="status"></span>
           </div>
           <div v-else-if="attachableStore.commentList.length === 0" class="d-flex-center min-h-150px text-muted">
-            댓글이 없습니다.
+            {{ t('comment.modal.empty') }}
           </div>
           <div v-else class="table-responsive-sm">
             <table class="table align-middle table-row-dashed fs-small gy-3 table-fixed mb-3">
@@ -47,7 +47,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+          <button type="button" class="btn btn-sm btn-light" @click="close">{{ t('common.close') }}</button>
         </div>
       </div>
     </div>
@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { ref, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
@@ -63,6 +64,7 @@ import {
   resolveProfileImageUrl,
 } from "@/shared/utils/profileImage";
 
+const { t } = useLocaleStore();
 const attachableStore = useAttachableModalStore();
 
 const modalEl = ref<HTMLElement | null>(null);

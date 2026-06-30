@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">{{ isModify ? '저널 결산 리뷰 수정' : '저널 결산 리뷰 등록' }}</h5>
+          <h5 class="modal-title">{{ isModify ? t('journal.annual.review.regist.modal.title.edit') : t('journal.annual.review.regist.modal.title.register') }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -33,7 +33,7 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">내용</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.content') }}</span>
                 </label>
                 <RichEditor v-model="model.content" />
               </div>
@@ -44,7 +44,7 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">태그</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.tag') }}</span>
                 </label>
                 <TagifyEditor v-model="tagListStrWithCtgr" />
               </div>
@@ -64,14 +64,14 @@
               @click="submit"
             >
               <span v-if="store.reviewSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t('common.save') }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-warning' : 'btn-light'"
               @click="requestSafeClose"
-            >{{ closeArmed ? '한 번 더 클릭해 닫기' : '닫기' }}</button>
+            >{{ closeArmed ? t('common.modal.close-armed.btn') : t('common.close') }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -90,8 +90,10 @@ import RichEditor from "@/shared/ui/editor/RichEditor.vue";
 import TagifyEditor from "@/shared/ui/tag/TagifyEditor.vue";
 import { Modal } from "bootstrap";
 import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalAnnualStore();
+const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
@@ -138,7 +140,7 @@ function close() {
 
 async function submit() {
   if (!model.value?.journalAnnualId) return;
-  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify.value ? t("journal.annual.confirm.edit") : t("journal.annual.confirm.register"));
   if (!confirmed) return;
   await store.submitReviewRegist();
 }

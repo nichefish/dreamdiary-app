@@ -6,7 +6,7 @@
       </button>
     </div>
 
-    <div class="admin-tabs nav nav-tabs nav-line-tabs" role="tablist" aria-label="사이트 관리 구분">
+    <div class="admin-tabs nav nav-tabs nav-line-tabs" role="tablist" :aria-label="t('admin.page.aria-label')">
       <button
         type="button"
         class="nav-link"
@@ -15,7 +15,7 @@
         :aria-selected="activeTab === 'general'"
         @click="selectTab('general')"
       >
-        일반 관리
+        {{ t('admin.page.tab.general') }}
       </button>
       <button
         type="button"
@@ -25,17 +25,17 @@
         :aria-selected="activeTab === 'ai'"
         @click="selectTab('ai')"
       >
-        AI 관리
+        {{ t('admin.page.tab.ai') }}
       </button>
     </div>
 
     <div v-if="store.backfillWorkActive" class="admin-backfill-banner" role="status">
       <i class="bi bi-cloud-check fs-4 text-primary"></i>
       <div class="flex-grow-1">
-        <strong>서버에서 백그라운드 처리 중</strong>
+        <strong>{{ t('admin.page.background-processing') }}</strong>
         <div class="text-muted fs-8">
-          Embedding·Entity 작업은 이 페이지를 떠나거나 다른 메뉴로 이동해도 서버에서 계속 진행됩니다.
-          진행 상황은 이 화면으로 돌아와 Refresh 하거나 아래 수치 갱신을 확인하세요.
+          {{ t('admin.page.background-note') }}
+          {{ t('admin.page.background-refresh') }}
         </div>
       </div>
     </div>
@@ -43,21 +43,21 @@
     <div class="admin-layout" :class="{ 'admin-layout-ai': activeTab === 'ai' }">
       <section v-if="activeTab === 'general'" class="card post">
         <div class="card-body">
-          <h3 class="admin-section-title">운영 도구</h3>
+          <h3 class="admin-section-title">{{ t('admin.page.section.tools') }}</h3>
 
           <div class="admin-tool-row">
             <div>
-              <div class="fw-bold">캐시</div>
-              <div class="text-muted fs-8">현재 활성 캐시를 확인하거나 초기화합니다.</div>
+              <div class="fw-bold">{{ t('admin.page.cache.title') }}</div>
+              <div class="text-muted fs-8">{{ t('admin.page.cache.desc') }}</div>
             </div>
             <div class="admin-tool-actions">
               <button type="button" class="btn btn-sm btn-primary" @click="openCacheList">
                 <i class="bi bi-list-ul"></i>
-                활성 목록
+                {{ t('admin.page.cache.list') }}
               </button>
               <button type="button" class="btn btn-sm btn-light-danger" @click="clearAllCaches">
                 <i class="bi bi-trash"></i>
-                전체 삭제
+                {{ t('admin.page.cache.delete-all') }}
               </button>
             </div>
           </div>
@@ -66,14 +66,14 @@
 
           <div class="admin-tool-row">
             <div>
-              <label for="holydayYy" class="fw-bold">공휴일 동기화</label>
-              <div class="text-muted fs-8">선택 연도의 휴일 정보를 다시 가져옵니다.</div>
+              <label for="holydayYy" class="fw-bold">{{ t('admin.page.holyday.title') }}</label>
+              <div class="text-muted fs-8">{{ t('admin.page.holyday.desc') }}</div>
             </div>
             <div class="admin-inline-form">
               <select id="holydayYy" v-model="holydayYy" class="form-select form-select-solid">
                 <option v-for="yy in store.yearOptions" :key="yy" :value="String(yy)">{{ yy }}</option>
               </select>
-              <button type="button" class="btn btn-sm btn-primary" @click="syncHolyday">실행</button>
+              <button type="button" class="btn btn-sm btn-primary" @click="syncHolyday">{{ t('admin.page.run') }}</button>
             </div>
           </div>
 
@@ -81,8 +81,8 @@
 
           <div class="admin-tool-row">
             <div>
-              <label for="notionDataType" class="fw-bold">Notion 요청</label>
-              <div class="text-muted fs-8">Notion API 연결을 확인합니다.</div>
+              <label for="notionDataType" class="fw-bold">{{ t('admin.page.notion.title') }}</label>
+              <div class="text-muted fs-8">{{ t('admin.page.notion.desc') }}</div>
             </div>
             <div class="admin-notion-form">
               <select id="notionDataType" v-model="notionDataType" class="form-select form-select-solid">
@@ -92,7 +92,7 @@
                 <option value="DATABASE">DATABASE</option>
               </select>
               <input v-model.trim="notionDataId" type="text" class="form-control form-control-solid" maxlength="64" />
-              <button type="button" class="btn btn-sm btn-primary" @click="runNotion">실행</button>
+              <button type="button" class="btn btn-sm btn-primary" @click="runNotion">{{ t('admin.page.run') }}</button>
             </div>
           </div>
         </div>
@@ -103,8 +103,8 @@
           <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
             <div>
               <h3 class="admin-section-title mb-1">AI Embedding Backfill</h3>
-              <div class="text-muted fs-8">Total은 활성 저널 entry 수입니다. Embedded는 그중 벡터화 완료 entry 수입니다.</div>
-              <div class="text-muted fs-8 mt-1">Sync Entries 후 벡터 생성은 서버 워커가 백그라운드에서 처리합니다.</div>
+              <div class="text-muted fs-8">{{ t('admin.page.embedding.total-desc') }}</div>
+              <div class="text-muted fs-8 mt-1">{{ t('admin.page.embedding.sync-desc') }}</div>
             </div>
             <div class="admin-tool-actions">
               <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.embeddingStatsLoading" @click="store.fetchEmbeddingStats">
@@ -229,8 +229,8 @@
           <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
             <div>
               <h3 class="admin-section-title mb-1">Entity Queue Backfill</h3>
-              <div class="text-muted fs-8">Total은 활성 저널 entry 수입니다. Synced는 entity catalog 동기화가 끝난 entry 수입니다.</div>
-              <div class="text-muted fs-8 mt-1">Sync Entries 후 entity 추출은 서버 워커가 백그라운드에서 처리합니다.</div>
+              <div class="text-muted fs-8">{{ t('admin.page.entity.total-desc') }}</div>
+              <div class="text-muted fs-8 mt-1">{{ t('admin.page.entity.sync-desc') }}</div>
             </div>
             <div class="admin-tool-actions">
               <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.entityQueueStatsLoading" @click="store.fetchEntityQueueStats">
@@ -291,20 +291,20 @@
 
       <section v-if="activeTab === 'general'" class="card post admin-role-card">
         <div class="card-body">
-          <h3 class="admin-section-title">권한 정보</h3>
+          <h3 class="admin-section-title">{{ t('admin.page.section.roles') }}</h3>
           <div class="table-responsive">
             <table class="table align-middle table-row-dashed fs-small gy-4 mb-0">
               <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                  <th>권한 코드</th>
-                  <th>권한명</th>
-                  <th class="text-center">정렬</th>
-                  <th class="text-center">사용</th>
+                  <th>{{ t('admin.page.roles.col.code') }}</th>
+                  <th>{{ t('admin.page.roles.col.name') }}</th>
+                  <th class="text-center">{{ t('admin.page.roles.col.sort') }}</th>
+                  <th class="text-center">{{ t('admin.page.roles.col.use') }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-if="!store.roles.length">
-                  <td colspan="4" class="text-center text-muted py-8">권한 정보가 없습니다.</td>
+                  <td colspan="4" class="text-center text-muted py-8">{{ t('admin.page.roles.empty') }}</td>
                 </tr>
                 <tr v-for="role in store.roles" :key="role.id">
                   <td class="fw-bold text-muted">{{ role.roleKey }}</td>
@@ -332,15 +332,15 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">사이트 캐시 목록</h5>
+            <h5 class="modal-title">{{ t('admin.page.cache.modal.title') }}</h5>
             <button type="button" class="btn-close" @click="closeCacheList"></button>
           </div>
           <div class="modal-body">
             <div v-if="store.cacheLoading" class="text-center text-muted py-8">
               <span class="spinner-border spinner-border-sm me-2"></span>
-              불러오는 중
+              {{ t('common.loading') }}
             </div>
-            <div v-else-if="!cacheNames.length" class="text-center text-muted py-8">활성 캐시가 없습니다.</div>
+            <div v-else-if="!cacheNames.length" class="text-center text-muted py-8">{{ t('admin.page.cache.empty') }}</div>
             <template v-else>
               <div v-for="(cacheName, index) in cacheNames" :key="cacheName">
                 <div class="admin-cache-block">
@@ -348,7 +348,7 @@
                     <strong>"{{ cacheName }}"</strong>
                     <button type="button" class="btn btn-sm btn-light-danger" @click="clearCache(cacheName)">
                       <i class="bi bi-trash"></i>
-                      전체 삭제
+                      {{ t('admin.page.cache.delete-all') }}
                     </button>
                   </div>
                   <div class="admin-cache-entry-list">
@@ -369,7 +369,7 @@
             </template>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-light" @click="closeCacheList">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="closeCacheList">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -379,15 +379,15 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">사이트 캐시 상세</h5>
+            <h5 class="modal-title">{{ t('admin.page.cache.detail.modal.title') }}</h5>
             <button type="button" class="btn-close" @click="closeCacheDetail"></button>
           </div>
           <div class="modal-body">
             <pre class="admin-cache-detail">{{ cacheDetailText }}</pre>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-light-primary" @click="backToCacheList">목록</button>
-            <button type="button" class="btn btn-sm btn-light" @click="closeCacheDetail">닫기</button>
+            <button type="button" class="btn btn-sm btn-light-primary" @click="backToCacheList">{{ t('admin.page.cache.detail.list') }}</button>
+            <button type="button" class="btn btn-sm btn-light" @click="closeCacheDetail">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -396,6 +396,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -405,6 +406,7 @@ import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import type { RoleRow } from "@/features/admin/types/adminPage.types";
 
 const store = useAdminPageStore();
+const { t } = useLocaleStore();
 type AdminTab = "general" | "ai";
 const route = useRoute();
 const router = useRouter();
@@ -416,7 +418,7 @@ const cacheDetailModalEl = ref<HTMLElement | null>(null);
 let cacheListModal: Modal | null = null;
 let cacheDetailModal: Modal | null = null;
 let statsTimer: number | undefined;
-const BACKGROUND_SYNC_NOTE = "큐 등록 후 처리는 서버에서 백그라운드로 계속됩니다. 이 페이지를 떠나도 됩니다.";
+const BACKGROUND_SYNC_NOTE = t("admin.page.background.queue-note");
 
 const activeTab = computed<AdminTab>(() => (route.query.tab === "ai" ? "ai" : "general"));
 const reloadDisabled = computed(() =>
@@ -556,7 +558,7 @@ function stringify(value: unknown): string {
 }
 
 function stringifyPretty(value: unknown): string {
-  if (value === null || value === undefined) return "캐시 상세가 없습니다.";
+  if (value === null || value === undefined) return t("admin.page.cache.detail.empty");
   if (typeof value === "string") return value;
   try {
     return JSON.stringify(value, null, 2);
@@ -590,7 +592,7 @@ async function syncHolyday() {
   try {
     void swalAlert(await store.syncHolyday(holydayYy.value));
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "휴일 정보를 동기화하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("admin.page.holyday.sync.failure"));
   }
 }
 
@@ -599,7 +601,7 @@ async function runNotion() {
     const res = await store.fetchNotion(notionDataType.value, notionDataId.value);
     void swalAlert(JSON.stringify(res.rsltObj ?? res.rsltList ?? res, null, 2));
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "Notion 요청에 실패했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("admin.page.notion.failure"));
   }
 }
 
@@ -630,29 +632,29 @@ function backToCacheList() {
 }
 
 async function clearCache(cacheName: string) {
-  if (!await swalConfirm(`${cacheName} 캐시를 전체 삭제할까요?`)) return;
+  if (!await swalConfirm(t("admin.page.cache.delete.confirm").replace("{cacheName}", cacheName))) return;
   try {
     await store.clearCacheByName(cacheName);
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "캐시를 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("admin.page.cache.delete.failure"));
   }
 }
 
 async function evictCacheEntry(cacheName: string, cacheKey: string) {
-  if (!await swalConfirm("캐시 항목을 삭제할까요?")) return;
+  if (!await swalConfirm(t("admin.page.cache.item.delete.confirm"))) return;
   try {
     await store.evictCacheEntry(cacheName, cacheKey);
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "캐시 항목을 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("admin.page.cache.item.delete.failure"));
   }
 }
 
 async function clearAllCaches() {
-  if (!await swalConfirm("전체 캐시를 삭제할까요?")) return;
+  if (!await swalConfirm(t("admin.page.cache.all.delete.confirm"))) return;
   try {
     void swalAlert(await store.clearAllCaches());
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "전체 캐시를 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("admin.page.cache.all.delete.failure"));
   }
 }
 

@@ -6,7 +6,7 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">히스토리</h5>
+          <h5 class="modal-title">{{ t('history.modal.title') }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
         <!--end::Modal Header-->
@@ -22,18 +22,18 @@
             <!--begin::헤더 (최종 수정일자 + 전체 삭제)-->
             <div class="d-flex justify-content-between align-items-center mb-5">
               <div class="fs-7 text-muted">
-                최종 수정일자:
+                {{ t('history.last-modified') }}
                 <span class="text-gray-700">{{ attachableStore.historyTriggeredAt || '-' }}</span>
               </div>
               <button
                 v-if="attachableStore.historyList.length > 0"
                 type="button"
                 class="btn btn-sm btn-light-danger"
-                title="이력을 전체 삭제합니다."
+                :title="t('history.delete-all.tooltip')"
                 @click="onClear"
               >
                 <i class="bi bi-trash3"></i>
-                전체 삭제
+                {{ t('history.delete-all') }}
               </button>
             </div>
             <!--end::헤더-->
@@ -53,20 +53,20 @@
                           <span
                             v-if="item.historyType === 'RESTORE'"
                             class="badge badge-light-warning text-warning"
-                          >복구</span>
-                          <span v-else class="badge badge-light-primary text-primary">변경</span>
+                          >{{ t('history.badge.restore') }}</span>
+                          <span v-else class="badge badge-light-primary text-primary">{{ t('history.badge.change') }}</span>
                           <span class="badge badge-light-dark text-dark"># {{ item.id }}</span>
                           <span v-if="item.fromHistoryId" class="fs-8 text-muted">
-                            복구 원본 # {{ item.fromHistoryId }}
+                            {{ t('history.from') }} {{ item.fromHistoryId }}
                           </span>
                         </div>
                         <div class="d-flex flex-wrap gap-4 fs-7">
                           <div>
-                            <span class="text-muted">작성일시:</span>
+                            <span class="text-muted">{{ t('history.created-at') }}</span>
                             <span class="fw-semibold text-dark ms-1">{{ item.createdAt || '-' }}</span>
                           </div>
                           <div>
-                            <span class="text-muted">작성자:</span>
+                            <span class="text-muted">{{ t('history.author') }}</span>
                             <span class="fw-semibold text-dark ms-1">{{ item.createdByNm || '-' }}</span>
                           </div>
                         </div>
@@ -76,7 +76,7 @@
                         <button
                           type="button"
                           class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
-                          title="복사"
+                          :title="t('history.copy.tooltip')"
                           @click="copyHistory(item)"
                         >
                           <i class="bi bi-copy fs-8"></i>
@@ -85,26 +85,26 @@
                         <button
                           type="button"
                           class="btn btn-sm btn-light-primary"
-                          title="선택한 히스토리 내용으로 복구합니다."
+                          :title="t('history.restore.tooltip')"
                           @click="onRestore(item.id)"
                         >
                           <i class="bi bi-arrow-counterclockwise"></i>
-                          복구
+                          {{ t('history.restore.btn') }}
                         </button>
                         <button
                           type="button"
                           class="btn btn-sm btn-light-danger"
-                          title="선택한 히스토리를 삭제합니다."
+                          :title="t('history.delete.tooltip')"
                           @click="onDelete(item.id)"
                         >
                           <i class="bi bi-trash"></i>
-                          삭제
+                          {{ t('history.delete.btn') }}
                         </button>
                       </div>
                     </div>
                     <!--begin::요약-->
                     <div class="journal-history-preview fs-7 text-gray-700">
-                      <div class="fw-semibold text-muted mb-2">요약</div>
+                      <div class="fw-semibold text-muted mb-2">{{ t('history.summary') }}</div>
                       {{ item.previewContent || '-' }}
                     </div>
                     <!--end::요약-->
@@ -119,12 +119,12 @@
                         :aria-controls="'attachable_history_detail_' + item.id"
                       >
                         <i class="bi bi-layout-text-window"></i>
-                        상세
+                        {{ t('history.detail') }}
                       </button>
                     </div>
                     <div :id="'attachable_history_detail_' + item.id" class="collapse mt-3">
                       <div class="border rounded bg-light px-4 py-4 fs-7 text-gray-800 journal-history-detail">
-                        <div class="fw-semibold text-muted mb-3">상세</div>
+                        <div class="fw-semibold text-muted mb-3">{{ t('history.detail') }}</div>
                         <span v-if="item.markdownContent" v-html="item.markdownContent"></span>
                         <span v-else>-</span>
                       </div>
@@ -134,7 +134,7 @@
                 </div>
               </template>
               <div v-else class="d-flex-center min-h-150px text-muted">
-                히스토리가 없습니다.
+                {{ t('history.empty') }}
               </div>
             </div>
             <!--end::이력 목록-->
@@ -145,7 +145,7 @@
         <!--begin::Modal Footer-->
         <div class="modal-footer">
           <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="close">{{ t('common.close') }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -157,12 +157,14 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { ref, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 
 /** 성공 시 상위 컴포넌트에 알린다 (목록 갱신 등 후속 처리 위임). */
+const { t } = useLocaleStore();
 const emit = defineEmits<{ success: [] }>();
 
 const attachableStore = useAttachableModalStore();
@@ -194,21 +196,21 @@ function close() {
 
 /** 이력 복원 처리. 성공 시 상위 컴포넌트에 알린다. */
 async function onRestore(historyId: number | string) {
-  if (!await swalConfirm("선택한 히스토리 내용으로 복구하시겠습니까?")) return;
+  if (!await swalConfirm(t("history.restore.confirm"))) return;
   const ok = await attachableStore.restoreHistory(historyId);
   if (ok) {
     close();
     emit("success");
   } else {
-    void swalAlert("복구에 실패했습니다.");
+    void swalAlert(t("history.restore.failure"));
   }
 }
 
 /** 이력 단건 삭제 처리. store 에서 목록을 직접 갱신하므로 모달을 닫지 않는다. */
 async function onDelete(historyId: number | string) {
-  if (!await swalConfirm("선택한 히스토리를 삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("history.delete.confirm"))) return;
   const ok = await attachableStore.deleteHistory(historyId);
-  if (!ok) void swalAlert("삭제에 실패했습니다.");
+  if (!ok) void swalAlert(t("history.delete.failure"));
 }
 
 /** HTML 마크업을 제거하고 평문으로 변환한다 (복사 시 사용). */
@@ -231,21 +233,21 @@ async function copyHistory(item: { markdownContent?: string; previewContent?: st
   const plain = htmlToPlainText(item.markdownContent ?? item.previewContent ?? "");
   try {
     await navigator.clipboard.writeText(plain);
-    void swalAlert("클립보드에 복사되었습니다.");
+    void swalAlert(t("history.copy.success"));
   } catch {
-    void swalAlert("복사에 실패했습니다.");
+    void swalAlert(t("history.copy.failure"));
   }
 }
 
 /** 이력 전체 삭제 처리. 성공 시 상위 컴포넌트에 알린다. */
 async function onClear() {
-  if (!await swalConfirm("이력을 전체 삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("history.delete-all.confirm"))) return;
   const ok = await attachableStore.clearHistory();
   if (ok) {
     close();
     emit("success");
   } else {
-    void swalAlert("전체 삭제에 실패했습니다.");
+    void swalAlert(t("history.delete-all.failure"));
   }
 }
 </script>

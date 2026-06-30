@@ -21,12 +21,12 @@
             </template>
             <template v-else>
               <span class="fs-4 fw-bolder me-1">{{ store.annualDetail.yy }}</span>
-              <span class="fs-5 me-1">년 결산</span>
+              <span class="fs-5 me-1">{{ t('journal.closing-by-year') }}</span>
             </template>
           </div>
           <div class="d-flex justify-content-start">
             <div class="d-flex-center text-gray-700 fs-6 me-5">
-              <span class="fw-bold me-2">꿈</span>
+              <span class="fw-bold me-2">{{ t('journal.annual.diary-count') }}</span>
               <template v-if="store.annualDetail.dreamComptYn === 'Y'">
                 <span class="cursor-help">
                   <i class="bi bi-moon-stars-fill fs-4 me-2 text-success"></i>
@@ -36,9 +36,9 @@
               <template v-else>
                 <span><i class="bi bi-moon-stars fs-4 me-2"></i></span>
               </template>
-              (<span class="text-info fw-bold mx-1">{{ store.annualDetail.dreamDayCnt }}</span>일
+              (<span class="text-info fw-bold mx-1">{{ store.annualDetail.dreamDayCnt }}</span>{{ t('common.unit.day') }}
               /
-              <span class="text-info fw-bold mx-1">{{ store.annualDetail.dreamCnt }}</span>건)
+              <span class="text-info fw-bold mx-1">{{ store.annualDetail.dreamCnt }}</span>{{ t('common.unit.count') }})
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@
                 @click="openReviewRegist"
               >
                 <i class="bi bi-plus fs-4 pe-0"></i>
-                리뷰 등록
+                {{ t('journal.annual.review.register') }}
               </button>
             </div>
             <!--begin::리뷰 행-->
@@ -117,7 +117,7 @@
                 <button
                   type="button"
                   class="btn btn-sm btn-icon journal-annual-action-btn"
-                  title="리뷰 수정"
+                  :title="t('journal.annual.review.edit.tooltip')"
                   @click="openReviewModify(rev.id!)"
                 >
                   <i class="bi bi-pencil fs-6"></i>
@@ -125,7 +125,7 @@
                 <button
                   type="button"
                   class="btn btn-sm btn-icon journal-annual-action-btn journal-annual-action-btn--danger"
-                  title="리뷰 삭제"
+                  :title="t('journal.annual.review.delete.tooltip')"
                   @click="deleteReview(rev.id!)"
                 >
                   <i class="bi bi-trash fs-6"></i>
@@ -152,7 +152,7 @@
               href="#"
             >
               <span class="nav-icon pe-1"><i class="bi bi-book"></i></span>
-              <span class="nav-text">일기 결산</span>
+              <span class="nav-text">{{ t('journal.annual.tab.diary') }}</span>
             </a>
           </li>
           <li class="nav-item">
@@ -163,7 +163,7 @@
               href="#"
             >
               <span class="nav-icon pe-1"><i class="bi bi-moon-stars"></i></span>
-              <span class="nav-text">꿈 결산</span>
+              <span class="nav-text">{{ t('journal.annual.tab.dream') }}</span>
             </a>
           </li>
         </ul>
@@ -245,7 +245,7 @@
           <!--begin::DIARY 목록-->
           <div v-if="store.activeSection === 'DIARY'" id="journal_annual_diary_list_div">
             <div v-if="!store.diaryEntries.length" class="text-center text-muted py-6 fs-7">
-              해당 조건의 일기가 없습니다.
+              {{ t('journal.annual.diary.empty') }}
             </div>
             <div
               v-for="entry in store.diaryEntries"
@@ -286,7 +286,7 @@
           <!--begin::DREAM 목록-->
           <div v-else id="journal_annual_imprtc_dream_list_div">
             <div v-if="!store.dreamEntries.length" class="text-center text-muted py-6 fs-7">
-              해당 조건의 꿈이 없습니다.
+              {{ t('journal.annual.dream.empty') }}
             </div>
             <div
               v-for="entry in store.dreamEntries"
@@ -332,7 +332,7 @@
 
     <!--begin::데이터 없음-->
     <div v-else-if="!store.detailLoading" class="text-center text-muted py-10 fs-6">
-      결산 데이터를 불러올 수 없습니다.
+      {{ t('journal.annual.detail.load.failure') }}
     </div>
     <!--end::데이터 없음-->
 
@@ -346,9 +346,11 @@ import { useRoute } from "vue-router";
 import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import type { AnnualSection, AnnualEntryDto, AnnualTagItem, JournalAnnualReviewDto } from "@/features/journal/stores/journalAnnual";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const route = useRoute();
 const store = useJournalAnnualStore();
+const { t } = useLocaleStore();
 const tagContextMenuStore = useTagContextMenuStore();
 
 const yy = computed(() => Number(route.params.yy));
@@ -368,14 +370,14 @@ const tagCloudRows = computed(() =>
     ? [
         {
           id: "journal_annual_day_tag_header",
-          label: "일자 태그",
+          label: t("journal.annual.tag.day"),
           tags: store.tagRows.DAY,
           hasSeparator: true,
           contentType: "JOURNAL_DAY",
         },
         {
           id: "journal_annual_diary_tag_header",
-          label: "일기 태그",
+          label: t("journal.annual.tag.diary"),
           tags: store.tagRows.DIARY,
           hasSeparator: false,
           contentType: "JOURNAL_DIARY",
@@ -384,7 +386,7 @@ const tagCloudRows = computed(() =>
     : [
         {
           id: "journal_annual_dream_tag_header",
-          label: "꿈 태그",
+          label: t("journal.annual.tag.dream"),
           tags: store.tagRows.DREAM,
           hasSeparator: false,
           contentType: "JOURNAL_DREAM",

@@ -7,7 +7,7 @@
         </button>
         <button type="button" class="btn btn-sm btn-primary" @click="store.openCreate">
           <i class="bi bi-plus-lg"></i>
-          등록
+          {{ t('common.register') }}
         </button>
       </div>
     </div>
@@ -21,7 +21,7 @@
               type="search"
               class="form-control form-control-solid"
               maxlength="200"
-              placeholder="게시판명 또는 코드 검색"
+              :placeholder="t('board.group.search.placeholder')"
               @keyup.enter="store.fetchList(0)"
             />
             <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchList(0)">
@@ -32,12 +32,12 @@
             <select
               :value="store.pageSize"
               class="form-select form-select-solid"
-              aria-label="페이지 크기"
+              :aria-label="t('common.page-size.aria-label')"
               @change="onPageSizeChange"
             >
-              <option :value="10">10개</option>
-              <option :value="25">25개</option>
-              <option :value="50">50개</option>
+              <option :value="10">{{ t('common.page-size.10') }}</option>
+              <option :value="25">{{ t('common.page-size.25') }}</option>
+              <option :value="50">{{ t('common.page-size.50') }}</option>
             </select>
             <button
               type="button"
@@ -47,7 +47,7 @@
             >
               <span v-if="store.sortSaving" class="spinner-border spinner-border-sm me-1"></span>
               <i v-else class="bi bi-save"></i>
-              순서 저장
+              {{ t('board.group.order.save') }}
             </button>
           </div>
         </div>
@@ -56,25 +56,25 @@
 
         <div v-if="store.loading" class="board-group-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
 
         <div v-else class="table-responsive">
           <table class="table align-middle table-row-dashed fs-small gy-4 mb-0">
             <thead>
               <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                <th class="text-center board-group-order-col">순서</th>
-                <th>게시판</th>
-                <th class="text-center hidden-table">카테고리 코드</th>
-                <th class="hidden-table">설명</th>
-                <th class="text-center hidden-table">게시글</th>
-                <th class="text-center">사용</th>
-                <th class="text-center board-group-manage-col">관리</th>
+                <th class="text-center board-group-order-col">{{ t('board.group.list.order') }}</th>
+                <th>{{ t('board.group.list.board-name-short') }}</th>
+                <th class="text-center hidden-table">{{ t('board.group.list.category-code') }}</th>
+                <th class="hidden-table">{{ t('board.group.list.col.description') }}</th>
+                <th class="text-center hidden-table">{{ t('board.group.list.posts') }}</th>
+                <th class="text-center">{{ t('common.use') }}</th>
+                <th class="text-center board-group-manage-col">{{ t('board.group.list.manage') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="!store.rows.length">
-                <td colspan="7" class="text-center text-muted py-8">등록된 게시판 그룹이 없습니다.</td>
+                <td colspan="7" class="text-center text-muted py-8">{{ t('board.group.empty') }}</td>
               </tr>
               <tr v-for="(row, index) in store.rows" :key="row.id">
                 <td class="text-center">
@@ -83,7 +83,7 @@
                       type="button"
                       class="btn btn-sm btn-icon btn-light"
                       :disabled="index === 0"
-                      title="위로"
+                      :title="t('common.move-up')"
                       @click="store.moveRow(index, -1)"
                     >
                       <i class="bi bi-chevron-up"></i>
@@ -92,7 +92,7 @@
                       type="button"
                       class="btn btn-sm btn-icon btn-light"
                       :disabled="index === store.rows.length - 1"
-                      title="아래로"
+                      :title="t('common.move-down')"
                       @click="store.moveRow(index, 1)"
                     >
                       <i class="bi bi-chevron-down"></i>
@@ -118,15 +118,15 @@
                     @click="toggleUse(row)"
                   >
                     <i :class="isUse(row) ? 'bi bi-check2' : 'bi bi-x-lg'"></i>
-                    {{ isUse(row) ? "사용" : "미사용" }}
+                    {{ isUse(row) ? t('status.use') : t('status.unuse') }}
                   </button>
                 </td>
                 <td class="text-center">
                   <div class="board-group-row-actions">
-                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" title="수정" @click="store.openEdit(row.id)">
+                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.edit')" @click="store.openEdit(row.id)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" title="삭제" @click="deleteBoard(row)">
+                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.delete')" @click="deleteBoard(row)">
                       <i class="bi bi-trash"></i>
                     </button>
                   </div>
@@ -138,7 +138,7 @@
       </div>
 
       <div class="card-footer board-group-footer">
-        <span class="text-muted fs-8">총 {{ formatNumber(store.totalElements) }}건</span>
+        <span class="text-muted fs-8">{{ t('board.group.pagination.total-format').replace('{0}', formatNumber(store.totalElements)) }}</span>
         <div v-if="pageNumbers.length" class="pagination mb-0">
           <button
             type="button"
@@ -176,17 +176,17 @@
           <div class="modal-content">
             <form @submit.prevent="submitForm">
               <div class="modal-header">
-                <h5 class="modal-title">{{ store.isEdit ? "게시판 그룹 수정" : "게시판 그룹 등록" }}</h5>
+                <h5 class="modal-title">{{ store.isEdit ? t('board.group.modal.title.edit') : t('board.group.modal.title.register') }}</h5>
                 <button type="button" class="btn-close" @click="store.closeModal"></button>
               </div>
               <div class="modal-body">
                 <div v-if="store.detailLoading" class="board-group-loading">
                   <span class="spinner-border spinner-border-sm me-2"></span>
-                  불러오는 중
+                  {{ t('common.loading') }}
                 </div>
                 <div v-else class="board-group-form">
                   <div class="board-group-form-row">
-                    <label for="boardKey" class="form-label required">게시판 코드</label>
+                    <label for="boardKey" class="form-label required">{{ t('board.group.form.board-code') }}</label>
                     <div>
                       <input
                         id="boardKey"
@@ -197,11 +197,11 @@
                         :readonly="store.isEdit"
                         required
                       />
-                      <div class="text-muted fs-8 mt-1">영문, 숫자, 하이픈, 언더스코어만 사용할 수 있습니다.</div>
+                      <div class="text-muted fs-8 mt-1">{{ t('board.group.form.board-code-guide-full') }}</div>
                     </div>
                   </div>
                   <div class="board-group-form-row">
-                    <label for="boardName" class="form-label required">게시판명</label>
+                    <label for="boardName" class="form-label required">{{ t('board.group.form.board-name') }}</label>
                     <input
                       id="boardName"
                       v-model.trim="store.form.boardName"
@@ -212,7 +212,7 @@
                     />
                   </div>
                   <div class="board-group-form-row">
-                    <label for="categoryGroupCode" class="form-label">카테고리 코드</label>
+                    <label for="categoryGroupCode" class="form-label">{{ t('board.group.form.category-code') }}</label>
                     <input
                       id="categoryGroupCode"
                       v-model.trim="store.form.categoryGroupCode"
@@ -222,7 +222,7 @@
                     />
                   </div>
                   <div class="board-group-form-row">
-                    <label for="description" class="form-label">설명</label>
+                    <label for="description" class="form-label">{{ t('board.group.list.col.description') }}</label>
                     <textarea
                       id="description"
                       v-model.trim="store.form.description"
@@ -232,7 +232,7 @@
                     ></textarea>
                   </div>
                   <div class="board-group-form-row">
-                    <label for="useYn" class="form-label">사용 여부</label>
+                    <label for="useYn" class="form-label">{{ t('board.group.form.use-yn') }}</label>
                     <div class="form-check form-switch form-check-custom form-check-solid">
                       <input
                         id="useYn"
@@ -241,17 +241,17 @@
                         :checked="store.form.useYn === 'Y'"
                         @change="onUseYnChange"
                       />
-                      <label class="form-check-label ms-3" for="useYn">{{ store.form.useYn === "Y" ? "사용" : "미사용" }}</label>
+                      <label class="form-check-label ms-3" for="useYn">{{ store.form.useYn === "Y" ? t('status.use') : t('status.unuse') }}</label>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-light" @click="store.closeModal">닫기</button>
+                <button type="button" class="btn btn-sm btn-light" @click="store.closeModal">{{ t('common.close') }}</button>
                 <button type="submit" class="btn btn-sm btn-primary" :disabled="store.saving || store.detailLoading">
                   <span v-if="store.saving" class="spinner-border spinner-border-sm me-1"></span>
                   <i v-else class="bi bi-check-lg"></i>
-                  저장
+                  {{ t('common.save') }}
                 </button>
               </div>
             </form>
@@ -264,11 +264,13 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted } from "vue";
 import { useBoardGroupStore, type BoardGroupRow } from "@/features/admin/stores/boardGroup";
 
 const store = useBoardGroupStore();
+const { t } = useLocaleStore();
 
 const pageNumbers = computed(() => {
   if (store.totalPages <= 1) return [];
@@ -289,15 +291,15 @@ function isUse(row: BoardGroupRow): boolean {
 
 function validateForm(): boolean {
   if (!store.form.boardKey.trim()) {
-    void swalAlert("게시판 코드를 입력해주세요.");
+    void swalAlert(t("board.group.validate.board-key.required"));
     return false;
   }
   if (!/^[A-Za-z0-9_-]+$/.test(store.form.boardKey.trim())) {
-    void swalAlert("게시판 코드는 영문, 숫자, 하이픈, 언더스코어만 사용할 수 있습니다.");
+    void swalAlert(t("board.group.validate.board-key.format"));
     return false;
   }
   if (!store.form.boardName.trim()) {
-    void swalAlert("게시판명을 입력해주세요.");
+    void swalAlert(t("board.group.validate.board-name.required"));
     return false;
   }
   return true;
@@ -322,26 +324,26 @@ async function submitForm() {
   try {
     await store.submitForm();
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("board.group.save.failure"));
   }
 }
 
 async function toggleUse(row: BoardGroupRow) {
-  const message = isUse(row) ? "게시판 그룹을 미사용 처리할까요?" : "게시판 그룹을 사용 처리할까요?";
+  const message = isUse(row) ? t("board.group.use-yn.disable.confirm") : t("board.group.use-yn.enable.confirm");
   if (!await swalConfirm(message)) return;
   try {
     void swalAlert(await store.toggleUse(row));
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "사용 여부를 변경하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("board.group.use-yn.change.failure"));
   }
 }
 
 async function deleteBoard(row: BoardGroupRow) {
-  if (!await swalConfirm(`${row.boardName} 게시판 그룹을 삭제할까요?`)) return;
+  if (!await swalConfirm(t("board.group.delete.confirm").replace("{boardName}", row.boardName))) return;
   try {
     await store.deleteBoard(row.id);
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "게시판 그룹을 삭제하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("board.group.delete.failure"));
   }
 }
 
@@ -349,7 +351,7 @@ async function saveSortOrders() {
   try {
     void swalAlert(await store.saveSortOrders());
   } catch (e) {
-    void swalAlert(e instanceof Error ? e.message : "정렬 순서를 저장하지 못했습니다.");
+    void swalAlert(e instanceof Error ? e.message : t("board.group.order.failure"));
   }
 }
 

@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">댓글 저장</h5>
+          <h5 class="modal-title">{{ t("comment.save.modal.title") }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -24,7 +24,7 @@
           </div>
           <!--end::로딩-->
           <template v-else>
-            <label class="mb-2 text-gray-700 fs-6 fw-bolder" for="comment_reg_content">내용</label>
+            <label class="mb-2 text-gray-700 fs-6 fw-bolder" for="comment_reg_content">{{ t("common.content") }}</label>
             <!--begin::본문-->
             <RichEditor v-model="attachableStore.commentContent" :height="300" />
             <!--end::본문-->
@@ -42,15 +42,15 @@
               @click="submit"
             >
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t("common.save") }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
-              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
               @click="requestSafeClose"
-            >닫기</button>
+            >{{ t("common.close") }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -70,11 +70,13 @@ import { Modal } from "bootstrap";
 import axios from "axios";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -113,11 +115,11 @@ function close() {
 /** 댓글 등록/수정 처리. 신규 시 /api/comments, 수정 시 /api/comment/{id} 로 multipart POST. */
 async function submit() {
   if (!attachableStore.commentContent.trim()) {
-    void swalAlert("내용을 입력해 주세요.");
+    void swalAlert(t("comment.content.required"));
     return;
   }
   const isModify = !!attachableStore.commentId;
-  const confirmed = await swalConfirm(isModify ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
 
   submitting.value = true;
@@ -134,10 +136,10 @@ async function submit() {
     });
     if (res.data?.rslt) {
       close();
-      await swalAlert(res.data?.message ?? (isModify ? "수정되었습니다." : "등록되었습니다."));
+      await swalAlert(res.data?.message ?? (isModify ? t("common.result.modified") : t("common.result.registered")));
       void refreshJournalDaysForRoute(journalStore, route);
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);

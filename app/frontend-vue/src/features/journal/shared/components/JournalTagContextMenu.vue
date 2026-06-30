@@ -9,11 +9,11 @@
     >
       <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--search" @click="onSearch">
         <i class="bi bi-search"></i>
-        <span>검색</span>
+        <span>{{ t("common.search") }}</span>
       </button>
       <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--configure" @click="onConfigure">
         <i class="bi bi-sliders2"></i>
-        <span>태그 설정</span>
+        <span>{{ t("journal.tag.settings") }}</span>
       </button>
     </div>
   </Teleport>
@@ -27,10 +27,12 @@ import { useTagContextMenuStore, type TagContextMenuPayload } from "@/features/j
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { assertAuthenticatedBeforePopup } from "@/shared/auth/popupAuth";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useTagContextMenuStore();
 const journalModalStore = useJournalModalStore();
 const attachableStore = useAttachableModalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -122,13 +124,13 @@ async function onConfigure(): Promise<void> {
 function getContentTypeLabel(contentType: string): string {
   switch (contentType) {
     case "JOURNAL_DAY":
-      return "일자";
+      return t("common.date");
     case "JOURNAL_DIARY":
-      return "일기";
+      return t("common.diary");
     case "JOURNAL_DREAM":
-      return "꿈";
+      return t("common.dream");
     case "JOURNAL_INTERPRETATION":
-      return "해석";
+      return t("common.interpretation");
     default:
       return contentType;
   }

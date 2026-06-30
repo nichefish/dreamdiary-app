@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
 
 // ---- 타입 정의 ----
@@ -52,6 +53,7 @@ export interface BoardPostRegistModel {
 // ---- 스토어 ----
 
 export const useBoardPostStore = defineStore("boardPost", () => {
+  const { t } = useLocaleStore();
   // ---- 목록 ----
 
   /** 현재 boardKey (contentType) */
@@ -123,7 +125,7 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       totalPages.value = pageResult?.totalPages ?? 0;
       currentPage.value = pageResult?.number ?? 0;
     } catch {
-      error.value = "게시물 목록을 불러오지 못했습니다.";
+      error.value = t("board.post.list.load.failure");
       postList.value = [];
     } finally {
       loading.value = false;
@@ -219,11 +221,11 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       });
       if (res.data?.rslt) {
         closeRegist();
-        await swalAlert(res.data?.message ?? "저장되었습니다.");
+        await swalAlert(res.data?.message ?? t("common.result.saved"));
         void fetchList(0);
         return true;
       }
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -241,15 +243,15 @@ export const useBoardPostStore = defineStore("boardPost", () => {
    * @param id - 게시물 ID
    */
   async function deletePost(id: number) {
-    const confirmed = await swalConfirm("게시물을 삭제하시겠습니까?");
+    const confirmed = await swalConfirm(t("board.post.delete.confirm"));
     if (!confirmed) return;
     try {
       const res = await axios.delete(`/api/board/posts/${id}`);
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? "삭제되었습니다.");
+        await swalAlert(res.data?.message ?? t("common.result.deleted"));
         void fetchList(0);
       } else {
-        void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+        void swalAlert(res.data?.message ?? t("board.post.delete.failure"));
       }
     } catch (e: unknown) {
       void swalRequestError(e);

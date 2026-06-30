@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">{{ isModify ? '저널 스레드 수정' : '저널 스레드 등록' }}</h5>
+          <h5 class="modal-title">{{ isModify ? t('journal.thread.modify.modal.title') : t('journal.thread.regist.modal.title') }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -32,13 +32,13 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">제목</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.title') }}</span>
                 </label>
                 <input
                   name="title"
                   v-model="model.title"
                   class="form-control form-control-solid"
-                  placeholder="제목을 입력하세요."
+                  :placeholder="t('journal.thread.title.placeholder')"
                   maxlength="100"
                   autocomplete="off"
                 />
@@ -50,7 +50,7 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">내용</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.content') }}</span>
                 </label>
                 <RichEditor v-model="model.content" />
               </div>
@@ -61,7 +61,7 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">태그</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.tag') }}</span>
                 </label>
                 <TagifyEditor v-model="tagListStrWithCtgr" />
               </div>
@@ -81,14 +81,14 @@
               @click="submit"
             >
               <span v-if="store.submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t('common.save') }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-warning' : 'btn-light'"
               @click="requestSafeClose"
-            >{{ closeArmed ? '한 번 더 클릭해 닫기' : '닫기' }}</button>
+            >{{ closeArmed ? t('common.modal.close-armed.btn') : t('common.close') }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -107,8 +107,10 @@ import RichEditor from "@/shared/ui/editor/RichEditor.vue";
 import TagifyEditor from "@/shared/ui/tag/TagifyEditor.vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalThreadStore();
+const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
@@ -154,7 +156,7 @@ function close() {
 }
 
 async function submit() {
-  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify.value ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
   await store.submitRegist();
 }

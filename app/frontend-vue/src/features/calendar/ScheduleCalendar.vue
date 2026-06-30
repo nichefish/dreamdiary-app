@@ -10,7 +10,7 @@
             @click="switchToCalendarView"
           >
             <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
-            <span class="nav-text">달력 VIEW</span>
+            <span class="nav-text">{{ t('schedule.view.calendar') }}</span>
           </button>
         </li>
         <li class="nav-item">
@@ -21,14 +21,14 @@
             @click="switchToListView"
           >
             <span class="nav-icon"><i class="bi bi-list-ul"></i></span>
-            <span class="nav-text">목록 VIEW</span>
+            <span class="nav-text">{{ t('schedule.view.list') }}</span>
           </button>
         </li>
       </ul>
 
       <div class="schedule-view-toolbar__tools d-none d-md-flex align-items-center flex-shrink-0 pe-5 mt-3 gap-2">
         <div class="d-flex align-items-center gap-2">
-          <label for="schedule_anchor_date" class="form-label mb-0 text-nowrap fs-7 fw-bold">이동일</label>
+          <label for="schedule_anchor_date" class="form-label mb-0 text-nowrap fs-7 fw-bold">{{ t('schedule.anchor-date') }}</label>
           <input
             id="schedule_anchor_date"
             v-model="anchorDateText"
@@ -42,19 +42,19 @@
             v-model="searchKeyword"
             type="search"
             class="form-control form-control-sm form-control-solid"
-            placeholder="검색어"
+            :placeholder="t('schedule.search.placeholder')"
             maxlength="200"
             style="min-width: 140px;"
             @keyup.enter="reloadActiveView"
           />
-          <button type="button" class="btn btn-sm btn-icon btn-light" title="검색" @click="reloadActiveView">
+          <button type="button" class="btn btn-sm btn-icon btn-light" :title="t('common.search')" @click="reloadActiveView">
             <i class="bi bi-search fs-7"></i>
           </button>
         </div>
         <button
           type="button"
           class="btn btn-sm btn-icon btn-light"
-          title="고급 필터"
+          :title="t('schedule.filter.advanced.tooltip')"
           data-bs-toggle="collapse"
           data-bs-target="#schedule_filter_panel"
         >
@@ -63,11 +63,11 @@
         <div class="vr mx-1 opacity-25"></div>
         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(false)">
           <i class="bi bi-plus-lg fs-4 pe-1"></i>
-          일정 등록
+          {{ t('schedule.register') }}
         </button>
         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(true)">
           <i class="bi bi-lock fs-4 pe-1"></i>
-          개인 일정
+          {{ t('schedule.private') }}
         </button>
       </div>
     </div>
@@ -88,29 +88,29 @@
       <div v-show="viewMode === 'calendar'" class="card-body position-relative">
         <div v-if="scheduleStore.loading" class="schedule-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
         <FullCalendar ref="calendarRef" :options="calendarOptions" />
       </div>
       <div v-show="viewMode === 'list'" class="card-body">
         <div v-if="scheduleStore.listLoading" class="schedule-list-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          불러오는 중
+          {{ t('common.loading') }}
         </div>
         <div v-else class="table-responsive">
           <table class="table table-row-bordered table-row-gray-300 align-middle gs-0 gy-3 schedule-list-table">
             <thead>
               <tr class="fw-bold text-muted">
-                <th class="min-w-90px">구분</th>
-                <th class="min-w-200px">제목</th>
-                <th class="min-w-100px">시작일</th>
-                <th class="min-w-100px">종료일</th>
-                <th>참여자</th>
+                <th class="min-w-90px">{{ t('schedule.list.col.category') }}</th>
+                <th class="min-w-200px">{{ t('common.title') }}</th>
+                <th class="min-w-100px">{{ t('schedule.list.col.start-date') }}</th>
+                <th class="min-w-100px">{{ t('schedule.list.col.end-date') }}</th>
+                <th>{{ t('schedule.list.col.participants') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="scheduleStore.listRows.length === 0">
-                <td colspan="5" class="text-center text-muted py-10">표시할 일정이 없습니다.</td>
+                <td colspan="5" class="text-center text-muted py-10">{{ t('schedule.list.empty') }}</td>
               </tr>
               <tr
                 v-for="row in scheduleStore.listRows"
@@ -120,7 +120,7 @@
               >
                 <td>{{ row.scheduleNm || row.scheduleCd }}</td>
                 <td>
-                  <span v-if="row.privateYn === 'Y'" class="me-1 text-muted" title="개인 일정">
+                  <span v-if="row.privateYn === 'Y'" class="me-1 text-muted" :title="t('schedule.private')">
                     <i class="bi bi-lock-fill"></i>
                   </span>
                   {{ row.title }}
@@ -134,16 +134,16 @@
         </div>
       </div>
       <div v-if="viewMode === 'list'" class="card-footer schedule-list-footer">
-        <span class="text-muted fs-8">총 {{ formatNumber(scheduleStore.listTotalElements) }}건</span>
+        <span class="text-muted fs-8">{{ t('board.group.pagination.total-format').replace('{0}', formatNumber(scheduleStore.listTotalElements)) }}</span>
         <div class="d-flex align-items-center gap-2">
           <select
             :value="scheduleStore.listPageSize"
             class="form-select form-select-solid form-select-sm schedule-list-page-size"
             @change="onListPageSizeChange"
           >
-            <option :value="10">10개</option>
-            <option :value="25">25개</option>
-            <option :value="50">50개</option>
+            <option :value="10">{{ t('common.page-size.10') }}</option>
+            <option :value="25">{{ t('common.page-size.25') }}</option>
+            <option :value="50">{{ t('common.page-size.50') }}</option>
           </select>
           <div v-if="listPageNumbers.length" class="pagination mb-0">
             <button type="button" class="page-link" :disabled="scheduleStore.listCurrentPage <= 0" @click="goListPage(0)">
@@ -176,7 +176,7 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">일정 저장</h5>
+            <h5 class="modal-title">{{ t('schedule.save.modal.title') }}</h5>
             <button type="button" class="btn-close" @click="closeRegist"></button>
           </div>
           <div class="modal-body">
@@ -185,50 +185,50 @@
 
               <div class="row g-3 mb-3">
                 <div class="col-md-4">
-                  <label class="form-label required" for="scheduleCd">구분</label>
+                  <label class="form-label required" for="scheduleCd">{{ t('schedule.list.col.category') }}</label>
                   <select id="scheduleCd" v-model="registForm.scheduleCd" class="form-select form-select-solid" required @change="onScheduleCodeChange">
-                    <option value="">선택</option>
+                    <option value="">{{ t('schedule.form.select-placeholder') }}</option>
                     <option v-for="code in filteredCodeOptions" :key="code.code" :value="code.code">
                       {{ code.codeName }}
                     </option>
                   </select>
                 </div>
                 <div class="col-md-8">
-                  <label class="form-label required" for="scheduleTitle">제목</label>
+                  <label class="form-label required" for="scheduleTitle">{{ t('common.title') }}</label>
                   <input id="scheduleTitle" v-model="registForm.title" class="form-control form-control-solid" maxlength="120" required />
                 </div>
               </div>
 
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                  <label class="form-label required" for="scheduleBgnDt">시작일</label>
+                  <label class="form-label required" for="scheduleBgnDt">{{ t('schedule.list.col.start-date') }}</label>
                   <input id="scheduleBgnDt" v-model="registForm.bgnDt" type="date" class="form-control form-control-solid" required />
                 </div>
                 <div class="col-md-6" v-if="showEndDate">
-                  <label class="form-label" for="scheduleEndDt">종료일</label>
+                  <label class="form-label" for="scheduleEndDt">{{ t('schedule.list.col.end-date') }}</label>
                   <input id="scheduleEndDt" v-model="registForm.endDt" type="date" class="form-control form-control-solid" />
                 </div>
               </div>
 
               <div class="mb-3">
-                <label class="form-label" for="scheduleContent">내용</label>
+                <label class="form-label" for="scheduleContent">{{ t('common.content') }}</label>
                 <textarea id="scheduleContent" v-model="registForm.content" class="form-control form-control-solid" rows="4" maxlength="500"></textarea>
               </div>
 
               <div class="mb-3">
                 <div class="d-flex align-items-center justify-content-between mb-2">
-                  <label class="form-label mb-0">참여자</label>
+                  <label class="form-label mb-0">{{ t('schedule.list.col.participants') }}</label>
                   <button v-if="!isPrivateRegist" type="button" class="btn btn-sm btn-icon btn-light-primary" @click="addParticipant">
                     <i class="bi bi-plus-lg"></i>
                   </button>
                 </div>
                 <div v-if="isPrivateRegist" class="text-muted fs-7">
-                  개인 일정은 본인과 참여자 화면에만 표시됩니다.
+                  {{ t('schedule.form.private-note') }}
                 </div>
                 <div v-else class="schedule-participants">
                   <div v-for="(participant, index) in registForm.prtcpntList" :key="index" class="schedule-participants__row">
                     <select v-model="participant.username" class="form-select form-select-solid">
-                      <option value="">선택</option>
+                      <option value="">{{ t('schedule.form.select-placeholder') }}</option>
                       <option v-for="user in scheduleStore.userOptions" :key="user.username" :value="user.username">
                         {{ user.userNm || user.username }}
                       </option>
@@ -244,9 +244,9 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-sm btn-primary" :disabled="submitting" @click="submitRegist">
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1"></span>
-              저장
+              {{ t('common.save') }}
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="closeRegist">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="closeRegist">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -256,37 +256,37 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">일정 정보</h5>
+            <h5 class="modal-title">{{ t('schedule.detail.modal.title') }}</h5>
             <button type="button" class="btn-close" @click="closeDetail"></button>
           </div>
           <div class="modal-body">
             <template v-if="detail">
               <div class="schedule-detail-row">
-                <span class="schedule-detail-row__label"><i class="bi bi-justify-left"></i> 제목</span>
+                <span class="schedule-detail-row__label"><i class="bi bi-justify-left"></i> {{ t('common.title') }}</span>
                 <span>{{ detailTitle }}</span>
               </div>
               <div v-if="!isDetailHolyday" class="schedule-detail-row">
-                <span class="schedule-detail-row__label"><i class="bi bi-people"></i> 참여자</span>
+                <span class="schedule-detail-row__label"><i class="bi bi-people"></i> {{ t('schedule.list.col.participants') }}</span>
                 <span>{{ detail.prtcpnt || "-" }}</span>
               </div>
               <div class="schedule-detail-row">
-                <span class="schedule-detail-row__label"><i class="bi bi-info-circle"></i> 설명</span>
+                <span class="schedule-detail-row__label"><i class="bi bi-info-circle"></i> {{ t('schedule.detail.label.description') }}</span>
                 <span class="schedule-detail-row__content">{{ detail.content || "-" }}</span>
               </div>
               <div class="schedule-detail-row">
-                <span class="schedule-detail-row__label"><i class="bi bi-calendar3"></i> 일정</span>
+                <span class="schedule-detail-row__label"><i class="bi bi-calendar3"></i> {{ t('schedule.detail.label.schedule') }}</span>
                 <span>{{ detail.bgnDt }}<template v-if="detail.endDt"> - {{ detail.endDt }}</template></span>
               </div>
             </template>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-sm btn-light-primary" :disabled="!detail || isDetailHolyday" @click="modifyDetail">
-              수정
+              {{ t('common.mdf') }}
             </button>
             <button type="button" class="btn btn-sm btn-light-danger" :disabled="!detail || isDetailHolyday" @click="deleteDetail">
-              삭제
+              {{ t('common.del') }}
             </button>
-            <button type="button" class="btn btn-sm btn-light" @click="closeDetail">닫기</button>
+            <button type="button" class="btn btn-sm btn-light" @click="closeDetail">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -295,6 +295,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, reactive, ref } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
@@ -318,6 +319,7 @@ import {
 } from "@/features/calendar/stores/schedule";
 
 const scheduleStore = useScheduleStore();
+const { t } = useLocaleStore();
 
 const calendarRef = ref<any>(null);
 const registModalEl = ref<HTMLElement | null>(null);
@@ -345,14 +347,14 @@ const registForm = reactive<ScheduleForm>({
   prtcpntList: [],
 });
 
-const filterItems: Array<{ key: keyof ScheduleFilter; label: string }> = [
-  { key: "myPaprChk", label: "내 일정만" },
-  { key: "vcatnChk", label: "휴가" },
-  { key: "indtChk", label: "입사" },
-  { key: "outdtChk", label: "퇴사" },
-  { key: "tlcmmtChk", label: "재택근무" },
-  { key: "prvtChk", label: "개인 일정" },
-];
+const filterItems = computed<Array<{ key: keyof ScheduleFilter; label: string }>>(() => [
+  { key: "myPaprChk", label: t("schedule.filter.my-only") },
+  { key: "vcatnChk", label: t("schedule.filter.vacation") },
+  { key: "indtChk", label: t("schedule.filter.join-date") },
+  { key: "outdtChk", label: t("schedule.filter.retire-date") },
+  { key: "tlcmmtChk", label: t("schedule.filter.remote") },
+  { key: "prvtChk", label: t("schedule.private") },
+]);
 
 const filteredCodeOptions = computed(() => {
   const excluded = ["HOLYDAY", "CEREMONY", "TLCMMT"];
@@ -433,7 +435,7 @@ async function switchToListView() {
   try {
     await scheduleStore.fetchList(queryRange.value, searchKeyword.value, 0);
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "일정 목록을 불러오지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("schedule.list.load.failure"));
   }
 }
 
@@ -441,7 +443,7 @@ async function goListPage(page: number) {
   try {
     await scheduleStore.fetchList(queryRange.value, searchKeyword.value, page);
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "일정 목록을 불러오지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("schedule.list.load.failure"));
   }
 }
 
@@ -451,7 +453,7 @@ async function onListPageSizeChange(event: Event) {
   try {
     await scheduleStore.fetchList(queryRange.value, searchKeyword.value, 0);
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "일정 목록을 불러오지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("schedule.list.load.failure"));
   }
 }
 
@@ -485,7 +487,7 @@ async function openListRow(row: ScheduleListRow) {
     detail.value = await scheduleStore.fetchDetail(row.id);
     detailModal?.show();
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "일정 정보를 조회하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("schedule.detail.load.failure"));
   }
 }
 
@@ -497,7 +499,7 @@ async function onEventClick(arg: EventClickArg) {
     detail.value = await scheduleStore.fetchDetail(arg.event.id);
     detailModal?.show();
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "일정 정보를 조회하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("schedule.detail.load.failure"));
   }
 }
 
@@ -543,10 +545,10 @@ function onScheduleCodeChange() {
 
 async function submitRegist() {
   if (!registForm.scheduleCd || !registForm.title || !registForm.bgnDt) {
-    void swalAlert("필수 값을 입력해 주세요.");
+    void swalAlert(t("schedule.validate.required"));
     return;
   }
-  if (!await swalConfirm(registForm.id ? "일정을 수정하시겠습니까?" : "일정을 등록하시겠습니까?")) return;
+  if (!await swalConfirm(registForm.id ? t("schedule.confirm.edit") : t("schedule.confirm.register"))) return;
 
   submitting.value = true;
   try {
@@ -559,7 +561,7 @@ async function submitRegist() {
     await swalAlert(message);
     await reloadActiveView();
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "일정을 저장하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("schedule.save.failure"));
   } finally {
     submitting.value = false;
   }
@@ -575,14 +577,14 @@ async function modifyDetail() {
 
 async function deleteDetail() {
   if (!detail.value?.id) return;
-  if (!await swalConfirm("일정을 삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("schedule.delete.confirm"))) return;
   try {
     const message = await scheduleStore.deleteSchedule(detail.value.id);
     closeDetail();
     await swalAlert(message);
     await reloadActiveView();
   } catch (error) {
-    void swalAlert(error instanceof Error ? error.message : "일정을 삭제하지 못했습니다.");
+    void swalAlert(error instanceof Error ? error.message : t("schedule.delete.failure"));
   }
 }
 

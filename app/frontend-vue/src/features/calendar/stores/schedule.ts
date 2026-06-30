@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export interface ScheduleCodeOption {
   code: string;
@@ -146,6 +147,7 @@ function writeFilter(filter: ScheduleFilter) {
 }
 
 export const useScheduleStore = defineStore("schedule", () => {
+  const { t } = useLocaleStore();
   const bootstrap = ref<ScheduleBootstrap>({});
   const events = ref<ScheduleCalendarEvent[]>([]);
   const listRows = ref<ScheduleListRow[]>([]);
@@ -207,7 +209,7 @@ export const useScheduleStore = defineStore("schedule", () => {
           size: listPageSize.value,
         },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "일정 목록을 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.list.load.failure"));
       const pageResult = res.data?.rsltObj ?? {};
       listRows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
       listTotalElements.value = Number(pageResult.totalElements ?? 0);
@@ -236,7 +238,7 @@ export const useScheduleStore = defineStore("schedule", () => {
 
   async function fetchDetail(id: string | number): Promise<ScheduleDetail> {
     const res = await axios.get("/api/schedule/cal-dtl", { params: { id } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "일정 정보를 조회하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.detail.load.failure"));
     return res.data.rsltObj;
   }
 
@@ -261,8 +263,8 @@ export const useScheduleStore = defineStore("schedule", () => {
     const res = await axios.post("/api/schedule/cal-reg", fd, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "일정을 저장하지 못했습니다.");
-    return res.data?.message ?? "일정이 저장되었습니다.";
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.save.failure"));
+    return res.data?.message ?? t("schedule.save.success");
   }
 
   /**
@@ -274,8 +276,8 @@ export const useScheduleStore = defineStore("schedule", () => {
     const fd = new FormData();
     fd.append("id", String(id));
     const res = await axios.post("/api/schedule/cal-del", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "일정을 삭제하지 못했습니다.");
-    return res.data?.message ?? "일정이 삭제되었습니다.";
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.delete.failure"));
+    return res.data?.message ?? t("schedule.delete.success");
   }
 
   return {

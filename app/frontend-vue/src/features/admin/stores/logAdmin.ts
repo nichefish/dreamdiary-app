@@ -2,6 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export interface LogListRow {
   id: number;
@@ -50,6 +51,7 @@ export interface LogStatsUserRow {
 }
 
 export const useLogAdminStore = defineStore("logAdmin", () => {
+  const { t } = useLocaleStore();
   const rows = ref<LogListRow[]>([]);
   const totalElements = ref(0);
   const totalPages = ref(0);
@@ -107,7 +109,7 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
       if (exceptionOnly.value) params.hasException = true;
 
       const res = await axios.get("/api/logs", { params });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "로그 목록을 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.log.list.load.failure"));
 
       const pageResult = res.data?.rsltObj ?? {};
       rows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
@@ -119,7 +121,7 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
         selectedTraceId.value = rows.value[0]?.traceId ?? "";
       }
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "로그 목록을 불러오지 못했습니다.";
+      error.value = e instanceof Error ? e.message : t("admin.log.list.load.failure");
       rows.value = [];
       totalElements.value = 0;
       totalPages.value = 0;
@@ -160,7 +162,7 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
     detailLoading.value = true;
     try {
       const res = await axios.get(`/api/logs/${id}`);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "로그 상세를 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.log.detail.load.failure"));
       detail.value = res.data?.rsltObj ?? null;
     } finally {
       detailLoading.value = false;

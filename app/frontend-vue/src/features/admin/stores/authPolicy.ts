@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export interface AuthPolicy {
   id: number | null;
@@ -29,6 +30,7 @@ const EMPTY_POLICY: AuthPolicy = {
 };
 
 export const useAuthPolicyStore = defineStore("authPolicy", () => {
+  const { t } = useLocaleStore();
   const policy = ref<AuthPolicy>({ ...EMPTY_POLICY });
   const loading = ref(false);
   const saving = ref(false);
@@ -55,12 +57,12 @@ export const useAuthPolicyStore = defineStore("authPolicy", () => {
         duplicateLoginAllowedYn: nextPolicy.duplicateLoginAllowedYn === "Y" ? "Y" : "N",
       };
       const res = await axios.put("/api/auth/policy", payload);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "인증 정책을 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("auth.policy.save.failure"));
       policy.value = {
         ...EMPTY_POLICY,
         ...(res.data?.rsltObj ?? payload),
       };
-      return res.data?.message ?? "저장되었습니다.";
+      return res.data?.message ?? t("common.result.saved");
     } finally {
       saving.value = false;
     }

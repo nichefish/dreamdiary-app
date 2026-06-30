@@ -72,6 +72,8 @@
 - `JOURNAL_DREAM` 엔트리 저장: 꿈 태그가 변경될 수 있으므로 `fetchTagCloud({ sections: ["dream"] })` 만 호출한다.
 - `JOURNAL_NOTE` 엔트리 저장과 저널 챕터 저장은 태그클라우드 직접 변경이 아니므로 태그클라우드를 재조회하지 않는다.
 
+로딩 상태·일자/일기/꿈 태그 행 레이블·태그 메뉴 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
+
 **현재 Vue 동등**: ✓ 구현 완료 (`JournalTagCloudHeader.vue`)
 
 ---
@@ -326,16 +328,17 @@ interface TodoRow {
 - flex 행 (`justify-content-between`): 좌측 `nav-tabs` (router-link 4개) + 우측 등록 버튼 (`d-none d-md-flex pe-5 mt-5`)
 - 탭 라벨: `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW`
 - 등록 버튼: `btn btn-sm btn-light-primary btn-outlined`, 아이콘 `bi-calendar-plus`, 라벨 「저널 일자 등록」
+- 탭·검색 placeholder/tooltip·등록 버튼 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **동작**:
 | 액션 | Vue |
 |------|-----|
 | 저널 일자 등록 클릭 | `useJournalModalStore().openDayRegist()` → `JournalDayRegistModal` (`JournalLayout` 마운트) |
 | 탭 전환 | `router-link` — `journal-weekly` / `journal-monthly` / `journal-calendar` / `journal-meta` |
-| 일기 키워드 검색 | `v-model="store.diaryKeyword"`, Enter/버튼 클릭 → `store.fetchDays()` |
-| 꿈 키워드 검색 | `v-model="store.dreamKeyword"`, Enter/버튼 클릭 → `store.fetchDays()` |
+| 일기 키워드 검색 | `v-model="localDiaryKw"`, Enter/버튼 클릭 → 일기 전체검색 새 탭 오픈 |
+| 꿈 키워드 검색 | `v-model="localDreamKw"`, Enter/버튼 클릭 → 꿈 전체검색 새 탭 오픈 |
 
-**추가 구현 (2026-05-19)**: 우측 영역에 일기·꿈 키워드 검색 input + 돋보기 버튼 추가 — `store.diaryKeyword` / `store.dreamKeyword` 바인딩. `JournalAside`의 키워드 필터와 동일 store 값을 공유하므로 양쪽 동기화.
+**추가 구현 (2026-05-19, 현재 계약)**: 우측 영역에 일기·꿈 키워드 검색 input + 돋보기 버튼 추가. 툴바는 `localDiaryKw` / `localDreamKw` 로컬 ref를 사용해 새 탭 전체검색을 실행하며, `JournalAside`의 `store.diaryKeyword` / `store.dreamKeyword` 현재 목록 필터와 상태를 공유하지 않는다.
 
 **행동 spec 교차 참조**: `docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.4 (상단 등록 버튼)
 
@@ -401,9 +404,21 @@ interface TodoRow {
 
 **본문 문단 저장 기준**: `RichEditor`가 전송한 TinyMCE HTML은 서버 저장 정규화(`MarkdownUtils.normalize`)를 거친다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉜 본문은 저장 시 별도 `<p>` 문단으로 분리해 레거시처럼 문단 단위 여백을 유지한다.
 
-**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림을 표시한다. 월간/주간 기본 목록은 성공 알림 OK 이후 현재 route 기준 목록을 갱신하되 강제 스크롤하지 않고, 기존 목록 DOM 유지로 브라우저 스크롤 위치 보존에 맡긴다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDtlModal` 데이터를 다시 조회하고, 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 `prepare-success` 이벤트에서 결과 DOM을 준비하고, OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다. 태그클라우드는 엔트리 타입별로 필요한 섹션만 갱신한다: `JOURNAL_DIARY`는 `fetchTagCloud({ sections: ["diary"] })`, `JOURNAL_DREAM`은 `fetchTagCloud({ sections: ["dream"] })`, `JOURNAL_NOTE`는 태그클라우드를 갱신하지 않는다.
+**저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림을 표시한다. 월간/주간 기본 목록은 성공 알림 OK 이후 현재 route 기준 목록을 갱신하되 강제 스크롤하지 않고, 기존 목록 DOM 유지로 브라우저 스크롤 위치 보존에 맡긴다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDetailModal` 데이터를 다시 조회하고, 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 `prepare-success` 이벤트에서 결과 DOM을 준비하고, OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다. 태그클라우드는 엔트리 타입별로 필요한 섹션만 갱신한다: `JOURNAL_DIARY`는 `fetchTagCloud({ sections: ["diary"] })`, `JOURNAL_DREAM`은 `fetchTagCloud({ sections: ["dream"] })`, `JOURNAL_NOTE`는 태그클라우드를 갱신하지 않는다.
 
 **챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. `JOURNAL_DREAM`→`DREAM` 챕터만, `JOURNAL_NOTE`→`NOTE` 챕터만 후보로 쓴다. **NOTE 챕터 엔트리의 `contentType`은 `JOURNAL_DIARY`**이므로, 후보 `chapterType`은 `contentType`이 아니라 `journalChapterId`가 가리키는 챕터(또는 신규 시 caller 가 넘긴 챕터)의 `chapterType`으로 분기한다 — 노트끼리·일기끼리만 이동한다. NOTE 챕터 신규 등록(`JournalChapterItem.openEntryNew`)도 `JOURNAL_DIARY`를 전송한다. 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다(이때 `console.warn`).
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
+### 22-5. `JournalTodoRegistModal` 등록/수정 폼
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/todo/modals/JournalTodoRegistModal.vue`
+
+**데이터·동작**: `useJournalModalStore.todoRegistModel`의 대상 년월·카테고리·제목·순서·본문·태그를 편집한다. 신규는 `POST /api/journal/todos`, 수정은 `POST /api/journal/todo/{id}`로 multipart form data를 전송한다. 성공 시 모달을 닫고 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route 기준 저널 목록을 갱신한다.
+
+**i18n**: 모달 제목·대상 년월·필드·placeholder·안내·저장·닫기·제목 필수 검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -419,7 +434,7 @@ interface TodoRow {
 
 **데이터**: `JournalDayDto` (`features/journal/stores/journal.ts`) — `journalChapterList`, `journalDreamSectionList`, `tag`, `meta` 등
 
-**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 가 DREAM 챕터 꿈을 `journalDreamSectionList`(`JournalDreamSectionDto`: `sectionKey`, `title`, `dreamerName`, `entries`) 로 내려준다. 내 꿈=`own`/「꿈」, 지정 꿈꾼=`dreamer:{이름}`/「{이름} 꿈」(동일 철자=한 섹션). 분류·묶음 SSOT는 `JournalDreamSectionHelper`·`JournalDreamerFieldHelper` 이다. Vue는 `journalDreamSectionList` 를 `JournalDreamVirtualSection.vue` 로만 렌더(프론트 재묶음 없음). 지정 꿈꾼 섹션에는 저널 꿈 등록 버튼 없음(내 꿈 `own` 만). 엔트리 본문에 꿈꾼 이름 배지 없음(섹션 헤더로 구분). `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력.
+**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 가 DREAM 챕터 꿈을 `journalDreamSectionList`(`JournalDreamSectionDto`: `sectionKey`, `title`, `dreamerName`, `entries`) 로 내려준다. 내 꿈=`own`/「꿈」, 지정 꿈꾼=`dreamer:{이름}`/「{이름} 꿈」(동일 철자=한 섹션). 분류·묶음 SSOT는 `JournalDreamSectionHelper`·`JournalDreamerFieldHelper` 이다. `title`은 서버가 요청 locale의 `common.dream`·`journal.dream.section.named` 메시지로 조립한다. Vue는 `journalDreamSectionList` 를 `JournalDreamVirtualSection.vue` 로만 렌더(프론트 재묶음 없음). 지정 꿈꾼 섹션에는 저널 꿈 등록 버튼 없음(내 꿈 `own` 만). 엔트리 본문에 꿈꾼 이름 배지 없음(섹션 헤더로 구분). 등록·복사·TXT 액션 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력.
 
 **모달 연동**: `useJournalModalStore` — 일자/챕터/엔트리 등록·상세·수정
 
@@ -448,6 +463,7 @@ interface TodoRow {
 **챕터 등록 모달 (`JournalChapterRegistModal.vue`)**: 제목(`title`)은 필수 항목이 아님.
 - 레거시에서 제목 없이 등록 가능 — `title` 빈 값 허용.
 - `submit()` 에서 title 공백 검증 제거.
+- 제목·필드·선택지·버튼·확인·결과 fallback 문구는 현재 locale의 클라이언트 카탈로그를 사용하고, 등록·수정·일자 이동 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
 **소유권 표시·쓰기 제한** (`isCreatedBy` — 백엔드 `BaseAuditRegDto` 직렬화):
 - `isCreatedBy === false`: 헤더에 `타인 작성` 배지, 수정·삭제·엔트리 등록·⋯ 메뉴·서버 접힘 변경 버튼 숨김 (읽기·클라이언트 접힘·복사·TXT는 유지)
@@ -459,6 +475,8 @@ interface TodoRow {
 - TXT보내기 버튼 (`fas fa-download`, `btn-outline btn-light-primary`): `exportChapter()` — `GET /api/journal/chapter/{id}/export`
 - ⋯ 컨텍스트 메뉴: 수정(`openChapterModify`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제
 - 접힘 화살표 버튼 (`toggle-chapter-btn`): `toggleChapter()` — 클라이언트만 접힘(`localCollapsedOverride`), 서버 POST 없음
+- 챕터 유형·소유권 배지·타입별 등록 버튼·액션 툴팁·메뉴·빈 상태 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
+- 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과는 현재 locale의 클라이언트 카탈로그를 사용하며, 삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
 ---
 
@@ -514,6 +532,8 @@ interface TodoRow {
 | 검색 | `journalModalStore.openTagDetail(tagId, name)` | 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds=...&tagName=...` | 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds=...&tagName=...` |
 | 태그 설정 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DAY` 조회 후 태그 프로필 모달 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DIARY` 조회 후 태그 프로필 모달 | `/api/tags/{tagId}/profile?contentType=JOURNAL_DREAM` 조회 후 태그 프로필 모달 |
 
+메뉴 액션과 태그 프로필의 콘텐츠 유형 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다.
+
 **검색 팝업 내부 동작**: 현재 route가 `journal-entry-search`이면 `검색` 액션은 새 창을 열지 않고 같은 창에서 `router.replace({ name: "journal-entry-search", query })`를 호출한다. `JournalEntrySearchPage`가 route 변경을 watch해 목록을 즉시 갱신한다.
 
 **보존 기준**:
@@ -542,6 +562,8 @@ interface TodoRow {
 | 그래프로 보기 | `journalStore.addMetaToGraph` (최대 2, 중복 시 비활성, 꽉 차면 alert) |
 | 메타 설정 | `journalModalStore.openMetaProfile` → `JournalMetaProfileModal` |
 
+메뉴 액션·그래프 표시 상태·최대 2개 제한 경고는 현재 locale의 클라이언트 카탈로그를 사용한다.
+
 **마운트 위치**: `JournalDayLayout.vue` — `<JournalMetaContextMenu />` (Teleport to body)
 
 **현재 Vue 동등**: ✓ 구현 완료
@@ -553,6 +575,8 @@ interface TodoRow {
 **Vue 구현**: `app/frontend-vue/src/features/journal/shared/modals/JournalMetaProfileModal.vue`
 
 **데이터**: `GET /api/journal/day/metas/{id}` → `journalModalStore.metaProfileModel` (이름·카테고리·단위·기록 수 등 조회·표시)
+
+**i18n**: 모달 제목·배지·필드 레이블·조회 실패 문구·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **현재 Vue 동등**: ⚠ 조회·표시만 (태그 프로필 수준의 색·메모 편집 API 없음)
 
@@ -591,6 +615,44 @@ interface TodoRow {
 
 ---
 
+### 23-5. `JournalThreadDetailModal` (저널 스레드 상세 모달)
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadDetailModal.vue`
+
+**데이터**: `useJournalThreadStore.detailModel`의 카테고리·제목·작성자·작성일·본문·태그를 읽기 전용으로 표시한다. 댓글 영역은 후속 연동 예정 안내만 표시한다.
+
+**i18n**: 모달 제목·댓글 후속 연동 안내·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
+
+**현재 Vue 동등**: ⚠ 부분 구현 — 상세 조회·표시 구현 완료, 댓글 연동은 미구현
+
+---
+
+### 23-6. `JournalThreadList` (저널 스레드 목록)
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/thread/JournalThreadList.vue`
+
+**데이터·동작**: `useJournalThreadStore.threadList`를 테이블로 표시하고, 행 클릭·등록·수정·삭제 버튼은 Vue Router 및 store 액션을 호출한다. 댓글 수 버튼은 `useAttachableModalStore.openCommentList`를 호출한다.
+
+**i18n**: 등록 버튼·테이블 헤더·빈 상태·댓글 목록·수정·삭제 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
+
+**삭제 계약**: 삭제 확인과 실패 fallback은 스레드 전용 현재 locale 메시지를 사용하고, 성공 fallback은 공통 삭제 성공 메시지를 사용한다. 삭제 API가 `message`를 반환하면 서버 메시지를 우선 표시하며, 성공 알림 확인 후 첫 페이지 목록을 다시 조회한다.
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
+### 23-7. `JournalThreadRegistModal` (저널 스레드 등록/수정 모달)
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadRegistModal.vue`
+
+**데이터·동작**: `useJournalThreadStore.registModel`의 제목·본문·태그를 편집하고, 등록/수정 확인 후 `submitRegist()`를 호출한다. 안전 닫기는 1회 클릭 시 확인 상태로 전환하고 2초 안에 다시 클릭하면 닫는다.
+
+**i18n**: 모달 제목·필드 레이블·제목 placeholder·저장·닫기·확인 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 결과는 서버 `message`를 우선 표시하고, 서버 메시지가 없을 때 현재 locale의 등록·수정·실패 fallback을 사용한다. 수정·상세 조회 실패 안내도 현재 locale을 사용한다.
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
 ### 24. `JournalLayout` (저널 공통 레이아웃·모달 호스트)
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/day/JournalDayLayout.vue`
@@ -599,7 +661,9 @@ interface TodoRow {
 
 **Aside 스크롤 동작**: `journal.scss`에서 `.journal-layout-vue__aside`에 `position: sticky`, `top: 1rem`, `max-height: calc(100vh - 2rem)`, `overflow-y: auto`를 적용한다. 본문 스크롤 중 필터 패널이 viewport 안에서 따라오며, 패널 내용이 화면보다 길면 aside 내부만 스크롤된다. 연간 결산 aside(`.journal-annual-layout-vue__aside`)도 같은 규칙을 공유한다.
 
-**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDtlModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`
+**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`
+
+`JournalDayDetailModal.vue`의 제목·날짜 정밀도 배지·빈 상태·조회 실패·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 

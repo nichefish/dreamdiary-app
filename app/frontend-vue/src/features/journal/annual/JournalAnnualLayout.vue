@@ -8,7 +8,7 @@
           <button
             type="button"
             class="btn btn-sm btn-icon btn-light-primary"
-            title="필터 패널"
+            :title="t('journal.annual.filter.panel.tooltip')"
             @click="asideVisible = true"
           >
             <i class="bi bi-layout-sidebar-inset-reverse"></i>
@@ -37,6 +37,8 @@ import JournalAnnualAside from "./components/JournalAnnualAside.vue";
 import JournalAnnualRegistModal from "./modals/JournalAnnualRegistModal.vue";
 import JournalAnnualReviewRegistModal from "./modals/JournalAnnualReviewRegistModal.vue";
 import JournalTagContextMenu from "@/features/journal/shared/components/JournalTagContextMenu.vue";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
+const { t } = useLocaleStore();
 const asideVisible = ref(true);
 </script>

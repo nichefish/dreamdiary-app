@@ -10,7 +10,7 @@
         @click="openCreate()"
       >
         <i class="bi bi-plus fs-5 pe-1"></i>
-        등록
+        {{ t("common.reg") }}
       </button>
     </div>
     <!--end::목록 헤더 툴바-->
@@ -27,15 +27,15 @@
         <table v-else class="table align-middle table-row-dashed fs-small gy-5 table-fixed hoverTable mb-3">
           <thead>
             <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-              <th class="text-center wb-keepall w-10 hidden-table">번호</th>
-              <th class="col-lg-9 col-9 text-center wb-keepall">제목</th>
-              <th class="col-lg-1 text-center wb-keepall hidden-table">첨부</th>
-              <th class="col-lg-1 text-center wb-keepall hidden-table">관리</th>
+              <th class="text-center wb-keepall w-10 hidden-table">{{ t("common.number") }}</th>
+              <th class="col-lg-9 col-9 text-center wb-keepall">{{ t("common.title") }}</th>
+              <th class="col-lg-1 text-center wb-keepall hidden-table">{{ t("common.attachment") }}</th>
+              <th class="col-lg-1 text-center wb-keepall hidden-table">{{ t("common.manage") }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="!store.threadList.length">
-              <td colspan="4" class="text-center text-muted py-6 fs-7">등록된 스레드가 없습니다.</td>
+              <td colspan="4" class="text-center text-muted py-6 fs-7">{{ t("journal.thread.empty") }}</td>
             </tr>
             <tr
               v-for="thread in store.threadList"
@@ -51,7 +51,7 @@
                   v-if="thread.comment && thread.comment.cnt"
                   type="button"
                   class="btn btn-link text-muted ms-2 fs-8 p-0 align-baseline"
-                  title="댓글 목록"
+                  :title="t('journal.thread.comments.tooltip')"
                   @click.stop="openCommentList(thread)"
                 >[{{ thread.comment.cnt }}]</button>
                 <!--begin::태그-->
@@ -75,7 +75,7 @@
                   <button
                     type="button"
                     class="btn btn-sm btn-icon btn-light-primary"
-                    title="수정"
+                    :title="t('common.edit')"
                     @click.stop="openModify(thread.id!)"
                   >
                     <i class="bi bi-pencil fs-7"></i>
@@ -83,7 +83,7 @@
                   <button
                     type="button"
                     class="btn btn-sm btn-icon btn-light-danger"
-                    title="삭제"
+                    :title="t('common.delete')"
                     @click.stop="store.deleteThread(thread.id!)"
                   >
                     <i class="bi bi-trash fs-7"></i>
@@ -123,9 +123,11 @@
   import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
   import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
   import type { JournalThreadDto } from "@/features/journal/stores/journalThread";
+  import { useLocaleStore } from "@/shared/i18n/stores/locale";
   
   const store = useJournalThreadStore();
   const attachableStore = useAttachableModalStore();
+  const { t } = useLocaleStore();
   const router = useRouter();
   
   onMounted(() => {

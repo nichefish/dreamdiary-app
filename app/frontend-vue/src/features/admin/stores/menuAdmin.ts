@@ -2,6 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
 
 export interface MenuNode {
@@ -66,14 +67,6 @@ const EMPTY_FORM: MenuForm = {
   sidebarVisibleYn: "Y",
 };
 
-const SUBMENU_EXPAND_OPTIONS: SubmenuExpandOption[] = [
-  { code: "EXTEND", codeName: "우측으로 확장" },
-  { code: "LIST", codeName: "하단에 목록 표시" },
-  { code: "NO_SUB", codeName: "하위메뉴 없음" },
-  { code: "COLLAPSE", codeName: "글접기" },
-  { code: "BOARD", codeName: "일반게시판" },
-];
-
 function yn(value: string | undefined): string {
   return String(value ?? "N").toUpperCase() === "Y" ? "Y" : "N";
 }
@@ -117,6 +110,7 @@ function getMenuTargetMode(row: MenuNode): MenuTargetMode {
 }
 
 export const useMenuAdminStore = defineStore("menuAdmin", () => {
+  const { t } = useLocaleStore();
   const rows = ref<MenuNode[]>([]);
   const loading = ref(false);
   const error = ref("");
@@ -124,7 +118,13 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
   const sortSaving = ref(false);
   const modalOpen = ref(false);
   const form = ref<MenuForm>({ ...EMPTY_FORM });
-  const submenuExpandOptions = ref<SubmenuExpandOption[]>(SUBMENU_EXPAND_OPTIONS);
+  const submenuExpandOptions = computed<SubmenuExpandOption[]>(() => [
+    { code: "EXTEND", codeName: t("enum.submenu-expand-type.extend") },
+    { code: "LIST", codeName: t("enum.submenu-expand-type.list") },
+    { code: "NO_SUB", codeName: t("enum.submenu-expand-type.no_sub") },
+    { code: "COLLAPSE", codeName: t("enum.submenu-expand-type.collapse") },
+    { code: "BOARD", codeName: t("enum.submenu-expand-type.board") },
+  ]);
 
   const isEdit = computed(() => form.value.id != null);
 
@@ -133,10 +133,10 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     error.value = "";
     try {
       const res = await axios.get("/api/menu/menu-main-list");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴 목록을 불러오지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.list.load.failure"));
       rows.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "메뉴 목록을 불러오지 못했습니다.";
+      error.value = e instanceof Error ? e.message : t("admin.menu.list.load.failure");
       rows.value = [];
     } finally {
       loading.value = false;
@@ -157,7 +157,7 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     if (!await assertAuthenticatedBeforeModal()) return;
     saving.value = false;
     const res = await axios.get(`/api/menu/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴 상세를 불러오지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.detail.load.failure"));
     form.value = cloneForm(res.data?.rsltObj ?? {});
     modalOpen.value = true;
   }
@@ -180,9 +180,9 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
       const res = await axios.post(url, toFormData(form.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴를 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.save.failure"));
       closeModal();
-      const message = res.data?.message ?? "저장되었습니다.";
+      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchTree();
       return message;
@@ -194,9 +194,9 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
   async function toggleUse(row: MenuNode) {
     const nextUseYn = yn(row.useYn) === "Y" ? "N" : "Y";
     const res = await axios.patch(`/api/menu/${row.id}`, { useYn: nextUseYn });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴 상태를 변경하지 못했습니다.");
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.status.change.failure"));
     await fetchTree();
-    return res.data?.message ?? "변경되었습니다.";
+    return res.data?.message ?? t("common.result.changed");
   }
 
   /**
@@ -206,8 +206,8 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
    */
   async function deleteMenu(id: number) {
     const res = await axios.delete(`/api/menu/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? "메뉴를 삭제하지 못했습니다.");
-    const message = res.data?.message ?? "삭제되었습니다.";
+    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.delete.failure"));
+    const message = res.data?.message ?? t("common.result.deleted");
     await swalAlert(message);
     await fetchTree();
     return message;
@@ -237,9 +237,9 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
         sortOrder: idx,
       }));
       const res = await axios.put("/api/menus/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "메인 메뉴 순서를 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.main-order.failure"));
       await fetchTree();
-      return res.data?.message ?? "정렬 순서가 저장되었습니다.";
+      return res.data?.message ?? t("common.result.sort-order-saved");
     } finally {
       sortSaving.value = false;
     }
@@ -266,9 +266,9 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
         sortOrder: idx,
       }));
       const res = await axios.put("/api/menus/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "하위 메뉴 순서를 저장하지 못했습니다.");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.submenu-order.failure"));
       await fetchTree();
-      return res.data?.message ?? "정렬 순서가 저장되었습니다.";
+      return res.data?.message ?? t("common.result.sort-order-saved");
     } finally {
       sortSaving.value = false;
     }
