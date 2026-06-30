@@ -296,7 +296,11 @@
                   </div>
                   <div class="code-admin-form-row">
                     <label for="itemCodeName" class="form-label required">코드명</label>
-                    <input id="itemCodeName" v-model.trim="store.itemForm.codeName" type="text" class="form-control form-control-solid" maxlength="20" required />
+                    <input id="itemCodeName" v-model.trim="store.itemForm.codeName" type="text" class="form-control form-control-solid" maxlength="50" required />
+                  </div>
+                  <div class="code-admin-form-row">
+                    <label for="itemCodeNameEn" class="form-label">코드명 (영문)</label>
+                    <input id="itemCodeNameEn" v-model.trim="store.itemForm.codeNameEn" type="text" class="form-control form-control-solid" maxlength="50" placeholder="English name (optional)" />
                   </div>
                   <div class="code-admin-form-row">
                     <label for="itemDescription" class="form-label">설명</label>

@@ -23,7 +23,10 @@ public class CodeItemDto
     private Integer id;
     private String groupCode;
     private String code;
+    /** 코드명 (한국어 기본) */
     private String codeName;
+    /** 코드명 (영문 번역, 선택) */
+    private String codeNameEn;
     private String description;
     @Builder.Default
     private String protectedYn = "N";

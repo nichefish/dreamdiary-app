@@ -22,6 +22,7 @@ export interface CodeItemRow {
   groupCode: string;
   code: string;
   codeName: string;
+  codeNameEn?: string;
   description?: string;
   protectedYn?: string;
   useYn: string;
@@ -41,6 +42,7 @@ export interface CodeItemForm {
   groupCode: string;
   code: string;
   codeName: string;
+  codeNameEn: string;
   description: string;
   useYn: string;
 }
@@ -58,6 +60,7 @@ const EMPTY_ITEM_FORM: CodeItemForm = {
   groupCode: "",
   code: "",
   codeName: "",
+  codeNameEn: "",
   description: "",
   useYn: "Y",
 };
@@ -82,6 +85,7 @@ function normalizeItemForm(row?: Partial<CodeItemRow>, groupCode = ""): CodeItem
     groupCode: row?.groupCode ?? groupCode,
     code: row?.code ?? "",
     codeName: row?.codeName ?? "",
+    codeNameEn: row?.codeNameEn ?? "",
     description: row?.description ?? "",
     useYn: yn(row?.useYn),
   };
@@ -103,6 +107,7 @@ function toItemFormData(form: CodeItemForm): FormData {
   fd.append("groupCode", form.groupCode.trim().toUpperCase());
   fd.append("code", form.code.trim().toUpperCase());
   fd.append("codeName", form.codeName.trim());
+  if (form.codeNameEn.trim()) fd.append("codeNameEn", form.codeNameEn.trim());
   fd.append("description", form.description.trim());
   fd.append("useYn", yn(form.useYn));
   return fd;

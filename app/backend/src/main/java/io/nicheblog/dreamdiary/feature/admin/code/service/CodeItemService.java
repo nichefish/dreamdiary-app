@@ -6,7 +6,9 @@ import io.nicheblog.dreamdiary.feature.admin.code.spec.CodeItemSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemI18nEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.model.CodeLookupItem;
+import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeItemI18nRepository;
 import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeItemRepository;
 import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import lombok.Getter;
@@ -45,6 +47,7 @@ public class CodeItemService
     private final CodeItemMapstruct mapstruct = CodeItemMapstruct.INSTANCE;
 
     private final CodeLookupService codeLookupService;
+    private final CodeItemI18nRepository codeItemI18nRepository;
 
     public CodeItemMapstruct getReadMapstruct() {
         return this.mapstruct;
@@ -121,13 +124,46 @@ public class CodeItemService
 
     @Override
     public void postRegist(final CodeItemDto updatedDto) throws Exception {
+        this.saveI18n(updatedDto);
         this.normalizeSortOrderByGroupCode(updatedDto.getGroupCode());
         this.evictCacheByGroupCode(updatedDto.getGroupCode());
     }
 
     @Override
     public void postModify(final CodeItemDto postDto, final CodeItemDto updatedDto) {
+        this.saveI18n(updatedDto);
         this.evictCache(updatedDto);
+    }
+
+    /**
+     * 상세 코드 다국어 저장.
+     * 기존 번역을 전부 삭제하고 새 값으로 교체한다.
+     */
+    private void saveI18n(final CodeItemDto dto) {
+        if (dto.getId() == null) return;
+        codeItemI18nRepository.deleteByCodeItemId(dto.getId());
+        if (StringUtils.isNotEmpty(dto.getCodeNameEn())) {
+            codeItemI18nRepository.save(
+                    CodeItemI18nEntity.builder()
+                            .codeItemId(dto.getId())
+                            .locale("en")
+                            .codeName(dto.getCodeNameEn().trim())
+                            .build()
+            );
+        }
+    }
+
+    /**
+     * 상세 코드 id 기준 영문 번역명 조회.
+     *
+     * @param id 상세 코드 ID
+     * @return 영문 번역명 (없으면 null)
+     */
+    public String getCodeNameEn(final Integer id) {
+        if (id == null) return null;
+        return codeItemI18nRepository.findByCodeItemIdAndLocale(id, "en")
+                .map(CodeItemI18nEntity::getCodeName)
+                .orElse(null);
     }
 
     @Override

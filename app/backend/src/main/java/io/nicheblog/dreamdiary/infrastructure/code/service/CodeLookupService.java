@@ -1,8 +1,10 @@
 package io.nicheblog.dreamdiary.infrastructure.code.service;
 
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemI18nEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.mapstruct.CodeLookupMapstruct;
 import io.nicheblog.dreamdiary.infrastructure.code.model.CodeLookupItem;
+import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeItemI18nRepository;
 import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,11 +14,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * CodeLookupService.
@@ -35,6 +35,7 @@ public class CodeLookupService {
     private static final String USE_YN = "Y";
 
     private final CodeItemRepository codeItemRepository;
+    private final CodeItemI18nRepository codeItemI18nRepository;
     private final CodeLookupMapstruct codeLookupMapstruct;
 
     /** groupCode -> 상세코드 목록 캐시 */
@@ -69,7 +70,7 @@ public class CodeLookupService {
     }
 
     /**
-     * groupCode + code 기준 코드명 조회 (인메모리 우선).
+     * groupCode + code 기준 코드명 조회 (인메모리 우선, 한국어 기본).
      */
     public String getCodeName(final String groupCode, final String code) {
         if (StringUtils.isEmpty(groupCode) || StringUtils.isEmpty(code)) return null;
@@ -90,7 +91,31 @@ public class CodeLookupService {
     }
 
     /**
+     * groupCode + code + locale 기준 다국어 코드명 조회.
+     * 번역이 없으면 한국어 코드명을 fallback 으로 반환한다.
+     *
+     * @param groupCode 분류 코드
+     * @param code      상세 코드
+     * @param locale    언어 코드 (예: "en", "ko")
+     * @return locale 에 맞는 코드명 (없으면 한국어 fallback)
+     */
+    public String getLocalizedCodeName(final String groupCode, final String code, final String locale) {
+        if (StringUtils.isEmpty(locale) || "ko".equals(locale)) return getCodeName(groupCode, code);
+        if (StringUtils.isEmpty(groupCode) || StringUtils.isEmpty(code)) return null;
+
+        final List<CodeLookupItem> itemList = getCdItemListByGroupCode(groupCode);
+        if (CollectionUtils.isEmpty(itemList)) return null;
+
+        for (final CodeLookupItem item : itemList) {
+            if (!code.equals(item.getCode())) continue;
+            return item.getLocalizedCodeName(locale);
+        }
+        return null;
+    }
+
+    /**
      * 전체 코드 캐시를 재구성.
+     * i18n 번역을 일괄 조회해 각 CodeLookupItem 에 설정한다.
      */
     public synchronized void reloadAll() {
         final List<CodeItemEntity> allCdList = codeItemRepository.findAllByUseYnOrderByGroupCodeAscSortOrderAsc(USE_YN);
@@ -99,9 +124,14 @@ public class CodeLookupService {
         codeNameCache.clear();
         if (CollectionUtils.isEmpty(allCdList)) return;
 
+        // i18n 일괄 조회
+        final List<Integer> allIds = allCdList.stream().map(CodeItemEntity::getId).collect(Collectors.toList());
+        final Map<Integer, Map<String, String>> i18nByItemId = loadI18nMap(allIds);
+
         final Map<String, List<CodeLookupItem>> groupedMap = new ConcurrentHashMap<>();
         for (final CodeItemEntity entity : allCdList) {
             final CodeLookupItem item = codeLookupMapstruct.toLookupItem(entity);
+            item.setI18nNames(i18nByItemId.getOrDefault(entity.getId(), Collections.emptyMap()));
             groupedMap.computeIfAbsent(item.getGroupCode(), key -> new ArrayList<>()).add(item);
             codeNameCache.put(getCodeNameCacheKey(item.getGroupCode(), item.getCode()), item.getCodeName());
         }
@@ -111,6 +141,25 @@ public class CodeLookupService {
         );
         log.info("cd cache preloaded. groupCode count: {}, codeItem count: {}",
                 codeItemListCacheByGroupCode.size(), codeNameCache.size());
+    }
+
+    /**
+     * codeItemId 목록으로 i18n 번역 맵을 일괄 조회한다.
+     *
+     * @param codeItemIds 상세 코드 ID 목록
+     * @return codeItemId → (locale → codeName) 맵
+     */
+    private Map<Integer, Map<String, String>> loadI18nMap(final List<Integer> codeItemIds) {
+        if (CollectionUtils.isEmpty(codeItemIds)) return Collections.emptyMap();
+        final List<CodeItemI18nEntity> i18nList = codeItemI18nRepository.findByCodeItemIdIn(codeItemIds);
+        if (CollectionUtils.isEmpty(i18nList)) return Collections.emptyMap();
+
+        final Map<Integer, Map<String, String>> result = new HashMap<>();
+        for (final CodeItemI18nEntity i18n : i18nList) {
+            result.computeIfAbsent(i18n.getCodeItemId(), k -> new HashMap<>())
+                  .put(i18n.getLocale(), i18n.getCodeName());
+        }
+        return result;
     }
 
     /**
@@ -140,13 +189,15 @@ public class CodeLookupService {
 
     private List<CodeLookupItem> loadCdItemList(final String groupCode) {
         final List<CodeItemEntity> entityList = codeItemRepository.findByGroupCodeAndUseYnOrderBySortOrderAsc(groupCode, USE_YN);
-        if (CollectionUtils.isEmpty(entityList)) {
-            return Collections.emptyList();
-        }
+        if (CollectionUtils.isEmpty(entityList)) return Collections.emptyList();
+
+        final List<Integer> ids = entityList.stream().map(CodeItemEntity::getId).collect(Collectors.toList());
+        final Map<Integer, Map<String, String>> i18nByItemId = loadI18nMap(ids);
 
         final List<CodeLookupItem> itemList = new ArrayList<>(entityList.size());
         for (final CodeItemEntity entity : entityList) {
             final CodeLookupItem item = codeLookupMapstruct.toLookupItem(entity);
+            item.setI18nNames(i18nByItemId.getOrDefault(entity.getId(), Collections.emptyMap()));
             itemList.add(item);
             codeNameCache.put(getCodeNameCacheKey(item.getGroupCode(), item.getCode()), item.getCodeName());
         }
