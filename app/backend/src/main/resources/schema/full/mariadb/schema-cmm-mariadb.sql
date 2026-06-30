@@ -72,6 +72,16 @@ CREATE TABLE IF NOT EXISTS code_item (
     UNIQUE KEY uk_code_item_group_code_code (group_code, code)
 ) COMMENT = '상세 코드';
 
+-- 상세 코드 다국어 (code_item_i18n)
+CREATE TABLE IF NOT EXISTS code_item_i18n (
+    code_item_id INT NOT NULL COMMENT '상세 코드 ID (FK → code_item.id)',
+    locale       VARCHAR(10) NOT NULL COMMENT '언어 코드 (en, ja 등)',
+    code_name    VARCHAR(50) NOT NULL COMMENT '번역된 코드명',
+    -- CONSTRAINT
+    PRIMARY KEY (code_item_id, locale),
+    CONSTRAINT fk_code_item_i18n FOREIGN KEY (code_item_id) REFERENCES code_item (id) ON DELETE CASCADE
+) COMMENT = '상세 코드 다국어';
+
 -- -----------------------
 
 -- 메뉴 (menu)

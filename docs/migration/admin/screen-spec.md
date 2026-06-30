@@ -96,6 +96,8 @@
 - 분류 코드(code_group) 목록/등록/수정/삭제
 - 분류 코드별 상세 코드(code_item) 목록/등록/삭제
 - 상세 코드 정렬 순서 변경
+- 상세 코드 등록/수정 시 영문 코드명(`codeNameEn`) 선택 입력 가능. 미입력 시 한국어 `codeName` 을 fallback 으로 사용한다.
+- 다국어 번역은 `code_item_i18n` 테이블(code_item_id, locale, code_name 복합PK)에 저장. 현재 `en` 언어만 지원.
 - API: `GET/POST /api/code/groups`, `GET/PATCH/DELETE /api/code/group/{id}`
 - API: `GET/POST /api/code/items`, `GET/DELETE /api/code/item`, `PUT /api/code/items/sort-orders`
 
