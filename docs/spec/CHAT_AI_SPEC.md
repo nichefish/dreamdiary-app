@@ -26,12 +26,34 @@ It must help the user continue thinking with their own journal data, but it must
 | Session management | `ChatSessionService` | Session ownership, default prompt, last-message timestamp/title |
 | Message history | `ChatMessageService` | Recent context messages |
 | LLM client | `OllamaClient` | Ollama chat and embedding API calls |
+| Ollama settings | `OllamaProperties` | `app.ollama.*` base URL and model names (`application.yml`, profile overrides) |
 | Memory search | `JournalEntryEmbeddingSearchService` | In-memory keyword + vector search over journal embeddings |
 | Entity focus summary | `JournalEntityFocusService` | Resolve entity-catalog-backed person summaries for synthesis questions |
 | Entity sync queue | `JournalEntryEntityQueueService` / `JournalEntryEntityWorker` | Queue and asynchronously refresh entity refs and mention roles after journal entry writes |
 | Entity queue admin API | `JournalEntryEntityAdminRestController` | Expose queue stats, full requeue sync, and failed-row requeue for operators |
 | RAG search result | `RagSearchResult` | Internal retrieval DTO carrying entity, match type, score, matched tokens, and snippet |
 | RAG intent | `RagIntent` | Classifies retrieval mode as `LOOKUP`, `SUMMARY`, or `SYNTHESIS` |
+
+### Ollama Configuration
+
+Chat and embedding model names are **not** hardcoded in `OllamaClient`. They bind from Spring configuration:
+
+| Property | Default | Used by |
+| --- | --- | --- |
+| `app.ollama.base-url` | `http://localhost:11434` | `OllamaClient` HTTP calls, `GET /api/admin/ollama/health` |
+| `app.ollama.chat-model` | `qwen2.5:7b` | General chat, person-meaning retry, `PERSON_SYNTHESIS_HYBRID` |
+| `app.ollama.embedding-model` | `nomic-embed-text` | RAG query embedding, journal backfill worker, quality eval |
+
+Local override example (`application-local.yml`):
+
+```yaml
+app:
+  ollama:
+    chat-model: qwen2.5:14b
+```
+
+Health check compares installed Ollama tags against the **configured** chat and embedding model names.
+
 
 ### Authentication Boundary
 
@@ -102,7 +124,7 @@ user query
   -> classify intent: LOOKUP, SUMMARY, SYNTHESIS
   -> extract direct keyword candidates for names/tags/proper nouns
   -> weighted keyword match against tags, chapter fields, embedding_text, and payload
-  -> Ollama embedding model: nomic-embed-text
+  -> Ollama embedding model: `app.ollama.embedding-model` (default `nomic-embed-text`)
   -> cosine similarity against cached journal_entry_embedding vectors
   -> retrieval_weight applied to vector results
   -> current user's records only
@@ -308,10 +330,13 @@ When a `SYNTHESIS` question is also a **first-person attitude** question (`isPer
 Detection requires all of:
 
 - a extracted person focus token (for example `원빈` from `원빈님`)
-- a first-person marker such as `나는`, `내가`, `나의`, or `내 `
+- an explicit first-person **subject** marker: `나는`, `내가`, `나의`, `나한테`, or `나에게` — **not** locative scope alone (`내 대화`, `내 기록`)
 - an attitude hint such as `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, or `어떤 느낌`
+- **not** a person-appearance query (`등장`, `나타나`, `보여`, or `내 대화/내 기록` scope without `나는/내가`)
 
-Example: `나는 원빈님을 어떻게 생각하고 있니?`
+Example (stance): `나는 원빈님을 어떻게 생각하고 있니?`
+
+**Not stance** — use person-meaning / appearance prompt instead: `내 대화에서 가영님은 어떤 느낌으로 등장하고 있니?`
 
 This path reuses person-meaning tag-only retrieval but changes prompt/scaffold/guard:
 
@@ -322,6 +347,26 @@ This path reuses person-meaning tag-only retrieval but changes prompt/scaffold/g
 - hollow guard (`isHollowPersonStanceResponse`) rejects coaching/advisory tone (`고려할 수 있습니다`, `이해하기 위해서는`), record evasion/neutralization (`명시적으로 표현되지 않`, `중립적 또는 평온`), third-person trait profiles, linked-tag-only answers when person-focus tags exist, ungrounded psych labels, heavy episode narration, and other-behavior reports; strong mirror markers (`네가`, `기록을 보면`, `기록에 남긴`, `내 태도`, etc.) are required — `당신` alone is insufficient
 - degraded retries use `PERSON_STANCE_RETRY` (full snapshot + 4-section shape); deterministic fallback uses `buildPersonStanceDeterministicFallback` and `responseMode=PERSON_STANCE_FALLBACK`
 
+### Person Synthesis Hybrid (Path C)
+
+When `shouldUseRulePrimaryPersonSynthesisResponse` is true — `SYNTHESIS` intent, resolved `personFocus`, and `isPersonMeaningQuery` — the server runs **Path C**:
+
+1. Build `PersonMeaningSnapshot` from tag-only (or focused) RAG sources (same material as rule-primary).
+2. Call Ollama **once** with `PERSON_SYNTHESIS_HYBRID` system prompt containing only the snapshot block (no full journal dump). Recent chat history is **not** injected; only the current user question is sent as context.
+3. Apply language guard and existing person hollow guards (`isDegradedPersonResponse`). On failure, **one** retry with `PERSON_MEANING_RETRY` / `PERSON_STANCE_RETRY` appendix.
+4. If the LLM answer passes guards → `responseMode=PERSON_SYNTHESIS_HYBRID`.
+5. If guards still fail or no tagged sources exist → `buildRulePrimaryPersonSynthesisResponse` and `responseMode=RULE_PRIMARY`.
+
+Attitude / appearance / meaning question types use the same four-section shapes as rule-primary fallbacks, but the LLM is asked to write natural interpretive prose grounded in the snapshot.
+
+User-facing tag lines in snapshot and fallbacks use `formatTopTagsForDisplay`. Short person tokens disambiguate via `resolveDominantPersonTagStem`. Tag-only paths retain `personFocus.entitySummary` for canonical display labels while aggregation uses tagged sources (`isTagOnlyPersonMeaningResults`).
+
+The legacy full-RAG LLM path (with hollow guard, retry, and `PERSON_*_FALLBACK` modes) remains for non-person synthesis and `LOOKUP`/`SUMMARY` questions.
+
+
+### Person-Appearance Questions
+
+When `isPersonAppearanceQuery` is true (dialogue/record scope + how someone **appears**), routing stays on **person-meaning** (`PERSON_MEANING_SCAFFOLD`), not person-stance. Intent prompt forbids quote parades, trait conclusions (`친근하다`, `자연스럽다`), and `추론하자면` generalizations. Hollow guard also rejects `isPersonMeaningQuoteParade` and expanded `isThirdPersonPersonalityProfile` even when mirror openers are present.
 Symbolic meaning questions such as `원빈은 내 기록에서 어떤 의미야?` remain on the person-meaning scaffold, not person-stance.
 
 For `SYNTHESIS`, the prompt asks the model to connect:
@@ -350,7 +395,7 @@ When tag-only retrieval returns zero rows, `ChatAIService` falls back to merged 
 
 When tag-only retrieval finds zero matches, the RAG context states that no tagged records exist and deterministic fallback tells the user to attach the person tag first. Body-only mentions are not used as a substitute.
 
-The entity catalog may still be consulted **only** to expand alias tokens (`원빈` -> canonical `#김원빈`). Catalog mention counts, role axes, and linked entry IDs must not be injected into person-meaning RAG sources or `personFocus.entitySummary`.
+The entity catalog may still be consulted **only** to expand alias tokens (`원빈` -> canonical `#김원빈`) and to populate `personFocus.entitySummary` for **canonical display labels** and chat metadata (`canonicalLabel`, `surfaceForms`). Catalog-wide role axes, content-kind counts, and linked entry IDs must not drive person-meaning **aggregation** when tag-only RAG sources exist; `buildPersonMeaningSnapshot` uses tagged-source timeline/kind data in that case (`isTagOnlyPersonMeaningResults`).
 
 When tagged sources exist, `ChatAIService` prepends a `PERSON_FOCUS` block before the general tag/timeline summary and appends `PERSON_MEANING_SCAFFOLD` so the model cannot reply with empty topic buckets such as "업무 협업" or "조직 관계" without citing tags or record snippets.
 
@@ -430,9 +475,9 @@ When a `SYNTHESIS` person-meaning question resolves `personFocus`, the server va
 1. A response is degraded when it leaks internal scaffold/meta field names (`role_axes_ko`, `repeated_tags`, machine-style section keys), or when it fails to cite tags/role axes from the current `PersonMeaningSnapshot`.
 2. Tags that do not contain the focused person token — including co-occurring scene tags on the same entry and app/meta tags such as `#dreamdiary` — are noise for **repeated-axis** ranking only. Linked context tags (for example `[엠서클]#조직역동`) **do** count as hollow-guard evidence when cited by full tag or `#` stem.
 3. When no person tag or role axis exists in the current snapshot, a response that cites sanitized evidence snippets from the snapshot still passes the guard.
-4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
+4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, `PERSON_APPEARANCE_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
 5. Degraded responses trigger **one** `PERSON_MEANING_RETRY` Ollama call with explicit tag/context citation instructions. Only if the retry is still hollow (or language-guard invalid) does the server replace the answer with `buildPersonMeaningDeterministicFallback(...)`.
-6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, or `LANGUAGE_FALLBACK`.
+6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, `PERSON_APPEARANCE_FALLBACK`, or `LANGUAGE_FALLBACK`.
 7. `PERSON_MEANING_FALLBACK` must not stop at person-tag counts alone. It also aggregates **linked context tags** from the same tagged sources (for example `[엠서클]#조직역동`, `[엠서클]#김종순`) and **chapter categories** from embedding payload (`DYNAMICS`, `INTERACTION`) to explain how the person appears in the user's intentional classification axes.
 8. When entity-catalog role axes are unavailable in the person-meaning path, fallback/scaffold role text must use linked context tags + chapter categories instead of the misleading `entity catalog ... not extracted` boilerplate.
 9. Hollow-guard evidence accepts, in order: person tags (full tag or `#` stem), role axes, linked context tags (full tag or `#` stem), chapter category code/label, content-kind words (`꿈`/`일기`/`노트`), and sanitized snippet probes. Generic workplace buckets without these anchors remain hollow.

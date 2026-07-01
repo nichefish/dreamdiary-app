@@ -84,7 +84,7 @@ public class ChatAIService {
     private static final int PERSON_FOCUS_MIN_TOKEN_LENGTH = 2;
     /** person-meaning 질문에서 person focus를 감지하는 문장 힌트 */
     private static final String[] PERSON_FOCUS_HINTS = {
-            "\uB0B4 \uAE30\uB85D", "\uAE30\uB85D\uC5D0\uC11C",
+            "\uB0B4 \uAE30\uB85D", "\uAE30\uB85D\uC5D0\uC11C", "\uB0B4 \uB300\uD654",
             "\uC5B4\uB5A4 \uC758\uBBF8", "\uBB34\uC2A8 \uC758\uBBF8",
             "\uC5B4\uB5A4 \uC874\uC7AC", "\uC5B4\uB5A4 \uC5ED\uD560",
             "\uC65C \uBC18\uBCF5", "\uC65C \uC790\uC8FC",
@@ -101,7 +101,8 @@ public class ChatAIService {
             "\uC5ED\uD560", "\uC874\uC7AC", "\uBC18\uBCF5", "\uC790\uC8FC",
             "\uD1B5\uC12D", "\uD574\uC11D", "\uC694\uC57D", "\uC815\uB9AC",
             "\uB9D0\uD574\uC918", "\uB9D0\uD574", "\uBCF4\uC5EC\uC918",
-            "\uB300\uD574", "\uAD00\uB828", "\uC804\uCCB4", "\uB9E5\uB77D"
+            "\uB300\uD574", "\uAD00\uB828", "\uC804\uCCB4", "\uB9E5\uB77D",
+            "\uB300\uD654", "\uB290\uB08C", "\uB4F1\uC7A5\uD558", "\uC788\uB2C8"
     );
     /** 세션별 프롬프트보다 우선 적용할 응답 안전 규칙 */
     private static final String RESPONSE_GUARD_PROMPT = String.join("\n",
@@ -203,55 +204,64 @@ public class ChatAIService {
         // 3. AI 응답 생성 (RAG 컨텍스트 주입)
         final int recentMessageLimit = chatSettingService.getMyRecentMessageLimit();
         final RagContext ragContext = buildRagContext(message);
-        final String systemPrompt = buildSystemPromptWithRag(
-                StringUtils.defaultIfBlank(session.getSystemPrompt(), chatSessionService.getDefaultSystemPrompt()),
-                ragContext,
-                message
-        );
-        final List<ChatMessageDto> contextMessages = sanitizeContextMessages(
-                chatMessageService.getRecentContextMessages(sessionId, recentMessageLimit)
-        );
-        String rawResponse = ollamaClient.chat(
-                        systemPrompt,
-                        contextMessages
-                );
-        if (containsDisallowedHanScript(rawResponse)) {
-            log.warn("AI response language guard retry. sessionId={}", sessionId);
-            rawResponse = ollamaClient.chat(systemPrompt + LANGUAGE_RETRY_PROMPT, contextMessages);
-        }
 
-        // 취소 요청이 들어왔으면 저장/broadcast 없이 종료
         if (isCancelled(sessionId)) {
             log.info("AI response cancelled. sessionId={}", sessionId);
             cancelFlags.remove(sessionId);
             return;
         }
 
-        String strippedResponse = stripInternalRecordCitations(stripMarkdown(rawResponse));
-        String responseMode = "LLM";
-        if (containsDisallowedHanScript(strippedResponse)) {
-            strippedResponse = buildLanguageFallback(message, ragContext);
-            responseMode = "LANGUAGE_FALLBACK";
-        } else if (isDegradedPersonResponse(strippedResponse, ragContext, message)) {
-            final boolean personAttitude = isPersonAttitudeQuery(message);
-            log.warn("AI person response degraded, retrying once. sessionId={}, personAttitude={}",
-                    sessionId, personAttitude);
-            final String retryResponse = stripInternalRecordCitations(stripMarkdown(ollamaClient.chat(
-                    systemPrompt + buildPersonMeaningRetryPrompt(ragContext, message),
-                    contextMessages
-            )));
-            if (!containsDisallowedHanScript(retryResponse)
-                    && !isDegradedPersonResponse(retryResponse, ragContext, message)) {
-                strippedResponse = retryResponse;
-                responseMode = "LLM";
-            } else {
-                log.warn("AI person retry still hollow, deterministic fallback applied. sessionId={}, personAttitude={}",
-                        sessionId, personAttitude);
-                strippedResponse = personAttitude
-                        ? buildPersonStanceDeterministicFallback(ragContext)
-                        : buildPersonMeaningDeterministicFallback(ragContext);
-                responseMode = personAttitude ? "PERSON_STANCE_FALLBACK" : "PERSON_MEANING_FALLBACK";
+        final String strippedResponse;
+        final String responseMode;
+        if (shouldUseRulePrimaryPersonSynthesisResponse(ragContext, message)) {
+            log.info("AI person synthesis hybrid. sessionId={}, stance={}, appearance={}",
+                    sessionId, isPersonAttitudeQuery(message), isPersonAppearanceQuery(message));
+            final ResolvedChatResponse resolved = resolvePersonSynthesisHybridResponse(
+                    sessionId,
+                    message,
+                    ragContext
+            );
+            if (isCancelled(sessionId)) {
+                log.info("AI response cancelled. sessionId={}", sessionId);
+                cancelFlags.remove(sessionId);
+                return;
             }
+            strippedResponse = resolved.content();
+            responseMode = resolved.responseMode();
+        } else {
+            final String systemPrompt = buildSystemPromptWithRag(
+                    StringUtils.defaultIfBlank(session.getSystemPrompt(), chatSessionService.getDefaultSystemPrompt()),
+                    ragContext,
+                    message
+            );
+            final List<ChatMessageDto> contextMessages = sanitizeContextMessages(
+                    chatMessageService.getRecentContextMessages(sessionId, recentMessageLimit)
+            );
+            String rawResponse = ollamaClient.chat(
+                            systemPrompt,
+                            contextMessages
+                    );
+            if (containsDisallowedHanScript(rawResponse)) {
+                log.warn("AI response language guard retry. sessionId={}", sessionId);
+                rawResponse = ollamaClient.chat(systemPrompt + LANGUAGE_RETRY_PROMPT, contextMessages);
+            }
+
+            if (isCancelled(sessionId)) {
+                log.info("AI response cancelled. sessionId={}", sessionId);
+                cancelFlags.remove(sessionId);
+                return;
+            }
+
+            final ResolvedChatResponse resolved = resolveLlmChatResponse(
+                    sessionId,
+                    message,
+                    ragContext,
+                    systemPrompt,
+                    contextMessages,
+                    stripInternalRecordCitations(stripMarkdown(rawResponse))
+            );
+            strippedResponse = resolved.content();
+            responseMode = resolved.responseMode();
         }
         final String aiResponse = strippedResponse;
 
@@ -384,10 +394,10 @@ public class ChatAIService {
         final List<String> focusTokens = mergePersonFocusTokens(queryTokens, entitySummary);
         final List<RagSearchResult> tagResults = embeddingSearchService.searchByPersonTagsWithScore(focusTokens, topK);
         final PersonFocus personFocus = new PersonFocus(
-                resolvePersonFocusPrimaryToken(queryTokens, entitySummary),
+                resolvePersonFocusPrimaryToken(queryText, queryTokens, entitySummary),
                 focusTokens,
                 tagResults.size(),
-                null
+                entitySummary
         );
 
         if (tagResults.isEmpty()) {
@@ -1120,7 +1130,7 @@ public class ChatAIService {
         }
         if (matchedSourceCount <= 0 && entitySummary == null) return null;
 
-        return new PersonFocus(resolvePersonFocusPrimaryToken(tokens, entitySummary), focusTokens, matchedSourceCount, entitySummary);
+        return new PersonFocus(resolvePersonFocusPrimaryToken(queryText, tokens, entitySummary), focusTokens, matchedSourceCount, entitySummary);
     }
 
     /**
@@ -1135,21 +1145,52 @@ public class ChatAIService {
     /**
      * 1인칭 태도·자기인식 질문(나는 X를 어떻게 생각/느끼는지)인지 확인합니다.
      *
-     * <p>person-meaning(상징·역할 축)과 구분해 PERSON_STANCE_SCAFFOLD·가드를 태웁니다.</p>
+     * <p>person-meaning(상징·역할 축·등장 방식)과 구분해 PERSON_STANCE_SCAFFOLD·가드를 태웁니다.
+     * {@code 내 대화에서 X는 어떤 느낌으로 등장}처럼 범위+등장 질문은 false입니다.</p>
      */
     private boolean isPersonAttitudeQuery(final String queryText) {
         final String text = StringUtils.defaultString(queryText);
         if (StringUtils.isBlank(text) || extractPersonFocusTokens(queryText).isEmpty()) {
             return false;
         }
-        if (!StringUtils.containsAny(text,
-                "나는", "내가", "나의", "내 ", "나한테", "나에게")) {
+        if (isPersonAppearanceQuery(text)) {
+            return false;
+        }
+        if (!hasExplicitFirstPersonSubjectMarker(text)) {
             return false;
         }
         return StringUtils.containsAny(text,
                 "어떻게 생각", "생각하고",
                 "어떤 감정", "어떤 마음", "어떤 느낌",
                 "어떻게 느끼", "느끼고");
+    }
+
+    /**
+     * 기록·대화 속 인물의 등장 방식·느낌·톤을 묻는 질문인지 확인합니다.
+     *
+     * <p>1인칭 태도 질문과 달리 주어가 인물({@code 가영님은 … 등장})이거나 {@code 내 대화/내 기록} 범위 질문입니다.</p>
+     */
+    private boolean isPersonAppearanceQuery(final String queryText) {
+        final String text = StringUtils.defaultString(queryText);
+        if (StringUtils.isBlank(text)) return false;
+        if (StringUtils.containsAny(text,
+                "등장", "등장하", "나타나", "나오는", "나오", "보이는", "보여")) {
+            return true;
+        }
+        if (StringUtils.containsAny(text, "내 대화", "내 기록", "대화에서", "대화 속", "대화 안")) {
+            return !hasExplicitFirstPersonSubjectMarker(text);
+        }
+        return false;
+    }
+
+    /**
+     * {@code 나는/내가} 등 주어가 사용자 자신인 1인칭 표지가 있는지 확인합니다.
+     *
+     * <p>{@code 내 대화}·{@code 내 기록} 같은 소유 범위만으로는 true가 되지 않습니다.</p>
+     */
+    private boolean hasExplicitFirstPersonSubjectMarker(final String queryText) {
+        return StringUtils.containsAny(StringUtils.defaultString(queryText),
+                "나는", "내가", "나의", "나한테", "나에게");
     }
 
     /**
@@ -1209,13 +1250,37 @@ public class ChatAIService {
      * Prefer the catalog canonical label as the primary focus target once the entity summary exists.
      */
     private String resolvePersonFocusPrimaryToken(
+            final String queryText,
             final List<String> tokens,
             final JournalEntityFocusService.PersonEntityFocusSummary entitySummary
     ) {
         if (entitySummary != null && StringUtils.isNotBlank(entitySummary.canonicalLabel())) {
             return entitySummary.canonicalLabel();
         }
-        return tokens == null || tokens.isEmpty() ? null : tokens.get(0);
+        return selectPrimaryPersonTokenFromQuery(queryText, tokens);
+    }
+
+    /**
+     * 질문 문장에서 person focus 대상 이름 토큰을 고릅니다.
+     *
+     * <p>{@code 가영님}처럼 호칭이 붙은 토큰을 우선하고, {@code 대화} 같은 범위어는 건너뜁니다.</p>
+     */
+    private String selectPrimaryPersonTokenFromQuery(final String queryText, final List<String> tokens) {
+        if (tokens == null || tokens.isEmpty()) return null;
+
+        final String text = StringUtils.defaultString(queryText);
+        for (final String token : tokens) {
+            if (StringUtils.isBlank(token)) continue;
+            if (text.contains(token + "\uB2D8")) {
+                return token;
+            }
+        }
+        for (final String token : tokens) {
+            if (StringUtils.isNotBlank(token)) {
+                return token;
+            }
+        }
+        return null;
     }
 
     /**
@@ -1414,6 +1479,239 @@ public class ChatAIService {
     }
 
     /**
+     * SYNTHESIS person 질문은 스냅샷 hybrid(LLM 해석 + rule-primary 폴백) 경로를 탑니다.
+     */
+    private boolean shouldUseRulePrimaryPersonSynthesisResponse(final RagContext ragContext, final String queryText) {
+        return ragContext != null
+                && ragContext.intent() == RagIntent.SYNTHESIS
+                && ragContext.personFocus() != null
+                && isPersonMeaningQuery(queryText);
+    }
+
+    /**
+     * person SYNTHESIS 질문 유형에 맞는 규칙 기반 응답을 조립합니다.
+     */
+    private String buildRulePrimaryPersonSynthesisResponse(final RagContext ragContext, final String queryText) {
+        if (isPersonAttitudeQuery(queryText)) {
+            return buildPersonStanceDeterministicFallback(ragContext);
+        }
+        if (isPersonAppearanceQuery(queryText)) {
+            return buildPersonAppearanceDeterministicFallback(ragContext);
+        }
+        return buildPersonMeaningDeterministicFallback(ragContext);
+    }
+
+    /**
+     * person SYNTHESIS: 서버 스냅샷 집계 후 LLM 해석 1회를 시도하고, 가드 실패 시 RULE_PRIMARY로 폴백합니다.
+     */
+    private ResolvedChatResponse resolvePersonSynthesisHybridResponse(
+            final Integer sessionId,
+            final String message,
+            final RagContext ragContext
+    ) throws Exception {
+        final String rulePrimaryFallback = buildRulePrimaryPersonSynthesisResponse(ragContext, message);
+        if (ragContext == null
+                || ragContext.personFocus() == null
+                || ragContext.results() == null
+                || ragContext.results().isEmpty()) {
+            return new ResolvedChatResponse(rulePrimaryFallback, "RULE_PRIMARY");
+        }
+
+        final String systemPrompt = buildPersonSynthesisHybridSystemPrompt(ragContext, message);
+        final List<ChatMessageDto> hybridContext = List.of(
+                ChatMessageDto.builder()
+                        .role("USER")
+                        .content(message)
+                        .build()
+        );
+
+        String rawResponse = ollamaClient.chat(systemPrompt, hybridContext);
+        if (containsDisallowedHanScript(rawResponse)) {
+            log.warn("AI person synthesis hybrid language guard retry. sessionId={}", sessionId);
+            rawResponse = ollamaClient.chat(systemPrompt + LANGUAGE_RETRY_PROMPT, hybridContext);
+        }
+
+        String strippedResponse = stripInternalRecordCitations(stripMarkdown(rawResponse));
+        if (containsDisallowedHanScript(strippedResponse)) {
+            log.warn("AI person synthesis hybrid language fallback to rule-primary. sessionId={}", sessionId);
+            return new ResolvedChatResponse(rulePrimaryFallback, "RULE_PRIMARY");
+        }
+        if (!isDegradedPersonResponse(strippedResponse, ragContext, message)) {
+            return new ResolvedChatResponse(strippedResponse, "PERSON_SYNTHESIS_HYBRID");
+        }
+
+        log.warn("AI person synthesis hybrid degraded, retrying once. sessionId={}", sessionId);
+        final String retryResponse = stripInternalRecordCitations(stripMarkdown(ollamaClient.chat(
+                systemPrompt + buildPersonMeaningRetryPrompt(ragContext, message),
+                hybridContext
+        )));
+        if (!containsDisallowedHanScript(retryResponse)
+                && !isDegradedPersonResponse(retryResponse, ragContext, message)) {
+            return new ResolvedChatResponse(retryResponse, "PERSON_SYNTHESIS_HYBRID");
+        }
+
+        log.warn("AI person synthesis hybrid guard failed, rule-primary fallback. sessionId={}", sessionId);
+        return new ResolvedChatResponse(rulePrimaryFallback, "RULE_PRIMARY");
+    }
+
+    /**
+     * person SYNTHESIS hybrid 경로용 시스템 프롬프트를 만듭니다.
+     *
+     * <p>전체 RAG 덤프 대신 {@link PersonMeaningSnapshot}만 전달해 7B 로컬 모델이 해석에 집중하도록 합니다.</p>
+     */
+    private String buildPersonSynthesisHybridSystemPrompt(final RagContext ragContext, final String queryText) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(RESPONSE_GUARD_PROMPT);
+        sb.append("\n\n## PERSON_SYNTHESIS_HYBRID\n");
+        sb.append("아래 SNAPSHOT만 근거로 답하세요. 스냅샷에 없는 성격·조직 역할·사건은 추측하지 마세요.\n");
+        sb.append("내부 필드명(role_axes_ko, repeated_tags 등)이나 [1] 같은 인덱스 인용은 금지입니다.\n");
+        sb.append("태그는 SNAPSHOT에 나온 #형태만 인용하세요.\n");
+
+        if (isPersonAttitudeQuery(queryText)) {
+            sb.append("질문은 사용자 자신의 태도입니다. 첫 문장은 '네가 기록에 남긴 바로는'으로 시작하세요.\n");
+            sb.append("답변 형식: (1) 내 태도·정서 (2) 반복 패턴 (3) 함께 묶인 축 (4) 확정 불가 — 네 섹션.\n");
+            sb.append("태도 해석은 사건 나열이 아니라 반복 축·연결 맥락·기록 유형을 통합한 패턴입니다.\n");
+            sb.append("금지: HR/코칭 톤, 성격 단정, 조직·협업 조언, 긴 대화 인용, 근거 없는 심리 라벨.\n");
+        } else if (isPersonAppearanceQuery(queryText)) {
+            sb.append("질문은 내 대화/기록 속 인물의 등장 방식입니다.\n");
+            sb.append("답변 형식: (1) 등장 느낌·톤 (2) 반복 맥락 (3) 함께 묶인 축 (4) 확정 불가 — 네 섹션.\n");
+            sb.append("금지: 인용 나열, 친근하다·적극적이다 같은 성격 단정, 추론하자면 일반화.\n");
+        } else {
+            sb.append("질문은 기록 속 인물/상징의 의미 통섭입니다.\n");
+            sb.append("등장 맥락, 반복 축, 정서적 기능, 확정 불가를 구분해 짧게 답하세요.\n");
+        }
+
+        sb.append("\n## SNAPSHOT\n");
+        appendPersonSynthesisSnapshotBlock(sb, ragContext, queryText);
+        return sb.toString().trim();
+    }
+
+    /**
+     * hybrid LLM에 전달할 person-meaning 스냅샷 블록을 조립합니다.
+     */
+    private void appendPersonSynthesisSnapshotBlock(
+            final StringBuilder sb,
+            final RagContext ragContext,
+            final String queryText
+    ) {
+        if (ragContext == null || ragContext.personFocus() == null) return;
+
+        final PersonFocus personFocus = ragContext.personFocus();
+        final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext);
+        final String target = resolvePersonFocusTarget(personFocus);
+
+        sb.append("대상: ").append(StringUtils.defaultString(target)).append('\n');
+
+        if (!snapshot.repeatedTagCountMap().isEmpty()) {
+            sb.append("반복 인물 태그: ")
+                    .append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 8))
+                    .append('\n');
+        }
+        if (!snapshot.linkedContextTagCountMap().isEmpty()) {
+            sb.append("연결 맥락: ")
+                    .append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 8))
+                    .append('\n');
+        }
+        if (!snapshot.chapterCategoryCountMap().isEmpty()) {
+            sb.append("챕터 분류: ")
+                    .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()))
+                    .append('\n');
+        }
+        if (!snapshot.roleAxesKo().isEmpty()) {
+            sb.append("역할 축: ").append(String.join(", ", snapshot.roleAxesKo())).append('\n');
+        }
+        if (!snapshot.contentKindCountMap().isEmpty()) {
+            sb.append("기록 유형: ")
+                    .append(formatContentKindSpread(snapshot.contentKindCountMap()))
+                    .append('\n');
+        }
+        if (StringUtils.isNotBlank(snapshot.firstDate()) || StringUtils.isNotBlank(snapshot.lastDate())) {
+            sb.append("기간: ")
+                    .append(StringUtils.defaultIfBlank(snapshot.firstDate(), "?"))
+                    .append(" ~ ")
+                    .append(StringUtils.defaultIfBlank(snapshot.lastDate(), "?"))
+                    .append('\n');
+        }
+        if (!snapshot.evidenceSnippets().isEmpty()) {
+            sb.append("근거 장면(짧게): ").append(snapshot.evidenceSnippets().get(0)).append('\n');
+        }
+
+        final String interpretiveSeed;
+        if (isPersonAttitudeQuery(queryText)) {
+            interpretiveSeed = buildPersonStanceInterpretiveLead(
+                    target,
+                    snapshot.repeatedTagCountMap(),
+                    snapshot.roleAxesKo(),
+                    snapshot.contentKindCountMap(),
+                    snapshot.linkedContextTagCountMap(),
+                    snapshot.chapterCategoryCountMap()
+            );
+        } else if (isPersonAppearanceQuery(queryText)) {
+            interpretiveSeed = buildPersonAppearanceInterpretiveLead(
+                    target,
+                    snapshot.repeatedTagCountMap(),
+                    snapshot.roleAxesKo(),
+                    snapshot.contentKindCountMap(),
+                    snapshot.linkedContextTagCountMap(),
+                    snapshot.chapterCategoryCountMap()
+            );
+        } else {
+            interpretiveSeed = buildPersonMeaningInterpretiveLead(
+                    target,
+                    snapshot.repeatedTagCountMap(),
+                    snapshot.roleAxesKo(),
+                    snapshot.contentKindCountMap(),
+                    snapshot.linkedContextTagCountMap(),
+                    snapshot.chapterCategoryCountMap()
+            );
+        }
+        if (StringUtils.isNotBlank(interpretiveSeed)) {
+            sb.append("해석 시드(참고만, 그대로 복사 금지): ").append(interpretiveSeed).append('\n');
+        }
+    }
+    /**
+     * LLM 1차 응답에 언어·person hollow guard를 적용해 최종 본문과 responseMode를 만듭니다.
+     */
+    private ResolvedChatResponse resolveLlmChatResponse(
+            final Integer sessionId,
+            final String message,
+            final RagContext ragContext,
+            final String systemPrompt,
+            final List<ChatMessageDto> contextMessages,
+            final String initialStrippedResponse
+    ) throws Exception {
+        if (containsDisallowedHanScript(initialStrippedResponse)) {
+            return new ResolvedChatResponse(buildLanguageFallback(message, ragContext), "LANGUAGE_FALLBACK");
+        }
+        if (!isDegradedPersonResponse(initialStrippedResponse, ragContext, message)) {
+            return new ResolvedChatResponse(initialStrippedResponse, "LLM");
+        }
+        final boolean personAttitude = isPersonAttitudeQuery(message);
+        log.warn("AI person response degraded, retrying once. sessionId={}, personAttitude={}",
+                sessionId, personAttitude);
+        final String retryResponse = stripInternalRecordCitations(stripMarkdown(ollamaClient.chat(
+                systemPrompt + buildPersonMeaningRetryPrompt(ragContext, message),
+                contextMessages
+        )));
+        if (!containsDisallowedHanScript(retryResponse)
+                && !isDegradedPersonResponse(retryResponse, ragContext, message)) {
+            return new ResolvedChatResponse(retryResponse, "LLM");
+        }
+        log.warn("AI person retry still hollow, deterministic fallback applied. sessionId={}, personAttitude={}",
+                sessionId, personAttitude);
+        if (personAttitude) {
+            return new ResolvedChatResponse(buildPersonStanceDeterministicFallback(ragContext), "PERSON_STANCE_FALLBACK");
+        }
+        if (isPersonAppearanceQuery(message)) {
+            return new ResolvedChatResponse(
+                    buildPersonAppearanceDeterministicFallback(ragContext),
+                    "PERSON_APPEARANCE_FALLBACK"
+            );
+        }
+        return new ResolvedChatResponse(buildPersonMeaningDeterministicFallback(ragContext), "PERSON_MEANING_FALLBACK");
+    }
+
+    /**
      * 상위 태그 카운트를 프롬프트에 넣기 좋은 문자열로 변환합니다.
      */
     private String formatTopTags(final Map<String, Integer> tagCountMap, final int limit) {
@@ -1421,6 +1719,31 @@ public class ChatAIService {
                 .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
                 .limit(limit)
                 .map(entry -> entry.getKey() + "(" + entry.getValue() + ")")
+                .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * 사용자 응답용 태그 표시 문자열에서 [엔서클] 등 메타 접두를 제거합니다.
+     */
+    private String formatDisplayTag(final String rawTag) {
+        if (StringUtils.isBlank(rawTag)) return "";
+        String normalized = StringUtils.normalizeSpace(rawTag).replaceAll("\\[[^\\]]+\\]", "");
+        final int hashIndex = normalized.indexOf('#');
+        if (hashIndex >= 0) {
+            normalized = normalized.substring(hashIndex);
+        }
+        return StringUtils.trim(normalized);
+    }
+
+    /**
+     * 규칙 기반 person 응답에 쓸 태그 요약 문자열입니다.
+     */
+    private String formatTopTagsForDisplay(final Map<String, Integer> tagCountMap, final int limit) {
+        return tagCountMap.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
+                .limit(limit)
+                .map(entry -> formatDisplayTag(entry.getKey()) + "(" + entry.getValue() + ")")
+                .filter(entry -> StringUtils.isNotBlank(entry) && !entry.startsWith("("))
                 .collect(Collectors.joining(", "));
     }
 
@@ -1551,6 +1874,17 @@ public class ChatAIService {
                     "단정하지 말고 근거의 한계를 드러내되, 기록에 내 정서·태도 단서가 있으면 '없다'고 말하지 마세요.",
                     "[1], [2] 같은 기록 번호 대신 날짜나 장면 표현으로 인용하세요.",
                     "내부 필드명이나 섹션 키(1_내태도·정서 등)를 답변 문장에 그대로 쓰지 마세요."
+            );
+        }
+        if (intent == RagIntent.SYNTHESIS && isPersonAppearanceQuery(queryText) && isPersonMeaningQuery(queryText)) {
+            return String.join("\n",
+                    "PERSON_FOCUS 또는 PERSON_MEANING_SCAFFOLD 블록이 있으면 그 값을 답의 골격으로 우선 사용하세요.",
+                    "이 질문은 내 대화/기록 속 인물이 어떤 느낌·톤·역할로 등장하는지 묻는 통섭형 질문입니다.",
+                    "PERSON_MEANING_SCAFFOLD의 5개 항목 순서로 답하세요: 반복 축, 역할/기능, 기록 유형, 근거 장면, 확정 불가.",
+                    "등장 방식·느낌 = 인용 나열·대사 모음이 아니라 반복 축·연결 맥락·역할 축·기록 유형을 연결한 해석입니다.",
+                    "금지: 성격 단정(친근하다·자연스럽다 등), '추론하자면' 식 일반화, 태그 문자열 원문 나열, [엔서클] 같은 메타 접두.",
+                    "기록에 직접 나온 태그 축·역할·장면 단어만 근거로 삼고, 근거 없는 외부 인물 이미지로 빈칸을 채우지 마세요.",
+                    "단정하지 말고 '기록상으로는', '반복해서 보이는 건'처럼 근거의 한계를 드러내세요."
             );
         }
         if (intent == RagIntent.SYNTHESIS) {
@@ -1788,7 +2122,21 @@ public class ChatAIService {
         if (isPersonAttitudeQuery(queryText)) {
             return isHollowPersonStanceResponse(response, ragContext);
         }
+        if (isThirdPersonPersonalityProfile(response)) return true;
+        if (isPersonMeaningQuoteParade(response)) return true;
         return !hasPersonMeaningEvidence(response, ragContext);
+    }
+
+    /**
+     * 인용문·대사 나열만 있고 해석이 없는 person-meaning 답변을 감지합니다.
+     */
+    private boolean isPersonMeaningQuoteParade(final String response) {
+        if (StringUtils.isBlank(response)) return false;
+        final boolean hasQuoteParadeCue = StringUtils.containsAny(response,
+                "말을 하면서", "라고 말", "라고 했", "또는 \"", "....\"");
+        if (!hasQuoteParadeCue) return false;
+        return StringUtils.containsAny(response,
+                "추론하자면", "추론하면", "인 것 같", "인물로", "자연스러운");
     }
 
     /**
@@ -1921,11 +2269,11 @@ public class ChatAIService {
      */
     private boolean isThirdPersonPersonalityProfile(final String response) {
         if (StringUtils.isBlank(response)) return false;
-        final boolean hasTraitProfile = StringUtils.containsAny(response,
+        return StringUtils.containsAny(response,
                 "열성적", "주도적", "인물입니다", "인물이며",
-                "중요한 역할을", "주도적인 인물");
-        if (!hasTraitProfile) return false;
-        return !hasPersonStanceMirrorMarkers(response);
+                "중요한 역할을", "주도적인 인물",
+                "친근하고", "친근한 인물", "자연스러운 인물",
+                "추론하자면", "추론하면");
     }
 
     /**
@@ -2216,10 +2564,26 @@ public class ChatAIService {
      *
      * <p>인물 축 태그에는 canonical/surface 이름(예: 김원빈)이 포함된다는 Dreamdiary 태그 계약을 따릅니다.</p>
      */
+    /**
+     * person-meaning 해석에 쓸 인물 태그만 남깁니다.
+     */
     private List<String> filterPersonMeaningTags(final List<String> tags, final PersonFocus personFocus) {
+        return filterPersonMeaningTags(tags, personFocus, null);
+    }
+
+    /**
+     * person-meaning 해석에 쓸 인물 태그만 남깁니다.
+     *
+     * <p>{@code dominantTagStem}이 있으면 짧은 이름 토큰(예: 가영)의 오매칭(#문가영)을 제거합니다.</p>
+     */
+    private List<String> filterPersonMeaningTags(
+            final List<String> tags,
+            final PersonFocus personFocus,
+            final String dominantTagStem
+    ) {
         if (tags == null || tags.isEmpty()) return List.of();
         return tags.stream()
-                .filter(tag -> isPersonRelevantTag(tag, personFocus))
+                .filter(tag -> isPersonRelevantTag(tag, personFocus, dominantTagStem))
                 .collect(Collectors.toList());
     }
 
@@ -2227,10 +2591,27 @@ public class ChatAIService {
      * 태그 문자열에 person focus 토큰이 포함되어 있는지 확인합니다.
      */
     private boolean isPersonRelevantTag(final String tag, final PersonFocus personFocus) {
+        return isPersonRelevantTag(tag, personFocus, null);
+    }
+
+    /**
+     * 태그 문자열이 person focus(및 선택적 dominant stem)와 맞는지 확인합니다.
+     */
+    private boolean isPersonRelevantTag(
+            final String tag,
+            final PersonFocus personFocus,
+            final String dominantTagStem
+    ) {
         if (StringUtils.isBlank(tag) || personFocus == null || personFocus.tokens() == null) return false;
 
         final String normalizedTag = StringUtils.lowerCase(StringUtils.deleteWhitespace(tag));
         if (StringUtils.contains(normalizedTag, "dreamdiary")) return false;
+
+        if (StringUtils.isNotBlank(dominantTagStem)) {
+            final String stem = extractPersonTagStem(tag);
+            return StringUtils.isNotBlank(stem)
+                    && stem.equalsIgnoreCase(StringUtils.deleteWhitespace(dominantTagStem));
+        }
 
         for (final String token : personFocus.tokens()) {
             if (StringUtils.isBlank(token)) continue;
@@ -2240,6 +2621,50 @@ public class ChatAIService {
             }
         }
         return false;
+    }
+
+    /**
+     * person 태그에서 # stem만 추출합니다.
+     */
+    private String extractPersonTagStem(final String tag) {
+        final String displayTag = formatDisplayTag(tag);
+        if (StringUtils.isBlank(displayTag)) return "";
+        return displayTag.startsWith("#") ? displayTag.substring(1) : displayTag;
+    }
+
+    /**
+     * 짧은 person 토큰(예: 가영)에 대해 반복 빈도가 가장 높은 태그 stem을 고릅니다.
+     */
+    private String resolveDominantPersonTagStem(
+            final List<RagSearchResult> results,
+            final PersonFocus personFocus
+    ) {
+        if (personFocus == null || results == null || results.isEmpty()) return null;
+
+        final String primaryToken = StringUtils.trimToEmpty(personFocus.primaryToken());
+        if (StringUtils.isBlank(primaryToken) || primaryToken.length() > 3) return null;
+
+        final Map<String, Integer> stemCounts = new LinkedHashMap<>();
+        for (final RagSearchResult result : results) {
+            if (result == null) continue;
+            for (final String tag : extractSourceTags(result)) {
+                if (!isPersonRelevantTag(tag, personFocus, null)) continue;
+
+                final String stem = extractPersonTagStem(tag);
+                if (StringUtils.isBlank(stem)) continue;
+                if (!stem.equalsIgnoreCase(primaryToken)
+                        && !StringUtils.endsWithIgnoreCase(stem, primaryToken)) {
+                    continue;
+                }
+                stemCounts.merge(stem, 1, Integer::sum);
+            }
+        }
+
+        return stemCounts.entrySet().stream()
+                .max(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder())
+                        .thenComparing(Map.Entry::getKey))
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 
     /**
@@ -2363,14 +2788,45 @@ public class ChatAIService {
             final List<RagSearchResult> results,
             final PersonFocus personFocus
     ) {
+        return resolvePersonFocusedResults(results, personFocus, null);
+    }
+
+    /**
+     * Returns sources that carry person tags for person-meaning aggregation.
+     */
+    private List<RagSearchResult> resolvePersonFocusedResults(
+            final List<RagSearchResult> results,
+            final PersonFocus personFocus,
+            final String dominantTagStem
+    ) {
         if (personFocus == null || results == null || results.isEmpty()) return List.of();
 
         final List<RagSearchResult> tagFocusedResults = results.stream()
-                .filter(result -> !filterPersonMeaningTags(extractSourceTags(result), personFocus).isEmpty())
+                .filter(result -> !filterPersonMeaningTags(
+                        extractSourceTags(result),
+                        personFocus,
+                        dominantTagStem
+                ).isEmpty())
                 .collect(Collectors.toList());
         if (!tagFocusedResults.isEmpty()) return tagFocusedResults;
 
         return List.of();
+    }
+
+    /**
+     * person-meaning tag-only RAG 결과만으로 스냅샷을 집계하는지 확인합니다.
+     *
+     * <p>이 경우 entity catalog의 전역 role/kind/date 집계는 쓰지 않고 태그 매칭 source만 사용합니다.</p>
+     */
+    private boolean isTagOnlyPersonMeaningResults(final List<RagSearchResult> results) {
+        if (results == null || results.isEmpty()) return false;
+        for (final RagSearchResult result : results) {
+            if (result == null) continue;
+            if (!RagSearchResult.MATCH_TYPE_TAG.equals(result.getMatchType())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -2379,13 +2835,14 @@ public class ChatAIService {
     private PersonMeaningSnapshot buildPersonMeaningSnapshot(final RagContext ragContext) {
         final PersonFocus personFocus = ragContext.personFocus();
         final List<RagSearchResult> results = ragContext.results() == null ? List.of() : ragContext.results();
-        final List<RagSearchResult> focusedResults = resolvePersonFocusedResults(results, personFocus);
+        final String dominantTagStem = resolveDominantPersonTagStem(results, personFocus);
+        final List<RagSearchResult> focusedResults = resolvePersonFocusedResults(results, personFocus, dominantTagStem);
 
         final Map<String, Integer> focusedTagCountMap = new LinkedHashMap<>();
         for (final RagSearchResult result : focusedResults) {
             incrementTagCounts(
                     focusedTagCountMap,
-                    filterPersonMeaningTags(extractSourceTags(result), personFocus).stream()
+                    filterPersonMeaningTags(extractSourceTags(result), personFocus, dominantTagStem).stream()
                             .distinct()
                             .collect(Collectors.toList())
             );
@@ -2394,31 +2851,37 @@ public class ChatAIService {
         final JournalEntityFocusService.PersonEntityFocusSummary entitySummary =
                 personFocus == null ? null : personFocus.entitySummary();
         final RagTimelineSummary timelineSummary = buildRagTimelineSummary(focusedResults);
+        final boolean tagOnlyAggregation = isTagOnlyPersonMeaningResults(focusedResults);
 
         final Map<String, Integer> contentKindCountMap = new LinkedHashMap<>();
-        if (entitySummary != null && entitySummary.contentKindCountMap() != null) {
+        if (!tagOnlyAggregation
+                && entitySummary != null
+                && entitySummary.contentKindCountMap() != null) {
             contentKindCountMap.putAll(entitySummary.contentKindCountMap());
         } else if (!timelineSummary.contentKindCountMap().isEmpty()) {
             contentKindCountMap.putAll(timelineSummary.contentKindCountMap());
         }
 
-        final List<String> roleAxesKo = entitySummary == null
-                ? List.of()
-                : formatPersonRoleAxes(entitySummary.roleCountMap());
+        final List<String> roleAxesKo = !tagOnlyAggregation && entitySummary != null
+                ? formatPersonRoleAxes(entitySummary.roleCountMap())
+                : List.of();
 
         final PersonMeaningContextAggregates contextAggregates =
                 buildPersonMeaningContextAggregates(focusedResults, personFocus);
 
         final List<String> evidenceSnippets = new ArrayList<>();
-        final int snippetLimit = Math.min(2, focusedResults.size());
-        for (int i = 0; i < snippetLimit; i++) {
-            evidenceSnippets.add(sanitizePersonMeaningSnippet(focusedResults.get(i), personFocus));
+        if (!focusedResults.isEmpty()) {
+            evidenceSnippets.add(sanitizePersonMeaningSnippet(focusedResults.get(0), personFocus));
         }
 
-        final String firstDate = entitySummary != null && StringUtils.isNotBlank(entitySummary.firstDate())
+        final String firstDate = !tagOnlyAggregation
+                && entitySummary != null
+                && StringUtils.isNotBlank(entitySummary.firstDate())
                 ? entitySummary.firstDate()
                 : timelineSummary.firstDate();
-        final String lastDate = entitySummary != null && StringUtils.isNotBlank(entitySummary.lastDate())
+        final String lastDate = !tagOnlyAggregation
+                && entitySummary != null
+                && StringUtils.isNotBlank(entitySummary.lastDate())
                 ? entitySummary.lastDate()
                 : timelineSummary.lastDate();
 
@@ -2433,6 +2896,8 @@ public class ChatAIService {
                 lastDate
         );
     }
+
+    private static final int RULE_PRIMARY_EVIDENCE_MAX_LENGTH = 100;
 
     /**
      * person-meaning fallback용 근거 장면 텍스트를 정리합니다.
@@ -2451,21 +2916,50 @@ public class ChatAIService {
         body = StringUtils.normalizeSpace(body);
         if (StringUtils.isBlank(body)) return "";
 
-        if (personFocus != null && personFocus.tokens() != null) {
-            for (final String token : personFocus.tokens()) {
+        if (personFocus != null) {
+            final List<String> tokenOrder = new ArrayList<>();
+            if (StringUtils.isNotBlank(personFocus.primaryToken())) {
+                tokenOrder.add(personFocus.primaryToken());
+            }
+            if (personFocus.tokens() != null) {
+                for (final String token : personFocus.tokens()) {
+                    if (StringUtils.isBlank(token) || tokenOrder.contains(token)) continue;
+                    tokenOrder.add(token);
+                }
+            }
+            for (final String token : tokenOrder) {
                 if (StringUtils.isBlank(token)) continue;
                 final int index = StringUtils.indexOfIgnoreCase(body, token);
                 if (index < 0) continue;
 
-                final int start = Math.max(0, index - 80);
-                final int end = Math.min(body.length(), index + 200);
+                final int start = Math.max(0, index - 40);
+                final int end = Math.min(body.length(), index + 80);
                 final String prefix = start > 0 ? "..." : "";
                 final String suffix = end < body.length() ? "..." : "";
-                return StringUtils.abbreviate(prefix + body.substring(start, end) + suffix, 220);
+                return StringUtils.abbreviate(
+                        prefix + body.substring(start, end) + suffix,
+                        RULE_PRIMARY_EVIDENCE_MAX_LENGTH
+                );
             }
         }
 
-        return StringUtils.abbreviate(body, 220);
+        return StringUtils.abbreviate(body, RULE_PRIMARY_EVIDENCE_MAX_LENGTH);
+    }
+
+    /**
+     * RULE_PRIMARY fallback 답변에 짧은 근거 장면 한 줄을 덧붙입니다.
+     */
+    private void appendRulePrimaryEvidenceSection(final StringBuilder sb, final List<String> evidenceSnippets) {
+        if (evidenceSnippets == null || evidenceSnippets.isEmpty()) return;
+
+        final String compact = evidenceSnippets.stream()
+                .filter(StringUtils::isNotBlank)
+                .findFirst()
+                .map(snippet -> StringUtils.abbreviate(StringUtils.normalizeSpace(snippet), RULE_PRIMARY_EVIDENCE_MAX_LENGTH))
+                .orElse("");
+        if (StringUtils.isBlank(compact)) return;
+
+        sb.append("\n근거 장면(짧게): ").append(compact);
     }
 
     /**
@@ -2512,10 +3006,10 @@ public class ChatAIService {
 
         final List<String> leadParts = new ArrayList<>();
         if (repeatedTagCountMap != null && !repeatedTagCountMap.isEmpty()) {
-            leadParts.add("주로 " + formatTopTags(repeatedTagCountMap, 3) + " 축에 묶여 있어");
+            leadParts.add("주로 " + formatTopTagsForDisplay(repeatedTagCountMap, 3) + " 축에 묶여 있어");
         }
         if (linkedContextTagCountMap != null && !linkedContextTagCountMap.isEmpty()) {
-            leadParts.add("\uAC19\uC740 \uC7A5\uBA74\uC5D0 " + formatTopTags(linkedContextTagCountMap, 2) + " \uD0DC\uADF8\uAC00 \uC790\uC8FC \uAC19\uC774 \uBD99\uC5B4");
+            leadParts.add("\uAC19\uC740 \uC7A5\uBA74\uC5D0 " + formatTopTagsForDisplay(linkedContextTagCountMap, 2) + " \uD0DC\uADF8\uAC00 \uC790\uC8FC \uAC19\uC774 \uBD99\uC5B4");
         }
         if (chapterCategoryCountMap != null && !chapterCategoryCountMap.isEmpty()) {
             leadParts.add(formatChapterCategorySpread(chapterCategoryCountMap) + " \uCC45\uD130\uC5D0\uC11C \uC8FC\uB85C \uB4F1\uC7A5\uD574");
@@ -2616,7 +3110,7 @@ public class ChatAIService {
         }
 
         if (!snapshot.repeatedTagCountMap().isEmpty()) {
-            sb.append("반복 축: ").append(formatTopTags(snapshot.repeatedTagCountMap(), 6)).append('\n');
+            sb.append("반복 축: ").append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6)).append('\n');
             sb.append("해석: 위 태그는 내가 의도적으로 붙인 ")
                     .append(target)
                     .append(" 관련 축이야. 같은 장면의 다른 태그보다 이 축을 우선 보면 돼.\n");
@@ -2628,7 +3122,7 @@ public class ChatAIService {
 
         if (!snapshot.linkedContextTagCountMap().isEmpty()) {
             sb.append("\uC5F0\uACB0 \uB9E5\uB77D: ")
-                    .append(formatTopTags(snapshot.linkedContextTagCountMap(), 8))
+                    .append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 8))
                     .append('\n');
             sb.append("\uD574\uC11D: \uC704 \uD0DC\uADF8\uB294 ")
                     .append(target)
@@ -2666,19 +3160,122 @@ public class ChatAIService {
                     .append('\n');
         }
 
-        if (!snapshot.evidenceSnippets().isEmpty()) {
-            sb.append("근거 장면: ");
-            for (int i = 0; i < snapshot.evidenceSnippets().size(); i++) {
-                if (i > 0) sb.append(" / ");
-                sb.append(snapshot.evidenceSnippets().get(i));
-            }
-            sb.append('\n');
-        }
+        appendRulePrimaryEvidenceSection(sb, snapshot.evidenceSnippets());
 
         sb.append("\n확정 못 하는 것: 실제 직장 관계, 직함, 조직 내 지위는 기록에 직접 적힌 표현이 없으면 알 수 없어.");
         return sb.toString().trim();
     }
 
+    /**
+     * 대화/기록 속 인물 등장 방식 질문용 규칙 기반 응답을 만듭니다.
+     */
+    private String buildPersonAppearanceDeterministicFallback(final RagContext ragContext) {
+        if (ragContext == null || ragContext.personFocus() == null) {
+            return "지금 확인되는 기록만으로는 답하기 어려워요. 어떤 사람이나 맥락을 말하는 건지 조금만 더 알려줘.";
+        }
+        if (ragContext.results() == null || ragContext.results().isEmpty()) {
+            final String target = resolvePersonFocusTarget(ragContext.personFocus());
+            return "지금 기록 안에서는 " + target + "이(가) 어떤 느낌으로 등장하는지 확인할 장면을 찾지 못했어요.";
+        }
+
+        final String target = resolvePersonFocusTarget(ragContext.personFocus());
+        final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext);
+        final StringBuilder sb = new StringBuilder();
+
+        final String interpretiveLead = buildPersonAppearanceInterpretiveLead(
+                target,
+                snapshot.repeatedTagCountMap(),
+                snapshot.roleAxesKo(),
+                snapshot.contentKindCountMap(),
+                snapshot.linkedContextTagCountMap(),
+                snapshot.chapterCategoryCountMap()
+        );
+        if (StringUtils.isNotBlank(interpretiveLead)) {
+            sb.append(interpretiveLead).append("\n\n");
+        } else {
+            sb.append("기록상 ").append(target).append("은(는) 내 대화/일기 안에서 이렇게 등장해 보여.\n\n");
+        }
+
+        sb.append("(1) 등장 느낌·톤: ");
+        if (!snapshot.roleAxesKo().isEmpty()) {
+            sb.append(String.join(", ", snapshot.roleAxesKo()));
+        } else if (!snapshot.repeatedTagCountMap().isEmpty()) {
+            sb.append("반복 인물 태그 ").append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6));
+        } else {
+            sb.append("태그·역할 축이 아직 충분하지 않음");
+        }
+        sb.append('\n');
+
+        sb.append("(2) 반복 맥락: ");
+        boolean hasRepeatPattern = false;
+        if (!snapshot.linkedContextTagCountMap().isEmpty()) {
+            sb.append("연결 맥락 ").append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 6));
+            hasRepeatPattern = true;
+        }
+        if (!snapshot.chapterCategoryCountMap().isEmpty()) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("챕터 ").append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()));
+            hasRepeatPattern = true;
+        }
+        if (!snapshot.contentKindCountMap().isEmpty()) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("기록 유형 ").append(formatContentKindSpread(snapshot.contentKindCountMap()));
+            hasRepeatPattern = true;
+        }
+        if (StringUtils.isNotBlank(snapshot.firstDate()) || StringUtils.isNotBlank(snapshot.lastDate())) {
+            if (hasRepeatPattern) sb.append("; ");
+            sb.append("기간 ")
+                    .append(StringUtils.defaultIfBlank(snapshot.firstDate(), "?"))
+                    .append(" ~ ")
+                    .append(StringUtils.defaultIfBlank(snapshot.lastDate(), "?"));
+            hasRepeatPattern = true;
+        }
+        if (!hasRepeatPattern) {
+            sb.append("반복 맥락 정보가 충분하지 않음");
+        }
+        sb.append('\n');
+
+        sb.append("(3) 함께 묶인 축: ");
+        if (!snapshot.repeatedTagCountMap().isEmpty()) {
+            sb.append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6));
+        } else {
+            sb.append("인물 태그 정보 없음");
+        }
+        sb.append('\n');
+
+        sb.append("(4) 확정 불가: 성격 단정(친근하다·적극적이다 등)이나 조직 내 지위는 기록에 직접 적힌 표현이 없으면 알 수 없어.\n");
+
+        appendRulePrimaryEvidenceSection(sb, snapshot.evidenceSnippets());
+
+        return sb.toString().trim();
+    }
+
+    /**
+     * person-appearance 해석 리드 문단을 규칙 기반으로 조립합니다.
+     */
+    private String buildPersonAppearanceInterpretiveLead(
+            final String target,
+            final Map<String, Integer> repeatedTagCountMap,
+            final List<String> roleAxesKo,
+            final Map<String, Integer> contentKindCountMap,
+            final Map<String, Integer> linkedContextTagCountMap,
+            final Map<String, Integer> chapterCategoryCountMap
+    ) {
+        final String meaningLead = buildPersonMeaningInterpretiveLead(
+                target,
+                repeatedTagCountMap,
+                roleAxesKo,
+                contentKindCountMap,
+                linkedContextTagCountMap,
+                chapterCategoryCountMap
+        );
+        if (StringUtils.isBlank(meaningLead)) return "";
+        if (StringUtils.startsWith(meaningLead, "기록상 ")) {
+            return "기록상 " + target + "은(는) 내 대화/일기 안에서 "
+                    + meaningLead.substring(("기록상 " + target + "은(는) ").length());
+        }
+        return "기록상 " + target + "은(는) 내 대화/일기 안에서 " + meaningLead;
+    }
     /**
      * 태도 질문에서 모델이 성격 평가·코칭만 내놓았을 때 기록 근거로 2인칭 태도 답변을 만듭니다.
      */
@@ -2712,7 +3309,7 @@ public class ChatAIService {
 
         sb.append("(1) 내 태도·정서: ");
         if (!snapshot.repeatedTagCountMap().isEmpty()) {
-            sb.append("반복 인물 태그 ").append(formatTopTags(snapshot.repeatedTagCountMap(), 6));
+            sb.append("반복 인물 태그 ").append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6));
         } else if (!snapshot.roleAxesKo().isEmpty()) {
             sb.append("역할 축 ").append(String.join(", ", snapshot.roleAxesKo()));
         } else {
@@ -2723,7 +3320,7 @@ public class ChatAIService {
         sb.append("(2) 반복 패턴: ");
         boolean hasRepeatPattern = false;
         if (!snapshot.linkedContextTagCountMap().isEmpty()) {
-            sb.append("연결 맥락 ").append(formatTopTags(snapshot.linkedContextTagCountMap(), 4));
+            sb.append("연결 맥락 ").append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 4));
             hasRepeatPattern = true;
         }
         if (!snapshot.chapterCategoryCountMap().isEmpty()) {
@@ -2751,7 +3348,7 @@ public class ChatAIService {
 
         sb.append("(3) 함께 묶인 축: ");
         if (!snapshot.repeatedTagCountMap().isEmpty()) {
-            sb.append(formatTopTags(snapshot.repeatedTagCountMap(), 6));
+            sb.append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6));
         } else {
             sb.append("인물 태그 정보 없음");
         }
@@ -2759,9 +3356,7 @@ public class ChatAIService {
 
         sb.append("(4) 확정 불가: 상대의 성격이나 조직 역할은 기록에 직접 적힌 표현이 없으면 알 수 없어.\n");
 
-        if (!snapshot.evidenceSnippets().isEmpty()) {
-            sb.append("\n근거 장면(짧게): ").append(String.join(" / ", snapshot.evidenceSnippets()));
-        }
+        appendRulePrimaryEvidenceSection(sb, snapshot.evidenceSnippets());
 
         return sb.toString().trim();
     }
@@ -2883,6 +3478,11 @@ public class ChatAIService {
             String firstDate,
             String lastDate
     ) {}
+    /**
+     * LLM 경로에서 최종 본문과 responseMode를 함께 반환합니다.
+     */
+    private record ResolvedChatResponse(String content, String responseMode) {}
+
     /**
      * RAG 의도, 검색 결과, 프롬프트용 컨텍스트 텍스트를 함께 보관합니다.
      */

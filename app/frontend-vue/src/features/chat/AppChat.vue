@@ -589,6 +589,10 @@ function responseModeText(metadata: RagMetadata | null | undefined): string {
   const mode = metadata?.responseMode;
   if (!mode) return "";
   if (mode === "PERSON_MEANING_FALLBACK") return "person fallback";
+  if (mode === "PERSON_STANCE_FALLBACK") return "stance fallback";
+  if (mode === "PERSON_APPEARANCE_FALLBACK") return "appearance fallback";
+  if (mode === "PERSON_SYNTHESIS_HYBRID") return "hybrid";
+  if (mode === "RULE_PRIMARY") return "rule primary";
   if (mode === "LANGUAGE_FALLBACK") return "language fallback";
   if (mode === "LLM") return "";
   return mode;
