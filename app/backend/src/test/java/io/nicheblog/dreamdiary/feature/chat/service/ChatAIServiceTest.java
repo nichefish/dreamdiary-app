@@ -720,6 +720,79 @@ class ChatAIServiceTest {
     }
 
     /**
+     * 내 대화/등장 질문은 person-attitude가 아니어야 합니다.
+     */
+    @Test
+    void isPersonAttitudeQuery_shouldNotMatchDialogueAppearanceQuestion() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method attitudeMethod = ChatAIService.class.getDeclaredMethod("isPersonAttitudeQuery", String.class);
+        final Method appearanceMethod = ChatAIService.class.getDeclaredMethod("isPersonAppearanceQuery", String.class);
+        attitudeMethod.setAccessible(true);
+        appearanceMethod.setAccessible(true);
+
+        final String query = "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8";
+        final boolean attitude = (boolean) attitudeMethod.invoke(service, query);
+        final boolean appearance = (boolean) appearanceMethod.invoke(service, query);
+
+        assertFalse(attitude);
+        assertTrue(appearance);
+    }
+
+    /**
+     * 대화 등장 질문은 appearance 전용 intent 프롬프트를 써야 합니다.
+     */
+    @Test
+    void buildIntentPrompt_shouldUseAppearanceBranchForDialogueQuestion() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildIntentPrompt",
+                RagIntent.class,
+                String.class
+        );
+        method.setAccessible(true);
+
+        final String prompt = (String) method.invoke(
+                service,
+                RagIntent.SYNTHESIS,
+                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8"
+        );
+
+        assertTrue(prompt.contains("PERSON_MEANING_SCAFFOLD"));
+        assertTrue(prompt.contains("\uB4F1\uC7A5"));
+        assertFalse(prompt.contains("PERSON_STANCE_SCAFFOLD"));
+        assertTrue(prompt.contains("\uCD94\uB860\uD558\uC790\uBA74"));
+    }
+
+    /**
+     * 인용 나열+성격 단정 person-meaning 답변은 degraded로 감지해야 합니다.
+     */
+    @Test
+    void isDegradedPersonResponse_shouldFlagTraitQuoteParadeForAppearanceQuestion() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonResponse",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("\uAC00\uC601");
+        final String shallowResponse =
+                "\uAE30\uB85D\uC0C1 #\uAE40\uAC00\uC601 \uCD95\uC5D0 \uBB36\uC5EC \uC788\uACE0, \"\uC77C\uD68C\uC6A9\uC810\uAC00\uB77D.....\" \uB610\uB294 \"\uC218\uBC15\uB9CC \uB370\uB824 \uAC00\uB294\uC911....\" \uB4F1\uC758 \uB9D0\uC744 \uD558\uBA74\uC11C \uB4F1\uC7A5\uD569\uB2C8\uB2E4. "
+                        + "\uC774\uB85C \uBD80\uD130 \uCD94\uB860\uD558\uC790\uBA74, \uCE5C\uADFC\uD558\uACE0 \uC790\uC5F0\uC2A4\uB7EC\uC6B4 \uC778\uBB3C\uB85C \uB4F1\uC7A5\uD558\uB294 \uAC83 \uAC19\uC544.";
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                shallowResponse,
+                ragContext,
+                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8"
+        );
+
+        assertTrue(degraded);
+    }
+
+    /**
      * SYNTHESIS 태도 질문 프롬프트는 2인칭 비춤·코칭 금지를 포함해야 합니다.
      */
     @Test
@@ -863,5 +936,303 @@ class ChatAIServiceTest {
         );
 
         assertTrue(degraded);
+    }
+
+    /**
+     * SYNTHESIS + personFocus + person-meaning 질문은 RULE_PRIMARY 경로를 써야 합니다.
+     */
+    @Test
+    void shouldUseRulePrimaryPersonSynthesisResponse_shouldBeTrueForAttitudeQuestion() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "shouldUseRulePrimaryPersonSynthesisResponse",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContext("\uC6D0\uBE48");
+        final boolean rulePrimary = (boolean) method.invoke(
+                service,
+                ragContext,
+                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+        );
+
+        assertTrue(rulePrimary);
+    }
+
+    /**
+     * personFocus 없는 SYNTHESIS 질문은 RULE_PRIMARY를 쓰지 않아야 합니다.
+     */
+    @Test
+    void shouldUseRulePrimaryPersonSynthesisResponse_shouldBeFalseWithoutPersonFocus() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "shouldUseRulePrimaryPersonSynthesisResponse",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Class<?> ragContextClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+        final var ragContextCtor = ragContextClass.getDeclaredConstructor(
+                RagIntent.class,
+                List.class,
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+        );
+        ragContextCtor.setAccessible(true);
+        final Object ragContext = ragContextCtor.newInstance(RagIntent.SYNTHESIS, List.of(), "ctx", null);
+
+        final boolean rulePrimary = (boolean) method.invoke(
+                service,
+                ragContext,
+                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+        );
+
+        assertFalse(rulePrimary);
+    }
+
+    /**
+     * 사용자 표시용 태그 문자열은 [엔서클] 접두를 제거해야 합니다.
+     */
+    @Test
+    void formatDisplayTag_shouldStripMetaPrefix() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("formatDisplayTag", String.class);
+        method.setAccessible(true);
+
+        final String display = (String) method.invoke(service, "[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9");
+
+        assertEquals("#\uC870\uC9C1\uC5ED\uB3D9", display);
+    }
+
+    /**
+     * appearance fallback은 4단 구조와 표시용 태그를 포함해야 합니다.
+     */
+    @Test
+    void buildPersonAppearanceDeterministicFallback_shouldUseFourSectionShape() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildPersonAppearanceDeterministicFallback",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("\uAC00\uC601");
+        final String response = (String) method.invoke(service, ragContext);
+
+        assertTrue(response.contains("(1) \uB4F1\uC7A5 \uB290\uB08C"));
+        assertTrue(response.contains("(2) \uBC18\uBCF5 \uB9E5\uB77D"));
+        assertTrue(response.contains("(3) \uD568\uAED8 \uBB36\uC778 \uCD95"));
+        assertTrue(response.contains("(4) \uD655\uC815 \uBD88\uAC00"));
+        assertFalse(response.contains("[\uC5D4\uC11C\uD074]"));
+    }
+
+    /**
+     * appearance 질문 토큰 추출 시 범위어(대화)보다 인물명(지연)을 남겨야 합니다.
+     */
+    @Test
+    void extractPersonFocusTokens_shouldPreferPersonNameOverDialogueScopeWord() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method extractMethod = ChatAIService.class.getDeclaredMethod("extractPersonFocusTokens", String.class);
+        extractMethod.setAccessible(true);
+
+        @SuppressWarnings("unchecked")
+        final List<String> tokens = (List<String>) extractMethod.invoke(
+                service,
+                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8"
+        );
+
+        assertTrue(tokens.contains("\uAC00\uC601"));
+        assertFalse(tokens.contains("\uB300\uD654"));
+    }
+
+    /**
+     * primary person token은 질문의 님 호칭 토큰을 우선해야 합니다.
+     */
+    @Test
+    void selectPrimaryPersonTokenFromQuery_shouldPreferHonorificPersonToken() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "selectPrimaryPersonTokenFromQuery",
+                String.class,
+                List.class
+        );
+        method.setAccessible(true);
+
+        final String primary = (String) method.invoke(
+                service,
+                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8",
+                List.of("\uAC00\uC601", "Dreamdiary")
+        );
+
+        assertEquals("\uAC00\uC601", primary);
+    }
+
+    /**
+     * dominant stem이 있으면 짧은 토큰 오매칭 태그(#문지연)를 제외해야 합니다.
+     */
+    @Test
+    void isPersonRelevantTag_shouldUseDominantStemForShortPersonToken() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isPersonRelevantTag",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object personFocus = buildTestPersonFocus("\uAC00\uC601");
+        final boolean matchesPrimaryTag = (boolean) method.invoke(
+                service,
+                "[\uC5D4\uC11C\uD074]#\uAE40\uAC00\uC601",
+                personFocus,
+                "\uAE40\uAC00\uC601"
+        );
+        final boolean matchesFalsePositiveTag = (boolean) method.invoke(
+                service,
+                "[\uC720\uBA85\uC778]#\uBB38\uAC00\uC601",
+                personFocus,
+                "\uAE40\uAC00\uC601"
+        );
+
+        assertTrue(matchesPrimaryTag);
+        assertFalse(matchesFalsePositiveTag);
+    }
+
+    /**
+     * interpretive lead는 표시용 태그 포맷([엔서클] 제거)을 써야 합니다.
+     */
+    @Test
+    void buildPersonMeaningInterpretiveLead_shouldUseDisplayTagFormat() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildPersonMeaningInterpretiveLead",
+                String.class,
+                Map.class,
+                List.class,
+                Map.class,
+                Map.class,
+                Map.class
+        );
+        method.setAccessible(true);
+
+        final String lead = (String) method.invoke(
+                service,
+                "\uAC00\uC601",
+                Map.of("[\uC5D4\uC11C\uD074]#\uAE40\uAC00\uC601", 24),
+                List.of(),
+                Map.of(),
+                Map.of("[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9", 9),
+                Map.of()
+        );
+
+        assertTrue(lead.contains("#\uAE40\uAC00\uC601"));
+        assertFalse(lead.contains("[\uC5D4\uC11C\uD074]"));
+    }
+
+    /**
+     * person focus 표시 이름은 entity catalog canonical label을 우선해야 합니다.
+     */
+    @Test
+    void resolvePersonFocusTarget_shouldPreferEntitySummaryCanonicalLabel() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "resolvePersonFocusTarget",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+        );
+        method.setAccessible(true);
+
+        final JournalEntityFocusService.PersonEntityFocusSummary entitySummary =
+                new JournalEntityFocusService.PersonEntityFocusSummary(
+                        12,
+                        "\uAE40\uAC00\uC601",
+                        "\uAE40\uAC00\uC601",
+                        List.of("\uAC00\uC601"),
+                        0,
+                        0,
+                        null,
+                        null,
+                        Map.of(),
+                        Map.of(),
+                        Map.of(),
+                        List.of()
+                );
+        final Class<?> personFocusClass = Class.forName(
+                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus"
+        );
+        final var personFocusCtor = personFocusClass.getDeclaredConstructor(
+                String.class,
+                List.class,
+                int.class,
+                JournalEntityFocusService.PersonEntityFocusSummary.class
+        );
+        personFocusCtor.setAccessible(true);
+        final Object personFocus = personFocusCtor.newInstance(
+                "\uAC00\uC601",
+                List.of("\uAC00\uC601"),
+                5,
+                entitySummary
+        );
+
+        final String target = (String) method.invoke(service, personFocus);
+
+        assertEquals("\uAE40\uAC00\uC601", target);
+    }
+
+    /**
+     * tag-only person-meaning 결과는 TAG match type만 포함해야 합니다.
+     */
+    @Test
+    void isTagOnlyPersonMeaningResults_shouldBeTrueForTagMatchesOnly() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isTagOnlyPersonMeaningResults",
+                List.class
+        );
+        method.setAccessible(true);
+
+        final RagSearchResult tagResult = RagSearchResult.builder()
+                .matchType(RagSearchResult.MATCH_TYPE_TAG)
+                .score(1.0D)
+                .build();
+        final RagSearchResult keywordResult = RagSearchResult.builder()
+                .matchType(RagSearchResult.MATCH_TYPE_KEYWORD)
+                .score(1.0D)
+                .build();
+
+        final boolean tagOnly = (boolean) method.invoke(service, List.of(tagResult));
+        final boolean mixed = (boolean) method.invoke(service, List.of(tagResult, keywordResult));
+
+        assertTrue(tagOnly);
+        assertFalse(mixed);
+    }
+
+    /**
+     * hybrid 시스템 프롬프트는 SNAPSHOT 블록과 표시용 태그를 포함해야 합니다.
+     */
+    @Test
+    void buildPersonSynthesisHybridSystemPrompt_shouldIncludeSnapshotWithDisplayTags() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildPersonSynthesisHybridSystemPrompt",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final String prompt = (String) method.invoke(
+                service,
+                ragContext,
+                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+        );
+
+        assertTrue(prompt.contains("PERSON_SYNTHESIS_HYBRID"));
+        assertTrue(prompt.contains("SNAPSHOT"));
+        assertTrue(prompt.contains("(1) \uB0B4 \uD0DC\uB3C4"));
+        assertFalse(prompt.contains("[\uC5D4\uC11C\uD074]"));
     }
 }

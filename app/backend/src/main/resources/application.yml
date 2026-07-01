@@ -231,3 +231,8 @@ app:
 
     release-history:
         max-list-size: 50
+
+    ollama:
+        base-url: http://localhost:11434
+        chat-model: qwen2.5:7b
+        embedding-model: nomic-embed-text

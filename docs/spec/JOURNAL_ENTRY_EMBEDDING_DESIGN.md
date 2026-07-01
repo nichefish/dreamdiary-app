@@ -161,7 +161,7 @@ final_score =
 | --- | --- |
 | Endpoint | `GET /api/admin/journal-entry-embeddings/quality-eval` |
 | 권한 | `ROLE_MNGR` |
-| 전제 | Ollama 임베딩 API 가동 (`nomic-embed-text` 등). 실행 전 `GET /api/admin/ollama/health`로 선행 핑 |
+| 전제 | Ollama 임베딩 API 가동 (`app.ollama.embedding-model`, 기본 `nomic-embed-text`). 실행 전 `GET /api/admin/ollama/health`로 선행 핑 |
 
 ### Ollama health
 
@@ -169,7 +169,7 @@ final_score =
 | --- | --- |
 | Endpoint | `GET /api/admin/ollama/health` |
 | 권한 | `ROLE_MNGR` |
-| 동작 | `GET /api/tags`로 연결·필수 모델(`qwen2.5:7b`, `nomic-embed-text`) 설치 여부만 확인. **자동 `ollama serve`는 하지 않음** |
+| 동작 | `GET /api/tags`로 연결·필수 모델(`app.ollama.chat-model`, `app.ollama.embedding-model`) 설치 여부만 확인. **자동 `ollama serve`는 하지 않음** |
 | `status` | `UP` (연결+모델 준비), `DEGRADED` (연결됐으나 모델 누락), `DOWN` (연결 불가) |
 
 Quality Eval 리포트에는 실측 시점 `ollamaHealth`가 포함됩니다. health가 `DOWN`/`DEGRADED`(임베딩 모델 미설치)이면 스위트는 실행하지 않고 `OLLAMA_UNAVAILABLE`과 구체적 `summary`를 반환합니다.

@@ -15,6 +15,18 @@ AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](migration/c
   - 현재 소규모 개인 PC 환경에서는 7B 모델이 가장 범용적으로 많이 사용된다.
 - cmd에서 위치 상관없이 "ollama run qwen2.5:7b" 입력하여 설치.
 
+### 3. 애플리케이션 설정 (`application.yml`)
+
+모델명은 코드 상수가 아니라 Spring 설정으로 관리합니다 (`OllamaProperties`, prefix `app.ollama`).
+
+| 키 | 기본값 | 용도 |
+| --- | --- | --- |
+| `app.ollama.base-url` | `http://localhost:11434` | Ollama API |
+| `app.ollama.chat-model` | `qwen2.5:7b` | 채팅·person synthesis hybrid |
+| `app.ollama.embedding-model` | `nomic-embed-text` | RAG 쿼리 임베딩·백필 worker |
+
+로컬에서 14B 시험 시 `application-local.yml`에 `app.ollama.chat-model: qwen2.5:14b`를 두고 `ollama pull qwen2.5:14b` 후 백엔드를 재기동합니다.
+
 ---
 
 ## RAG (Retrieval-Augmented Generation) 구현
@@ -41,12 +53,12 @@ AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](migration/c
 ```
 사용자 메시지
   → JournalEntryEmbeddingSearchService.search(message, topK=5)
-      → OllamaClient.embed(message)          // 쿼리 벡터 (nomic-embed-text)
+      → OllamaClient.embed(message)          // 쿼리 벡터 (app.ollama.embedding-model)
       → ConcurrentHashMap 캐시에서 cosine similarity 계산
       → retrieval_weight(DREAM 1.3, DIARY 1.0, NOTE 0.85) 적용
       → 상위 5개 반환
   → 검색 결과를 systemPrompt 뒤에 주입
-  → OllamaClient.chat(systemPrompt, contextMessages)  // qwen2.5:7b
+  → OllamaClient.chat(systemPrompt, contextMessages)  // app.ollama.chat-model
 ```
 
 **캐시 갱신 시점**

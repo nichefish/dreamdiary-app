@@ -67,3 +67,7 @@ app:
         service-entry:
             enabled: ${SERVICE_ENTRY_LOG_ENABLED:false}
             log-finish: ${SERVICE_ENTRY_LOG_FINISH:false}
+
+    # 로컬 Ollama chat 모델 (기본 qwen2.5:7b). 14B 시험 시 아래 주석 해제 후 ollama pull.
+    ollama:
+        chat-model: qwen2.5:14b
