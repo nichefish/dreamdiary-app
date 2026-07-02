@@ -10,14 +10,14 @@
 ## Vue SPA 구현 현황 (소스 기준)
 
 > 레거시 FTL/브리지 설명은 아래 각 화면 절을 유지한다. **실제 동작·경로는 이 절과 `app/frontend-vue/src` 가 우선**한다.
-> 라우트: `app/frontend-vue/src/router/index.ts` · URL 매핑: `app/frontend-vue/src/utils/urlMapping.ts`
+> 라우트: `app/frontend-vue/src/app/router/index.ts` · URL 매핑: `app/frontend-vue/src/shared/utils/urlMapping.ts`
 
 ### 아키텍처 (수렴 후)
 
 | 축 | 레거시 | Vue SPA |
 |----|--------|---------|
 | 목록 렌더 | FTL `#journal_day_list_div` + `JournalDay*ListApp` 텔레포트/브리지 | `JournalDayCard.vue` + `useJournalStore.dayList` |
-| 상태 | `window.JOURNAL`, `JournalDayMonthlyApp.*` pending 큐 | Pinia `stores/journal.ts` |
+| 상태 | `window.JOURNAL`, `JournalDayMonthlyApp.*` pending 큐 | Pinia `features/journal/stores/journal.ts` |
 | 탭 전환 | `dF.JournalDayViewService.changeView(url)` | `router-link` (`journal-monthly` 등) |
 | 모달 | Bootstrap + 레거시 서비스 | `JournalDayLayout.vue` + `useJournalModalStore` |
 | 공통 첨부 | `CommentList.modal`, `FileGroupList.modal` | `useAttachableModalStore` |
@@ -44,9 +44,12 @@
 ### 일정 캘린더 (`ScheduleCalendar.vue`)
 
 - **탭·툴바**: `JournalDayViewToolbar` 와 동일 상하감 — 탭(`nav-tabs-line ps-5 mt-5`) 상단, 이동일·검색·필터·등록은 탭 오른쪽(`pe-5 mt-3`). 카드 `margin-top: 0`. 달력 VIEW(FullCalendar) · 목록 VIEW(테이블)
+- **aside (년월 내비게이션)**: `ScheduleAside.vue` — 저널 aside 와 동일 폭(280px 고정)·sticky(상단 1rem, 자체 스크롤). 연도 select + 월 prev/next + 월 3열 그리드 + TODAY 버튼만 배치(필터·검색·등록은 툴바 유지). 연/월 선택·TODAY 는 이동일(anchorDate)을 갱신 후 기존 이동일 경로 재사용 — 달력 VIEW `gotoDate`, 목록 VIEW 해당 연도 재조회. 표시/숨김 토글은 `scheduleAside` 스토어(localStorage `schedule_aside_visible`) — 닫기 버튼은 aside 내부, 숨김 시 툴바 끝에 열기 아이콘 버튼(`bi-layout-sidebar-inset-reverse`) 표시. 저널과 달리 Pinpoint·필터 없음
+- **저장 모달 날짜 입력**: 시작일·종료일은 레거시(`ScheduleRegModal` — readonly 텍스트 input + `cF.datepicker.singleDatePicker`)와 동일하게 **readonly 텍스트 input + flatpickr**(`bindSingleDatePicker`, 저널 등록 모달과 동일 유틸). input 아무 곳이나 클릭하면 달력이 뜬다. 모달 열 때마다 재초기화(attach), 닫기 버튼에서 destroy. 종료일 칸은 레거시 `#endDtDiv`(display:none 토글)와 동일하게 `v-show` — 공휴일 선택 시 숨기고 `endDt=bgnDt` 로 덮어쓰며 flatpickr 표시값도 `setDate` 동기화. (변경 전: 네이티브 `<input type="date">` — 마이그레이션 시 이탈분을 레거시로 수렴)
 - **목록 API**: `GET /api/schedule/list` — 달력과 동일 `bgnDt`/`endDt`·고급필터·검색어, `ScheduleDto` 페이징
 - **목록 행 클릭**: 휴가·생일 코드는 상세 모달 생략(달력과 동일), 그 외 `GET /api/schedule/cal-dtl` 상세 모달
 - **공휴일 DB SSOT**: `schedule.schedule_cd` = `HOLYDAY` (`SCHEDULE_CD` 코드·`ScheduleSpec` 조회와 동일). 레거시 `HLDY`·`content_type` `schdul`/`schedule` 은 `data-required-cd-mariadb.sql` 하단 UPDATE로 정합. **이동일**은 달력/목록 이동용(데이터 필터 아님). 달력 API `bgnDt`/`endDt` = FullCalendar `datesSet` visible 구간. 목록 VIEW는 동일 구간(달력에서 넘어온 경우) 또는 이동일 변경 시 해당 **연도 전체**.
+- **i18n**: 목록·상세 조회와 등록·수정·삭제 결과 메시지는 서버 `message`를 우선 사용하고, 서버 메시지가 없을 때 현재 locale의 클라이언트 카탈로그 메시지를 표시한다.
 
 ### 저널 일간 화면 (journal-daily) 스펙
 
@@ -54,6 +57,7 @@
 - **레이아웃**: `SystemLayout` > `JournalDayDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
 - **네비게이션**: 상단 이전/다음 버튼으로 날짜 이동 (`router.replace` + `stdrdDt` query)
 - **모달**: `JournalDayDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
+- **챕터 모달 i18n**: `JournalChapterRegistModal.vue`의 표시 문구·확인창·결과 fallback은 현재 locale 카탈로그를 사용하며, 등록·수정·일자 이동 API의 서버 `message`가 있으면 우선 표시
 - **진입점**: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼
 - **URL**: `/journal/daily?stdrdDt=YYYY-MM-DD`
 - **새 창 오픈**: `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제
@@ -83,6 +87,8 @@
 | 검색 | `openDayFilterModal({ type: "meta", ... })` — `JournalDayMetaModal` |
 | 그래프로 보기 | `addMetaToGraph` (최대 2, 중복·꽉 참 시 안내) |
 | 메타 설정 | `openMetaProfile` — `JournalMetaProfileModal` |
+
+메타 컨텍스트 메뉴의 액션·표시 상태·제한 경고는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 #### 그래프 영역
 
@@ -139,10 +145,12 @@
 | 메타 탭 | `<a>` | `.nav-link.px-6.cursor-pointer` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 (Vue) |
 | 탭 라벨 | text | — | — | `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW` |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 등록 버튼; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
-| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex` |
+| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex`. 신규 등록 성공 시 서버가 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. |
 | 키워드 검색 | include | `_journal_day_keyword_search.ftlh` | 검색 파라미터 | 팝업 형태 — SPA ❌ MISSING |
 | 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부. 일자/일기/꿈 태그 행의 목록 시작 x좌표는 동일해야 하며, `꿈 태그` 라벨 길이 차이로 들여쓰기 차이가 생기면 안 된다. |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayMonthlyListApp` 마운트 대상 |
+
+`JournalDayViewToolbar.vue`의 주간·월간·달력·메타 탭, 일기·꿈 전체검색 placeholder/tooltip, 저널 일자 등록 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 라벨만 바꾸며 탭 route, 로컬 검색어, 새 탭 검색 URL과 등록 모달 호출은 유지한다.
 
 ### Action Buttons & Interactions
 
@@ -156,11 +164,16 @@
 
 **레이아웃 전역 툴바** (`_journal_day_page_header.ftlh` 나머지): 고급필터·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ❌ MISSING (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
+**인증 만료 후 복귀**: 월간 VIEW 의 현재 기간은 URL query `yy`/`mnth`가 SSOT다. 월 이동, 연도 변경, 월 버튼, TODAY, Pinpoint 되돌리기는 `/journal/monthly?yy=YYYY&mnth=M` 형태로 주소를 갱신하며, 세션 만료로 로그인 화면에 이동할 때 해당 `fullPath`를 `redirect`로 넘긴다. 로그인 성공 후 동일 query로 복귀하면 `JournalDayMonthly`가 query를 store에 복원한 뒤 목록과 태그 클라우드를 조회한다.
+
 ### Data Displayed
 
 `JournalDayMonthlyListApp` Vue 앱이 `#journal_day_list_div`에 렌더한다.
 - 월 단위 저널 일자 목록 (월별 카드 형태)
 - 각 일자 카드에 일기(DIARY)/꿈(DREAM)/노트(NOTE) 엔트리 포함
+- 챕터 헤더의 유형·소유권 배지·등록 버튼·액션 툴팁·메뉴·빈 상태 문구는 현재 locale의 클라이언트 카탈로그를 사용
+- 챕터 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과는 현재 locale 카탈로그를 사용하며, 삭제 API의 서버 `message`가 있으면 우선 표시
+- 꿈 가상 섹션 제목은 서버가 요청 locale로 조립하고, 내 꿈 섹션의 등록·복사·TXT 액션 문구는 현재 locale의 클라이언트 카탈로그를 사용
 - 꿈 엔트리(`JOURNAL_DREAM`)의 태그에 사용자별 프로필 본문(`tag.list[].profileContent`)이 있으면 해당 꿈 본문 아래에 표시한다. 일기/노트 태그 프로필 본문은 일자 카드 본문 아래에 표시하지 않는다.
 - 정렬, 필터, 검색 파라미터 반영
 
@@ -195,6 +208,8 @@
 | 이력 | `_history_modal.ftlh` | 이력 버튼 클릭 |
 | 댓글 등록 | `_comment_reg_modal.ftlh` | 댓글 등록 버튼 클릭 |
 
+`JournalDayDetailModal.vue`의 제목·날짜 정밀도 배지·빈 상태·조회 실패·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
+
 ### Special behaviors
 
 - `Model.locale`을 JS 변수로 노출 (`${.locale?replace('_', '-')?js_string}`)
@@ -202,7 +217,7 @@
 - TinyMCE 에디터 로드 (일기/꿈/노트 본문 편집용)
 - FullCalendar 로드 (달력 뷰 전환 대비)
 - Prism.js 코드 하이라이팅 로드
-- 태그 헤더: `JournalTagCloudHeader.vue` 컴포넌트 (`v-if="store.showTagCloud"`). `store.tagCloud` 상태를 읽고 parent view 초기화 및 기간/뷰 변경 watch에서 `store.fetchTagCloud()` 호출
+- 태그 헤더: `JournalTagCloudHeader.vue` 컴포넌트 (`v-if="store.showTagCloud"`). `store.tagCloud` 상태를 읽고 parent view 초기화 및 기간/뷰 변경 watch에서 `store.fetchTagCloud()` 호출. 로딩 상태·행 레이블·태그 메뉴 툴팁은 현재 locale의 클라이언트 카탈로그 사용
 
 ---
 
@@ -243,6 +258,8 @@
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
 | 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` `reg-modal` | `JournalDayRegistModal` 신규 등록 (`openDayRegist()`) |
+
+**인증 만료 후 복귀**: 주간 VIEW 의 현재 기간은 URL query `weekStartDt`가 SSOT다. 주 이동, 날짜 선택기, TODAY는 `/journal/weekly?weekStartDt=YYYY-MM-DD` 형태로 주소를 갱신하며, 세션 만료로 로그인 화면에 이동할 때 해당 `fullPath`를 `redirect`로 넘긴다. `stdrdDt` query 로 진입한 기존 링크는 해당 날짜가 포함된 주의 `weekStartDt`로 해석해 조회한다.
 
 ### Data Displayed
 
@@ -291,6 +308,7 @@
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
 | 결산 등록 | 툴바 버튼 | `dF.JournalAnnual` 서비스 | 결산 등록 모달 오픈 |
+| 전체 결산 갱신 | annual aside `전체 결산 갱신` 버튼 | `dF.JournalAnnual.makeTotalAnnualAjax()` | `POST /api/journal/annual/make-total` 호출 후 성공 알림, 결산 목록과 전체 꿈 통계 재조회 |
 | 결산 카드 클릭 | 목록 카드 클릭 | `JournalAnnualListItem` Vue 내부 | 결산 상세 페이지 이동 |
 | 태그 클릭 | 태그 배지 클릭 | `dF.JournalDayTagService.select(...)` | 태그 상세 모달 |
 | 연도 필터 변경 | annual aside select 변경 | Vue store | 연도 필터가 키워드 필터보다 우선하며 AND 조건으로 결합하지 않음 |
@@ -312,6 +330,7 @@
 ### Special behaviors
 
 - 결산 등록 후 목록 갱신: `JournalAnnualListApp.init() + listAjax()` (레거시 IIFE 동등)
+- 전체 결산 갱신 후 목록 갱신: 레거시 `blockUIReload()`와 달리 Vue SPA에서는 `JournalAnnualStore.makeTotalAnnual()` 성공 알림 후 `fetchList()`와 `fetchTotal()`을 재호출해 현재 화면의 목록/총 집계를 갱신한다.
 - `preloadJournalDayTagService.js` 별도 적재 (태그 클릭 시 `dF.JournalDayTagService.select` 호출 대비)
 - 꿈 아이콘: `bi bi-moon-stars fs-4`
 - Vue SPA 목록 필터 우선순위:
@@ -319,6 +338,7 @@
   - 연도 필터가 비어 있을 때만 키워드 필터가 전체 결산 목록을 축소한다.
   - 따라서 연도 필터와 키워드 필터는 AND 조건이 아니다.
 - 키워드 필터 값이 있으면 목록 본문 렌더링 시 일치 텍스트를 `<mark class="journal-annual-list-vue__keyword-mark">`로 하이라이트한다. HTML 문자열 자체를 정규식 치환하지 않고 DOM 텍스트 노드만 감싸서 마크다운 HTML 구조를 보존한다.
+- Vue SPA의 결산 목록·필터·등록 모달 표시 문구, 툴팁, 확인창은 `useLocaleStore.t()`를 사용하며 `journal.annual.*`와 공통 i18n 키를 한국어/영어 카탈로그에서 동일하게 제공한다.
 
 ---
 
@@ -389,6 +409,7 @@
 - IMPORTANT/REFERENCE 라벨: 영문 대문자 표기
 - 부트 순서: `journalAnnualCrudService` → `journalAnnualStateService` → `journalAnnualService` → `JournalAnnualDetailCardApp` → `JournalAnnualEntryTagListApp` → `JournalAnnualEntryListApp` → `JournalAnnualDetailPageBoot`
 - `preloadJournalDayTagService.js` 적재 (태그 클릭 대비)
+- Vue SPA의 결산 상세·리뷰 등록 모달 표시 문구, 툴팁, 확인창은 `useLocaleStore.t()`를 사용하며 `journal.annual.*`와 공통 i18n 키를 한국어/영어 카탈로그에서 동일하게 제공한다.
 
 ---
 
@@ -421,6 +442,12 @@
 | 첨부파일 열 | `<th>` | `.col-lg-1.text-center.wb-keepall.hidden-table` | `post.hasFiles` | 모바일 숨김 |
 | 목록 tbody | `<tbody>` | `#journal_thread_list_div` | `JournalThreadListApp` Vue 텔레포트 | 행 직접 주입 |
 | 페이지네이션 | include | `_pagination.ftlh` | `paginationInfo` | 기존 서버사이드 페이지네이션 유지 |
+
+`JournalThreadList.vue`의 등록 버튼·테이블 헤더·빈 상태·댓글 목록·수정·삭제 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
+
+`JournalThreadRegistModal.vue`의 등록·수정 제목, 필드, placeholder, 저장·닫기 버튼 및 확인창은 현재 locale의 클라이언트 카탈로그를 사용한다. 목록·수정·상세 조회 실패와 등록·수정 결과 fallback도 현재 locale을 사용하며, API가 `message`를 반환하면 서버 메시지를 우선 표시한다.
+
+스레드 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 삭제 API의 서버 `message`가 있으면 우선 표시하고, 성공 알림 확인 후 첫 페이지 목록을 다시 조회한다.
 
 ### Action Buttons & Interactions
 
@@ -462,6 +489,8 @@
 | 댓글 목록 | `_comment_list_modal.ftlh` | 댓글 수 클릭 |
 | 파일 목록 | `_file_list_modal.ftlh` | 첨부파일 아이콘 클릭 |
 | 스레드 상세 | `_journal_thread_detail_modal.ftlh` | 모달 아이콘 클릭 |
+
+`JournalThreadDetailModal.vue`의 제목·댓글 후속 연동 안내·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 ### Special behaviors
 
@@ -882,6 +911,8 @@ const pinnedMnth = ref<number | null>(null);
 | 일기 키워드 | `#diaryFilterKeyword` | `store.diaryKeyword` — `store.showDiaries=true` 시에만 표시, Enter 시 `store.fetchDays()` |
 | 꿈 키워드 | `#dreamFilterKeyword` | `store.dreamKeyword` — `store.showDreams=true` 시에만 표시, Enter 시 `store.fetchDays()` |
 
+- 챕터 카테고리 필터로 숨겨진 무카테고리 챕터 힌트는 서버가 `common.category.none`을 현재 locale로 조회해 `카테고리 없음`/`No category`로 표시한다.
+
 ---
 
 ### 섹션 4: TODO 카드 (JournalDayAsideTodoCardApp)
@@ -963,6 +994,7 @@ type TodoRow = {
 - 폼: `#journalTodoRegistForm` (multipart/form-data)
 - 본문 textarea: `#tinymce_journalTodoCn` (TinyMCE 에디터)
 - Vue SPA: `journalModalStore.openTodoReg()` → 모달 open, `JournalTodoRegistModal.vue` 처리
+- 모달 제목·대상 년월·필드·placeholder·안내·검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용하고, 저장 API의 서버 `message`가 있으면 우선 표시한다.
 
 ---
 
@@ -1002,7 +1034,7 @@ type TodoRow = {
 
 - **Legacy screen**: `legacy/templates/view/feature/journal/entry/journal_entry_search.ftlh`
 - **Vue SPA route**: `/journal/entry/search` (`journal-entry-search`)
-- **Vue view**: `app/frontend-vue/src/views/journal/entry/JournalEntrySearchPage.vue`
+- **Vue view**: `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue`
 - **Layout**: `SystemLayout.vue` 하위 auth route. 새 창 검색 화면이므로 `DefaultLayout` 메뉴와 `JournalLayout` aside를 렌더링하지 않는다.
 - **Open pattern**: 태그 컨텍스트 메뉴의 `검색` 버튼에서 `window.open(...)`. 이미 이 검색 화면 안에 있는 경우에는 같은 창에서 route query를 갱신한다.
 
@@ -1012,20 +1044,21 @@ type TodoRow = {
 |-------|------|
 | `type=DIARY` | 일기 검색 |
 | `type=DREAM` | 꿈 검색 |
-| `tagIds=N` | 태그 ID 기반 검색 |
-| `tagName=...` | 화면 표시용 태그명 |
+| `tagIds=N` | 태그 ID 기반 검색. 검색 팝업의 태그 직접 입력은 기존 태그 자동완성/카테고리 선택으로 특정 태그 ID를 확정한 뒤 이 파라미터에 추가한다. |
 | `searchKeywords=...` | 키워드 검색 |
 
 ### Data Contract
 
 - 목록 API: `GET /api/journal/entries`
 - 파라미터: `type`, `tagIds`, `searchKeywords`
+- 고급 필터: 유형 토글, 키워드 입력, 태그 입력. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다.
 - 응답: `AjaxResponse.rsltList` (`JournalEntryDto[]`)
 - `type=DREAM` 응답의 태그 항목은 사용자별 꿈 태그 프로필 본문이 있으면 `tag.list[].profileContent`를 포함한다. 검색 결과 행은 `JournalEntryItem`을 통해 꿈 엔트리 본문 아래에 해당 프로필을 표시한다.
 
 ### Behavioral Contract
 
 - 태그 클릭 자체는 검색을 실행하지 않고 `JournalTagContextMenu`를 연다.
+- 태그 컨텍스트 메뉴의 액션과 태그 프로필 콘텐츠 유형 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다.
 - 일기/꿈 태그의 `검색` 액션은 현재 월간/주간 목록 필터를 변경하지 않고 새 창 검색 화면으로 이동한다.
 - 검색 팝업 내부에서 일기/꿈 태그의 `검색` 액션을 누르면 새 팝업을 열지 않고 같은 창의 URL query를 바꿔 결과를 재조회한다.
 - 검색 팝업 내부의 `태그 설정` 액션은 `JournalTagProfileModal`을 같은 창에서 연다.
@@ -1034,5 +1067,6 @@ type TodoRow = {
 - 검색 팝업 내부에서 엔트리 본문/태그 프로필 다음에 이어지는 저널 해석 행은 같은 결과 묶음으로 읽히도록 공통 저널 행 간격보다 좁게 붙여 표시한다.
 - 날짜가 바뀔 때 표시되는 날짜 헤더에는 새 창 버튼이 있어야 한다. 버튼은 해당 날짜의 `/journal/daily?stdrdDt=YYYY-MM-DD` 일자 뷰를 새 창으로 연다.
 - 검색 조건은 URL query에 남아야 한다. 검색 결과는 새로고침/공유 가능한 주소 기반 상태여야 한다.
+- 검색 API 실패는 `0건`으로 표시하지 않는다. 직전 성공 결과와 건수를 보존하고 서버 오류 메시지 또는 검색 실패 안내를 표시한다.
 - `결과 복사` 버튼은 현재 검색 결과 전체를 legacy 포맷(`날짜 (요일)`, `#정렬번호`, 본문)으로 클립보드에 복사한다.
 - 각 검색 결과 행의 복사 버튼은 해당 엔트리 하나만 같은 포맷으로 복사한다.

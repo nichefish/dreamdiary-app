@@ -1,5 +1,23 @@
 # DEV NOTES
 
+
+## Agent / CI 빌드 검증
+
+Agent shell·일부 CI에는 PATH 
+pm이 없다. **Vue 빌드는 Gradle Node로 돌린다** (uild.gradle → com.github.node-gradle.node, 
+odeProjectDir = app/frontend-vue).
+
+| 목적 | 명령 |
+|------|------|
+| Vue 프로덕션 빌드 | ./gradlew buildFrontend |
+| npm install | ./gradlew npmInstall |
+| 기타 package.json 스크립트 | ./gradlew npm_run_<script> (	ype-check → 
+pm_run_type_check) |
+
+인코딩 게이트: python scripts/check_encoding.py (
+pm run check:encoding과 동일).
+
+에이전트용 상세: .cursor/rules/agent-build-toolchain.mdc
 ## 공통 인코딩 게이트
 
 - `npm run check:encoding` → `scripts/check_encoding.py`. 실패 시 **해당 변경 묶음 전체 폐기·되돌림**(부분 통과 없음). `scripts/`에는 검증 외 자동 수정 도구를 두지 않는다(`scripts/README.md`).
@@ -12,6 +30,17 @@
 - **남기지 말 것**: 자잘한 리네임·한 줄 수정·매 커밋 단위 “변경 로그”용 `.md` 양산.
 - **같은 주제·같은 마이그레이션**은 이 파일(또는 `DESIGN_NOTES.md`) 안에서 정리한다. Phase별로 파일을 새로 만들지 말고, 필요하면 **한 문서에 `### Phase N` 섹션**만 둔다.
 - UTF-8 깨짐이 보이면 **일괄 스크립트·전역 치환으로 복구하지 말고** 해당 범위에서 작업을 중단한다. (연쇄 손상 방지.)
+
+---
+
+## 설정 네임스페이스
+
+- `spring.*` 아래에는 Spring Boot/Spring Security가 직접 해석하는 공식 설정만 둔다. 앱 코드가 임의로 읽는 커스텀 설정은 `spring.*`에 새로 추가하지 않는다.
+- DreamDiary 앱 런타임 설정은 `app.*`로 수렴한다. 인증 커스텀 설정은 `app.auth.*`를 사용한다.
+- 외부 연동 커스텀 설정은 `app.integration.*`를 사용한다.
+- 커스텀 `app.*` 설정을 Java 코드에서 읽을 때는 새 `@Value`를 늘리지 않고, 책임 경계의 `*Properties` 클래스에 `@ConfigurationProperties`로 바인딩한다.
+- Spring Boot/외부 라이브러리 공식 namespace(`spring.*`, `server.*`, `springdoc.*`)는 공식 설정 계약을 유지한다. 앱 코드가 소수 값을 직접 참조해야 하는 경우에도 별도 `app.*` 래핑을 기본값으로 만들지 않는다.
+- JWT 직접 발급 설정은 `app.auth.jwt.*`, refresh token 유지 시간은 `app.auth.refresh-token.*`에 둔다. 사용자 체감 세션 유지 시간처럼 재기동 없이 바뀌어야 하는 정책은 yml/env가 아니라 `auth_policy`를 SSOT로 둔다.
 
 ---
 
@@ -36,6 +65,8 @@
 ### 레거시 복원 모드 — UI 동일성 SSOT
 
 - 저널 Vue 마이그레이션에서 화면 UI의 SSOT는 legacy templates/static의 partial, FTL, CSS, 실제 DOM이다. `app/frontend-vue` 구현은 이를 재해석하지 않고 먼저 동일하게 복원한다.
+- **legacy 원본 참조 경로 (2026-07-02 `legacy/` 폴더 삭제 이후)**: ① 템플릿·정적 소스 원본은 git 이력 — 각 모듈의 Vue 전환 커밋 직전 트리(예: 일정은 `4932678fd^`)에서 원래 경로(`app/backend/src/main/resources/templates/…`, `static/…`)로 조회. ② 삭제 직전 `legacy/` 폴더 스냅샷 전체(2,560개 파일, ftlh/hbs + static 이미지·GeoLite2 mmdb 포함)는 리포 밖 `../legacy_backup_20260702.zip` 아카이브. (`legacy/`는 gitignore 대상이었으므로 폴더 자체는 git 이력에 없다.)
+- **FreeMarker MVC 렌더 경로 제거 (2026-07-02)**: 화면 뷰 전면 Vue 이관 완료에 따라 `FreemarkerInterceptor`·`FreemarkerModelContributor`(port/adapter)·MVC `FreeMarkerConfigurer` 커스터마이즈·`spring.freemarker` 설정·`spring-boot-starter-freemarker` 를 제거. FreeMarker 는 **이메일 템플릿 렌더**(`freemarkerEmailConfig` + `templates/email/*.ftlh`, `spring-context-support`)로만 잔존한다.
 - 작업 순서: ① legacy partial/FTL 확인 ② legacy CSS 확인 ③ legacy 렌더 DOM·클래스 확인 ④ 현재 Vue 비교 ⑤ 차이 목록 작성 ⑥ 차이 전부 수정 ⑦ 타입체크와 필요한 spec 갱신.
 - 사용자가 짚은 한 픽셀·문구·간격은 국소 요청이 아니라 해당 컴포넌트의 legacy 동등성 검수 신호로 취급한다. 그 지점만 고치고 끝내지 않는다.
 - 의미를 이해하지 못한 UI는 추정·개선하지 않는다. 우선 legacy와 동일하게 옮긴 뒤, 개선은 별도 명시 요청이 있을 때만 진행한다.
@@ -87,36 +118,59 @@
 
 - `journal/day/components` 에 섞였던 entry/chapter/interpretation 조립 컴포넌트는 `feature/journal/entry|chapter|interpretation/components` 로 직접 이동했다. **UI/DOM/클래스 불변.**
 
-### frontend-vue 패키지 구조 기준
+### frontend SPA 패키지 구조 기준 (Vue·React)
 
-- `src/components/` 는 앱 소유 공통 컴포넌트 루트다. `.gitignore` 로 숨기지 않는다. 시스템 공통 UI는 `components/system`, 폼·입력·표시 공통 UI는 `components/common` 아래에 둔다.
-- `src/layouts/` 는 라우트 셸과 레이아웃 전용 하위 컴포넌트만 둔다. 전역 상태 패널, 입력기, 모달 버튼처럼 레이아웃 의미가 아닌 공통 UI를 `layouts/` 에 넣지 않는다.
-- `src/views/` 는 라우트 화면과 feature-local 컴포넌트 경계다. 여러 feature가 재사용하는 컴포넌트는 `views/common` 에 새로 추가하지 말고 `src/components/common` 으로 둔다. 기존 `views/common/editor|tag` 는 이동 대상 부채다.
-- `src/stores/` 는 Pinia 상태와 API 조립까지만 담당한다. store가 `views` 또는 DOM 컴포넌트를 import하면 구조 위반이다.
-- `src/utils/` 는 순수 helper 또는 composable 성격만 둔다. 화면 렌더링 컴포넌트나 feature UI 상태가 커지면 `components` 또는 feature store로 이동한다.
-- `src/vendor/` 와 `metronic_vue_v8.2.1_demo1/` 은 외부 원본/벤더 경계다. 앱 코드 정리 목적으로 내부 파일을 수정하거나 새 앱 컴포넌트를 추가하지 않는다.
+- flat `src/views/`, `src/stores/`, `src/layouts/`, `src/router/` hybrid 는 제거됐다. import 축은 `@/app/`, `@/shared/`, `@/features/` 이다.
+- `src/app/` — `router/`, `layouts/`, `pages/Error*.vue` 등 앱 shell.
+- `src/shared/` — auth·config·theme·menu store, `ui/editor|tag`, 범용 `utils/`, `components/system/`.
+- `src/features/{admin,journal,chat,board,calendar,user,attachable,auth}/` — 화면 + feature store(+ types) co-location. 백엔드 `feature/*` 축과 맞춘다.
+- feature store는 Pinia 상태·API 조립까지만 담당한다. store가 Vue 컴포넌트나 DOM을 import하면 구조 위반이다.
+- `src/styles/` 는 앱 전역 스타일 경계다.
+- `src/platform/metronic/` 는 UI 플랫폼 킷(Metronic) 경계다. npm vendor·제품 도메인이 아닌 **UI platform 층**으로 분류한다. `frontend-vue`·`frontend-react` 공통 SSOT.
+- `src` top-level 책임: `app/`(shell), `shared/`(횡단 플랫폼), `features/`(제품), `platform/`(UI 킷), `styles/`(앱 스타일).
+- `metronic_vue_v8.2.1_demo1/` 은 Metronic 원본 참조·업그레이드 diff용 외부 경계(앱 import 축 아님).
 
 ### journal Vue 패키지 기준
 
-- `views/journal/**` 는 Java `feature/journal/**` 패키지 경계를 따른다. `day`, `entry`, `chapter`, `interpretation`, `todo`, `annual`, `thread`, `shared` 를 기준으로 둔다.
-- `daily`, `weekly`, `monthly`, `calendar`, `meta` 는 독립 feature가 아니라 `journal.day` 의 view mode/presentation 이다. 화면 파일은 `views/journal/day/` 아래에 둔다.
-- `views/journal/day/components` 는 day aggregate 표시용 컴포넌트만 둔다. `JournalEntryItem`, `JournalChapterItem`, `JournalInterpretationItem` 처럼 다른 journal feature의 항목 컴포넌트는 각 feature 하위에 둔다.
-- 여러 journal feature가 함께 쓰는 context menu, tag profile, comment/related modal 은 `views/journal/shared/**` 에 둔다.
+- `features/journal/**` 는 Java `feature/journal/**` 패키지 경계를 따른다. `day`, `entry`, `chapter`, `interpretation`, `todo`, `annual`, `thread`, `shared` 를 기준으로 둔다.
+- 횡단 store(`journal.ts`, `journalModal.ts`, `journalAside.ts` 등)는 `features/journal/stores/` 에 둔다.
+- `daily`, `weekly`, `monthly`, `calendar`, `meta` 는 독립 feature가 아니라 `journal.day` 의 view mode/presentation 이다. 화면 파일은 `features/journal/day/` 아래에 둔다.
+- `features/journal/day/components` 는 day aggregate 표시용 컴포넌트만 둔다. `JournalEntryItem`, `JournalChapterItem`, `JournalInterpretationItem` 처럼 다른 journal feature의 항목 컴포넌트는 각 feature 하위에 둔다.
+- 여러 journal feature가 함께 쓰는 context menu, tag profile, comment/related modal 은 `features/journal/shared/**` 에 둔다.
 - modal 위치도 대상 도메인을 따른다. 예: day 등록/상세/meta/tag 상세는 `day/modals`, entry 등록은 `entry/modals`, chapter 등록은 `chapter/modals`, todo 등록은 `todo/modals`.
 
-### Metronic vendor 경계
+### Metronic platform 경계 (UI 킷 층)
 
-- **Metronic asset**: Metronic에서 가져온 CSS/SCSS, 폰트, 이미지, 아이콘, 데모 미디어처럼 제품 코드가 아닌 정적 자산이다. 예: `src/vendor/metronic/assets/**`, `public/media/**`.
-- **Metronic runtime/core**: 앱 코드가 직접 import하는 Metronic helper/plugin/service다. 예: `@metronic/core/services/ApiService`, `@metronic/core/plugins/keenthemes`, `@metronic/core/helpers/assets`. 이것은 정적 asset이 아니라 빌드 입력이지만, public repo에서는 Metronic 원본 재배포가 될 수 있으므로 커밋하지 않는다. 대신 로컬 설치/복원 절차를 둔다.
-- **Metronic demo source**: 원본 데모의 샘플 Vue 컴포넌트와 샘플 화면이다. 예: `src/vendor/metronic/components/**`, `views/crafted/**`, `LayoutBuilder.vue`, 데모용 drawer/search/toolbar/modal 컴포넌트. 제품에서 쓰지 않으면 보관하지 않고 제거한다.
-- **앱 소유 컴포넌트**: Metronic class, icon, asset을 사용하더라도 DreamDiary 라우트/레이아웃/기능에서 import하는 Vue 컴포넌트는 앱 소스다. `src/components/**`, `src/layouts/**`, `src/views/**` 아래 앱 경계에 둔다.
-- 예외 판단: `layouts/default/components/modals/Modals.vue` 처럼 Metronic demo modal들을 조립하는 Vue 파일은 asset은 아니지만 현재 앱에서 import하지 않는 demo source다. 제품에서 필요해지면 `src/components` 또는 `src/layouts`의 앱 소유 경계로 새로 승격하고, import 경로를 실제 사용 vendor/app 컴포넌트에 맞춘 뒤 커밋한다. 쓰지 않으면 제거한다.
-- 원칙: **추적되는 앱 코드가 import하는 파일은 ignored 상태로 두지 않는다.** ignored 파일을 import해야 한다면 먼저 그 파일을 앱 소유 코드로 승격하거나, 명시적 vendor 복원 절차를 만든다.
-- public repo 원칙: Metronic 원본 소스·SCSS·폰트·이미지·데모 미디어는 git에 올리지 않는다. 필요한 경우 라이선스를 보유한 개발자가 로컬 vendor 복원 절차로 채운다.
+분류: Metronic은 **외부 npm vendor**도 **DreamDiary 제품 도메인**(`app`/`shared`/`features`)도 아니다. 앱 부트스트랩·전역 SCSS·layout 런타임에 깊게 붙은 **UI platform kit** 으로 본다.
+
+| 층 | 경로 | 역할 |
+|---|---|---|
+| 제품 | `app/`, `shared/`, `features/` | DreamDiary 라우트·상태·도메인 UI |
+| 통합 | `app/layouts/**` | Metronic DOM/class를 DreamDiary 방식으로 소유·감쌈 |
+| UI 킷 | `platform/metronic/**` | Metronic 원본(runtime, assets, demo 잔재) |
+| import 축 | `@metronic` alias | 물리 경로 `src/platform/metronic` — 앱 코드에 물리 경로 하드코딩 금지 |
+
+`frontend-vue`·`frontend-react` 공통:
+- **물리 경로 SSOT**: `src/platform/metronic/`
+- **alias SSOT**: `@metronic` → 위 경로 (`vite.config`·`tsconfig` paths)
+- **내부 subtree**: Vue(`core/` 등)와 React(`layout/`, `partials/` 등)는 킷·스타터가 달라 **1:1 동일할 필요 없음**. 맞출 것은 층·alias·편집 정책.
+
+물리 경로 이전 현황:
+- Vue: `src/vendor/metronic` → `src/platform/metronic` (✓ 완료)
+- React: `src/_metronic` → `src/platform/metronic` (✓ 완료)
+
+- **Metronic asset**: CSS/SCSS, 폰트, 이미지, 아이콘, 데모 미디어 등 정적 자산. 예: `src/platform/metronic/assets/**`, `public/media/**`.
+- **Metronic runtime/core**: 앱이 직접 import하는 helper/plugin/service. 예: `@metronic/core/services/ApiService`, `@metronic/core/plugins/keenthemes`, `@metronic/core/helpers/assets`. public repo에서는 Metronic 원본 재배포 이슈로 git 미추적; **로컬 킷 복원 절차**로 채운다.
+- **Metronic demo source**: 원본 스타터 샘플 화면·컴포넌트. 예: `platform/metronic/components/**`, `views/crafted/**`, `LayoutBuilder.vue`, 데모용 drawer/search/toolbar/modal. 제품에서 import하지 않으면 제거.
+- **앱 소유 컴포넌트**: Metronic class/icon/asset을 쓰더라도 DreamDiary 라우트·레이아웃·기능에서 import하는 Vue/React 컴포넌트는 `src/app/**`, `src/shared/**`, `src/features/**` 소유.
+- 예외 판단: `app/layouts/default/components/modals/Modals.vue` 처럼 Metronic demo modal을 조립하는 파일은 demo source. 제품에서 필요해지면 `shared` 또는 `app` 으로 승격 후 import 경로를 앱 소유 컴포넌트에 맞춘 뒤 커밋. 쓰지 않으면 제거.
+- **편집 원칙**: `platform/metronic` 자체를 앱 루트로 만들지 않는다. 킷 내부 링크 일괄 수정은 피하고 `app/layouts` adapter에서 감쌈. 장기적으로 demo source(`components/**` 등)는 삭제 대상.
+- **추적 원칙**: 추적되는 앱 코드가 import하는 파일은 ignored 로 두지 않는다. ignored 킷 파일을 import해야 하면 앱 소유 코드로 승격하거나 명시적 **킷 복원 절차**를 문서화한다.
+- public repo 원칙: Metronic 원본 소스·SCSS·폰트·이미지·데모 미디어는 git에 올리지 않는다. 필요한 경우 라이선스를 보유한 개발자가 로컬 **킷 복원 절차**로 채운다.
 
 ### 검증
 
-- `npm run build:ts` 등. 브라우저 회귀: monthly/weekly·필터·주간 네비·태그·모달 등.
+- `./gradlew buildFrontend` (또는 PATH `npm` 있을 때 `npm run build`). 브라우저 회귀: monthly/weekly·필터·주간 네비·태그·모달 등.
 
 ---
 
@@ -259,7 +313,7 @@
 
 | 범위 | 결정/기록 |
 |------|-----------|
-| Metronic vendor 경계 | `vendor/metronic` 자체를 앱 루트로 만들려 하지 않는다. vendor 내부 링크를 전부 고치는 방향은 피하고, 앱 쪽 adapter/layout에서 감싼다. 장기적으로 `vendor/metronic/components`는 삭제 대상이다. |
+| Metronic platform 경계 | `platform/metronic` 을 UI platform kit 층으로 둔다(제품 도메인·npm vendor 아님). 킷 자체를 앱 루트로 만들지 않고 `app/layouts` adapter에서 감싼다. import는 `@metronic` alias. 장기적으로 demo source(`platform/metronic/components/**` 등)는 삭제 대상. 물리 이동: Vue `vendor/metronic` → `platform/metronic` (✓). React `_metronic` → `platform/metronic` (✓). |
 | 기본 레이아웃명 | `layout/default-layout`은 의미 중복이므로 `layouts/default`로 둔다. |
 | 첫 화면 메뉴 | 대시보드가 placeholder여도 기본 메뉴/사이드바가 있어야 한다. 이동 수단 없는 빈 화면은 마이그레이션 완료 상태가 아니다. |
 | 사용자/관리자 메뉴 | 메뉴는 1차원 하드코딩이 아니라 `GET /api/menus?mode=USER|MNGR` + `subMenuList` depth 기반이어야 한다. fallback 메뉴는 서버 실패 시 보조 수단으로만 둔다. |

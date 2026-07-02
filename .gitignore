@@ -51,17 +51,12 @@ lerna-debug.log*
 
 # Vue SPA build output copied to Spring Boot
 /static/vue-app/
+/static/react-app/
 
 # Metronic Vue source dump / vendor-heavy original assets
 /app/frontend-vue/src/views/crafted/
 /app/frontend-vue/src/views/LayoutBuilder.vue
 /app/frontend-vue/public/media/
-/app/frontend-vue/src/layouts/default/components/drawers/
-/app/frontend-vue/src/layouts/default/components/extras/
-/app/frontend-vue/src/layouts/default/components/search/
-/app/frontend-vue/src/layouts/default/components/toolbar/
-/app/frontend-vue/src/layouts/default/config/MainMenuConfig.ts
-/app/frontend-vue/src/layouts/default/config/CleanMainMenuConfig.ts
 
 # frontend-vue local/build artifacts
 /app/frontend-vue/node_modules/
@@ -73,9 +68,10 @@ lerna-debug.log*
 /app/frontend-vue/*.js
 /app/frontend-vue/**/*.js
 /app/frontend-vue/src/assets/css
-/app/frontend-vue/src/vendor/metronic/
+/app/frontend-vue/src/platform/metronic/
 
 /app/frontend-react/node_modules
+/app/frontend-react/src/platform/metronic/
 
 /legacy
 /metronic_vue_v8.2.1_demo1/

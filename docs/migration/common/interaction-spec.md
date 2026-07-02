@@ -33,6 +33,16 @@
 - Pinia 스토어의 `visible` / `open*` 함수 + Bootstrap 5 모달 컴포넌트.
 - 게시판 상세: 레거시 `CustomEvent('board-post:open-detail-modal')` 대신 `useBoardPostStore.openDetail(id)`.
 
+### 언어(Locale) 전환
+
+- `shared/i18n/stores/locale.ts` (`useLocaleStore`) — Pinia store, `localStorage("dreamdiary_locale")` 에 `ko`/`en` 저장.
+- 전환 시 `axios.defaults.headers.common["Accept-Language"]` 갱신 → 이후 모든 axios 요청에 반영.
+- 서버는 `AcceptHeaderLocaleResolver`(Spring MVC) 로 `Accept-Language` 헤더를 읽어 `LocaleContextHolder` locale 설정 → `MessageUtils.getMessage()` 응답 메시지 다국어 반환.
+- 앱 초기 로드 시 `applyLocaleHeader()` (`ApiService.ts`) 가 localStorage 값을 읽어 axios 헤더를 초기화한다.
+- 라우터 `beforeEach`는 인증 상태 확인과 화면 마운트보다 먼저 `localeStore.ensureCatalog()`를 호출한다. 같은 locale의 catalog가 이미 준비됐으면 재요청하지 않으며, 직접 URL 진입·새로고침에서도 번역 키 대신 현재 locale 메시지를 표시한다.
+- 로그인 화면(`SignIn.vue`): 국기 버튼(🇰🇷/🇺🇸) — `localeStore.setLocale()` 호출, 화면 텍스트 `localeStore.t()` 카탈로그로 전환.
+- 앱 헤더 Navbar: 국기 버튼 클릭 → ko↔en 토글. UI 텍스트 전체 i18n 적용은 별도 작업.
+
 ### 라우팅·메뉴
 
 - `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`).
@@ -102,12 +112,42 @@ cF.ajax.request(url, options, callback, continueBlock?)
 
 | 상태코드 | 처리 방식 |
 |---------|----------|
-| 401 Unauthorized | SweetAlert confirm 다이얼로그: "세션이 만료되었습니다. 작성 중인 내용이 유실될 수 있습니다. 로그인 화면으로 이동하시겠습니까?" → 확인 시 `/sign-in` 이동, 취소 시 현재 화면 유지. 동시에 여러 요청이 401 로 실패해도 대화상자는 1회만 표시(`authExpiredDialogShowing` 플래그). `/api/auth/` 경로는 제외(auth 스토어에서 직접 처리). |
-| 그 외 | 각 컴포넌트/스토어의 catch 블록에서 개별 처리. |
+| 401 Unauthorized | 응답 문구나 locale과 무관하게 HTTP 상태만으로 미인증을 판정하고 `shared/auth/sessionExpired.ts`의 `confirmSessionExpired()` 다이얼로그를 사용한다. 일반 라우트는 확인 시 `/sign-in?sessionExpired=Y&redirect=현재 fullPath` 이동, 취소 시 현재 화면 유지. 팝업 라우트(`journal-entry-search`, `journal-daily`)는 로그인 화면 이동 대신 창 닫기 확인을 표시하고 확인 시 `window.close()` 호출. 동시에 여러 요청이 401 로 실패해도 대화상자는 1회만 표시(`authExpiredDialogShowing` 플래그). `/api/auth/` 경로는 제외(auth 스토어에서 직접 처리). |
+| 403 Forbidden | 권한 오류로 유지한다. 전역 401 인터셉터의 세션 만료 다이얼로그나 로그인 화면 이동으로 분류하지 않고, 호출부의 서버 메시지 alert 또는 `/403` access denied 화면으로 처리한다. |
+| 그 외 | Vue 저널의 변경·주요 조회 요청은 `swalRequestError()`가 구조화된 Axios 응답의 `message`를 우선 표시하고, 메시지가 없을 때만 작업별 또는 공통 요청 실패 문구를 표시한다. 그 밖의 컴포넌트/스토어는 각 catch 블록에서 개별 처리한다. |
 
 - 인터셉터에서 401 처리 후 `AuthExpiredError` sentinel(`utils/authError.ts`)을 throw 해 각 catch 블록의 일반 오류 alert 가 중복으로 뜨지 않도록 억제한다.
-- 각 컴포넌트 submit/delete catch 에서 `isAuthExpiredError(e)` 판별 후 해당하면 즉시 return.
+- 라우터 가드(`router/index.ts`)가 `verifyAuth()` 이후 미인증 상태를 감지한 경우에도 같은 `confirmSessionExpired()`를 거친다. 일반 보호 라우트는 확인 시 `buildSessionExpiredSignInRoute(to.fullPath)`로 이동하고, 팝업 보호 라우트는 alert 후 `next(false)`로 로그인 화면 렌더를 막는다.
+- 사용자 체감 로그인 유지 시간은 `auth_policy.session_timeout_minutes` 단일 정책으로 관리한다. 서버는 이 값을 Spring Session max inactive interval, JWT access token `exp`, JWT 쿠키 max-age에 적용하고, JWT 검증 시에도 `issuedAt + policyTimeout`을 넘으면 만료로 처리한다. 정책값이 없거나 조회 실패 시 기존 `server.servlet.session.timeout` 설정을 fallback으로 사용한다.
+- Vue 저널의 submit/delete/state catch는 `swalRequestError(e)`를 호출한다. 이 공통 함수가 `AuthExpiredError`를 즉시 무시하고, 그 외 오류는 콘솔에 기록한 뒤 서버 `message` 또는 공통 실패 문구를 표시한다.
+- Vue 저널의 검색·목록 조회가 실패해도 직전 성공 데이터를 빈 목록이나 `0건`으로 덮지 않는다. 상세·수정용 조회 실패는 오류를 표시하고 해당 모달을 열지 않는다.
+- 저장·삭제·복원처럼 결과값으로 후속 알림을 분기하는 store action은 `AuthExpiredError`를 `{ rslt: false }` 또는 `false`로 변환하지 않고 재throw한다. 호출부는 인증 만료일 때 전역 401 안내만 남기고, 실제 처리 실패일 때만 실패 알림을 표시한다.
+- 인증이 필요한 Vue SPA 모달은 `shared/auth/sessionPing.ts`의 `assertAuthenticatedBeforeModal()`을 먼저 호출한 뒤 모달 open 플래그 또는 Bootstrap `show()`를 실행한다. 이 핑은 `/api/session/ping`을 호출하며, 로그인 세션이 풀려 있으면 전역 401 인터셉터가 즉시 세션 만료 안내를 표시하고 모달은 열지 않는다. 로그인 화면의 비밀번호 변경 모달처럼 비로그인 상태에서 열려야 하는 auth 모달은 선행 핑 대상에서 제외한다.
 - 취소 시 navbar 세션 만료 메시지 표시(legacy `.blink.text-danger`)는 Vue SPA 에서 미구현.
+
+### 백엔드 전역 예외 응답
+
+`BaseExceptionHandler`는 Ajax 요청의 HTTP 상태와 `AjaxResponse.status`를 동일하게 유지한다.
+
+| 예외 유형 | HTTP/본문 status | 사용자 메시지 계약 |
+|---|---:|---|
+| `BindException`, `BusinessException`, `IllegalArgumentException` | 400 | 첫 검증 메시지 또는 메시지 번들로 해석한 요청 오류 |
+| `NotAuthorizedException`, `AccessDeniedException` | 403 | 권한 오류 메시지 |
+| `EntityNotFoundException`, `NoHandlerFoundException` | 404 | 대상 데이터/경로 없음 메시지 |
+| `DuplicateException`, `DataIntegrityViolationException` | 409 | 중복 또는 데이터 무결성 충돌 메시지 |
+| 그 밖의 `Exception` | 500 | 상세 예외는 서버 로그에만 기록하고 응답에는 `msg.rslt.exception` 공통 메시지만 노출 |
+
+메시지가 영문 내부 조건문인 `BusinessException`은 예외 클래스 번들의 공통 요청 실패 문구로 치환하며, 메시지 키나 명시적 사용자 메시지는 그대로 해석한다.
+
+Spring Security 필터·인증 진입점의 Ajax 오류도 `SecurityErrorResponseWriter`를 통해 같은 `AjaxResponse` JSON 계약을 사용한다. 401은 `msg.auth.login-required`, 403은 권한 오류, 필터 내부의 예상 밖 오류는 `msg.rslt.exception`을 사용하며 HTTP 상태와 본문 `status`를 일치시킨다. `AjaxSessionTimeoutFilter`가 비Ajax 요청에서 포착한 인증·권한 예외는 빈 응답으로 삼키지 않고 다시 throw하여 정상 보안 오류 흐름으로 전달한다.
+
+API 인증 경계는 `PublicApiRequestMatcher`를 SSOT로 사용하며 Spring Security와 JWT 필터가 같은 경로·HTTP 메서드 목록을 공유한다. 로그인·토큰 갱신·로그아웃 JSON·세션 만료·로그인 비밀번호 변경·인증 메일 검증·아이디/이메일 중복 확인·신규 계정 신청 POST만 공개하고, 그 외 `/api/**`는 인증을 요구한다. `/api/user/signup-requests`는 POST만 공개하며 목록 GET과 승인/거절은 보호한다. `/api/auth/get-auth-account`와 `/api/session/ping`도 보호 API로서 미인증 요청에 공통 JSON 401을 반환한다.
+
+채팅 경로는 `WebSocketHandshakeRequestMatcher`가 식별하는 `GET /chat` 핸드셰이크만 Spring Security URL 인가에서 공개한다. 핸드셰이크 인증은 `WebSocketAuthInterceptor`가 JWT 또는 기존 Principal로 수행하며, `/chat/settings`, `/chat/sessions`를 포함한 등록된 `/chat/**` REST 요청은 인증을 요구하고 미인증 요청에 공통 JSON 401을 반환한다.
+
+세션 종료 WebSocket 알림은 전역 토픽을 사용하지 않는다. `SessionDestroyListener`는 종료된 세션의 사용자명으로 `/user/queue/session-invalid`에만 발송하며, 웹·모바일 클라이언트도 사용자 전용 큐만 구독한다. 다른 사용자의 세션 종료 이벤트를 현재 사용자의 세션 만료로 오인해서는 안 된다.
+
+채팅 메시지 이력은 세션 소유권을 먼저 검증하는 `GET /chat/sessions/{sessionId}/messages` 단일 경로로 조회한다. 소유권 범위를 확정하지 않는 레거시 `GET /chat/messages`는 제공하지 않는다. WebSocket 취소 요청도 대상 세션의 소유권을 검증한 뒤에만 취소 플래그를 변경한다.
 
 ---
 

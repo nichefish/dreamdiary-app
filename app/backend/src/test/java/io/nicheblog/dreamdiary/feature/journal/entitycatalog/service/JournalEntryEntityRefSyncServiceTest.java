@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.entitycatalog.service;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -69,7 +70,7 @@ class JournalEntryEntityRefSyncServiceTest {
     void extractEntityRoles_shouldInferRoleFromMentionContext() throws Exception {
         final JournalEntryEntityRefSyncService service =
                 new JournalEntryEntityRefSyncService(null, null, null, null);
-        final Method mentionCtor = Class.forName(
+        final Constructor<?> mentionCtor = Class.forName(
                         "io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityRefSyncService$ExtractedPersonMention")
                 .getDeclaredConstructor(String.class, String.class, io.nicheblog.dreamdiary.feature.journal.entitycatalog.type.JournalEntityMentionType.class, String.class, String.class, Double.class);
         mentionCtor.setAccessible(true);

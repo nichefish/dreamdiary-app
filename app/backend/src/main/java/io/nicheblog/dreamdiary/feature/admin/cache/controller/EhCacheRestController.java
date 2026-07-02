@@ -52,7 +52,7 @@ public class EhCacheRestController
         // 현재 활성 중인 캐시(name) 목록 조회 :: 성공시 처리완료목록으로 출력
         final HashMap<String, Object> activeCacheMap = EhCacheUtils.getActiveCacheMap();
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(activeCacheMap));
     }
@@ -74,7 +74,7 @@ public class EhCacheRestController
         // 현재 활성 중인 캐시(name) 목록 조회 :: 성공시 처리완료목록으로 출력
         final Object activeCache = EhCacheUtils.getObjectFromCache(cacheParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(activeCache));
     }
@@ -96,7 +96,7 @@ public class EhCacheRestController
         // 캐시 evict
         EhCacheUtils.evictCache(cacheParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -118,7 +118,7 @@ public class EhCacheRestController
         // 캐시 evict
         EhCacheUtils.clearCache(cacheParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -136,7 +136,7 @@ public class EhCacheRestController
 
         final List<String> activeCacheList = EhCacheUtils.chckActiveCacheNm();
         final boolean isSuccess = EhCacheUtils.clearAllCaches();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(activeCacheList));
     }

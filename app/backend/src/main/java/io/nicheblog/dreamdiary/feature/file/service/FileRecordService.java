@@ -110,13 +110,13 @@ public class FileRecordService
             // 파일명 체크
             final String orgnFileNmRaw = Optional.ofNullable(multipartFile.getOriginalFilename()).orElse(DateUtils.getCurrDateStr(DatePtn.DATE));
             final String orgnFileNm = FileUtils.sanitizeFileName(orgnFileNmRaw);
-            if (!FileUtils.isValidFileName(orgnFileNm)) throw new IllegalArgumentException("msg.file.name.invalid");
+            if (!FileUtils.isValidFileName(orgnFileNm)) throw new IllegalArgumentException("file.name.invalid");
             // 확장자 체크
             final String orgnFileExtn = Optional.ofNullable(FilenameUtils.getExtension(orgnFileNm)).orElse("");
-            if (!fileConfig.getAllowedExtensions().contains(orgnFileExtn.toLowerCase())) throw new IllegalArgumentException("msg.file.extension.invalid");
+            if (!fileConfig.getAllowedExtensions().contains(orgnFileExtn.toLowerCase())) throw new IllegalArgumentException("file.extension.invalid");
             // 마임타입 체크
             final String contentType = Optional.ofNullable(multipartFile.getContentType()).orElse("application/octet-stream");
-            if (!fileConfig.getAllowedMimeTypes().contains(contentType)) throw new IllegalArgumentException("msg.file.mime-type.invalid");
+            if (!fileConfig.getAllowedMimeTypes().contains(contentType)) throw new IllegalArgumentException("file.mime-type.invalid");
 
             // TODO: Tika 이용한 더 정밀한 파일 타입 검증
 

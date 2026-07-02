@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
+import io.nicheblog.dreamdiary.feature.user.account.service.UserPasswordHistoryService;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -43,6 +44,7 @@ public class UserMyService {
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
     private final AuthPolicyQueryService authPolicyQueryService;
+    private final UserPasswordHistoryService userPasswordHistoryService;
 
     /**
      * 비밀번호 만료시 비밀번호 변경 (미로그인 상태)
@@ -61,15 +63,18 @@ public class UserMyService {
 
         // password 일치여부 체크
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
+            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
         }
         this.validatePasswordResetTokenIfNeeded(retrievedEntity, param.getPasswordToken());
+        userPasswordHistoryService.validateReusablePassword(retrievedEntity, newPw);
+        final String previousPasswordHash = retrievedEntity.getPassword();
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
-        retrievedEntity.acntStus.setPasswordToken(null);
+        retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
+        userPasswordHistoryService.recordPasswordChange(modified, previousPasswordHash);
         refreshTokenService.revoke(username);
 
         return modified.getId() != null;
@@ -89,7 +94,7 @@ public class UserMyService {
 
         // 1. 내 비밀번호가 맞는지부터 확인
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
+            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
         }
 
         return true;
@@ -123,15 +128,18 @@ public class UserMyService {
 
         // 1. 내 비밀번호가 맞는지부터 확인
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
+            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
         }
         // 2. 맞으면 비밀번호 업데이트
+        userPasswordHistoryService.validateReusablePassword(retrievedEntity, newPw);
+        final String previousPasswordHash = retrievedEntity.getPassword();
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
-        retrievedEntity.acntStus.setPasswordToken(null);
+        retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
+        userPasswordHistoryService.recordPasswordChange(modified, previousPasswordHash);
         refreshTokenService.revoke(loginUsername);
 
         return modified.getId() != null;
@@ -185,8 +193,8 @@ public class UserMyService {
         if (user == null || user.acntStus == null) return;
         if (!"Y".equals(user.acntStus.getNeedsPasswordReset())) return;
 
-        if (StringUtils.isBlank(passwordToken) || StringUtils.isBlank(user.acntStus.getPasswordToken())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
+        if (StringUtils.isBlank(passwordToken) || StringUtils.isBlank(user.acntStus.getPasswordResetTokenHash())) {
+            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
         }
         if (!this.isPasswordResetTokenWindowValid(user.acntStus.getPasswordResetTokenIssuedAt())) {
             throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
@@ -195,9 +203,9 @@ public class UserMyService {
         final String hashed = userService.hashPasswordResetToken(passwordToken);
         if (!MessageDigest.isEqual(
                 hashed.getBytes(StandardCharsets.UTF_8),
-                user.acntStus.getPasswordToken().getBytes(StandardCharsets.UTF_8)
+                user.acntStus.getPasswordResetTokenHash().getBytes(StandardCharsets.UTF_8)
         )) {
-            throw new BadCredentialsException(MessageUtils.getMessage("msg.user.pw.mismatch"));
+            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
         }
     }
 

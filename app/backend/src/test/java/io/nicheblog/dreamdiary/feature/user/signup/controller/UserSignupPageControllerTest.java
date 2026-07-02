@@ -9,8 +9,6 @@ import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.web.config.WebMvcTestSliceSupportConfig;
-import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerTestHelper;
-import io.nicheblog.dreamdiary.infrastructure.freemarker.config.TestFreemarkerConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,14 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.util.AssertionErrors.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,14 +38,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 변경 전 근본 원인: {@link UserSignupRequestDto} 가 {@link io.nicheblog.dreamdiary.feature.user.account.model.UserDto} 와 동일 필드를 재선언해 WebMvc 바인딩이 어긋났고(해당 중복 필드 선언 제거로 정리됨 — 본 테스트는 회귀 방지용).
  * 테스트 슬라이스에서 보안 자동설정이 {@link JwtTokenProvider} 빈을 요구하므로 {@code @MockBean} 으로 주입한다.
  * 변경 후: 필터 비활성화로 CSRF 필터가 없으므로 슬라이스 POST 에 {@code csrf()} 를 붙이지 않는다(운영 {@code WebSecurityAdapter} 와의 차이는 테스트 범위 밖).
- * {@link io.nicheblog.dreamdiary.infrastructure.web.config.WebMvcContextConfig} 경로의 Freemarker 인터셉터가
- * {@link io.nicheblog.dreamdiary.global.ActiveProfile}·{@link io.nicheblog.dreamdiary.global.ReleaseInfo} 등을 요구하므로
- * {@link WebMvcTestSliceSupportConfig},{@link TestFreemarkerConfig} 를 {@literal @}Import 한다.
+ * 변경 전: {@code WebMvcContextConfig} 경로의 Freemarker 인터셉터 조립 빈 때문에 {@code TestFreemarkerConfig} 를 함께 {@literal @}Import 했다.
+ * 변경 후: FreeMarker MVC 렌더 경로 제거(화면 뷰 Vue 이관 완료)로 {@link WebMvcTestSliceSupportConfig} 만 {@literal @}Import 한다
+ * ({@link io.nicheblog.dreamdiary.global.ActiveProfile}·{@link io.nicheblog.dreamdiary.global.ReleaseInfo} 등 웹 레이어 빈 보충은 계속 필요).
  *
  * @author nichefish
  */
 @WebMvcTest(controllers = { UserSignupPageController.class, UserSignupRestController.class })
-@Import({ TestFreemarkerConfig.class, WebMvcTestSliceSupportConfig.class })
+@Import({ WebMvcTestSliceSupportConfig.class })
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class UserSignupPageControllerTest {
@@ -68,22 +61,18 @@ class UserSignupPageControllerTest {
 
     /**
      * 신규계정 등록 화면 조회 Test
+     *
+     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재, 코드 목록 모델 주입(times(5))을 검증했다.
+     * 변경 후: 컨트롤러가 Vue SPA 리다이렉트만 반환하므로(signup-3) 리다이렉트 경로를 검증한다.
      */
     @Test
     public void testUserSignupRegForm() throws Exception {
         // given::
 
-        // when::
-        final MvcResult result = mockMvc.perform(get(Url.USER_SIGNUP_PAGE))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        verify(codeLookupService, times(5)).setCdListToModel(anyString(), any());
-
-        // then::
-        final String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();
-        assertNotNull(viewName, "View name is null");
-        assertTrue(BaseControllerTestHelper.viewFileExists(viewName), "View template file does not exist: " + viewName);
+        // when:: / then::
+        mockMvc.perform(get(Url.USER_SIGNUP_PAGE))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/vue-app/user/signup"));
     }
 
     /**
@@ -124,7 +113,7 @@ class UserSignupPageControllerTest {
     @Test
     @WithMockUser(username = "mngr-test", authorities = "ROLE_MNGR")
     public void testUserCfAjax() throws Exception {
-        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS)).build();
+        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage("common.result.success")).build();
         when(userSignupService.cf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_SIGNUP_REQUEST_APPROVAL.replace("{id}", "123")))
@@ -135,7 +124,7 @@ class UserSignupPageControllerTest {
     @Test
     @WithMockUser(username = "mngr-test", authorities = "ROLE_MNGR")
     public void testUserUncfAjax() throws Exception {
-        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS)).build();
+        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage("common.result.success")).build();
         when(userSignupService.uncf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_SIGNUP_REQUEST_REJECTION.replace("{id}", "123")))

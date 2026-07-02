@@ -21,6 +21,8 @@ public interface ApiUrl {
     String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
     String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
     String API_AUTH_INFO = Prefix.API + "/auth/get-auth-account";
+    /** Vue SPA authenticated action preflight. */
+    String API_SESSION_PING = Prefix.API + "/session/ping";
     /** Vue SPA용 JSON 로그인/로그아웃 */
     String API_AUTH_LOGIN = Prefix.API + "/auth/login";
     String API_AUTH_LGOUT_JSON = Prefix.API + "/auth/logout-json";
@@ -176,6 +178,8 @@ public interface ApiUrl {
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_STATS = Prefix.API + "/admin/journal-entry-embeddings/stats";
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_SYNC = Prefix.API + "/admin/journal-entry-embeddings/sync";
     String ADMIN_JOURNAL_ENTRY_EMBEDDING_REQUEUE_FAILED = Prefix.API + "/admin/journal-entry-embeddings/requeue-failed";
+    String ADMIN_JOURNAL_ENTRY_EMBEDDING_QUALITY_EVAL = Prefix.API + "/admin/journal-entry-embeddings/quality-eval";
+    String ADMIN_OLLAMA_HEALTH = Prefix.API + "/admin/ollama/health";
     String ADMIN_JOURNAL_ENTRY_ENTITY_STATS = Prefix.API + "/admin/journal-entry-entities/stats";
     String ADMIN_JOURNAL_ENTRY_ENTITY_SYNC = Prefix.API + "/admin/journal-entry-entities/sync";
     String ADMIN_JOURNAL_ENTRY_ENTITY_REQUEUE_FAILED = Prefix.API + "/admin/journal-entry-entities/requeue-failed";

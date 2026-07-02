@@ -50,7 +50,7 @@ public class SnmpApiController
         SnmpUtils.sendSnmpMessage(snmpApiParam);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

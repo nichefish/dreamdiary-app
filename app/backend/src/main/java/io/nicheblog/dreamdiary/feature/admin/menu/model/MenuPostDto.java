@@ -54,6 +54,10 @@ public class MenuPostDto
     @NotBlank
     private String menuLabel;
 
+    /** 메뉴 breadcrumb 하단에 표시할 설명 */
+    @Size(max = 1000)
+    private String menuDescription;
+
     /** 미열람 카운트 이름 (model) */
     @Size(max = 100)
     private String unreadCntNm;
@@ -69,6 +73,10 @@ public class MenuPostDto
     /** 사용 여부 (Y/N) */
     @Pattern(regexp = "^[YN]$")
     private String useYn;
+
+    /** 사이드바 표시 여부 (Y/N) */
+    @Pattern(regexp = "^[YN]$")
+    private String sidebarVisibleYn;
 
     /** 아이콘 (bootstrap icon 또는 font-awesome) TODO: svg? */
     private String icon;

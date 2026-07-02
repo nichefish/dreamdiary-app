@@ -72,6 +72,16 @@ CREATE TABLE IF NOT EXISTS code_item (
     UNIQUE KEY uk_code_item_group_code_code (group_code, code)
 ) COMMENT = '상세 코드';
 
+-- 상세 코드 다국어 (code_item_i18n)
+CREATE TABLE IF NOT EXISTS code_item_i18n (
+    code_item_id INT NOT NULL COMMENT '상세 코드 ID (FK → code_item.id)',
+    locale       VARCHAR(10) NOT NULL COMMENT '언어 코드 (en, ja 등)',
+    code_name    VARCHAR(50) NOT NULL COMMENT '번역된 코드명',
+    -- CONSTRAINT
+    PRIMARY KEY (code_item_id, locale),
+    CONSTRAINT fk_code_item_i18n FOREIGN KEY (code_item_id) REFERENCES code_item (id) ON DELETE CASCADE
+) COMMENT = '상세 코드 다국어';
+
 -- -----------------------
 
 -- 메뉴 (menu)
@@ -84,11 +94,13 @@ CREATE TABLE IF NOT EXISTS menu (
     admin_yn CHAR(1) DEFAULT 'N' COMMENT '관리자 메뉴 여부 (Y/N)',
     menu_name VARCHAR(200) COMMENT '메뉴명',
     menu_label VARCHAR(200) COMMENT '메뉴 라벨 (약어표시)',
+    menu_description VARCHAR(1000) COMMENT '메뉴 설명',
     url VARCHAR(500) COMMENT '연결 URL',
     icon VARCHAR(1000) COMMENT '아이콘',
     unread_cnt_nm VARCHAR(200) COMMENT '미열람 카운트 이름 (model)',
     submenu_expand_type VARCHAR(50) COMMENT '하위메뉴 확장 유형',
     protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부',
+    sidebar_visible_yn CHAR(1) DEFAULT 'Y' COMMENT '사이드바 표시 여부',
     -- STATE
     sort_order INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
@@ -109,7 +121,9 @@ CREATE TABLE IF NOT EXISTS auth_policy (
     login_attempt_limit INT COMMENT '로그인 시도 제한 횟수',
     login_attempt_window_minutes INT COMMENT '로그인 시도 누적 시간 창(분)',
     account_lock_duration_minutes INT COMMENT '계정 잠금 지속 시간(분)',
+    session_timeout_minutes INT COMMENT '사용자 체감 로그인 유지 시간(분)',
     password_change_cycle_days INT COMMENT '패스워드 변경 주기(일)',
+    password_history_count INT DEFAULT 2 COMMENT '최근 비밀번호 재사용 제한 개수',
     inactive_lock_days INT COMMENT '미로그인 시 잠금 일수',
     password_reset_token_expiry_minutes INT COMMENT '비밀번호 재설정 토큰 만료 시간(분)',
     duplicate_login_allowed_yn CHAR(1) DEFAULT 'N' COMMENT 'Duplicate login allowed Y/N',
@@ -120,6 +134,15 @@ CREATE TABLE IF NOT EXISTS auth_policy (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '인증 정책';
+
+CREATE TABLE IF NOT EXISTS user_password_history (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 비밀번호 이력 ID',
+    user_id INT NOT NULL COMMENT '사용자 고유 ID',
+    password_hash VARCHAR(64) NOT NULL COMMENT '이전 비밀번호 해시',
+    changed_at DATETIME NOT NULL COMMENT '비밀번호 변경 일시',
+    FOREIGN KEY(user_id) REFERENCES user (id),
+    INDEX idx_user_password_history_user_changed_at (user_id, changed_at)
+) COMMENT = '사용자 비밀번호 이력';
 
 -- -----------------------
 

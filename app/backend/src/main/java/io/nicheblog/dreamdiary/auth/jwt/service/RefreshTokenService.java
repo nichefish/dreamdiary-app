@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.jwt.service;
 
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
@@ -7,7 +8,6 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,11 +38,12 @@ public class RefreshTokenService {
     private static final Base64.Decoder BASE64_URL_DECODER = Base64.getUrlDecoder();
 
     private final UserRepository userRepository;
+    private final AuthProperties authProperties;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    @Getter
-    @Value("${spring.jwt.refresh-token-validity-seconds:1209600}")
-    private long refreshTokenValiditySeconds;
+    public long getRefreshTokenTtlSeconds() {
+        return authProperties.getRefreshToken().getTtlSeconds();
+    }
 
     @Getter
     @RequiredArgsConstructor
@@ -62,7 +63,7 @@ public class RefreshTokenService {
     public String issue(final String username) {
         if (StringUtils.isBlank(username)) throw new IllegalArgumentException("username is required.");
         final UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
+                .orElseThrow(() -> new AuthenticationFailureException());
         return issueForUser(user);
     }
 
@@ -77,28 +78,28 @@ public class RefreshTokenService {
     @Transactional
     public RefreshResult rotate(final String refreshToken) {
         if (StringUtils.isBlank(refreshToken)) {
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final String username = extractUsername(refreshToken);
         final UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
+                .orElseThrow(() -> new AuthenticationFailureException());
 
         if (user.getRefreshTokenHash() == null || user.getRefreshTokenExpiresAt() == null) {
             revoke(user);
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final Date now = DateUtils.getCurrDate();
         if (user.getRefreshTokenExpiresAt().before(now)) {
             revoke(user);
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final String hashed = hashToken(refreshToken);
         if (!secureEquals(hashed, user.getRefreshTokenHash())) {
             revoke(user);
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
 
         final String newToken = issueForUser(user);
@@ -138,7 +139,7 @@ public class RefreshTokenService {
 
         user.setRefreshTokenHash(refreshTokenHash);
         user.setRefreshTokenIssuedAt(now);
-        user.setRefreshTokenExpiresAt(new Date(now.getTime() + refreshTokenValiditySeconds * 1000L));
+        user.setRefreshTokenExpiresAt(new Date(now.getTime() + this.getRefreshTokenTtlSeconds() * 1000L));
         userRepository.saveAndFlush(user);
 
         return refreshToken;
@@ -165,18 +166,18 @@ public class RefreshTokenService {
      */
     private String extractUsername(final String refreshToken) {
         final int idx = refreshToken.indexOf(DELIMITER);
-        if (idx <= 0) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+        if (idx <= 0) throw new AuthenticationFailureException();
 
         final String encodedUser = refreshToken.substring(0, idx);
         try {
             final byte[] decoded = BASE64_URL_DECODER.decode(encodedUser);
             final String username = new String(decoded, StandardCharsets.UTF_8);
             if (StringUtils.isBlank(username)) {
-                throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+                throw new AuthenticationFailureException();
             }
             return username;
         } catch (final IllegalArgumentException e) {
-            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+            throw new AuthenticationFailureException();
         }
     }
 

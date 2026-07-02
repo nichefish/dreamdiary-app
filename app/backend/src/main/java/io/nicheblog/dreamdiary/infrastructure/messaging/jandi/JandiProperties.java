@@ -19,7 +19,7 @@ import java.util.List;
  * @author nichefish
  */
 @Component
-@ConfigurationProperties(prefix = "api.jandi")
+@ConfigurationProperties(prefix = "app.integration.jandi")
 @Getter
 @Setter
 public class JandiProperties {
@@ -45,11 +45,11 @@ public class JandiProperties {
 
     /** 토픽 조회 */
     public String getId(final String name) {
-        if (StringUtils.isEmpty(name)) throw new JandiException(MessageUtils.getMessage("msg.jandi.rslt.team-not-found"));
+        if (StringUtils.isEmpty(name)) throw new JandiException(MessageUtils.getMessage("jandi.result.team-not-found"));
 
         for (final Topic topic : this.topics) {
             if (name.equals(topic.getName())) return topic.getId();
         }
-        throw new JandiException(MessageUtils.getMessage("msg.jandi.rslt.team-not-found"));
+        throw new JandiException(MessageUtils.getMessage("jandi.result.team-not-found"));
     }
 }

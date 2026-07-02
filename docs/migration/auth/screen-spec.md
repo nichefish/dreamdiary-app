@@ -1,16 +1,17 @@
 # 인증/사용자 화면 스펙 (Auth & User Screen Spec)
 
-> 라우트: `app/frontend-vue/src/router/index.ts`
-> 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
+> Vue 라우트: `app/frontend-vue/src/app/router/index.ts` / React 라우트: `app/frontend-react/src/router.tsx`
+> 전체 라우트 목록: `docs/migration/vue-screen-overview.md`, `docs/migration/react-screen-overview.md`
+> 인증/사용자 Vue store의 API 결과 메시지는 서버 `message`를 우선 사용하고, 서버 메시지가 없을 때는 현재 locale의 클라이언트 카탈로그 메시지를 fallback으로 사용한다.
 
 ## 라우트·화면 매핑
 
-| 화면 | Vue route | Vue view | 레이아웃 | 구현 |
-|------|-----------|----------|---------|------|
-| 로그인 | `/sign-in` | `SignIn.vue` | AuthLayout | ✓ |
-| 계정 신청 | `/user/signup` | `UserSignupPage.vue` | AuthLayout | ✓ |
-| 계정 인증 결과 | `/auth/verify-result` | `VerifyResultPage.vue` | AuthLayout | ✓ |
-| 내 정보 | `/my` | `UserMyPage.vue` | DefaultLayout | ✓ |
+| 화면 | Vue route | Vue view | React view | 레이아웃 | Vue | React |
+|------|-----------|----------|------------|---------|-----|-------|
+| 로그인 | `/sign-in` | `SignIn.vue` | `SignInPage.tsx` | AuthLayout | ✓ | ✓ |
+| 계정 신청 | `/user/signup` | `UserSignupPage.vue` | — | AuthLayout | ✓ | ❌ |
+| 계정 인증 결과 | `/auth/verify-result` | `VerifyResultPage.vue` | — | AuthLayout | ✓ | ❌ |
+| 내 정보 | `/my` | `UserMyPage.vue` | — | DefaultLayout | ✓ | ❌ |
 
 > 계정 신청 승인 관리(`/user/signup/approval`)는 관리자 기능으로 `admin/screen-spec.md` 참조.
 
@@ -18,11 +19,18 @@
 
 ## 로그인 (`sign-in`)
 
-**Vue view**: `app/frontend-vue/src/views/auth/SignIn.vue`  
-**스토어**: `stores/auth.ts`
+**Vue view**: `app/frontend-vue/src/features/auth/SignIn.vue`  
+**Vue 스토어**: `shared/auth/stores/auth.ts`
+
+**React view**: `app/frontend-react/src/features/auth/SignInPage.tsx`  
+**React 스토어**: `shared/auth/authStore.ts` (zustand)  
+**React 레이아웃**: `app/layouts/AuthLayout.tsx`  
+**Spring 서빙**: `/react-app/**` → `static/react-app/` SPA fallback (`WebMvcContextConfig`)
 
 **기능**:
 - ID/PW 폼 로그인 → `POST /api/auth/login`
+- POST /api/auth/login internal server errors return HTTP 500 with a login-scoped error message and must not be classified as login-required/session-expired.
+- Vue auth verification treats only HTTP 401 from `/api/auth/get-auth-account` as unauthenticated/session-expired; HTTP 403, HTTP 500, and network failures surface as auth verification/runtime errors and must not purge auth state as a login-required diagnosis.
 - Google OAuth2 소셜 로그인 → `/oauth2/authorization/google` (팝업)
 - Naver OAuth2 소셜 로그인 → `/oauth2/authorization/naver` (팝업)
 - 로그인 실패 메시지 표시
@@ -30,29 +38,32 @@
 - 로그인 실패 응답이 `isDupIdLogin`이면 중복 로그인 확인 다이얼로그 표시 후 확인 시 재로그인, 취소 시 `/api/auth/expire-session` 호출
 - 로그인 실패 응답이 `isCredentialExpired` 또는 `needsPasswordReset`이면 로그인 비밀번호 변경 모달 오픈
 - 로그인 비밀번호 변경 모달 저장 → `POST /api/auth/login-pw-chg`
+- 로그인 비밀번호 변경은 `auth_policy.password_history_count` 기준으로 현재 비밀번호와 최근 이력 재사용을 막는다. 정책값 기본은 `2`이며, `0`이면 재사용 검사를 수행하지 않는다.
 - 로그인 성공 → `/journal/weekly` 리다이렉트
 
 ---
 
 ## 계정 신청 (`user-signup`)
 
-**Vue view**: `app/frontend-vue/src/views/auth/UserSignupPage.vue`
+**Vue view**: `app/frontend-vue/src/features/auth/UserSignupPage.vue`
 
 **기능**:
 - 신규 계정 신청 폼 (이름, 이메일, 비밀번호 등)
 - 신청 완료 → `POST /api/user/signup-requests`
 - 신청 완료 후 안내 메시지 표시
+- **i18n**: 화면 내 모든 UI 텍스트는 `useLocaleStore.t()` 카탈로그 키로 표시 (`user.signup.*`, `user.form.*`, `user.profile.*`, `user.emplym.*`). 관련 messages_ko/en.properties 키 일괄 정의 완료.
 
 ---
 
 ## 계정 인증 결과 (`auth-verify-result`)
 
-**Vue view**: `app/frontend-vue/src/views/auth/VerifyResultPage.vue`
+**Vue view**: `app/frontend-vue/src/features/auth/VerifyResultPage.vue`
 
 **기능**:
 - 이메일 인증 토큰 결과 표시 (레거시 `verify_success.ftlh` + `verify_failure.ftlh` 통합)
 - `?status=success` → "인증이 완료되었습니다"
 - `?status=failure&message=...` → "인증에 실패했습니다" + 메시지
+- **i18n**: 화면 내 모든 UI 텍스트는 `useLocaleStore.t()` 카탈로그 키로 표시 (`auth.verify.*`). 관련 messages_ko/en.properties 키 일괄 정의 완료.
 
 ---
 
@@ -60,13 +71,14 @@
 
 - **Vue SPA**: `/my`
 - **Legacy file**: `legacy/templates/view/feature/user/my/user_my_page.ftlh`
-- **스토어**: `stores/userMy.ts`
-- **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목은 렌더링하지 않고 안내문과 새로고침 버튼만 표시
+- **스토어**: `features/user/stores/userMy.ts`
+- **본문 상단**: breadcrumb와 중복되는 `내 정보` 제목·설명문 및 별도 새로고침 버튼은 렌더링하지 않고 프로필 정보 카드부터 표시
+- **메뉴 모드**: `/my` 진입은 사용자/관리자 메뉴 모드를 전환하지 않는다. 관리자 모드에서 프로필 메뉴로 들어오면 관리자 사이드바를 유지하고, 사용자 모드에서 들어오면 사용자 사이드바를 유지한다.
 
 ### Layout Structure
 
 - 레이아웃: `layout_default.ftlh` (사이드바 없음)
-- 툴바: 안내문과 새로고침 버튼
+- 툴바: 별도 툴바 없음. `/my` 화면 진입 시 사용자 정보를 조회하고, 프로필 이미지 변경/삭제 후에는 내부적으로 사용자 정보와 인증 상태를 갱신한다.
 - 메인 영역:
   - Vue 마운트 루트: `#user_my_app`
   - 컨텐츠 div: `#user_my_page_div` (Vue `UserMyPageApp` 텔레포트 대상)

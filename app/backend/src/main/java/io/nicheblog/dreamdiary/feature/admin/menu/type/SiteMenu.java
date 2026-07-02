@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -11,7 +12,7 @@ import lombok.RequiredArgsConstructor;
  * @author nichefish
  */
 @RequiredArgsConstructor
-public enum SiteMenu {
+public enum SiteMenu implements LocalizedEnum {
 
     LGN_PAGE("로그인"),
     MAIN("메인"),

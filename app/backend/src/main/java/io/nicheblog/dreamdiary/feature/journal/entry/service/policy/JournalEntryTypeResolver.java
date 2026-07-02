@@ -31,7 +31,7 @@ public class JournalEntryTypeResolver {
      */
     public ContentType resolveByChapterId(final Integer journalChapterId) {
         final JournalChapterEntity chapter = journalChapterRepository.findById(journalChapterId)
-                .orElseThrow(() -> new BusinessException("msg.journal.chapter.not-found"));
+                .orElseThrow(() -> new BusinessException("journal.chapter.not-found"));
         if (chapter.getChapterType() == ChapterType.NOTE) {
             return ContentType.JOURNAL_DIARY;
         }
@@ -39,7 +39,7 @@ public class JournalEntryTypeResolver {
                 .filter(policy -> policy.expectedChapterType == chapter.getChapterType())
                 .findFirst()
                 .map(policy -> policy.contentType)
-                .orElseThrow(() -> new BusinessException("msg.journal.entry.invalid-chapter-type"));
+                .orElseThrow(() -> new BusinessException("journal.entry.invalid-chapter-type"));
     }
 
     /**
@@ -50,10 +50,10 @@ public class JournalEntryTypeResolver {
      */
     public ContentType resolveByEntryId(final Integer entryId) {
         final JournalEntryEntity entity = journalEntryRepository.findById(entryId)
-                .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+                .orElseThrow(() -> new EntityNotFoundException());
         final ContentType contentType = ContentType.get(entity.getContentType());
         if (!policyResolver.isEntryType(contentType.key)) {
-            throw new BusinessException("msg.journal.entry.invalid-chapter-type");
+            throw new BusinessException("journal.entry.invalid-chapter-type");
         }
         return contentType;
     }

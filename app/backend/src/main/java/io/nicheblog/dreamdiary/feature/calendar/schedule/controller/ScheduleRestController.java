@@ -56,7 +56,7 @@ public class ScheduleRestController
         final boolean isReg = (schedule.getKey() == null);
         final ServiceResponse result = isReg ? scheduleService.regist(schedule) : scheduleService.modify(schedule);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -76,7 +76,7 @@ public class ScheduleRestController
 
         final ScheduleDto retrievedDto = scheduleService.getDtlDto(key);
         final boolean isSuccess = (retrievedDto.getId() != null);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -96,7 +96,7 @@ public class ScheduleRestController
     ) throws Exception {
 
         final ServiceResponse result = scheduleService.delete(id);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

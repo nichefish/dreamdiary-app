@@ -52,7 +52,7 @@ public enum ReservedStructuralBoard {
      * @return 표시명
      */
     public String getConsumerLabel() {
-        return contentType.getDesc();
+        return contentType.getLabel();
     }
 
     /**

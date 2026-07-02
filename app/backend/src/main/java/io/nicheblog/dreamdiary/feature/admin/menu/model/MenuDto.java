@@ -57,6 +57,10 @@ public class MenuDto
     @Size(max = 100)
     private String menuLabel;
 
+    /** 메뉴 breadcrumb 하단에 표시할 설명 */
+    @Size(max = 1000)
+    private String menuDescription;
+
     /** 미열람 카운트 이름 (model) */
     @Size(max = 100)
     private String unreadCntNm;
@@ -96,6 +100,10 @@ public class MenuDto
     @Builder.Default
     private String protectedYn = "N";
 
+    /** 사이드바 표시 여부 (Y/N) */
+    @Builder.Default
+    private String sidebarVisibleYn = "Y";
+
     /** 셀프 참조 :: 상위메뉴 조회 */
     private MenuDto upperMenu;
     /** 셀프 참조 :: 상위메뉴명 */
@@ -127,7 +135,9 @@ public class MenuDto
         if (this.submenuExpandTypeName != null && !this.submenuExpandTypeName.isBlank()) {
             return this.submenuExpandTypeName;
         }
-        return SubmenuExpandType.getDesc(this.submenuExpandType);
+        if (this.submenuExpandType == null || this.submenuExpandType.isBlank()) return null;
+        try { return SubmenuExpandType.valueOf(this.submenuExpandType).getLabel(); }
+        catch (final IllegalArgumentException e) { return null; }
     }
 
     /**

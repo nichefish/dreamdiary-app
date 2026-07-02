@@ -70,7 +70,7 @@ public class BoardPostRestController
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         final Page<BoardPostDto> pageResult = boardPostService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(pageResult));
     }
@@ -94,7 +94,7 @@ public class BoardPostRestController
         final boolean isReg = (boardPost.getKey() == null);
         final ServiceResponse result = isReg ? boardPostService.regist(boardPost, request) : boardPostService.modify(boardPost, request);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -116,7 +116,7 @@ public class BoardPostRestController
 
         final BoardPostDto retrievedDto = boardPostService.viewDtlPage(id);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -137,7 +137,7 @@ public class BoardPostRestController
 
         final ServiceResponse result = boardPostService.delete(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

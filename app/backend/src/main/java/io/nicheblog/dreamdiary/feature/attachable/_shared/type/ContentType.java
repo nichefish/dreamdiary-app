@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable._shared.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public enum ContentType {
+public enum ContentType implements LocalizedEnum {
 
     DEFAULT("DEFAULT", "기본"),
     BOARD("BOARD", "일반게시판"),

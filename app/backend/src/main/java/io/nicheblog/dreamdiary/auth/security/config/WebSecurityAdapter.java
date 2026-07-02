@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.config;
 
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.jwt.filter.JwtAuthenticationFilter;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationFailureHandler;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationSuccessHandler;
@@ -9,6 +10,8 @@ import io.nicheblog.dreamdiary.auth.security.handler.AjaxAwareAuthenticationEntr
 import io.nicheblog.dreamdiary.auth.security.handler.LoginFailureHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.LoginSuccessHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.LogoutHandler;
+import io.nicheblog.dreamdiary.auth.security.matcher.PublicApiRequestMatcher;
+import io.nicheblog.dreamdiary.auth.security.matcher.WebSocketHandshakeRequestMatcher;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -31,6 +34,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.time.Duration;
 
 /**
  * WebSecurityAdapter
@@ -60,15 +65,14 @@ public class WebSecurityAdapter {
     private final SessionRegistry sessionRegistry;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthPolicyQueryService authPolicyQueryService;
+    private final AuthProperties authProperties;
+    private final PublicApiRequestMatcher publicApiRequestMatcher;
+    private final WebSocketHandshakeRequestMatcher webSocketHandshakeRequestMatcher;
 
     @Value("${springdoc.api-docs.path:/v3/api-docs}")
     private String API_DOCS_PATH;
     @Value("${springdoc.swagger-ui.path:/swagger-ui.html}")
     private String SWAGGER_UI_PATH;
-    @Value("${remember-me.key}")
-    private String REMEMBER_ME_KEY;
-    @Value("${remember-me.param}")
-    private String REMEMBER_ME_PARAM;
 
     /**
      * Security 필터 자체를 타지 않도록 제외할 경로 정의
@@ -91,8 +95,9 @@ public class WebSecurityAdapter {
                 // 비밀번호 만료시 비밀번호 변경 화면
                 .antMatchers(Url.API_AUTH_LGN_PW_CHG)
                 // 신규계정 신청 화면/기능 전체 접근 (+아이디 중복 체크)
+                // 계정 신청 등록 API는 관리자 목록 조회와 같은 URL을 쓰므로 SecurityContext 생성을 위해 FilterChain을 통과한다.
+                // 비로그인 POST 접근은 아래 authorizeRequests()의 /api/** permitAll 계약으로 유지한다.
                 .antMatchers(Url.USER_SIGNUP_PAGE)
-                .antMatchers(Url.USER_SIGNUP_REQUESTS)
                 .antMatchers(Url.USERS_DUPLICATE_USERNAME_CHECK)
                 .antMatchers(Url.USERS_DUPLICATE_EMAIL_CHECK);
     }
@@ -137,19 +142,24 @@ public class WebSecurityAdapter {
                 // static resource 전체 접근
                 .antMatchers(Constant.STATIC_PATHS)
                 .permitAll()
-                // API 접근 전체 허용 (현재는 인증 적용하지 않음)
-                // TODO: inbound API 쪽에 토큰 인증 적용하기
-                .antMatchers("/api/**")
+                // 공개 API는 경로와 HTTP 메서드를 함께 검사한다.
+                .requestMatchers(publicApiRequestMatcher)
                 .permitAll()
+                // 그 외 API는 인증 사용자만 접근한다.
+                .antMatchers("/api/**")
+                .authenticated()
                 // OAUTH2 인증 관련 페이지
                 .antMatchers("/oauth2/authorization/**", "/login/oauth2/code/**")
                 .permitAll()
                 // Swagger/OpenAPI docs and UI resources
                 .antMatchers(API_DOCS_PATH, API_DOCS_PATH + "/**", SWAGGER_UI_PATH, "/swagger-ui/**")
                 .permitAll()
-                // WebSocket 엔드포인트에 대한 접근 허용
-                .antMatchers("/chat/**")
+                // WebSocket 엔드포인트에 대한 접근 허용. 실제 인증은 핸드셰이크 인터셉터가 처리한다.
+                .requestMatchers(webSocketHandshakeRequestMatcher)
                 .permitAll()
+                // 채팅 설정·세션·메시지 REST API는 로그인 사용자만 접근한다.
+                .antMatchers("/chat/**")
+                .authenticated()
                 // 로그인 화면 i18n catalog json
                 // 변경 전: /i18n/** 경로는 anyRequest().authenticated()에 걸려 401 가능
                 // 변경 후: /i18n/** 경로는 비인증 접근 허용
@@ -166,9 +176,9 @@ public class WebSecurityAdapter {
 
         // remember-me 관련 (쿠키 기반 장기 로그인)
         http.rememberMe()
-                .key(REMEMBER_ME_KEY)
-                .rememberMeParameter(REMEMBER_ME_PARAM)
-                .tokenValiditySeconds(86400 * 30)
+                .key(authProperties.getRememberMe().getKey())
+                .rememberMeParameter(authProperties.getRememberMe().getParam())
+                .tokenValiditySeconds((int) Duration.ofDays(authProperties.getRememberMe().getTokenTtlDays()).getSeconds())
                 .userDetailsService(authService)
                 .authenticationSuccessHandler(webLoginSuccessHandler);
 

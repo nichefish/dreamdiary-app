@@ -60,7 +60,7 @@ public class UserRestController
         final PageRequest pageRequest = PageRequest.of(page, size, sort);
         final Page<UserDto> pageResult = userService.getPageDto(searchParam, pageRequest);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(pageResult));
     }
 
     /**
@@ -73,7 +73,7 @@ public class UserRestController
             final @PathVariable("id") Integer id
     ) throws Exception {
         final UserDto user = userService.getDtlDto(id);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(user != null, MessageUtils.RSLT_SUCCESS).withObj(user));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(user != null, MessageUtils.getMessage("common.result.success")).withObj(user));
     }
 
     /**
@@ -91,7 +91,7 @@ public class UserRestController
 
         final Boolean isUsernameDup = userService.usernameDupChck(username);
         final boolean isSuccess = !isUsernameDup;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.id.usable" : "msg.user.id.duplicated");
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.id.usable" : "user.id.duplicated");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -111,7 +111,7 @@ public class UserRestController
 
         final Boolean isEmailDup = userService.emailDupChck(email);
         final boolean isSuccess = !isEmailDup;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.email.usable" : "msg.user.email.duplicated");
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.email.usable" : "user.email.duplicated");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -131,7 +131,7 @@ public class UserRestController
     ) throws Exception {
         final ServiceResponse result = userService.regist(user);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -146,7 +146,7 @@ public class UserRestController
         user.setId(id);
         final ServiceResponse result = userService.modify(user);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -167,7 +167,9 @@ public class UserRestController
 
         final ServiceResponse result = userService.passwordReset(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS_PW_RESET : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess
+                ? MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS_PW_RESET)
+                : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -190,13 +192,13 @@ public class UserRestController
         // 내 정보인지 비교 :: "내 정보는 삭제할 수 없습니다."
         final boolean isMyInfo = AuthUtils.isMyInfo(user.getUsername());
         if (isMyInfo) {
-            final String rsltMsg = MessageUtils.getMessage("msg.user.id.delete-own-denied");
+            final String rsltMsg = MessageUtils.getMessage("user.id.delete-own-denied");
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, rsltMsg));
         }
 
         final ServiceResponse result = userService.delete(id);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

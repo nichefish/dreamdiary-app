@@ -74,8 +74,10 @@ dependencies {
     implementation(platform('org.apache.logging.log4j:log4j-bom:2.20.0'))
 
     /* ↓ FreeMarker: ?cn 사용 위해 버전업 */
-    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    /* 변경 전: spring-boot-starter-freemarker (MVC 뷰 자동설정 포함). 변경 후: 화면 뷰 Vue 이관 완료로 starter 제거 —
+       이메일 렌더(FreeMarkerConfigurationFactoryBean·FreeMarkerTemplateUtils)용 spring-context-support 를 명시 선언. */
     implementation 'org.freemarker:freemarker:2.3.32'
+    implementation 'org.springframework:spring-context-support'
     /* ↓ Mustache */
     implementation 'org.springframework.boot:spring-boot-starter-mustache'
 

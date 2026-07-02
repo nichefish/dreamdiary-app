@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.calendar.holiday.service;
 
+import io.nicheblog.dreamdiary.feature.calendar.holiday.config.KasiProperties;
 import io.nicheblog.dreamdiary.feature.calendar.holiday.mapstruct.HolydayKasiApiMapstruct;
 import io.nicheblog.dreamdiary.feature.calendar.holiday.model.HolydayKasiApiItemDto;
 import io.nicheblog.dreamdiary.feature.calendar.holiday.model.HolydayKasiApiRespDto;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -40,16 +40,12 @@ public class HolydayKasiApiService {
 
     private final HolydayKasiApiMapstruct holydayApiMapstruct = HolydayKasiApiMapstruct.INSTANCE;
     private final ScheduleService scheduleService;
+    private final KasiProperties kasiProperties;
 
     private final ApplicationContext context;
     private HolydayKasiApiService getSelf() {
         return context.getBean(this.getClass());
     }
-
-    @Value("${api.kasi.serviceKey}")
-    private String serviceKey;
-    @Value("${api.kasi.api-url}")
-    private String serviceUrl;
 
     /**
      * API로 받아온 휴일 정보를 DB에서 삭제 후 재등록
@@ -83,7 +79,7 @@ public class HolydayKasiApiService {
         try {
             // URL 설정
             int numOfRows = 30;
-            URI requestURI = new URI(serviceUrl + "?solYear=" + yyStr + "&numOfRows=" + numOfRows + "&ServiceKey=" + serviceKey);
+            URI requestURI = new URI(kasiProperties.getApiUrl() + "?solYear=" + yyStr + "&numOfRows=" + numOfRows + "&ServiceKey=" + kasiProperties.getServiceKey());
             // 요청 생성
             HolydayKasiApiRespDto respDto = restTemplate.getForObject(requestURI, HolydayKasiApiRespDto.class);
             if (respDto != null) rsItems = respDto.getBody().getItems();
@@ -151,4 +147,3 @@ public class HolydayKasiApiService {
         return isSuccess;
     }
 }
-

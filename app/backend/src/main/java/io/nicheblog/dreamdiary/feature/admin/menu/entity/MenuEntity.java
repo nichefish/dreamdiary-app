@@ -67,6 +67,11 @@ public class MenuEntity
     @Comment("메뉴 라벨")
     private String menuLabel;
 
+    /** 메뉴 breadcrumb 하단에 표시할 설명 */
+    @Column(name = "menu_description")
+    @Comment("메뉴 설명")
+    private String menuDescription;
+
     /** 미열람 카운트 이름 (model) */
     @Column(name = "unread_cnt_nm")
     @Comment("미열람 카운트 이름 (model)")
@@ -87,6 +92,12 @@ public class MenuEntity
     @Column(name = "protected_yn")
     @Comment("시스템 보호 여부 (Y/N)")
     private String protectedYn = "N";
+
+    /** 사이드바 표시 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "sidebar_visible_yn")
+    @Comment("사이드바 표시 여부 (Y/N)")
+    private String sidebarVisibleYn = "Y";
 
     /** 하위메뉴 확장유형 */
     @Column(name = "submenu_expand_type")

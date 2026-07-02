@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.release.service;
 
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.infrastructure.release.entity.ReleaseHistoryEntity;
+import io.nicheblog.dreamdiary.infrastructure.release.config.ReleaseHistoryProperties;
 import io.nicheblog.dreamdiary.infrastructure.release.model.ReleaseHistoryDto;
 import io.nicheblog.dreamdiary.infrastructure.release.model.ReleaseRuntimeMeta;
 import io.nicheblog.dreamdiary.infrastructure.release.repository.jpa.ReleaseHistoryRepository;
@@ -9,7 +10,6 @@ import io.nicheblog.dreamdiary.infrastructure.release.type.ReleaseEventType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,9 +38,7 @@ public class ReleaseHistoryService {
     private final ReleaseHistoryRepository releaseHistoryRepository;
     private final ActiveProfile activeProfile;
     private final Environment environment;
-
-    @Value("${release-history.max-list-size:50}")
-    private Integer maxListSize;
+    private final ReleaseHistoryProperties releaseHistoryProperties;
 
     /**
      * 서버 시작 이벤트를 기록한다.
@@ -117,6 +115,7 @@ public class ReleaseHistoryService {
     private int normalizeListSize(final Integer requestedSize) {
         final int fallback = 20;
         if (requestedSize == null || requestedSize <= 0) return fallback;
+        final Integer maxListSize = releaseHistoryProperties.getMaxListSize();
         if (maxListSize == null || maxListSize <= 0) return requestedSize;
         return Math.min(requestedSize, maxListSize);
     }

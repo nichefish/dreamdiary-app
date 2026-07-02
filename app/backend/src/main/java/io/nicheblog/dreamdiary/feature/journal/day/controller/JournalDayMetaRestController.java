@@ -58,7 +58,7 @@ public class JournalDayMetaRestController
 
         final List<MetaDto> tagList = journalDayMetaService.getListDto(searchParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(tagList));
     }
@@ -78,7 +78,7 @@ public class JournalDayMetaRestController
 
         final MetaDto retrievedDto = journalDayMetaService.getDtlDto(id);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -98,7 +98,7 @@ public class JournalDayMetaRestController
 
         final List<Integer> yyList = myJournalDayMetaService.getMyYyListByMetaId(id);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(yyList));
     }
@@ -119,7 +119,7 @@ public class JournalDayMetaRestController
 
         final Map<String, List<String>> metaCategoryMap = myJournalDayMetaService.getMyMetaCategoryMap();
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(metaCategoryMap));
     }

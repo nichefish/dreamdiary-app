@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.infrastructure.web.config;
 
 import io.nicheblog.dreamdiary.auth.security.interceptor.CsrfInterceptor;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor;
 import io.nicheblog.dreamdiary.infrastructure.log.interceptor.LogInterceptor;
 import io.nicheblog.dreamdiary.infrastructure.web.handler.UTF8DecodeResourceResolver;
 import io.nicheblog.dreamdiary.infrastructure.web.interceptor.CookieInterceptor;
@@ -33,7 +31,6 @@ import java.util.List;
 public class WebMvcContextConfig
         implements WebMvcConfigurer {
 
-    private final FreemarkerInterceptor freemarkerInterceptor;
     private final CookieInterceptor cookieInterceptor;
     private final CsrfInterceptor csrfInterceptor;
     private final LogInterceptor logActvtyInterceptor;
@@ -95,6 +92,22 @@ public class WebMvcContextConfig
                         return indexHtml.exists() ? indexHtml : null;
                     }
                 });
+        // react-app 경로 = React SPA (index.html SPA 폴백 포함)
+        final String reactAppContextPath = "/react-app/**";
+        final String reactAppResourcePath = "file:static/react-app/";
+        registry.addResourceHandler(reactAppContextPath)
+                .addResourceLocations(reactAppResourcePath)
+                .resourceChain(false)
+                .addResolver(new PathResourceResolver() {
+                    @Override
+                    protected Resource getResource(final String resourcePath, final Resource location) throws java.io.IOException {
+                        final Resource requested = location.createRelative(resourcePath);
+                        // 실제 파일이 존재하면 그대로 서빙, 없으면 SPA index.html 폴백
+                        if (requested.exists() && requested.isReadable()) return requested;
+                        final Resource indexHtml = new FileSystemResource("static/react-app/index.html");
+                        return indexHtml.exists() ? indexHtml : null;
+                    }
+                });
         // 기본 static 경로
         final String staticContextPath = "/static/**";
         final String orglStaticPath = "classpath:/static/";
@@ -110,20 +123,8 @@ public class WebMvcContextConfig
      */
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        // freemarker interceptor
-        // 화면 조회에만 적용, ajax 및 기타 작동에는 적용 안함
-        registry.addInterceptor(freemarkerInterceptor)
-                /* 페이지 접근에 대해서만 처리 */
-                .addPathPatterns("/")
-                .addPathPatterns("/**/*.do")
-                /* 에러 화면 경로 포함 */
-                .addPathPatterns(Url.ERROR, Url.ERROR + "/**")
-                /* 스태틱 자원 경로의 경우 처리하지 않음 */
-                .excludePathPatterns(STATIC_RESOURCES_URL_PATTERN)
-                /* API 경로의 경우 처리하지 않음 */
-                .excludePathPatterns("/api/**")
-                /* 파일 다운로드의 경우 처리하지 않음 */
-                .excludePathPatterns("/**/*-download.do");
+        // 변경 전: freemarker interceptor 를 페이지 경로에 등록 (뷰 렌더 모델 주입).
+        // 변경 후: 화면 뷰가 전부 Vue SPA 로 이관되어 FreeMarker MVC 렌더 경로 제거 — 인터셉터 등록 삭제.
 
         // 쿠키 관련 인터셉터 수동 추가
         registry.addInterceptor(cookieInterceptor)

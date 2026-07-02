@@ -4,16 +4,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,20 +45,14 @@ public class JwtTokenProvider {
 
     private final AuthService authService;
     private final AuthenticationHelper authenticationHelper;
+    private final AuthSessionPolicyService authSessionPolicyService;
+    private final AuthProperties authProperties;
 
-    @Value("${spring.jwt.secret}")
     private String secretKey;
-
-    @Value("${spring.jwt.token-validity-seconds:3600}")
-    private long tokenValiditySeconds;
-
-    @Getter
-    @Value("${spring.jwt.access-token-validity-seconds:900}")
-    private long accessTokenValiditySeconds;
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
+        secretKey = Base64.getEncoder().encodeToString(authProperties.getJwt().getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -86,7 +80,7 @@ public class JwtTokenProvider {
         claims.put("roles", roles);
         final Date now = DateUtils.getCurrDate();
         
-        final long tokenValidMillisecond = 1000L * tokenValiditySeconds;
+        final long tokenValidMillisecond = 1000L * authProperties.getJwt().getSignupTokenTtlSeconds();
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -100,7 +94,7 @@ public class JwtTokenProvider {
      *
      * @param username 사용자 계정명
      * @param roles 권한
-     * @return {@link String} -- ?앹꽦??JWT ?좏겙 臾몄옄??
+     * @return {@link String} -- 생성된 JWT 토큰 문자열
      */
     public String createAccessToken(final String username, final List<String> roles) {
         final Claims claims = Jwts.claims().setSubject(username);
@@ -110,7 +104,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + 1000L * accessTokenValiditySeconds))
+                .setExpiration(new Date(now.getTime() + 1000L * authSessionPolicyService.getSessionTimeoutSeconds()))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
@@ -141,11 +135,11 @@ public class JwtTokenProvider {
 
         try {
             final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-            if (!isValidated) throw new SecurityException(MessageUtils.getMessage("msg.rslt.authentication-failed"));
+            if (!isValidated) throw new SecurityException(MessageUtils.getMessage("common.result.authentication-failed"));
         } catch (final Exception e) {
             log.error(e);
             // TODO: 더 정밀한 예외 처리 필요
-            // throw new SecurityException(MessageUtils.getMessage("msg.rslt.authentication-failed"));
+            // throw new SecurityException(MessageUtils.getMessage("common.result.authentication-failed"));
         }
 
         return authInfo.getAuthToken();
@@ -220,8 +214,15 @@ public class JwtTokenProvider {
     public Boolean validateToken(final String token) {
         try {
             final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            final Claims body = claims.getBody();
+            final Date now = new Date();
+            final Date issuedAt = body.getIssuedAt();
+            if (issuedAt == null) return false;
 
-            return !claims.getBody().getExpiration().before(new Date());
+            final Date tokenExpiresAt = body.getExpiration();
+            final Date policyExpiresAt = new Date(issuedAt.getTime() + 1000L * authSessionPolicyService.getSessionTimeoutSeconds());
+
+            return !tokenExpiresAt.before(now) && !policyExpiresAt.before(now);
         } catch (final Exception e) {
             return false;
         }

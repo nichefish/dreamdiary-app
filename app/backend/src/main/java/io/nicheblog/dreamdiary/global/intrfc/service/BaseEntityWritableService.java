@@ -153,7 +153,7 @@ public interface BaseEntityWritableService<Key extends Serializable, Entity exte
     @Transactional
     default void remove(final Key key) throws Exception {
         final Entity entity = this.getDtlEntity(key);
-        if (entity == null) throw new EntityNotFoundException("exception.EntityNotFoundException.to-delete");
+        if (entity == null) throw new EntityNotFoundException("this.to-delete");
 
         this.remove(entity);
     }

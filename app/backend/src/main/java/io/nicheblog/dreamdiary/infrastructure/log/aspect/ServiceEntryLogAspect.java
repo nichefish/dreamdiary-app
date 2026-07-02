@@ -1,13 +1,14 @@
 package io.nicheblog.dreamdiary.infrastructure.log.aspect;
 
 import io.nicheblog.dreamdiary.infrastructure.log.annotation.NoServiceEntryLog;
+import io.nicheblog.dreamdiary.infrastructure.log.config.ServiceEntryLogProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
@@ -26,20 +27,17 @@ import java.lang.reflect.Method;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 200)
 @Log4j2
+@RequiredArgsConstructor
 public class ServiceEntryLogAspect {
 
-    @Value("${app.logging.service-entry.enabled:false}")
-    private boolean enabled;
-
-    @Value("${app.logging.service-entry.log-finish:false}")
-    private boolean logFinish;
+    private final ServiceEntryLogProperties serviceEntryLogProperties;
 
     @Pointcut("@within(org.springframework.stereotype.Service) && execution(public * io.nicheblog.dreamdiary..*(..))")
     public void servicePublicMethods() {}
 
     @Around("servicePublicMethods()")
     public Object aroundService(final ProceedingJoinPoint joinPoint) throws Throwable {
-        if (!enabled) {
+        if (!serviceEntryLogProperties.isEnabled()) {
             return joinPoint.proceed();
         }
         final Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
@@ -56,7 +54,7 @@ public class ServiceEntryLogAspect {
         final long t0 = System.currentTimeMillis();
         try {
             final Object result = joinPoint.proceed();
-            if (logFinish) {
+            if (serviceEntryLogProperties.isLogFinish()) {
                 log.info(
                         "SVC_TX phase=done bean={} method={} durationMs={}",
                         bean,

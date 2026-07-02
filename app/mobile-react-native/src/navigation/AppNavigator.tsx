@@ -1,4 +1,4 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
@@ -106,12 +106,28 @@ function MainTabs() {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function AppNavigator() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { authError, isAuthenticated, isLoading, retryAuth } = useAuth();
 
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color={colors.accent} />
+      </View>
+    );
+  }
+
+  if (authError) {
+    return (
+      <View style={styles.authErrorContainer}>
+        <Text style={styles.authErrorTitle}>인증 상태 확인 오류</Text>
+        <Text style={styles.authErrorMessage}>{authError}</Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => { void retryAuth(); }}
+          style={styles.authRetryButton}
+        >
+          <Text style={styles.authRetryButtonText}>다시 시도</Text>
+        </Pressable>
       </View>
     );
   }
@@ -153,3 +169,38 @@ export function AppNavigator() {
     </Stack.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  authErrorContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.background,
+    paddingHorizontal: 28,
+    gap: 12
+  },
+  authErrorTitle: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: "800"
+  },
+  authErrorMessage: {
+    color: colors.secondaryText,
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: "center"
+  },
+  authRetryButton: {
+    alignItems: "center",
+    backgroundColor: colors.accent,
+    borderRadius: 8,
+    marginTop: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 12
+  },
+  authRetryButtonText: {
+    color: colors.onAccent,
+    fontSize: 14,
+    fontWeight: "800"
+  }
+});

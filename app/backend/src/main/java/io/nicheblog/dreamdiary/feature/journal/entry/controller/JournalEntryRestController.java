@@ -140,7 +140,7 @@ public class JournalEntryRestController
     ) throws Exception {
         assertSearchParam(searchParam);
         final List<JournalEntryDto> listDto = journalEntryMyViewService.getMyList(searchParam, contentType);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withList(listDto));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(listDto));
     }
 
     /**
@@ -157,7 +157,7 @@ public class JournalEntryRestController
     ) throws Exception {
         final JournalEntryDto retrievedDto = journalEntryMyViewService.getMyDetail(id, contentType);
         final boolean retrieved = retrievedDto != null && retrievedDto.getId() != null;
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(retrieved, MessageUtils.RSLT_SUCCESS).withObj(retrievedDto));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(retrieved, MessageUtils.getMessage("common.result.success")).withObj(retrievedDto));
     }
 
     /**
@@ -182,7 +182,7 @@ public class JournalEntryRestController
         final boolean isSuccess = Boolean.TRUE.equals(result.getRslt());
         final AjaxResponse ajax = AjaxResponse.fromResponseWithObj(
                 result,
-                isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE
+                isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure")
         );
         if (isSuccess) {
             final ContentType contentType = ContentType.get(postDto.getContentType());
@@ -203,7 +203,7 @@ public class JournalEntryRestController
      */
     private ResponseEntity<AjaxResponse> deleteAjax(final Integer id) throws Exception {
         final ServiceResponse result = journalEntryService.delete(id);
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, MessageUtils.getMessage("common.result.success")));
     }
 
 }

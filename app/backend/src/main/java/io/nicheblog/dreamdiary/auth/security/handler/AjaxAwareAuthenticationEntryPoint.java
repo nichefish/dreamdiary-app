@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.extern.log4j.Log4j2;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -22,8 +23,11 @@ import java.util.Locale;
  */
 @Component
 @Log4j2
+@RequiredArgsConstructor
 public class AjaxAwareAuthenticationEntryPoint
         implements AuthenticationEntryPoint {
+
+    private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     /**
      * 인증되지 않은 요청을 감지했을 때 호출되는 메서드.
@@ -41,14 +45,15 @@ public class AjaxAwareAuthenticationEntryPoint
             final AuthenticationException authException
     ) throws IOException {
 
-        final String loginRequiredMessage = MessageUtils.getMessage("msg.auth.login-required");
+        final String loginRequiredMessage = MessageUtils.getMessage("auth.login-required");
         if (HttpUtils.isAjaxRequest(request)) {
             // Ajax 요청은 클라이언트 공통 핸들러에서 처리할 수 있도록 JSON으로 내려보낸다.
             // @see commons.js
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(String.format(Locale.ROOT,
-                    "{\"error\":\"Unauthenticated\",\"message\":\"%s\"}", escapeJson(loginRequiredMessage)));
+            securityErrorResponseWriter.write(
+                    response,
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    loginRequiredMessage
+            );
             return;
         }
 

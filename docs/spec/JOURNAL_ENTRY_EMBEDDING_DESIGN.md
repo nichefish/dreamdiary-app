@@ -152,3 +152,44 @@ final_score =
 ```
 
 초기에는 타입 가중치만 사용하고, 태그/상태/날짜 가중치는 ranking 고도화 단계에서 반영한다.
+
+## 품질 실측 (Quality Eval)
+
+한국어 의미 유사도가 현재 임베딩 모델에서 RAG에 쓸 만한지 빠르게 판단하는 운영 도구입니다. DB 네이티브 VECTOR 여부와 무관하게 **저장된 벡터·쿼리 임베딩 간 코사인**만 검증합니다.
+
+| 항목 | 값 |
+| --- | --- |
+| Endpoint | `GET /api/admin/journal-entry-embeddings/quality-eval` |
+| 권한 | `ROLE_MNGR` |
+| 전제 | Ollama 임베딩 API 가동 (`app.ollama.embedding-model`, 기본 `nomic-embed-text`). 실행 전 `GET /api/admin/ollama/health`로 선행 핑 |
+
+### Ollama health
+
+| 항목 | 값 |
+| --- | --- |
+| Endpoint | `GET /api/admin/ollama/health` |
+| 권한 | `ROLE_MNGR` |
+| 동작 | `GET /api/tags`로 연결·필수 모델(`app.ollama.chat-model`, `app.ollama.embedding-model`) 설치 여부만 확인. **자동 `ollama serve`는 하지 않음** |
+| `status` | `UP` (연결+모델 준비), `DEGRADED` (연결됐으나 모델 누락), `DOWN` (연결 불가) |
+
+Quality Eval 리포트에는 실측 시점 `ollamaHealth`가 포함됩니다. health가 `DOWN`/`DEGRADED`(임베딩 모델 미설치)이면 스위트는 실행하지 않고 `OLLAMA_UNAVAILABLE`과 구체적 `summary`를 반환합니다.
+
+### 스위트
+
+| 코드 | 내용 | 통과 기준 |
+| --- | --- | --- |
+| `PARAPHRASE` | 고정 한국어 paraphrase 10쌍 코사인 | 각 쌍 ≥ 0.72, 통과율 ≥ 80% |
+| `RELATED_DISTINCT` | anchor / related / unrelated 10삼중 | related−unrelated ≥ 0.05, 통과율 ≥ 80% |
+| `CORPUS_SELF_RANK` | 캐시된 저널 embedding_text 프로브 vs 자기·타 벡터 | self > bestOther, 통과율 ≥ 70% |
+
+### 권고값 (`recommendation`)
+
+| 값 | 의미 |
+| --- | --- |
+| `KEEP_MODEL` | 고정 시드·코퍼스 샘플 기준 유지 가능 |
+| `REVIEW_MODEL` | 한국어 모델 교체(bge-m3 등) 검토 |
+| `OLLAMA_UNAVAILABLE` | Ollama 미가동·임베딩 모델 누락으로 실측 불가 (`ollamaHealth`·`summary` 참고) |
+
+리포트에는 `SKIPPED` row 사유 샘플(최대 20건)도 포함됩니다.
+
+Admin UI **AI Embedding Backfill** 섹션의 **Refresh** 시 Ollama 상태 배너를 함께 갱신하고, **Quality Eval** 버튼으로 동일 API를 호출합니다.

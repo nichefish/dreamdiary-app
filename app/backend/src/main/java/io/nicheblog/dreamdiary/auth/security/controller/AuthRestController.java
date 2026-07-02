@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetExcept
 import io.nicheblog.dreamdiary.auth.security.exception.DupIdLoginException;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthUserDto;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
@@ -73,6 +74,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class AuthRestController {
+    private static final java.util.Map<String, String> AUTH_EXCEPTION_MSG_KEYS =
+            java.util.Map.ofEntries(
+                java.util.Map.entry("BadCredentialsException",                    "auth.bad-credentials"),
+                java.util.Map.entry("LockedException",                            "auth.account-locked"),
+                java.util.Map.entry("DisabledException",                          "auth.account-disabled"),
+                java.util.Map.entry("AccountExpiredException",                    "auth.account-expired"),
+                java.util.Map.entry("CredentialsExpiredException",                "auth.credentials-expired"),
+                java.util.Map.entry("UsernameNotFoundException",                  "auth.username-not-found"),
+                java.util.Map.entry("InternalAuthenticationServiceException",     "auth.internal-service-error"),
+                java.util.Map.entry("AccountDormantException",                    "auth.account-dormant"),
+                java.util.Map.entry("AccountNeedsPwResetException",               "auth.account-needs-pw-reset"),
+                java.util.Map.entry("AccountNotCfException",                      "auth.account-not-confirmed"),
+                java.util.Map.entry("IpNotAllowedException",                      "auth.ip-not-allowed"),
+                java.util.Map.entry("DupIdLoginException",                        "auth.dup-id-login")
+            );
 
     @Getter
     private final String baseUrl = Url.APP_AUTH_LGN_FORM;
@@ -85,6 +101,7 @@ public class AuthRestController {
     private final RefreshTokenService refreshTokenService;
     private final DreamdiaryAuthenticationProvider authenticationProvider;
     private final AuthPolicyQueryService authPolicyQueryService;
+    private final AuthSessionPolicyService authSessionPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -107,14 +124,36 @@ public class AuthRestController {
             final Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
             final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
 
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo)));
         } catch (final JwtException | AuthenticationException e) {
             return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
             // 그 외 일반적인 예외 처리
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("common.result.failure")));
+        }
+    }
+
+    /**
+     * Vue SPA modal/action preflight.
+     * Checks the current authenticated username without returning user details.
+     *
+     * @param request HTTP request
+     * @return {@link ResponseEntity} processing result
+     */
+    @GetMapping(Url.API_SESSION_PING)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> sessionPingAjax(
+            final HttpServletRequest request
+    ) {
+
+        try {
+            AuthUtils.requireLoginUsername();
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
+        } catch (final Exception e) {
+            log.info("Session ping rejected. reason={}", e.getClass().getSimpleName());
+            return unauthorizedAndInvalidate(request);
         }
     }
 
@@ -146,20 +185,23 @@ public class AuthRestController {
 
             final String accessToken = jwtTokenProvider.createAccessToken(authInfo.getUsername(), roles);
 
-            CookieUtils.setJwtCookie(accessToken, (int) jwtTokenProvider.getAccessTokenValiditySeconds());
-            CookieUtils.setRefreshTokenCookie(refreshResult.getRefreshToken(), (int) refreshTokenService.getRefreshTokenValiditySeconds());
+            CookieUtils.setJwtCookie(accessToken, authSessionPolicyService.getSessionTimeoutSecondsAsInt());
+            CookieUtils.setRefreshTokenCookie(refreshResult.getRefreshToken(), (int) refreshTokenService.getRefreshTokenTtlSeconds());
             if (response != null) response.setHeader("Authorization", "Bearer " + accessToken);
 
             final HttpSession session = request.getSession(false);
-            if (session != null) session.setAttribute("jwt", accessToken);
+            if (session != null) {
+                authSessionPolicyService.applyToSession(session);
+                session.setAttribute("jwt", accessToken);
+            }
 
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
         } catch (final JwtException | AuthenticationException e) {
             return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("common.result.failure")));
         }
     }
 
@@ -179,7 +221,7 @@ public class AuthRestController {
     ) throws Exception {
 
         final boolean isSuccess = userMyService.loginPwChg(userPwChgParam);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -202,7 +244,7 @@ public class AuthRestController {
         final HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -253,7 +295,7 @@ public class AuthRestController {
             final Authentication auth = authenticationProvider.authenticate(token);
             final AuthInfo authInfo = (AuthInfo) auth.getPrincipal();
             this.handleJsonLoginSuccess(request, response, authInfo);
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(AuthUserDto.from(authInfo)));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo)));
         } catch (final AccountNeedsPwResetException e) {
             final String errorMsg = this.getLoginFailureMsg(e);
             this.publishLoginFailureLog(body.getUsername(), e, errorMsg);
@@ -312,9 +354,9 @@ public class AuthRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(AjaxResponse.withAjaxResult(false, errorMsg));
         } catch (final Exception e) {
-            log.error("Vue login error: {}", e.getMessage());
+            log.error("Vue login internal error. username={}", body.getUsername(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getMessage("auth.login-processing-error")));
         }
     }
 
@@ -336,7 +378,7 @@ public class AuthRestController {
         CookieUtils.deleteRefreshTokenCookie();
         final HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -369,6 +411,7 @@ public class AuthRestController {
 
         authInfo.nullifyPasswordInfo();
         final HttpSession session = request.getSession();
+        authSessionPolicyService.applyToSession(session);
         session.setAttribute("authInfo", authInfo);
         session.setAttribute("remoteIp", AuthUtils.getRemoteIpAddr());
 
@@ -376,7 +419,7 @@ public class AuthRestController {
         authService.setLastLoginAt(username);
         DupIdLoginManager.addKey(username);
 
-        publisher.publishAsyncEvent(new LogEvent(this, new LogParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN)));
+        publisher.publishAsyncEvent(new LogEvent(this, new LogParam(true, MessageUtils.getMessage("common.result.success"), ActvtyCtgr.LGN)));
         publisher.publishAsyncEvent(new LoginSuccessCacheWarmupEvent(this, username));
         HttpUtils.setInvalidateBrowserCacheHeader(response);
         log.info("Vue login succeeded. username: {}", username);
@@ -415,8 +458,9 @@ public class AuthRestController {
                 return MessageUtils.getExceptionMsg(root);
             }
         }
-        final String fullExceptionNm = e.getClass().toString();
-        final String exceptionNm = fullExceptionNm.substring(fullExceptionNm.lastIndexOf('.') + 1);
-        return MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider." + exceptionNm);
+        final String exceptionNm = e.getClass().getSimpleName();
+        final String msgKey = AUTH_EXCEPTION_MSG_KEYS.getOrDefault(exceptionNm, "auth.bad-credentials");
+        return MessageUtils.getMessage(msgKey);
     }
 }
+

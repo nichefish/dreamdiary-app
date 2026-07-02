@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -214,7 +215,8 @@ public class JournalEntryEmbeddingSearchService {
 
         final List<String> normalizedTokens = personTokens.stream()
                 .filter(StringUtils::isNotBlank)
-                .map(token -> StringUtils.lowerCase(StringUtils.deleteWhitespace(token)))
+                .map(this::normalizeKeywordToken)
+                .filter(token -> token.length() >= 2)
                 .distinct()
                 .collect(Collectors.toList());
         if (normalizedTokens.isEmpty()) return Collections.emptyList();
@@ -315,6 +317,40 @@ public class JournalEntryEmbeddingSearchService {
         if (journalEntryId == null) return;
         vectorCache.remove(journalEntryId);
         metaCache.remove(journalEntryId);
+    }
+
+    /**
+     * 품질 실측·운영 진단용: 메모리 캐시에 로드된 벡터 건수.
+     */
+    public int getCachedVectorCount() {
+        return vectorCache.size();
+    }
+
+    /**
+     * 품질 실측용: 캐시된 저널 엔트리 ID를 정렬·상한 샘플링합니다.
+     */
+    public List<Integer> sampleCachedJournalEntryIds(final int limit) {
+        if (limit <= 0 || vectorCache.isEmpty()) return List.of();
+        return vectorCache.keySet().stream()
+                .sorted()
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 품질 실측용: 캐시된 벡터를 조회합니다.
+     */
+    public Optional<double[]> getCachedVector(final Integer journalEntryId) {
+        if (journalEntryId == null) return Optional.empty();
+        return Optional.ofNullable(vectorCache.get(journalEntryId));
+    }
+
+    /**
+     * 품질 실측용: 캐시된 임베딩 메타를 조회합니다.
+     */
+    public Optional<JournalEntryEmbeddingEntity> getCachedMeta(final Integer journalEntryId) {
+        if (journalEntryId == null) return Optional.empty();
+        return Optional.ofNullable(metaCache.get(journalEntryId));
     }
 
     /**

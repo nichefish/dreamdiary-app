@@ -64,7 +64,7 @@ public class JournalEntryPolicyResolver {
      */
     public void assertMatches(final JournalEntryEntity entity, final JournalEntryTypePolicy policy) {
         if (entity == null || !Objects.equals(entity.getContentType(), policy.contentType.key)) {
-            throw new EntityNotFoundException("exception.EntityNotFoundException");
+            throw new EntityNotFoundException();
         }
     }
 }

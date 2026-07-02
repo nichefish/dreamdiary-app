@@ -67,11 +67,24 @@ alwaysApply: true
 ## 6. SAVEPOINT/진행 통제
 
 - **마이그레이션 진행은 SAVEPOINT 단위로 통제한다.** SAVEPOINT 는 사용자가 수동으로 git commit 하는 시점을 가리킨다. 한 phase(또는 phase 내 sub-block)가 끝나면 그 자리에서 작업을 멈추고, 사용자가 커밋할 때까지 다음 phase 를 시작하지 않는다. "다음 단계로 갈까요" 식으로 떠넘기지 말고 그냥 멈춘다.
-- **각 SAVEPOINT 시점은 그 자체로 정합한 상태**여야 한다. 그 시점에서 `npm run build:ts` 와 `npm run check:encoding` 이 통과 가능하고, 호출 그래프(외부 호출자·타입·링킹)가 끊긴 채로 남지 않아야 한다. 중간 단계의 페이지 가동성 허용 룰과는 다른 축이다 — 페이지가 깨져 있어도 무방하지만, 빌드/인코딩 게이트와 호출 그래프 정합은 SAVEPOINT 기준으로 항상 맞춰라.
+- **각 SAVEPOINT 시점은 그 자체로 정합한 상태**여야 한다. 그 시점에서 `./gradlew buildFrontend` (또는 PATH `npm` 있을 때 `npm run build`) 와 `python scripts/check_encoding.py` (또는 `npm run check:encoding`) 이 통과 가능하고, 호출 그래프(외부 호출자·타입·링킹)가 끊긴 채로 남지 않아야 한다. 중간 단계의 페이지 가동성 허용 룰과는 다른 축이다 — 페이지가 깨져 있어도 무방하지만, 빌드/인코딩 게이트와 호출 그래프 정합은 SAVEPOINT 기준으로 항상 맞춰라.
 - **명시적 진행 지시 전엔 새 변경 묶음을 시작하지 마라.** 사용자가 "다음 phase 가자" / "진행해" 같은 형태로 진입을 명시하기 전엔 직전 SAVEPOINT 상태에서 멈춰 있어야 한다. 진행 중간에 "기왕 하는 김에" 식으로 다음 phase 작업을 슬쩍 끼워넣지 마라.
 - **한 phase 안에서도 변경 묶음이 크면 sub-savepoint 분할안을 먼저 제시한다.** 분할 후보(예: dead 정리 / 모달 Vue 흡수 / service 화 / 레거시 모듈 제거)와 각 안의 규모·회복 비용 차이를 보여주고 결정을 사용자에게 넘겨라. 단, 분할 후 한 번 진입한 sub-phase 는 끝까지 간다 — sub-phase 도중에 임의로 멈추거나 방향을 틀지 마라.
 - **이미 한 작업을 되돌릴 일이 생기면 즉시 멈추고 보고한다.** 사용자 커밋이 SAVEPOINT 인 이상, 임의로 "방금 한 거 도로 무르고 다른 방향으로 갈게요" 식 결정을 내리면 SAVEPOINT 의미가 망가진다. 방향 전환이 필요한 신호(빌드 실패, 인코딩 깨짐, 호출 그래프 미일치, 룰 위반)가 보이면 즉시 멈추고 결정권을 사용자에게 넘긴다.
 
-## 7. 금지 경로
+## 7. 외부 소스 경로
 
-- **`vendor/` 폴더(하위 전체 포함)는 절대 건드리지 마.** 읽기도 하지 마. 어떤 작업(마이그레이션·정리·빌드 수정)에서도 vendor 내 파일을 수정·삭제·이동·재작성하지 않는다.
+- **`vendor/` 폴더(하위 전체 포함)는 외부 소스로 간주한다.** 원인 조사와 참조를 위한 읽기·검색은 허용하지만, 어떤 작업(마이그레이션·정리·빌드 수정)에서도 vendor 내 파일을 수정·삭제·이동·재작성하지 않는다.
+- `vendor/`는 일괄 포맷, 자동 수정, 코드 생성, 전역 치환 대상에서도 제외한다. vendor 변경이 필요해 보이면 직접 수정하지 말고 설정·래퍼·상위 소스 변경 등 외부 소스를 보존하는 대안을 먼저 제시한다.
+
+## 8. Agent 빌드 검증 (Gradle Node)
+
+- Agent shell·일부 CI에는 PATH `npm` 이 없는 경우가 많다. **npm 부재만으로 프론트 빌드 검증을 생략하지 말고**, 루트 `build.gradle` 의 `com.github.node-gradle.node` 플러그인을 사용한다.
+- Vue SPA (`app/frontend-vue`) 프로덕션 빌드(type-check + vite build): `./gradlew buildFrontend`
+- `npm install` 만: `./gradlew npmInstall`
+- `package.json` 기타 스크립트: `./gradlew npm_run_<script>` — 하이픈은 camelCase (`type-check` → `npm_run_type_check`)
+- Gradle 설정: `node.version = '20.11.1'`, `nodeProjectDir = app/frontend-vue`, `buildFrontend` → `dependsOn npmInstall`, `args = ['run', 'build']`
+- **금지**: "이 환경에는 npm이 없어 빌드를 못 돌렸습니다"만 보고하고 끝내기. 먼저 `./gradlew buildFrontend` 를 시도한다.
+- 인코딩 게이트: `scripts/check_encoding.py`. npm 없으면 `python scripts/check_encoding.py` (Windows: `py -3 scripts/check_encoding.py`). `npm run check:encoding` 과 동일.
+- `gradlew` 자체가 `JAVA_HOME` 미설정 등으로 실패할 때만 환경 한계를 보고한다. npm 부재만으로 검증 생략은 하지 않는다.
+- 상세: `docs/DEV_NOTES.md` § Agent / CI 빌드 검증, `.cursor/rules/agent-build-toolchain.mdc`

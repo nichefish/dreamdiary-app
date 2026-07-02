@@ -112,7 +112,7 @@ public class JournalInterpretationService
     @Override
     public void preModify(final JournalInterpretationDto modifyDto, final JournalInterpretationEntity modifyEntity) throws Exception {
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
         this.applyJournalDayIdFromRef(modifyDto);
@@ -146,7 +146,7 @@ public class JournalInterpretationService
         final JournalInterpretationEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JournalInterpretationDto retrieved = mapstruct.toDto(retrievedEntity);
         if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return retrieved;
     }
@@ -182,7 +182,7 @@ public class JournalInterpretationService
     @Override
     public void preDelete(final JournalInterpretationDto deletedDto) throws Exception {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 
@@ -208,7 +208,7 @@ public class JournalInterpretationService
         final JournalInterpretationDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return deleted;
     }

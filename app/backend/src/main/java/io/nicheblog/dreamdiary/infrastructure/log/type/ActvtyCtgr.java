@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.log.type;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -11,7 +12,7 @@ import lombok.RequiredArgsConstructor;
  * @author nichefish
  */
 @RequiredArgsConstructor
-public enum ActvtyCtgr {
+public enum ActvtyCtgr implements LocalizedEnum {
 
     // DEFAULT
     DEFAULT("DEFAULT"),

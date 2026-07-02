@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.attachable.lifecycle;
 
+import io.nicheblog.dreamdiary.global.type.LocalizedEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +12,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum LifecycleKey {
+public enum LifecycleKey implements LocalizedEnum {
 
     OPEN("OPEN", "열림"),
     PENDING("PENDING", "보류"),

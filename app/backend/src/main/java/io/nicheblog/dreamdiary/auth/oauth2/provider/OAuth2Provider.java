@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureExce
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -43,6 +44,7 @@ public class OAuth2Provider {
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final AuthSessionPolicyService authSessionPolicyService;
     private final AuthenticationHelper authenticationHelper;
 
     /**
@@ -56,13 +58,13 @@ public class OAuth2Provider {
     public AuthInfo authenticate(final OAuth2AuthenticationToken authentication) throws AuthenticationException {
 
         final String email = authentication.getPrincipal().getAttribute("email");
-        if (StringUtils.isEmpty(email)) throw new SecurityException("msg.user.email.invalid");
+        if (StringUtils.isEmpty(email)) throw new SecurityException("user.email.invalid");
 
         final AuthInfo authInfo = authService.loadUserByEmail(email);
 
         // 인증 객체 생성
         final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-        if (!isValidated) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+        if (!isValidated) throw new AuthenticationFailureException();
         final UsernamePasswordAuthenticationToken authToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
@@ -71,12 +73,12 @@ public class OAuth2Provider {
         // 세션에 JWT 저장
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession();
+        authSessionPolicyService.applyToSession(session);
         session.setAttribute("jwt", accessToken);
         // HTTP 쿠키에 JWT 저장
-        CookieUtils.setJwtCookie(accessToken); // 7일간 유지
         // HttpServletResponse 응답 헤더에 JWT 세팅
-        CookieUtils.setJwtCookie(accessToken, (int) jwtTokenProvider.getAccessTokenValiditySeconds());
-        CookieUtils.setRefreshTokenCookie(refreshToken, (int) refreshTokenService.getRefreshTokenValiditySeconds());
+        CookieUtils.setJwtCookie(accessToken, authSessionPolicyService.getSessionTimeoutSecondsAsInt());
+        CookieUtils.setRefreshTokenCookie(refreshToken, (int) refreshTokenService.getRefreshTokenTtlSeconds());
         final HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
         if (response != null) response.setHeader("Authorization", "Bearer " + accessToken);
 

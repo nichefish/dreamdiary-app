@@ -55,7 +55,7 @@ public class FileRestController
     ) {
 
         final boolean isSuccess = FileUtils.fileChck(fileId);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         // TODO: 실패시에만 로그 적용하도록
 
@@ -77,7 +77,7 @@ public class FileRestController
 
         final List<FileRecordDto> fileList = fileRecordService.getPageDto(fileGroupId);
         final boolean isSuccess = (fileList != null);
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(fileList));
     }
@@ -105,7 +105,7 @@ public class FileRestController
         FileUtils.downloadFile(file, orgnFileNm);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -127,7 +127,7 @@ public class FileRestController
         final FileRecordDto atchfileDtl = FileUtils.uploadDtlFile(request);
         assert atchfileDtl != null;
         final boolean isSuccess = (atchfileDtl.getId() != null);
-        final String rsltMsg =  isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg =  isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(atchfileDtl));
     }

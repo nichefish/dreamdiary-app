@@ -62,7 +62,7 @@ public class MenuRestController
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
         final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(menuList));
     }
@@ -77,16 +77,17 @@ public class MenuRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> userMenuListAjax(
-            @RequestParam(value = "mode", defaultValue = "USER") final String mode
+            @RequestParam(value = "mode", defaultValue = "USER") final String mode,
+            @RequestParam(value = "includeHidden", defaultValue = "false") final boolean includeHidden
     ) throws Exception {
 
         final boolean mngrModeRequested = Code.AUTH_MNGR.equals(mode);
         final boolean canUseMngrMode = AuthUtils.hasAuthority(Constant.ROLE_MNGR);
         final List<MenuDto> menuList = mngrModeRequested && canUseMngrMode
-                ? menuService.getMngrMenuList()
-                : menuService.getUserMenuList();
+                ? (includeHidden ? menuService.getMngrMenuMetaList() : menuService.getMngrMenuList())
+                : (includeHidden ? menuService.getUserMenuMetaList() : menuService.getUserMenuList());
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(menuList));
     }
@@ -110,7 +111,7 @@ public class MenuRestController
         if (isModify) menu.setId(id);
         final ServiceResponse result = isModify ? menuService.modify(menu) : menuService.regist(menu);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -131,7 +132,7 @@ public class MenuRestController
 
         final MenuDto retrievedDto = menuService.getDtlDto(id);
         final boolean isSuccess = retrievedDto != null;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -153,7 +154,7 @@ public class MenuRestController
 
         final ServiceResponse result = menuService.patch(id, patchDto);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -174,7 +175,7 @@ public class MenuRestController
 
         final ServiceResponse result = menuService.sortOrder(menuParam.getSortOrders());
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -195,7 +196,7 @@ public class MenuRestController
 
         final ServiceResponse result = menuService.moveTree(moveParam);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -215,7 +216,7 @@ public class MenuRestController
     ) throws Exception {
 
         final ServiceResponse result = menuService.delete(id);
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

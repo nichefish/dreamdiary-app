@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
@@ -43,10 +44,20 @@ public class AuthPolicyDto
     @Max(value = 9999)
     private Integer accountLockDurationMinutes;
 
+    /** 사용자 체감 로그인 유지 시간(분) */
+    @Positive
+    @Max(value = 10080)
+    private Integer sessionTimeoutMinutes;
+
     /** 비밀번호 변경 주기(일) */
     @Positive
     @Max(value = 365)
     private Integer passwordChangeCycleDays;
+
+    /** Password history reuse limit count */
+    @Min(value = 0)
+    @Max(value = 24)
+    private Integer passwordHistoryCount;
 
     /** 미로그인 시 잠금 일수 */
     @Positive

@@ -226,7 +226,7 @@ public class XlsxUtils {
                     });
                 }
             } catch (final Exception e) {
-                throw new RuntimeException("msg.report.xlsx.create.error", e);
+                throw new RuntimeException("report.xlsx.create.error", e);
             }
         });
     }

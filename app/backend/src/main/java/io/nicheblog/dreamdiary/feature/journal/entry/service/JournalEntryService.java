@@ -296,7 +296,7 @@ public class JournalEntryService
         policyResolver.assertMatches(retrievedEntity, policyResolver.resolve(contentType));
         final JournalEntryDto retrieved = mapstruct.toDto(retrievedEntity);
         if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return retrieved;
     }
@@ -379,7 +379,7 @@ public class JournalEntryService
         JournalDreamerFieldHelper.applyDreamerFieldsFromPost(modifyDto, policy.contentType);
         policyResolver.assertMatches(modifyEntity, policy);
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
         final Integer journalChapterId = policy.resolveModifiedChapterId(modifyDto.getJournalChapterId(), modifyEntity.getJournalChapter().getId());
@@ -402,7 +402,7 @@ public class JournalEntryService
     @Override
     public void preDelete(final JournalEntryDto deletedDto) {
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
     }
 
@@ -547,7 +547,7 @@ public class JournalEntryService
         final JournalEntryDto deleted = journalEntryMapper.getDeletedByIdAndContentType(key, policyResolver.resolve(contentType).contentType.key);
         if (deleted == null) return null;
         if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
-            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+            throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return deleted;
     }
@@ -565,7 +565,7 @@ public class JournalEntryService
         final JournalEntryEntity deleteEntity = this.getDtlEntity(id);
         policyResolver.assertMatches(deleteEntity, policyResolver.resolve(contentType));
         if (deleteEntity == null) {
-            throw new EntityNotFoundException("exception.EntityNotFoundException.to-delete");
+            throw new EntityNotFoundException("this.to-delete");
         }
 
         final JournalEntryDto deletedDto = mapstruct.toDto(deleteEntity);
@@ -601,13 +601,13 @@ public class JournalEntryService
      */
     private void assertChapterForEntry(final JournalEntryTypePolicy policy, final Integer journalChapterId) {
         final JournalChapterEntity chapter = journalChapterRepository.findById(journalChapterId)
-                .orElseThrow(() -> new BusinessException("msg.journal.chapter.not-found"));
+                .orElseThrow(() -> new BusinessException("journal.chapter.not-found"));
         if (chapter.getChapterType() == ChapterType.NOTE
                 && policy.contentType == ContentType.JOURNAL_DIARY) {
             return;
         }
         if (chapter.getChapterType() != policy.expectedChapterType) {
-            throw new BusinessException("msg.journal.entry.invalid-chapter-type");
+            throw new BusinessException("journal.entry.invalid-chapter-type");
         }
     }
 

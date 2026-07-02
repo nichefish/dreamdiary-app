@@ -45,13 +45,14 @@ spring:
         password: ${ELASTIC_PASSWORD}
         uris: ${ELASTIC_URIS}
 
-api:
-    jandi:
-        teamId: ${JANDI_TEAM_ID}
-        topics:
-            - name: NOTICE
-              id:  ${JANDI_TOPIC_NOTICE}
-            - name: SCHEDULE
-              id: ${JANDI_TOPIC_SCHEDULE}
-            - name: TEST
-              id: ${TEST}
+app:
+    integration:
+        jandi:
+            team-id: ${JANDI_TEAM_ID}
+            topics:
+                - name: NOTICE
+                  id:  ${JANDI_TOPIC_NOTICE}
+                - name: SCHEDULE
+                  id: ${JANDI_TOPIC_SCHEDULE}
+                - name: TEST
+                  id: ${TEST}

@@ -2,7 +2,10 @@ package io.nicheblog.dreamdiary.auth.jwt.filter;
 
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.config.WebSecurityAdapter;
+import io.nicheblog.dreamdiary.auth.security.handler.SecurityErrorResponseWriter;
+import io.nicheblog.dreamdiary.auth.security.matcher.PublicApiRequestMatcher;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -40,6 +43,10 @@ public class JwtAuthenticationFilter
         extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthSessionPolicyService authSessionPolicyService;
+    private final SecurityErrorResponseWriter securityErrorResponseWriter;
+    /** JWT authentication should not preempt public API handlers; the security chain shares this matcher. */
+    private final PublicApiRequestMatcher publicApiRequestMatcher;
 
     /**
      * JWT 인증을 위한 필터입니다.
@@ -64,6 +71,11 @@ public class JwtAuthenticationFilter
 
         //  정적 리소스 요청인 경우 필터 체인을 바로 통과시킴
         final String requestUri = request.getRequestURI();
+        if (publicApiRequestMatcher.matches(request)) {
+            log.debug("JWT filter skipped for public auth API. requestUri={}", requestUri);
+            filterChain.doFilter(request, response);
+            return;
+        }
         for (final String path : Constant.STATIC_PATHS) {
             if (requestUri.startsWith(path.replace("/**", "/"))) {
                 filterChain.doFilter(request, response);
@@ -84,15 +96,24 @@ public class JwtAuthenticationFilter
             // 세션에 authInfo 저장
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
+            authSessionPolicyService.applyToSession(session);
             session.setAttribute("authInfo", authInfo);
         } catch (final AuthenticationException e) {
-            log.error("Authentication failed: {}", e.getMessage());
+            log.warn("JWT authentication failed. requestUri={} message={}", requestUri, e.getMessage());
             invalidateAuthentication(request);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, MessageUtils.getMessage("msg.rslt.authentication-failed"));
+            securityErrorResponseWriter.write(
+                    response,
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    MessageUtils.getMessage("auth.login-required")
+            );
             return; // 필터 체인 중단
         } catch (final Exception e) {
-            log.error("Unexpected error: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, MessageUtils.getMessage("msg.rslt.exception"));
+            log.error("Unexpected JWT authentication error. requestUri={}", requestUri, e);
+            securityErrorResponseWriter.write(
+                    response,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    MessageUtils.getMessage("common.result.exception")
+            );
             return; // 필터 체인 중단
         }
 

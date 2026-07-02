@@ -50,10 +50,20 @@ public class AuthPolicyEntity
     @Comment("계정 잠금 지속 시간(분)")
     private Integer accountLockDurationMinutes;
 
+    /** 사용자 체감 로그인 유지 시간(분) */
+    @Column(name = "session_timeout_minutes")
+    @Comment("사용자 체감 로그인 유지 시간(분)")
+    private Integer sessionTimeoutMinutes;
+
     /** 비밀번호 변경 주기(일) */
     @Column(name = "password_change_cycle_days")
     @Comment("비밀번호 변경 주기(일)")
     private Integer passwordChangeCycleDays;
+
+    /** Password history reuse limit count */
+    @Column(name = "password_history_count")
+    @Comment("Password history reuse limit count")
+    private Integer passwordHistoryCount;
 
     /** 미로그인 시 잠금 일수 */
     @Column(name = "inactive_lock_days")

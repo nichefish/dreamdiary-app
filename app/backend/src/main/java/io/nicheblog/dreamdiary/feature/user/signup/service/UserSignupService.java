@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.user.signup.entity.UserSignupRequestEntit
 import io.nicheblog.dreamdiary.feature.user.signup.model.UserSignupRequestDto;
 import io.nicheblog.dreamdiary.feature.user.signup.repository.jpa.UserSignupRequestRepository;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.RequiredArgsConstructor;
@@ -76,16 +77,16 @@ public class UserSignupService {
         final String username = registDto.getUsername();
         final String email = registDto.getEmail();
         if (userRepository.findByUsername(username).isPresent()) {
-            return ServiceResponse.builder().rslt(false).message("이미 사용 중인 아이디입니다.").build();
+            return ServiceResponse.builder().rslt(false).message(MessageUtils.getMessage("auth.signup.duplicate-id")).build();
         }
         if (userRepository.findByEmail(email).isPresent()) {
-            return ServiceResponse.builder().rslt(false).message("이미 사용 중인 이메일입니다.").build();
+            return ServiceResponse.builder().rslt(false).message(MessageUtils.getMessage("auth.signup.duplicate-email")).build();
         }
         if (userSignupRequestRepository.existsByUsernameAndStatus(username, "PENDING")) {
-            return ServiceResponse.builder().rslt(false).message("이미 대기 중인 신청이 존재합니다.").build();
+            return ServiceResponse.builder().rslt(false).message(MessageUtils.getMessage("auth.signup.pending-exists")).build();
         }
         if (userSignupRequestRepository.existsByEmailAndStatus(email, "PENDING")) {
-            return ServiceResponse.builder().rslt(false).message("해당 이메일로 대기 중인 신청이 존재합니다.").build();
+            return ServiceResponse.builder().rslt(false).message(MessageUtils.getMessage("auth.signup.pending-exists-by-email")).build();
         }
 
         final UserSignupRequestEntity registEntity = UserSignupRequestEntity.builder()
@@ -124,7 +125,7 @@ public class UserSignupService {
     @Transactional
     public ServiceResponse cf(final Integer key) throws Exception {
         final UserSignupRequestEntity req =
-                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException());
         if (!"PENDING".equals(req.getStatus())) {
             return ServiceResponse.builder().rslt(false).build();
         }
@@ -160,7 +161,7 @@ public class UserSignupService {
      @Transactional
     public ServiceResponse uncf(final Integer key) throws Exception {
         final UserSignupRequestEntity req =
-                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException());
         req.setStatus("REJECTED");
         req.setRejectedAt(DateUtils.getCurrDate());
         final UserSignupRequestEntity updatedEntity = userSignupRequestRepository.saveAndFlush(req);
@@ -177,7 +178,7 @@ public class UserSignupService {
     public ServiceResponse cfByUsername(final String username) throws Exception {
         final Optional<UserSignupRequestEntity> reqWrapper =
                 userSignupRequestRepository.findTopByUsernameAndStatusOrderByCreatedAtDesc(username, "PENDING");
-        if (reqWrapper.isEmpty()) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (reqWrapper.isEmpty()) throw new EntityNotFoundException();
         return this.cf(reqWrapper.get().getId());
     }
 }

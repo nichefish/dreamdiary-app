@@ -42,14 +42,6 @@ spring:
     mvc:
         throw-exception-if-no-handler-found: true
 
-    freemarker:
-        suffix: .ftlh
-        content-type: text/html; charset=utf-8
-        request-context-attribute: rc
-        expose-request-attributes: true
-        expose-session-attributes: true
-        cache: ${FREEMARKER_CACHE:true}
-
     mustache:
         check-template-location: false
 
@@ -104,8 +96,8 @@ spring:
     messages:
         basename: messages/messages
         encoding: UTF-8
-        use-code-as-default-message: true
-        fallback-to-system-locale: true
+        use-code-as-default-message: false
+        fallback-to-system-locale: false
 
     mail:
         default-encoding: UTF-8
@@ -124,12 +116,6 @@ spring:
                         required: true
                     ssl:
                         trust: smtp.gmail.com
-
-    jwt:
-        secret: ${JWT_SECRET}
-        token-validity-seconds: 3600
-        access-token-validity-seconds: 900
-        refresh-token-validity-seconds: 1209600
 
     security:
         oauth2:
@@ -190,24 +176,55 @@ springdoc:
 
 # 서비스 진입 AOP (ServiceEntryLogAspect). 로컬에서 켜 두고 운영은 기본 false 권장.
 app:
+    auth:
+        jwt:
+            secret: ${JWT_SECRET}
+            signup-token-ttl-seconds: 3600
+        refresh-token:
+            ttl-seconds: 1209600
+        remember-me:
+            key: ${REMEMBER_ME_KEY}
+            param: ${REMEMBER_ME_PARAM}
+            token-ttl-days: 30
+        initial-admin-password: ${SYSTEM_INIT_TEMP_PW}
+
+    journal:
+        embedding:
+            sync-on-startup: true
+            worker:
+                batch-size: 20
+                fixed-delay-ms: 60000
+                initial-delay-ms: 15000
+        entity:
+            worker:
+                batch-size: 20
+                fixed-delay-ms: 20000
+                initial-delay-ms: 10000
+
     logging:
         service-entry:
             enabled: false
             log-finish: false
 
-system:
-    init-temp-pw: ${SYSTEM_INIT_TEMP_PW}
+    file:
+        allowed-extensions: jpg|jpeg|gif|png|bmp|webp|wav|mp3|mp4|txt|csv|tsv|json|xls|xlsx|doc|docx|ppt|pptx|hwp|pdf
+        allowed-mime-types: image/jpeg|image/png|image/gif|image/bmp|image/webp|application/pdf|application/msword|application/vnd.ms-excel|application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|application/vnd.openxmlformats-officedocument.presentationml.presentation|application/zip|application/x-rar-compressed|application/x-7z-compressed|text/plain|text/csv
+        image-extensions: jpg|jpeg|png|gif|bmp|webp|svg
 
-#AES128 secret key; 16 chars
-aes128:
-    secret-key: ${AES128_SECRET_KEY}
+    #AES128 secret key; 16 chars
+    crypto:
+        aes128:
+            secret-key: ${AES128_SECRET_KEY}
 
-#key used for remember-me library
-remember-me:
-    param: ${REMEMBER_ME_PARAM}
-    key: ${REMEMBER_ME_KEY}
+    integration:
+        kasi:
+            service-key: ${API_KASI_SERVICE_KEY}
+            api-url: ${API_KASI_URL}
 
-api:
-    kasi:
-        serviceKey: ${API_KASI_SERVICE_KEY}
-        api-url: ${API_KASI_URL}
+    release-history:
+        max-list-size: 50
+
+    ollama:
+        base-url: http://localhost:11434
+        chat-model: qwen2.5:7b
+        embedding-model: nomic-embed-text

@@ -1,5 +1,35 @@
 # CHANGELOG
 
+### 2026-07-02 | v0.22.0
+- 신규 기능
+  - 다국어(i18n) 지원 도입.
+    - 로그인 화면·상단 navbar에 언어 선택(한/영) 추가, 라우트 진입 전 메시지 카탈로그 초기화.
+    - Vue 전 화면 문구를 t() 카탈로그 기반으로 교체하고, 서버 사이드 하드코딩 메시지 교체·LocalizedEnum 적용·code_item 번역 테이블(code_item_i18n) 지원 추가.
+  - AI 챗봇 고도화.
+    - person SYNTHESIS 질문에 RULE_PRIMARY 규칙 기반 하이브리드 응답 적용, 응답 토큰·태그·근거 장면 품질 보정.
+    - Ollama chat/embedding 모델 설정화 및 Health 체크 추가, 사이트 관리 화면을 일반/AI 설정으로 분리.
+  - 일정 달력 aside 추가.
+    - 저널 aside와 동일 폭(280px)·표시 토글의 년월 내비게이션(연도 select + 월 그리드 + TODAY).
+  - 엔트리 검색에 태그 피커 추가.
+  - 계정 신청 관리·메뉴 설명 관리·비밀번호 변경 이력 추가.
+  - React SPA 실험 초기화(`app/frontend-react`).
+- 개선 사항
+  - 일정 저장 모달 시작일·종료일을 레거시 datepicker(flatpickr)로 수렴 — input 어디를 클릭해도 달력 표시.
+  - 세션·인증 흐름 보강.
+    - 등록/수정 모달 열 때 auth ping, 세션 무효화 시 alert 및 만료 후 저널 일자 유지, 세션 무효화 시간 DB값 관리.
+    - 인증 오류 메시지 세분화 및 false success 제거, 비밀번호 재설정 토큰 해시 명칭 정리.
+  - 설정 구조 정리 — namespace 정리 및 Properties.java 기반 관리.
+  - 저널 보강 — 결산 SYNC 버튼 복원, 메타 입력 안내, 일자 bootstrap 기본값, 엔트리 상태 변경 시 캐시 갱신.
+  - 메뉴/라우트 — 사용자·관리자 메뉴 라우트 보존, 사이드바에 표시되지 않는 메뉴(내 정보) 처리.
+- 구조 정리
+  - 레거시 템플릿·정적 리소스(`legacy/`) 아카이브 후 삭제 — 원본 참조 경로(git 이력·백업 zip)를 DEV_NOTES에 기록.
+  - FreeMarker MVC 렌더 경로 제거(인터셉터·ModelContributor·starter) — 이메일 템플릿 렌더만 잔존.
+  - redirect 전환된 페이지 테스트의 FTL 뷰 검증을 리다이렉트 검증으로 정리.
+  - 소스 UTF-8 BOM 제거·로케일 고정 등 인코딩 통일, 한글 깨짐 복구.
+- 문서
+  - vendor 경로 정책 완화(읽기/참조 허용, 수정 금지 유지).
+  - journal/common migration spec·CHAT_AI_SPEC·DEV_NOTES(legacy 참조 경로·FreeMarker 제거 기록) 갱신.
+
 ### 2026-06-13 | v0.21.2
 - 신규 기능
   - AI 챗봇 고도화.

@@ -41,8 +41,9 @@ export function useJournalDay(
     try {
       const res = await getDailyJournalDay(dateStr);
       setDay(res.rsltList?.[0] ?? null);
-    } catch {
-      setError("불러오는 중 오류가 발생했습니다.");
+    } catch (e) {
+      console.error("[useJournalDay] daily journal load failed", { dateStr }, e);
+      setError(e instanceof Error ? e.message : "불러오는 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
       setRefreshing(false);

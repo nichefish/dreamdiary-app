@@ -125,7 +125,7 @@ public interface BaseAttachableService<PostDto extends BaseAttachableDto & Ident
     default ServiceResponse delete(final Key key) throws Exception {
         final Entity deleteEntity = this.getDtlEntity(key);
         if (deleteEntity == null) {
-            throw new EntityNotFoundException("exception.EntityNotFoundException.to-delete");
+            throw new EntityNotFoundException("this.to-delete");
         }
 
         final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);

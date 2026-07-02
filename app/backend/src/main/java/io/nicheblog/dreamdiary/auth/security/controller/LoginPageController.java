@@ -10,7 +10,6 @@ import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseController
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,9 +37,6 @@ public class LoginPageController
     private final String baseUrl = Url.APP_AUTH_LGN_FORM;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리 (로그 적재용)
-
-    @Value("${remember-me.param}")
-    private String REMEMBER_ME_PARAM;
 
     /**
      * 로그인 화면 조회

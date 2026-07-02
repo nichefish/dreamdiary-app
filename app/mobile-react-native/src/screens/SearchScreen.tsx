@@ -97,9 +97,9 @@ export function SearchScreen() {
       const type = ft === "ALL" ? undefined : ft;
       const res = await searchEntries({ keyword: trimmed, type });
       setResults(res.rsltList ?? []);
-    } catch {
-      setError("검색 중 오류가 발생했습니다.");
-      setResults([]);
+    } catch (e) {
+      console.error("[SearchScreen] entry search failed", { keyword: trimmed, filterType: ft }, e);
+      setError(e instanceof Error ? e.message : "검색 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }

@@ -109,15 +109,20 @@ export function CalendarScreen() {
   const navigation = useNavigation<Nav>();
   const [yearMonth, setYearMonth] = useState(currentYearMonth);
   const [monthDays, setMonthDays] = useState<JournalDay[]>([]);
+  const [loadedYearMonth, setLoadedYearMonth] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [monthError, setMonthError] = useState<string | null>(null);
 
   const fetchMonth = useCallback(async (ym: string) => {
     setLoading(true);
+    setMonthError(null);
     try {
       const res = await getMonthlyJournalDays(ym);
       setMonthDays(res.rsltList ?? []);
-    } catch {
-      setMonthDays([]);
+      setLoadedYearMonth(ym);
+    } catch (e) {
+      console.error("[CalendarScreen] month load failed", { yearMonth: ym }, e);
+      setMonthError(e instanceof Error ? e.message : "달력 기록을 불러오지 못했습니다.");
     } finally {
       setLoading(false);
     }
@@ -136,12 +141,13 @@ export function CalendarScreen() {
 
   const entryDateSet = useMemo(() => {
     const set = new Set<string>();
+    if (loadedYearMonth !== yearMonth) return set;
     for (const d of monthDays) {
       const safeDate = normalizeDateStr(d.stdrdDt);
       if (hasEntries(d) && safeDate) set.add(safeDate);
     }
     return set;
-  }, [monthDays]);
+  }, [loadedYearMonth, monthDays, yearMonth]);
 
   const isFutureMonth = useMemo(() => {
     const now = currentYearMonth();
@@ -184,8 +190,21 @@ export function CalendarScreen() {
           </Pressable>
         </View>
 
+        {monthError != null && (
+          <View style={styles.errorRow}>
+            <Text style={styles.errorText}>{monthError}</Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => { void fetchMonth(yearMonth); }}
+              style={styles.retryButton}
+            >
+              <Text style={styles.retryButtonText}>다시 시도</Text>
+            </Pressable>
+          </View>
+        )}
+
         {/* 이번 달 기록 일수 요약 — 로딩 완료 후 기록이 하나라도 있을 때만 표시 */}
-        {!loading && entryDateSet.size > 0 && (
+        {!loading && monthError == null && entryDateSet.size > 0 && (
           <Text style={styles.monthSummary}>{entryDateSet.size}일 기록</Text>
         )}
 
@@ -283,6 +302,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: -8
   },
+  errorRow: { alignItems: "center", gap: 8, paddingVertical: 8 },
+  errorText: { color: "#C0392B", fontSize: 13, textAlign: "center" },
+  retryButton: { paddingHorizontal: 12, paddingVertical: 7 },
+  retryButtonText: { color: colors.accent, fontSize: 13, fontWeight: "700" },
   // 달력 그리드
   week: { flexDirection: "row" },
   dayCell: {

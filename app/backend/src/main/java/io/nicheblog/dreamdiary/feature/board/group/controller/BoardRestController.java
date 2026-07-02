@@ -67,7 +67,7 @@ public class BoardRestController extends BaseControllerImpl {
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "sortOrder"));
         final Page<BoardDto> pageResult = boardService.getPageDto(searchParam, pageRequest);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(pageResult));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(pageResult));
     }
 
     /**
@@ -83,7 +83,7 @@ public class BoardRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> boardRegAjax(final @Valid BoardDto board) throws Exception {
         final ServiceResponse result = boardService.regist(board);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -99,7 +99,7 @@ public class BoardRestController extends BaseControllerImpl {
     @Secured({Constant.ROLE_MNGR})
     public ResponseEntity<AjaxResponse> boardDtlAjax(final @PathVariable Integer id) throws Exception {
         final BoardDto board = boardService.getDtlDto(id);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(board));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(board));
     }
 
     /**
@@ -115,7 +115,7 @@ public class BoardRestController extends BaseControllerImpl {
     public ResponseEntity<AjaxResponse> boardMdfItemAjax(final @Valid BoardDto board) throws Exception {
         final ServiceResponse result = boardService.modify(board);
         final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+        final String rsltMsg = isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -132,7 +132,7 @@ public class BoardRestController extends BaseControllerImpl {
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDelAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.delete(id);
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -147,7 +147,7 @@ public class BoardRestController extends BaseControllerImpl {
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardUseAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.setUse(id, "Y");
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -162,7 +162,7 @@ public class BoardRestController extends BaseControllerImpl {
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardUnuseAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.setUse(id, "N");
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.getMessage("common.result.success")));
     }
 
     /**
@@ -177,6 +177,6 @@ public class BoardRestController extends BaseControllerImpl {
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardSortOrderAjax(final @RequestBody BoardParam boardParam) throws Exception {
         final ServiceResponse result = boardService.sortOrder(boardParam.getSortOrders());
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.RSLT_SUCCESS));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.getMessage("common.result.success")));
     }
 }

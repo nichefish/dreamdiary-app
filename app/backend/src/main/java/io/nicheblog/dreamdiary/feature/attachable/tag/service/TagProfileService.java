@@ -215,7 +215,7 @@ public class TagProfileService
     public TagProfileEntity getDtlEntity(final Integer key) throws Exception {
         final String createdBy = AuthUtils.requireLoginUsername();
         return repository.findByIdAndCreatedBy(key, createdBy)
-                .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+                .orElseThrow(() -> new EntityNotFoundException());
     }
 
     @Override

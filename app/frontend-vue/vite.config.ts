@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         "vue-i18n": "vue-i18n/dist/vue-i18n.cjs.js",
         "@": fileURLToPath(new URL("./src", import.meta.url)),
-        "@metronic": fileURLToPath(new URL("./src/vendor/metronic", import.meta.url)),
+        "@metronic": fileURLToPath(new URL("./src/platform/metronic", import.meta.url)),
       },
     },
     // dev/prod 모두 /vue-app/ 기준으로 서빙 (Spring Boot static 경로와 일치)

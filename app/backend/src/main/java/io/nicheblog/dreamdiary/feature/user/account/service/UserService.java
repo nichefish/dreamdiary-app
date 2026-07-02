@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.account.service;
 
+import io.nicheblog.dreamdiary.auth.config.AuthProperties;
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
@@ -19,7 +20,6 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +62,9 @@ public class UserService
     }
 
     private final AuthPolicyQueryService authPolicyQueryService;
+    private final AuthProperties authProperties;
     private final PasswordEncoder passwordEncoder;
+    private final UserPasswordHistoryService userPasswordHistoryService;
     private final RoleRepository roleRepository;
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -70,8 +72,9 @@ public class UserService
     private static final Base64.Encoder BASE64_URL = Base64.getUrlEncoder().withoutPadding();
 
     /** 관리자 '비밀번호 초기화' 시 적용할 임시 비밀번호(평문) — 초기 설치와 동일 설정 사용 */
-    @Value("${system.init-temp-pw:}")
-    private String systemInitTempPw;
+    private String getInitialAdminPassword() {
+        return authProperties.getInitialAdminPassword();
+    }
 
     /**
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long id와 별도로 String username)
@@ -96,7 +99,7 @@ public class UserService
     public UserEntity getDtlEntity(final String username) throws Exception {
         final Optional<UserEntity> retrievedWrapper = repository.findByUsername(username);
 
-        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException("exception.UsernameNotFoundException")));
+        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException()));
     }
 
     /* ----- */
@@ -157,17 +160,20 @@ public class UserService
     public ServiceResponse passwordReset(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (retrievedEntity == null) throw new EntityNotFoundException();
 
-        if (StringUtils.isBlank(systemInitTempPw)) {
-            throw new IllegalStateException("msg.user.pw.init-temp-pw.not-set");
+        final String initialAdminPassword = this.getInitialAdminPassword();
+        if (StringUtils.isBlank(initialAdminPassword)) {
+            throw new IllegalStateException("user.pw.init-temp-pw.not-set");
         }
-        retrievedEntity.setPassword(passwordEncoder.encode(systemInitTempPw));
+        final String previousPasswordHash = retrievedEntity.getPassword();
+        retrievedEntity.setPassword(passwordEncoder.encode(initialAdminPassword));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
-        retrievedEntity.acntStus.setPasswordToken(null);
+        retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
+        userPasswordHistoryService.recordPasswordChange(updatedEntity, previousPasswordHash);
 
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getId() != null)
@@ -184,7 +190,7 @@ public class UserService
         final String passwordToken = this.generatePasswordResetToken();
 
         if (user.acntStus == null) user.acntStus = UserStateEntity.builder().build();
-        user.acntStus.setPasswordToken(this.hashPasswordResetToken(passwordToken));
+        user.acntStus.setPasswordResetTokenHash(this.hashPasswordResetToken(passwordToken));
         user.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         repository.saveAndFlush(user);
 
@@ -252,7 +258,7 @@ public class UserService
     public ServiceResponse userLock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (retrievedEntity == null) throw new EntityNotFoundException();
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setLockedYn("Y");
@@ -271,7 +277,7 @@ public class UserService
     public ServiceResponse userUnlock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        if (retrievedEntity == null) throw new EntityNotFoundException();
 
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");

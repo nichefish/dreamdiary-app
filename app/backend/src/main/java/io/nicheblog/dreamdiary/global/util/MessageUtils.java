@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +31,7 @@ import java.util.ResourceBundle;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class MessageUtils
-        extends ReloadableResourceBundleMessageSource
-        implements MessageSource {
+public class MessageUtils {
 
     @Resource(name = "messageSource")
     private MessageSource autowiredMessageSource;
@@ -46,25 +44,18 @@ public class MessageUtils
     @PostConstruct
     private void init() {
         messageSource = autowiredMessageSource;
-        response = autowiredResponse;
-        RSLT_SUCCESS = getMessage("msg.rslt.success");
-        RSLT_FAILURE = getMessage("msg.rslt.failure");
-        RSLT_EMPTY = getMessage("msg.rslt.empty");
-    }
+        response = autowiredResponse;    }
 
-    public static String RSLT_SUCCESS;
-    public static String RSLT_FAILURE;
-    public static String RSLT_EMPTY;
 
     public static final String RSLT_EXCEPTION = "exception";
 
-    public static final String RSLT_JANDI_SUCCESS = "msg.jandi.rslt.success";
-    public static final String RSLT_JANDI_FAILURE = "msg.jandi.rslt.failure";
+    public static final String RSLT_JANDI_SUCCESS = "jandi.result.success";
+    public static final String RSLT_JANDI_FAILURE = "jandi.result.failure";
 
-    public static final String RSLT_SUCCESS_PW_RESET = "msg.user.pw.reset.rslt.success";
+    public static final String RSLT_SUCCESS_PW_RESET = "user.pw.reset.result.success";
 
-    public static final String LGN_FAIL_BADCREDENTIALS_CNT = "AbstractUserDetailsAuthenticationProvider.BadCredentials.failCnt";
-    public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "AbstractUserDetailsAuthenticationProvider.BadCredentials.locked";
+    public static final String LGN_FAIL_BADCREDENTIALS_CNT = "auth.bad-credentials.fail-count";
+    public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "auth.bad-credentials.locked";
 
     /**
      * 코드로 사전 정의된 메세지 조회
@@ -76,7 +67,7 @@ public class MessageUtils
     public static String getMessage(final String code) throws NoSuchMessageException {
         // test환경에서의 난해성 때문에 bean 주입 환경 외에는 예외 리턴 처리
         if (messageSource == null) return null;
-        return messageSource.getMessage(code, null, code, Locale.getDefault());
+        return messageSource.getMessage(code, null, code, LocaleContextHolder.getLocale());
     }
 
     /**
@@ -89,7 +80,7 @@ public class MessageUtils
      */
     public static String getMessage(final String code, final @Nullable Object[] args) throws NoSuchMessageException {
         if (messageSource == null) return code;
-        return messageSource.getMessage(code, args, code, Locale.getDefault());
+        return messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale());
     }
 
     /**
@@ -166,16 +157,15 @@ public class MessageUtils
     public static String getExceptionMsg(final Throwable e) {
         final String msg = StringUtils.trimToNull(e.getMessage());
         if (msg != null) {
-            final String resolvedMsg = getMessage(msg);
-            if (!msg.equals(resolvedMsg)) return resolvedMsg;
-            final String exceptionMsg = getExceptionBundleMsg(e);
-            if (StringUtils.isAsciiPrintable(msg) && exceptionMsg != null) return exceptionMsg;
-            if (msg.length() > 200) return msg.substring(0, 200) + "...";
-            return msg;
+            // "this.suffix" → "exception.{class-key}.suffix" (서브키 자기참조 패턴)
+            final String resolvedKey = msg.startsWith("this.")
+                    ? RSLT_EXCEPTION + "." + getExceptionNm(e) + msg.substring(4)
+                    : msg;
+            final String resolvedMsg = getMessage(resolvedKey);
+            if (!resolvedKey.equals(resolvedMsg)) return resolvedMsg;
         }
-
-        final String exceptionMsg = getExceptionBundleMsg(e);
-        return exceptionMsg != null ? exceptionMsg : getMessage("msg.rslt.exception");
+        final String bundleMsg = getExceptionBundleMsg(e);
+        return bundleMsg != null ? bundleMsg : getMessage("common.result.exception");
     }
 
     /**
@@ -210,8 +200,25 @@ public class MessageUtils
      * @return {@link String} -- 예외 메시지
      */
     public static String getExceptionNm(final Throwable e) {
-        final String exceptionNm = e.getClass().toString();
-        return exceptionNm.substring(exceptionNm.lastIndexOf('.') + 1);
+        final String fullName = e.getClass().getName();
+        // 패키지 제거, 이너클래스 구분자 $ → .
+        String name = fullName.substring(fullName.lastIndexOf('.') + 1).replace('$', '.');
+        // 각 세그먼트에서 "Exception" 접미어 제거 후 kebab-case 변환
+        final String[] segments = name.split("\\.");
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < segments.length; i++) {
+            if (i > 0) sb.append('.');
+            String seg = segments[i];
+            if (seg.endsWith("Exception") && seg.length() > "Exception".length()) {
+                seg = seg.substring(0, seg.length() - "Exception".length());
+            }
+            // PascalCase → kebab-case (lowercase→uppercase 경계, 연속대문자+대소문자 경계)
+            seg = seg.replaceAll("([a-z0-9])([A-Z])", "$1-$2")
+                     .replaceAll("([A-Z]+)([A-Z][a-z])", "$1-$2")
+                     .toLowerCase();
+            sb.append(seg);
+        }
+        return sb.toString();
     }
 
     /**
@@ -220,7 +227,7 @@ public class MessageUtils
      * @return {@link Map} -- messageMap
      */
     public static Object getMessageMap() {
-        final ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", Locale.getDefault());
+        final ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", Locale.KOREAN);
         final Map<String, String> messageMap = new HashMap<>();
         bundle.keySet().forEach(key -> messageMap.put(key, bundle.getString(key)));
 
