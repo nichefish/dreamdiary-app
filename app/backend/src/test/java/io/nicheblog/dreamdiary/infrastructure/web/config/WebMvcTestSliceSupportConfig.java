@@ -15,13 +15,14 @@ import java.util.concurrent.Executor;
 /**
  * WebMvc 슬라이스 테스트용 빈 보강
  * <pre>
- *  {@literal @}WebMvcTest 시 {@link WebMvcContextConfig}가 {@link io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor}
+ *  {@literal @}WebMvcTest 시 {@link WebMvcContextConfig}가 {@link io.nicheblog.dreamdiary.infrastructure.log.interceptor.LogInterceptor}
  *  등 조립 빈을 끌어오는데, 기본 패키지 스캔 밖(global 등)의 {@literal @}Component 들은 컨텍스트에 등록되지 않을 수 있다.
+ *  (FreeMarker MVC 렌더 경로 제거 이후에도 웹 레이어 인터셉터 조립에는 동일하게 필요하다.)
  * </pre>
  *
  * 변경 전: {@code Failed to load ApplicationContext} ({@link org.springframework.beans.factory.NoSuchBeanDefinitionException}: {@link ActiveProfile}, {@link ReleaseInfo},
  * 또는 {@link io.nicheblog.dreamdiary.infrastructure.log.interceptor.LogInterceptor}→{@link ApplicationEventPublisherWrapper} 미등록).
- * 변경 후: {@code spring.profiles.active=test}로 {@link ActiveProfile} 바인딩하고, 웹 레이어 인터셉터·메뉴 모델(Freemarker) 슬라이스에 빠지기 쉬운 빈을 보충한다.
+ * 변경 후: {@code spring.profiles.active=test}로 {@link ActiveProfile} 바인딩하고, 웹 레이어 인터셉터 슬라이스에 빠지기 쉬운 빈을 보충한다.
  * — {@link ReleaseInfo},{@link ApplicationEventPublisherWrapper} 및 해당 래퍼의 {@literal @}Resource 이름 빈 {@code taskExecutor},{@code customEventBus}
  * ({@link CustomEventBus}: Mockito 스텁, 워커 비가동).
  *
@@ -33,7 +34,8 @@ import java.util.concurrent.Executor;
 public class WebMvcTestSliceSupportConfig {
 
     /**
-     * 화면 인터셉터가 {@code releaseDate} 모델에 넣을 때 사용하는 배포 메타의 테스트용 인스턴스.
+     * 배포 메타({@link ReleaseInfo})의 테스트용 인스턴스.
+     * (변경 전: 화면 인터셉터의 {@code releaseDate} 모델 주입용. 변경 후: FreeMarker 인터셉터 제거 — {@code CmmController} 등 웹 레이어 소비처용으로 유지.)
      *
      * @return 비어 있지 않은 기본값을 가진 {@link ReleaseInfo}
      */

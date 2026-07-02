@@ -65,6 +65,8 @@ pm run check:encoding과 동일).
 ### 레거시 복원 모드 — UI 동일성 SSOT
 
 - 저널 Vue 마이그레이션에서 화면 UI의 SSOT는 legacy templates/static의 partial, FTL, CSS, 실제 DOM이다. `app/frontend-vue` 구현은 이를 재해석하지 않고 먼저 동일하게 복원한다.
+- **legacy 원본 참조 경로 (2026-07-02 `legacy/` 폴더 삭제 이후)**: ① 템플릿·정적 소스 원본은 git 이력 — 각 모듈의 Vue 전환 커밋 직전 트리(예: 일정은 `4932678fd^`)에서 원래 경로(`app/backend/src/main/resources/templates/…`, `static/…`)로 조회. ② 삭제 직전 `legacy/` 폴더 스냅샷 전체(2,560개 파일, ftlh/hbs + static 이미지·GeoLite2 mmdb 포함)는 리포 밖 `../legacy_backup_20260702.zip` 아카이브. (`legacy/`는 gitignore 대상이었으므로 폴더 자체는 git 이력에 없다.)
+- **FreeMarker MVC 렌더 경로 제거 (2026-07-02)**: 화면 뷰 전면 Vue 이관 완료에 따라 `FreemarkerInterceptor`·`FreemarkerModelContributor`(port/adapter)·MVC `FreeMarkerConfigurer` 커스터마이즈·`spring.freemarker` 설정·`spring-boot-starter-freemarker` 를 제거. FreeMarker 는 **이메일 템플릿 렌더**(`freemarkerEmailConfig` + `templates/email/*.ftlh`, `spring-context-support`)로만 잔존한다.
 - 작업 순서: ① legacy partial/FTL 확인 ② legacy CSS 확인 ③ legacy 렌더 DOM·클래스 확인 ④ 현재 Vue 비교 ⑤ 차이 목록 작성 ⑥ 차이 전부 수정 ⑦ 타입체크와 필요한 spec 갱신.
 - 사용자가 짚은 한 픽셀·문구·간격은 국소 요청이 아니라 해당 컴포넌트의 legacy 동등성 검수 신호로 취급한다. 그 지점만 고치고 끝내지 않는다.
 - 의미를 이해하지 못한 UI는 추정·개선하지 않는다. 우선 legacy와 동일하게 옮긴 뒤, 개선은 별도 명시 요청이 있을 때만 진행한다.
