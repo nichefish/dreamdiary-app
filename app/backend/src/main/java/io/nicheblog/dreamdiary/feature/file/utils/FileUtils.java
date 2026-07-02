@@ -39,13 +39,16 @@ import java.util.stream.Collectors;
  *  (파일 서비스에서 (서비스 인터페이스에서 쓰는) 파일 업로드 부분을 유틸리티 클래스로 분리)
  * </pre>
  *
+ * 변경 전: {@code org.apache.commons.io.FileUtils} 상속 — commons-io 2.9+ 에서 해당 생성자가 deprecated 라
+ * 암묵적 super() 호출로 "uses or overrides a deprecated API" 경고 발생.
+ * 변경 후: 상속 제거 (상속 static 메서드를 이 클래스 경유로 호출하는 곳 0건 확인 — commons-io 는 필요 시 직접 사용).
+ *
  * @author nichefish
  */
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class FileUtils
-        extends org.apache.commons.io.FileUtils {
+public class FileUtils {
 
     private final FileGroupService autowiredFileService;
     private final FileRecordService autowiredFileDtlService;
