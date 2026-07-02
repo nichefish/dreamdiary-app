@@ -1,11 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.controller;
 
-import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.security.model.AuthInfoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerTestHelper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -14,14 +10,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.Objects;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.util.AssertionErrors.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -46,37 +39,35 @@ class LoginPageControllerTest {
     /**
      * 로그인 화면 조회 Test
      * 로그인 사용자가 아닐 때 로그인 페이지 접근
+     *
+     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재를 검증했다 (FreeMarker 렌더 시절).
+     * 변경 후: 컨트롤러가 Vue SPA 로그인 화면으로 리다이렉트만 반환하므로 리다이렉트 경로를 검증한다.
      */
     @Test
     void testLoginFormAnonymous() throws Exception {
 
-        AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
-
-        MvcResult result = this.mockMvc.perform(get(Url.APP_AUTH_LGN_FORM))
+        this.mockMvc.perform(get(Url.APP_AUTH_LGN_FORM))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document("main"))
-                .andReturn();
-
-        String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();
-        assertNotNull(viewName, "View name is null");
-        Assertions.assertTrue(BaseControllerTestHelper.viewFileExists(viewName), "View template file does not exist: " + viewName);
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(Url.VUE_SIGN_IN))
+                .andDo(document("main"));
     }
 
     /**
      * 로그인 화면 조회 Test
      * 로그인 사용자일 떄 메인 화면으로 리다이렉트
+     *
+     * 변경 전: 미사용 지역변수(authInfo, result)가 남아 있었다. 검증(302)은 동일하게 유지하고,
+     * 변경 후: 리다이렉트 목적지(메인 화면)까지 명시 검증한다.
      */
     @Test
     @WithMockUser
     void testLoginFormAuthenticated() throws Exception {
 
-        AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
-
-        MvcResult result = this.mockMvc.perform(get(Url.APP_AUTH_LGN_FORM))
+        this.mockMvc.perform(get(Url.APP_AUTH_LGN_FORM))
                 .andDo(print())
                 .andExpect(status().isFound())
-                .andDo(document("main"))
-                .andReturn();
+                .andExpect(redirectedUrl(Url.MAIN))
+                .andDo(document("main"));
     }
 }

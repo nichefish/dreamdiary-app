@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfoTestFactory;
 import io.nicheblog.dreamdiary.feature.admin.web.controller.MainPageController;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerTestHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -12,14 +11,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.util.AssertionErrors.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -40,6 +35,9 @@ public class MainPageControllerTest {
 
     /**
      * 메인 화면 조회 Test
+     *
+     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재를 검증했다 (FreeMarker 렌더 시절).
+     * 변경 후: 컨트롤러가 저널 주간 화면(Vue SPA)으로 리다이렉트만 반환하므로 리다이렉트 경로를 검증한다.
      */
     @Test
     @WithMockUser
@@ -47,19 +45,18 @@ public class MainPageControllerTest {
 
         AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
 
-        MvcResult result = this.mockMvc.perform(get(Url.MAIN)
+        this.mockMvc.perform(get(Url.MAIN)
                 .sessionAttr("authInfo", authInfo))  // 세션 어트리뷰트 추가
-                .andExpect(status().isOk())
-                .andDo(document("main"))
-                .andReturn();
-
-        String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();
-        assertNotNull(viewName, "View name is null");
-        assertTrue(BaseControllerTestHelper.viewFileExists(viewName), "View template file does not exist: " + viewName);
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/vue-app/journal/weekly"))
+                .andDo(document("main"));
     }
 
     /**
      * 관리자 메인 화면 조회 Test
+     *
+     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재를 검증했다 (FreeMarker 렌더 시절).
+     * 변경 후: 컨트롤러가 사이트 관리 화면으로 리다이렉트만 반환하므로 리다이렉트 경로를 검증한다.
      */
     @Test
     @WithMockUser
@@ -67,14 +64,10 @@ public class MainPageControllerTest {
 
         AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
 
-        MvcResult result = this.mockMvc.perform(get(Url.ADMIN_MAIN)
+        this.mockMvc.perform(get(Url.ADMIN_MAIN)
                 .sessionAttr("authInfo", authInfo))  // 세션 어트리뷰트 추가
-                .andExpect(status().isOk())
-                .andDo(document("adminMain"))
-                .andReturn();
-
-        String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();
-        assertNotNull(viewName, "View name is null");
-        assertTrue(BaseControllerTestHelper.viewFileExists(viewName), "View template file does not exist: " + viewName);
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(Url.ADMIN_PAGE))
+                .andDo(document("adminMain"));
     }
 }

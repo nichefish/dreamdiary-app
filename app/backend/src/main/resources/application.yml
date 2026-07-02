@@ -42,14 +42,6 @@ spring:
     mvc:
         throw-exception-if-no-handler-found: true
 
-    freemarker:
-        suffix: .ftlh
-        content-type: text/html; charset=utf-8
-        request-context-attribute: rc
-        expose-request-attributes: true
-        expose-session-attributes: true
-        cache: ${FREEMARKER_CACHE:true}
-
     mustache:
         check-template-location: false
 
