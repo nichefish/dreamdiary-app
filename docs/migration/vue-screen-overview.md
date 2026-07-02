@@ -126,6 +126,7 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | `attachableModal.ts` | 댓글/이력/파일/태그 공통 모달 |
 | `boardPost.ts` | 게시판 목록/상세 |
 | `schedule.ts` | 일정 캘린더 |
+| `scheduleAside.ts` | 일정 aside 표시 제어 (`visible`, `show/hide`) |
 | `userMy.ts` | 내 정보 |
 | `userSignup.ts` | 계정 신청 승인 |
 | `adminPage.ts` | 사이트 관리 |

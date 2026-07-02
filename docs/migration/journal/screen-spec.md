@@ -44,6 +44,8 @@
 ### 일정 캘린더 (`ScheduleCalendar.vue`)
 
 - **탭·툴바**: `JournalDayViewToolbar` 와 동일 상하감 — 탭(`nav-tabs-line ps-5 mt-5`) 상단, 이동일·검색·필터·등록은 탭 오른쪽(`pe-5 mt-3`). 카드 `margin-top: 0`. 달력 VIEW(FullCalendar) · 목록 VIEW(테이블)
+- **aside (년월 내비게이션)**: `ScheduleAside.vue` — 저널 aside 와 동일 폭(280px 고정)·sticky(상단 1rem, 자체 스크롤). 연도 select + 월 prev/next + 월 3열 그리드 + TODAY 버튼만 배치(필터·검색·등록은 툴바 유지). 연/월 선택·TODAY 는 이동일(anchorDate)을 갱신 후 기존 이동일 경로 재사용 — 달력 VIEW `gotoDate`, 목록 VIEW 해당 연도 재조회. 표시/숨김 토글은 `scheduleAside` 스토어(localStorage `schedule_aside_visible`) — 닫기 버튼은 aside 내부, 숨김 시 툴바 끝에 열기 아이콘 버튼(`bi-layout-sidebar-inset-reverse`) 표시. 저널과 달리 Pinpoint·필터 없음
+- **저장 모달 날짜 입력**: 시작일·종료일은 레거시(`ScheduleRegModal` — readonly 텍스트 input + `cF.datepicker.singleDatePicker`)와 동일하게 **readonly 텍스트 input + flatpickr**(`bindSingleDatePicker`, 저널 등록 모달과 동일 유틸). input 아무 곳이나 클릭하면 달력이 뜬다. 모달 열 때마다 재초기화(attach), 닫기 버튼에서 destroy. 종료일 칸은 레거시 `#endDtDiv`(display:none 토글)와 동일하게 `v-show` — 공휴일 선택 시 숨기고 `endDt=bgnDt` 로 덮어쓰며 flatpickr 표시값도 `setDate` 동기화. (변경 전: 네이티브 `<input type="date">` — 마이그레이션 시 이탈분을 레거시로 수렴)
 - **목록 API**: `GET /api/schedule/list` — 달력과 동일 `bgnDt`/`endDt`·고급필터·검색어, `ScheduleDto` 페이징
 - **목록 행 클릭**: 휴가·생일 코드는 상세 모달 생략(달력과 동일), 그 외 `GET /api/schedule/cal-dtl` 상세 모달
 - **공휴일 DB SSOT**: `schedule.schedule_cd` = `HOLYDAY` (`SCHEDULE_CD` 코드·`ScheduleSpec` 조회와 동일). 레거시 `HLDY`·`content_type` `schdul`/`schedule` 은 `data-required-cd-mariadb.sql` 하단 UPDATE로 정합. **이동일**은 달력/목록 이동용(데이터 필터 아님). 달력 API `bgnDt`/`endDt` = FullCalendar `datesSet` visible 구간. 목록 VIEW는 동일 구간(달력에서 넘어온 경우) 또는 이동일 변경 시 해당 **연도 전체**.
@@ -55,6 +57,7 @@
 - **레이아웃**: `SystemLayout` > `JournalDayDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
 - **네비게이션**: 상단 이전/다음 버튼으로 날짜 이동 (`router.replace` + `stdrdDt` query)
 - **모달**: `JournalDayDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
+- **챕터 모달 i18n**: `JournalChapterRegistModal.vue`의 표시 문구·확인창·결과 fallback은 현재 locale 카탈로그를 사용하며, 등록·수정·일자 이동 API의 서버 `message`가 있으면 우선 표시
 - **진입점**: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼
 - **URL**: `/journal/daily?stdrdDt=YYYY-MM-DD`
 - **새 창 오픈**: `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제
