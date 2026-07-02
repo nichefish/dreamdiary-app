@@ -1,176 +1,199 @@
-1<template>
+<template>
   <div class="schedule-calendar-page">
-    <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4 w-100">
-      <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1">
-        <li class="nav-item">
-          <button
-            type="button"
-            class="nav-link px-6 border-0 bg-transparent"
-            :class="{ active: viewMode === 'calendar' }"
-            @click="switchToCalendarView"
-          >
-            <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
-            <span class="nav-text">{{ t('schedule.view.calendar') }}</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button
-            type="button"
-            class="nav-link px-6 border-0 bg-transparent"
-            :class="{ active: viewMode === 'list' }"
-            @click="switchToListView"
-          >
-            <span class="nav-icon"><i class="bi bi-list-ul"></i></span>
-            <span class="nav-text">{{ t('schedule.view.list') }}</span>
-          </button>
-        </li>
-      </ul>
-
-      <div class="schedule-view-toolbar__tools d-none d-md-flex align-items-center flex-shrink-0 pe-5 mt-3 gap-2">
-        <div class="d-flex align-items-center gap-2">
-          <label for="schedule_anchor_date" class="form-label mb-0 text-nowrap fs-7 fw-bold">{{ t('schedule.anchor-date') }}</label>
-          <input
-            id="schedule_anchor_date"
-            v-model="anchorDateText"
-            type="date"
-            class="form-control form-control-sm form-control-solid schedule-view-toolbar__date-input"
-            @change="goToAnchorDate"
-          />
-        </div>
-        <div class="input-group input-group-sm">
-          <input
-            v-model="searchKeyword"
-            type="search"
-            class="form-control form-control-sm form-control-solid"
-            :placeholder="t('schedule.search.placeholder')"
-            maxlength="200"
-            style="min-width: 140px;"
-            @keyup.enter="reloadActiveView"
-          />
-          <button type="button" class="btn btn-sm btn-icon btn-light" :title="t('common.search')" @click="reloadActiveView">
-            <i class="bi bi-search fs-7"></i>
-          </button>
-        </div>
-        <button
-          type="button"
-          class="btn btn-sm btn-icon btn-light"
-          :title="t('schedule.filter.advanced.tooltip')"
-          data-bs-toggle="collapse"
-          data-bs-target="#schedule_filter_panel"
-        >
-          <i class="bi bi-funnel fs-7"></i>
-        </button>
-        <div class="vr mx-1 opacity-25"></div>
-        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(false)">
-          <i class="bi bi-plus-lg fs-4 pe-1"></i>
-          {{ t('schedule.register') }}
-        </button>
-        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(true)">
-          <i class="bi bi-lock fs-4 pe-1"></i>
-          {{ t('schedule.private') }}
-        </button>
-      </div>
-    </div>
-
-    <div id="schedule_filter_panel" class="collapse schedule-filter mx-5 mb-0">
-      <label v-for="item in filterItems" :key="item.key" class="form-check form-check-sm form-check-custom form-check-solid">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          :checked="scheduleStore.filter[item.key]"
-          @change="toggleFilter(item.key, $event)"
-        />
-        <span class="form-check-label">{{ item.label }}</span>
-      </label>
-    </div>
-
-    <div class="card post schedule-calendar-card" style="margin-top: 0 !important;">
-      <div v-show="viewMode === 'calendar'" class="card-body position-relative">
-        <div v-if="scheduleStore.loading" class="schedule-loading">
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          {{ t('common.loading') }}
-        </div>
-        <FullCalendar ref="calendarRef" :options="calendarOptions" />
-      </div>
-      <div v-show="viewMode === 'list'" class="card-body">
-        <div v-if="scheduleStore.listLoading" class="schedule-list-loading">
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          {{ t('common.loading') }}
-        </div>
-        <div v-else class="table-responsive">
-          <table class="table table-row-bordered table-row-gray-300 align-middle gs-0 gy-3 schedule-list-table">
-            <thead>
-              <tr class="fw-bold text-muted">
-                <th class="min-w-90px">{{ t('schedule.list.col.category') }}</th>
-                <th class="min-w-200px">{{ t('common.title') }}</th>
-                <th class="min-w-100px">{{ t('schedule.list.col.start-date') }}</th>
-                <th class="min-w-100px">{{ t('schedule.list.col.end-date') }}</th>
-                <th>{{ t('schedule.list.col.participants') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="scheduleStore.listRows.length === 0">
-                <td colspan="5" class="text-center text-muted py-10">{{ t('schedule.list.empty') }}</td>
-              </tr>
-              <tr
-                v-for="row in scheduleStore.listRows"
-                :key="row.id"
-                class="schedule-list-table__row"
-                @click="openListRow(row)"
+    <!--begin::일정 본문 + aside 컨테이너 (저널 레이아웃과 동일 구성)-->
+    <div class="d-flex align-items-start gap-6">
+      <div class="flex-grow-1 min-w-0">
+        <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4 w-100">
+          <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1">
+            <li class="nav-item">
+              <button
+                type="button"
+                class="nav-link px-6 border-0 bg-transparent"
+                :class="{ active: viewMode === 'calendar' }"
+                @click="switchToCalendarView"
               >
-                <td>{{ row.scheduleNm || row.scheduleCd }}</td>
-                <td>
-                  <span v-if="row.privateYn === 'Y'" class="me-1 text-muted" :title="t('schedule.private')">
-                    <i class="bi bi-lock-fill"></i>
-                  </span>
-                  {{ row.title }}
-                </td>
-                <td>{{ row.bgnDt }}</td>
-                <td>{{ row.endDt || row.bgnDt }}</td>
-                <td class="text-truncate" style="max-width: 240px;">{{ row.prtcpntListStr || "-" }}</td>
-              </tr>
-            </tbody>
-          </table>
+                <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
+                <span class="nav-text">{{ t('schedule.view.calendar') }}</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button
+                type="button"
+                class="nav-link px-6 border-0 bg-transparent"
+                :class="{ active: viewMode === 'list' }"
+                @click="switchToListView"
+              >
+                <span class="nav-icon"><i class="bi bi-list-ul"></i></span>
+                <span class="nav-text">{{ t('schedule.view.list') }}</span>
+              </button>
+            </li>
+          </ul>
+
+          <div class="schedule-view-toolbar__tools d-none d-md-flex align-items-center flex-shrink-0 pe-5 mt-3 gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <label for="schedule_anchor_date" class="form-label mb-0 text-nowrap fs-7 fw-bold">{{ t('schedule.anchor-date') }}</label>
+              <input
+                id="schedule_anchor_date"
+                v-model="anchorDateText"
+                type="date"
+                class="form-control form-control-sm form-control-solid schedule-view-toolbar__date-input"
+                @change="goToAnchorDate"
+              />
+            </div>
+            <div class="input-group input-group-sm">
+              <input
+                v-model="searchKeyword"
+                type="search"
+                class="form-control form-control-sm form-control-solid"
+                :placeholder="t('schedule.search.placeholder')"
+                maxlength="200"
+                style="min-width: 140px;"
+                @keyup.enter="reloadActiveView"
+              />
+              <button type="button" class="btn btn-sm btn-icon btn-light" :title="t('common.search')" @click="reloadActiveView">
+                <i class="bi bi-search fs-7"></i>
+              </button>
+            </div>
+            <button
+              type="button"
+              class="btn btn-sm btn-icon btn-light"
+              :title="t('schedule.filter.advanced.tooltip')"
+              data-bs-toggle="collapse"
+              data-bs-target="#schedule_filter_panel"
+            >
+              <i class="bi bi-funnel fs-7"></i>
+            </button>
+            <div class="vr mx-1 opacity-25"></div>
+            <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(false)">
+              <i class="bi bi-plus-lg fs-4 pe-1"></i>
+              {{ t('schedule.register') }}
+            </button>
+            <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 text-nowrap" @click="openRegist(true)">
+              <i class="bi bi-lock fs-4 pe-1"></i>
+              {{ t('schedule.private') }}
+            </button>
+            <template v-if="!asideStore.visible">
+              <div class="vr mx-1 opacity-25"></div>
+              <button
+                type="button"
+                class="btn btn-sm btn-icon btn-light"
+                :title="t('schedule.aside.open')"
+                @click="asideStore.show()"
+              >
+                <i class="bi bi-layout-sidebar-inset-reverse"></i>
+              </button>
+            </template>
+          </div>
         </div>
-      </div>
-      <div v-if="viewMode === 'list'" class="card-footer schedule-list-footer">
-        <span class="text-muted fs-8">{{ t('board.group.pagination.total-format').replace('{0}', formatNumber(scheduleStore.listTotalElements)) }}</span>
-        <div class="d-flex align-items-center gap-2">
-          <select
-            :value="scheduleStore.listPageSize"
-            class="form-select form-select-solid form-select-sm schedule-list-page-size"
-            @change="onListPageSizeChange"
-          >
-            <option :value="10">{{ t('common.page-size.10') }}</option>
-            <option :value="25">{{ t('common.page-size.25') }}</option>
-            <option :value="50">{{ t('common.page-size.50') }}</option>
-          </select>
-          <div v-if="listPageNumbers.length" class="pagination mb-0">
-            <button type="button" class="page-link" :disabled="scheduleStore.listCurrentPage <= 0" @click="goListPage(0)">
-              <i class="previous"></i>
-            </button>
-            <button
-              v-for="page in listPageNumbers"
-              :key="page"
-              type="button"
-              class="page-link"
-              :class="{ active: page === scheduleStore.listCurrentPage }"
-              @click="goListPage(page)"
-            >
-              {{ page + 1 }}
-            </button>
-            <button
-              type="button"
-              class="page-link"
-              :disabled="scheduleStore.listCurrentPage >= scheduleStore.listTotalPages - 1"
-              @click="goListPage(scheduleStore.listTotalPages - 1)"
-            >
-              <i class="next"></i>
-            </button>
+
+        <div id="schedule_filter_panel" class="collapse schedule-filter mx-5 mb-0">
+          <label v-for="item in filterItems" :key="item.key" class="form-check form-check-sm form-check-custom form-check-solid">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              :checked="scheduleStore.filter[item.key]"
+              @change="toggleFilter(item.key, $event)"
+            />
+            <span class="form-check-label">{{ item.label }}</span>
+          </label>
+        </div>
+
+        <div class="card post schedule-calendar-card" style="margin-top: 0 !important;">
+          <div v-show="viewMode === 'calendar'" class="card-body position-relative">
+            <div v-if="scheduleStore.loading" class="schedule-loading">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              {{ t('common.loading') }}
+            </div>
+            <FullCalendar ref="calendarRef" :options="calendarOptions" />
+          </div>
+          <div v-show="viewMode === 'list'" class="card-body">
+            <div v-if="scheduleStore.listLoading" class="schedule-list-loading">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              {{ t('common.loading') }}
+            </div>
+            <div v-else class="table-responsive">
+              <table class="table table-row-bordered table-row-gray-300 align-middle gs-0 gy-3 schedule-list-table">
+                <thead>
+                  <tr class="fw-bold text-muted">
+                    <th class="min-w-90px">{{ t('schedule.list.col.category') }}</th>
+                    <th class="min-w-200px">{{ t('common.title') }}</th>
+                    <th class="min-w-100px">{{ t('schedule.list.col.start-date') }}</th>
+                    <th class="min-w-100px">{{ t('schedule.list.col.end-date') }}</th>
+                    <th>{{ t('schedule.list.col.participants') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="scheduleStore.listRows.length === 0">
+                    <td colspan="5" class="text-center text-muted py-10">{{ t('schedule.list.empty') }}</td>
+                  </tr>
+                  <tr
+                    v-for="row in scheduleStore.listRows"
+                    :key="row.id"
+                    class="schedule-list-table__row"
+                    @click="openListRow(row)"
+                  >
+                    <td>{{ row.scheduleNm || row.scheduleCd }}</td>
+                    <td>
+                      <span v-if="row.privateYn === 'Y'" class="me-1 text-muted" :title="t('schedule.private')">
+                        <i class="bi bi-lock-fill"></i>
+                      </span>
+                      {{ row.title }}
+                    </td>
+                    <td>{{ row.bgnDt }}</td>
+                    <td>{{ row.endDt || row.bgnDt }}</td>
+                    <td class="text-truncate" style="max-width: 240px;">{{ row.prtcpntListStr || "-" }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div v-if="viewMode === 'list'" class="card-footer schedule-list-footer">
+            <span class="text-muted fs-8">{{ t('board.group.pagination.total-format').replace('{0}', formatNumber(scheduleStore.listTotalElements)) }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <select
+                :value="scheduleStore.listPageSize"
+                class="form-select form-select-solid form-select-sm schedule-list-page-size"
+                @change="onListPageSizeChange"
+              >
+                <option :value="10">{{ t('common.page-size.10') }}</option>
+                <option :value="25">{{ t('common.page-size.25') }}</option>
+                <option :value="50">{{ t('common.page-size.50') }}</option>
+              </select>
+              <div v-if="listPageNumbers.length" class="pagination mb-0">
+                <button type="button" class="page-link" :disabled="scheduleStore.listCurrentPage <= 0" @click="goListPage(0)">
+                  <i class="previous"></i>
+                </button>
+                <button
+                  v-for="page in listPageNumbers"
+                  :key="page"
+                  type="button"
+                  class="page-link"
+                  :class="{ active: page === scheduleStore.listCurrentPage }"
+                  @click="goListPage(page)"
+                >
+                  {{ page + 1 }}
+                </button>
+                <button
+                  type="button"
+                  class="page-link"
+                  :disabled="scheduleStore.listCurrentPage >= scheduleStore.listTotalPages - 1"
+                  @click="goListPage(scheduleStore.listTotalPages - 1)"
+                >
+                  <i class="next"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!--begin::일정 aside (년월 내비게이션, 폭 280px = 저널 aside 와 동일)-->
+      <aside v-if="asideStore.visible" class="schedule-calendar-page__aside flex-shrink-0">
+        <ScheduleAside :yy="asideYy" :mnth="asideMnth" @goto="onAsideGoto" @today="onAsideToday" />
+      </aside>
+      <!--end::일정 aside-->
     </div>
+    <!--end::일정 본문 + aside 컨테이너-->
 
     <div ref="registModalEl" class="modal fade" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-lg">
@@ -202,11 +225,32 @@
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
                   <label class="form-label required" for="scheduleBgnDt">{{ t('schedule.list.col.start-date') }}</label>
-                  <input id="scheduleBgnDt" v-model="registForm.bgnDt" type="date" class="form-control form-control-solid" required />
+                  <!--레거시 #bgnDt: readonly 텍스트 input + cF.datepicker.singleDatePicker → flatpickr 바인딩-->
+                  <input
+                    id="scheduleBgnDt"
+                    ref="bgnDtInputRef"
+                    :value="registForm.bgnDt"
+                    type="text"
+                    class="form-control form-control-solid"
+                    :placeholder="t('schedule.list.col.start-date')"
+                    autocomplete="off"
+                    readonly
+                    required
+                  />
                 </div>
-                <div class="col-md-6" v-if="showEndDate">
+                <!--레거시 #endDtDiv: display:none 토글(v-show 동등) — v-if 사용 시 flatpickr 인스턴스가 깨진다-->
+                <div class="col-md-6" v-show="showEndDate">
                   <label class="form-label" for="scheduleEndDt">{{ t('schedule.list.col.end-date') }}</label>
-                  <input id="scheduleEndDt" v-model="registForm.endDt" type="date" class="form-control form-control-solid" />
+                  <input
+                    id="scheduleEndDt"
+                    ref="endDtInputRef"
+                    :value="registForm.endDt"
+                    type="text"
+                    class="form-control form-control-solid"
+                    :placeholder="t('schedule.list.col.end-date')"
+                    autocomplete="off"
+                    readonly
+                  />
                 </div>
               </div>
 
@@ -297,7 +341,9 @@
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { computed, onMounted, reactive, ref } from "vue";
+import { bindSingleDatePicker, destroySingleDatePicker } from "@/shared/utils/flatpickrSingleDate";
+import type { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
+import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -306,6 +352,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import type { CalendarOptions, DatesSetArg, EventClickArg } from "@fullcalendar/core";
 import { Modal } from "bootstrap";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import ScheduleAside from "@/features/calendar/components/ScheduleAside.vue";
+import { useScheduleAsideStore } from "@/features/calendar/stores/scheduleAside";
 import {
   useScheduleStore,
   queryRangeForMonth,
@@ -319,13 +367,18 @@ import {
 } from "@/features/calendar/stores/schedule";
 
 const scheduleStore = useScheduleStore();
+const asideStore = useScheduleAsideStore();
 const { t } = useLocaleStore();
 
 const calendarRef = ref<any>(null);
 const registModalEl = ref<HTMLElement | null>(null);
 const detailModalEl = ref<HTMLElement | null>(null);
+const bgnDtInputRef = ref<HTMLInputElement | null>(null);
+const endDtInputRef = ref<HTMLInputElement | null>(null);
 let registModal: Modal | null = null;
 let detailModal: Modal | null = null;
+let bgnDtFp: FlatpickrInstance | null = null;
+let endDtFp: FlatpickrInstance | null = null;
 
 const today = new Date();
 const queryRange = ref<ScheduleQueryRange>(queryRangeForMonth(today));
@@ -382,6 +435,10 @@ const listPageNumbers = computed(() => {
   for (let page = start; page <= end; page += 1) pages.push(page);
   return pages;
 });
+
+/** aside 표시용 연/월 — 이동일(anchorDateText) 기준. 달력 이동 시 datesSet 에서 동기화된다. */
+const asideYy = computed(() => parseDate(anchorDateText.value).getFullYear());
+const asideMnth = computed(() => parseDate(anchorDateText.value).getMonth() + 1);
 
 const calendarOptions = computed<CalendarOptions>(() => ({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
@@ -474,6 +531,18 @@ function goToAnchorDate() {
   void reloadActiveView();
 }
 
+/** aside 연/월 선택 → 이동일을 해당 월 1일로 갱신 후 기존 이동일 경로(goToAnchorDate)로 반영한다. */
+function onAsideGoto(yy: number, mnth: number) {
+  anchorDateText.value = formatDate(new Date(yy, mnth - 1, 1));
+  goToAnchorDate();
+}
+
+/** aside TODAY → 이동일을 오늘로 갱신 후 이동한다. */
+function onAsideToday() {
+  anchorDateText.value = formatDate(new Date());
+  goToAnchorDate();
+}
+
 function toggleFilter(key: keyof ScheduleFilter, event: Event) {
   scheduleStore.setFilter({ [key]: (event.target as HTMLInputElement).checked });
   scheduleStore.listCurrentPage = 0;
@@ -516,13 +585,40 @@ function resetRegistForm(isPrivate: boolean, source?: ScheduleDetail) {
   showEndDate.value = registForm.scheduleCd !== scheduleStore.holyDayCode;
 }
 
+/** 레거시 _initDatepickers(cF.datepicker.singleDatePicker #bgnDt/#endDt) 동등 — 모달 열 때마다 재초기화한다. */
+function attachRegistDatePickers(): void {
+  destroyRegistDatePickers();
+  if (bgnDtInputRef.value) {
+    bgnDtFp = bindSingleDatePicker(bgnDtInputRef.value, {
+      initial: registForm.bgnDt,
+      onValue: (dateStr) => { registForm.bgnDt = dateStr; },
+    });
+  }
+  if (endDtInputRef.value) {
+    endDtFp = bindSingleDatePicker(endDtInputRef.value, {
+      initial: registForm.endDt,
+      onValue: (dateStr) => { registForm.endDt = dateStr; },
+    });
+  }
+}
+
+function destroyRegistDatePickers(): void {
+  destroySingleDatePicker(bgnDtFp);
+  destroySingleDatePicker(endDtFp);
+  bgnDtFp = null;
+  endDtFp = null;
+}
+
 async function openRegist(isPrivate: boolean) {
   if (!await assertAuthenticatedBeforeModal()) return;
   resetRegistForm(isPrivate);
   registModal?.show();
+  await nextTick();
+  attachRegistDatePickers();
 }
 
 function closeRegist() {
+  destroyRegistDatePickers();
   registModal?.hide();
 }
 
@@ -540,7 +636,11 @@ function removeParticipant(index: number) {
 
 function onScheduleCodeChange() {
   showEndDate.value = registForm.scheduleCd !== scheduleStore.holyDayCode;
-  if (!showEndDate.value) registForm.endDt = registForm.bgnDt;
+  if (!showEndDate.value) {
+    registForm.endDt = registForm.bgnDt;
+    // 종료일을 프로그램으로 덮어쓴 경우 flatpickr 표시값도 동기화한다 (재표시 시 불일치 방지).
+    endDtFp?.setDate(registForm.endDt ?? "", false);
+  }
 }
 
 async function submitRegist() {
@@ -573,6 +673,8 @@ async function modifyDetail() {
   closeDetail();
   resetRegistForm(detail.value.privateYn === "Y", detail.value);
   registModal?.show();
+  await nextTick();
+  attachRegistDatePickers();
 }
 
 async function deleteDetail() {
@@ -598,6 +700,16 @@ onMounted(async () => {
 <style scoped>
 .schedule-view-toolbar__date-input {
   width: 148px;
+}
+
+/* aside sticky — 저널 aside(.journal-layout-vue__aside)와 동일 규칙 */
+.schedule-calendar-page__aside {
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .schedule-filter {
