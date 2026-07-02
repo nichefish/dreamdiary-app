@@ -228,3 +228,7 @@ app:
         base-url: http://localhost:11434
         chat-model: qwen2.5:7b
         embedding-model: nomic-embed-text
+        chat-temperature: 0.35
+        num-predict: 768
+        connect-timeout-ms: 5000
+        read-timeout-ms: 300000

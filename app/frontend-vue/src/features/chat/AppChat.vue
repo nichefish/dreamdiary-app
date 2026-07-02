@@ -178,6 +178,12 @@
                     >
                       {{ responseModeText(messageRagMetadata(message)) }}
                     </span>
+                    <span
+                      v-if="guardDetailText(messageRagMetadata(message))"
+                      class="chat-rag__guard"
+                    >
+                      {{ guardDetailText(messageRagMetadata(message)) }}
+                    </span>
                   </summary>
 
                   <div class="chat-rag__body">
@@ -416,6 +422,8 @@ interface PersonFocusMetadata {
 
 interface RagMetadata {
   responseMode?: string;
+  guardDetail?: string;
+  retryGuardDetail?: string;
   ragIntent?: string;
   ragSourceCount?: number;
   personFocus?: PersonFocusMetadata;
@@ -532,8 +540,17 @@ function messageRagMetadata(chatMessage: ChatMessage): RagMetadata | null {
 
   try {
     const metadata = JSON.parse(chatMessage.metadataJson) as RagMetadata;
-    if (!metadata || !metadata.ragSourceCount) return null;
-    return metadata;
+    if (!metadata) return null;
+    if (
+      metadata.responseMode ||
+      metadata.guardDetail ||
+      metadata.retryGuardDetail ||
+      metadata.personFocus ||
+      (typeof metadata.ragSourceCount === "number" && metadata.ragSourceCount > 0)
+    ) {
+      return metadata;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -594,8 +611,21 @@ function responseModeText(metadata: RagMetadata | null | undefined): string {
   if (mode === "PERSON_SYNTHESIS_HYBRID") return "hybrid";
   if (mode === "RULE_PRIMARY") return "rule primary";
   if (mode === "LANGUAGE_FALLBACK") return "language fallback";
-  if (mode === "LLM") return "";
+  if (mode === "LLM") return "llm";
   return mode;
+}
+
+function guardDetailText(metadata: RagMetadata | null | undefined): string {
+  const parts: string[] = [];
+  const detail = metadata?.guardDetail;
+  const retryDetail = metadata?.retryGuardDetail;
+  if (detail) {
+    parts.push(`guard: ${detail}`);
+  }
+  if (retryDetail && retryDetail !== detail) {
+    parts.push(`retry: ${retryDetail}`);
+  }
+  return parts.join(" · ");
 }
 
 function topTagText(metadata: RagMetadata | null | undefined): string {

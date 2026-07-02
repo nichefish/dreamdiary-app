@@ -10,13 +10,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -32,13 +35,14 @@ public class OllamaClient {
     private static final int INSTALLED_MODEL_SAMPLE_LIMIT = 12;
 
     private final OllamaProperties ollamaProperties;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     /**
      * @param ollamaProperties {@code app.ollama.*} 설정
      */
     public OllamaClient(final OllamaProperties ollamaProperties) {
         this.ollamaProperties = ollamaProperties;
+        this.restTemplate = createRestTemplate(ollamaProperties);
     }
 
     /**
@@ -65,10 +69,12 @@ public class OllamaClient {
      */
     public String chat(final String systemPrompt, final List<ChatMessageDto> contextMessages) {
 
+        final long start = System.currentTimeMillis();
         final OllamaChatRequest request = new OllamaChatRequest();
 
         request.setModel(getChatModel());
         request.setStream(false);
+        request.setOptions(buildChatOptions());
 
         final List<OllamaChatRequest.Message> messages = new ArrayList<>();
         messages.add(new OllamaChatRequest.Message("system", systemPrompt));
@@ -98,7 +104,10 @@ public class OllamaClient {
         }
 
         final String content = body.getMessage().getContent();
-        log.info("Ollama response: {}", content);
+        log.info("Ollama chat completed. model={}, latencyMs={}, responseChars={}",
+                getChatModel(),
+                System.currentTimeMillis() - start,
+                StringUtils.length(content));
 
         return content;
     }
@@ -226,6 +235,24 @@ public class OllamaClient {
             throw new IllegalArgumentException("Ollama API path must start with '/': " + path);
         }
         return StringUtils.stripEnd(getBaseUrl(), "/") + normalizedPath;
+    }
+
+    private RestTemplate createRestTemplate(final OllamaProperties properties) {
+        final SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(properties.getConnectTimeoutMs());
+        factory.setReadTimeout(properties.getReadTimeoutMs());
+        return new RestTemplate(factory);
+    }
+
+    private Map<String, Object> buildChatOptions() {
+        final Map<String, Object> options = new LinkedHashMap<>();
+        if (ollamaProperties.getChatTemperature() != null) {
+            options.put("temperature", ollamaProperties.getChatTemperature());
+        }
+        if (ollamaProperties.getNumPredict() != null) {
+            options.put("num_predict", ollamaProperties.getNumPredict());
+        }
+        return options.isEmpty() ? null : options;
     }
 
     private List<String> extractInstalledModelNames(final OllamaTagsResponse body) {

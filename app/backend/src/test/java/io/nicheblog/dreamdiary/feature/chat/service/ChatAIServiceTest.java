@@ -37,7 +37,7 @@ class ChatAIServiceTest {
 
         assertTrue(prompt.contains("PERSON_FOCUS"));
         assertTrue(prompt.contains("PERSON_MEANING_SCAFFOLD"));
-        assertTrue(prompt.contains("\uC5C5\uBB34 \uD611\uC5C5"));
+        assertTrue(prompt.contains("업무 협업"));
     }
 
     /**
@@ -55,7 +55,7 @@ class ChatAIServiceTest {
 
         final String label = (String) method.invoke(service, JournalEntityRoleType.TENSION, 3);
 
-        assertTrue(label.contains("\uAE34\uC7A5"));
+        assertTrue(label.contains("긴장"));
         assertTrue(label.contains("(3)"));
     }
 
@@ -71,10 +71,10 @@ class ChatAIServiceTest {
         @SuppressWarnings("unchecked")
         final List<String> tokens = (List<String>) method.invoke(
                 service,
-                "\uC6D0\uBE48\uC740 \uB0B4 Dreamdiary \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uB85C \uB4F1\uC7A5\uD574?"
+                "민수는 내 Dreamdiary 기록에서 어떤 의미로 등장해?"
         );
 
-        assertEquals(List.of("\uC6D0\uBE48"), tokens);
+        assertEquals(List.of("민수"), tokens);
     }
 
     /**
@@ -89,11 +89,11 @@ class ChatAIServiceTest {
         @SuppressWarnings("unchecked")
         final List<String> tokens = (List<String>) method.invoke(
                 service,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
-        assertTrue(tokens.contains("\uC6D0\uBE48"));
-        assertFalse(tokens.contains("\uC6D0\uBE48\uB2D8"));
+        assertTrue(tokens.contains("민수"));
+        assertFalse(tokens.contains("민수님"));
     }
 
     /**
@@ -113,27 +113,27 @@ class ChatAIServiceTest {
         final JournalEntityFocusService.PersonEntityFocusSummary entitySummary =
                 new JournalEntityFocusService.PersonEntityFocusSummary(
                         7,
-                        "\uC6D0\uBE48",
-                        "\uC6D0\uBE48",
-                        List.of("\uC6D0\uBE48"),
+                        "민수",
+                        "민수",
+                        List.of("민수"),
                         5,
                         3,
                         "2026-01-02",
                         "2026-05-29",
                         Map.of("DREAM", 2, "DIARY", 1),
                         Map.of(io.nicheblog.dreamdiary.feature.journal.entitycatalog.type.JournalEntityRoleType.COLLABORATION, 2),
-                        Map.of("\uC6D0\uBE48\uB2D8", 3, "\uC6D0\uBE48", 2),
+                        Map.of("민수님", 3, "민수", 2),
                         List.of(101, 102, 103)
                 );
 
         @SuppressWarnings("unchecked")
         final List<String> mergedTokens = (List<String>) method.invoke(
                 service,
-                List.of("\uC6D0\uBE48"),
+                List.of("민수"),
                 entitySummary
         );
 
-        assertEquals(List.of("\uC6D0\uBE48", "\uC6D0\uBE48\uB2D8"), mergedTokens);
+        assertEquals(List.of("민수", "민수님"), mergedTokens);
     }
 
     /**
@@ -150,15 +150,15 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContext("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContext("민수");
         final String hollowResponse =
-                "\uC6D0\uBE48\uC740 \uD300 \uAD00\uACC4\uC640 \uC804\uB7B5\uC801 \uD589\uB3D9 \uCE21\uBA74\uC5D0\uC11C \uC790\uC8FC \uB4F1\uC7A5\uD569\uB2C8\uB2E4.";
+                "민수는 팀 관계와 전략적 행동 측면에서 자주 등장합니다.";
 
         final boolean hollow = (boolean) method.invoke(
                 service,
                 hollowResponse,
                 ragContext,
-                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+                "민수는 내 기록에서 어떤 의미야?"
         );
 
         assertTrue(hollow);
@@ -178,15 +178,15 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContext("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContext("민수");
         final String leakedResponse =
-                "\uC5ED\uD560 \uCD95 roleaxesko: \uD300 \uB3D9\uB8CC \uBC18\uBCF5 \uCD95 repeated_tags: #dreamdiary";
+                "역할 축 roleaxesko: 팀 동료 반복 축 repeated_tags: #dreamdiary";
 
         final boolean hollow = (boolean) method.invoke(
                 service,
                 leakedResponse,
                 ragContext,
-                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+                "민수는 내 기록에서 어떤 의미야?"
         );
 
         assertTrue(hollow);
@@ -206,14 +206,14 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContext("\uC6D0\uBE48");
-        final String noisyResponse = "\uC6D0\uBE48\uC740 #dreamdiary \uD0DC\uADF8\uC640 \uAD00\uB828\uB418\uC5B4 \uB4F1\uC7A5\uD569\uB2C8\uB2E4.";
+        final Object ragContext = buildTestRagContext("민수");
+        final String noisyResponse = "민수는 #dreamdiary 태그와 관련되어 등장합니다.";
 
         final boolean hollow = (boolean) method.invoke(
                 service,
                 noisyResponse,
                 ragContext,
-                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+                "민수는 내 기록에서 어떤 의미야?"
         );
 
         assertTrue(hollow);
@@ -232,18 +232,18 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object personFocus = buildTestPersonFocus("\uC6D0\uBE48");
+        final Object personFocus = buildTestPersonFocus("민수");
         final List<String> tags = List.of(
-                "[\uC5D4\uC11C\uD074]#\uAE40\uC6D0\uBE48",
-                "[\uC5D4\uC11C\uD074]#\uAE40\uAC00\uC601",
-                "#\uD68C\uC0AC\uBD88\uB9CC",
+                "[엔서클]#김민수",
+                "[엔서클]#박지연",
+                "#회사불만",
                 "#dreamdiary"
         );
 
         @SuppressWarnings("unchecked")
         final List<String> filtered = (List<String>) method.invoke(service, tags, personFocus);
 
-        assertEquals(List.of("[\uC5D4\uC11C\uD074]#\uAE40\uC6D0\uBE48"), filtered);
+        assertEquals(List.of("[엔서클]#김민수"), filtered);
     }
 
     /**
@@ -262,20 +262,20 @@ class ChatAIServiceTest {
         final JournalEntryEmbeddingEntity entity = JournalEntryEmbeddingEntity.builder()
                 .journalEntryId(101)
                 .embeddingText(
-                        "\uC720\uD615: DIARY\n"
-                                + "\uB0A0\uC9DC: 2026-01-01\n"
-                                + "\uD575\uC2EC \uD0DC\uADF8: [\uC5D4\uC11C\uD074]#\uAE40\uC6D0\uBE48\n"
-                                + "\uBCF8\uBB38: <p>\uC624\uB298 \uC6D0\uBE48\uACFC \uD68C\uC758\uD588\uB2E4</p>"
+                        "유형: DIARY\n"
+                                + "날짜: 2026-01-01\n"
+                                + "핵심 태그: [엔서클]#김민수\n"
+                                + "본문: <p>오늘 민수와 회의했다</p>"
                 )
                 .build();
         final RagSearchResult result = RagSearchResult.builder().entity(entity).build();
-        final Object personFocus = buildTestPersonFocus("\uC6D0\uBE48");
+        final Object personFocus = buildTestPersonFocus("민수");
 
         final String snippet = (String) method.invoke(service, result, personFocus);
 
-        assertFalse(snippet.contains("\uC720\uD615:"));
+        assertFalse(snippet.contains("유형:"));
         assertFalse(snippet.contains("<p>"));
-        assertTrue(snippet.contains("\uC6D0\uBE48"));
+        assertTrue(snippet.contains("민수"));
     }
 
     /**
@@ -297,24 +297,58 @@ class ChatAIServiceTest {
 
         final String lead = (String) method.invoke(
                 service,
-                "\uC6D0\uBE48",
-                Map.of("[\uC5D4\uC11C\uD074]#\uAE40\uC6D0\uBE48", 3),
-                List.of("\uAE34\uC7A5\u00B7\uACBD\uACC4 \uCD95(2)"),
+                "민수",
+                Map.of("[엔서클]#김민수", 3),
+                List.of("긴장·경계 축(2)"),
                 Map.of("DIARY", 4, "DREAM", 1),
-                Map.of("[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9", 5),
+                Map.of("[엔서클]#조직역동", 5),
                 Map.of("DYNAMICS", 4)
         );
 
-        assertTrue(lead.contains("\uC6D0\uBE48"));
-        assertTrue(lead.contains("\uAE40\uC6D0\uBE48"));
-        assertTrue(lead.contains("\uAE34\uC7A5"));
-        assertTrue(lead.contains("\uC77C\uAE30"));
-        assertTrue(lead.contains("\uC870\uC9C1\uC5ED\uB3D9"));
+        assertTrue(lead.contains("민수"));
+        assertTrue(lead.contains("김민수"));
+        assertTrue(lead.contains("긴장"));
+        assertTrue(lead.contains("일기"));
+        assertTrue(lead.contains("조직역동"));
         assertTrue(lead.contains("DYNAMICS"));
     }
+    /**
+     * person-stance 해석 리드는 3인칭 주어(민수는) 없이 2인칭 비춤으로 시작해야 합니다.
+     */
+    @Test
+    void buildPersonStanceInterpretiveLead_shouldAvoidThirdPersonSubject() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildPersonStanceInterpretiveLead",
+                String.class,
+                Map.class,
+                List.class,
+                Map.class,
+                Map.class,
+                Map.class
+        );
+        method.setAccessible(true);
+
+        final String lead = (String) method.invoke(
+                service,
+                "민수",
+                Map.of("[엔서클]#김민수", 3),
+                List.of("긴장·경계 축(2)"),
+                Map.of("DIARY", 4, "DREAM", 1),
+                Map.of("[엔서클]#조직역동", 5),
+                Map.of("DYNAMICS", 4)
+        );
+
+        assertTrue(lead.startsWith("네가 기록에 남긴 태도로 보면,"));
+        assertFalse(lead.contains("민수는(는)"));
+        assertFalse(lead.contains("기록상 "));
+        assertTrue(lead.contains("#김민수"));
+        assertTrue(lead.contains("#조직역동"));
+    }
+
 
     /**
-     * person-meaning fallback\uC740 \uC778\uBB3C \uD0DC\uADF8 \uC678 \uC5F0\uACB0 \uB9E5\uB77D \uD0DC\uADF8\uB97C \uC81C\uC678\uD574\uC57C \uD569\uB2C8\uB2E4.
+     * person-meaning fallback은 인물 태그 외 연결 맥락 태그를 제외해야 합니다.
      */
     @Test
     void filterPersonMeaningLinkedContextTags_shouldExcludePersonFocusTags() throws Exception {
@@ -326,24 +360,24 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object personFocus = buildTestPersonFocus("\uC6D0\uBE48");
+        final Object personFocus = buildTestPersonFocus("민수");
         final List<String> tags = List.of(
-                "[\uC5D4\uC11C\uD074]#\uAE40\uC6D0\uBE48",
-                "[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9",
-                "[\uC5D4\uC11C\uD074]#\uAE40\uC885\uC21C"
+                "[엔서클]#김민수",
+                "[엔서클]#조직역동",
+                "[엔서클]#김종순"
         );
 
         @SuppressWarnings("unchecked")
         final List<String> filtered = (List<String>) method.invoke(service, tags, personFocus);
 
         assertEquals(
-                List.of("[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9", "[\uC5D4\uC11C\uD074]#\uAE40\uC885\uC21C"),
+                List.of("[엔서클]#조직역동", "[엔서클]#김종순"),
                 filtered
         );
     }
 
     /**
-     * \uC5F0\uACB0 \uB9E5\uB77D \uD0DC\uADF8 \uD575\uC2EC\uC5B4\uB97C \uC778\uC6A9\uD55C person-meaning \uB2F5\uC740 hollow\uAC00 \uC544\uB2C8\uC5B4\uC57C \uD569\uB2C8\uB2E4.
+     * 연결 맥락 태그 핵심어를 인용한 person-meaning 답은 hollow가 아니어야 합니다.
      */
     @Test
     void isHollowPersonMeaningResponse_shouldAcceptLinkedContextTagCitation() throws Exception {
@@ -356,23 +390,23 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String interpretiveResponse =
-                "\uAE30\uB85D\uC0C1 \uC6D0\uBE48\uC740 [\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9 \uD0DC\uADF8\uAC00 \uC790\uC8FC \uAC19\uC774 \uBD99\uB294 "
-                        + "DYNAMICS \uC77C\uAE30\uC5D0\uC11C \uC870\uC9C1 \uC5ED\uB3D9 \uB9E5\uB77D\uC758 \uC778\uBB3C\uB85C \uBC18\uBCF5\uB3FC.";
+                "기록상 민수는 [엔서클]#조직역동 태그가 자주 같이 붙는 "
+                        + "DYNAMICS 일기에서 조직 역동 맥락의 인물로 반복돼.";
 
         final boolean hollow = (boolean) method.invoke(
                 service,
                 interpretiveResponse,
                 ragContext,
-                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+                "민수는 내 기록에서 어떤 의미야?"
         );
 
         assertFalse(hollow);
     }
 
     /**
-     * \uD0DC\uADF8 \uD575\uC2EC\uC5B4 \uC778\uC6A9 \uAC80\uC0AC\uB294 # \uC774\uD6C4 \uBB38\uC790\uC5F4\uB3C4 \uD5C8\uC6A9\uD574\uC57C \uD569\uB2C8\uB2E4.
+     * 태그 핵심어 인용 검사는 # 이후 문자열도 허용해야 합니다.
      */
     @Test
     void citesPersonMeaningTagEvidence_shouldAcceptHashStem() throws Exception {
@@ -386,15 +420,15 @@ class ChatAIServiceTest {
 
         final boolean cited = (boolean) method.invoke(
                 service,
-                "\uC6D0\uBE48\uC740 \uC870\uC9C1\uC5ED\uB3D9 \uB9E5\uB77D\uC5D0\uC11C \uC790\uC8FC \uB4F1\uC7A5\uD569\uB2C8\uB2E4.",
-                Map.of("[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9", 3)
+                "민수는 조직역동 맥락에서 자주 등장합니다.",
+                Map.of("[엔서클]#조직역동", 3)
         );
 
         assertTrue(cited);
     }
 
     /**
-     * person-meaning fallback\uC740 \uC5F0\uACB0 \uB9E5\uB77D \uD0DC\uADF8\uC640 \uCC45\uD130 \uBD84\uB958\uB97C \uD3EC\uD568\uD574\uC57C \uD569\uB2C8\uB2E4.
+     * person-meaning fallback은 연결 맥락 태그와 책터 분류를 포함해야 합니다.
      */
     @Test
     void buildPersonMeaningDeterministicFallback_shouldIncludeLinkedContextAndChapter() throws Exception {
@@ -405,12 +439,12 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String fallback = (String) method.invoke(service, ragContext);
 
-        assertTrue(fallback.contains("\uC5F0\uACB0 \uB9E5\uB77D"));
-        assertTrue(fallback.contains("\uC870\uC9C1\uC5ED\uB3D9"));
-        assertTrue(fallback.contains("\uCC45\uD130 \uBD84\uB958"));
+        assertTrue(fallback.contains("연결 맥락"));
+        assertTrue(fallback.contains("조직역동"));
+        assertTrue(fallback.contains("책터 분류"));
         assertTrue(fallback.contains("DYNAMICS"));
         assertFalse(fallback.toLowerCase().contains("entity catalog"));
     }
@@ -428,7 +462,7 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object personFocus = buildTestPersonFocus("\uC6D0\uBE48");
+        final Object personFocus = buildTestPersonFocus("민수");
         final RagSearchResult tagResult = RagSearchResult.builder()
                 .matchType(RagSearchResult.MATCH_TYPE_TAG)
                 .build();
@@ -455,11 +489,11 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object personFocus = buildTestPersonFocus("\uC6D0\uBE48");
+        final Object personFocus = buildTestPersonFocus("민수");
         final JournalEntryEmbeddingEntity entity = JournalEntryEmbeddingEntity.builder()
                 .journalEntryId(101)
-                .embeddingText("\uBCF8\uBB38: \uC624\uB298 \uC6D0\uBE48\uACFC \uD68C\uC758\uD588\uB2E4")
-                .embeddingPayloadJson("{\"tags\":\"[\uC77C\uC0C1]#\uD68C\uC758\"}")
+                .embeddingText("본문: 오늘 민수와 회의했다")
+                .embeddingPayloadJson("{\"tags\":\"[일상]#회의\"}")
                 .build();
         final RagSearchResult bodyMentionOnly = RagSearchResult.builder()
                 .entity(entity)
@@ -491,8 +525,8 @@ class ChatAIServiceTest {
 
         final boolean cited = (boolean) method.invoke(
                 service,
-                "\uAE30\uB85D\uC744 \uBCF4\uBA74 \uC624\uB298 \uC6D0\uBE48\uACFC \uD68C\uC758\uD588\uB2E4.",
-                List.of("\uC624\uB298 \uC6D0\uBE48\uACFC \uD68C\uC758\uD588\uB2E4")
+                "기록을 보면 오늘 민수와 회의했다.",
+                List.of("오늘 민수와 회의했다")
         );
 
         assertTrue(cited);
@@ -549,9 +583,9 @@ class ChatAIServiceTest {
         final JournalEntryEmbeddingEntity entity = JournalEntryEmbeddingEntity.builder()
                 .journalEntryId(101)
                 .contentKind("DIARY")
-                .embeddingText("\uBCF8\uBB38: \uC6D0\uBE48\uB2D8\uACFC \uD68C\uC758\uD588\uB2E4")
+                .embeddingText("본문: 민수님과 회의했다")
                 .embeddingPayloadJson(
-                        "{\"tags\":\"[\uC5D4\uC11C\uD074]#\uAE40\uC6D0\uBE48 [\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9\","
+                        "{\"tags\":\"[엔서클]#김민수 [엔서클]#조직역동\","
                                 + "\"chapterCategory\":\"DYNAMICS\"}"
                 )
                 .build();
@@ -582,7 +616,7 @@ class ChatAIServiceTest {
 
         final RagIntent intent = (RagIntent) method.invoke(
                 service,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertEquals(RagIntent.SYNTHESIS, intent);
@@ -599,7 +633,7 @@ class ChatAIServiceTest {
 
         final boolean personMeaning = (boolean) method.invoke(
                 service,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(personMeaning);
@@ -621,10 +655,10 @@ class ChatAIServiceTest {
         final String prompt = (String) method.invoke(
                 service,
                 RagIntent.LOOKUP,
-                "\uC6D0\uBE48\uB2D8\uC740 \uBB50 \uD588\uC5B4?"
+                "민수님은 뭐 했어?"
         );
 
-        assertTrue(prompt.contains("\uC870\uC9C1"));
+        assertTrue(prompt.contains("조직"));
         assertTrue(prompt.contains("[1]"));
     }
 
@@ -639,11 +673,11 @@ class ChatAIServiceTest {
 
         final String cleaned = (String) method.invoke(
                 service,
-                "\uC608\uB97C \uB4E4\uC5B4, [2] \uAE30\uB85D\uC5D0\uC11C\uB294 \uAC1C\uC785\uB3C4\uAC00 \uB192\uC558\uC2B5\uB2C8\uB2E4."
+                "예를 들어, [2] 기록에서는 개입도가 높았습니다."
         );
 
         assertFalse(cleaned.contains("[2]"));
-        assertTrue(cleaned.contains("\uAE30\uB85D"));
+        assertTrue(cleaned.contains("기록"));
     }
 
     /**
@@ -677,9 +711,9 @@ class ChatAIServiceTest {
 
         final boolean degraded = (boolean) method.invoke(
                 service,
-                "\uC6D0\uBE48\uB2D8\uC740 \uC870\uC9C1 \uB0B4\uC5D0\uC11C \uC911\uC694\uD55C \uC5ED\uD560\uC744 \uD558\uB294 \uC778\uBB3C\uC774\uC5D0\uC694.",
+                "민수님은 조직 내에서 중요한 역할을 하는 인물이에요.",
                 lookupContext,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(degraded);
@@ -696,7 +730,7 @@ class ChatAIServiceTest {
 
         final boolean attitude = (boolean) method.invoke(
                 service,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(attitude);
@@ -713,7 +747,7 @@ class ChatAIServiceTest {
 
         final boolean attitude = (boolean) method.invoke(
                 service,
-                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+                "민수는 내 기록에서 어떤 의미야?"
         );
 
         assertFalse(attitude);
@@ -730,7 +764,7 @@ class ChatAIServiceTest {
         attitudeMethod.setAccessible(true);
         appearanceMethod.setAccessible(true);
 
-        final String query = "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8";
+        final String query = "내 대화에서 지연님은 어떤 느낌으로 등장하고 있니";
         final boolean attitude = (boolean) attitudeMethod.invoke(service, query);
         final boolean appearance = (boolean) appearanceMethod.invoke(service, query);
 
@@ -754,13 +788,13 @@ class ChatAIServiceTest {
         final String prompt = (String) method.invoke(
                 service,
                 RagIntent.SYNTHESIS,
-                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8"
+                "내 대화에서 지연님은 어떤 느낌으로 등장하고 있니"
         );
 
         assertTrue(prompt.contains("PERSON_MEANING_SCAFFOLD"));
-        assertTrue(prompt.contains("\uB4F1\uC7A5"));
+        assertTrue(prompt.contains("등장"));
         assertFalse(prompt.contains("PERSON_STANCE_SCAFFOLD"));
-        assertTrue(prompt.contains("\uCD94\uB860\uD558\uC790\uBA74"));
+        assertTrue(prompt.contains("추론하자면"));
     }
 
     /**
@@ -777,16 +811,16 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uAC00\uC601");
+        final Object ragContext = buildTestRagContextWithTaggedResults("지연");
         final String shallowResponse =
-                "\uAE30\uB85D\uC0C1 #\uAE40\uAC00\uC601 \uCD95\uC5D0 \uBB36\uC5EC \uC788\uACE0, \"\uC77C\uD68C\uC6A9\uC810\uAC00\uB77D.....\" \uB610\uB294 \"\uC218\uBC15\uB9CC \uB370\uB824 \uAC00\uB294\uC911....\" \uB4F1\uC758 \uB9D0\uC744 \uD558\uBA74\uC11C \uB4F1\uC7A5\uD569\uB2C8\uB2E4. "
-                        + "\uC774\uB85C \uBD80\uD130 \uCD94\uB860\uD558\uC790\uBA74, \uCE5C\uADFC\uD558\uACE0 \uC790\uC5F0\uC2A4\uB7EC\uC6B4 \uC778\uBB3C\uB85C \uB4F1\uC7A5\uD558\uB294 \uAC83 \uAC19\uC544.";
+                "기록상 #박지연 축에 묶여 있고, \"일회용 접시.....\" 또는 \"식재료만 사는 중....\" 등의 말을 하면서 등장합니다. "
+                        + "이로 부터 추론하자면, 친근하고 자연스러운 인물로 등장하는 것 같아.";
 
         final boolean degraded = (boolean) method.invoke(
                 service,
                 shallowResponse,
                 ragContext,
-                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8"
+                "내 대화에서 지연님은 어떤 느낌으로 등장하고 있니"
         );
 
         assertTrue(degraded);
@@ -808,12 +842,12 @@ class ChatAIServiceTest {
         final String prompt = (String) method.invoke(
                 service,
                 RagIntent.SYNTHESIS,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(prompt.contains("PERSON_STANCE_SCAFFOLD"));
-        assertTrue(prompt.contains("\uB124\uAC00 \uAE30\uB85D\uC5D0 \uB0A8\uAE34"));
-        assertTrue(prompt.contains("\uACE0\uB824\uD560 \uC218 \uC788"));
+        assertTrue(prompt.contains("네가 기록에 남긴"));
+        assertTrue(prompt.contains("고려할 수 있"));
     }
 
     /**
@@ -830,14 +864,14 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
 
         final boolean degraded = (boolean) method.invoke(
                 service,
-                "\uC6D0\uBE48\uB2D8\uC740 \uB9E4\uC6B0 \uC5F4\uC131\uC801\uC774\uACE0 \uC8FC\uB3D9\uC801\uC778 \uC778\uBB3C\uC785\uB2C8\uB2E4. "
-                        + "\uC870\uC9C1 \uC5ED\uB3D9\uC131\uC5D0\uC11C \uC911\uC694\uD55C \uC5ED\uD560\uC744 \uD558\uBA70 \uD611\uC5C5 \uAD00\uACC4\uB97C \uC720\uC9C0\uD558\uB294 \uAC83\uC774 \uC911\uC694\uD560 \uAC83 \uAC19\uC2B5\uB2C8\uB2E4.",
+                "민수님은 매우 열성적이고 주동적인 인물입니다. "
+                        + "조직 역동성에서 중요한 역할을 하며 협업 관계를 유지하는 것이 중요할 것 같습니다.",
                 ragContext,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(degraded);
@@ -857,18 +891,18 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String episodeResponse =
-                "\uB124\uAC00 \uAE30\uB85D\uC5D0 \uB0A8\uAE34 \uBC14\uB85C\uB294, \uC6D0\uBE48\uB2D8\uC5D0 \uB300\uD55C \uD0DC\uB3C4\uB294 \uADF8\uB9AC \uAE0D\uC815\uC801\uC774\uC9C0 \uC54A\uC544 \uBCF4\uC778\uB2E4. "
-                        + "\uD1F4\uADFC \uC2DC\uAC04\uC774\uC5C8\uB294\uB370 PDF \uD30C\uC2F1 \uC774\uC57C\uAE30\uB97C \uB098\uB204\uB294 \uB3D9\uC548 \uB2E8\uAC00\uAC00 \uC548 \uB098\uC62C \uAC83 \uAC19\uB2E4\uACE0 \uB9D0\uD588\uB2E4. "
-                        + "\uADF8\uB7EC\uC790 \uC6D0\uBE48\uB2D8\uC740 \uBC29\uC5B4\uC801\uC73C\uB85C \uB300\uB2F5\uD588\uACE0, \uD2B9\uD788 \uB124 \uB9C8\uC74C\uC5D0\uB294 \uBD88\uC2E0\uACFC \uAC70\uB9AC\uAC10\uC774 \uC788\uB294 \uAC83 \uAC19\uB2E4. "
-                        + "\uC5B4\uC918\uB4E0 \uC774\uB294 \uAE30\uB85D\uC5D0 \uB0A8\uAE34 \uB300\uD654\uB9CC\uC73C\uB85C \uCD94\uB860\uD55C \uAC83\uC774\uB2E4.";
+                "네가 기록에 남긴 바로는, 민수님에 대한 태도는 그리 긍정적이지 않아 보인다. "
+                        + "퇴근 시간이었는데 PDF 파싱 이야기를 나누는 동안 단가가 안 나올 것 같다고 말했다. "
+                        + "그러자 민수님은 방어적으로 대답했고, 특히 네 마음에는 불신과 거리감이 있는 것 같다. "
+                        + "어줘든 이는 기록에 남긴 대화만으로 추론한 것이다.";
 
         final boolean degraded = (boolean) method.invoke(
                 service,
                 episodeResponse,
                 ragContext,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(degraded);
@@ -888,19 +922,19 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String groundedResponse =
-                "\uB124\uAC00 \uAE30\uB85D\uC5D0 \uB0A8\uAE34 \uBC14\uB85C\uB294, \uC6D0\uBE48\uC5D0 \uB300\uD55C \uB9C8\uC74C\uC740 #\uC870\uC9C1\uC5ED\uB3D9 \uCD95\uC5D0\uC11C \uC790\uC8FC \uAE34\uC7A5\uACFC \uC6B0\uB824\uAC00 \uBC18\uBCF5\uB3FC. "
-                        + "(1) \uB0B4 \uD0DC\uB3C4\u00B7\uC815\uC11C: \uAE30\uB85D\uC744 \uBCF4\uBA74 \uC6B0\uB824\uAC00 \uB4DC\uB7EC\uB0A8. "
-                        + "(2) \uBC18\uBCF5 \uD328\uD134: \uC5C5\uBB34 \uB17C\uC758 \uC7A5\uBA74\uC5D0\uC11C \uB2F5\uC774 \uC5B4\uAE38\uB9AC\uB294 \uBAA8\uC2B5\uC774 \uBC18\uBCF5. "
-                        + "(3) \uD568\uAED8 \uBB36\uC778 \uCD95: #\uAE40\uC6D0\uBE48, #\uC870\uC9C1\uC5ED\uB3D9. "
-                        + "(4) \uD655\uC815 \uBD88\uAC00: \uC0C1\uB300 \uC131\uACA9\uC740 \uAE30\uB85D\uC5D0 \uC5C6\uC74C.";
+                "네가 기록에 남긴 바로는, 민수에 대한 마음은 #조직역동 축에서 자주 긴장과 우려가 반복돼. "
+                        + "(1) 내 태도·정서: 기록을 보면 우려가 드러남. "
+                        + "(2) 반복 패턴: 업무 논의 장면에서 답이 어길리는 모습이 반복. "
+                        + "(3) 함께 묶인 축: #김민수, #조직역동. "
+                        + "(4) 확정 불가: 상대 성격은 기록에 없음.";
 
         final boolean degraded = (boolean) method.invoke(
                 service,
                 groundedResponse,
                 ragContext,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertFalse(degraded);
@@ -920,19 +954,19 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String advisoryResponse =
-                "dreamdiary \uAE30\uB85D\uC744 \uD1B5\uD574 \uC54C \uC218 \uC788\uB294 \uBC14\uB85C, \uB2F9\uC2E0\uC740 \uC6D0\uBE48\uB2D8\uACFC \uD568\uAED8 \uC77C\uD558\uBA74\uC11C \uB2E4\uC591\uD55C \uC0C1\uD669\uC5D0\uC11C \uAD50\uB958\uB97C \uAC00\uC9D1\uB2C8\uB2E4. "
-                        + "\uADF8\uB7EC\uB098 \uC9C1\uC811\uC801\uC778 \uD3C9\uAC00\uB098 \uC2EC\uB9AC \uC0C1\uD0DC\uB294 \uBA85\uD655\uD788 \uB098\uD0C0\uB098\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. "
-                        + "\uC774\uB7EC\uD55C \uAD00\uACC4\uB97C \uB354 \uAE4A\uAC8C \uC774\uD574\uD558\uAE30 \uC704\uD574\uC11C\uB294 \uBA87 \uAC00\uC9C0 \uC810\uC744 \uACE0\uB824\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4: "
-                        + "\uC0C1\uD638\uC791\uC6A9 \uD328\uD134: #\uC870\uC9C1\uC5ED\uB3D9 \uCD95\uC5D0 \uBB36\uC5EC \uC788\uC2B5\uB2C8\uB2E4. "
-                        + "\uD655\uC815 \uBD88\uAC00: \uB2F9\uC2E0\uC758 \uC0DD\uAC01\uC774\uB098 \uAC10\uC815\uC740 \uBA85\uC2DC\uC801\uC73C\uB85C \uD45C\uD604\uB418\uC9C0 \uC54A\uACE0, \uC911\uB9BD\uC801 \uB610\uB294 \uD3C9\uC628\uD55C \uD0DC\uB3C4\uB97C \uC720\uC9C0\uD558\uACE0 \uC788\uB294 \uAC83\uC73C\uB85C \uBCF4\uC785\uB2C8\uB2E4.";
+                "dreamdiary 기록을 통해 알 수 있는 바로, 당신은 민수님과 함께 일하면서 다양한 상황에서 교류를 가집니다. "
+                        + "그러나 직접적인 평가나 심리 상태는 명확히 나타나지 않습니다. "
+                        + "이러한 관계를 더 깊게 이해하기 위해서는 몇 가지 점을 고려할 수 있습니다: "
+                        + "상호작용 패턴: #조직역동 축에 묶여 있습니다. "
+                        + "확정 불가: 당신의 생각이나 감정은 명시적으로 표현되지 않고, 중립적 또는 평온한 태도를 유지하고 있는 것으로 보입니다.";
 
         final boolean degraded = (boolean) method.invoke(
                 service,
                 advisoryResponse,
                 ragContext,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(degraded);
@@ -951,11 +985,11 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContext("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContext("민수");
         final boolean rulePrimary = (boolean) method.invoke(
                 service,
                 ragContext,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(rulePrimary);
@@ -987,7 +1021,7 @@ class ChatAIServiceTest {
         final boolean rulePrimary = (boolean) method.invoke(
                 service,
                 ragContext,
-                "\uC6D0\uBE48\uC740 \uB0B4 \uAE30\uB85D\uC5D0\uC11C \uC5B4\uB5A4 \uC758\uBBF8\uC57C?"
+                "민수는 내 기록에서 어떤 의미야?"
         );
 
         assertFalse(rulePrimary);
@@ -1002,9 +1036,9 @@ class ChatAIServiceTest {
         final Method method = ChatAIService.class.getDeclaredMethod("formatDisplayTag", String.class);
         method.setAccessible(true);
 
-        final String display = (String) method.invoke(service, "[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9");
+        final String display = (String) method.invoke(service, "[엔서클]#조직역동");
 
-        assertEquals("#\uC870\uC9C1\uC5ED\uB3D9", display);
+        assertEquals("#조직역동", display);
     }
 
     /**
@@ -1019,14 +1053,14 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uAC00\uC601");
+        final Object ragContext = buildTestRagContextWithTaggedResults("지연");
         final String response = (String) method.invoke(service, ragContext);
 
-        assertTrue(response.contains("(1) \uB4F1\uC7A5 \uB290\uB08C"));
-        assertTrue(response.contains("(2) \uBC18\uBCF5 \uB9E5\uB77D"));
-        assertTrue(response.contains("(3) \uD568\uAED8 \uBB36\uC778 \uCD95"));
-        assertTrue(response.contains("(4) \uD655\uC815 \uBD88\uAC00"));
-        assertFalse(response.contains("[\uC5D4\uC11C\uD074]"));
+        assertTrue(response.contains("(1) 등장 느낌"));
+        assertTrue(response.contains("(2) 반복 맥락"));
+        assertTrue(response.contains("(3) 함께 묶인 축"));
+        assertTrue(response.contains("(4) 확정 불가"));
+        assertFalse(response.contains("[엔서클]"));
     }
 
     /**
@@ -1041,11 +1075,11 @@ class ChatAIServiceTest {
         @SuppressWarnings("unchecked")
         final List<String> tokens = (List<String>) extractMethod.invoke(
                 service,
-                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8"
+                "내 대화에서 지연님은 어떤 느낌으로 등장하고 있니"
         );
 
-        assertTrue(tokens.contains("\uAC00\uC601"));
-        assertFalse(tokens.contains("\uB300\uD654"));
+        assertTrue(tokens.contains("지연"));
+        assertFalse(tokens.contains("대화"));
     }
 
     /**
@@ -1063,11 +1097,11 @@ class ChatAIServiceTest {
 
         final String primary = (String) method.invoke(
                 service,
-                "\uB0B4 \uB300\uD654\uC5D0\uC11C \uAC00\uC601\uB2D8\uC740 \uC5B4\uB5A4 \uB290\uB08C\uC73C\uB85C \uB4F1\uC7A5\uD558\uACE0 \uC788\uB2C8",
-                List.of("\uAC00\uC601", "Dreamdiary")
+                "내 대화에서 지연님은 어떤 느낌으로 등장하고 있니",
+                List.of("지연", "Dreamdiary")
         );
 
-        assertEquals("\uAC00\uC601", primary);
+        assertEquals("지연", primary);
     }
 
     /**
@@ -1084,18 +1118,18 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object personFocus = buildTestPersonFocus("\uAC00\uC601");
+        final Object personFocus = buildTestPersonFocus("지연");
         final boolean matchesPrimaryTag = (boolean) method.invoke(
                 service,
-                "[\uC5D4\uC11C\uD074]#\uAE40\uAC00\uC601",
+                "[엔서클]#박지연",
                 personFocus,
-                "\uAE40\uAC00\uC601"
+                "박지연"
         );
         final boolean matchesFalsePositiveTag = (boolean) method.invoke(
                 service,
-                "[\uC720\uBA85\uC778]#\uBB38\uAC00\uC601",
+                "[유명인]#문지연",
                 personFocus,
-                "\uAE40\uAC00\uC601"
+                "박지연"
         );
 
         assertTrue(matchesPrimaryTag);
@@ -1121,16 +1155,16 @@ class ChatAIServiceTest {
 
         final String lead = (String) method.invoke(
                 service,
-                "\uAC00\uC601",
-                Map.of("[\uC5D4\uC11C\uD074]#\uAE40\uAC00\uC601", 24),
+                "지연",
+                Map.of("[엔서클]#박지연", 24),
                 List.of(),
                 Map.of(),
-                Map.of("[\uC5D4\uC11C\uD074]#\uC870\uC9C1\uC5ED\uB3D9", 9),
+                Map.of("[엔서클]#조직역동", 9),
                 Map.of()
         );
 
-        assertTrue(lead.contains("#\uAE40\uAC00\uC601"));
-        assertFalse(lead.contains("[\uC5D4\uC11C\uD074]"));
+        assertTrue(lead.contains("#박지연"));
+        assertFalse(lead.contains("[엔서클]"));
     }
 
     /**
@@ -1148,9 +1182,9 @@ class ChatAIServiceTest {
         final JournalEntityFocusService.PersonEntityFocusSummary entitySummary =
                 new JournalEntityFocusService.PersonEntityFocusSummary(
                         12,
-                        "\uAE40\uAC00\uC601",
-                        "\uAE40\uAC00\uC601",
-                        List.of("\uAC00\uC601"),
+                        "박지연",
+                        "박지연",
+                        List.of("지연"),
                         0,
                         0,
                         null,
@@ -1171,15 +1205,15 @@ class ChatAIServiceTest {
         );
         personFocusCtor.setAccessible(true);
         final Object personFocus = personFocusCtor.newInstance(
-                "\uAC00\uC601",
-                List.of("\uAC00\uC601"),
+                "지연",
+                List.of("지연"),
                 5,
                 entitySummary
         );
 
         final String target = (String) method.invoke(service, personFocus);
 
-        assertEquals("\uAE40\uAC00\uC601", target);
+        assertEquals("박지연", target);
     }
 
     /**
@@ -1223,16 +1257,306 @@ class ChatAIServiceTest {
         );
         method.setAccessible(true);
 
-        final Object ragContext = buildTestRagContextWithTaggedResults("\uC6D0\uBE48");
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String prompt = (String) method.invoke(
                 service,
                 ragContext,
-                "\uB098\uB294 \uC6D0\uBE48\uB2D8\uC744 \uC5B4\uB5BB\uAC8C \uC0DD\uAC01\uD558\uACE0 \uC788\uB2C8?"
+                "나는 민수님을 어떻게 생각하고 있니?"
         );
 
         assertTrue(prompt.contains("PERSON_SYNTHESIS_HYBRID"));
         assertTrue(prompt.contains("SNAPSHOT"));
-        assertTrue(prompt.contains("(1) \uB0B4 \uD0DC\uB3C4"));
-        assertFalse(prompt.contains("[\uC5D4\uC11C\uD074]"));
+        assertTrue(prompt.contains("(1) 내 태도"));
+        assertTrue(prompt.contains("네 섹션 헤더"));
+        assertFalse(prompt.contains("[엔서클]"));
     }
+
+    /**
+     * hybrid식 3인칭 조직 해설 답은 person-stance degraded로 감지해야 합니다.
+     */
+    @Test
+    void isDegradedPersonResponse_shouldFlagHybridThirdPersonOrgNarrative() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonResponse",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
+        final String hybridStyleResponse =
+                "네가 기록에 남긴 바로는, 김민수은 주로 조직 내 역동과 관련된 상황에서 언급되는 경향이 있다. "
+                        + "특히 #박지연이라는 인물과 함께 자주 등장한다. "
+                        + "예를 들어 \"예상과 달랐다고 아니었어요\" 와 같은 문장은 민수에 대한 개인적 기대감이나 실망감을 드러낸다. "
+                        + "김민수과 함께 묶인 축으로는 #조직역동, #박지연 등이 있다. "
+                        + "확실하지 않은 점으로는 민수가 조직 내에서 어떤 위치를 차지하는지는 더 자세히 알기 어렵다.";
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                hybridStyleResponse,
+                ragContext,
+                "나는 민수님을 어떻게 생각하고 있니?"
+        );
+
+        assertTrue(degraded);
+    }
+
+    /**
+     * 4섹션 형식과 사용자 태도 비추가 있으면 person-stance 답은 통과해야 합니다.
+     */
+    @Test
+    void isDegradedPersonResponse_shouldAcceptStructuredStanceMirror() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonResponse",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
+        final String structuredResponse =
+                "네가 기록에 남긴 바로는, #김민수 축에서 기대와 실망이 반복된다.\n"
+                        + "(1) 내 태도·정서: 네가 민수에 대해 기대감을 적어 두고 있다.\n"
+                        + "(2) 반복 패턴: #김민수과 #조직역동이 잡히 등장한다.\n"
+                        + "(3) 함께 묶인 축: #박지연, #조직역동\n"
+                        + "(4) 확정 불가: 조직 역할을 단정할 규거는 부족하다.";
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                structuredResponse,
+                ragContext,
+                "나는 민수님을 어떻게 생각하고 있니?"
+        );
+
+        assertFalse(degraded);
+    }
+    /**
+     * #조직역동·4섹션·mirror가 있는 조직 축 언급은 coaching/org 가드에 걸리지 않아야 합니다.
+     */
+    @Test
+    void isDegradedPersonResponse_shouldAcceptOrgPhraseWhenTagGrounded() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonResponse",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
+        final String groundedResponse =
+                "네가 기록에 남긴 바로는, 조직 내 역동 맥락에서 #조직역동과 #김민수이 반복된다.\n"
+                        + "(1) 내 태도·정서: 기대와 실망이 교차한다.\n"
+                        + "(2) 반복 패턴: #조직역동, #박지연\n"
+                        + "(3) 함께 묶인 축: #김민수\n"
+                        + "(4) 확정 불가: 조직 역할 단정 불가";
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                groundedResponse,
+                ragContext,
+                "나는 민수님을 어떻게 생각하고 있니?"
+        );
+
+        assertFalse(degraded);
+    }
+
+    /**
+     * 협업·조언 표현은 기록 태그가 있어도 coaching 톤으로 거부해야 합니다.
+     */
+    @Test
+    void isPersonStanceCoachingTone_shouldFlagHardAdviceDespiteTags() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("isPersonStanceCoachingTone", String.class);
+        method.setAccessible(true);
+
+        final boolean coaching = (boolean) method.invoke(
+                service,
+                "네가 기록에 남긴 #조직역동 맥락에서 협업 관계를 유지하는 것이 중요할 것 같습니다."
+        );
+
+        assertTrue(coaching);
+    }
+
+
+    /**
+     * '~에 대해 뭘 말해' 류 인물 질문은 person-meaning 경로로 인식해야 합니다.
+     */
+    @Test
+    void isPersonMeaningQuery_shouldRecognizePersonAboutQuestion() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method meaningMethod = ChatAIService.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
+        meaningMethod.setAccessible(true);
+
+        final boolean personMeaning = (boolean) meaningMethod.invoke(
+                service,
+                "민수님에 대해 뭘 말해줘 수 있니?"
+        );
+
+        assertTrue(personMeaning);
+    }
+
+    /**
+     * 인물 about 질문은 SYNTHESIS intent로 분류해야 합니다.
+     */
+    @Test
+    void detectRagIntent_shouldTreatPersonAboutQuestionAsSynthesis() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        method.setAccessible(true);
+
+        final RagIntent intent = (RagIntent) method.invoke(
+                service,
+                "민수님에 대해 뭘 말해줘 수 있니?"
+        );
+
+        assertEquals(RagIntent.SYNTHESIS, intent);
+    }
+    /**
+     * person-about LOOKUP 힌트는 뭘/무엇을 말해·알려 표현을 인식해야 합니다.
+     */
+    @Test
+    void isPersonAboutLookupQuery_shouldRecognizeFixedLookupHints() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("isPersonAboutLookupQuery", String.class);
+        method.setAccessible(true);
+
+        assertTrue((boolean) method.invoke(service, "민수님에 대해 무엇을 말해줄 수 있니?"));
+        assertTrue((boolean) method.invoke(service, "민수님에 대해 뭘 알려줘"));
+        assertFalse((boolean) method.invoke(service, "오늘 꿈 해석해줘"));
+    }
+    /**
+     * person 재시도 프롬프트는 1차 가드 실패 guardDetail을 포함해야 합니다.
+     */
+    @Test
+    void buildPersonMeaningRetryPrompt_shouldIncludeGuardDetailHint() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildPersonMeaningRetryPrompt",
+                RagContext.class,
+                String.class,
+                String.class
+        );
+        method.setAccessible(true);
+
+        final String stancePrompt = (String) method.invoke(
+                service,
+                null,
+                "나는 민수님을 어떻게 생각하고 있니?",
+                "person_stance_missing_sections"
+        );
+        assertTrue(stancePrompt.contains("PERSON_STANCE_RETRY"));
+        assertTrue(stancePrompt.contains("person_stance_missing_sections"));
+        assertTrue(stancePrompt.contains("4섹션"));
+
+        final String meaningPrompt = (String) method.invoke(
+                service,
+                null,
+                "민수님은 내 기록에서 어떤 의미야?",
+                "person_meaning_hollow"
+        );
+        assertTrue(meaningPrompt.contains("PERSON_MEANING_RETRY"));
+        assertTrue(meaningPrompt.contains("person_meaning_hollow"));
+    }
+    /**
+     * RULE_PRIMARY fallback 근거 장면은 hybrid와 같이 최대 3건을 | 로 이어야 합니다.
+     */
+    @Test
+    void appendRulePrimaryEvidenceSection_shouldIncludeUpToThreeSnippets() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "appendRulePrimaryEvidenceSection",
+                StringBuilder.class,
+                List.class
+        );
+        method.setAccessible(true);
+
+        final StringBuilder sb = new StringBuilder();
+        method.invoke(service, sb, List.of("장면A", "장면B", "장면C", "장면D"));
+
+        final String out = sb.toString();
+        assertTrue(out.contains("근거 장면(짧게):"));
+        assertTrue(out.contains("장면A"));
+        assertTrue(out.contains("장면B"));
+        assertTrue(out.contains("장면C"));
+        assertFalse(out.contains("장면D"));
+        assertTrue(out.contains(" | "));
+    }
+    /**
+     * RULE_PRIMARY 근거 장면은 대화 인용·화자 라벨을 제거해야 합니다.
+     */
+    @Test
+    void compactRulePrimaryEvidenceSnippet_shouldStripDialogueQuotes() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "compactRulePrimaryEvidenceSnippet",
+                String.class
+        );
+        method.setAccessible(true);
+
+        final String compact = (String) method.invoke(
+                service,
+                "... \"기대했던 너낌이\" \"아니었어요\" 지연님: \"오전 회의\" 나: \"스티커\" 민수님은 옆에서 지켜봤고."
+        );
+
+        assertFalse(compact.contains("\""));
+        assertFalse(compact.contains("지연님:"));
+        assertTrue(compact.contains("민수"));
+    }
+    /**
+     * hybrid 폴백 시 재시도 가드 사유는 metadataJson.retryGuardDetail에 저장해야 합니다.
+     */
+    @Test
+    void buildRagMetadataJson_shouldIncludeRetryGuardDetail() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildRagMetadataJson",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class,
+                String.class,
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
+        final String json = (String) method.invoke(
+                service,
+                ragContext,
+                "RULE_PRIMARY",
+                "person_stance_coaching_tone",
+                "person_stance_missing_sections"
+        );
+
+        assertNotNull(json);
+        assertTrue(json.contains("\"guardDetail\":\"person_stance_coaching_tone\""));
+        assertTrue(json.contains("\"retryGuardDetail\":\"person_stance_missing_sections\""));
+    }
+
+    /**
+     * RULE_PRIMARY person-stance (1) 섹션은 연결 맥락 태그를 우선해 태도·정서를 요약해야 합니다.
+     */
+    @Test
+    void buildPersonStanceDeterministicFallback_shouldPreferLinkedContextInAttitudeSection() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildPersonStanceDeterministicFallback",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithTaggedResults("민수");
+        final String fallback = (String) method.invoke(service, ragContext);
+
+        assertTrue(fallback.contains("(1) 내 태도·정서:"));
+        assertTrue(fallback.contains("조직역동"));
+        assertTrue(fallback.contains("맥락에서 드러난 마음·태도"));
+        assertFalse(fallback.contains("반복 인물 태그"));
+    }
+
+
 }
