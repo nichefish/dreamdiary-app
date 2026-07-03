@@ -335,37 +335,39 @@ Detection requires all of:
 
 - a extracted person focus token (for example `민수` from `민수님`)
 - an explicit first-person **subject** marker: `나는`, `내가`, `나의`, `나한테`, or `나에게` — **not** locative scope alone (`내 대화`, `내 기록`)
-- an attitude hint such as `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, or `어떤 느낌`
+- an attitude hint such as `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, `어떤 느낌`, `어떻게 느끼`, or `느끼고` (all now routed to `SYNTHESIS`/Path C by `detectRagIntent` + `PERSON_FOCUS_HINTS`)
 - **not** a person-appearance query (`등장`, `나타나`, `보여`, or `내 대화/내 기록` scope without `나는/내가`)
 
 Example (stance): `나는 민수님을 어떻게 생각하고 있니?`
 
 **Not stance** — use person-meaning / appearance prompt instead: `내 대화에서 지연님은 어떤 느낌으로 등장하고 있니?`
 
-This path reuses person-meaning tag-only retrieval but changes prompt/scaffold/guard:
+This path reuses person-meaning tag-only retrieval but runs a **rich-trust** prompt/guard (Option A). The design goal is to read as much journal text as possible and let the LLM speak, rather than force a rigid template:
 
-- RAG intro text asks for attitude **pattern synthesis** (repeat axes, linked context, record types), not episode recap or symbolic role synthesis
-- `PERSON_STANCE_SCAFFOLD` replaces `PERSON_MEANING_SCAFFOLD`. Internal material includes interpretive lead, repeat axes, linked context, role axes, record types, and brief evidence scenes; the **user-facing answer** must use four sections: (1) 내 태도·정서 (2) 반복 패턴 (3) 함께 묶인 축 (4) 확정 불가
-- Attitude interpretation = integrating repeat axes/context/types, **not** long event narration or ungrounded psych labels (불신·거리감·방어적 등)
-- intent prompt requires 2nd-person mirroring, axis citation when scaffold material exists, and forbids HR/coaching tone, personality adjectives, collaboration advice, and episode-only answers
-- hollow guard (`isHollowPersonStanceResponse`) rejects coaching/advisory tone (`고려할 수 있습니다`, `이해하기 위해서는`), record evasion/neutralization (`명시적으로 표현되지 않`, `중립적 또는 평온`), third-person trait profiles, **missing 4-section headers** (fewer than 3 of the four section cues), **direct quote / dialogue citation**, **third-person subject dominance** without `내 태도`/`내 마음`, **org-bucket narrative** (`조직 내` without user-attitude mirroring; exempt when `#조직역동` or mirror markers plus `#` tag / `(1) 내 태도` section cues ground the org phrase), linked-tag-only answers when person-focus tags exist, ungrounded psych labels, heavy episode narration, and other-behavior reports; strong mirror markers (`네가`, `기록을 보면`, `기록에 남긴`, `내 태도`, etc.) are required — `당신` alone is insufficient
-- degraded retries use `PERSON_STANCE_RETRY` (full snapshot + 4-section shape); deterministic fallback uses `buildPersonStanceDeterministicFallback` and `responseMode=PERSON_STANCE_FALLBACK`
+- RAG intro text asks for attitude **pattern synthesis** grounded in the retrieved records.
+- The hybrid prompt for attitude questions asks for **free-form prose** (no forced numbered sections), 2nd-person framing (`네가`, `내 태도`, `내 마음`), reading many evidence scenes, continuing the user's own journal analysis notes, and writing at length. The **only** hard content rule is anti-fabrication: do not assert facts/roles/relationships absent from the records (say `기록만으로는 확실치 않다` instead).
+- **Live acceptance gate** for attitude answers is `isDegradedPersonStanceRichResponse`: it rejects **only** blank, too-short (<40 chars), scaffold-field leaks, and record-ungrounded generic org buckets (`isGenericPersonBucketHallucination`). Formatting (4 sections), coaching/advisory tone, org narrative, 3rd-person subject dominance, episode narration, direct quotes, and psych labels are **no longer rejection reasons** for attitude answers. Korean-only language guard still applies upstream.
+- `describePersonStanceRichGuardFailure` maps the minimal gate to codes `person_stance_too_short`, `person_stance_scaffold_leak`, `person_stance_generic_bucket`.
+- The legacy stance guard detectors (`isHollowPersonStanceResponse`, `isPersonStanceCoachingTone`, `isPersonStanceMissingSectionShape`, `isPersonStanceGenericOrgNarrative`, `hasPersonStanceMirrorMarkers`, and their marker-constant arrays, etc.) have been **removed** (convergence). Only `isThirdPersonPersonalityProfile` remains — it is shared by the non-attitude person-meaning hollow guard.
+- degraded retries use `PERSON_STANCE_RETRY`, itself **rich-trust**: it no longer re-imposes the 4-section / anti-tone regime — it only asks the model to cite more evidence scenes, keep 2nd-person framing, and avoid empty org generalities. Retry-hint codes are `person_stance_too_short` / `_scaffold_leak` / `_generic_bucket`. The deterministic stance fallback (`buildPersonStanceDeterministicFallback`, surfaced as `responseMode=RULE_PRIMARY` from Path C) is likewise **rich-trust prose** (no 4-section dump; see below), reached only when the minimal gate fails (blank/short/leak/generic-bucket).
 - `buildPersonStanceInterpretiveLead` / `RULE_PRIMARY` stance fallback open with `네가 기록에 남긴 태도로 보면,` plus tag/context aggregation — not `기록상 {인물}은(는)` third-person subject
-- `RULE_PRIMARY` / `PERSON_STANCE_FALLBACK` section (1) prefers **linked context tags** for attitude (`#조직역동 맥락에서 드러난 마음·태도`); section (2) carries person-tag/content-kind/chapter repeats; section (3) bundles person + linked context axes
+- The stance `RULE_PRIMARY` fallback (Path C) is now **rich-trust prose** (Option A ②-B): the `buildPersonStanceInterpretiveLead` 2nd-person lead (tag/context aggregation) + one honest caveat sentence (`상대의 성격이나 조직에서의 역할처럼 기록에 직접 안 적힌 건 단정하기 어려워`) + up to **3** evidence snippets joined inline as prose (`이런 장면들이 그렇게 느끼게 했어: …`). The old numbered `(1) 내 태도·정서` / `(2) 반복 패턴` / `(3) 함께 묶인 축` / `(4) 확정 불가` section helpers have been **removed** (convergence). Meaning/appearance rule-primary fallbacks keep their existing structured shapes.
+- **Routing convergence (③):** every `isPersonAttitudeQuery` phrasing (including `어떻게 느끼`/`느끼고`) now classifies as `SYNTHESIS` + person-meaning, so attitude questions are answered **and** fall back only through Path C. The legacy `resolveLlmChatResponse` degraded path no longer has an attitude branch and no longer emits `responseMode=PERSON_STANCE_FALLBACK`; it now serves only LOOKUP person-meaning/appearance and general chat. `PERSON_STANCE_FALLBACK` survives as a **legacy** responseMode value for pre-convergence `chat_message` rows (the chat UI still maps it for historical display).
+- **Unresolved-person edge (rich-trust, F1/F2):** an attitude question can bypass Path C only when `personFocus` cannot be resolved at all (no person tags, no record mentions, no entity summary). That case takes the general prompt path, where the `buildIntentPrompt` attitude branch is now **rich-trust** too: free-form 2nd-person prose, anti-fabrication only, and an instruction to say honestly when the records hold no cue about the person (plus a short clarifying question). The old strict regime (4-item scaffold skeleton, advisory/tone bans, mandatory person-tag citation) is removed. No person guard applies on this path (`responseMode=LLM`). The `PERSON_STANCE_SCAFFOLD` context block builder was removed entirely (convergence): Path C never consumed `RagContext.text`, and the legacy path can never have a resolved `personFocus`, so the block could not reach any LLM prompt. (The remaining `PERSON_FOCUS` / `PERSON_MEANING_SCAFFOLD` context blocks were removed for the same reason in F4 — see the person-meaning retrieval section.)
 
 ### Person Synthesis Hybrid (Path C)
 
 When `shouldUseRulePrimaryPersonSynthesisResponse` is true — `SYNTHESIS` intent, resolved `personFocus`, and `isPersonMeaningQuery` — the server runs **Path C**:
 
-1. Build `PersonMeaningSnapshot` from tag-only (or focused) RAG sources (same material as rule-primary). Snapshot includes up to **3** evidence snippets (`PERSON_MEANING_SNAPSHOT_EVIDENCE_LIMIT`).
-2. Call Ollama **once** with `PERSON_SYNTHESIS_HYBRID` system prompt containing only the snapshot block (no full journal dump). **Recent session messages (up to 5)** may be included as follow-up context; full history is not injected. Attitude questions require explicit `(1)~(4)` section headers and forbid 3rd-person subject narration.
-3. Apply language guard and existing person hollow guards (`isDegradedPersonResponse`). On failure, **one** retry with `PERSON_MEANING_RETRY` / `PERSON_STANCE_RETRY` appendix that includes the first `guardDetail` reason from `describePersonGuardFailure`.
+1. Build `PersonMeaningSnapshot` from tag-only (or focused) RAG sources (same material as rule-primary). Default snapshot includes up to **3** evidence snippets (`PERSON_MEANING_SNAPSHOT_EVIDENCE_LIMIT`), each ~100 chars. **Person-stance (attitude) questions** use a richer budget: RAG up to **50** entries (`PERSON_STANCE_RAG_TOP_K`) — applied in **both** the tag-only retrieval and the merged fallback retrieval (`buildMergedRagContext` passes `queryText` to `resolveRagTopK`; F3 alignment) — snapshot evidence up to **20** snippets (`PERSON_STANCE_SNAPSHOT_EVIDENCE_LIMIT`), ~400 chars each, **8000** total char budget, sampled across tagged sources (not only the first rows).
+2. Call Ollama **once** with `PERSON_SYNTHESIS_HYBRID` system prompt containing only the snapshot block (no full journal dump). **Recent session messages (up to 5)** may be included as follow-up context; full history is not injected. **Attitude questions use the rich-trust prompt**: free-form prose (no forced sections), 2nd-person framing, read many evidence scenes, do not assert facts/roles absent from the records. Local `app.ollama.num-predict` may be raised (e.g. 2048) so deep answers are not truncated.
+3. Apply the Korean language guard, then the person degradation gate (`isDegradedPersonResponse`). **Attitude answers use the minimal `isDegradedPersonStanceRichResponse` gate** (blank/short/scaffold-leak/generic-bucket only); meaning/appearance keep the fuller hollow guards. On failure, **one** retry with `PERSON_MEANING_RETRY` / `PERSON_STANCE_RETRY` appendix that includes the first `guardDetail` reason. Stance retries include the richer evidence list.
 4. If the LLM answer passes guards → `responseMode=PERSON_SYNTHESIS_HYBRID`.
-5. If guards still fail or no tagged sources exist → `buildRulePrimaryPersonSynthesisResponse` and `responseMode=RULE_PRIMARY`. `metadataJson.guardDetail` records the **first** guard failure code; when a retry still fails, `metadataJson.retryGuardDetail` records the retry failure code (chat UI shows `guard: … · retry: …`). Rule-primary fallbacks append up to **3** evidence snippets (`PERSON_MEANING_SNAPSHOT_EVIDENCE_LIMIT`), joined with ` | ` like the hybrid SNAPSHOT block; each snippet strips dialogue quotes/speaker labels then abbreviates to 100 chars (hybrid SNAPSHOT keeps raw snippets).
+5. If guards still fail or no tagged sources exist → `buildRulePrimaryPersonSynthesisResponse` and `responseMode=RULE_PRIMARY`. `metadataJson.guardDetail` records the **first** guard failure code; when a retry still fails, `metadataJson.retryGuardDetail` records the retry failure code (chat UI shows `guard: … · retry: …`). Rule-primary fallbacks use the same snapshot budget as hybrid for the query type (stance: up to **20** snippets / 400 chars (tag-only RAG **50**); others: **3** / 100 chars). Meaning/appearance rule-primary label the evidence block `근거 장면:`; **stance rule-primary now uses inline prose snippets** (`이런 장면들이 그렇게 느끼게 했어: …`, up to 3) instead of a labeled block.
 
 `isPersonMeaningQuery` also matches person-about questions when a person token is extracted and the query contains hints such as `에 대해`, `뭘 말해`, `알려줘`. Those questions route to `SYNTHESIS` via `detectRagIntent`.
 
-Attitude / appearance / meaning question types use the same four-section shapes as rule-primary fallbacks, but the LLM is asked to write natural interpretive prose grounded in the snapshot.
+Appearance / meaning question types use structured rule-primary fallback shapes; **attitude uses rich-trust prose** in both hybrid and fallback. In all cases the LLM is asked to write natural interpretive prose grounded in the snapshot.
 
 User-facing tag lines in snapshot and fallbacks use `formatTopTagsForDisplay`. Short person tokens disambiguate via `resolveDominantPersonTagStem`. Tag-only paths retain `personFocus.entitySummary` for canonical display labels while aggregation uses tagged sources (`isTagOnlyPersonMeaningResults`).
 
@@ -374,8 +376,8 @@ The legacy full-RAG LLM path (with hollow guard, retry, and `PERSON_*_FALLBACK` 
 
 ### Person-Appearance Questions
 
-When `isPersonAppearanceQuery` is true (dialogue/record scope + how someone **appears**), routing stays on **person-meaning** (`PERSON_MEANING_SCAFFOLD`), not person-stance. Intent prompt forbids quote parades, trait conclusions (`친근하다`, `자연스럽다`), and `추론하자면` generalizations. Hollow guard also rejects `isPersonMeaningQuoteParade` and expanded `isThirdPersonPersonalityProfile` even when mirror openers are present.
-Symbolic meaning questions such as `민수는 내 기록에서 어떤 의미야?` remain on the person-meaning scaffold, not person-stance.
+When `isPersonAppearanceQuery` is true (dialogue/record scope + how someone **appears**), routing stays on **person-meaning** (Path C snapshot with the appearance four-section prompt), not person-stance. Intent prompt forbids quote parades, trait conclusions (`친근하다`, `자연스럽다`), and `추론하자면` generalizations. Hollow guard also rejects `isPersonMeaningQuoteParade` and expanded `isThirdPersonPersonalityProfile` even when mirror openers are present.
+Symbolic meaning questions such as `민수는 내 기록에서 어떤 의미야?` remain on the person-meaning treatment, not person-stance.
 
 For `SYNTHESIS`, the prompt asks the model to connect:
 
@@ -405,19 +407,19 @@ When tag-only retrieval finds zero matches, the RAG context states that no tagge
 
 The entity catalog may still be consulted **only** to expand alias tokens (`민수` -> canonical `#김민수`) and to populate `personFocus.entitySummary` for **canonical display labels** and chat metadata (`canonicalLabel`, `surfaceForms`). Catalog-wide role axes, content-kind counts, and linked entry IDs must not drive person-meaning **aggregation** when tag-only RAG sources exist; `buildPersonMeaningSnapshot` uses tagged-source timeline/kind data in that case (`isTagOnlyPersonMeaningResults`).
 
-When tagged sources exist, `ChatAIService` prepends a `PERSON_FOCUS` block before the general tag/timeline summary and appends `PERSON_MEANING_SCAFFOLD` so the model cannot reply with empty topic buckets such as "업무 협업" or "조직 관계" without citing tags or record snippets.
+The `PERSON_FOCUS` / `PERSON_MEANING_SCAFFOLD` context-text blocks have been **removed** (convergence, F4): whenever `personFocus` resolves, the question is handled by Path C, whose `SNAPSHOT` prompt block carries the same aggregation material — and Path C never consumes `RagContext.text`. The legacy prompt path (which does consume `RagContext.text`) can only run with `personFocus == null`, so the blocks could never render there. The anti-bucket rule ("업무 협업"/"조직 관계" without cited tags or snippets) is enforced by the Path C snapshot prompt + hollow guards, and by the legacy SYNTHESIS intent prompt wording.
 
-Prompt/scaffold behavior:
+Prompt/snapshot behavior:
 
 - extracts the queried person token from the user message
 - runs `searchByPersonTagsWithScore(...)` as the sole retrieval path for person-meaning `SYNTHESIS` questions
 - resolves the matching `journal_entity(PERSON)` row only for alias token expansion when the catalog already knows that person
 - reports how many tagged sources matched
 - keeps repeated-tag summary scoped to person-relevant tags whose text contains a focus token, not co-occurring scene tags from the same entry body
-- sanitizes evidence snippets by stripping `embedding_text` metadata lines (`유형:`, `핵심 태그:`, `본문:` wrapper) and HTML before scaffold/fallback output
+- sanitizes evidence snippets by stripping `embedding_text` metadata lines (`유형:`, `핵심 태그:`, `본문:` wrapper) and HTML before snapshot/fallback output
 - scopes `## 태그 요약` and message `ragTagSummary` metadata to person-focused tagged sources and person-relevant tags only when `personFocus` is present
-- prepends a rule-based `해석 시드:` line to `PERSON_MEANING_SCAFFOLD` and uses the same interpretive lead sentence at the top of `PERSON_MEANING_FALLBACK`
-- instructs the model to answer in five sections: repeated axes, role/function, content-kind spread, evidence scenes, and unconfirmed points
+- prepends a rule-based `해석 시드:` line to the Path C `SNAPSHOT` block and uses the same interpretive lead sentence at the top of `PERSON_MEANING_FALLBACK`
+- instructs the model (hybrid meaning/appearance prompt and legacy SYNTHESIS intent prompt) to organize the answer around: repeated axes, role/function, content-kind spread, evidence scenes, and unconfirmed points
 - forbids generic workplace/category labels unless backed by cited tags or snippets
 
 For `SYNTHESIS`, the context starts with a tag summary block:
@@ -483,9 +485,9 @@ When a `SYNTHESIS` person-meaning question resolves `personFocus`, the server va
 1. A response is degraded when it leaks internal scaffold/meta field names (`role_axes_ko`, `repeated_tags`, machine-style section keys), or when it fails to cite tags/role axes from the current `PersonMeaningSnapshot`.
 2. Tags that do not contain the focused person token — including co-occurring scene tags on the same entry and app/meta tags such as `#dreamdiary` — are noise for **repeated-axis** ranking only. Linked context tags (for example `[엠서클]#조직역동`) **do** count as hollow-guard evidence when cited by full tag or `#` stem.
 3. When no person tag or role axis exists in the current snapshot, a response that cites sanitized evidence snippets from the snapshot still passes the guard.
-4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, `PERSON_APPEARANCE_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
+4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK` (legacy), `PERSON_APPEARANCE_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
 5. Degraded responses trigger **one** `PERSON_MEANING_RETRY` Ollama call with explicit tag/context citation instructions. Only if the retry is still hollow (or language-guard invalid) does the server replace the answer with `buildPersonMeaningDeterministicFallback(...)`.
-6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK`, `PERSON_APPEARANCE_FALLBACK`, or `LANGUAGE_FALLBACK`. Person retry fallbacks and `RULE_PRIMARY` also persist `guardDetail` / `retryGuardDetail` when guards reject the LLM output; `LANGUAGE_FALLBACK` sets `guardDetail=language_guard`.
+6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK` (legacy, no longer emitted — historical rows only), `PERSON_APPEARANCE_FALLBACK`, or `LANGUAGE_FALLBACK`. Person retry fallbacks and `RULE_PRIMARY` also persist `guardDetail` / `retryGuardDetail` when guards reject the LLM output; `LANGUAGE_FALLBACK` sets `guardDetail=language_guard`.
 7. `PERSON_MEANING_FALLBACK` must not stop at person-tag counts alone. It also aggregates **linked context tags** from the same tagged sources (for example `[엠서클]#조직역동`, `[엠서클]#김종순`) and **chapter categories** from embedding payload (`DYNAMICS`, `INTERACTION`) to explain how the person appears in the user's intentional classification axes.
 8. When entity-catalog role axes are unavailable in the person-meaning path, fallback/scaffold role text must use linked context tags + chapter categories instead of the misleading `entity catalog ... not extracted` boilerplate.
 9. Hollow-guard evidence accepts, in order: person tags (full tag or `#` stem), role axes, linked context tags (full tag or `#` stem), chapter category code/label, content-kind words (`꿈`/`일기`/`노트`), and sanitized snippet probes. Generic workplace buckets without these anchors remain hollow.

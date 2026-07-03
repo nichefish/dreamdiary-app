@@ -30,7 +30,7 @@
 | 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalDayMonthly.vue` | ✓ |
 | 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
 | 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
-| 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalDayCalendar.vue` | △ 탭/플레이스홀더 |
+| 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalDayCalendar.vue` | ✓ |
 | 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalDayMeta.vue` | ✓ 컨텍스트 메뉴·단일 비교 차트(최대 2시리즈)·연도 전체 |
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
@@ -40,6 +40,15 @@
 | 스레드 수정 | `/app/journal/thread/modify-form.do?id={id}` | `/thread/:id/edit` | `JournalThreadList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/calendar.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
+
+### 저널 달력 (`JournalDayCalendar.vue`)
+
+- **레거시 원형**: `journal_day_cal.ftlh` + `JournalDayCalApp.ts` (git 이력 `210d8200a^`). 탭 툴바 + 카드(태그 클라우드 헤더 + FullCalendar) + aside(레이아웃 공통) 구성.
+- **데이터**: `GET /api/journal/days?viewType=CAL` — `MyJournalDayCalService.getScheduleTotalCalList` = 저널 일자/일기/꿈 이벤트(`JournalDayCalDto`/`JournalEntryCalDto`) + 공휴일·행사(`getHolydayCalList`). 이벤트는 store `calEventList`(dayList 와 별도 상태)로 보관 — aside 의 월 이동·필터·초기화가 부르는 `fetchDays()` 가 CAL 분기로 자연 갱신.
+- **달력 옵션**: 레거시 동일 — headerToolbar 는 title 만(자체 prev/next 없음, 월 이동은 aside), `eventOverlap: false`, 음수 margin-top 하네스 보정.
+- **이벤트 렌더**: icon HTML + title. DIARY/DREAM 중요(`imprtcYn=Y`) 시 `text-magenta blink fw-bold`(`.text-magenta` 는 레거시 commons.css 에서 이관). 클릭: JOURNAL_DAY → 일자 상세 모달, DIARY/DREAM → 소속 일자(`journalDayId`) 상세 모달, 일정 이벤트 무동작.
+- **툴팁**: DAY=제목, DIARY/DREAM=마크다운 본문. 변경 전(레거시): jQuery tooltip + 페이지 전역 `.tooltip` 광폭 스타일 → 변경 후: bootstrap `Tooltip` + `customClass(journal-cal-tooltip)` 로 이 화면 툴팁에만 광폭 스타일 한정.
+- **레거시와의 차이**: 상단 고급 필터 collapse(일정 종류 체크박스, 쿠키 저장)는 이식하지 않음 — 현행 백엔드 `getScheduleTotalCalList` 가 공휴일·행사만 병합해 해당 필터 파라미터를 소비하지 않는다(dead UI). 필요 시 백엔드 계약 복원과 함께 별도 작업.
 
 ### 일정 캘린더 (`ScheduleCalendar.vue`)
 

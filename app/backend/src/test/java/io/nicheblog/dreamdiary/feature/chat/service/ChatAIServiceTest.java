@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.journal.entitycatalog.type.JournalEntityR
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ChatAIServiceTest {
 
     /**
-     * 통섭형 인물 질문은 PERSON_FOCUS 축과 역할 추정 억제 지시를 함께 포함해야 합니다.
+     * 통섭형 인물 질문은 역할 추정 억제 지시를 포함하고, 제거된 스캐폴드 블록을 참조하지 않아야 합니다.
+     *
+     * <p>PERSON_FOCUS·PERSON_MEANING_SCAFFOLD 블록은 convergence로 제거됨 — personFocus가 해결된
+     * 질문은 Path C(SNAPSHOT)로 가고, 이 레거시 프롬프트가 쓰이는 경로에서는 블록이 존재할 수 없다.</p>
      */
     @Test
     void buildIntentPrompt_shouldConstrainPersonRoleInferenceForSynthesis() throws Exception {
@@ -35,9 +39,10 @@ class ChatAIServiceTest {
 
         final String prompt = (String) method.invoke(service, RagIntent.SYNTHESIS, null);
 
-        assertTrue(prompt.contains("PERSON_FOCUS"));
-        assertTrue(prompt.contains("PERSON_MEANING_SCAFFOLD"));
         assertTrue(prompt.contains("업무 협업"));
+        assertTrue(prompt.contains("현실 관계 지위는 기록에 직접 나온 표현이 있을 때만"));
+        assertFalse(prompt.contains("PERSON_FOCUS"));
+        assertFalse(prompt.contains("PERSON_MEANING_SCAFFOLD"));
     }
 
     /**
@@ -640,6 +645,66 @@ class ChatAIServiceTest {
     }
 
     /**
+     * '느끼고'/'어떻게 느끼' 표현의 태도 질문도 SYNTHESIS로 수렴해야 합니다(③ 라우팅 수렴).
+     *
+     * <p>이 표현이 SYNTHESIS로 분류돼야 Path C(rich-trust)로 라우팅되고, 레거시 LOOKUP 저하 경로로
+     * 새지 않는다.</p>
+     */
+    @Test
+    void detectRagIntent_shouldTreatFeelVerbAttitudeAsSynthesis() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        method.setAccessible(true);
+
+        final RagIntent intent = (RagIntent) method.invoke(
+                service,
+                "나는 민수가를 어떻게 느끼고 있지?"
+        );
+
+        assertEquals(RagIntent.SYNTHESIS, intent);
+    }
+
+    /**
+     * 태도 질문 검색 폭은 tag-only·merged 경로 공통으로 확대 폭(50)을 써야 합니다(F3 정렬).
+     *
+     * <p>일반 SYNTHESIS 질문은 기본 폭(25)을 유지한다. merged 폴백 경로가 queryText를 넘기지 않아
+     * 태도 질문이 기본 폭으로 좁아지던 불일치를 고정하는 계약.</p>
+     */
+    @Test
+    void resolveRagTopK_shouldUseStanceBudgetForAttitudeQuery() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "resolveRagTopK",
+                RagIntent.class,
+                String.class
+        );
+        method.setAccessible(true);
+
+        final int stanceTopK = (int) method.invoke(service, RagIntent.SYNTHESIS, "나는 민수님을 어떻게 생각하고 있니?");
+        final int synthesisTopK = (int) method.invoke(service, RagIntent.SYNTHESIS, "내 기록의 반복 패턴을 해석해줘");
+
+        assertEquals(50, stanceTopK);
+        assertEquals(25, synthesisTopK);
+    }
+
+    /**
+     * '느끼고' 태도 질문도 person-meaning으로 인식해 Path C 조건(SYNTHESIS+meaning)을 만족해야 합니다(③ 라우팅 수렴).
+     */
+    @Test
+    void isPersonMeaningQuery_shouldRecognizeFeelVerbAttitude() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
+        method.setAccessible(true);
+
+        final boolean personMeaning = (boolean) method.invoke(
+                service,
+                "나는 민수가를 어떻게 느끼고 있지?"
+        );
+
+        assertTrue(personMeaning);
+    }
+
+    /**
      * LOOKUP 인물 질문 프롬프트는 조직 일반론 억제와 인덱스 인용 금지를 포함해야 합니다.
      */
     @Test
@@ -791,10 +856,10 @@ class ChatAIServiceTest {
                 "내 대화에서 지연님은 어떤 느낌으로 등장하고 있니"
         );
 
-        assertTrue(prompt.contains("PERSON_MEANING_SCAFFOLD"));
         assertTrue(prompt.contains("등장"));
-        assertFalse(prompt.contains("PERSON_STANCE_SCAFFOLD"));
         assertTrue(prompt.contains("추론하자면"));
+        assertFalse(prompt.contains("PERSON_MEANING_SCAFFOLD"));
+        assertFalse(prompt.contains("PERSON_STANCE_SCAFFOLD"));
     }
 
     /**
@@ -827,10 +892,13 @@ class ChatAIServiceTest {
     }
 
     /**
-     * SYNTHESIS 태도 질문 프롬프트는 2인칭 비춤·코칭 금지를 포함해야 합니다.
+     * SYNTHESIS 태도 질문 intent 프롬프트는 rich-trust(자유 산문·2인칭 비춤·반환각만 금지)여야 합니다.
+     *
+     * <p>이 분기는 personFocus 미해결(기록에 단서 없는 인물) 레거시 경로에서만 쓰이며,
+     * 예전 PERSON_STANCE_SCAFFOLD 골격·조언/톤 금지 레짐은 재도입하지 않는다.</p>
      */
     @Test
-    void buildIntentPrompt_shouldUsePersonStanceForAttitudeQuestion() throws Exception {
+    void buildIntentPrompt_shouldUseRichTrustProseForAttitudeQuestion() throws Exception {
         final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "buildIntentPrompt",
@@ -845,9 +913,11 @@ class ChatAIServiceTest {
                 "나는 민수님을 어떻게 생각하고 있니?"
         );
 
-        assertTrue(prompt.contains("PERSON_STANCE_SCAFFOLD"));
-        assertTrue(prompt.contains("네가 기록에 남긴"));
-        assertTrue(prompt.contains("고려할 수 있"));
+        assertTrue(prompt.contains("네가 기록에 남긴 바로는"));
+        assertTrue(prompt.contains("형식은 자유"));
+        assertTrue(prompt.contains("기록만으로는 확실치 않다"));
+        assertFalse(prompt.contains("PERSON_STANCE_SCAFFOLD"));
+        assertFalse(prompt.contains("고려할 수 있"));
     }
 
     /**
@@ -878,10 +948,10 @@ class ChatAIServiceTest {
     }
 
     /**
-     * 태그·축이 있는데 사건 나열·심리 라벨만 있는 person-stance 답변은 degraded로 감지해야 합니다.
+     * 풍부 신뢰(Option A) 모드: 기록에 근거한 사건 나열·심리 해석 태도 답변은 더 이상 거부하지 않습니다.
      */
     @Test
-    void isDegradedPersonResponse_shouldFlagEpisodeNarrationWithoutAxisCitation() throws Exception {
+    void isDegradedPersonResponse_shouldAcceptEpisodeNarrationInRichMode() throws Exception {
         final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
@@ -905,7 +975,7 @@ class ChatAIServiceTest {
                 "나는 민수님을 어떻게 생각하고 있니?"
         );
 
-        assertTrue(degraded);
+        assertFalse(degraded);
     }
 
     /**
@@ -941,10 +1011,11 @@ class ChatAIServiceTest {
     }
 
     /**
-     * 조언·회피·중립화·연결 태그만 인용한 person-stance 답변은 degraded로 감지해야 합니다.
+     * 풍부 신뢰(Option A) 모드: 조언·중립화 톤이라도 기록 태그를 인용하면 거부하지 않습니다.
+     * (톤 검열 대신 기록 근거 없는 빈 버킷만 거부하는 최소 게이트로 전환.)
      */
     @Test
-    void isDegradedPersonResponse_shouldFlagAdvisoryEvasionAnswer() throws Exception {
+    void isDegradedPersonResponse_shouldAcceptAdvisoryStyleWhenTagGroundedInRichMode() throws Exception {
         final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
@@ -969,7 +1040,7 @@ class ChatAIServiceTest {
                 "나는 민수님을 어떻게 생각하고 있니?"
         );
 
-        assertTrue(degraded);
+        assertFalse(degraded);
     }
 
     /**
@@ -1266,16 +1337,18 @@ class ChatAIServiceTest {
 
         assertTrue(prompt.contains("PERSON_SYNTHESIS_HYBRID"));
         assertTrue(prompt.contains("SNAPSHOT"));
-        assertTrue(prompt.contains("(1) 내 태도"));
-        assertTrue(prompt.contains("네 섹션 헤더"));
+        assertTrue(prompt.contains("네가 기록에 남긴 바로는"));
+        assertTrue(prompt.contains("형식은 자유"));
+        assertTrue(prompt.contains("근거 장면을 최대한 많이"));
+        assertFalse(prompt.contains("네 섹션 헤더"));
         assertFalse(prompt.contains("[엔서클]"));
     }
 
     /**
-     * hybrid식 3인칭 조직 해설 답은 person-stance degraded로 감지해야 합니다.
+     * 풍부 신뢰(Option A) 모드: 3인칭 서술이 섞여도 #태그 근거가 있으면 태도 답변을 거부하지 않습니다.
      */
     @Test
-    void isDegradedPersonResponse_shouldFlagHybridThirdPersonOrgNarrative() throws Exception {
+    void isDegradedPersonResponse_shouldAcceptTagGroundedNarrativeInRichMode() throws Exception {
         final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
@@ -1300,7 +1373,7 @@ class ChatAIServiceTest {
                 "나는 민수님을 어떻게 생각하고 있니?"
         );
 
-        assertTrue(degraded);
+        assertFalse(degraded);
     }
 
     /**
@@ -1364,23 +1437,6 @@ class ChatAIServiceTest {
         );
 
         assertFalse(degraded);
-    }
-
-    /**
-     * 협업·조언 표현은 기록 태그가 있어도 coaching 톤으로 거부해야 합니다.
-     */
-    @Test
-    void isPersonStanceCoachingTone_shouldFlagHardAdviceDespiteTags() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("isPersonStanceCoachingTone", String.class);
-        method.setAccessible(true);
-
-        final boolean coaching = (boolean) method.invoke(
-                service,
-                "네가 기록에 남긴 #조직역동 맥락에서 협업 관계를 유지하는 것이 중요할 것 같습니다."
-        );
-
-        assertTrue(coaching);
     }
 
 
@@ -1448,11 +1504,12 @@ class ChatAIServiceTest {
                 service,
                 null,
                 "나는 민수님을 어떻게 생각하고 있니?",
-                "person_stance_missing_sections"
+                "person_stance_generic_bucket"
         );
         assertTrue(stancePrompt.contains("PERSON_STANCE_RETRY"));
-        assertTrue(stancePrompt.contains("person_stance_missing_sections"));
-        assertTrue(stancePrompt.contains("4섹션"));
+        assertTrue(stancePrompt.contains("person_stance_generic_bucket"));
+        assertTrue(stancePrompt.contains("근거 장면"));
+        assertFalse(stancePrompt.contains("4섹션"));
 
         final String meaningPrompt = (String) method.invoke(
                 service,
@@ -1528,35 +1585,175 @@ class ChatAIServiceTest {
                 service,
                 ragContext,
                 "RULE_PRIMARY",
-                "person_stance_coaching_tone",
-                "person_stance_missing_sections"
+                "person_stance_generic_bucket",
+                "person_stance_too_short"
         );
 
         assertNotNull(json);
-        assertTrue(json.contains("\"guardDetail\":\"person_stance_coaching_tone\""));
-        assertTrue(json.contains("\"retryGuardDetail\":\"person_stance_missing_sections\""));
+        assertTrue(json.contains("\"guardDetail\":\"person_stance_generic_bucket\""));
+        assertTrue(json.contains("\"retryGuardDetail\":\"person_stance_too_short\""));
     }
 
     /**
-     * RULE_PRIMARY person-stance (1) 섹션은 연결 맥락 태그를 우선해 태도·정서를 요약해야 합니다.
+     * 태도 결정론 폴백(rich-trust)은 4섹션 태그 덤프 대신 2인칭 산문 근거 노트를 만들어야 합니다.
+     *
+     * <p>해석 리드로 연결 맥락 태그를 근거로 인용하고, 기록에 없는 건 단정하지 않는다는 문구를 남기되,
+     * 예전 (1)~(4) 섹션 헤더 형식은 재도입하지 않는다.</p>
      */
     @Test
-    void buildPersonStanceDeterministicFallback_shouldPreferLinkedContextInAttitudeSection() throws Exception {
+    void buildPersonStanceDeterministicFallback_shouldWriteGroundedSecondPersonProse() throws Exception {
         final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "buildPersonStanceDeterministicFallback",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
         );
         method.setAccessible(true);
 
         final Object ragContext = buildTestRagContextWithTaggedResults("민수");
-        final String fallback = (String) method.invoke(service, ragContext);
+        final String fallback = (String) method.invoke(
+                service,
+                ragContext,
+                "나는 민수님을 어떻게 생각하고 있니?"
+        );
 
-        assertTrue(fallback.contains("(1) 내 태도·정서:"));
+        assertTrue(fallback.contains("네가 기록에 남긴"));
         assertTrue(fallback.contains("조직역동"));
-        assertTrue(fallback.contains("맥락에서 드러난 마음·태도"));
-        assertFalse(fallback.contains("반복 인물 태그"));
+        assertTrue(fallback.contains("단정하기 어려워"));
+        assertFalse(fallback.contains("(1) 내 태도·정서"));
+        assertFalse(fallback.contains("(4) 확정 불가"));
     }
 
+
+
+    /**
+     * 태도 질문 SNAPSHOT은 근거 장면을 더 많이·고르게 샘플링해야 합니다.
+     */
+    @Test
+    void buildPersonMeaningSnapshot_stanceQuery_shouldSpreadRichEvidence() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildPersonMeaningSnapshot",
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                String.class
+        );
+        method.setAccessible(true);
+
+        final Object ragContext = buildTestRagContextWithManyTaggedResults("민수", 12);
+        final Object snapshot = method.invoke(
+                service,
+                ragContext,
+                "나는 민수님을 어떻게 생각하고 있니?"
+        );
+
+        final Method evidenceMethod = snapshot.getClass().getDeclaredMethod("evidenceSnippets");
+        @SuppressWarnings("unchecked")
+        final List<String> evidenceSnippets = (List<String>) evidenceMethod.invoke(snapshot);
+
+        assertEquals(12, evidenceSnippets.size());
+        assertTrue(evidenceSnippets.stream().anyMatch(snippet -> snippet.contains("장면0")));
+        assertTrue(evidenceSnippets.stream().anyMatch(snippet -> snippet.contains("장면11")));
+    }
+
+    /**
+     * 태도 질문 RULE_PRIMARY 근거 장면은 hybrid와 같이 최대 20건까지 실을 수 있어야 합니다.
+     */
+    @Test
+    void appendRulePrimaryEvidenceSection_stanceOptions_shouldIncludeUpToTwentySnippets() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Class<?> optionsClass = Class.forName(
+                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonMeaningSnapshotOptions"
+        );
+        final Method stanceRich = optionsClass.getDeclaredMethod("personStanceRich");
+        stanceRich.setAccessible(true);
+        final Object stanceOptions = stanceRich.invoke(null);
+
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "appendRulePrimaryEvidenceSection",
+                StringBuilder.class,
+                List.class,
+                optionsClass
+        );
+        method.setAccessible(true);
+
+        final StringBuilder sb = new StringBuilder();
+        method.invoke(
+                service,
+                sb,
+                List.of(
+                        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+                        "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"
+                ),
+                stanceOptions
+        );
+
+        final String out = sb.toString();
+        assertTrue(out.contains("근거 장면:"));
+        assertTrue(out.contains("T"));
+        assertFalse(out.contains(" | U"));
+    }
+
+
+
+    /**
+     * 풍부 신뢰 게이트: 기록 근거 없는 빈 조직 버킷 나열 태도 답변은 거부해야 합니다.
+     */
+    @Test
+    void isDegradedPersonStanceRichResponse_shouldRejectGenericBucket() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonStanceRichResponse",
+                String.class
+        );
+        method.setAccessible(true);
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                "민수님은 조직 내에서 중요한 역할을 하며 업무 협업에 기여하는 것으로 보입니다."
+        );
+
+        assertTrue(degraded);
+    }
+
+    /**
+     * 풍부 신뢰 게이트: 기록 근거가 담긴 긴 산문 태도 답변은 통과해야 합니다.
+     */
+    @Test
+    void isDegradedPersonStanceRichResponse_shouldAcceptGroundedProse() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "isDegradedPersonStanceRichResponse",
+                String.class
+        );
+        method.setAccessible(true);
+
+        final boolean degraded = (boolean) method.invoke(
+                service,
+                "네가 기록에 남긴 바로는, #조직역동 맥락에서 민수와 부딪힐 때 미묘한 기싸움을 반복해서 느낀 것 같아. "
+                        + "화면을 기웃거리는 장면을 여러 번 적어 두었고, 그때마다 경계심이 배어 있어."
+        );
+
+        assertFalse(degraded);
+    }
+
+    /**
+     * 풍부 신뢰 게이트 사유 코드: 빈 버킷은 person_stance_generic_bucket 로 표기해야 합니다.
+     */
+    @Test
+    void describePersonStanceRichGuardFailure_shouldReturnGenericBucketCode() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "describePersonStanceRichGuardFailure",
+                String.class
+        );
+        method.setAccessible(true);
+
+        final String code = (String) method.invoke(
+                service,
+                "민수님은 조직 내에서 중요한 역할을 하며 업무 협업에 기여하는 것으로 보이며 전략적 존재감이 있습니다."
+        );
+
+        assertEquals("person_stance_generic_bucket", code);
+    }
 
 }

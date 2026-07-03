@@ -14,7 +14,7 @@
 | `/journal` | — | redirect → `/journal/weekly` | JournalLayout | — |
 | `/journal/weekly` | `journal-weekly` | `JournalDayWeekly.vue` | Journal | ✓ |
 | `/journal/monthly` | `journal-monthly` | `JournalDayMonthly.vue` | Journal | ✓ |
-| `/journal/calendar` | `journal-calendar` | `JournalDayCalendar.vue` | Journal | ❌ placeholder |
+| `/journal/calendar` | `journal-calendar` | `JournalDayCalendar.vue` | Journal | ✓ FullCalendar 일자/일기/꿈+공휴일 |
 | `/journal/meta` | `journal-meta` | `JournalDayMeta.vue` | Journal | ✓ 메타 컨텍스트 메뉴·단일 차트 2시리즈 비교 |
 | `/journal/daily` | `journal-daily` | `JournalDayDaily.vue` | JournalDayDailyLayout | ✓ 새 창 전용 |
 | `/annual` | `annual-list` | `JournalAnnualList.vue` | AnnualLayout | ✓ |
@@ -102,7 +102,7 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 
 | 화면/기능 | 상태 | 비고 |
 |----------|------|------|
-| JournalCalendar | ❌ | `JournalDayViewToolbar` + 안내 텍스트만 |
+| JournalCalendar | ✓ | 저널 일자/일기/꿈 + 공휴일 이벤트, 상세 모달 연동 (고급 필터 collapse 는 백엔드 계약 부재로 미이식 — `journal/screen-spec.md` 참고) |
 | JournalMeta 그래프 | ✓ | 컨텍스트 메뉴(검색/그래프로 보기/메타 설정), 최대 2메타·헤더 × 제거, 연도 전체, 한 차트 2선 |
 | JournalAside — 고급 필터 아코디언 | ❌ | |
 | JournalAside — TODO 목록 표시·삭제 | ❌ | 등록 버튼만 있음 |

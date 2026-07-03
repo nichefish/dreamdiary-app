@@ -231,6 +231,29 @@ export interface TagCloudItem {
   textClass?: string;
 }
 
+/** 저널 달력(CAL) 이벤트 — 백엔드 BaseCalDto(JournalDayCalDto·JournalEntryCalDto·공휴일) 직렬화 형태 (FullCalendar 이벤트 입력) */
+export interface JournalCalEvent {
+  id: string | number;
+  title: string;
+  /** 이벤트 분기 키 (JOURNAL_DAY | JOURNAL_DIARY | JOURNAL_DREAM | 일정 코드) */
+  groupId: string;
+  start: string;
+  end?: string;
+  allDay?: boolean;
+  display?: string;
+  color?: string;
+  className?: string;
+  textColor?: string;
+  /** 아이콘 HTML (레거시 renderEventContent 계약) */
+  icon?: string;
+  imprtcYn?: string;
+  markdownContent?: string;
+  /** DIARY/DREAM 이벤트 클릭 시 열 일자 상세 ID */
+  journalDayId?: number;
+  contentType?: string;
+  [key: string]: unknown;
+}
+
 export type TagCloudSection = "day" | "diary" | "dream";
 
 /** 태그 클라우드 결과 — 일자/일기/꿈 태그 목록 */
@@ -261,6 +284,9 @@ export const useJournalStore = defineStore("journal", () => {
 
   /** 조회된 일자 목록 */
   const dayList = ref<JournalDayDto[]>([]);
+
+  /** 달력(CAL) 이벤트 목록 — dayList 와 응답 형태가 달라 별도 상태로 보관 */
+  const calEventList = ref<JournalCalEvent[]>([]);
 
   /** 로딩 상태 */
   const loading = ref<boolean>(false);
@@ -349,6 +375,11 @@ export const useJournalStore = defineStore("journal", () => {
         sort: params?.sort ?? sortOrder.value,
       };
       const res = await axios.get("/api/journal/days", { params: query });
+      if (resolvedViewType === "CAL") {
+        // CAL 은 FullCalendar 이벤트(BaseCalDto) 응답 — dayList 와 형태가 달라 별도 상태에 담고 정렬 반전도 하지 않는다.
+        calEventList.value = (res.data?.rsltList ?? []) as JournalCalEvent[];
+        return;
+      }
       // 변경: 백엔드 AjaxResponse.rsltList 필드명으로 수정 (기존: res.data?.list)
       // 레거시 동일: 백엔드는 항상 ASC 반환 → DESC 이면 프론트에서 reverse
       const rslt: JournalDayDto[] = res.data?.rsltList ?? [];
@@ -357,7 +388,11 @@ export const useJournalStore = defineStore("journal", () => {
       const vt = params?.viewType ?? viewType.value;
       console.error("[journal] fetchDays failed", { viewType: vt, weekStartDt: weekStartDt.value }, e);
       error.value = "저널 목록을 불러오지 못했습니다.";
-      dayList.value = [];
+      if ((params?.viewType ?? viewType.value) === "CAL") {
+        calEventList.value = [];
+      } else {
+        dayList.value = [];
+      }
     } finally {
       loading.value = false;
       void reinitMetronicAfterDom();
@@ -565,6 +600,7 @@ export const useJournalStore = defineStore("journal", () => {
     mnth,
     weekStartDt,
     dayList,
+    calEventList,
     loading,
     error,
     showDiaries,

@@ -954,3 +954,8 @@ $journal-paired-states: (
         padding-right: 1.25rem;
     }
 }
+
+/* 중요 표시 색상 (레거시 commons.css .text-magenta 동일 — 달력 중요 엔트리 표시에 사용) */
+.text-magenta {
+    color: #a4007f !important;
+}

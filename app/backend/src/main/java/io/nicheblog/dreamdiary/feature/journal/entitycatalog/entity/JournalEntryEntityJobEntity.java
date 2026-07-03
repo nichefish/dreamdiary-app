@@ -20,7 +20,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Queue row for asynchronous journal entity-ref and role sync.
@@ -69,10 +69,9 @@ public class JournalEntryEntityJobEntity
     private String lockedBy;
 
     /** Time when the queue row was last fully processed */
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "processed_at")
     @Comment("Time when the queue row was last fully processed")
-    private Date processedAt;
+    private LocalDateTime processedAt;
 
     /** Last worker error, if any */
     @Lob
