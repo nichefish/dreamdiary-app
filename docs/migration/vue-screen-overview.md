@@ -20,6 +20,7 @@
 | `/annual` | `annual-list` | `JournalAnnualList.vue` | AnnualLayout | ✓ |
 | `/annual/:yy` | `annual-detail` | `JournalAnnualDetail.vue` | AnnualLayout | ✓ |
 | `/thread` | `thread-list` | `JournalThreadList.vue` | ThreadLayout | ✓ |
+| `/thread/new` · `/thread/:id` · `/thread/:id/edit` | `thread-*` | `JournalThreadList.vue` | ThreadLayout | ✓ |
 | `/schedule` | `schedule-calendar` | `ScheduleCalendar.vue` | Default | ✓ |
 | `/board/:boardKey` | `board-post-list` | `BoardPostList.vue` | BoardPostLayout | ✓ |
 | `/my` | `user-my` | `UserMyPage.vue` | Default | ✓ |
@@ -87,12 +88,13 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | DREAMS 토글 | ✓ |
 | TAGCLOUD 토글 | ✓ |
 | 할일 등록 버튼 (`JournalTodoRegistModal`) | ✓ |
-| 태그 목록 버튼 (`JournalTagListModal`) | ✓ |
 | 어사이드 닫기 버튼 | ✓ |
-| CHAPTER CATEGORIES 멀티셀렉트 | ❌ MISSING |
-| 일기/꿈 키워드 필터 input (어사이드) | ❌ MISSING (툴바에만 있음) |
+| CHAPTER CATEGORIES 체크박스 (일기·노트 코드 그룹 병합) | ✓ |
+| DIARY/DREAM LIFECYCLE select 필터 | ✓ |
+| 일기/꿈 키워드 필터 input (어사이드) | ✓ |
+| 필터 초기화 버튼 | ✓ |
 | 고급 필터 아코디언 | ❌ MISSING |
-| TODO 목록 표시 + 삭제 | ❌ MISSING |
+| TODO 목록 표시 + 삭제 | ❌ MISSING (등록 버튼만 있음) |
 
 ---
 
@@ -102,11 +104,8 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 |----------|------|------|
 | JournalCalendar | ❌ | `JournalDayViewToolbar` + 안내 텍스트만 |
 | JournalMeta 그래프 | ✓ | 컨텍스트 메뉴(검색/그래프로 보기/메타 설정), 최대 2메타·헤더 × 제거, 연도 전체, 한 차트 2선 |
-| JournalAside — CHAPTER CATEGORIES | ❌ | store(`chapterCtgrCds`) 존재, UI 없음 |
-| JournalAside — 키워드 필터 input | ❌ | 툴바에만 있음 |
 | JournalAside — 고급 필터 아코디언 | ❌ | |
 | JournalAside — TODO 목록 표시·삭제 | ❌ | 등록 버튼만 있음 |
-| JournalEntrySearchPage — 결과 복사, TXT export | ❌ | `journal/component-spec.md` §23-4 |
 | 로그 사용자별 통계 (`/admin/log/stats-user`) | ⚠ | placeholder 포함 |
 
 ---
@@ -123,6 +122,7 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | `journalAnnual.ts` | 연간 결산 목록/상세 |
 | `journalThread.ts` | 스레드 목록/상세 |
 | `tagContextMenu.ts` | 태그 클릭 컨텍스트 메뉴 위치·상태 |
+| `metaContextMenu.ts` | 메타 클릭 컨텍스트 메뉴 위치·상태 |
 | `attachableModal.ts` | 댓글/이력/파일/태그 공통 모달 |
 | `boardPost.ts` | 게시판 목록/상세 |
 | `schedule.ts` | 일정 캘린더 |
@@ -137,4 +137,5 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | `userAdmin.ts` | 계정 관리 |
 | `logAdmin.ts` | 로그 관리 |
 | `chat.ts` | AI 채팅 (라우트 없음, `AppChat.vue`) |
+| `locale.ts` | i18n locale·메시지 카탈로그 (`t()`) |
 | `body.ts`, `config.ts`, `theme.ts` | 레이아웃 설정 |
