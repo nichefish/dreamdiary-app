@@ -17,7 +17,7 @@
 | 메뉴 관리 | `/admin/menu` | `MenuAdminPage.vue` | ✓ |
 | 계정 관리 | `/admin/users` | `UserAdminPage.vue` | ✓ |
 | 로그 관측 | `/admin/log` | `LogAdminPage.vue` | ✓ |
-| 사용자별 로그 통계 | `/admin/log/stats-user` | `LogAdminPage.vue` (route로 분기) | ⚠ placeholder |
+| 사용자별 로그 통계 | `/admin/log/stats-user` | `LogAdminPage.vue` (route로 분기) | ✓ |
 | 계정 신청 승인 관리 | `/user/signup/approval` | `UserSignupApprovalList.vue` | ✓ |
 
 ---
@@ -157,8 +157,8 @@
 - 본문 상단 목록/통계 전환 버튼 표시. 화면 설명은 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 운영 로그 목록/검색/상세 모달
 - `/admin/log` → 전체 로그 관측 뷰 (`isStatsView = false`)
-- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`, ⚠ placeholder)
-- API: `GET /api/logs`, `GET /api/logs/{id}`
+- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**(레거시 `log_stats_user_list` 기본 노출 동일). 통계 뷰 진입 시 조회
+- API: `GET /api/logs`, `GET /api/logs/{id}`, `GET /api/logs/stats-user` (`LogStatsUserQueryService` — 레거시 서비스를 현행 flat 패키지로 복원, 응답 `rsltObj = { userList, anonymousList }`)
 
 ---
 

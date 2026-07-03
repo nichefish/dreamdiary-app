@@ -421,11 +421,19 @@ async function openDetail(id: number) {
 }
 
 onMounted(async () => {
-  if (!isStatsView.value) await store.fetchLogs(0);
+  if (isStatsView.value) {
+    await store.fetchStatsUser();
+    return;
+  }
+  await store.fetchLogs(0);
 });
 
 watch(isStatsView, async (next) => {
-  if (!next && !store.rows.length) await store.fetchLogs(0);
+  if (next) {
+    await store.fetchStatsUser();
+    return;
+  }
+  if (!store.rows.length) await store.fetchLogs(0);
 });
 </script>
 

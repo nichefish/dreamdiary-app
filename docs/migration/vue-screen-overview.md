@@ -31,7 +31,7 @@
 | `/admin/menu` | `menu-admin` | `MenuAdminPage.vue` | Default | ✓ |
 | `/admin/users` | `user-admin` | `UserAdminPage.vue` | Default | ✓ |
 | `/admin/log` | `log-list` | `LogAdminPage.vue` | Default | ✓ |
-| `/admin/log/stats-user` | `log-stats-user` | `LogAdminPage.vue` | Default | ⚠ stats placeholder |
+| `/admin/log/stats-user` | `log-stats-user` | `LogAdminPage.vue` | Default | ✓ 사용자별/비로그인 통계 |
 | `/user/signup/approval` | `user-signup-approval` | `UserSignupApprovalList.vue` | Default | ✓ |
 | `/sign-in` | `sign-in` | `SignIn.vue` | Auth | ✓ |
 | `/user/signup` | `user-signup` | `UserSignupPage.vue` | Auth | ✓ |
@@ -106,7 +106,6 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | JournalMeta 그래프 | ✓ | 컨텍스트 메뉴(검색/그래프로 보기/메타 설정), 최대 2메타·헤더 × 제거, 연도 전체, 한 차트 2선 |
 | JournalAside — 고급 필터 아코디언 | ❌ | |
 | JournalAside — TODO 목록 표시·삭제 | ❌ | 등록 버튼만 있음 |
-| 로그 사용자별 통계 (`/admin/log/stats-user`) | ⚠ | placeholder 포함 |
 
 ---
 
