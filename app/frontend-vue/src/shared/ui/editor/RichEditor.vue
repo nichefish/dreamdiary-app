@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 /** TinyMCE 6 자체 호스팅 - 번들러(Vite)를 통해 직접 임포트 */
 import "tinymce/tinymce";
@@ -60,7 +60,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
   height: 540,
-  placeholder: "내용을 입력하세요.",
+  placeholder: undefined,
 });
 
 const emit = defineEmits<{
@@ -74,10 +74,11 @@ const imageFileInput = ref<HTMLInputElement | null>(null);
 /** 글접기/펼치기 섹션 카운터 (에디터 인스턴스별 독립) */
 let sectionCount = 0;
 
-/** TinyMCE 초기화 옵션 (기존 tinymce.ts basicOptions 이식) */
-const editorInit = {
+/** TinyMCE 초기화 옵션 (기존 tinymce.ts basicOptions 이식). placeholder 는 locale 카탈로그 기본값 사용. */
+const editorInit = computed(() => ({
   editor_encoding: "raw",
   height: props.height,
+  placeholder: props.placeholder ?? t("rich-editor.placeholder"),
   menubar: false,
   branding: false,
   statusbar: false,
@@ -164,7 +165,7 @@ const editorInit = {
       },
     });
   },
-};
+}));
 
 /**
  * 이미지 파일 선택 후 서버에 업로드하고 에디터에 img 태그를 삽입한다.

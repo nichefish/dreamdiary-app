@@ -432,7 +432,7 @@ export const useJournalStore = defineStore("journal", () => {
       metaList.value = res.data?.rsltList ?? [];
     } catch (e: unknown) {
       console.error("[journal] fetchMetas failed", e);
-      metaError.value = "메타 목록을 불러오지 못했습니다.";
+      metaError.value = useLocaleStore().t("journal.meta.list.load.failure");
     } finally {
       metaLoading.value = false;
     }

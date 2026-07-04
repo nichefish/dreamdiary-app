@@ -265,7 +265,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Modal } from "bootstrap";
 import axios from "axios";
@@ -278,10 +278,10 @@ import type { RouteLocationRaw } from "vue-router";
 const localeStore = useLocaleStore();
 const t = (key: string) => localeStore.t(key);
 
-const supportedLocales: { code: SupportedLocale; flag: string; label: string }[] = [
-  { code: "ko", flag: "🇰🇷", label: "한국어" },
-  { code: "en", flag: "🇺🇸", label: "English" },
-];
+const supportedLocales = computed(() => [
+  { code: "ko" as SupportedLocale, flag: "🇰🇷", label: t("locale.label.ko") },
+  { code: "en" as SupportedLocale, flag: "🇺🇸", label: t("locale.label.en") },
+]);
 
 /** 로그인 후 redirect query 를 안전한 Vue Router 경로로 정규화한다. (`//` 포함 시 기본 화면) */
 function resolvePostLoginRoute(redirect: string): RouteLocationRaw {

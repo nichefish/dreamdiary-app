@@ -26,7 +26,7 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 | 구분 | Vue 경로 | 레거시 매크로 대응 | 비고 |
 |------|----------|-------------------|------|
-| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. |
+| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. |
 | 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. |
 | 댓글 목록/등록 | `features/attachable/CommentListModal.vue` 등 | `list_comment`, `CommentList.modal` | `useAttachableModalStore.openCommentList` |
 | 파일 그룹 | `FileGroupListModal.vue`, `FileGroupDetail.vue`, `FileGroupSection.vue` | `list_file_group` | `openFileList`. 다운로드 레이블과 파일 크기 단위는 현재 locale의 클라이언트 카탈로그를 사용하며 다운로드 URL·클릭 흐름은 유지한다. |
@@ -40,11 +40,12 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 | 사이드바 로고 | `app/layouts/default/components/sidebar/SidebarLogo.vue` | 레거시 앱 로고 | 브랜드명은 locale과 무관하게 `DreamDiary`로 고정 표시한다. locale 변경은 브랜드 표기·홈 링크·DOM·CSS를 변경하지 않는다. |
 | Footer | `app/layouts/default/components/footer/Footer.vue` | 레거시 footer | `2024©` tooltip은 프로젝트 기간(`2024.03.20 ~ (진행중)`), 사이트 링크 tooltip은 작업인원(`nysnyari`)을 표시한다. 프로젝트 기간·진행 상태·작업인원·About 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. tooltip은 `v-tooltip`로 locale 변경 시 재생성하며 링크·DOM·배치는 유지한다. |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
+| AI 채팅 드로어 | `features/chat/AppChat.vue` | Metronic app-chat | 인증 후 전역 플로팅 버튼·드로어. `chat.*` 카탈로그로 셸 UI·RAG 메타 레이블·person-role·response-mode·guard 문구를 표시한다. locale 변경은 WebSocket·세션 목록·작성 중 메시지를 초기화하지 않는다. |
 | 앱 런타임 상태 | `shared/components/system/AppRuntimeStatus.vue` + `shared/utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
 | 오류 화면 | `app/pages/ErrorPage.vue` | legacy 오류 화면 | 오류 분류·제목·설명·메인 이동 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. URL query로 전달된 상세 메시지는 서버 원문을 그대로 표시하며 오류 유형·상태 코드·메인 이동 흐름은 유지한다. |
 | 앱 헤더 Navbar | `app/layouts/default/components/header/Header.vue`, `Navbar.vue` — 테마·사용자/관리자 모드·국기 버튼(🇰🇷/🇺🇸)·프로필·모바일 헤더/사이드바 메뉴 | — | `useLocaleStore.setLocale()` ko↔en 토글. 테마 전환 tooltip, 사용자/관리자 모드 선택지, 언어 전환 tooltip, 프로필 대체 텍스트, 모바일 헤더·사이드바 메뉴 tooltip은 현재 locale의 클라이언트 카탈로그를 사용하며 locale 변경은 테마·메뉴 모드·라우트·인증 상태를 변경하지 않는다. |
 | 사용자 계정 메뉴·사이드바 Footer | `app/layouts/default/components/menus/UserAccountMenu.vue`, `sidebar/SidebarFooter.vue` | — | 사용자 역할·내 정보·관리 홈·메뉴 관리·로그아웃·로그아웃 확인 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 기존 권한별 메뉴 노출, 로그아웃 API, 로그인 화면 이동 흐름은 유지한다. |
-| 언어 토글 (로그인) | `features/auth/SignIn.vue` — 로그인 패널 우상단 국기 버튼 | — | `localeStore.setLocale()` + `localeStore.t()` 카탈로그로 화면 텍스트 전환 |
+| 언어 토글 (로그인) | `features/auth/SignIn.vue` — 로그인 패널 우상단 국기 버튼 | — | `localeStore.setLocale()` + `localeStore.t()` 카탈로그로 화면 텍스트 전환. 언어 선택지 레이블은 `locale.label.ko` / `locale.label.en` |
 
 화면 위치/제목/설명 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title 또는 메뉴 설명을 별도로 렌더링하지 않고, 필요한 액션 버튼만 둔다.
 
@@ -66,9 +67,10 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 Vue SPA는 빌드가 성공했더라도 라우팅, 동적 import, 렌더링, 전역 Promise 예외가 발생하면 화면에 상태를 표시해야 한다.
 
-- 라우터 이동이 500ms 이상 이어지면 상단에 `화면 이동 중입니다.` 상태를 표시한다.
+- 라우터 이동이 500ms 이상 이어지면 상단 pending 배너에 `runtime.pending.navigation` 카탈로그 문구를 표시한다.
 - Vue 렌더 오류, `app.config.errorHandler`, `router.onError`, `window.error`, `unhandledrejection`은 `AppRuntimeStatus` 패널에 오류 출처와 메시지를 표시한다.
-- 오류 패널에는 `새로고침`과 `메인으로` 액션을 제공한다.
+- 오류 패널 제목·본문·액션(`runtime.action.reload`, `error.page.action.home`)은 현재 locale 카탈로그를 사용한다. 기본 오류 제목은 `runtime.error.default-title`, 라우터 이동 실패는 `runtime.error.navigation`, 인증 확인 실패는 `auth.verification.failure`.
+- `app.mount` 실패 등 Vue mount 이전 부트 오류는 `main.ts`가 `/i18n/{locale}.json`에서 `runtime.boot.failure.title`·`runtime.action.reload`를 조회해 표시한다. catalog fetch 실패 시 `dreamdiary_locale` 기준 최소 ko/en fallback을 사용한다.
 - 오류를 정상 화면처럼 숨기지 않는다. 콘솔에도 같은 오류를 남겨 개발자가 원인을 확인할 수 있어야 한다.
 
 적용 파일:

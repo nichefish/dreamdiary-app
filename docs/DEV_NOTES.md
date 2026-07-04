@@ -11,6 +11,12 @@ Agent shell·일부 CI에는 PATH `npm`이 없다. **Vue 빌드는 Gradle Node�
 | npm install | `./gradlew npmInstall` |
 | 기타 package.json 스크립트 | `./gradlew npm_run_<script>` (`type-check` → `npm_run_type_check`) |
 
+
+백엔드 테스트·배포 게이트 (`gradle/testconfig.gradle`, `Dockerfile`, 2026-07-05):
+- `ignoreFailures` 제거 — `./gradlew test` / `check` / `build` 는 테스트 실패 시 중단된다. (`bootJar` 는 `test` 비의존.)
+- JaCoCo 하한: LINE·INSTRUCTION 9% (측정 baseline ~10.5%, 회귀 차단용).
+- Docker 런타임: `eclipse-temurin:17-jre-jammy` — build.gradle Java 17 과 일치.
+
 인코딩 게이트: `python scripts/check_encoding.py` (`npm run check:encoding`과 동일).
 
 에이전트용 상세: `.cursor/rules/agent-build-toolchain.mdc`
