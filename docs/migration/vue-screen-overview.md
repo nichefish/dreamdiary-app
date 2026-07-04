@@ -87,14 +87,13 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | DIARIES 토글 | ✓ |
 | DREAMS 토글 | ✓ |
 | TAGCLOUD 토글 | ✓ |
-| 할일 등록 버튼 (`JournalTodoRegistModal`) | ✓ |
 | 어사이드 닫기 버튼 | ✓ |
 | CHAPTER CATEGORIES 체크박스 (일기·노트 코드 그룹 병합) | ✓ |
 | DIARY/DREAM LIFECYCLE select 필터 | ✓ |
 | 일기/꿈 키워드 필터 input (어사이드) | ✓ |
 | 필터 초기화 버튼 | ✓ |
-| 고급 필터 아코디언 | ❌ MISSING |
-| TODO 목록 표시 + 삭제 | ❌ MISSING (등록 버튼만 있음) |
+| TODO List 카드 (등록 + 목록·삭제, `JournalAsideTodoCard`) | ✓ |
+| 고급 필터 아코디언 | — 이식 대상 아님 (레거시가 빈 슬롯 placeholder — 실 필터 컨트롤 없음) |
 
 ---
 
@@ -104,8 +103,6 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 |----------|------|------|
 | JournalCalendar | ✓ | 저널 일자/일기/꿈 + 공휴일 이벤트, 상세 모달 연동 (고급 필터 collapse 는 백엔드 계약 부재로 미이식 — `journal/screen-spec.md` 참고) |
 | JournalMeta 그래프 | ✓ | 컨텍스트 메뉴(검색/그래프로 보기/메타 설정), 최대 2메타·헤더 × 제거, 연도 전체, 한 차트 2선 |
-| JournalAside — 고급 필터 아코디언 | ❌ | |
-| JournalAside — TODO 목록 표시·삭제 | ❌ | 등록 버튼만 있음 |
 
 ---
 

@@ -254,6 +254,12 @@ export interface JournalCalEvent {
   [key: string]: unknown;
 }
 
+/** 저널 할일 항목 — 백엔드 JournalTodoDto 직렬화 (aside TODO 카드 표시분) */
+export interface JournalTodoItem {
+  id: number;
+  title?: string;
+}
+
 export type TagCloudSection = "day" | "diary" | "dream";
 
 /** 태그 클라우드 결과 — 일자/일기/꿈 태그 목록 */
@@ -319,6 +325,20 @@ export const useJournalStore = defineStore("journal", () => {
   const metaError = ref<string | null>(null);
 
   /** 태그 클라우드 결과 */
+  /** aside TODO 카드 목록 (레거시 journal_todo yyMnthListAjax 등가 — 현재 년/월 기준) */
+  const todoList = ref<JournalTodoItem[]>([]);
+
+  /** aside TODO 목록 조회 — 등록/삭제 후에도 호출해 카드를 갱신한다. */
+  async function fetchTodos() {
+    try {
+      const res = await axios.get("/api/journal/todos", { params: { yy: yy.value, mnth: mnth.value } });
+      todoList.value = (res.data?.rsltList ?? []) as JournalTodoItem[];
+    } catch (e: unknown) {
+      console.error("[journal] fetchTodos failed", { yy: yy.value, mnth: mnth.value }, e);
+      todoList.value = [];
+    }
+  }
+
   const tagCloud = ref<JournalTagCloud>({ dayTagList: [], diaryTagList: [], dreamTagList: [] });
   /** 태그 클라우드 로딩 상태 */
   const tagCloudLoading = ref<boolean>(false);
@@ -631,5 +651,7 @@ export const useJournalStore = defineStore("journal", () => {
     tagCloud,
     tagCloudLoading,
     fetchTagCloud,
+    todoList,
+    fetchTodos,
   };
 });

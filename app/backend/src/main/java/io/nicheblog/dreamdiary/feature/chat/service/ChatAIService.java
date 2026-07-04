@@ -1298,7 +1298,10 @@ public class ChatAIService {
     /**
      * person SYNTHESIS hybrid 경로용 시스템 프롬프트를 만듭니다.
      *
-     * <p>전체 RAG 덤프 대신 {@link PersonMeaningSnapshot}만 전달합니다. 태도 질문은 4섹션 형식과 2인칭 비춤을 가드가 강제합니다.</p>
+     * <p>전체 RAG 덤프 대신 {@link PersonMeaningSnapshot}만 전달합니다. 태도 질문은 rich-trust 자유 산문을
+     * 안내하고 최소 게이트({@link #isDegradedPersonStanceRichResponse(String)})만 적용합니다
+     * (Option A 이전에는 4섹션 형식·2인칭 비춤을 가드가 강제했으나 수렴으로 완화됨).
+     * 등장(appearance) 질문은 현행대로 4섹션 형식을 프롬프트로 안내합니다.</p>
      */
     private String buildPersonSynthesisHybridSystemPrompt(final RagContext ragContext, final String queryText) {
         final StringBuilder sb = new StringBuilder();

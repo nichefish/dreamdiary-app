@@ -245,6 +245,7 @@ async function submit() {
       close();
       await swalAlert(res.data?.message ?? (isModify.value ? t("common.result.modified") : t("common.result.registered")));
       void refreshJournalDaysForRoute(journalStore, route);
+      void journalStore.fetchTodos();
     } else {
       void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
