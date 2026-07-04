@@ -12,7 +12,7 @@
 | 태그 클릭 컨텍스트 메뉴 | `tagContextMenu.ts` + `JournalTagContextMenu.vue` — 메뉴 액션과 태그 프로필 콘텐츠 유형 레이블은 현재 locale 카탈로그 사용 | ✓ |
 | 일자 카드 ⋯ 컨텍스트 메뉴 | `JournalDayCard.vue` — Metronic dropdown | ✓ |
 | 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
-| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴 | ✓코드 |
+| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴; 태그 입력 검색 — 컨트롤 행의 태그 입력(모달 내 datalist 미표시 대응: 인라인 typeahead 미리보기; 모달 오픈·포커스 시 `journalModalStore.dayTagCategoryMap`(SSOT)과 `/api/journal/day/tags` 를 병합해 최초 1회 로드)으로 기존 태그만 AND 필터에 추가(엔트리 검색과 동일 `findKnownTagName`·categoryMap 매칭); 카탈로그에 없는 이름은 Swal 대신 인라인 안내(모달 유지), 동명 태그(다중 카테고리)는 카테고리 선택 버튼으로 분기; 모달 닫힘 시 입력·힌트·카테고리 선택 상태 초기화(카탈로그 캐시는 유지) | ✓코드 |
 | 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/삭제 | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 버튼 | `JournalChapterItem.vue` — `copyChapter()`, 날짜(요일)·카테고리·엔트리 전체 텍스트 클립보드 복사 | ✓ |
@@ -34,6 +34,8 @@
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 클라이언트 차단 경고는 현재 locale 카탈로그 사용, 수정/삭제/이동 API 거부 시 서버 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. CSS `:has` + `:not(:has([data-resolved=\"N\"]))` 로 하위 엔트리 전체 resolved 여부를 집계해 접힘 외곽 inset 표시. 접힘 바: 완료 1px 초록·중요 2px 빨강·참조 4px 노랑(엔트리 `$journal-paired-states` 와 동일). 단독 우선 중요>참조>완료; 중요+완료·중요+참조·삼중 조합 다중선. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러 | ✓ |
+
+**일자 필터 모달 i18n**: 제목·결과 건수·연도/전체 연도·연월 구분선·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·모든 필터 제거 시 빈 결과·연도 변경 시 필터 유지 계약을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 
 ---
 
@@ -234,6 +236,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **트리거**: `JournalDayRegistModal` submit 성공 (등록 및 수정 공통)
 
+**저장 메시지 i18n**: 날짜 필수 검증·등록/수정 확인·성공/실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
+
 **동작**:
 1. `model.journalDate`를 `savedDate`로 캡처
 2. 모달 닫기
@@ -285,6 +289,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **월간/주간 재조회 렌더 계약**: 기존 `dayList`가 있는 상태에서 `fetchDays()`가 다시 실행될 때는 본문을 전체 로딩 스피너로 교체하지 않는다. 기존 목록 DOM을 유지해야 문서 높이가 순간적으로 줄어들지 않고, 저장 후 스크롤 위치가 브라우저에 의해 `0`으로 클램프되지 않는다.
 
+**엔트리 저장 메시지 i18n**: 등록·수정 확인과 성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용하고, 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. 검색 팝업의 `prepare-success` 작업은 성공 알림 전에 완료하고, 알림 확인 후 기존 `success` 이벤트 또는 상세·목록 재조회와 위치 복귀를 실행한다.
+
 **태그클라우드 갱신 범위 계약**: 저장 후 태그클라우드는 변경된 데이터 범위만 다시 조회한다. 저널 일자 저장은 `day`, `JOURNAL_DIARY` 엔트리 저장은 `diary`, `JOURNAL_DREAM` 엔트리 저장은 `dream` 섹션만 갱신한다. `JOURNAL_NOTE` 엔트리 저장과 저널 챕터 저장은 일자/일기/꿈 태그클라우드의 직접 변경이 아니므로 태그클라우드를 재조회하지 않는다.
 
 **엔트리 id SSOT**: `JournalEntryItem.vue` `:id="'journal-entry-' + entry.id"`, 검색 팝업은 `JournalEntrySearchPage.vue` 결과 article `:id="'journal-entry-search-' + entry.id"`.
@@ -334,16 +340,19 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **메뉴 구조**:
 - 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간·캘린더·메타 등 전용; route `journal-weekly` 에서는 `v-if` 로 메뉴 미표시)
 - 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
-- JournalDayDaily.vue 로드·oute.query.stdrdDt watch: uildDailyFetchParams(stdrdDt) → etchDays({ viewType: DAILY, stdrdDt, yy, mnth }) (@/utils/journalDayRefresh.ts)
-- 일간 팝업(journal-daily)에서 저장·삭제·상태 변경·이력 복원 후 목록 갱신: efreshJournalDaysForRoute(store, route, fallbackStdrdDt?) — 주간/월간과 동일하게 route name 분기, 일간은 URL·fallback 기준일 유지
+- JournalDayDaily.vue 로드·route.query.stdrdDt watch: buildDailyFetchParams(stdrdDt) → fetchDays({ viewType: DAILY, stdrdDt, yy, mnth }) (@/utils/journalDayRefresh.ts)
+- 일간 팝업(journal-daily)에서 저장·삭제·상태 변경·이력 복원 후 목록 갱신: refreshJournalDaysForRoute(store, route, fallbackStdrdDt?) — 주간/월간과 동일하게 route name 분기, 일간은 URL·fallback 기준일 유지
 - 날짜 이동(이전/다음)은 로컬 Date 생성자로 파싱 — `new Date(stdrdDt)`는 UTC로 파싱되어 Korea(UTC+9) 환경에서 날짜가 1일 밀리는 버그 발생
 - 중앙 날짜 표시: `<input type=date>` 클릭 시 브라우저 달력 피커 오픈, 선택 날짜로 `router.replace`하여 이동
+- 이전/다음 버튼·날짜 선택 tooltip·빈 상태와 목록 조회 실패 fallback은 현재 locale 카탈로그를 사용한다. locale 변경은 `stdrdDt` query와 일간 조회 조건을 변경하지 않는다.
 - 팝업 너비 1600px / 높이 1080px (`window.screen.availWidth/Height` 상한); left/top 제거하여 OS 기본 배치 사용
 - 수정 → `openReg()` (등록 모달 재활용, id 포함)
 - 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 접힘(COLLAPSED, `POST /api/states` 토글)
   - 삭제 → `DELETE /api/journal/day/{id}` → 성공 알림 OK 이후 `refreshJournalDaysForRoute` (일간 포함 route 분기)
 
 **드롭다운**: Metronic `data-kt-menu-trigger="click"`, `data-kt-menu-placement="bottom-end"`
+
+**액션 메시지 i18n**: 일자 삭제 확인·성공·실패와 꿈 섹션 클립보드 복사 성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 삭제 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route 기준 목록을 갱신하고 해당 일자 카드로 스크롤한다.
 
 ---
 
@@ -371,6 +380,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
   - 삭제 → `DELETE /api/journal/entry/{id}` → 성공 알림 OK 이후 현재 route 기준 목록 재조회 + `#journal-day-{stdrdDt}` 스크롤
 
 **상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤.
+
+**액션 메시지 i18n**: 클립보드 복사 성공·실패, 라이프사이클·상태 변경 실패, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, 상태 변경·삭제 성공 후 기존 현재 route 재조회와 `#journal-day-{stdrdDt}` 스크롤 순서를 유지한다. 검색 팝업에서는 재조회 중인 `journalStore.loading` 완료를 감지해 검색 결과를 다시 조회한다.
 
 **RESOLVED 자동 접힘**: `isCollapsed` computed에서 `localCollapsedOverride` 없고 `lifecycleKey === "RESOLVED"`이면 `true` 반환. 상태 서버 저장 없이 클라이언트에서 자동 접힘 처리.
 
@@ -440,7 +451,7 @@ function toggleEntry(): void {
                                          ← 빈 줄 구분 (엔트리 반복)
 ```
 
-요일은 `getWeekDayStr(stdrdDt)` 로 계산 (`journalDate.ts`).
+요일은 `getWeekDayStr(stdrdDt, t)` 로 계산하고 현재 locale의 공용 요일 카탈로그를 사용한다 (`journalDate.ts`). 한국어는 기존 한자 표기를 유지한다.
 
 클립보드 쓰기 성공·실패 알림은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
@@ -525,7 +536,15 @@ async function copyChapter(): Promise<void> {
 
 **TXT 내보내기**: `GET /api/journal/entries/export?type=...&sort=...&tagIds=...&searchKeywords=...`
 
-**전체 복사 포맷**: 레거시 `JournalEntrySearch.copy()` 동일 — 날짜가 바뀔 때만 `날짜(요일)` 헤더, `#순번\n본문`, 엔트리 간 빈 줄, `\r\n` 줄바꿈.
+**전체 복사 포맷**: 레거시 `JournalEntrySearch.copy()` 동일 — 날짜가 바뀔 때만 `날짜(요일)` 헤더, `#순번\n본문`, 엔트리 간 빈 줄, `\r\n` 줄바꿈. 요일은 현재 locale의 공용 요일 카탈로그를 사용한다.
+
+**액션 메시지 i18n**: 검색 결과/엔트리 상세 조회 실패, 태그 선택·검색 조건 검증, 복사 대상 없음과 복사 성공/실패 알림은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색·복사 실행과 클립보드/TXT 본문 포맷을 변경하지 않는다.
+
+---
+
+### 연간 결산 CRUD 메시지와 재조회
+
+`journalAnnual.ts`의 결산 목록 조회 실패, 전체 결산 갱신·결산/리뷰 등록·수정 결과 fallback과 리뷰 삭제 확인·결과 fallback은 현재 locale의 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. 성공 알림 후 전체 결산 갱신은 목록·총계를, 결산 저장은 목록을, 리뷰 저장·삭제는 해당 연도 상세를 기존 순서대로 재조회한다.
 
 ---
 
@@ -551,11 +570,15 @@ const isPopup = computed(() => ["journal-entry-search", "journal-daily"].include
 
 저널 등록·수정·삭제·상태 변경 요청이 401 이외의 HTTP 오류로 실패하면 `swalRequestError()`가 오류를 기록하고 응답 JSON의 `message`를 우선 표시한다. 서버 메시지가 없을 때만 `요청 처리 중 오류가 발생했습니다.`를 표시하며, 401의 `AuthExpiredError`는 전역 안내와 중복되지 않도록 별도 alert를 띄우지 않는다.
 
-검색·목록·메타 조회 실패는 실제 빈 결과와 구분한다. 직전 성공 데이터와 결과 건수를 보존하면서 오류를 기록·표시하고, 일자/엔트리/스레드의 상세·수정용 조회가 실패하면 불완전한 모델로 모달을 열지 않는다.
+검색·목록·메타 조회 실패는 실제 빈 결과와 구분한다. 직전 성공 데이터와 결과 건수를 보존하면서 오류를 기록·표시하고, 일자/엔트리/스레드의 상세·수정용 조회가 실패하면 불완전한 모델로 모달을 열지 않는다. 일자 수정·상세, 꿈 등록, 엔트리 수정 정보 조회 실패는 서버 메시지를 우선 표시하고 없으면 현재 locale의 fallback을 사용한다.
 
 저널 스레드 등록·수정 모달의 확인창과 저장 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 등록·수정 성공 또는 실패 응답에 서버 `message`가 있으면 서버 메시지를 우선 표시하며, 수정·상세 조회 실패 시 모달을 닫고 현재 locale의 조회 실패 안내를 표시한다. 삭제 확인·성공·실패 fallback도 현재 locale을 사용하고 서버 `message`를 우선 표시하며, 성공 알림 확인 후 첫 페이지 목록을 다시 조회한다.
 
 저널 할일 등록·수정 모달의 제목 필수 검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API의 서버 `message`가 있으면 우선 표시하고, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route의 저널 목록을 갱신한다.
+
+저널 해석 등록·수정 모달의 확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 해석 제목은 선택값으로 유지하고, 저장 API의 서버 `message`가 있으면 우선 표시하며, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route의 저널 목록을 갱신한다.
+
+저널 해석 아이템의 라이프사이클·상태 변경 실패, 클립보드 복사 성공·실패, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답의 `message`를 우선 표시하고, 상태 변경 성공은 현재 일자를 재조회한 뒤 스크롤하며, 삭제 성공은 성공 알림 확인 후 현재 route 기준 목록을 갱신한다.
 
 ```typescript
 const confirmed = await confirmSessionExpired(route.name);

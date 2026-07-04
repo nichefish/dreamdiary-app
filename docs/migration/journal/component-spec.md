@@ -111,6 +111,8 @@ function toggleSort() {
 
 **정렬 아이콘**: `DESC` → `bi-sort-numeric-down-alt`, `ASC` → `bi-sort-numeric-up-alt`
 
+**표시 문구 i18n**: 필터 패널 닫기와 정렬 변경 tooltip은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 패널 표시 상태와 정렬값을 변경하지 않는다.
+
 ---
 
 ### 20. `JournalAsideYyMnthSection` (어사이드 연월·주간·핀포인트)
@@ -153,6 +155,8 @@ HTML 요소:
 - 돌아가기 버튼: `<i class="bi bi-reply-all">` — turnback() 호출; pinnedYy null이면 disabled
 
 **요일 버튼 색상 수정**: `isActive`는 `dateStr === selectedDt` (선택된 날짜만 파란색). `hasDay=false`이면 `:disabled` → CSS가 회색 처리. 기존 `is-active: day.hasDay` 버그 수정됨.
+
+**표시 문구 i18n**: 월 숫자 뒤 단위, 날짜 선택·Pinpoint 저장·복귀 tooltip과 월~일 요일 축약명은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 연월·선택 일자·Pinpoint 저장값·route query를 변경하지 않는다.
 
 ---
 
@@ -225,6 +229,8 @@ HTML 요소:
 - `OPEN`은 라이프사이클 값이 없거나 `OPEN`인 엔트리를 포함한다.
 - 일기/꿈 각각 독립적으로 적용하며, 기존 키워드 필터와 AND 조건으로 동작한다.
 
+**표시 문구 i18n**: 필터 영역의 고정 영문 제목·토글·섹션명, 로딩·카테고리 조회 실패, 라이프사이클 선택지, 일기·꿈 키워드 placeholder/적용 tooltip, 필터 초기화 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 토글·카테고리·라이프사이클·키워드 필터값과 조회 호출을 변경하지 않는다.
+
 **블록 D — 고급 필터 아코디언 (MISSING)**:
 ```html
 <div class="accordion accordion-flush" id="journal_day_filter_accordion">
@@ -250,7 +256,9 @@ HTML 요소:
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideTodoCardApp.ts`
 
-**현재 Vue 동등**: ❌ MISSING — `openTodoReg` 버튼만 있고 TODO 카드 전체가 없음
+**현재 Vue 동등**: ✓ `JournalAsideTodoCard.vue` — 카드 헤더·월별 목록 조회·삭제·등록 모달 호출 구현
+
+현재 구현된 카드 제목과 할일 등록 버튼 문구는 현재 locale의 클라이언트 카탈로그를 사용하며, locale 변경은 목록·모달에 전달하는 대상 년월을 변경하지 않는다.
 
 **API**:
 | 작업 | 엔드포인트 | 응답 |
@@ -360,9 +368,15 @@ interface TodoRow {
 
 **저장 후 갱신**: `JournalDayRegistModal.vue` 는 저장 성공 시 모달을 닫고 성공 알림을 표시한 뒤, 사용자가 OK를 누르면 현재 route 기준으로 목록을 갱신한다. `/journal/weekly` 에서는 `setViewType("WEEKLY")` 후 `fetchDays({ viewType: "WEEKLY" })`, `/journal/monthly` 에서는 `setViewType("LIST")` 후 `fetchDays({ viewType: "LIST" })` 를 호출해 주간 등록 완료 후 월간 목록으로 돌아가지 않게 한다. 일자 태그 변경이 일자 태그클라우드에 반영되도록 OK 이후 `fetchTagCloud({ sections: ["day"] })`도 함께 호출한다 (2026-05-19 수정, 2026-06-02 OK 이후 갱신, 2026-06-03 부분 갱신).
 
+**수정 정보 조회 실패**: 수정용 일자 정보 조회가 실패하면 불완전한 폼을 열지 않고, 서버 메시지를 우선 표시하며 없으면 현재 locale의 fallback을 사용한다.
+
 **중복 등록 정책**: 신규 등록 시 같은 사용자에게 같은 `journalDate`의 활성 저널 일자가 이미 있으면 등록을 실패 처리한다. 과거처럼 기존 일자를 수정으로 전환하지 않는다 (2026-05-20 수정).
 
 **닫기 정책**: 등록/수정 중 백드롭(모달 바깥)을 클릭하거나 Escape를 눌러도 모달을 닫지 않는다. 사용자가 입력 중인 날짜/태그/메타 값이 의도치 않은 닫힘으로 클리어되지 않도록 `Bootstrap Modal`을 `backdrop: "static", keyboard: false`로 생성한다 (2026-05-21 수정).
+
+**표시 문구 i18n**: 모달 제목·안전 닫기 안내·날짜·날짜 정확도 선택지·날씨·일기 완료 여부·태그·메타 안내·저장·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 입력값과 저장 payload를 변경하지 않는다.
+
+**저장 메시지 i18n**: 날짜 필수 검증·등록/수정 확인·성공/실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, 성공 알림 확인 후 기존 현재 route 재조회·태그클라우드 갱신·일자 스크롤 순서를 유지한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -408,6 +422,10 @@ interface TodoRow {
 
 **챕터 선택 옵션**: 엔트리 신규/수정 모달은 `journalDayId`가 있으면 `GET /api/journal/day/{journalDayId}`를 추가 조회해 해당 일자의 챕터 목록을 `chapterList` 옵션으로 채운다. 엔트리 상세 DTO에는 `chapterList`가 없을 수 있으므로, 수정 모달은 상세 응답의 `entry.chapterList`에 의존하지 않는다. `JOURNAL_DREAM`→`DREAM` 챕터만, `JOURNAL_NOTE`→`NOTE` 챕터만 후보로 쓴다. **NOTE 챕터 엔트리의 `contentType`은 `JOURNAL_DIARY`**이므로, 후보 `chapterType`은 `contentType`이 아니라 `journalChapterId`가 가리키는 챕터(또는 신규 시 caller 가 넘긴 챕터)의 `chapterType`으로 분기한다 — 노트끼리·일기끼리만 이동한다. NOTE 챕터 신규 등록(`JournalChapterItem.openEntryNew`)도 `JOURNAL_DIARY`를 전송한다. 현재 선택값이 없거나 후보에 없으면 첫 번째 후보를 선택한다(이때 `console.warn`).
 
+**등록·수정 정보 조회 실패**: 꿈 등록 정보 또는 엔트리 수정 정보 조회가 실패하면 불완전한 폼을 닫고, 서버 메시지를 우선 표시하며 없으면 현재 locale의 fallback을 사용한다.
+
+**i18n**: 일기·꿈·노트·기본 엔트리별 모달 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 카테고리·제목·순서·꿈꾼 placeholder, 저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. locale 변경은 표시 문구만 바꾸며 챕터 선택·태그·꿈꾼 값과 저장 payload는 유지한다.
+
 **현재 Vue 동등**: ✓ 구현 완료
 
 ---
@@ -419,6 +437,18 @@ interface TodoRow {
 **데이터·동작**: `useJournalModalStore.todoRegistModel`의 대상 년월·카테고리·제목·순서·본문·태그를 편집한다. 신규는 `POST /api/journal/todos`, 수정은 `POST /api/journal/todo/{id}`로 multipart form data를 전송한다. 성공 시 모달을 닫고 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route 기준 저널 목록을 갱신한다.
 
 **i18n**: 모달 제목·대상 년월·필드·placeholder·안내·저장·닫기·제목 필수 검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
+### 22-6. `JournalInterpretationRegistModal` 등록/수정 폼
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/interpretation/modals/JournalInterpretationRegistModal.vue`
+
+**데이터·동작**: `useJournalModalStore.interpretationRegistModel`의 참조 대상·날짜·카테고리·제목·순서·본문을 편집한다. 제목은 선택값이다. 신규는 `POST /api/journal/interpretations`, 수정은 `POST /api/journal/interpretation/{id}`로 multipart form data를 전송한다. 성공 시 모달을 닫고 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route 기준 저널 목록을 갱신한다.
+
+**i18n**: 모달 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -442,6 +472,10 @@ interface TodoRow {
 
 **컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수. 「주간 뷰로 이동」은 route `journal-weekly` 에서 미표시(월간·캘린더·메타 등 전용).
 
+**i18n**: 기준 날짜 요일·날짜 정확도 배지·챕터 필터 안내, 챕터·꿈 등록, 메뉴·저널 일자 헤더, 주간 뷰 이동·일자 뷰 새 창, 수정·상태·중요·접힘·삭제, 메타 tooltip, 숨겨진 카테고리·꿈 숨김 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 route·팝업·상태·필터 데이터와 액션 호출을 변경하지 않는다.
+
+**액션 결과 i18n**: 일자 삭제 확인·성공·실패와 꿈 섹션 클립보드 복사 성공·실패 fallback 및 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용한다. 삭제 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하고, 성공 알림 확인 후 현재 route 기준 목록 재조회와 일자 스크롤을 유지한다.
+
 **일간 뷰 새 창 열기**: ✓ 구현 완료 — 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` 새 창 강제 (features 지정)
 
 ---
@@ -463,7 +497,7 @@ interface TodoRow {
 **챕터 등록 모달 (`JournalChapterRegistModal.vue`)**: 제목(`title`)은 필수 항목이 아님.
 - 레거시에서 제목 없이 등록 가능 — `title` 빈 값 허용.
 - `submit()` 에서 title 공백 검증 제거.
-- 제목·필드·선택지·버튼·확인·결과 fallback 문구는 현재 locale의 클라이언트 카탈로그를 사용하고, 등록·수정·일자 이동 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
+- 기준 날짜 요일과 제목·필드·선택지·버튼·확인·결과 fallback 문구는 현재 locale의 클라이언트 카탈로그를 사용하고, 등록·수정·일자 이동 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
 **소유권 표시·쓰기 제한** (`isCreatedBy` — 백엔드 `BaseAuditRegDto` 직렬화):
 - `isCreatedBy === false`: 헤더에 `타인 작성` 배지, 수정·삭제·엔트리 등록·⋯ 메뉴·서버 접힘 변경 버튼 숨김 (읽기·클라이언트 접힘·복사·TXT는 유지)
@@ -476,7 +510,7 @@ interface TodoRow {
 - ⋯ 컨텍스트 메뉴: 수정(`openChapterModify`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제
 - 접힘 화살표 버튼 (`toggle-chapter-btn`): `toggleChapter()` — 클라이언트만 접힘(`localCollapsedOverride`), 서버 POST 없음
 - 챕터 유형·소유권 배지·타입별 등록 버튼·액션 툴팁·메뉴·빈 상태 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
-- 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과는 현재 locale의 클라이언트 카탈로그를 사용하며, 삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
+- 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과와 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용하며, 삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
 ---
 
@@ -492,6 +526,10 @@ interface TodoRow {
 - data 속성: `:data-imprtc`, `:data-refrnc`, `:data-resolved`, `:data-else-dream`, `:data-id` — journal.scss CSS 선택자 연동. 타인 꿈(`hasDreamerName` → `data-else-dream="Y"`)은 RESOLVED 초록 1줄 대신 **회색 이중선**(slate 0/2px) 기본; RESOLVED·중요·참조는 그 뒤 4px·6px·8px inset 에 기존 색으로 추가(`$journal-else-dream-paired-states`)
 
 **우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/라이프사이클/상태/삭제)
+
+**i18n**: 펼침/접힘, 보류 badge·접힌 상태 문구, 꿈 상태 배지, 액션 툴팁, 일기·꿈 메뉴 헤더, 수정·해석 등록·이력·관련 글 추가, 라이프사이클·상태·삭제 메뉴와 각 옵션 라벨은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 엔트리 상태·태그·댓글·관련글 데이터와 액션 호출을 변경하지 않는다.
+
+**액션 결과 i18n**: 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 라이프사이클·상태 변경 실패, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하고, 변경·삭제 성공 후 현재 route 기준 목록 재조회와 일자 스크롤을 유지한다.
 
 **엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + `htmlToPlainText(content)` (TinyMCE HTML → 평문, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음 — 레거시 `copy()` 동일)
 
@@ -513,6 +551,20 @@ interface TodoRow {
 | 라이프사이클 설정 | `PUT /api/lifecycles { id, contentType, lifecycleKey, cacheContext }` |
 | 상태 토글 | `POST /api/states { id, contentType, stateKey, cacheContext }` |
 | 삭제 | `DELETE /api/journal/entry/{id}` |
+
+---
+
+### 23-2a. `JournalInterpretationItem` (저널 해석 아이템)
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/interpretation/components/JournalInterpretationItem.vue`
+
+**데이터·표시**: `InterpretationItem`의 순번·제목·본문·댓글·라이프사이클·상태를 표시한다. RESOLVED 또는 COLLAPSED 상태는 접힌 렌더를 사용하며, `localCollapsedOverride`는 서버 상태를 변경하지 않고 현재 화면에서만 펼침/접힘을 전환한다.
+
+**액션 UI**: 댓글 등록·복사 버튼과 수정·이력·라이프사이클·상태·삭제 컨텍스트 메뉴를 제공한다. 펼침/접힘·접힌 상태·툴팁·메뉴·라이프사이클 및 상태 라벨은 현재 locale의 클라이언트 카탈로그를 사용한다.
+
+**액션 결과 i18n**: 라이프사이클·상태 변경 실패, 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, 삭제 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route 기준 저널 목록을 갱신한다.
+
+**현재 Vue 동등**: ✓ 구현 완료
 
 ---
 
@@ -582,6 +634,18 @@ interface TodoRow {
 
 ---
 
+### 23-3c. `JournalAnnualDetail`·Annual Aside (연간 결산 상세·필터)
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/annual/JournalAnnualDetail.vue`, `components/JournalAnnualDetailAside.vue`, `components/JournalAnnualListAside.vue`
+
+**데이터·동작**: 결산 상세·리뷰·태그클라우드·중요/참조 토글과 상세/목록 필터를 `useJournalAnnualStore` 상태 및 기존 액션에 연결한다. locale 변경은 선택 연도·활성 탭·태그클라우드·필터값·토글 상태·API 호출을 변경하지 않는다.
+
+**i18n**: 상세의 SUMMARY·REVIEWS·로딩·태그 메뉴 tooltip·IMPORTANT·REFERENCE와 두 aside의 FILTER·TAGCLOUD·ENTRY FILTER·SUMMARY FILTER·키워드 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. 영어는 기존 대문자 표기를 유지한다.
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
 ### 23-4. `JournalEntrySearchPage` (저널 엔트리 검색 새 창)
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue`
@@ -609,6 +673,10 @@ interface TodoRow {
 - 검색 결과에 포함된 저널 해석의 수정 액션은 같은 창에서 `JournalInterpretationRegistModal`을 열어야 한다. 검색 팝업이 이 모달을 직접 마운트하며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회로 제목/본문/순번을 채운 뒤 모달을 열어야 한다. 저장 성공 후 모달 내부의 `journalStore.fetchDays()` 완료 신호를 `JournalEntrySearchPage`가 감지해 현재 검색 목록을 재조회한다.
 - `JournalInterpretationRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 해석 등록/수정이 가능해야 한다.
 - 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
+
+**표시 문구 i18n**: 컨트롤 바·고급 필터·유형/키워드/태그 입력·카테고리 선택·로딩/빈 결과·일자 새 창 tooltip과 결과 건수·연월 구분선·요일은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
+
+**액션 메시지 i18n**: 검색 결과/엔트리 상세 조회 실패, 태그 선택 검증, 검색 조건 검증, 복사 대상 없음과 복사 성공/실패 알림 및 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용한다. 클립보드와 TXT 본문은 기존 레거시 출력 포맷을 유지한다.
 
 **남은 legacy 동등성 확인 대상**:
 - 고급 검색 영역의 태그 직접 입력 UX
@@ -661,9 +729,13 @@ interface TodoRow {
 
 **Aside 스크롤 동작**: `journal.scss`에서 `.journal-layout-vue__aside`에 `position: sticky`, `top: 1rem`, `max-height: calc(100vh - 2rem)`, `overflow-y: auto`를 적용한다. 본문 스크롤 중 필터 패널이 viewport 안에서 따라오며, 패널 내용이 화면보다 길면 aside 내부만 스크롤된다. 연간 결산 aside(`.journal-annual-layout-vue__aside`)도 같은 규칙을 공유한다.
 
+**Aside 열기 i18n**: aside가 숨겨졌을 때 표시되는 필터 패널 열기 버튼 tooltip은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 aside 표시 상태를 변경하지 않는다.
+
 **마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`
 
-`JournalDayDetailModal.vue`의 제목·날짜 정밀도 배지·빈 상태·조회 실패·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
+`JournalDayMetaModal.vue`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
+
+`JournalDayDetailModal.vue`의 제목·기준 날짜 요일·날짜 정밀도 배지·빈 상태·조회 실패·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -679,4 +751,4 @@ interface TodoRow {
 | `JournalAsideFilterHeader` | `JournalDayAsideFilterHeaderApp.ts` | ✓ `JournalAside.vue` (`#journal_aside_header` + 정렬 토글) | 완료 |
 | `JournalAsideYyMnthSection` | `JournalDayAsideYyMnthApp.ts` | ✓ `JournalAside.vue` (연/월/TODAY/Week/Pinpoint 모두 구현) | 완료 |
 | `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ⚠ 부분 (토글·챕터·라이프사이클·키워드 구현; 고급필터 아코디언 없음) | 높음 |
-| `JournalAsideTodoCard` | `JournalDayAsideTodoCardApp.ts` | ❌ MISSING (할일 등록 버튼만; 목록 API 미연동) | 높음 |
+| `JournalAsideTodoCard` | `JournalDayAsideTodoCardApp.ts` | ✓ `JournalAsideTodoCard.vue` (카드 헤더·목록 API·삭제·등록 모달 호출) | 완료 |

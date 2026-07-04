@@ -87,8 +87,53 @@
                   <!--end::태그 칩-->
                 </div>
                 <!--end::선택 필터 칩 목록-->
+
+                <!--begin::태그 입력 검색 (엔트리 검색과 동일 패턴: datalist 자동완성 + 동명 태그 카테고리 선택)-->
+                <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                  <span class="fw-bold fs-7 text-gray-700">{{ t("common.tag") }}</span>
+                  <input
+                    v-model="tagInput"
+                    type="text"
+                    class="form-control form-control-sm w-200px"
+                    :placeholder="t('journal.entry.search.tag.placeholder')"
+                    maxlength="100"
+                    list="journal_day_meta_tag_options"
+                    autocomplete="off"
+                    @focus="ensureTagCatalog()"
+                    @keydown.enter.prevent="addTagFromInput"
+                  />
+                  <datalist id="journal_day_meta_tag_options">
+                    <option
+                      v-for="tagName in tagNameOptions"
+                      :key="tagName"
+                      :value="tagName"
+                    />
+                  </datalist>
+                  <button type="button" class="btn btn-sm btn-light-primary flex-shrink-0" @click="addTagFromInput">
+                    + {{ t("common.add") }}
+                  </button>
+                </div>
+                <!--end::태그 입력 검색-->
               </div>
               <!--end::컨트롤 행-->
+
+              <!--begin::동명 태그 카테고리 선택 행 (엔트리 검색과 동일 UX)-->
+              <div v-if="tagCategoryChoices.length > 0" class="d-flex align-items-center gap-2 mb-4">
+                <span class="text-muted fs-8">{{ t("journal.entry.search.category.select") }}</span>
+                <button
+                  v-for="ctgr in tagCategoryChoices"
+                  :key="ctgr"
+                  type="button"
+                  class="btn btn-xs btn-light-primary"
+                  @click="selectTagCategory(ctgr)"
+                >
+                  {{ ctgr || t("journal.entry.search.category.none") }}
+                </button>
+                <button type="button" class="btn btn-xs btn-light-secondary" @click="cancelTagCategoryChoice">
+                  {{ t("common.cancel") }}
+                </button>
+              </div>
+              <!--end::동명 태그 카테고리 선택 행-->
 
               <!--begin::일자 목록-->
               <template
@@ -220,6 +265,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
+import axios from "axios";
+import { swalAlert } from "@/shared/utils/swal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import type { JournalDayDto, MetaContentItem, TagItem } from "@/features/journal/stores/journal";
 
@@ -313,6 +360,9 @@ onMounted(() => {
       selectedMetas.value = [];
       selectedTags.value = [];
       initializedSeedKey.value = null;
+      // 태그 입력 검색 상태도 함께 초기화한다. (카탈로그 캐시는 유지)
+      tagInput.value = "";
+      cancelTagCategoryChoice();
     });
   }
 });
@@ -363,6 +413,98 @@ function addTag(tagId: string, tagName: string, ctgr?: string): void {
 /** 선택 태그 필터에서 항목을 제거한다. */
 function removeTag(tagId: string): void {
   selectedTags.value = selectedTags.value.filter((t) => t.tagId !== tagId);
+}
+
+// ---- 태그 입력 검색 (JournalEntrySearchPage 의 태그 입력 패턴 이식) ----
+
+/** 태그 카탈로그 항목 (/api/journal/day/tag/group-list 응답 평탄화) */
+interface DayTagCatalogItem {
+  tagId: string;
+  name: string;
+  ctgr: string;
+}
+
+const tagInput = ref("");
+const tagCatalog = ref<DayTagCatalogItem[]>([]);
+const tagCatalogLoaded = ref(false);
+const pendingTagName = ref("");
+const tagCategoryChoices = ref<string[]>([]);
+
+/** datalist 자동완성용 태그명 목록 (중복 제거·정렬) */
+const tagNameOptions = computed(() => {
+  const names = new Set(tagCatalog.value.map((item) => item.name));
+  return [...names].sort((a, b) => a.localeCompare(b));
+});
+
+/** 일자 태그 카탈로그를 최초 1회 lazy 로드한다. 실패해도 기존 칩 클릭 추가 흐름은 유지된다. */
+async function ensureTagCatalog(): Promise<void> {
+  if (tagCatalogLoaded.value) return;
+  try {
+    const res = await axios.get("/api/journal/day/tag/group-list");
+    const rawMap = (res.data?.rsltMap ?? {}) as Record<string, unknown>;
+    const catalog: DayTagCatalogItem[] = [];
+    for (const [category, rawList] of Object.entries(rawMap)) {
+      if (!Array.isArray(rawList)) continue;
+      for (const raw of rawList) {
+        const item = raw as Record<string, unknown>;
+        const tagId = String(item.id ?? "");
+        const name = String(item.name ?? "").trim();
+        if (!tagId || !name) continue;
+        catalog.push({ tagId, name, ctgr: String(item.ctgr ?? category ?? "") });
+      }
+    }
+    tagCatalog.value = catalog;
+    tagCatalogLoaded.value = true;
+  } catch (e: unknown) {
+    console.warn("[JournalDayMetaModal] tag catalog load failed.", e);
+  }
+}
+
+/**
+ * 입력한 태그명을 카탈로그에서 찾아 AND 필터에 추가한다.
+ * 카탈로그에 없으면 안내 알림, 동명 태그가 여러 카테고리에 있으면 카테고리 선택으로 분기한다.
+ */
+async function addTagFromInput(): Promise<void> {
+  await ensureTagCatalog();
+  const normalized = tagInput.value.replace(/^#/, "").trim();
+  if (!normalized) return;
+  const matches = tagCatalog.value.filter(
+    (item) => item.name === normalized || item.name.toLowerCase() === normalized.toLowerCase()
+  );
+  if (matches.length === 0) {
+    void swalAlert(t("journal.entry.search.tag.select-existing"));
+    return;
+  }
+  const categories = [...new Set(matches.map((m) => m.ctgr))];
+  if (categories.length === 1) {
+    addTagByNameAndCategory(matches[0].name, categories[0]);
+    return;
+  }
+  pendingTagName.value = matches[0].name;
+  tagCategoryChoices.value = categories;
+}
+
+/** 동명 태그 카테고리 선택 버튼 클릭 처리 */
+function selectTagCategory(ctgr: string): void {
+  addTagByNameAndCategory(pendingTagName.value, ctgr);
+}
+
+/** 동명 태그 카테고리 선택을 취소한다. */
+function cancelTagCategoryChoice(): void {
+  pendingTagName.value = "";
+  tagCategoryChoices.value = [];
+}
+
+/** 태그명+카테고리로 카탈로그에서 tagId 를 찾아 기존 addTag 필터 흐름에 넘긴다. */
+function addTagByNameAndCategory(tagName: string, ctgr: string): void {
+  const matched = tagCatalog.value.find((item) => item.name === tagName && item.ctgr === ctgr);
+  if (!matched) {
+    void swalAlert(t("journal.entry.search.tag.not-found"));
+    return;
+  }
+  tagInput.value = "";
+  cancelTagCategoryChoice();
+  addTag(matched.tagId, matched.name, matched.ctgr || undefined);
 }
 
 /** 월 구분 헤더를 표시할 경계인지 확인한다. */
