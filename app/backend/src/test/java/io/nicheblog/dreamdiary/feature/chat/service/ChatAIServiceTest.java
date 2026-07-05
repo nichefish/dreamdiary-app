@@ -5,9 +5,15 @@ import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbe
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.RagSearchResult;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntityFocusService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.type.JournalEntityRoleType;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +27,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * ChatAIService 프롬프트 계약 테스트.
  */
 class ChatAIServiceTest {
+
+    @BeforeAll
+    static void bindMessageSourceForChatCatalog() throws Exception {
+        final ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames("classpath:messages/messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        final Field field = MessageUtils.class.getDeclaredField("messageSource");
+        field.setAccessible(true);
+        field.set(null, messageSource);
+        LocaleContextHolder.setLocale(Locale.KOREAN);
+    }
 
     /**
      * 통섭형 인물 질문은 역할 추정 억제 지시를 포함하고, 제거된 스캐폴드 블록을 참조하지 않아야 합니다.
@@ -629,7 +646,7 @@ class ChatAIServiceTest {
             final JournalEntryEmbeddingEntity entity = JournalEntryEmbeddingEntity.builder()
                     .journalEntryId(101 + i)
                     .contentKind("DIARY")
-                    .embeddingText("본문 장면" + i + ": " + target + "님과 회의했다")
+                    .embeddingText("본문: 장면" + i + " " + target + "님과 회의했다")
                     .embeddingPayloadJson(
                             "{\"tags\":\"[엔서클]#김민수 [엔서클]#조직역동\","
                                     + "\"chapterCategory\":\"DYNAMICS\"}"

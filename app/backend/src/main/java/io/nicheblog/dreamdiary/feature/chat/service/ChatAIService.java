@@ -20,6 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import java.util.Locale;
+
 import java.time.LocalDate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -123,28 +126,6 @@ public class ChatAIService {
             "대해", "관련", "전체", "맥락",
             "대화", "느낌", "등장하", "있니"
     );
-    /** 세션별 프롬프트보다 우선 적용할 응답 안전 규칙 */
-    private static final String RESPONSE_GUARD_PROMPT = String.join("\n",
-            "",
-            "## 응답 규칙",
-            "반드시 한국어로만 답변한다. 사용자가 명시적으로 요청하지 않는 한 중국어, 영어, 일본어 문장을 섞지 않는다.",
-            "사용자의 질문이 한국어이면 자연스러운 한국어 구어체로 답한다.",
-            "참고할 저널 기록은 관련성이 충분할 때만 사용한다. 관련이 약하면 억지로 연결하지 않는다.",
-            "사용자가 인물, 장소, 태그, 고유명사를 물으면 외부 상식보다 먼저 참고 저널 기록 안의 맥락으로 이해한다.",
-            "인물의 직업, 역할, 관계 지위는 참고 기록에 직접 드러난 표현이 있을 때만 말한다. 근거가 없으면 추정하지 말고 확인되지 않는다고 밝힌다.",
-            "인물/상징의 의미를 묻는 질문에는 최소한 등장 장면, 반복되는 관계 축, 정서적 기능, 확실하지 않은 점을 구분해 답한다.",
-            "기록에서 확인되지 않는 사람, 사건, 사실은 아는 척하지 말고 확인되는 정보가 없다고 말한 뒤 필요한 맥락을 짧게 물어본다.",
-            "참고 기록과 질문이 맞지 않더라도 '이전 기록과 무관합니다' 같은 시스템 내부 판단을 길게 설명하지 않는다."
-    );
-    /** LLM이 언어 규칙을 어긴 경우 1회 재시도할 때 추가하는 지시문 */
-    private static final String LANGUAGE_RETRY_PROMPT = String.join("\n",
-            "",
-            "## 중요",
-            "직전 응답에는 허용되지 않는 중국어/한자 문장이 섞였습니다.",
-            "이번 응답은 반드시 한글 중심의 한국어 문장으로만 다시 작성하세요.",
-            "중국어 원문, 한자 이름 추정, 병음, 번체/간체 문자를 쓰지 마세요."
-    );
-
     /** person-meaning 답변에 내부 스캐폴드/메타 필드명이 새어 나오면 degraded로 본다. */
     private static final String[] PERSON_MEANING_SCAFFOLD_LEAK_MARKERS = {
             "role_axes_ko", "roleaxesko", "repeated_tags", "PERSON_MEANING_SCAFFOLD",
@@ -163,6 +144,28 @@ public class ChatAIService {
 
     /** 세션별 응답 취소 플래그 */
     private final Map<Integer, AtomicBoolean> cancelFlags = new ConcurrentHashMap<>();
+
+    /** LocaleContextHolder 기준 영어 UI 여부. Accept-Language en 과 axios 헤더에 대응한다. */
+    private boolean isEnglishLocale() {
+        final Locale locale = LocaleContextHolder.getLocale();
+        return locale != null && locale.getLanguage().startsWith("en");
+    }
+
+    /** chat.ai.* 카탈로그 메시지를 현재 locale 로 조회한다. */
+    private String chatMsg(final String key, final Object... args) {
+        return MessageUtils.getMessage(key, args);
+    }
+
+    /** 세션별 프롬프트보다 우선 적용할 응답 안전 규칙 (locale 카탈로그). */
+    private String responseGuardPrompt() {
+        return chatMsg("chat.ai.guard.response-rules");
+    }
+
+    /** LLM 이 언어 규칙을 어긴 경우 1회 재시도할 때 추가하는 지시문 (locale 카탈로그). */
+    private String languageRetryPrompt() {
+        return chatMsg("chat.ai.guard.language-retry");
+    }
+
 
     /**
      * 사용자 메시지를 저장한 뒤 최근 대화 맥락을 포함해 AI 응답을 생성하고 세션 구독자에게 전송한다.
@@ -242,7 +245,7 @@ public class ChatAIService {
                     );
             if (containsDisallowedHanScript(rawResponse)) {
                 log.warn("AI response language guard retry. sessionId={}", sessionId);
-                rawResponse = ollamaClient.chat(systemPrompt + LANGUAGE_RETRY_PROMPT, contextMessages);
+                rawResponse = ollamaClient.chat(systemPrompt + languageRetryPrompt(), contextMessages);
             }
 
             if (isCancelled(sessionId)) {
@@ -432,7 +435,7 @@ public class ChatAIService {
         final StringBuilder sb = new StringBuilder();
         sb.append("RAG_INTENT: SYNTHESIS\n");
         sb.append("PERSON_MEANING_TAG_ONLY: true\n");
-        sb.append("해당 인물 태그가 붙은 저널 기록이 없습니다. 본문에 이름만 등장한 기록은 person-meaning 해석 재료로 사용하지 않습니다.\n\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.tag-only-empty")).append("\n\n");
         // PERSON_FOCUS 블록 부착은 제거됨(convergence): 이 컨텍스트는 결과 0건이라 상위에서 merged
         // 검색으로 폴백하며 폐기되고, personFocus가 살아 있는 경로는 Path C로 가서 text를 소비하지 않는다.
         return sb.toString().trim();
@@ -450,12 +453,10 @@ public class ChatAIService {
             final RagContext ragContext,
             final String queryText
     ) {
-        final String guardedPrompt = StringUtils.defaultString(basePrompt) + RESPONSE_GUARD_PROMPT;
+        final String guardedPrompt = StringUtils.defaultString(basePrompt) + responseGuardPrompt();
         if (ragContext == null || StringUtils.isBlank(ragContext.text())) return guardedPrompt;
         return guardedPrompt
-                + "\n\n## 참고할 저널 기록\n"
-                + "아래는 현재 질문과 관련성이 충분하다고 검색된 나의 저널 기록입니다.\n"
-                + "질문 속 인물/키워드가 아래 기록에 등장하면, 외부 인물이 아니라 나의 Dreamdiary 기록 속 맥락으로 해석하세요.\n"
+                + chatMsg("chat.ai.prompt.rag.journal-block")
                 + buildIntentPrompt(ragContext.intent(), queryText)
                 + "\n\n"
                 + ragContext.text();
@@ -674,9 +675,9 @@ public class ChatAIService {
         final StringBuilder sb = new StringBuilder();
         sb.append("RAG_INTENT: ").append(intent.name()).append('\n');
         if (isPersonAttitudeQuery(queryText)) {
-            sb.append("아래 기록은 네가 이 인물에 대해 적어 둔 정서·패턴 재료입니다. 사건 줄거리가 아니라 반복 축·연결 맥락·기록 유형으로 내 태도를 통합해 비춰 주세요.\n\n");
+            sb.append(chatMsg("chat.ai.prompt.rag.synthesis.stance-intro")).append("\n\n");
         } else {
-            sb.append("아래 기록 묶음은 통섭을 위한 재료입니다. 단일 기록만 보지 말고 반복, 변화, 연결을 함께 보세요.\n\n");
+            sb.append(chatMsg("chat.ai.prompt.rag.synthesis.general-intro")).append("\n\n");
         }
         // PERSON_FOCUS·PERSON_MEANING_SCAFFOLD 블록은 제거됨(convergence): personFocus가 해결된
         // 질문은 항상 Path C(SNAPSHOT 프롬프트)로 가서 이 contextText를 소비하지 않고, 이 텍스트를
@@ -749,18 +750,19 @@ public class ChatAIService {
 
         if (tagSummary.totalTagCountMap().isEmpty()) return;
 
-        sb.append("## 태그 요약\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.tag-summary.header"));
         if (personFocus != null) {
-            sb.append("아래 태그는 ")
-                    .append(resolvePersonFocusTarget(personFocus))
-                    .append(" 관련 기록에서만 집계한 person 축 태그입니다.\n");
+            sb.append(chatMsg(
+                    "chat.ai.prompt.rag.tag-summary.person-focus-intro",
+                    resolvePersonFocusTarget(personFocus)
+            ));
         }
-        sb.append("태그는 사용자가 의도적으로 붙인 주제 축입니다. 본문보다 강한 해석 신호로 우선 참고하세요.\n");
-        appendTagCountLine(sb, "전체 반복 태그", tagSummary.totalTagCountMap());
-        appendTagCountLine(sb, "꿈 기록 태그", tagSummary.dreamTagCountMap());
-        appendTagCountLine(sb, "일기 기록 태그", tagSummary.diaryTagCountMap());
-        appendTagCountLine(sb, "노트 기록 태그", tagSummary.noteTagCountMap());
-        appendTagPairLine(sb, "연결 태그", tagSummary.tagPairCountMap());
+        sb.append(chatMsg("chat.ai.prompt.rag.tag-summary.guide"));
+        appendTagCountLine(sb, chatMsg("chat.ai.prompt.rag.tag-summary.label.total"), tagSummary.totalTagCountMap());
+        appendTagCountLine(sb, chatMsg("chat.ai.prompt.rag.tag-summary.label.dream"), tagSummary.dreamTagCountMap());
+        appendTagCountLine(sb, chatMsg("chat.ai.prompt.rag.tag-summary.label.diary"), tagSummary.diaryTagCountMap());
+        appendTagCountLine(sb, chatMsg("chat.ai.prompt.rag.tag-summary.label.note"), tagSummary.noteTagCountMap());
+        appendTagPairLine(sb, chatMsg("chat.ai.prompt.rag.tag-summary.label.pair"), tagSummary.tagPairCountMap());
         sb.append('\n');
     }
 
@@ -1244,7 +1246,7 @@ public class ChatAIService {
         String rawResponse = ollamaClient.chat(systemPrompt, hybridContext);
         if (containsDisallowedHanScript(rawResponse)) {
             log.warn("AI person synthesis hybrid language guard retry. sessionId={}", sessionId);
-            rawResponse = ollamaClient.chat(systemPrompt + LANGUAGE_RETRY_PROMPT, hybridContext);
+            rawResponse = ollamaClient.chat(systemPrompt + languageRetryPrompt(), hybridContext);
         }
 
         String strippedResponse = stripInternalRecordCitations(stripMarkdown(rawResponse));
@@ -1307,30 +1309,30 @@ public class ChatAIService {
      */
     private String buildPersonSynthesisHybridSystemPrompt(final RagContext ragContext, final String queryText) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(RESPONSE_GUARD_PROMPT);
-        sb.append("\n\n## PERSON_SYNTHESIS_HYBRID\n");
-        sb.append("아래 SNAPSHOT만 근거로 답하세요. 스냅샷에 없는 성격·조직 역할·사건은 추측하지 마세요.\n");
-        sb.append("내부 필드명(role_axes_ko, repeated_tags 등)이나 [1] 같은 인덱스 인용은 금지입니다.\n");
-        sb.append("태그는 SNAPSHOT에 나온 #형태만 인용하세요.\n");
-        sb.append("최근 대화 맥락이 함께 오면 follow-up 보조용으로만 참고하고, SNAPSHOT 밖 사실은 쓰지 마세요.\n");
+        sb.append(responseGuardPrompt());
+        sb.append(chatMsg("chat.ai.prompt.rag.hybrid.header"));
+        sb.append(chatMsg("chat.ai.prompt.rag.hybrid.rule.snapshot-only"));
+        sb.append(chatMsg("chat.ai.prompt.rag.hybrid.rule.no-internal-fields"));
+        sb.append(chatMsg("chat.ai.prompt.rag.hybrid.rule.tag-hash-only"));
+        sb.append(chatMsg("chat.ai.prompt.rag.hybrid.rule.context-followup"));
 
         if (isPersonAttitudeQuery(queryText)) {
-            sb.append("질문은 사용자 자신의 태도입니다. 첫 문장은 '네가 기록에 남긴 바로는'으로 시작하세요.\n");
-            sb.append("SNAPSHOT의 근거 장면을 최대한 많이 읽고, 네가 그 인물을 실제로 어떻게 느끼고 판단하는지 '네가', '내 태도', '내 마음' 중심으로 솔직하게 정리하세요.\n");
-            sb.append("형식은 자유입니다. 번호 매긴 섹션을 억지로 만들지 말고, 기록에서 반복되는 결·긴장·감정 흐름을 자연스러운 산문으로 엮으세요.\n");
-            sb.append("기록에 실제로 드러난 것만 근거로 삼으세요. 기록에 없는 직업·관계·지위·사실은 단정하지 말고, 확실치 않으면 '기록만으로는 확실치 않다'고 밝히세요.\n");
-            sb.append("네 기록에 이미 네 해석·메모가 있으면 무시하지 말고 이어받아 정리하세요.\n");
-            sb.append("길이를 아끼지 말고, 근거 장면에서 드러난 구체적 정황을 충분히 인용하며 깊게 쓰세요.\n");
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.stance.opening"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.stance.evidence"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.stance.format-free"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.stance.ground-only"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.stance.continue-interpretation"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.stance.length"));
         } else if (isPersonAppearanceQuery(queryText)) {
-            sb.append("질문은 내 대화/기록 속 인물의 등장 방식입니다.\n");
-            sb.append("답변 형식: (1) 등장 느낌·톤 (2) 반복 맥락 (3) 함께 묶인 축 (4) 확정 불가 — 네 섹션.\n");
-            sb.append("금지: 인용 나열, 친근하다·적극적이다 같은 성격 단정, 추론하자면 일반화.\n");
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.appearance.question"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.appearance.format"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.appearance.forbidden"));
         } else {
-            sb.append("질문은 기록 속 인물/상징의 의미 통섭입니다.\n");
-            sb.append("등장 맥락, 반복 축, 정서적 기능, 확정 불가를 구분해 짧게 답하세요.\n");
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.meaning.question"));
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.meaning.guide"));
         }
 
-        sb.append("\n## SNAPSHOT\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.header"));
         appendPersonSynthesisSnapshotBlock(sb, ragContext, queryText);
         return sb.toString().trim();
     }
@@ -1349,42 +1351,52 @@ public class ChatAIService {
         final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext, queryText);
         final String target = resolvePersonFocusTarget(personFocus);
 
-        sb.append("대상: ").append(StringUtils.defaultString(target)).append('\n');
+        sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.target"))
+                .append(": ")
+                .append(StringUtils.defaultString(target))
+                .append('\n');
 
         if (!snapshot.repeatedTagCountMap().isEmpty()) {
-            sb.append("반복 인물 태그: ")
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.repeated-tags"))
+                    .append(": ")
                     .append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 8))
                     .append('\n');
         }
         if (!snapshot.linkedContextTagCountMap().isEmpty()) {
-            sb.append("연결 맥락: ")
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.linked-context"))
+                    .append(": ")
                     .append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 8))
                     .append('\n');
         }
         if (!snapshot.chapterCategoryCountMap().isEmpty()) {
-            sb.append("챕터 분류: ")
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.chapter-category"))
+                    .append(": ")
                     .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()))
                     .append('\n');
         }
         if (!snapshot.roleAxesKo().isEmpty()) {
-            sb.append("역할 축: ").append(String.join(", ", snapshot.roleAxesKo())).append('\n');
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.role-axes"))
+                    .append(": ")
+                    .append(String.join(", ", snapshot.roleAxesKo()))
+                    .append('\n');
         }
         if (!snapshot.contentKindCountMap().isEmpty()) {
-            sb.append("기록 유형: ")
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.content-kind"))
+                    .append(": ")
                     .append(formatContentKindSpread(snapshot.contentKindCountMap()))
                     .append('\n');
         }
         if (StringUtils.isNotBlank(snapshot.firstDate()) || StringUtils.isNotBlank(snapshot.lastDate())) {
-            sb.append("기간: ")
-                    .append(StringUtils.defaultIfBlank(snapshot.firstDate(), "?"))
-                    .append(" ~ ")
-                    .append(StringUtils.defaultIfBlank(snapshot.lastDate(), "?"))
-                    .append('\n');
+            sb.append(chatMsg(
+                    "chat.ai.prompt.rag.hybrid.snapshot.label.period",
+                    StringUtils.defaultIfBlank(snapshot.firstDate(), "?"),
+                    StringUtils.defaultIfBlank(snapshot.lastDate(), "?")
+            ));
         }
         if (!snapshot.evidenceSnippets().isEmpty()) {
             final String evidenceLabel = isPersonAttitudeQuery(queryText)
-                    ? "근거 장면"
-                    : "근거 장면(짧게)";
+                    ? chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.evidence")
+                    : chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.evidence-short");
             sb.append(evidenceLabel).append(": ")
                     .append(String.join(" | ", snapshot.evidenceSnippets()))
                     .append('\n');
@@ -1420,7 +1432,10 @@ public class ChatAIService {
             );
         }
         if (StringUtils.isNotBlank(interpretiveSeed)) {
-            sb.append("해석 시드(참고만, 그대로 복사 금지): ").append(interpretiveSeed).append('\n');
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.interpretive-seed"))
+                    .append(": ")
+                    .append(interpretiveSeed)
+                    .append('\n');
         }
     }
     /**
@@ -1541,17 +1556,17 @@ public class ChatAIService {
         final RagTimelineSummary timelineSummary = buildRagTimelineSummary(results);
         if (timelineSummary.sourceCount() <= 0) return;
 
-        sb.append("## 시간/유형 흐름\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.timeline.header"));
         if (StringUtils.isNotBlank(timelineSummary.firstDate()) || StringUtils.isNotBlank(timelineSummary.lastDate())) {
-            sb.append("기간: ")
-                    .append(StringUtils.defaultIfBlank(timelineSummary.firstDate(), "?"))
-                    .append(" ~ ")
-                    .append(StringUtils.defaultIfBlank(timelineSummary.lastDate(), "?"))
-                    .append('\n');
+            sb.append(chatMsg(
+                    "chat.ai.prompt.rag.timeline.period",
+                    StringUtils.defaultIfBlank(timelineSummary.firstDate(), "?"),
+                    StringUtils.defaultIfBlank(timelineSummary.lastDate(), "?")
+            ));
         }
-        appendTagCountLine(sb, "기록 유형", timelineSummary.contentKindCountMap());
-        appendTagCountLine(sb, "월별 밀도", timelineSummary.monthCountMap());
-        sb.append("시간축은 주제가 어느 시기에 응집되거나 옮겨가는지 보는 보조 해석 축입니다.\n\n");
+        appendTagCountLine(sb, chatMsg("chat.ai.prompt.rag.timeline.label.content-kind"), timelineSummary.contentKindCountMap());
+        appendTagCountLine(sb, chatMsg("chat.ai.prompt.rag.timeline.label.month-density"), timelineSummary.monthCountMap());
+        sb.append(chatMsg("chat.ai.prompt.rag.timeline.guide"));
     }
 
     /**
@@ -1634,52 +1649,23 @@ public class ChatAIService {
         // 인물) 케이스뿐이다. Path C hybrid 프롬프트와 같은 rich-trust 계약(자유 산문·2인칭 비춤·반환각만
         // 금지)을 적용하며, 예전 4개 항목 스캐폴드 골격·조언/톤 금지 레짐은 재도입하지 않는다.
         if (intent == RagIntent.SYNTHESIS && isPersonAttitudeQuery(queryText)) {
-            return String.join("\n",
-                    "이 질문은 내가 특정 인물을 어떻게 느끼고/생각하는지 묻는 태도·자기인식 질문입니다.",
-                    "첫 문장은 '네가 기록에 남긴 바로는'으로 시작하고, 답은 2인칭(네가·내 태도·내 마음)으로 기록에 드러난 나의 정서·거리감·반복 패턴을 비춰 주세요.",
-                    "형식은 자유입니다. 번호 매긴 섹션을 억지로 만들지 말고 자연스러운 산문으로 엮으세요.",
-                    "기록에 실제로 드러난 것만 근거로 삼으세요. 기록에 없는 직업·관계·지위·사실은 단정하지 말고, 확실치 않으면 '기록만으로는 확실치 않다'고 밝히세요.",
-                    "아래 기록에 이 인물에 대한 내 정서·태도 단서가 없으면 없다고 솔직하게 말하고, 어떤 맥락의 기록을 봐야 할지 짧게 확인 질문을 덧붙이세요.",
-                    "[1], [2] 같은 기록 번호 대신 날짜나 장면 표현으로 인용하세요."
-            );
+            return chatMsg("chat.ai.prompt.intent.stance");
         }
         // PERSON_FOCUS·PERSON_MEANING_SCAFFOLD 블록 참조는 제거됨(convergence): personFocus가 해결된
         // 질문은 Path C(SNAPSHOT 프롬프트)로 가므로, 이 분기(레거시 일반 경로)에서는 블록이 존재할 수 없다.
         if (intent == RagIntent.SYNTHESIS && isPersonAppearanceQuery(queryText) && isPersonMeaningQuery(queryText)) {
-            return String.join("\n",
-                    "이 질문은 내 대화/기록 속 인물이 어떤 느낌·톤·역할로 등장하는지 묻는 통섭형 질문입니다.",
-                    "다음 항목 순서로 답하세요: 반복 축, 역할/기능, 기록 유형, 근거 장면, 확정 불가.",
-                    "등장 방식·느낌 = 인용 나열·대사 모음이 아니라 반복 축·연결 맥락·역할 축·기록 유형을 연결한 해석입니다.",
-                    "금지: 성격 단정(친근하다·자연스럽다 등), '추론하자면' 식 일반화, 태그 문자열 원문 나열, [엔서클] 같은 메타 접두.",
-                    "기록에 직접 나온 태그 축·역할·장면 단어만 근거로 삼고, 근거 없는 외부 인물 이미지로 빈칸을 채우지 마세요.",
-                    "단정하지 말고 '기록상으로는', '반복해서 보이는 건'처럼 근거의 한계를 드러내세요."
-            );
+            return chatMsg("chat.ai.prompt.intent.appearance-meaning");
         }
         if (intent == RagIntent.SYNTHESIS) {
-            return String.join("\n",
-                    "이 질문은 통섭형 질문입니다.",
-                    "금지: '업무 협업', '조직 관계', '사내 문화', '전략적 고민'처럼 태그·기록 인용 없는 빈 주제 분류.",
-                    "의미는 등장 장면 나열이 아니라 반복 축·역할·기능·기록 유형 차이를 연결한 해석입니다.",
-                    "내부 필드명(role_axes_ko, repeated_tags 등)이나 섹션 키를 답변 문장에 그대로 쓰지 마세요.",
-                    "답변은 기록에 확인되는 범위 안에서 다음 관점으로 엮으세요: 반복 축, 역할/기능, 기록 유형 차이, 근거 장면, 확정 불가.",
-                    "특히 인물의 의미를 묻는 경우, 그 사람이 실제 직장 상사/동료/연인/가족인지 같은 현실 관계 지위는 기록에 직접 나온 표현이 있을 때만 말하세요.",
-                    "기록에 직접 나온 장면 단어와 태그 축을 근거로 삼고, 근거 없는 일반론이나 외부 인물 이미지로 빈칸을 채우지 마세요.",
-                    "단정하지 말고 '기록상으로는', '반복해서 보이는 건'처럼 근거의 한계를 드러내세요.",
-                    "기록 조각을 단순 나열하지 말고, 사용자가 자기 흐름을 이해할 수 있게 하나의 해석으로 정리하세요."
-            );
+            return chatMsg("chat.ai.prompt.intent.synthesis");
         }
         if (intent == RagIntent.SUMMARY) {
-            return "이 질문은 요약형 질문입니다. 기록 묶음에서 핵심 사건, 반복 주제, 눈에 띄는 변화를 간결하게 정리하세요.";
+            return chatMsg("chat.ai.prompt.intent.summary");
         }
         if (intent == RagIntent.LOOKUP && isPersonLookupQuery(queryText)) {
-            return String.join("\n",
-                    "이 질문은 내 기록 속 특정 인물에 대한 질문입니다.",
-                    "인물의 직장·조직·관계 지위는 기록에 직접 나온 표현이 있을 때만 말하세요. 근거 없는 일반론(조직 내 중요 인물, 업무 협업 등)은 쓰지 마세요.",
-                    "[1], [2] 같은 기록 번호 대신 날짜나 장면 표현으로 인용하세요.",
-                    "기록에 적힌 범위 안에서만 정리하고, 부족하면 짧게 확인 질문을 덧붙이세요."
-            );
+            return chatMsg("chat.ai.prompt.intent.lookup-person");
         }
-        return "답변은 기록에 적힌 범위 안에서만 정리하고, 부족한 부분은 짧게 확인 질문을 덧붙이세요.";
+        return chatMsg("chat.ai.prompt.intent.default");
     }
 
     private boolean isPersonLookupQuery(final String queryText) {
@@ -1880,11 +1866,30 @@ public class ChatAIService {
      */
     private boolean containsDisallowedHanScript(final String text) {
         if (StringUtils.isBlank(text)) return false;
+        if (isEnglishLocale()) {
+            return containsExcessiveHangulForEnglish(text) || containsDisallowedHanScriptCount(text, 2);
+        }
+        return containsDisallowedHanScriptCount(text, 2);
+    }
+
+    private boolean containsDisallowedHanScriptCount(final String text, final int threshold) {
         int count = 0;
         for (int i = 0; i < text.length(); i++) {
             if (Character.UnicodeScript.of(text.charAt(i)) == Character.UnicodeScript.HAN) {
                 count++;
-                if (count >= 2) return true;
+                if (count >= threshold) return true;
+            }
+        }
+        return false;
+    }
+
+    /** 영어 locale 에서 한국어 본문이 과도하게 섞였는지 확인한다. */
+    private boolean containsExcessiveHangulForEnglish(final String text) {
+        int hangul = 0;
+        for (int i = 0; i < text.length(); i++) {
+            if (Character.UnicodeScript.of(text.charAt(i)) == Character.UnicodeScript.HANGUL) {
+                hangul++;
+                if (hangul >= 12) return true;
             }
         }
         return false;
@@ -2038,22 +2043,21 @@ public class ChatAIService {
         if (StringUtils.isBlank(guardDetail)) {
             return;
         }
-        sb.append("거부 사유 코드: ").append(guardDetail).append('\n');
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.guard-detail-label", guardDetail));
         switch (guardDetail) {
             case "person_stance_too_short" -> sb.append(
-                    "직전 답이 너무 짧았습니다. 근거 장면을 더 읽고 네 태도·마음을 충분히 길게 풀어 쓰세요.\n");
+                    chatMsg("chat.ai.prompt.rag.retry.hint.person-stance-too-short"));
             case "person_stance_scaffold_leak" -> sb.append(
-                    "직전 답에 내부 필드명·스캐폴드 문구가 새어 나왔습니다. 그런 메타 표현 없이 자연스러운 산문으로만 쓰세요.\n");
+                    chatMsg("chat.ai.prompt.rag.retry.hint.person-stance-scaffold-leak"));
             case "person_stance_generic_bucket" -> sb.append(
-                    "직전 답이 기록 근거 없이 조직·업무 일반론만 나열했습니다. SNAPSHOT의 실제 태그·근거 장면을 인용해 다시 쓰세요.\n");
+                    chatMsg("chat.ai.prompt.rag.retry.hint.person-stance-generic-bucket"));
             case "person_meaning_hollow" -> sb.append(
-                    "직전 답은 기록 근거·해석이 비어 있었습니다. 태그·연결 맥락·책터·기록 유형 중 하나 이상을 인용하세요.\n");
+                    chatMsg("chat.ai.prompt.rag.retry.hint.person-meaning-hollow"));
             case "language_guard" -> sb.append(
-                    "직전 답은 한국어 전용 규칙을 어겼습니다. 한국어만 쓰세요.\n");
+                    chatMsg("chat.ai.prompt.rag.retry.hint.language-guard"));
             case "empty_response" -> sb.append(
-                    "직전 답이 비어 있었습니다. SNAPSHOT만 근거로 다시 작성하세요.\n");
-            default -> sb.append(
-                    "직전 답은 가드 기준을 통과하지 못했습니다. 위 규칙을 지키고 다시 작성하세요.\n");
+                    chatMsg("chat.ai.prompt.rag.retry.hint.empty-response"));
+            default -> sb.append(chatMsg("chat.ai.prompt.rag.retry.hint.default"));
         }
     }
 
@@ -2069,25 +2073,37 @@ public class ChatAIService {
             return buildPersonStanceRetryPrompt(ragContext, queryText, guardDetail);
         }
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n\n## PERSON_MEANING_RETRY\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.meaning.header"));
         appendPersonGuardRetryHint(sb, guardDetail);
-        sb.append("직전 답은 내 기록 태그/맥락을 인용하지 않아 거부되었습니다. 다시 작성하세요.\n");
-        sb.append("반드시 아래 원문 태그명, 연결 맥락 태그 핵심어, 책터 분류, 기록 유형 중 하나 이상을 문장 안에 인용하세요.\n");
-        sb.append("기존 빈 주제(업무 협업, 조직 관계 등) 전용 문구만 쓰지 마세요.\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.meaning.rejected"));
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.meaning.cite-required"));
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.meaning.no-generic-bucket"));
 
         if (ragContext != null && ragContext.personFocus() != null) {
             final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext);
             if (!snapshot.repeatedTagCountMap().isEmpty()) {
-                sb.append("인물 태그: ").append(formatTopTags(snapshot.repeatedTagCountMap(), 4)).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.person-tags"))
+                        .append(": ")
+                        .append(formatTopTags(snapshot.repeatedTagCountMap(), 4))
+                        .append('\n');
             }
             if (!snapshot.linkedContextTagCountMap().isEmpty()) {
-                sb.append("연결 맥락: ").append(formatTopTags(snapshot.linkedContextTagCountMap(), 4)).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.linked-context"))
+                        .append(": ")
+                        .append(formatTopTags(snapshot.linkedContextTagCountMap(), 4))
+                        .append('\n');
             }
             if (!snapshot.chapterCategoryCountMap().isEmpty()) {
-                sb.append("책터 분류: ").append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap())).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.chapter-category"))
+                        .append(": ")
+                        .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()))
+                        .append('\n');
             }
             if (!snapshot.contentKindCountMap().isEmpty()) {
-                sb.append("기록 유형: ").append(formatContentKindSpread(snapshot.contentKindCountMap())).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.content-kind"))
+                        .append(": ")
+                        .append(formatContentKindSpread(snapshot.contentKindCountMap()))
+                        .append('\n');
             }
         }
         return sb.toString();
@@ -2105,12 +2121,12 @@ public class ChatAIService {
             final String guardDetail
     ) {
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n\n## PERSON_STANCE_RETRY\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.stance.header"));
         appendPersonGuardRetryHint(sb, guardDetail);
-        sb.append("직전 답이 기록 근거가 약하거나 빈 일반론이었습니다. 아래 SNAPSHOT 근거를 더 읽고 다시 쓰세요.\n");
-        sb.append("네가 그 인물을 실제로 어떻게 느끼고 판단하는지 '네가', '내 태도', '내 마음' 중심으로 자연스러운 산문으로 솔직하게 정리하세요.\n");
-        sb.append("첫 문장은 '네가 기록에 남긴 바로는'로 시작하세요. 형식은 자유이며 근거 장면의 구체적 정황을 충분히 인용하세요.\n");
-        sb.append("기록에 없는 직업·관계·지위·사실은 단정하지 말고, 기록 근거 없는 조직·업무 일반론만 나열하지 마세요.\n");
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.stance.weak-evidence"));
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.stance.honest-summary"));
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.stance.opening-format"));
+        sb.append(chatMsg("chat.ai.prompt.rag.retry.stance.no-fabrication"));
 
         if (ragContext != null && ragContext.personFocus() != null) {
             final PersonMeaningSnapshot snapshot = buildPersonMeaningSnapshot(ragContext, queryText);
@@ -2123,22 +2139,40 @@ public class ChatAIService {
                     snapshot.chapterCategoryCountMap()
             );
             if (StringUtils.isNotBlank(interpretiveLead)) {
-                sb.append("해석 시드: ").append(interpretiveLead).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.interpretive-seed"))
+                        .append(": ")
+                        .append(interpretiveLead)
+                        .append('\n');
             }
             if (!snapshot.repeatedTagCountMap().isEmpty()) {
-                sb.append("인물 태그: ").append(formatTopTags(snapshot.repeatedTagCountMap(), 6)).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.person-tags"))
+                        .append(": ")
+                        .append(formatTopTags(snapshot.repeatedTagCountMap(), 6))
+                        .append('\n');
             }
             if (!snapshot.linkedContextTagCountMap().isEmpty()) {
-                sb.append("연결 맥락: ").append(formatTopTags(snapshot.linkedContextTagCountMap(), 4)).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.linked-context"))
+                        .append(": ")
+                        .append(formatTopTags(snapshot.linkedContextTagCountMap(), 4))
+                        .append('\n');
             }
             if (!snapshot.roleAxesKo().isEmpty()) {
-                sb.append("역할 축: ").append(String.join(", ", snapshot.roleAxesKo())).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.role-axes"))
+                        .append(": ")
+                        .append(String.join(", ", snapshot.roleAxesKo()))
+                        .append('\n');
             }
             if (!snapshot.contentKindCountMap().isEmpty()) {
-                sb.append("기록 유형: ").append(formatContentKindSpread(snapshot.contentKindCountMap())).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.content-kind"))
+                        .append(": ")
+                        .append(formatContentKindSpread(snapshot.contentKindCountMap()))
+                        .append('\n');
             }
             if (!snapshot.evidenceSnippets().isEmpty()) {
-                sb.append("근거 장면: ").append(String.join(" | ", snapshot.evidenceSnippets())).append('\n');
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.evidence"))
+                        .append(": ")
+                        .append(String.join(" | ", snapshot.evidenceSnippets()))
+                        .append('\n');
             }
         }
         return sb.toString();
@@ -2455,15 +2489,15 @@ public class ChatAIService {
         if ((linkedContextTagCountMap == null || linkedContextTagCountMap.isEmpty())
                 && (chapterCategoryCountMap == null || chapterCategoryCountMap.isEmpty())) {
             if (scaffoldStyle) {
-                sb.append("(연결 태그·책터 분류 정보 없음 - 스니펫의 정서·관계 표현으로만 서술)");
+                sb.append(chatMsg("chat.ai.fallback.linked-context.scaffold-empty"));
             } else {
-                sb.append("연결 태그·책터 분류 근거가 아직 충분하지 않아. 근거 장면 중심으로만 보면 돼.");
+                sb.append(chatMsg("chat.ai.fallback.linked-context.empty"));
             }
             return;
         }
 
         if (!scaffoldStyle) {
-            sb.append("같은 장면의 연결 태그·책터 분류를 보면, ");
+            sb.append(chatMsg("chat.ai.fallback.linked-context.prefix")).append(" ");
         }
         final List<String> hintParts = new ArrayList<>();
         if (linkedContextTagCountMap != null && !linkedContextTagCountMap.isEmpty()) {
@@ -2474,9 +2508,9 @@ public class ChatAIService {
         }
         sb.append(String.join(" · ", hintParts));
         if (scaffoldStyle) {
-            sb.append(" 기준");
+            sb.append(chatMsg("chat.ai.fallback.linked-context.suffix-scaffold"));
         } else {
-            sb.append(" 축에서 반복 등장하는 인물로 기록돼");
+            sb.append(chatMsg("chat.ai.fallback.linked-context.suffix"));
         }
     }
 
@@ -2785,8 +2819,8 @@ public class ChatAIService {
         if (StringUtils.isBlank(compact)) return;
 
         final String evidenceLabel = options.spreadEvidenceAcrossSources()
-                ? "근거 장면"
-                : "근거 장면(짧게)";
+                ? chatMsg("chat.ai.fallback.section.evidence-full")
+                : chatMsg("chat.ai.fallback.section.evidence-compact");
         sb.append("\n").append(evidenceLabel).append(": ").append(compact);
     }
 
@@ -2831,20 +2865,20 @@ public class ChatAIService {
     ) {
         final List<String> leadParts = new ArrayList<>();
         if (repeatedTagCountMap != null && !repeatedTagCountMap.isEmpty()) {
-            leadParts.add("주로 " + formatTopTagsForDisplay(repeatedTagCountMap, 3) + " 축에 묶여 있어");
+            leadParts.add(chatMsg("chat.ai.fallback.lead-body.repeated-axis", formatTopTagsForDisplay(repeatedTagCountMap, 3)));
         }
         if (linkedContextTagCountMap != null && !linkedContextTagCountMap.isEmpty()) {
-            leadParts.add("같은 장면에 " + formatTopTagsForDisplay(linkedContextTagCountMap, 2) + " 태그가 자주 같이 붙어");
+            leadParts.add(chatMsg("chat.ai.fallback.lead-body.linked-tags", formatTopTagsForDisplay(linkedContextTagCountMap, 2)));
         }
         if (chapterCategoryCountMap != null && !chapterCategoryCountMap.isEmpty()) {
-            leadParts.add(formatChapterCategorySpread(chapterCategoryCountMap) + " 책터에서 주로 등장해");
+            leadParts.add(chatMsg("chat.ai.fallback.lead-body.chapter", formatChapterCategorySpread(chapterCategoryCountMap)));
         }
         if (roleAxesKo != null && !roleAxesKo.isEmpty()) {
             final String topRoleAxis = roleAxesKo.get(0);
             final int parenIndex = topRoleAxis.indexOf('(');
             final String roleLabel = parenIndex > 0 ? topRoleAxis.substring(0, parenIndex) : topRoleAxis;
             if (StringUtils.isNotBlank(roleLabel)) {
-                leadParts.add(roleLabel + " 관점에서 반복돼");
+                leadParts.add(chatMsg("chat.ai.fallback.lead-body.role-axis", roleLabel));
             }
         }
 
@@ -2877,7 +2911,7 @@ public class ChatAIService {
                 chapterCategoryCountMap
         );
         if (StringUtils.isBlank(leadBody)) return "";
-        return "기록상 " + target + "은(는) " + leadBody + ".";
+        return chatMsg("chat.ai.lead.person-meaning", target, leadBody);
     }
 
     /**
@@ -2901,7 +2935,7 @@ public class ChatAIService {
                 chapterCategoryCountMap
         );
         if (StringUtils.isBlank(leadBody)) return "";
-        return "네가 기록에 남긴 태도로 보면, " + leadBody + ".";
+        return chatMsg("chat.ai.lead.person-stance", leadBody);
     }
 
     /**
@@ -2915,10 +2949,10 @@ public class ChatAIService {
         final int noteCount = contentKindCountMap.getOrDefault("NOTE", 0);
         if (dreamCount == 0 && diaryCount == 0 && noteCount == 0) return "";
 
-        if (dreamCount > diaryCount && dreamCount > noteCount) return "꿈 기록 쪽에서 더 자주 등장해";
-        if (diaryCount > dreamCount && diaryCount > noteCount) return "일기 기록 쪽에서 더 자주 등장해";
-        if (noteCount > dreamCount && noteCount > diaryCount) return "노트 기록 쪽에서 더 자주 등장해";
-        if (dreamCount == diaryCount && dreamCount > 0) return "꿈과 일기 기록에서 비슷하게 등장해";
+        if (dreamCount > diaryCount && dreamCount > noteCount) return chatMsg("chat.ai.hint.content-kind.dream");
+        if (diaryCount > dreamCount && diaryCount > noteCount) return chatMsg("chat.ai.hint.content-kind.diary");
+        if (noteCount > dreamCount && noteCount > diaryCount) return chatMsg("chat.ai.hint.content-kind.note");
+        if (dreamCount == diaryCount && dreamCount > 0) return chatMsg("chat.ai.hint.content-kind.dream-diary");
         return "";
     }
 
@@ -2927,12 +2961,11 @@ public class ChatAIService {
      */
     private String buildPersonMeaningDeterministicFallback(final RagContext ragContext) {
         if (ragContext == null || ragContext.personFocus() == null) {
-            return "지금 확인되는 기록만으로는 답하기 어려워요. 어떤 사람이나 맥락을 말하는 건지 조금만 더 알려줘.";
+            return chatMsg("chat.ai.clarify.need-context");
         }
         if (ragContext.results() == null || ragContext.results().isEmpty()) {
             final String target = resolvePersonFocusTarget(ragContext.personFocus());
-            return "지금 기록 안에서는 " + target + "에 대해 확인되는 정보가 없어요. "
-                    + "어떤 맥락의 기록을 봐야 할지 조금만 더 알려줘.";
+            return chatMsg("chat.ai.clarify.no-info-for-target", target);
         }
 
         final PersonFocus personFocus = ragContext.personFocus();
@@ -2951,36 +2984,31 @@ public class ChatAIService {
         if (StringUtils.isNotBlank(interpretiveLead)) {
             sb.append(interpretiveLead).append("\n\n");
         } else {
-            sb.append("기록상으로 ").append(target).append("은(는) 내 Dreamdiary 안에서 이렇게 반복돼 보여.\n\n");
+            sb.append(chatMsg("chat.ai.fallback.person-meaning.intro-no-lead", target)).append("\n\n");
         }
 
         if (!snapshot.repeatedTagCountMap().isEmpty()) {
-            sb.append("반복 축: ").append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6)).append('\n');
-            sb.append("해석: 위 태그는 내가 의도적으로 붙인 ")
-                    .append(target)
-                    .append(" 관련 축이야. 같은 장면의 다른 태그보다 이 축을 우선 보면 돼.\n");
+            sb.append(chatMsg("chat.ai.fallback.section.repeated-axis")).append(' ')
+                    .append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6)).append('\n');
+            sb.append(chatMsg("chat.ai.fallback.person-meaning.repeated-axis-interpret", target)).append('\n');
         } else {
-            sb.append("반복 축: ")
-                    .append(target)
-                    .append(" 이름이 들어간 person 태그가 아직 없어. 아래 근거 장면 중심으로만 보면 돼.\n");
+            sb.append(chatMsg("chat.ai.fallback.person-meaning.repeated-axis-empty", target)).append('\n');
         }
 
         if (!snapshot.linkedContextTagCountMap().isEmpty()) {
-            sb.append("연결 맥락: ")
+            sb.append(chatMsg("chat.ai.fallback.section.linked-context")).append(' ')
                     .append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 8))
                     .append('\n');
-            sb.append("해석: 위 태그는 ")
-                    .append(target)
-                    .append("이(가) 등장하는 같은 장면에서 함께 붙은 축이야. 조직맥락·다른 인물 태그와 묶어 읽으면 돼.\n");
+            sb.append(chatMsg("chat.ai.fallback.person-meaning.linked-context-interpret", target)).append('\n');
         }
 
         if (!snapshot.chapterCategoryCountMap().isEmpty()) {
-            sb.append("책터 분류: ")
+            sb.append(chatMsg("chat.ai.fallback.section.chapter-category")).append(' ')
                     .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()))
                     .append('\n');
         }
 
-        sb.append("역할·기능: ");
+        sb.append(chatMsg("chat.ai.fallback.section.role-function")).append(' ');
         if (!snapshot.roleAxesKo().isEmpty()) {
             sb.append(String.join(", ", snapshot.roleAxesKo())).append('\n');
         } else {
@@ -2994,20 +3022,21 @@ public class ChatAIService {
         }
 
         if (!snapshot.contentKindCountMap().isEmpty()) {
-            sb.append("기록 유형: ").append(formatContentKindSpread(snapshot.contentKindCountMap())).append('\n');
+            sb.append(chatMsg("chat.ai.fallback.section.content-kind")).append(' ')
+                    .append(formatContentKindSpread(snapshot.contentKindCountMap())).append('\n');
         }
 
         if (StringUtils.isNotBlank(snapshot.firstDate()) || StringUtils.isNotBlank(snapshot.lastDate())) {
-            sb.append("기간: ")
-                    .append(StringUtils.defaultIfBlank(snapshot.firstDate(), "?"))
-                    .append(" ~ ")
-                    .append(StringUtils.defaultIfBlank(snapshot.lastDate(), "?"))
-                    .append('\n');
+            sb.append(chatMsg(
+                    "chat.ai.fallback.section.period",
+                    StringUtils.defaultIfBlank(snapshot.firstDate(), "?"),
+                    StringUtils.defaultIfBlank(snapshot.lastDate(), "?")
+            )).append('\n');
         }
 
         appendRulePrimaryEvidenceSection(sb, snapshot.evidenceSnippets());
 
-        sb.append("\n확정 못 하는 것: 실제 직장 관계, 직함, 조직 내 지위는 기록에 직접 적힌 표현이 없으면 알 수 없어.");
+        sb.append('\n').append(chatMsg("chat.ai.fallback.person-meaning.uncertainty"));
         return sb.toString().trim();
     }
 
@@ -3016,11 +3045,11 @@ public class ChatAIService {
      */
     private String buildPersonAppearanceDeterministicFallback(final RagContext ragContext) {
         if (ragContext == null || ragContext.personFocus() == null) {
-            return "지금 확인되는 기록만으로는 답하기 어려워요. 어떤 사람이나 맥락을 말하는 건지 조금만 더 알려줘.";
+            return chatMsg("chat.ai.clarify.need-context");
         }
         if (ragContext.results() == null || ragContext.results().isEmpty()) {
             final String target = resolvePersonFocusTarget(ragContext.personFocus());
-            return "지금 기록 안에서는 " + target + "이(가) 어떤 느낌으로 등장하는지 확인할 장면을 찾지 못했어요.";
+            return chatMsg("chat.ai.clarify.no-appearance-for-target", target);
         }
 
         final String target = resolvePersonFocusTarget(ragContext.personFocus());
@@ -3038,57 +3067,61 @@ public class ChatAIService {
         if (StringUtils.isNotBlank(interpretiveLead)) {
             sb.append(interpretiveLead).append("\n\n");
         } else {
-            sb.append("기록상 ").append(target).append("은(는) 내 대화/일기 안에서 이렇게 등장해 보여.\n\n");
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.intro-no-lead", target)).append("\n\n");
         }
 
-        sb.append("(1) 등장 느낌·톤: ");
+        sb.append(chatMsg("chat.ai.fallback.person-appearance.section-tone")).append(' ');
         if (!snapshot.roleAxesKo().isEmpty()) {
             sb.append(String.join(", ", snapshot.roleAxesKo()));
         } else if (!snapshot.repeatedTagCountMap().isEmpty()) {
-            sb.append("반복 인물 태그 ").append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6));
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.repeated-tags-prefix")).append(' ')
+                    .append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6));
         } else {
-            sb.append("태그·역할 축이 아직 충분하지 않음");
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.insufficient-axis"));
         }
         sb.append('\n');
 
-        sb.append("(2) 반복 맥락: ");
+        sb.append(chatMsg("chat.ai.fallback.person-appearance.section-repeat")).append(' ');
         boolean hasRepeatPattern = false;
         if (!snapshot.linkedContextTagCountMap().isEmpty()) {
-            sb.append("연결 맥락 ").append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 6));
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.linked-context-prefix")).append(' ')
+                    .append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 6));
             hasRepeatPattern = true;
         }
         if (!snapshot.chapterCategoryCountMap().isEmpty()) {
             if (hasRepeatPattern) sb.append("; ");
-            sb.append("챕터 ").append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()));
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.chapter-prefix")).append(' ')
+                    .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()));
             hasRepeatPattern = true;
         }
         if (!snapshot.contentKindCountMap().isEmpty()) {
             if (hasRepeatPattern) sb.append("; ");
-            sb.append("기록 유형 ").append(formatContentKindSpread(snapshot.contentKindCountMap()));
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.content-kind-prefix")).append(' ')
+                    .append(formatContentKindSpread(snapshot.contentKindCountMap()));
             hasRepeatPattern = true;
         }
         if (StringUtils.isNotBlank(snapshot.firstDate()) || StringUtils.isNotBlank(snapshot.lastDate())) {
             if (hasRepeatPattern) sb.append("; ");
-            sb.append("기간 ")
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.period-prefix")).append(' ')
                     .append(StringUtils.defaultIfBlank(snapshot.firstDate(), "?"))
                     .append(" ~ ")
                     .append(StringUtils.defaultIfBlank(snapshot.lastDate(), "?"));
             hasRepeatPattern = true;
         }
         if (!hasRepeatPattern) {
-            sb.append("반복 맥락 정보가 충분하지 않음");
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.insufficient-repeat"));
         }
         sb.append('\n');
 
-        sb.append("(3) 함께 묶인 축: ");
+        sb.append(chatMsg("chat.ai.fallback.person-appearance.section-bundled")).append(' ');
         if (!snapshot.repeatedTagCountMap().isEmpty()) {
             sb.append(formatTopTagsForDisplay(snapshot.repeatedTagCountMap(), 6));
         } else {
-            sb.append("인물 태그 정보 없음");
+            sb.append(chatMsg("chat.ai.fallback.person-appearance.no-person-tags"));
         }
         sb.append('\n');
 
-        sb.append("(4) 확정 불가: 성격 단정(친근하다·적극적이다 등)이나 조직 내 지위는 기록에 직접 적힌 표현이 없으면 알 수 없어.\n");
+        sb.append(chatMsg("chat.ai.fallback.person-appearance.uncertainty")).append('\n');
 
         appendRulePrimaryEvidenceSection(sb, snapshot.evidenceSnippets());
 
@@ -3106,31 +3139,28 @@ public class ChatAIService {
             final Map<String, Integer> linkedContextTagCountMap,
             final Map<String, Integer> chapterCategoryCountMap
     ) {
-        final String meaningLead = buildPersonMeaningInterpretiveLead(
-                target,
+        if (StringUtils.isBlank(target)) return "";
+
+        final String leadBody = buildPersonMeaningLeadBody(
                 repeatedTagCountMap,
                 roleAxesKo,
                 contentKindCountMap,
                 linkedContextTagCountMap,
                 chapterCategoryCountMap
         );
-        if (StringUtils.isBlank(meaningLead)) return "";
-        if (StringUtils.startsWith(meaningLead, "기록상 ")) {
-            return "기록상 " + target + "은(는) 내 대화/일기 안에서 "
-                    + meaningLead.substring(("기록상 " + target + "은(는) ").length());
-        }
-        return "기록상 " + target + "은(는) 내 대화/일기 안에서 " + meaningLead;
+        if (StringUtils.isBlank(leadBody)) return "";
+        return chatMsg("chat.ai.lead.person-appearance", target, leadBody);
     }
     /**
      * 태도 질문에서 모델이 성격 평가·코칭만 내놓았을 때 기록 근거로 2인칭 태도 답변을 만듭니다.
      */
     private String buildPersonStanceDeterministicFallback(final RagContext ragContext, final String queryText) {
         if (ragContext == null || ragContext.personFocus() == null) {
-            return "지금 확인되는 기록만으로는 답하기 어려워요. 어떤 사람이나 맥락을 말하는 건지 조금만 더 알려줘.";
+            return chatMsg("chat.ai.clarify.need-context");
         }
         if (ragContext.results() == null || ragContext.results().isEmpty()) {
             final String target = resolvePersonFocusTarget(ragContext.personFocus());
-            return "지금 기록 안에서는 " + target + "에 대해 내 마음이 드러난 장면을 찾지 못했어요. 어떤 맥락의 기록을 봐야 할지 조금만 더 알려줘.";
+            return chatMsg("chat.ai.clarify.no-stance-for-target", target);
         }
 
         final PersonFocus personFocus = ragContext.personFocus();
@@ -3149,14 +3179,14 @@ public class ChatAIService {
         if (StringUtils.isNotBlank(interpretiveLead)) {
             sb.append(interpretiveLead);
         } else {
-            sb.append("네가 기록에 남긴 바로는, ").append(target).append("에 대한 내 태도가 아직 한 줄로 뚜렷하게 잡히진 않아.");
+            sb.append(chatMsg("chat.ai.fallback.person-stance.intro-no-lead", target));
         }
-        sb.append(" 다만 상대의 성격이나 조직에서의 역할처럼 기록에 직접 안 적힌 건 단정하기 어려워.");
+        sb.append(chatMsg("chat.ai.fallback.person-stance.caveat"));
 
         final List<String> stanceSnippets = snapshot.evidenceSnippets();
         if (stanceSnippets != null && !stanceSnippets.isEmpty()) {
             final int snippetLimit = Math.min(stanceSnippets.size(), 3);
-            sb.append("\n\n이런 장면들이 그렇게 느끼게 했어: ")
+            sb.append(chatMsg("chat.ai.fallback.person-stance.evidence-intro"))
                     .append(String.join(" / ", stanceSnippets.subList(0, snippetLimit)));
         }
 
@@ -3170,9 +3200,9 @@ public class ChatAIService {
         if (contentKindCountMap == null || contentKindCountMap.isEmpty()) return "";
 
         final List<String> parts = new ArrayList<>();
-        appendContentKindPart(parts, contentKindCountMap, "DREAM", "꼈");
-        appendContentKindPart(parts, contentKindCountMap, "DIARY", "일기");
-        appendContentKindPart(parts, contentKindCountMap, "NOTE", "노트");
+        appendContentKindPart(parts, contentKindCountMap, "DREAM", chatMsg("chat.ai.fallback.content-kind.dream"));
+        appendContentKindPart(parts, contentKindCountMap, "DIARY", chatMsg("chat.ai.fallback.content-kind.diary"));
+        appendContentKindPart(parts, contentKindCountMap, "NOTE", chatMsg("chat.ai.fallback.content-kind.note"));
         for (final Map.Entry<String, Integer> entry : contentKindCountMap.entrySet()) {
             if (entry == null || entry.getValue() == null || entry.getValue() <= 0) continue;
             final String kind = StringUtils.defaultString(entry.getKey());
@@ -3206,12 +3236,12 @@ public class ChatAIService {
     private String buildLanguageFallback(final String userMessage, final RagContext ragContext) {
         log.warn("AI response language guard fallback. query={}", StringUtils.abbreviate(userMessage, 80));
         if (ragContext == null || StringUtils.isBlank(ragContext.text())) {
-            return "지금 확인되는 기록만으로는 답하기 어려워요. 어떤 사람이나 맥락을 말하는 건지 조금만 더 알려줘.";
+            return chatMsg("chat.ai.language-fallback.no-context");
         }
         if (ragContext.intent() == RagIntent.SYNTHESIS) {
-            return "관련 기록은 찾았지만, 응답 생성 중 언어가 섞여서 그대로 보여주지 않았어요. 통섭 답변으로 다시 정리할 수 있게 질문을 한 번만 더 보내줘.";
+            return chatMsg("chat.ai.language-fallback.synthesis-retry");
         }
-        return "관련 기록은 일부 찾았지만, 응답 생성 중 언어가 섞여서 그대로 보여주지 않았어요. 질문을 조금 더 구체적으로 말해주면 한국어로 다시 정리해볼게.";
+        return chatMsg("chat.ai.language-fallback.lookup-retry");
     }
 
     /**

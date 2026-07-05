@@ -85,13 +85,33 @@ User message
       -> log selected source IDs, match types, scores, tokens, and snippets
   -> build guarded system prompt
   -> OllamaClient.chat(systemPrompt, recentContextMessages)
-  -> language guard validation
-      -> if Chinese/Han script is detected, retry once with stricter Korean-only prompt
-      -> if retry still violates guard, replace with Korean fallback response
+  -> language guard validation (Accept-Language / LocaleContextHolder)
+      -> ko: if Chinese/Han script is detected, retry once with stricter Korean-only prompt
+      -> en: if excessive Hangul or Han script is detected, retry once with English-only prompt
+      -> if retry still violates guard, replace with locale catalog fallback (`chat.ai.language-fallback.*`)
   -> strip markdown symbols
   -> save ASSISTANT chat_message with RAG source metadataJson
   -> broadcast ASSISTANT message
 ```
+
+## i18n (server chat responses)
+
+User-visible rule-primary / guard / clarification strings in `ChatAIService` use `MessageUtils` + `chat.ai.*` keys in `messages_ko.properties` / `messages_en.properties`.
+
+| Key prefix | Purpose |
+| --- | --- |
+| `chat.ai.guard.*` | LLM system guard + language retry appendices (`responseGuardPrompt()`, `languageRetryPrompt()`) |
+| `chat.ai.clarify.*` | Deterministic fallback when person focus / RAG context is insufficient |
+| `chat.ai.language-fallback.*` | Safe assistant bubble when LLM output fails language guard |
+| `chat.ai.lead.*` | Rule-primary interpretive lead sentences |
+| `chat.ai.hint.content-kind.*` | Content-kind hints inside lead body assembly |
+| `chat.ai.fallback.*` | Rule-primary deterministic fallback bodies (`buildPerson*DeterministicFallback`), section labels, lead-body fragments, linked-context role hints, content-kind spread labels |
+| `chat.ai.lead.person-appearance` | person-appearance interpretive lead (uses `buildPersonMeaningLeadBody` + appearance framing) |
+| `chat.ai.prompt.*` | LLM system/RAG/intent prompt bodies (`buildSystemPromptWithRag`, `buildIntentPrompt`, synthesis RAG intros). D.3a–c: intent, tag/timeline, hybrid/SNAPSHOT; D.3d: `appendPersonGuardRetryHint`, `buildPersonMeaningRetryPrompt`, `buildPersonStanceRetryPrompt` (`chat.ai.prompt.rag.retry.*`) |
+
+Locale follows `AcceptHeaderLocaleResolver` (axios `Accept-Language` from Vue). Korean NLP keyword lists for intent/person detection remain Korean-only; English UI gets English guard prompts and English user-facing fallbacks.
+
+Client chat shell labels use the separate `chat.*` namespace served via `/i18n/{locale}.json`.
 
 ## Memory Model
 
