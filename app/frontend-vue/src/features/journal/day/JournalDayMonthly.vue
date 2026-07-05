@@ -35,7 +35,7 @@
             />
           </template>
           <div v-else class="d-flex-center py-10 text-muted">
-            조회된 저널이 없습니다.
+            {{ t("journal.day.list.empty") }}
           </div>
         </template>
         <!--end::일자 목록-->
@@ -52,12 +52,14 @@ import { onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalDayCard from "./components/JournalDayCard.vue";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
 import JournalTagCloudHeader from "./components/JournalTagCloudHeader.vue";
 
 const store = useJournalStore();
 const modalStore = useJournalModalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 function loadMonthlyView(): void {

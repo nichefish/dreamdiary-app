@@ -7,25 +7,25 @@
       <div class="order-1 order-md-1 text-gray-900">
         <span
           class="text-muted fw-semibold me-1"
-          data-bs-toggle="tooltip"
+          v-tooltip
           data-bs-placement="top"
           data-bs-dismiss="click"
-          title="프로젝트 기간: &#10;2024.03.20 ~ (진행중)"
+          :title="`${t('layout.footer.project-period')}:\n2024.03.20 ~ (${t('layout.footer.in-progress')})`"
         >2024©</span>
         <a
           href="/"
           class="text-gray-600 text-hover-primary fw-bold blink cursor-help"
-          data-bs-toggle="tooltip"
+          v-tooltip
           data-bs-placement="top"
           data-bs-dismiss="click"
-          title="작업인원: &#10;nysnyari"
+          :title="`${t('layout.footer.contributors')}:\nnysnyari`"
         >dreamdiary.nicheblog.io</a>
       </div>
       <!--end::Copyright-->
       <!--begin::Menu-->
       <ul class="order-2 menu menu-gray-600 menu-hover-primary fw-semibold">
         <li class="menu-item">
-          <a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a>
+          <a href="https://keenthemes.com" target="_blank" class="menu-link px-2">{{ t("layout.footer.about") }}</a>
         </li>
         <li class="menu-item">
           <a href="https://preview.keenthemes.com/html/metronic/docs/index" target="_blank" class="menu-link px-2">Metronic</a>
@@ -41,13 +41,18 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { footerDisplay } from "@/app/layouts/default/config/helper";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export default defineComponent({
   name: "theme-footer",
   components: {},
   setup() {
+    const localeStore = useLocaleStore();
+    const t = (key: string) => localeStore.t(key);
+
     return {
       footerDisplay,
+      t,
     };
   },
 });

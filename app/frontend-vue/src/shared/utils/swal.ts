@@ -5,6 +5,7 @@
 import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { isAuthExpiredError } from "@/shared/utils/authError";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 /** Ajax 오류 응답 본문의 message 필드 추출 */
 export function getAjaxResponseMessage(error: unknown): string | undefined {
@@ -38,8 +39,9 @@ export async function swalAlert(text: string): Promise<void> {
 /**
  * 요청 실패 알림. 인증 만료는 전역 인터셉터에서 이미 안내하므로 일반 오류로 다시 띄우지 않는다.
  */
-export async function swalRequestError(error: unknown, text = "요청 처리 중 오류가 발생했습니다."): Promise<void> {
+export async function swalRequestError(error: unknown, text?: string): Promise<void> {
   if (isAuthExpiredError(error)) return;
   console.error("[swalRequestError] API request failed", error);
-  await swalAlert(getAjaxResponseMessage(error) ?? text);
+  const fallbackText = text ?? useLocaleStore().t("common.error.processing");
+  await swalAlert(getAjaxResponseMessage(error) ?? fallbackText);
 }

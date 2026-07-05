@@ -18,9 +18,9 @@
           <table class="table align-middle table-row-dashed fs-small gy-3 table-fixed mb-0">
             <thead>
               <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                <th class="text-center w-10">ID</th>
+                <th class="text-center w-10">{{ t('user.signup.approval.col.id') }}</th>
                 <th class="text-center w-25">{{ t('user.signup.approval.col.name-username') }}</th>
-                <th class="text-center w-25">E-MAIL</th>
+                <th class="text-center w-25">{{ t('user.admin.list.col.email') }}</th>
                 <th class="text-center w-15">{{ t('user.list.column.requested-at') }}</th>
                 <th class="text-center w-25">{{ t('user.list.column.action') }}</th>
               </tr>
@@ -54,9 +54,9 @@
           <table class="table align-middle table-row-dashed fs-small gy-3 table-fixed mb-0">
             <thead>
               <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
-                <th class="text-center w-10">ID</th>
+                <th class="text-center w-10">{{ t('user.signup.approval.col.id') }}</th>
                 <th class="text-center w-25">{{ t('user.signup.approval.col.name-username') }}</th>
-                <th class="text-center w-25">E-MAIL</th>
+                <th class="text-center w-25">{{ t('user.admin.list.col.email') }}</th>
                 <th class="text-center w-15">{{ t('user.list.column.requested-at') }}</th>
                 <th class="text-center w-25">{{ t('common.status') }}</th>
               </tr>

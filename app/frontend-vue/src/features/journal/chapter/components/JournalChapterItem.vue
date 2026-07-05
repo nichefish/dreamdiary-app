@@ -376,7 +376,7 @@ async function copyChapter(): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
   if (props.chapter.stdrdDt) {
-    const weekDay = getWeekDayStr(props.chapter.stdrdDt);
+    const weekDay = getWeekDayStr(props.chapter.stdrdDt, t);
     headerParts.push(weekDay ? `${props.chapter.stdrdDt} (${weekDay})` : props.chapter.stdrdDt);
   }
   if (props.chapter.categoryName) headerParts.push(props.chapter.categoryName);

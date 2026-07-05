@@ -300,7 +300,7 @@
                   </div>
                   <div class="code-admin-form-row">
                     <label for="itemCodeNameEn" class="form-label">{{ t('code.item.form.code-name-en') }}</label>
-                    <input id="itemCodeNameEn" v-model.trim="store.itemForm.codeNameEn" type="text" class="form-control form-control-solid" maxlength="50" placeholder="English name (optional)" />
+                    <input id="itemCodeNameEn" v-model.trim="store.itemForm.codeNameEn" type="text" class="form-control form-control-solid" maxlength="50" :placeholder="t('code.item.form.code-name-en.placeholder')" />
                   </div>
                   <div class="code-admin-form-row">
                     <label for="itemDescription" class="form-label">{{ t('board.group.list.col.description') }}</label>

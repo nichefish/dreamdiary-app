@@ -21,6 +21,7 @@
 
 <script setup lang="ts">
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { ref } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 /** TinyMCE 6 자체 호스팅 - 번들러(Vite)를 통해 직접 임포트 */
@@ -65,6 +66,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   "update:modelValue": [value: string];
 }>();
+const { t } = useLocaleStore();
 
 /** 이미지 업로드용 hidden file input 레퍼런스 */
 const imageFileInput = ref<HTMLInputElement | null>(null);
@@ -132,7 +134,7 @@ const editorInit = {
     /** custom_image 버튼: 이미지 파일 선택 후 서버 업로드 */
     editor.ui.registry.addButton("custom_image", {
       icon: "image",
-      tooltip: "Insert Image",
+      tooltip: t("rich-editor.image.insert.tooltip"),
       onAction(): void {
         imageFileInput.value?.click();
       },
@@ -141,7 +143,7 @@ const editorInit = {
     /** moreless 버튼: 글접기/펼치기 섹션 삽입 */
     editor.ui.registry.addButton("moreless", {
       icon: "vertical-align",
-      tooltip: "Insert moreless section",
+      tooltip: t("rich-editor.moreless.insert.tooltip"),
       onAction(): void {
         const sid = "tinymce_section_" + sectionCount;
         const cid = "tinymce_section_content_" + sectionCount;
@@ -151,9 +153,11 @@ const editorInit = {
           '<div class="tinymce-section" id="' + sid + '">' +
           '<span id="' + tid + '" class="tinymce-collapse-toggle"' +
           ' onclick="(function(c){var el=document.getElementById(c);if(el)el.classList.toggle(\'collapsed\');})(\''+cid+'\')">' +
-          "Toggle Section " + sectionCount +
+          t("rich-editor.moreless.toggle-label").replace("{0}", String(sectionCount)) +
           "</span>" +
-          '<div id="' + cid + '" class="tinymce-collapsed">Section content goes here.</div>' +
+          '<div id="' + cid + '" class="tinymce-collapsed">' +
+          t("rich-editor.moreless.content-placeholder") +
+          "</div>" +
           "</div>";
         editor.execCommand("mceInsertContent", false, html);
         sectionCount++;
@@ -173,7 +177,7 @@ async function handleImageUpload(event: Event): Promise<void> {
 
   const MAX_SIZE_BYTES = 10 * 1024 * 1024;
   if (file.size > MAX_SIZE_BYTES) {
-    void swalAlert("이미지 파일 크기는 10MB 이하여야 합니다.");
+    void swalAlert(t("rich-editor.image.size-limit"));
     input.value = "";
     return;
   }
@@ -188,7 +192,7 @@ async function handleImageUpload(event: Event): Promise<void> {
     });
     const data = await res.json();
     if (!data.rslt) {
-      void swalAlert(data.message ?? "이미지 업로드에 실패했습니다.");
+      void swalAlert(data.message ?? t("rich-editor.image.upload.failure"));
       return;
     }
     const fileInfo = data.rsltObj;
@@ -203,7 +207,7 @@ async function handleImageUpload(event: Event): Promise<void> {
       imgTag
     );
   } catch {
-    void swalAlert("이미지 업로드 중 오류가 발생했습니다.");
+    void swalAlert(t("rich-editor.image.upload.error"));
   } finally {
     input.value = "";
   }

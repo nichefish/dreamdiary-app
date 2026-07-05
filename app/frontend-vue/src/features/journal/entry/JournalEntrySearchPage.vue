@@ -13,34 +13,34 @@
             <path d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z" fill="rgba(0, 158, 247, 0.5)"/>
           </svg>
         </span>
-        고급 필터
+        {{ t("journal.day.filter.advanced") }}
       </button>
       <!--end::고급 필터 토글-->
       <!--begin::초기화-->
       <button type="button" class="btn btn-sm btn-outline btn-light-secondary text-dark" @click="resetSearch">
-        초기화
+        {{ t("common.reset") }}
       </button>
       <!--end::초기화-->
       <!--begin::정렬 토글-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" title="정렬" @click="toggleSort">
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :title="t('journal.entry.search.sort.tooltip')" @click="toggleSort">
         <i class="bi" :class="sort === 'asc' ? 'bi-sort-down-alt' : 'bi-sort-up'"></i>
       </button>
       <!--end::정렬 토글-->
       <!--begin::검색-->
       <button type="button" class="btn btn-sm btn-primary" @click="doSearch">
-        검색
+        {{ t("common.search") }}
       </button>
       <!--end::검색-->
       <!--begin::구분선-->
       <div class="border-start border-gray-300 h-25px ms-1"></div>
       <!--end::구분선-->
       <!--begin::전체 복사-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" title="전체 복사" @click="copyAll">
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :title="t('journal.entry.search.copy-all.tooltip')" @click="copyAll">
         <i class="bi bi-copy"></i>
       </button>
       <!--end::전체 복사-->
       <!--begin::TXT 내보내기-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" title="TXT 내보내기" @click="exportTxt">
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt">
         <i class="fas fa-download"></i>
       </button>
       <!--end::TXT 내보내기-->
@@ -80,45 +80,45 @@
     <div v-show="showAdvanced" class="mb-4 px-4 py-3 bg-light rounded">
       <!--begin::유형 선택-->
       <div class="d-flex align-items-center gap-2 mb-3">
-        <span class="fw-bold fs-7 text-gray-700 min-w-50px">유형</span>
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("journal.entry.search.type") }}</span>
         <div class="btn-group btn-group-sm">
           <button
             type="button"
             :class="['btn', type === 'DIARY' ? 'btn-primary' : 'btn-light']"
             @click="changeType('DIARY')"
-          >일기</button>
+          >{{ t("common.diary") }}</button>
           <button
             type="button"
             :class="['btn', type === 'DREAM' ? 'btn-info' : 'btn-light']"
             @click="changeType('DREAM')"
-          >꿈</button>
+          >{{ t("common.dream") }}</button>
         </div>
       </div>
       <!--end::유형 선택-->
       <!--begin::키워드 입력-->
       <div class="d-flex align-items-center gap-2">
-        <span class="fw-bold fs-7 text-gray-700 min-w-50px">키워드</span>
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("common.keyword") }}</span>
         <input
           v-model="keywordInput"
           type="text"
           class="form-control form-control-sm journal-entry-search-input"
-          placeholder="키워드를 입력하세요"
+          :placeholder="t('journal.entry.search.keyword.placeholder')"
           maxlength="200"
           @keydown.enter.prevent="addKeyword"
         />
         <button type="button" class="btn btn-sm btn-light-primary w-100px" @click="addKeyword">
-          + 추가
+          + {{ t("common.add") }}
         </button>
       </div>
       <!--end::키워드 입력-->
       <!--begin::태그 입력-->
       <div class="d-flex align-items-center gap-2 mt-3">
-        <span class="fw-bold fs-7 text-gray-700 min-w-50px">태그</span>
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("common.tag") }}</span>
         <input
           v-model="tagInput"
           type="text"
           class="form-control form-control-sm journal-entry-search-input"
-          placeholder="태그를 선택하세요"
+          :placeholder="t('journal.entry.search.tag.placeholder')"
           maxlength="100"
           list="journal-entry-search-tag-options"
           autocomplete="off"
@@ -133,11 +133,11 @@
           />
         </datalist>
         <button type="button" class="btn btn-sm btn-light-primary w-100px" @click="addTagFromInput">
-          + 추가
+          + {{ t("common.add") }}
         </button>
       </div>
       <div v-if="tagCategoryChoices.length > 0" class="d-flex align-items-center gap-2 mt-2" style="padding-left: 60px;">
-        <span class="text-muted fs-8">카테고리 선택</span>
+        <span class="text-muted fs-8">{{ t("journal.entry.search.category.select") }}</span>
         <button
           v-for="ctgr in tagCategoryChoices"
           :key="ctgr"
@@ -145,10 +145,10 @@
           class="btn btn-xs btn-light-primary"
           @click="selectTagCategory(ctgr)"
         >
-          {{ ctgr || "미분류" }}
+          {{ ctgr || t("journal.entry.search.category.none") }}
         </button>
         <button type="button" class="btn btn-xs btn-light-secondary" @click="cancelTagCategoryChoice">
-          취소
+          {{ t("common.cancel") }}
         </button>
       </div>
       <!--end::태그 입력-->
@@ -156,8 +156,8 @@
     <!--end::고급 필터 아코디언-->
 
     <!--begin::결과 목록-->
-    <div v-if="loading" class="text-muted fs-7 py-10">검색 중...</div>
-    <div v-else-if="entries.length === 0" class="text-muted fs-7 py-10">검색 결과가 없습니다.</div>
+    <div v-if="loading" class="text-muted fs-7 py-10">{{ t("journal.entry.search.loading") }}</div>
+    <div v-else-if="entries.length === 0" class="text-muted fs-7 py-10">{{ t("common.search.rslt.empty") }}</div>
     <div v-else class="d-flex flex-column">
       <template v-for="(entry, idx) in entries" :key="entry.id">
         <!--begin::월 구분선 (월이 바뀔 때만)-->
@@ -176,12 +176,12 @@
           class="d-flex align-items-center gap-2 text-gray-700 fw-bold fs-6 ps-2 pt-3 pb-1"
         >
           <span>{{ entry.stdrdDt }}</span>
-          <span v-if="entry.stdrdDt" class="text-muted fs-7">({{ getWeekDayStr(entry.stdrdDt) }})</span>
+          <span v-if="entry.stdrdDt" class="text-muted fs-7">({{ getDisplayWeekDayStr(entry.stdrdDt) }})</span>
           <button
             v-if="entry.stdrdDt"
             type="button"
             class="btn btn-xs btn-icon btn-light-primary"
-            title="새 창으로 보기 (일자 뷰)"
+            :title="t('journal.entry.search.open-daily.tooltip')"
             @click="openDailyView(entry.stdrdDt)"
           >
             <i class="bi bi-box-arrow-up-right fs-8"></i>
@@ -239,6 +239,7 @@ import HistoryModal from "@/features/attachable/HistoryModal.vue";
 import RelatedContentAddModal from "../shared/modals/RelatedContentAddModal.vue";
 import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
 import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 interface JournalEntrySaveEvent {
   entryId?: number | string;
@@ -260,6 +261,7 @@ interface SearchTagDto {
 const route = useRoute();
 const router = useRouter();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 
 const entries = ref<JournalEntryDto[]>([]);
 const loading = ref(false);
@@ -280,7 +282,7 @@ const searchKeywords = ref<string[]>([]);
 /** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
 const tagLabelMap = ref<Record<string, string>>({});
 
-const resultLabel = ref("0건");
+const resultLabel = computed(() => t("journal.entry.search.result-count").replace("{0}", String(entries.value.length)));
 
 const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
 
@@ -311,10 +313,9 @@ async function loadEntries(): Promise<void> {
     entries.value = res.data?.rsltList ?? [];
     hydrateTagNamesFromEntries(entries.value);
     void hydrateMissingTagNames();
-    resultLabel.value = `${entries.value.length}건`;
   } catch (e: unknown) {
     console.error("[JournalEntrySearchPage] entry search failed", e);
-    void swalRequestError(e, "검색 결과를 불러오지 못했습니다.");
+    void swalRequestError(e, t("journal.entry.search.load.failure"));
   } finally {
     loading.value = false;
     void reinitMetronicAfterDom();
@@ -410,7 +411,7 @@ async function addTagFromInput(): Promise<void> {
   const tagName = findKnownTagName(tagInput.value);
   const categories = tagCategoryMap.value[tagName] ?? [];
   if (!tagName || categories.length === 0) {
-    void swalAlert("기존 태그에서 선택하세요.");
+    void swalAlert(t("journal.entry.search.tag.select-existing"));
     return;
   }
   if (categories.length === 1) {
@@ -437,7 +438,7 @@ function addTagByNameAndCategory(tagName: string, ctgr: string): void {
   const tagId = matchedTag?.id ?? matchedTag?.tagId;
   if (tagId === undefined || tagId === null) {
     console.warn("[JournalEntrySearchPage] selected tag id not found.", { tagName, ctgr });
-    void swalAlert("선택한 태그 정보를 찾을 수 없습니다.");
+    void swalAlert(t("journal.entry.search.tag.not-found"));
     return;
   }
 
@@ -455,7 +456,7 @@ async function fetchEntryDetail(entryId: number | string): Promise<JournalEntryD
     return res.data?.rsltObj ?? null;
   } catch (e: unknown) {
     console.error("[JournalEntrySearchPage] entry detail load failed", { entryId }, e);
-    void swalRequestError(e, "엔트리 상세를 불러오지 못했습니다.");
+    void swalRequestError(e, t("journal.entry.search.detail.load.failure"));
     return null;
   }
 }
@@ -556,7 +557,7 @@ function resetSearch(): void {
 /** TXT 내보내기. 레거시 exportUrl = /api/journal/entries/export */
 function exportTxt(): void {
   if (searchKeywords.value.length === 0 && tagIds.value.length === 0) {
-    void swalAlert("검색 조건을 하나 이상 입력하세요.");
+    void swalAlert(t("journal.entry.search.condition.required"));
     return;
   }
   const params = new URLSearchParams();
@@ -620,13 +621,13 @@ function onHistorySuccess(): void {
  */
 async function copyAll(): Promise<void> {
   if (entries.value.length === 0) {
-    void swalAlert("복사할 검색 결과가 없습니다.");
+    void swalAlert(t("journal.entry.search.copy.empty"));
     return;
   }
   let prevDate: string | null = null;
   const blocks = entries.value.map((entry) => {
     const dt = entry.stdrdDt ?? "";
-    const weekDay = getWeekDayStr(dt);
+    const weekDay = getWeekDayStr(dt, t);
     const dateLabel = dt ? (weekDay ? `${dt} (${weekDay})` : dt) : "";
     const content = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
     let block = "";
@@ -640,9 +641,13 @@ async function copyAll(): Promise<void> {
   const text = blocks.join("\r\n\r\n").trim();
   try {
     await navigator.clipboard.writeText(text);
-    void Swal.fire({ text: `현재 페이지 ${entries.value.length}건이 복사되었습니다.`, timer: 1500, showConfirmButton: false });
+    void Swal.fire({
+      text: t("journal.entry.search.copy.success-count").replace("{0}", String(entries.value.length)),
+      timer: 1500,
+      showConfirmButton: false,
+    });
   } catch {
-    void swalAlert("복사에 실패했습니다.");
+    void swalAlert(t("common.copy.failure"));
   }
 }
 
@@ -672,7 +677,13 @@ function getYyMm(stdrdDt?: string | null): string {
 function getYyMmLabel(stdrdDt?: string | null): string {
   if (!stdrdDt) return "";
   const [yy, mm] = stdrdDt.split("-");
-  return `${yy}년 ${String(Number(mm))}월`;
+  return t("journal.entry.search.year-month")
+    .replace("{0}", yy)
+    .replace("{1}", String(Number(mm)));
+}
+
+function getDisplayWeekDayStr(stdrdDt?: string | null): string {
+  return getWeekDayStr(stdrdDt, t);
 }
 
 function normalizeQueryList(value: unknown): string[] {

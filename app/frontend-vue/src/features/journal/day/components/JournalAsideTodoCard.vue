@@ -3,7 +3,7 @@
   <div class="card card-reset card-p-0 p-5 mt-8" style="width:280px; min-width:280px; max-width:280px;">
     <div id="journal_todo_aside_header" class="card-header min-h-auto mb-5 px-0 border-0">
       <h3 class="card-title text-gray-900 fw-bold fs-3 mb-0">
-        <i class="bi bi-list-task fs-2 me-1"></i> TODO List
+        <i class="bi bi-list-task fs-2 me-1"></i> {{ t("journal.aside.todo.title") }}
       </h3>
       <div class="card-toolbar">
         <button

@@ -10,7 +10,7 @@
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -40,13 +40,13 @@
             <div class="row d-flex mb-8">
               <div class="col-2">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">날짜</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('journal.day.field.date') }}</span>
                 </label>
               </div>
               <div class="col-4 fs-6">
                 <i class="bi bi-calendar3"></i>
                 {{ model.stdrdDt ?? '' }}
-                <span v-if="model.journalDateWeekDay" class="fs-8 text-gray-600">({{ model.journalDateWeekDay }})</span>
+                <span v-if="model.stdrdDt" class="fs-8 text-gray-600">({{ getWeekDayStr(model.stdrdDt, t) }})</span>
               </div>
             </div>
             <!--end::날짜-->
@@ -55,8 +55,8 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">제목</span>
-                  <span class="text-gray-500 fs-9 ms-2">(최대 100자)</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.title') }}</span>
+                  <span class="text-gray-500 fs-9 ms-2">{{ t('journal.field.title-max-100') }}</span>
                 </label>
               </div>
 
@@ -71,13 +71,13 @@
                 </div>
                 <div class="col-lg-2">
                   <select name="ctgrCd" class="form-select form-select-solid" v-model="model.ctgrCd">
-                    <option value="">-- 카테고리 선택 --</option>
+                    <option value="">{{ t('common.category.select') }}</option>
                     <!--TODO: 일기 카테고리 옵션 서버 조회 미구현-->
                   </select>
                 </div>
                 <div :class="isModify ? 'col-lg-7' : 'col-lg-8'">
                   <input type="text" name="title" class="form-control" v-model="model.title"
-                    placeholder="제목" maxlength="100" />
+                    :placeholder="t('common.title')" maxlength="100" />
                 </div>
               </template>
               <!--end::DIARY-->
@@ -86,7 +86,7 @@
               <template v-else-if="isDream">
                 <div :class="isModify ? 'col-lg-11' : 'col-lg-12'">
                   <input type="text" name="title" class="form-control" v-model="model.title"
-                    placeholder="제목" maxlength="100" />
+                    :placeholder="t('common.title')" maxlength="100" />
                 </div>
               </template>
               <!--end::DREAM-->
@@ -102,7 +102,7 @@
                 </div>
                 <div :class="isModify ? 'col-lg-10' : 'col-lg-11'">
                   <input type="text" name="title" class="form-control" v-model="model.title"
-                    placeholder="제목" maxlength="100" />
+                    :placeholder="t('common.title')" maxlength="100" />
                 </div>
               </template>
               <!--end::NOTE-->
@@ -111,7 +111,7 @@
               <div v-if="showSortCol" class="col-1 d-flex ps-0">
                 <div class="d-flex-center p-2 fw-bold fs-5 text-gray-600">#</div>
                 <input type="number" class="form-control form-control-sm" name="sortOrder"
-                  min="1" max="99" v-model="model.sortOrder" placeholder="순서"
+                  min="1" max="99" v-model="model.sortOrder" :placeholder="t('journal.entry.sort-order.placeholder')"
                   :maxlength="isDream ? 2 : 3" />
               </div>
               <!--end::순서-->
@@ -121,7 +121,7 @@
             <div v-if="isDream" class="row d-flex mb-8">
               <div class="col-2">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">꿈꾼</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('journal.entry.dreamer.label') }}</span>
                 </label>
               </div>
               <div class="col-4">
@@ -130,7 +130,7 @@
                   name="elseDreamerNm"
                   class="form-control"
                   v-model="model.elseDreamerNm"
-                  placeholder="비우면 내 꿈"
+                  :placeholder="t('journal.entry.dreamer.placeholder')"
                   maxlength="64"
                 />
               </div>
@@ -140,7 +140,7 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">본문</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.body') }}</span>
                 </label>
                 <RichEditor v-model="model.content" />
               </div>
@@ -151,7 +151,7 @@
             <div v-if="showTag" class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">태그</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.tag') }}</span>
                 </label>
                 <TagifyEditor v-model="tagListStrWithCtgr" :category-map="modalStore.entryCategoryMap" />
               </div>
@@ -171,15 +171,15 @@
               @click="submit"
             >
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t('common.save') }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
-              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
               @click="requestSafeClose"
-            >닫기</button>
+            >{{ t('common.close') }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -204,9 +204,12 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import type { JournalChapterOption } from "@/features/journal/stores/journalModal";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 const emit = defineEmits<{
   (e: "prepare-success", payload: {
@@ -236,10 +239,10 @@ const isNote = computed(() => model.value?.contentType === "JOURNAL_NOTE");
 
 /** 모달 제목 */
 const modalTitle = computed(() => {
-  if (isDiary.value) return "저널 일기 등록/수정";
-  if (isDream.value) return "저널 꿈 등록/수정";
-  if (isNote.value) return "저널 노트 등록/수정";
-  return "저널 엔트리 등록/수정";
+  if (isDiary.value) return t("journal.entry.modal.diary.title");
+  if (isDream.value) return t("journal.entry.modal.dream.title");
+  if (isNote.value) return t("journal.entry.modal.note.title");
+  return t("journal.entry.modal.default.title");
 });
 
 /** 태그 입력 표시 여부 (DIARY/DREAM 전용) */
@@ -388,7 +391,7 @@ async function submit() {
   const fallbackDate = model.value.stdrdDt;
   submitting.value = true;
   try {
-    const confirmed = await swalConfirm(wasModify ? "수정하시겠습니까?" : "등록하시겠습니까?");
+    const confirmed = await swalConfirm(wasModify ? t("common.confirm.mdf") : t("common.confirm.reg"));
     if (!confirmed) return;
 
     const formData = new FormData();
@@ -441,7 +444,7 @@ async function submit() {
       if (prepareTasks.length > 0) {
         await Promise.allSettled(prepareTasks);
       }
-      await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
+      await swalAlert(res.data?.message ?? (wasModify ? t("common.result.modified") : t("common.result.registered")));
       if (route.name === "journal-entry-search") {
         emit("success", successPayload);
       } else {
@@ -449,7 +452,7 @@ async function submit() {
         scrollDayDetailIfRefreshed(savedEntryId, detailRefreshed);
       }
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);

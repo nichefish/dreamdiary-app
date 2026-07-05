@@ -32,7 +32,7 @@
               <div class="col-4 fs-6 d-flex align-items-center gap-2">
                 <i class="bi bi-calendar3"></i>
                 {{ model.stdrdDt }}
-                <span v-if="model.journalDateWeekDay" class="fs-8 text-gray-600">({{ model.journalDateWeekDay }})</span>
+                <span v-if="model.stdrdDt" class="fs-8 text-gray-600">({{ getWeekDayStr(model.stdrdDt, t) }})</span>
               </div>
               <!--begin::챕터 일자 변경 (수정 모드, 비DREAM 한정)-->
               <div v-if="isModify && !isModifyDream" class="col-6 d-flex align-items-center gap-2">
@@ -163,6 +163,7 @@ import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();

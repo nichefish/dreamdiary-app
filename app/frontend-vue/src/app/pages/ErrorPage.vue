@@ -7,7 +7,7 @@
     <p v-if="message" class="text-gray-500 fw-bold min-h-100px mb-8">{{ message }}</p>
     <div class="d-flex justify-content-center gap-2">
       <button class="btn btn-sm btn-outlined btn-light-primary btn-active-primary py-2 px-3" @click="goHome">
-        <i class="bi bi-arrow-counterclockwise"></i>메인으로
+        <i class="bi bi-arrow-counterclockwise"></i>{{ t("error.page.action.home") }}
       </button>
     </div>
   </div>
@@ -16,11 +16,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 type ErrorType = "general" | "not_found" | "bad_request" | "access_denied";
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useLocaleStore();
 
 const type = computed<ErrorType>(() => {
   const raw = String(route.query.type ?? route.meta.errorType ?? "general");
@@ -37,20 +39,24 @@ const statusCode = computed(() => {
   return "500";
 });
 
-const categoryLabel = computed(() => type.value === "access_denied" ? "Access Denied" : "Error Page");
+const categoryLabel = computed(() =>
+  type.value === "access_denied"
+    ? t("error.page.category.access-denied")
+    : t("error.page.category.general")
+);
 
 const title = computed(() => {
-  if (type.value === "not_found") return "페이지를 찾을 수 없습니다";
-  if (type.value === "bad_request") return "잘못된 요청입니다";
-  if (type.value === "access_denied") return "접근 권한이 없습니다";
-  return "서버 오류가 발생했습니다";
+  if (type.value === "not_found") return t("error.page.title.not-found");
+  if (type.value === "bad_request") return t("error.page.title.bad-request");
+  if (type.value === "access_denied") return t("error.page.title.access-denied");
+  return t("error.page.title.server");
 });
 
 const description = computed(() => {
-  if (type.value === "not_found") return "요청하신 주소가 존재하지 않거나 이동되었습니다.";
-  if (type.value === "bad_request") return "요청 내용을 확인한 뒤 다시 시도해 주세요.";
-  if (type.value === "access_denied") return "현재 계정으로는 이 화면에 접근할 수 없습니다.";
-  return "서버 처리 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.";
+  if (type.value === "not_found") return t("error.page.description.not-found");
+  if (type.value === "bad_request") return t("error.page.description.bad-request");
+  if (type.value === "access_denied") return t("error.page.description.access-denied");
+  return t("error.page.description.server");
 });
 
 function goHome() {

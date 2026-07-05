@@ -12,7 +12,7 @@
     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-6 m-0">
       <!--begin::Home-->
       <li class="breadcrumb-item">
-        <router-link to="/" class="text-gray-500 text-hover-primary">홈</router-link>
+        <router-link to="/" class="text-gray-500 text-hover-primary">{{ t("layout.breadcrumb.home") }}</router-link>
       </li>
       <!--end::Home-->
       <template v-for="(item, i) in breadcrumbItems" :key="`${item.name}-${i}`">
@@ -43,6 +43,7 @@ import { computed, defineComponent } from "vue";
 import { useRoute } from "vue-router";
 import { useMenuStore, type MenuDto } from "@/shared/menu/stores/menu";
 import { toVuePath } from "@/shared/utils/urlMapping";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 interface BreadcrumbItem {
   name: string;
@@ -98,6 +99,8 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const menuStore = useMenuStore();
+    const localeStore = useLocaleStore();
+    const t = (key: string) => localeStore.t(key);
 
     /** 메뉴 트리의 현재 route 매칭 결과를 breadcrumb 와 설명으로 표시한다. */
     const breadcrumbMatch = computed(() => {
@@ -110,6 +113,7 @@ export default defineComponent({
     return {
       breadcrumbItems,
       menuDescription,
+      t,
     };
   },
 });

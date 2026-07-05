@@ -41,7 +41,8 @@
 - 앱 초기 로드 시 `applyLocaleHeader()` (`ApiService.ts`) 가 localStorage 값을 읽어 axios 헤더를 초기화한다.
 - 라우터 `beforeEach`는 인증 상태 확인과 화면 마운트보다 먼저 `localeStore.ensureCatalog()`를 호출한다. 같은 locale의 catalog가 이미 준비됐으면 재요청하지 않으며, 직접 URL 진입·새로고침에서도 번역 키 대신 현재 locale 메시지를 표시한다.
 - 로그인 화면(`SignIn.vue`): 국기 버튼(🇰🇷/🇺🇸) — `localeStore.setLocale()` 호출, 화면 텍스트 `localeStore.t()` 카탈로그로 전환.
-- 앱 헤더 Navbar: 국기 버튼 클릭 → ko↔en 토글. UI 텍스트 전체 i18n 적용은 별도 작업.
+- 앱 헤더 Navbar: 국기 버튼 클릭 → ko↔en 토글. 테마 전환·사용자/관리자 모드·언어 전환·프로필·모바일 헤더 메뉴의 사용자 노출 레이블은 현재 locale의 클라이언트 카탈로그를 사용하며, locale 변경은 기존 테마·메뉴 모드·라우트·인증 상태를 보존한다.
+- 브라우저 탭 제목은 최종 route의 `meta.pageTitleKey`를 현재 locale의 클라이언트 카탈로그로 해석한다. route 또는 locale 변경 시 `App.vue`의 단일 반응형 경로가 제목을 즉시 갱신하며, locale 변경은 현재 route와 인증 상태를 변경하지 않는다.
 
 ### 라우팅·메뉴
 
@@ -118,8 +119,9 @@ cF.ajax.request(url, options, callback, continueBlock?)
 
 - 인터셉터에서 401 처리 후 `AuthExpiredError` sentinel(`utils/authError.ts`)을 throw 해 각 catch 블록의 일반 오류 alert 가 중복으로 뜨지 않도록 억제한다.
 - 라우터 가드(`router/index.ts`)가 `verifyAuth()` 이후 미인증 상태를 감지한 경우에도 같은 `confirmSessionExpired()`를 거친다. 일반 보호 라우트는 확인 시 `buildSessionExpiredSignInRoute(to.fullPath)`로 이동하고, 팝업 보호 라우트는 alert 후 `next(false)`로 로그인 화면 렌더를 막는다.
+- `confirmSessionExpired()`의 일반 화면·팝업 제목, 설명, 확인·취소 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. locale은 안내 문구만 변경하며 HTTP 상태 판정, 중복 다이얼로그 방지, 팝업 닫기, 로그인 이동·취소 분기를 변경하지 않는다.
 - 사용자 체감 로그인 유지 시간은 `auth_policy.session_timeout_minutes` 단일 정책으로 관리한다. 서버는 이 값을 Spring Session max inactive interval, JWT access token `exp`, JWT 쿠키 max-age에 적용하고, JWT 검증 시에도 `issuedAt + policyTimeout`을 넘으면 만료로 처리한다. 정책값이 없거나 조회 실패 시 기존 `server.servlet.session.timeout` 설정을 fallback으로 사용한다.
-- Vue 저널의 submit/delete/state catch는 `swalRequestError(e)`를 호출한다. 이 공통 함수가 `AuthExpiredError`를 즉시 무시하고, 그 외 오류는 콘솔에 기록한 뒤 서버 `message` 또는 공통 실패 문구를 표시한다.
+- Vue 저널의 submit/delete/state catch는 `swalRequestError(e)`를 호출한다. 이 공통 함수가 `AuthExpiredError`를 즉시 무시하고, 그 외 오류는 콘솔에 기록한 뒤 서버 `message` 또는 현재 locale의 `common.error.processing` 공통 실패 문구를 표시한다.
 - Vue 저널의 검색·목록 조회가 실패해도 직전 성공 데이터를 빈 목록이나 `0건`으로 덮지 않는다. 상세·수정용 조회 실패는 오류를 표시하고 해당 모달을 열지 않는다.
 - 저장·삭제·복원처럼 결과값으로 후속 알림을 분기하는 store action은 `AuthExpiredError`를 `{ rslt: false }` 또는 `false`로 변환하지 않고 재throw한다. 호출부는 인증 만료일 때 전역 401 안내만 남기고, 실제 처리 실패일 때만 실패 알림을 표시한다.
 - 인증이 필요한 Vue SPA 모달은 `shared/auth/sessionPing.ts`의 `assertAuthenticatedBeforeModal()`을 먼저 호출한 뒤 모달 open 플래그 또는 Bootstrap `show()`를 실행한다. 이 핑은 `/api/session/ping`을 호출하며, 로그인 세션이 풀려 있으면 전역 401 인터셉터가 즉시 세션 만료 안내를 표시하고 모달은 열지 않는다. 로그인 화면의 비밀번호 변경 모달처럼 비로그인 상태에서 열려야 하는 auth 모달은 선행 핑 대상에서 제외한다.
@@ -299,6 +301,8 @@ onclick="ModalHistory.pop(); ModalHistory.prev();"
 
 ### 로그아웃 확인
 
+Vue SPA의 `UserAccountMenu.vue`와 `SidebarFooter.vue`는 현재 locale의 `account.logout.confirm` 문구로 확인한 뒤 기존 `useAuthStore.logout()`과 로그인 화면 이동을 수행한다. locale 변경은 로그아웃 API·메뉴 초기화·이동 흐름을 변경하지 않는다.
+
 `Layout.logout()`:
 ```javascript
 Swal.fire({
@@ -402,6 +406,8 @@ const tagify = cF.tagify.initMeta(selector, ctgrMap, additionalOptions?)
 6. ctgrMap에 없는 태그 → ctgr 입력 필드 직접 표시 + input에 자동 포커스
 7. Escape → 입력 취소, draft 초기화
 ```
+
+Vue `TagifyEditor.vue`의 일반/메타 카테고리 placeholder, 메타 값 예시, 태그 삭제 접근성 레이블, `직접입력` 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. `tagifyHelper.ts`는 해당 레이블을 호출자로부터 주입받으며 번역 카탈로그를 직접 참조하지 않는다. locale 변경 시 이미 렌더된 삭제 버튼과 열린 `직접입력` 선택지의 레이블만 갱신하고 Tagify 인스턴스를 재생성하지 않아 기존 태그·draft·포커스를 보존한다.
 
 관련 DOM 요소 (스코프 내 선택):
 - `#tag_ctgr_select_div`: 카테고리 선택 selectbox 컨테이너
@@ -523,6 +529,8 @@ cF.tinymce.init(selectorStr, imgFunc?)
      </div>
      ```
    - `tinymce_toggle_N` 클릭 → `#tinymce_section_content_N`에 `.collapsed` 클래스 토글
+
+Vue `RichEditor.vue`는 `custom_image`·`moreless` tooltip, 새 섹션의 토글·기본 내용, 이미지 크기 제한·업로드 실패 문구를 에디터 초기화 시점 locale의 클라이언트 카탈로그에서 읽는다. 위 삽입 구조와 ID·class·onclick 토글 계약은 유지하며, 영어 카탈로그에서는 예시 문구를 그대로 사용한다. 서버가 이미지 업로드 실패 `message`를 반환하면 카탈로그 기본 문구보다 우선 표시한다. 작성 중 내용과 커서 상태를 보존하기 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다.
 
 ### SaveContent 이벤트 처리
 

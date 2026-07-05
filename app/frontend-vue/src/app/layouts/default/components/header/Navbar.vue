@@ -50,7 +50,7 @@
       <button
         type="button"
         class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-30px h-30px w-md-40px h-md-40px"
-        :title="themeMode === 'light' ? 'Dark mode' : 'Light mode'"
+        :title="themeMode === 'light' ? t('navbar.theme.switch-dark.tooltip') : t('navbar.theme.switch-light.tooltip')"
         @click="toggleThemeMode"
       >
         <KTIcon
@@ -67,11 +67,11 @@
       <select
         class="form-select form-select-solid form-select-sm fw-bold w-115px"
         :value="menuMode"
-        title="사용자/관리자 권한별로 화면을 전환합니다."
+        :title="t('navbar.menu-mode.tooltip')"
         @change="onMenuModeChange"
       >
-        <option value="USER">사용자 모드</option>
-        <option value="MNGR">관리자 모드</option>
+        <option value="USER">{{ t("navbar.menu-mode.user") }}</option>
+        <option value="MNGR">{{ t("navbar.menu-mode.manager") }}</option>
       </select>
     </div>
     <!--end::User mode-->
@@ -80,7 +80,7 @@
       <button
         type="button"
         class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-30px h-30px w-md-40px h-md-40px"
-        :title="locale === 'ko' ? 'Switch to English' : '한국어로 전환'"
+        :title="locale === 'ko' ? t('navbar.locale.switch-english.tooltip') : t('navbar.locale.switch-korean.tooltip')"
         @click="toggleLocale"
       >
         <span class="fs-4">{{ locale === 'ko' ? '🇰🇷' : '🇺🇸' }}</span>
@@ -99,7 +99,7 @@
         <img
           :src="profileImageUrl"
           class="rounded-3"
-          alt="user"
+          :alt="t('navbar.profile-image.alt')"
           @error="handleProfileImageError"
         />
       </div>
@@ -111,7 +111,7 @@
     <div
       class="app-navbar-item d-lg-none ms-2 me-n2"
       v-tooltip
-      title="Show header menu"
+      :title="t('navbar.header-menu.open.tooltip')"
     >
       <div
         class="btn btn-flex btn-icon btn-active-color-primary w-30px h-30px"
@@ -163,6 +163,7 @@ export default defineComponent({
       store.setThemeMode(themeMode.value === "light" ? "dark" : "light");
     };
     const locale = computed(() => localeStore.locale);
+    const t = (key: string) => localeStore.t(key);
     const toggleLocale = () => {
       localeStore.setLocale(localeStore.locale === "ko" ? "en" : "ko");
     };
@@ -181,6 +182,7 @@ export default defineComponent({
       profileImageUrl,
       getAssetPath,
       locale,
+      t,
       toggleLocale,
     };
   },

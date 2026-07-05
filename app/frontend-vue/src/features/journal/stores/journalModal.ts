@@ -7,6 +7,7 @@ import { formatLocalDateStr } from "@/features/journal/utils/journalDate";
 import { mergeTagifyListIntoCategoryMap } from "@/shared/utils/tagifyHelper";
 import { requireApiPathSegment } from "@/shared/utils/appPath";
 import { swalRequestError } from "@/shared/utils/swal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 // ---- categoryMap (앱 세션 SSOT: 로그인·마운트 시 preload 1회, 저장 시 Tagify JSON 병합 — 무효화·모달 오픈 재조회 없음) ----
 
@@ -82,7 +83,6 @@ export interface JournalChapterRegistModel {
   id?: number;
   journalDayId?: number;
   stdrdDt?: string;
-  journalDateWeekDay?: string;
   chapterType?: "DIARY" | "NOTE" | "DREAM";
   categoryCode?: string;
   title?: string;
@@ -101,7 +101,6 @@ export interface JournalInterpretationRegistModel {
   refId?: number;
   refContentType?: string;
   stdrdDt?: string;
-  journalDateWeekDay?: string;
   ctgrCd?: string;
   title?: string;
   sortOrder?: number;
@@ -157,7 +156,6 @@ export interface JournalEntryRegistModel {
   journalDayId?: number;
   journalChapterId?: number | string;
   stdrdDt?: string;
-  journalDateWeekDay?: string;
   ctgrCd?: string;
   title?: string;
   sortOrder?: number;
@@ -174,6 +172,8 @@ export interface JournalEntryRegistModel {
 // ---- 스토어 ----
 
 export const useJournalModalStore = defineStore("journalModal", () => {
+  const { t } = useLocaleStore();
+
   // ---- 일자 등록/수정 모달 ----
 
   /** 등록/수정 모달 오픈 여부 */
@@ -218,7 +218,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         }
       } catch (e: unknown) {
         console.error("[journalModal] openDayRegist 상세 조회 실패 id=", payload.id, e);
-        void swalRequestError(e, "저널 일자 정보를 불러오지 못했습니다.");
+        void swalRequestError(e, t("journal.day.modify.load.failure"));
         return;
       }
     }
@@ -261,7 +261,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       console.error("[journalModal] openDayDetail failed", { id }, e);
       dayDetailData.value = null;
       dayDetailOpen.value = false;
-      void swalRequestError(e, "저널 일자 상세를 불러오지 못했습니다.");
+      void swalRequestError(e, t("journal.day.detail.load.failure"));
     } finally {
       dayDetailLoading.value = false;
     }
@@ -439,7 +439,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       const yearOptions: Array<{ value: string | number; label: string; selected?: boolean }> =
         seed.type === "tag"
           ? [
-              { value: "", label: "전체 년도" },
+              { value: "", label: "" },
               ...yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy })),
             ]
           : yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy }));
@@ -456,7 +456,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       console.error("[journalModal] openDayFilterModal failed", { tagId: seed.id, yy }, e);
       filterModalPayload.value = null;
       filterModalOpen.value = false;
-      void swalRequestError(e, "태그 검색 결과를 불러오지 못했습니다.");
+      void swalRequestError(e, t("journal.day.filter.load.failure"));
     } finally {
       filterModalLoading.value = false;
     }
@@ -643,12 +643,11 @@ export const useJournalModalStore = defineStore("journalModal", () => {
 
   /**
    * 꿈 엔트리 신규 등록 모달을 연다. dream-auto API 로 챕터를 자동 생성/조회한다.
-   * @param params - journalDayId, stdrdDt, journalDateWeekDay
+   * @param params - journalDayId, stdrdDt, dreamerName
    */
   async function openDreamEntryRegist(params: {
     journalDayId: number;
     stdrdDt: string;
-    journalDateWeekDay?: string;
     dreamerName?: string;
   }) {
     if (dreamEntryRegistOpening) return;
@@ -670,7 +669,6 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         journalDayId: params.journalDayId,
         journalChapterId: chapter?.id ?? "",
         stdrdDt: params.stdrdDt,
-        journalDateWeekDay: params.journalDateWeekDay,
         elseDreamerNm: params.dreamerName?.trim() ?? "",
         title: "",
         content: "",
@@ -681,7 +679,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       console.error("[journalModal] openDreamEntryRegist failed", { journalDayId: params.journalDayId }, e);
       entryRegistModel.value = null;
       entryRegistOpen.value = false;
-      void swalRequestError(e, "꿈 등록 정보를 불러오지 못했습니다.");
+      void swalRequestError(e, t("journal.entry.dream-regist.load.failure"));
     } finally {
       entryRegistLoading.value = false;
       dreamEntryRegistOpening = false;
@@ -720,7 +718,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       console.error("[journalModal] openEntryModify failed", { entryId: id }, e);
       entryRegistModel.value = null;
       entryRegistOpen.value = false;
-      void swalRequestError(e, "엔트리 정보를 불러오지 못했습니다.");
+      void swalRequestError(e, t("journal.entry.modify.load.failure"));
     } finally {
       entryRegistLoading.value = false;
     }

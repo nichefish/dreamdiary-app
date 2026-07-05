@@ -352,7 +352,7 @@
                         <div class="user-admin-email">
                           <input v-model.trim="store.form.emplym.emplymEmailId" type="text" class="form-control form-control-solid" maxlength="64" :placeholder="t('user.signup.work-email')" />
                           <span>@</span>
-                          <input v-model.trim="store.form.emplym.emplymEmailDomain" type="text" class="form-control form-control-solid" maxlength="100" placeholder="domain" />
+                          <input v-model.trim="store.form.emplym.emplymEmailDomain" type="text" class="form-control form-control-solid" maxlength="100" :placeholder="t('user.form.email-domain-placeholder')" />
                         </div>
                         <input v-model.trim="store.form.emplym.emplymPhoneNumber" type="text" class="form-control form-control-solid" maxlength="20" :placeholder="t('user.admin.form.emplym.phone.label')" />
                         <div class="user-admin-inline flex-wrap">

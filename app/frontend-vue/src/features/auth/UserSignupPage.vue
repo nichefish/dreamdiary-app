@@ -78,7 +78,7 @@
           <!--begin::이메일-->
           <div class="row mb-4">
             <div class="col-xl-2">
-              <label for="emailId" class="fw-bold col-form-label text-sm-start text-lg-center required">E-mail</label>
+              <label for="emailId" class="fw-bold col-form-label text-sm-start text-lg-center required">{{ t('user.form.email') }}</label>
             </div>
             <div class="col-lg-2 col-4">
               <input id="emailId" v-model.trim="form.emailId" maxlength="20" type="text"

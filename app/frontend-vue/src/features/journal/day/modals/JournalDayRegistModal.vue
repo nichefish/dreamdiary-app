@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">저널 일자 등록/수정</h5>
+          <h5 class="modal-title">{{ t("journal.day.regist-modal.title") }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -25,7 +25,7 @@
             <!--begin::날짜 + 정확도-->
             <div class="row row-cols-lg-2 mb-3">
               <div class="col-xl-2 col-2 d-flex-center">
-                <label class="fs-6 fw-bold mb-2 required" for="journalDate">날짜</label>
+                <label class="fs-6 fw-bold mb-2 required" for="journalDate">{{ t("journal.day.field.date") }}</label>
               </div>
               <div class="col-xl-3 col-5 d-flex flex-column" id="journalDateDiv">
                 <div class="d-flex align-items-center mt-1">
@@ -48,7 +48,7 @@
                 <div id="journalDate_validate_span"></div>
               </div>
               <div class="col-xl-2 col-5 d-flex flex-column align-items-start col-form-label">
-                <label class="fs-6 fw-bold mb-0 required" for="journalDatePrecision">날짜 정확도</label>
+                <label class="fs-6 fw-bold mb-0 required" for="journalDatePrecision">{{ t("journal.day.regist.field.date-precision") }}</label>
               </div>
               <div class="col-xl-3 col-5 d-flex flex-column">
                 <select
@@ -57,9 +57,9 @@
                   v-model="model.journalDatePrecision"
                   class="form-select form-select-solid w-150px mt-1"
                 >
-                  <option value="EXACT">EXACT</option>
-                  <option value="APPROXIMATE">APPROXIMATE</option>
-                  <option value="UNKNOWN">UNKNOWN</option>
+                  <option value="EXACT">{{ t("journal.date-precision.exact") }}</option>
+                  <option value="APPROXIMATE">{{ t("journal.date-precision.approximate") }}</option>
+                  <option value="UNKNOWN">{{ t("journal.date-precision.unknown") }}</option>
                 </select>
               </div>
             </div>
@@ -68,7 +68,7 @@
             <!--begin::날씨-->
             <div class="row mb-3">
               <div class="col-2 text-center">
-                <label for="weather" class="cursor-pointer col-form-label fs-6 fw-bold">날씨</label>
+                <label for="weather" class="cursor-pointer col-form-label fs-6 fw-bold">{{ t("journal.day.field.weather") }}</label>
               </div>
               <div class="col-1 d-flex-center w-5">
                 <span v-if="model.weather" v-html="model.weather" class="cursor-pointer"></span>
@@ -80,7 +80,7 @@
                   id="weather"
                   v-model="model.weather"
                   class="form-control form-control-solid d-block"
-                  placeholder="날씨 (이모지 등)"
+                  :placeholder="t('journal.day.regist.placeholder.weather')"
                   maxlength="200"
                   rows="1"
                 ></textarea>
@@ -91,7 +91,7 @@
             <!--begin::일기 완료 여부-->
             <div class="row d-flex mb-8">
               <div class="col-lg-12 col-3 d-flex align-items-center">
-                <label class="text-gray-700 fs-6 fw-bolder">일기 완료 여부</label>
+                <label class="text-gray-700 fs-6 fw-bolder">{{ t("journal.day.regist.diary-resolved-label") }}</label>
               </div>
               <div class="col-lg-2 col-9 d-flex align-items-center">
                 <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
@@ -108,7 +108,7 @@
                     class="form-check-label fw-bold fs-6 ms-3"
                     for="diaryResolvedYn"
                     :style="{ color: diaryResolvedChecked ? 'blue' : 'gray' }"
-                  >{{ diaryResolvedChecked ? '완료' : '미완료' }}</label>
+                  >{{ diaryResolvedChecked ? t("status.completed") : t("status.incomplete") }}</label>
                 </div>
               </div>
             </div>
@@ -118,8 +118,8 @@
             <div class="row mb-3">
               <div>
                 <label class="mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">태그</span>
-                  <span class="text-gray-500 fs-9 mx-2">(자동완성·카테고리 선택)</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t("common.tag") }}</span>
+                  <span class="text-gray-500 fs-9 mx-2">{{ t("journal.day.regist.tag-guide") }}</span>
                 </label>
               </div>
               <div class="col-xl-12 text-sm-start" id="tag_div">
@@ -136,12 +136,12 @@
             <div class="row mb-3">
               <div>
                 <label class="mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">메타</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t("common.meta") }}</span>
                   <i
                     v-tooltip
                     class="bi bi-question-circle text-muted ms-2 cursor-pointer"
-                    title="단위는 값 뒤에 붙여 입력합니다. 예: 30분, 2회, 5점, 72kg"
-                    aria-label="메타 단위 입력법"
+                    :title="t('journal.day.regist.meta-unit.tooltip')"
+                    :aria-label="t('journal.day.regist.meta-unit.aria')"
                     tabindex="0"
                   ></i>
                 </label>
@@ -171,15 +171,15 @@
               @click="submit"
             >
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t("common.save") }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
-              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
               @click="requestSafeClose"
-            >닫기</button>
+            >{{ t("common.close") }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -203,9 +203,11 @@ import { bindSingleDatePicker, destroySingleDatePicker } from "@/shared/utils/fl
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -342,12 +344,12 @@ function refreshCurrentDayView(targetDate?: string): void {
 async function submit() {
   if (!model.value) return;
   if (!model.value.journalDate) {
-    void swalAlert("날짜를 입력해 주세요.");
+    void swalAlert(t("journal.day.date.required"));
     return;
   }
 
   const isEdit = !!model.value.id;
-  const confirmed = await swalConfirm(isEdit ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isEdit ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
 
   /** 레거시 regAjax: 저장 직전 작성 중 메타 draft 확정 */
@@ -376,10 +378,10 @@ async function submit() {
       modalStore.applyCategoryMapsFromSaveResponse(res.data?.rsltMap);
       const savedDate = model.value?.journalDate ?? undefined;
       close();
-      await swalAlert(res.data?.message ?? (isEdit ? "수정되었습니다." : "등록되었습니다."));
+      await swalAlert(res.data?.message ?? (isEdit ? t("common.result.modified") : t("common.result.registered")));
       refreshCurrentDayView(savedDate);
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);

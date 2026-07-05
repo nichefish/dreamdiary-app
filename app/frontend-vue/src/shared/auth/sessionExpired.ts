@@ -1,6 +1,7 @@
 import type { RouteLocationRaw, Router } from "vue-router";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useAuthStore } from "@/shared/auth/stores/auth";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const SESSION_EXPIRED_QUERY = { sessionExpired: "Y" };
 const POPUP_ROUTE_NAMES = ["journal-entry-search", "journal-daily"];
@@ -28,16 +29,17 @@ export function buildSessionExpiredSignInRoute(redirect: string): RouteLocationR
 export async function confirmSessionExpired(routeName: unknown): Promise<boolean> {
   if (authExpiredDialogShowing) return false;
   authExpiredDialogShowing = true;
+  const { t } = useLocaleStore();
   try {
     if (isAuthPopupRoute(routeName)) {
       console.warn("[auth] popup session expired; close dialog shown", { routeName: String(routeName) });
       const result = await Swal.fire({
         icon: "warning",
-        title: "로그인이 풀렸습니다",
-        text: "현재 창에서는 더 이상 저장/조회할 수 없습니다. 창을 닫을까요?",
+        title: t("auth.session.expired.popup.title"),
+        text: t("auth.session.expired.popup.message"),
         showCancelButton: true,
-        confirmButtonText: "창 닫기",
-        cancelButtonText: "그대로 두기",
+        confirmButtonText: t("auth.session.expired.popup.confirm"),
+        cancelButtonText: t("auth.session.expired.popup.cancel"),
       });
       if (result.isConfirmed) window.close();
       return false;
@@ -46,11 +48,11 @@ export async function confirmSessionExpired(routeName: unknown): Promise<boolean
     console.warn("[auth] session expired; sign-in dialog shown", { routeName: String(routeName) });
     const result = await Swal.fire({
       icon: "warning",
-      title: "인증이 만료되었습니다",
-      text: "인증이 만료되었습니다. 로그인 화면으로 돌아가시겠습니까?",
+      title: t("auth.session.expired.page.title"),
+      text: t("auth.session.expired.page.message"),
       showCancelButton: true,
-      confirmButtonText: "로그인 화면으로 돌아가기",
-      cancelButtonText: "현재 화면에 머무르기",
+      confirmButtonText: t("auth.session.expired.page.confirm"),
+      cancelButtonText: t("auth.session.expired.page.cancel"),
     });
     return result.isConfirmed;
   } finally {

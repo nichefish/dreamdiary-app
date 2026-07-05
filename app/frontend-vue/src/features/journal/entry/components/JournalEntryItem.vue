@@ -15,12 +15,12 @@
     <!--begin::순번-->
     <div class="d-none d-md-flex flex-column align-items-center pt-1 ps-2" style="width:56px; min-width:56px;">
       <span :class="['fw-bold fs-7', isResolved ? 'text-success' : 'text-muted']">#{{ entry.sortOrder }}</span>
-      <span v-if="lcKey === 'PENDING'" class="badge badge-light-warning fs-8 mt-1">PEND</span>
+      <span v-if="lcKey === 'PENDING'" class="badge badge-light-warning fs-8 mt-1">{{ t("journal.entry.pending-badge") }}</span>
       <!--begin::클라이언트 임시 접힘/펼침 버튼-->
       <button
         type="button"
         :class="['btn btn-xs px-1 mt-1', { 'is-active': isCollapsed }]"
-        :title="isCollapsed ? '펼치기' : '접기'"
+        :title="isCollapsed ? t('common.expand') : t('common.collapse')"
         @click="toggleEntry"
       >
         <i :class="['bi pe-0 fs-8', isCollapsed ? 'bi-arrows-expand' : 'bi-arrows-collapse']"></i>
@@ -33,8 +33,8 @@
     <div :class="[contentClass, 'flex-grow-1']">
       <!--begin::꿈 상태 배지 (꿈 엔트리 전용)-->
       <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
-        <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!악몽</span>
-        <span v-if="hasState('HALLUC')" class="badge badge-light-secondary">!환각/현시</span>
+        <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!{{ t('state.nightmare') }}</span>
+        <span v-if="hasState('HALLUC')" class="badge badge-light-secondary">!{{ t('state.hallucination') }}</span>
         <span v-if="entry.title" class="fw-bold fs-7">{{ entry.title }}</span>
       </div>
       <!--end::꿈 상태 배지-->
@@ -45,7 +45,7 @@
         class="journal-content p-2"
         v-html="entry.markdownContent"
       ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">collapsed</div>
+      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">{{ t("journal.entry.collapsed") }}</div>
       <!--end::마크다운 본문-->
 
       <!--begin::엔트리 태그-->
@@ -112,7 +112,7 @@
       <button
         type="button"
         class="btn btn-xs btn-icon journal-entry-action-btn"
-        title="댓글 등록"
+        :title="t('comment.register')"
         @click="openCommentRegist"
       >
         <i class="bi bi-chat-dots fs-8"></i>
@@ -123,7 +123,7 @@
       <button
         type="button"
         class="btn btn-xs btn-icon journal-entry-action-btn"
-        title="복사"
+        :title="t('common.copy')"
         @click="copyEntry"
       >
         <i class="bi bi-copy fs-8"></i>
@@ -137,7 +137,7 @@
           class="btn btn-xs btn-icon journal-entry-action-btn"
           data-kt-menu-trigger="click"
           data-kt-menu-placement="bottom-end"
-          title="메뉴"
+          :title="t('common.menu')"
         >
           <i class="ki-solid ki-dots-horizontal fs-6"></i>
         </button>
@@ -154,7 +154,7 @@
           <!--begin::수정-->
           <div class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openModify">
-              수정
+              {{ t('common.edit') }}
               <i class="bi bi-pencil-square fs-8"></i>
             </div>
           </div>
@@ -163,7 +163,7 @@
           <!--begin::해석 등록-->
           <div class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openInterpretationRegist">
-              해석 등록
+              {{ t('journal.entry.interpretation.register') }}
               <i class="bi bi-lightbulb fs-8"></i>
             </div>
           </div>
@@ -175,7 +175,7 @@
               :class="['menu-link flex-stack px-3', { 'disabled text-muted': !hasHistory }]"
               @click="hasHistory ? openHistory() : undefined"
             >
-              이력
+              {{ t('journal.entry.history') }}
               <i class="bi bi-clock-history fs-8"></i>
             </div>
           </div>
@@ -184,7 +184,7 @@
           <!--begin::관련 글 추가 (다른 사람 꿈 제외)-->
           <div v-if="!hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openRelated">
-              관련 글 추가
+              {{ t('journal.entry.related-content.add') }}
               <i class="bi bi-link-45deg fs-8"></i>
             </div>
           </div>
@@ -195,7 +195,7 @@
           <!--begin::라이프사이클 서브메뉴-->
           <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
             <a href="#" class="menu-link px-3" @click.prevent>
-              <span class="menu-title">라이프사이클</span>
+              <span class="menu-title">{{ t('common.lifecycle') }}</span>
               <span class="menu-arrow"></span>
             </a>
             <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -221,7 +221,7 @@
           <!--begin::상태 서브메뉴-->
           <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
             <a href="#" class="menu-link px-3" @click.prevent>
-              <span class="menu-title">상태</span>
+              <span class="menu-title">{{ t('common.status') }}</span>
               <span class="menu-arrow"></span>
             </a>
             <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -269,7 +269,7 @@
                       :checked="hasState('COLLAPSED')"
                       @click="toggleState('COLLAPSED')"
                     />
-                    <span class="form-check-label fs-7" :class="hasState('COLLAPSED') ? 'text-gray-700' : 'text-muted'">접기</span>
+                    <span class="form-check-label fs-7" :class="hasState('COLLAPSED') ? 'text-gray-700' : 'text-muted'">{{ t('common.collapse') }}</span>
                   </label>
                 </div>
               </div>
@@ -283,7 +283,7 @@
           <!--begin::삭제-->
           <div class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3 text-danger" @click="deleteEntry">
-              삭제
+              {{ t('common.delete') }}
               <i class="bi bi-trash text-danger p-0 fs-8"></i>
             </div>
           </div>
@@ -318,6 +318,7 @@ import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayR
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
 
 const props = defineProps<{
@@ -334,6 +335,7 @@ const attachableStore = useAttachableModalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();
 const route = useRoute();
+const { t } = useLocaleStore();
 
 interface JournalCacheContext {
   yy?: number;
@@ -357,8 +359,8 @@ const contentClass = computed(() => {
 
 /** 메뉴 헤더에 표시할 컨텐츠 유형 레이블 */
 const contentLabel = computed(() => {
-  if (props.isDream || props.entry.contentType === 'JOURNAL_DREAM') return '꿈';
-  return '일기';
+  if (props.isDream || props.entry.contentType === 'JOURNAL_DREAM') return t('common.dream');
+  return t('common.diary');
 });
 
 const lcKey = computed(() => props.entry.lifecycle?.lifecycleKey ?? "");
@@ -442,23 +444,23 @@ function resolveJournalCacheContext(): JournalCacheContext {
 }
 
 /** 라이프사이클 옵션 (OPEN/PENDING/RESOLVED) */
-const lifecycleOptions = [
-  { key: "OPEN", label: "진행 중", activeClass: "text-gray-800" },
-  { key: "PENDING", label: "보류", activeClass: "text-primary" },
-  { key: "RESOLVED", label: "완료", activeClass: "text-success" },
-];
+const lifecycleOptions = computed(() => [
+  { key: "OPEN", label: t("journal.entry.lifecycle.open"), activeClass: "text-gray-800" },
+  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-primary" },
+  { key: "RESOLVED", label: t("status.completed"), activeClass: "text-success" },
+]);
 
 /** 상태 옵션 (중요/참조) */
-const statusOptions = [
-  { key: "IMPRTC", label: "중요", activeClass: "text-danger" },
-  { key: "REFRNC", label: "참조", activeClass: "text-warning" },
-];
+const statusOptions = computed(() => [
+  { key: "IMPRTC", label: t("state.important"), activeClass: "text-danger" },
+  { key: "REFRNC", label: t("state.reference"), activeClass: "text-warning" },
+]);
 
 /** 꿈 전용 상태 옵션 (악몽/환각) */
-const dreamStatusOptions = [
-  { key: "NHTMR", label: "악몽", activeClass: "text-info" },
-  { key: "HALLUC", label: "환각/현시", activeClass: "text-gray-700" },
-];
+const dreamStatusOptions = computed(() => [
+  { key: "NHTMR", label: t("state.nightmare"), activeClass: "text-info" },
+  { key: "HALLUC", label: t("state.hallucination"), activeClass: "text-gray-700" },
+]);
 
 /** 태그 클릭 컨텍스트 메뉴 열기 */
 function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; name: string; ctgr?: string }): void {
@@ -493,7 +495,7 @@ function htmlToPlainText(html: string): string {
 
 /** 엔트리 내용을 클립보드에 복사한다. 레거시 copy() 와 동일 형식: 날짜(요일)\n마크다운 원문 */
 async function copyEntry(): Promise<void> {
-  const weekDay = getWeekDayStr(props.entry.stdrdDt);
+  const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
   const dateLine = weekDay
     ? `${props.entry.stdrdDt} (${weekDay})`
     : (props.entry.stdrdDt ?? "");
@@ -502,9 +504,9 @@ async function copyEntry(): Promise<void> {
   const text = [dateLine, raw].filter(Boolean).join("\n");
   try {
     await navigator.clipboard.writeText(text);
-    void swalAlert("클립보드에 복사되었습니다.");
+    void swalAlert(t("common.copy.success"));
   } catch {
-    void swalAlert("복사에 실패했습니다.");
+    void swalAlert(t("common.copy.failure"));
   }
 }
 
@@ -569,7 +571,7 @@ async function setLifecycle(lifecycleKey: string): Promise<void> {
     if (res.data?.rslt) {
       scrollAfterFetch();
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -589,7 +591,7 @@ async function toggleState(stateKey: string): Promise<void> {
     if (res.data?.rslt) {
       scrollAfterFetch();
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -600,15 +602,15 @@ async function toggleState(stateKey: string): Promise<void> {
 async function deleteEntry(): Promise<void> {
   if (!props.entry.id) return;
   const stdrdDt = props.entry.stdrdDt;
-  const confirmed = await swalConfirm("삭제하시겠습니까?");
+  const confirmed = await swalConfirm(t("common.confirm.del"));
   if (!confirmed) return;
   try {
     const res = await axios.delete(`/api/journal/entry/${props.entry.id}`);
     if (res.data?.rslt) {
-      await swalAlert(res.data?.message ?? "삭제되었습니다.");
+      await swalAlert(res.data?.message ?? t("common.result.deleted"));
       scrollAfterFetch(stdrdDt);
     } else {
-      void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("journal.entry.delete.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);

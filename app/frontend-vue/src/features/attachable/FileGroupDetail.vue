@@ -15,7 +15,7 @@
               :title="t('attach.download.tooltip')"
             >
               <i class="fas fa-file-download fs-15 me-1"></i>
-              {{ file.orgnFileNm }}({{ file.fileSize }}byte)
+              {{ file.orgnFileNm }}({{ file.fileSize }}{{ t('attach.file-size.unit') }})
             </a>
           </div>
         </div>

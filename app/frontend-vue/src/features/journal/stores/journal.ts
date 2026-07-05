@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { formatLocalDateStr, resolveWeekStartDt } from "@/features/journal/utils/journalDate";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import type { JournalDreamSectionDto } from "@/features/journal/utils/journalDream";
 
 // ---- 타입 정의 ----
@@ -178,7 +179,6 @@ export interface JournalDayDto {
   journalDate?: string;
   /** 기준일자 — 백엔드 getStdrdDt() getter 직렬화 (journalDate 와 동일값) */
   stdrdDt?: string;
-  journalDateWeekDay?: string;
   journalDatePrecision?: string;
   yy?: number;
   mnth?: number;
@@ -274,6 +274,7 @@ export interface JournalTagCloud {
 // ---- 스토어 ----
 
 export const useJournalStore = defineStore("journal", () => {
+  const { t } = useLocaleStore();
   const now = new Date();
 
   /** 현재 보기 타입 */
@@ -407,7 +408,7 @@ export const useJournalStore = defineStore("journal", () => {
     } catch (e: unknown) {
       const vt = params?.viewType ?? viewType.value;
       console.error("[journal] fetchDays failed", { viewType: vt, weekStartDt: weekStartDt.value }, e);
-      error.value = "저널 목록을 불러오지 못했습니다.";
+      error.value = t("journal.day.list.load.failure");
       if ((params?.viewType ?? viewType.value) === "CAL") {
         calEventList.value = [];
       } else {

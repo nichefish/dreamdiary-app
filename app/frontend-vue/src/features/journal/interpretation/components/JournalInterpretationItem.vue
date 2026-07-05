@@ -11,7 +11,7 @@
       <button
         type="button"
         :class="['btn btn-xs px-1 mt-1', { 'is-active': isCollapsed }]"
-        :title="isCollapsed ? '펼치기' : '접기'"
+        :title="isCollapsed ? t('common.expand') : t('common.collapse')"
         @click="toggleInterpretation"
       >
         <i :class="['bi pe-0 fs-8', isCollapsed ? 'bi-arrows-expand' : 'bi-arrows-collapse']"></i>
@@ -30,7 +30,7 @@
         class="journal-content fs-7 p-2"
         v-html="interpretation.markdownContent"
       ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">접힌 상태</div>
+      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">{{ t('journal.interpretation.collapsed') }}</div>
       <!--end::마크다운 본문-->
       <!--begin::댓글-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
@@ -52,7 +52,7 @@
       <button
         type="button"
         class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
-        title="댓글 등록"
+        :title="t('comment.register')"
         @click="openCommentRegist"
       >
         <i class="bi bi-chat-dots fs-8"></i>
@@ -63,7 +63,7 @@
       <button
         type="button"
         class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
-        title="복사"
+        :title="t('common.copy')"
         @click="copyInterpretation"
       >
         <i class="bi bi-copy fs-8"></i>
@@ -77,7 +77,7 @@
           class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
           data-kt-menu-trigger="click"
           data-kt-menu-placement="bottom-end"
-          title="메뉴"
+          :title="t('common.menu')"
         >
           <i class="ki-solid ki-dots-horizontal fs-6"></i>
         </button>
@@ -87,14 +87,14 @@
         >
           <!--begin::메뉴 헤더-->
           <div class="menu-item px-3">
-            <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">해석</div>
+            <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t('common.interpretation') }}</div>
           </div>
           <!--end::메뉴 헤더-->
 
           <!--begin::수정-->
           <div class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openModify">
-              수정
+              {{ t('common.edit') }}
               <i class="bi bi-pencil-square fs-8"></i>
             </div>
           </div>
@@ -106,7 +106,7 @@
               :class="['menu-link flex-stack px-3', { 'disabled text-muted': !hasHistory }]"
               @click="hasHistory ? openHistory() : undefined"
             >
-              이력
+              {{ t('journal.interpretation.history') }}
               <i class="bi bi-clock-history fs-8"></i>
             </div>
           </div>
@@ -117,7 +117,7 @@
           <!--begin::라이프사이클 서브메뉴-->
           <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
             <a href="#" class="menu-link px-3" @click.prevent>
-              <span class="menu-title">라이프사이클</span>
+              <span class="menu-title">{{ t('common.lifecycle') }}</span>
               <span class="menu-arrow"></span>
             </a>
             <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -145,7 +145,7 @@
           <!--begin::상태 서브메뉴-->
           <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
             <a href="#" class="menu-link px-3" @click.prevent>
-              <span class="menu-title">상태</span>
+              <span class="menu-title">{{ t('common.status') }}</span>
               <span class="menu-arrow"></span>
             </a>
             <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -158,7 +158,7 @@
                       :checked="hasState('IMPRTC')"
                       @click="toggleState('IMPRTC')"
                     />
-                    <span class="form-check-label fs-7" :class="hasState('IMPRTC') ? 'text-danger' : 'text-muted'">중요</span>
+                    <span class="form-check-label fs-7" :class="hasState('IMPRTC') ? 'text-danger' : 'text-muted'">{{ t('state.important') }}</span>
                   </label>
                 </div>
               </div>
@@ -171,7 +171,7 @@
                       :checked="hasState('COLLAPSED')"
                       @click="toggleState('COLLAPSED')"
                     />
-                    <span class="form-check-label fs-7" :class="hasState('COLLAPSED') ? 'text-gray-700' : 'text-muted'">접기</span>
+                    <span class="form-check-label fs-7" :class="hasState('COLLAPSED') ? 'text-gray-700' : 'text-muted'">{{ t('common.collapse') }}</span>
                   </label>
                 </div>
               </div>
@@ -184,7 +184,7 @@
           <!--begin::삭제-->
           <div class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3 text-danger" @click="deleteInterpretation">
-              삭제
+              {{ t('common.delete') }}
               <i class="bi bi-trash text-danger p-0 fs-8"></i>
             </div>
           </div>
@@ -209,6 +209,7 @@ import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import type { InterpretationItem } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const props = defineProps<{
   interpretation: InterpretationItem;
@@ -217,6 +218,7 @@ const props = defineProps<{
 const modalStore = useJournalModalStore();
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const lcKey = computed(() => props.interpretation.lifecycle?.lifecycleKey ?? "");
@@ -238,11 +240,11 @@ function hasState(key: string): boolean {
 const commentList = computed(() => props.interpretation.comment?.list ?? []);
 
 /** 라이프사이클 옵션 */
-const lifecycleOptions = [
-  { key: "OPEN",     label: "진행 중", activeClass: "text-gray-800" },
-  { key: "PENDING",  label: "보류",    activeClass: "text-primary"  },
-  { key: "RESOLVED", label: "완료",    activeClass: "text-success"  },
-];
+const lifecycleOptions = computed(() => [
+  { key: "OPEN",     label: t("journal.interpretation.lifecycle.open"), activeClass: "text-gray-800" },
+  { key: "PENDING",  label: t("lifecycle.pending"), activeClass: "text-primary"  },
+  { key: "RESOLVED", label: t("status.completed"),  activeClass: "text-success"  },
+]);
 
 function toggleInterpretation(): void {
   localCollapsedOverride.value = !isCollapsed.value;
@@ -290,7 +292,7 @@ async function setLifecycle(lifecycleKey: string): Promise<void> {
       lifecycleKey,
     });
     if (res.data?.rslt) scrollAfterFetch();
-    else void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+    else void swalAlert(res.data?.message ?? t("common.result.failure"));
   } catch (e: unknown) {
     void swalRequestError(e);
   }
@@ -305,7 +307,7 @@ async function toggleState(stateKey: string): Promise<void> {
       stateKey,
     });
     if (res.data?.rslt) scrollAfterFetch();
-    else void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+    else void swalAlert(res.data?.message ?? t("common.result.failure"));
   } catch (e: unknown) {
     void swalRequestError(e);
   }
@@ -313,7 +315,7 @@ async function toggleState(stateKey: string): Promise<void> {
 
 /** 해석 내용 클립보드 복사 */
 async function copyInterpretation(): Promise<void> {
-  const weekDay = getWeekDayStr(props.interpretation.stdrdDt);
+  const weekDay = getWeekDayStr(props.interpretation.stdrdDt, t);
   const dateLine = weekDay
     ? `${props.interpretation.stdrdDt} (${weekDay})`
     : (props.interpretation.stdrdDt ?? "");
@@ -326,22 +328,22 @@ async function copyInterpretation(): Promise<void> {
   const text = [dateLine, raw].filter(Boolean).join("\n");
   try {
     await navigator.clipboard.writeText(text);
-    void swalAlert("클립보드에 복사되었습니다.");
+    void swalAlert(t("common.copy.success"));
   } catch {
-    void swalAlert("복사에 실패했습니다.");
+    void swalAlert(t("common.copy.failure"));
   }
 }
 
 /** 해석 삭제 */
 async function deleteInterpretation(): Promise<void> {
-  if (!await swalConfirm("해석을 삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("journal.interpretation.delete.confirm"))) return;
   try {
     const res = await axios.delete(`/api/journal/interpretation/${props.interpretation.id}`);
     if (res.data?.rslt) {
-      await swalAlert(res.data?.message ?? "삭제되었습니다.");
+      await swalAlert(res.data?.message ?? t("common.result.deleted"));
       void refreshJournalDaysForRoute(journalStore, route, props.interpretation.stdrdDt);
     }
-    else void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+    else void swalAlert(res.data?.message ?? t("journal.interpretation.delete.failure"));
   } catch (e: unknown) {
     void swalRequestError(e);
   }

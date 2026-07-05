@@ -14,7 +14,7 @@
         <!--begin::로딩 (달력 DOM 을 유지해야 하므로 오버레이 방식)-->
         <div v-if="store.loading" class="journal-cal-loading">
           <span class="spinner-border spinner-border-sm me-2"></span>
-          조회 중...
+          {{ t("journal.day.calendar.loading") }}
         </div>
         <!--end::로딩-->
         <FullCalendar ref="calendarRef" :options="calendarOptions" />
@@ -30,15 +30,19 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import koLocale from "@fullcalendar/core/locales/ko";
 import type { CalendarOptions, EventClickArg, EventContentArg, EventMountArg } from "@fullcalendar/core";
 import { Tooltip } from "bootstrap";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
 import JournalTagCloudHeader from "./components/JournalTagCloudHeader.vue";
 
 const store = useJournalStore();
 const modalStore = useJournalModalStore();
+const localeStore = useLocaleStore();
+const { t } = localeStore;
 const route = useRoute();
 
 const calendarRef = ref<any>(null);
@@ -47,7 +51,7 @@ const calendarOptions = computed<CalendarOptions>(() => ({
   plugins: [dayGridPlugin],
   initialView: "dayGridMonth",
   initialDate: new Date(store.yy, store.mnth - 1, 1),
-  locale: "ko",
+  locale: localeStore.locale === "ko" ? koLocale : "en",
   height: "auto",
   // 레거시 동일: 달력 자체 내비게이션 없음(title 만) — 월 이동은 aside 에서 수행
   headerToolbar: { left: "", center: "title", right: "" },

@@ -10,7 +10,7 @@
         class="btn btn-sm btn-light-danger"
         @click="handleLogout"
       >
-        로그아웃
+        {{ t("account.logout") }}
       </button>
     </div>
   </div>
@@ -21,12 +21,15 @@
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { swalConfirm } from "@/shared/utils/swal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const authStore = useAuthStore();
 const router = useRouter();
+const localeStore = useLocaleStore();
+const t = (key: string) => localeStore.t(key);
 
 async function handleLogout() {
-  if (!await swalConfirm("로그아웃 하시겠습니까?")) return;
+  if (!await swalConfirm(t("account.logout.confirm"))) return;
   await authStore.logout();
   await router.push({ name: "sign-in" });
 }
