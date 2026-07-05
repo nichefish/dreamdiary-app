@@ -38,8 +38,8 @@ public abstract class JournalDayMapstruct
      */
     @Override
     @Named("toEntity")
-    @Mapping(target = "journalDate", expression = "java(DateUtils.asDate(dto.getJournalDate()))")
-    @Mapping(target = "weekStartDt", expression = "java(DateUtils.asDate(dto.getWeekStartDt()))")
+    @Mapping(target = "journalDate", expression = "java(DateUtils.asLocalDate(dto.getJournalDate()))")
+    @Mapping(target = "weekStartDt", expression = "java(DateUtils.asLocalDate(dto.getWeekStartDt()))")
     public abstract JournalDayEntity toEntity(final JournalDayDto dto) throws Exception;
 
     /**
@@ -49,8 +49,8 @@ public abstract class JournalDayMapstruct
      * @param entity 갱신 대상 Entity 객체
      */
     @Override
-    @Mapping(target = "journalDate", expression = "java(DateUtils.asDate(dto.getJournalDate()))")
-    @Mapping(target = "weekStartDt", expression = "java(DateUtils.asDate(dto.getWeekStartDt()))")
+    @Mapping(target = "journalDate", expression = "java(DateUtils.asLocalDate(dto.getJournalDate()))")
+    @Mapping(target = "weekStartDt", expression = "java(DateUtils.asLocalDate(dto.getWeekStartDt()))")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract void updateFromDto(final JournalDayDto dto, final @MappingTarget JournalDayEntity entity) throws Exception;
 

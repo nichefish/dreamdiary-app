@@ -13,10 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -114,7 +114,7 @@ public class JournalEntryEntityQueueService {
         repository.findById(jobId).ifPresent(job -> {
             job.setJobStatus(STATUS_SYNCED);
             job.setContentHash(contentHash);
-            job.setProcessedAt(new Date());
+            job.setProcessedAt(LocalDateTime.now());
             job.setLockedBy(null);
             job.setErrorMessage(null);
             repository.save(job);
@@ -133,7 +133,7 @@ public class JournalEntryEntityQueueService {
         repository.findById(jobId).ifPresent(job -> {
             job.setJobStatus(STATUS_SKIPPED);
             job.setContentHash(contentHash);
-            job.setProcessedAt(new Date());
+            job.setProcessedAt(LocalDateTime.now());
             job.setLockedBy(null);
             job.setErrorMessage(null);
             repository.save(job);
@@ -164,7 +164,7 @@ public class JournalEntryEntityQueueService {
      * @param batchSize limit
      */
     @Transactional
-    public void requeueStaleProcessing(final Date updatedAt, final Integer batchSize) {
+    public void requeueStaleProcessing(final LocalDateTime updatedAt, final Integer batchSize) {
         final List<JournalEntryEntityJobEntity> staleJobList = repository
                 .findAllByJobStatusAndUpdatedAtBeforeOrderByUpdatedAtAscIdAsc(
                         STATUS_PROCESSING,

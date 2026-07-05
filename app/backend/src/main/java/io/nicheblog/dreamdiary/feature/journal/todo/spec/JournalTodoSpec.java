@@ -7,8 +7,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +66,7 @@ public class JournalTodoSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        final Expression<Date> createdAtExp = root.get("createdAt");
+        final Expression<LocalDateTime> createdAtExp = root.get("createdAt");
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -74,11 +74,11 @@ public class JournalTodoSpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(createdAtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

@@ -48,8 +48,8 @@ public interface HolydayKasiApiMapstruct
     @Mapping(target = "title", expression = "java(dto.getDateName())")
     @Mapping(target = "content", expression = "java(dto.getDateName())")
     @Mapping(target = "scheduleCd", expression = "java(Code.SCHEDULE_HOLYDAY)")
-    @Mapping(target = "bgnDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
-    @Mapping(target = "endDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
+    @Mapping(target = "bgnDt", expression = "java(DateUtils.asLocalDateTime(dto.getLocdate()))")
+    @Mapping(target = "endDt", expression = "java(DateUtils.asLocalDateTime(dto.getLocdate()))")
     ScheduleEntity toEntity(final HolydayKasiApiItemDto dto) throws Exception;
 
     /**
@@ -62,8 +62,8 @@ public interface HolydayKasiApiMapstruct
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "title", expression = "java(dto.getDateName())")
     @Mapping(target = "scheduleCd", expression = "java(Code.SCHEDULE_HOLYDAY)")
-    @Mapping(target = "bgnDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
-    @Mapping(target = "endDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
+    @Mapping(target = "bgnDt", expression = "java(DateUtils.asLocalDateTime(dto.getLocdate()))")
+    @Mapping(target = "endDt", expression = "java(DateUtils.asLocalDateTime(dto.getLocdate()))")
     void updateFromDto(final HolydayKasiApiItemDto dto, final @MappingTarget ScheduleEntity entity) throws Exception;
 }
 

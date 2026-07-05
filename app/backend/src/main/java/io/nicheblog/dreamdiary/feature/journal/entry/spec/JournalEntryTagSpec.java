@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class JournalEntryTagSpec
         final Join<JournalEntryTagContentEntity, JournalEntrySmpEntity> entryJoin = tagContentJoin.join("journalEntry", JoinType.INNER);
         final Join<JournalEntrySmpEntity, JournalChapterSmpEntity> chapterJoin = entryJoin.join("journalChapter", JoinType.INNER);
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
+        final Expression<LocalDate> effectiveDtExp = journalDayJoin.get("journalDate");
 
         predicate.add(builder.equal(tagContentJoin.get("refContentType"), contentType.key));
         predicate.add(builder.equal(entryJoin.get("contentType"), contentType.key));
@@ -69,10 +69,10 @@ public class JournalEntryTagSpec
             final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
-                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "searchEndDt":
-                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "yy":
                     final Integer yy = (Integer) value;
@@ -83,7 +83,7 @@ public class JournalEntryTagSpec
                     if (mnth != 99) predicate.add(builder.equal(journalDayJoin.get(key), mnth));
                     continue;
                 case "weekStartDt":
-                    predicate.add(builder.equal(journalDayJoin.get(key), DateUtils.asDate(value)));
+                    predicate.add(builder.equal(journalDayJoin.get(key), DateUtils.asLocalDate(value)));
                     continue;
                 case "createdBy":
                     predicate.add(builder.equal(tagContentJoin.get("createdBy"), value));

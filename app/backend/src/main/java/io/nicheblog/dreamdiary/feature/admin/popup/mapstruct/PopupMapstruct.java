@@ -43,8 +43,8 @@ public interface PopupMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "popupStartDt", expression = "java(DateUtils.asDate(dto.getPopupStartDt()))")
-    @Mapping(target = "popupEndDt", expression = "java(DateUtils.asDate(dto.getPopupEndDt()))")
+    @Mapping(target = "popupStartDt", expression = "java(DateUtils.asLocalDateTime(dto.getPopupStartDt()))")
+    @Mapping(target = "popupEndDt", expression = "java(DateUtils.asLocalDateTime(dto.getPopupEndDt()))")
     PopupEntity toEntity(final PopupDto dto) throws Exception;
 
     /**
@@ -55,7 +55,7 @@ public interface PopupMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "popupStartDt", expression = "java(DateUtils.asDate(dto.getPopupStartDt()))")
-    @Mapping(target = "popupEndDt", expression = "java(DateUtils.asDate(dto.getPopupEndDt()))")
+    @Mapping(target = "popupStartDt", expression = "java(DateUtils.asLocalDateTime(dto.getPopupStartDt()))")
+    @Mapping(target = "popupEndDt", expression = "java(DateUtils.asLocalDateTime(dto.getPopupEndDt()))")
     void updateFromDto(final PopupDto dto, final @MappingTarget PopupEntity entity) throws Exception;
 }

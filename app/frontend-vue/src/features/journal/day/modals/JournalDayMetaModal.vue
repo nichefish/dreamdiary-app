@@ -7,7 +7,7 @@
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title">
-            저널 일자 필터:
+            {{ t("journal.day.filter.modal.title") }}
             <template v-for="(sm, idx) in selectedMetas" :key="'hd-meta-' + sm.metaId">
               <span class="text-primary">{{ sm.metaName }}</span>
               <span v-if="idx < selectedMetas.length - 1 || selectedTags.length > 0" class="text-muted mx-1">+</span>
@@ -16,7 +16,7 @@
               <span class="text-success">#{{ st.tagName }}</span>
               <span v-if="idx < selectedTags.length - 1" class="text-muted mx-1">+</span>
             </template>
-            <span v-if="payload" class="text-muted fs-7 ms-2">-- {{ dayCount }}개</span>
+            <span v-if="payload" class="text-muted fs-7 ms-2">-- {{ t("journal.day.filter.result-count").replace("{0}", String(dayCount)) }}</span>
           </h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
@@ -38,7 +38,7 @@
               <div class="d-flex align-items-center gap-4 mb-4 flex-wrap">
                 <!--begin::연도 선택기-->
                 <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                  <label for="journal_day_meta_yy" class="form-label mb-0 fw-bold">연도</label>
+                  <label for="journal_day_meta_yy" class="form-label mb-0 fw-bold">{{ t("common.year") }}</label>
                   <select
                     id="journal_day_meta_yy"
                     class="form-select form-select-sm w-auto"
@@ -49,7 +49,7 @@
                       v-for="opt in payload.yearOptions"
                       :key="'yy-' + opt.value"
                       :value="String(opt.value)"
-                    >{{ opt.label }}</option>
+                    >{{ String(opt.value) === "" ? t("journal.day.filter.all-years") : opt.label }}</option>
                   </select>
                 </div>
                 <!--end::연도 선택기-->
@@ -66,7 +66,7 @@
                     {{ sm.metaName }}
                     <i
                       class="bi bi-x-circle-fill cursor-pointer opacity-75"
-                      :title="sm.metaName + ' 제거'"
+                      :title="t('journal.day.filter.remove.tooltip').replace('{0}', sm.metaName)"
                       @click.stop="removeMeta(sm.metaId)"
                     ></i>
                   </span>
@@ -80,7 +80,7 @@
                     #{{ st.tagName }}
                     <i
                       class="bi bi-x-circle-fill cursor-pointer opacity-75"
-                      :title="'#' + st.tagName + ' 제거'"
+                      :title="t('journal.day.filter.remove.tooltip').replace('{0}', '#' + st.tagName)"
                       @click.stop="removeTag(st.tagId)"
                     ></i>
                   </span>
@@ -88,30 +88,47 @@
                 </div>
                 <!--end::선택 필터 칩 목록-->
 
-                <!--begin::태그 입력 검색 (엔트리 검색과 동일 패턴: datalist 자동완성 + 동명 태그 카테고리 선택)-->
-                <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                  <span class="fw-bold fs-7 text-gray-700">{{ t("common.tag") }}</span>
-                  <input
-                    v-model="tagInput"
-                    type="text"
-                    class="form-control form-control-sm w-200px"
-                    :placeholder="t('journal.entry.search.tag.placeholder')"
-                    maxlength="100"
-                    list="journal_day_meta_tag_options"
-                    autocomplete="off"
-                    @focus="ensureTagCatalog()"
-                    @keydown.enter.prevent="addTagFromInput"
-                  />
-                  <datalist id="journal_day_meta_tag_options">
-                    <option
-                      v-for="tagName in tagNameOptions"
-                      :key="tagName"
-                      :value="tagName"
-                    />
-                  </datalist>
-                  <button type="button" class="btn btn-sm btn-light-primary flex-shrink-0" @click="addTagFromInput">
-                    + {{ t("common.add") }}
-                  </button>
+                <!--begin::태그 입력 검색 (모달 내 datalist 미표시 대응: 인라인 typeahead + 엔트리 검색과 동일 매칭)-->
+                <div class="d-flex align-items-start gap-2 flex-shrink-0">
+                  <span class="fw-bold fs-7 text-gray-700 pt-2">{{ t("common.tag") }}</span>
+                  <div class="d-flex flex-column gap-1">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="position-relative">
+                        <input
+                          v-model="tagInput"
+                          type="text"
+                          class="form-control form-control-sm w-200px"
+                          :placeholder="t('journal.entry.search.tag.placeholder')"
+                          maxlength="100"
+                          autocomplete="off"
+                          @focus="onTagInputFocus"
+                          @blur="onTagInputBlur"
+                          @input="onTagInputChange"
+                          @keydown.enter.prevent="addTagFromInput"
+                          @keydown.escape.prevent="hideTagSuggestions"
+                        />
+                        <div
+                          v-if="showTagSuggestions && tagSuggestions.length > 0"
+                          class="dropdown-menu show position-absolute w-100 mt-1 py-1"
+                          style="max-height: 220px; overflow-y: auto; z-index: 1060;"
+                        >
+                          <button
+                            v-for="tagName in tagSuggestions"
+                            :key="'tag-suggest-' + tagName"
+                            type="button"
+                            class="dropdown-item py-2 fs-7"
+                            @mousedown.prevent="selectTagSuggestion(tagName)"
+                          >
+                            #{{ tagName }}
+                          </button>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-light-primary flex-shrink-0" @click="addTagFromInput">
+                        + {{ t("common.add") }}
+                      </button>
+                    </div>
+                    <span v-if="tagInputHint" class="text-danger fs-8">{{ tagInputHint }}</span>
+                  </div>
                 </div>
                 <!--end::태그 입력 검색-->
               </div>
@@ -142,7 +159,7 @@
               >
                 <!--begin::월 구분 헤더-->
                 <div v-if="showMonthHeader(day, index)" class="d-flex-center mt-6 mb-4 fs-5 text-dark">
-                  {{ day.yy }}년 {{ day.mnth }}월
+                  {{ t("journal.entry.search.year-month").replace("{0}", String(day.yy ?? "")).replace("{1}", String(day.mnth ?? "")) }}
                 </div>
                 <!--end::월 구분 헤더-->
 
@@ -155,11 +172,11 @@
                   >
                     <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': day.isHolyday }"></i>
                     {{ day.stdrdDt }}
-                    <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ day.journalDateWeekDay }})</span>
+                    <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
                     <button
                       type="button"
                       class="btn btn-icon btn-sm btn-light-primary"
-                      title="새 창으로 보기 (일자 뷰)"
+                      :title="t('journal.entry.search.open-daily.tooltip')"
                       @click="openDailyView(day.stdrdDt)"
                     ><i class="bi bi-box-arrow-up-right fs-8 p-0"></i></button>
                     <span class="fs-7 ms-1 text-muted" v-html="day.weather"></span>
@@ -187,7 +204,7 @@
                         v-for="(other, oIdx) in otherMetaRows(day)"
                         :key="'om-' + index + '-' + oIdx"
                         class="badge badge-light rounded-pill cursor-pointer d-inline-flex align-items-center gap-1 px-2 py-1 fs-8"
-                        :title="(other.ctgr ? '[' + other.ctgr + '] ' : '') + (other.name ?? '') + ' 필터 추가'"
+                        :title="t('journal.day.filter.add.tooltip').replace('{0}', (other.ctgr ? '[' + other.ctgr + '] ' : '') + (other.name ?? ''))"
                         @click="addMeta(String(other.metaId ?? ''), other.name ?? '', other.ctgr)"
                       >
                         <span v-if="other.ctgr" class="text-noti">[{{ other.ctgr }}]</span>
@@ -206,7 +223,7 @@
                         v-for="tag in selectedTagItems(day)"
                         :key="'st-tag-' + tag.tagId"
                         class="text-muted cursor-pointer"
-                        :title="'#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name + ' 필터 제거'"
+                        :title="t('journal.day.filter.remove-filter.tooltip').replace('{0}', '#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name)"
                         @click.stop="removeTag(String(tag.tagId))"
                       >
                         #<span class="border-bottom text-success fw-bold opacity-hover">
@@ -220,7 +237,7 @@
                         v-for="tag in otherTagItems(day)"
                         :key="'ot-tag-' + tag.tagId"
                         class="text-muted cursor-pointer"
-                        :title="'#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name + ' 필터 추가'"
+                        :title="t('journal.day.filter.add.tooltip').replace('{0}', '#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name)"
                         @click.stop="addTag(String(tag.tagId), tag.name, tag.ctgr)"
                       >
                         #<span class="border-bottom text-primary fw-lighter opacity-hover">
@@ -245,14 +262,14 @@
           <!--end::필터 일자 목록-->
 
           <div v-else class="text-center text-muted py-10">
-            데이터가 없습니다.
+            {{ t("journal.day.meta.graph.empty") }}
           </div>
         </div>
         <!--end::Modal Body-->
 
         <!--begin::Modal Footer-->
         <div class="modal-footer">
-          <button type="button" class="btn btn-sm btn-light" @click="close">닫기</button>
+          <button type="button" class="btn btn-sm btn-light" @click="close">{{ t("common.close") }}</button>
         </div>
         <!--end::Modal Footer-->
 
@@ -266,11 +283,14 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import axios from "axios";
-import { swalAlert } from "@/shared/utils/swal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import type { JournalDayDto, MetaContentItem, TagItem } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { joinAppBasePath } from "@/shared/utils/appPath";
 
 const modalStore = useJournalModalStore();
+const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
@@ -362,6 +382,8 @@ onMounted(() => {
       initializedSeedKey.value = null;
       // 태그 입력 검색 상태도 함께 초기화한다. (카탈로그 캐시는 유지)
       tagInput.value = "";
+      tagInputHint.value = "";
+      hideTagSuggestions();
       cancelTagCategoryChoice();
     });
   }
@@ -370,8 +392,12 @@ onMounted(() => {
 watch(
   () => modalStore.filterModalOpen,
   (isOpen) => {
-    if (isOpen) bsModal?.show();
-    else bsModal?.hide();
+    if (isOpen) {
+      bsModal?.show();
+      void ensureTagSelectorData();
+    } else {
+      bsModal?.hide();
+    }
   }
 );
 
@@ -415,72 +441,164 @@ function removeTag(tagId: string): void {
   selectedTags.value = selectedTags.value.filter((t) => t.tagId !== tagId);
 }
 
-// ---- 태그 입력 검색 (JournalEntrySearchPage 의 태그 입력 패턴 이식) ----
+// ---- 태그 입력 검색 (JournalEntrySearchPage 의 태그 입력 패턴 이식; 모달에서는 datalist 대신 typeahead) ----
 
-/** 태그 카탈로그 항목 (/api/journal/day/tag/group-list 응답 평탄화) */
+/** 태그 카탈로그 항목 (/api/journal/day/tags 응답) */
 interface DayTagCatalogItem {
   tagId: string;
   name: string;
   ctgr: string;
 }
 
+const TAG_SUGGESTION_LIMIT = 12;
+
 const tagInput = ref("");
 const tagCatalog = ref<DayTagCatalogItem[]>([]);
-const tagCatalogLoaded = ref(false);
+const tagCategoryMap = ref<Record<string, string[]>>({});
+const tagSelectorLoaded = ref(false);
 const pendingTagName = ref("");
 const tagCategoryChoices = ref<string[]>([]);
+const tagInputHint = ref("");
+const showTagSuggestions = ref(false);
 
-/** datalist 자동완성용 태그명 목록 (중복 제거·정렬) */
-const tagNameOptions = computed(() => {
-  const names = new Set(tagCatalog.value.map((item) => item.name));
-  return [...names].sort((a, b) => a.localeCompare(b));
+/** typeahead 자동완성용 태그명 목록 (categoryMap 키 기준·정렬) */
+const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
+
+/** 입력값 기준 부분 일치 태그명 후보 (모달 내 미리보기) */
+const tagSuggestions = computed(() => {
+  const query = normalizeTagName(tagInput.value.replace(/^#/, ""));
+  const options = tagNameOptions.value;
+  if (!query) return options.slice(0, TAG_SUGGESTION_LIMIT);
+  const lower = query.toLowerCase();
+  return options
+    .filter((name) => name.toLowerCase().includes(lower))
+    .slice(0, TAG_SUGGESTION_LIMIT);
 });
 
-/** 일자 태그 카탈로그를 최초 1회 lazy 로드한다. 실패해도 기존 칩 클릭 추가 흐름은 유지된다. */
-async function ensureTagCatalog(): Promise<void> {
-  if (tagCatalogLoaded.value) return;
-  try {
-    const res = await axios.get("/api/journal/day/tag/group-list");
-    const rawMap = (res.data?.rsltMap ?? {}) as Record<string, unknown>;
-    const catalog: DayTagCatalogItem[] = [];
-    for (const [category, rawList] of Object.entries(rawMap)) {
-      if (!Array.isArray(rawList)) continue;
-      for (const raw of rawList) {
-        const item = raw as Record<string, unknown>;
-        const tagId = String(item.id ?? "");
-        const name = String(item.name ?? "").trim();
-        if (!tagId || !name) continue;
-        catalog.push({ tagId, name, ctgr: String(item.ctgr ?? category ?? "") });
-      }
-    }
-    tagCatalog.value = catalog;
-    tagCatalogLoaded.value = true;
-  } catch (e: unknown) {
-    console.warn("[JournalDayMetaModal] tag catalog load failed.", e);
+function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const out: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
+    if (!Array.isArray(categories)) continue;
+    out[tagName] = categories.map((c) => String(c ?? "")).filter((c) => c.length > 0);
   }
+  return out;
+}
+
+function mergeCatalogIntoCategoryMap(
+  baseMap: Record<string, string[]>,
+  catalog: DayTagCatalogItem[],
+): Record<string, string[]> {
+  const next: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(baseMap)) {
+    next[tagName] = [...categories];
+  }
+  catalog.forEach((tag) => {
+    const name = String(tag.name ?? "").trim();
+    if (!name) return;
+    const ctgr = String(tag.ctgr ?? "");
+    const categories = next[name] ? [...next[name]] : [];
+    if (!categories.includes(ctgr)) categories.push(ctgr);
+    next[name] = categories;
+  });
+  return next;
+}
+
+function normalizeTagName(raw: string): string {
+  return raw.trim().replace(/\s+/g, "_");
+}
+
+function findKnownTagName(input: string): string {
+  const normalized = normalizeTagName(input);
+  if (tagCategoryMap.value[normalized]) return normalized;
+  return tagNameOptions.value.find((name) => name.toLowerCase() === normalized.toLowerCase()) ?? normalized;
+}
+
+function flattenTagCatalog(rawList: unknown): DayTagCatalogItem[] {
+  if (!Array.isArray(rawList)) return [];
+  const catalog: DayTagCatalogItem[] = [];
+  for (const raw of rawList) {
+    const item = raw as Record<string, unknown>;
+    const tagId = String(item.id ?? item.tagId ?? "");
+    const name = String(item.name ?? "").trim();
+    if (!tagId || !name) continue;
+    catalog.push({ tagId, name, ctgr: String(item.ctgr ?? "") });
+  }
+  return catalog;
 }
 
 /**
- * 입력한 태그명을 카탈로그에서 찾아 AND 필터에 추가한다.
- * 카탈로그에 없으면 안내 알림, 동명 태그가 여러 카테고리에 있으면 카테고리 선택으로 분기한다.
+ * 일자 태그 categoryMap·태그 목록을 최초 1회 로드한다.
+ * journalModalStore 의 dayTagCategoryMap(SSOT)과 /api/journal/day/tags 를 병합한다.
+ */
+async function ensureTagSelectorData(): Promise<void> {
+  if (tagSelectorLoaded.value) return;
+  try {
+    await modalStore.preloadAllCategoryMaps();
+    const res = await axios.get("/api/journal/day/tags");
+    if (!res.data?.rslt) {
+      console.warn("[JournalDayMetaModal] tag list rslt=false");
+      return;
+    }
+    const catalog = flattenTagCatalog(res.data?.rsltList ?? []);
+    tagCatalog.value = catalog;
+    tagCategoryMap.value = mergeCatalogIntoCategoryMap(
+      { ...modalStore.dayTagCategoryMap },
+      catalog,
+    );
+    tagSelectorLoaded.value = true;
+  } catch (e: unknown) {
+    console.warn("[JournalDayMetaModal] tag selector data load failed.", e);
+  }
+}
+
+function onTagInputFocus(): void {
+  tagInputHint.value = "";
+  void ensureTagSelectorData().then(() => {
+    showTagSuggestions.value = true;
+  });
+}
+
+function onTagInputBlur(): void {
+  window.setTimeout(() => {
+    showTagSuggestions.value = false;
+  }, 150);
+}
+
+function onTagInputChange(): void {
+  tagInputHint.value = "";
+  showTagSuggestions.value = true;
+}
+
+function hideTagSuggestions(): void {
+  showTagSuggestions.value = false;
+}
+
+function selectTagSuggestion(tagName: string): void {
+  tagInput.value = tagName;
+  tagInputHint.value = "";
+  hideTagSuggestions();
+  void addTagFromInput();
+}
+
+/**
+ * 입력한 태그명을 categoryMap·카탈로그에서 찾아 AND 필터에 추가한다.
+ * 카탈로그에 없으면 인라인 안내(모달 유지), 동명 태그는 카테고리 선택으로 분기한다.
  */
 async function addTagFromInput(): Promise<void> {
-  await ensureTagCatalog();
-  const normalized = tagInput.value.replace(/^#/, "").trim();
-  if (!normalized) return;
-  const matches = tagCatalog.value.filter(
-    (item) => item.name === normalized || item.name.toLowerCase() === normalized.toLowerCase()
-  );
-  if (matches.length === 0) {
-    void swalAlert(t("journal.entry.search.tag.select-existing"));
+  await ensureTagSelectorData();
+  tagInputHint.value = "";
+  const tagName = findKnownTagName(tagInput.value);
+  const categories = tagCategoryMap.value[tagName] ?? [];
+  if (!tagName || categories.length === 0) {
+    tagInputHint.value = t("journal.entry.search.tag.select-existing");
     return;
   }
-  const categories = [...new Set(matches.map((m) => m.ctgr))];
   if (categories.length === 1) {
-    addTagByNameAndCategory(matches[0].name, categories[0]);
+    addTagByNameAndCategory(tagName, categories[0]);
     return;
   }
-  pendingTagName.value = matches[0].name;
+  pendingTagName.value = tagName;
   tagCategoryChoices.value = categories;
 }
 
@@ -499,10 +617,12 @@ function cancelTagCategoryChoice(): void {
 function addTagByNameAndCategory(tagName: string, ctgr: string): void {
   const matched = tagCatalog.value.find((item) => item.name === tagName && item.ctgr === ctgr);
   if (!matched) {
-    void swalAlert(t("journal.entry.search.tag.not-found"));
+    console.warn("[JournalDayMetaModal] selected tag id not found.", { tagName, ctgr });
+    tagInputHint.value = t("journal.entry.search.tag.not-found");
     return;
   }
   tagInput.value = "";
+  tagInputHint.value = "";
   cancelTagCategoryChoice();
   addTag(matched.tagId, matched.name, matched.ctgr || undefined);
 }
@@ -546,9 +666,8 @@ function otherTagItems(day: JournalDayDto): TagItem[] {
 /** 일자 뷰를 새 창으로 연다. */
 function openDailyView(stdrdDt: string | undefined): void {
   if (!stdrdDt) return;
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   const w = Math.min(1600, window.screen.availWidth);
   const h = Math.min(1080, window.screen.availHeight);
-  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h}`);
+  window.open(joinAppBasePath(`/journal/daily?stdrdDt=${stdrdDt}`), "_blank", `width=${w},height=${h}`);
 }
 </script>

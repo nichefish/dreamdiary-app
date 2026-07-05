@@ -11,10 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
+import java.time.LocalDateTime;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -75,7 +74,7 @@ public class JournalEntryEmbeddingWorker {
      * @return 임베딩 벡터 생성에 성공한 작업 건수
      */
     public int processPendingBatch(final Integer batchSize) {
-        queueService.requeueStaleProcessing(Date.from(Instant.now().minus(STALE_PROCESSING_AGE)), batchSize);
+        queueService.requeueStaleProcessing(LocalDateTime.now().minus(STALE_PROCESSING_AGE), batchSize);
 
         final List<JournalEntryEmbeddingEntity> entityList = queueService.claimPendingBatch(batchSize);
         if (entityList.isEmpty()) return 0;

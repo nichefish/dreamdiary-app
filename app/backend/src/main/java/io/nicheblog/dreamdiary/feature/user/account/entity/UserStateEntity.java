@@ -6,7 +6,8 @@ import org.hibernate.annotations.Comment;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  * UserStateEntity
@@ -44,13 +45,13 @@ public class UserStateEntity {
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "refresh_token_issued_at")
     @Comment("Refresh Token 발생일시")
-    private Date refreshTokenIssuedAt;
+    private LocalDateTime refreshTokenIssuedAt;
 
     /** Refresh Token 만료일시 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "refresh_token_expires_at")
     @Comment("Refresh Token 만료일시")
-    private Date refreshTokenExpiresAt;
+    private LocalDateTime refreshTokenExpiresAt;
 
     /** 잠금 여부 (Y/N) */
     @Builder.Default
@@ -61,7 +62,7 @@ public class UserStateEntity {
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "last_login_at")
     @Comment("마지막 로그인 일시")
-    private Date lastLoginAt;
+    private LocalDateTime lastLoginAt;
 
     /** 로그인 실패 횟수 */
     @Builder.Default
@@ -73,19 +74,19 @@ public class UserStateEntity {
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "login_fail_window_started_at")
     @Comment("로그인 실패 카운트 윈도우 시작 시각")
-    private Date loginFailWindowStartedAt;
+    private LocalDateTime loginFailWindowStartedAt;
 
     /** 계정 잠금 만료 시각 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "lock_expires_at")
     @Comment("계정 잠금 만료 시각")
-    private Date lockExpiresAt;
+    private LocalDateTime lockExpiresAt;
 
     /** 패스워드 변경일시 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "password_changed_at")
     @Comment("패스워드 변경일시")
-    private Date passwordChangedAt;
+    private LocalDateTime passwordChangedAt;
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
     @Builder.Default
@@ -102,7 +103,7 @@ public class UserStateEntity {
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "password_reset_token_issued_at")
     @Comment("패스워드 리셋 토큰 발급 시각")
-    private Date passwordResetTokenIssuedAt;
+    private LocalDateTime passwordResetTokenIssuedAt;
 
     public static UserStateEntity getRegistStus() {
         return UserStateEntity.builder()

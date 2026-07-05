@@ -18,7 +18,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -72,10 +72,9 @@ public class JournalDayEntity
 
     /** 저널 일자 */
     @Column(name = "journal_date")
-    @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = DateUtils.PTN_DATE)
     @Comment("저널 일자")
-    private Date journalDate;
+    private LocalDate journalDate;
 
     /** 저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN) */
     @Builder.Default
@@ -96,10 +95,9 @@ public class JournalDayEntity
 
     /** 주 시작일자 (월요일 기준) */
     @Column(name = "week_start_date")
-    @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = DateUtils.PTN_DATE)
     @Comment("주 시작일자 (월요일 기준)")
-    private Date weekStartDt;
+    private LocalDate weekStartDt;
 
     /** 날씨 */
     @Column(name = "weather")

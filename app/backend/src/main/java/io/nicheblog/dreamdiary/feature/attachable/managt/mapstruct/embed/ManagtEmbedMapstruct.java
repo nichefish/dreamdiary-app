@@ -45,7 +45,7 @@ public interface ManagtEmbedMapstruct
      */
     @Override
     @Mapping(target = "list", expression = "java(ManagtrMapstruct.INSTANCE.toEntityList(dto.getList()))")
-    @Mapping(target = "managtDt", expression = "java(DateUtils.asDate(dto.getManagtDt()))")
+    @Mapping(target = "managtDt", expression = "java(DateUtils.asLocalDateTime(dto.getManagtDt()))")
     ManagtEmbed toEntity(final ManagtCmpstn dto) throws Exception;
 
     /**

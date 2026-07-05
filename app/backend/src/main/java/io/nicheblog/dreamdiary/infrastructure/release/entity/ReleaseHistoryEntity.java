@@ -11,7 +11,8 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  * ReleaseHistoryEntity
@@ -57,13 +58,11 @@ public class ReleaseHistoryEntity
 
     @Column(name = "started_at")
     @Comment("서버 시작 시각")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startedAt;
+    private LocalDateTime startedAt;
 
     @Column(name = "deployed_at")
     @Comment("배포 판정 시각")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date deployedAt;
+    private LocalDateTime deployedAt;
 
     @Column(name = "profile", length = 20)
     @Comment("실행 프로필")

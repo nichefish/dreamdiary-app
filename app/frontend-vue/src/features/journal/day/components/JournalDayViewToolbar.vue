@@ -117,6 +117,7 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { resolveWeekStartDt } from "@/features/journal/utils/journalDate";
 import { assertAuthenticatedBeforePopup } from "@/shared/auth/popupAuth";
+import { joinAppBasePath } from "@/shared/utils/appPath";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 /** 툴바 전체검색 전용 로컬 키워드 — store.diaryKeyword/dreamKeyword(필터)와 분리 */
@@ -146,8 +147,7 @@ async function openSearchTab(type: "DIARY" | "DREAM", keyword: string): Promise<
   if (!await assertAuthenticatedBeforePopup(router, route)) return;
   const params = new URLSearchParams({ type });
   if (keyword.trim()) params.set("searchKeywords", keyword.trim());
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const popup = window.open(`${base}/journal/entry/search?${params.toString()}`, `journal-entry-search-${type}`, "width=1960,height=1440,top=0,left=270");
+  const popup = window.open(joinAppBasePath(`/journal/entry/search?${params.toString()}`), `journal-entry-search-${type}`, "width=1960,height=1440,top=0,left=270");
   if (popup) popup.focus();
 }
 

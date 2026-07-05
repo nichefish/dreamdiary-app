@@ -13,7 +13,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  * PopupEntity
@@ -60,12 +61,12 @@ public class PopupEntity
     /** 게시시작일시 */
     @Column(name = "popup_start_dt")
     @Comment("게시시작일시")
-    private Date popupStartDt;
+    private LocalDateTime popupStartDt;
 
     /** 게시종료일시 */
     @Column(name = "popup_end_dt")
     @Comment("게시종료일시")
-    private Date popupEndDt;
+    private LocalDateTime popupEndDt;
 
     /* ----- */
 

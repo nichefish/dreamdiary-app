@@ -9,9 +9,10 @@ import org.hibernate.annotations.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * UserProfileEntity
@@ -50,7 +51,7 @@ public class UserProfileEntity extends BaseCrudEntity {
     @DateTimeFormat(pattern = DateUtils.PTN_DATE)
     @Column(name = "brthdy")
     @Comment("생년월일")
-    private Date brthdy;
+    private LocalDate brthdy;
 
     @Builder.Default
     @Column(name = "lunar_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")

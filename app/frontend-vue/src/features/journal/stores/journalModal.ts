@@ -5,6 +5,7 @@ import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import type { JournalDayDto, MetaDto } from "@/features/journal/stores/journal";
 import { formatLocalDateStr } from "@/features/journal/utils/journalDate";
 import { mergeTagifyListIntoCategoryMap } from "@/shared/utils/tagifyHelper";
+import { requireApiPathSegment } from "@/shared/utils/appPath";
 import { swalRequestError } from "@/shared/utils/swal";
 
 // ---- categoryMap (앱 세션 SSOT: 로그인·마운트 시 preload 1회, 저장 시 Tagify JSON 병합 — 무효화·모달 오픈 재조회 없음) ----
@@ -407,13 +408,21 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     yy?: string
   ): Promise<void> {
     if (!await assertAuthenticatedBeforeModal()) return;
+    let seedId: string;
+    try {
+      seedId = requireApiPathSegment(seed.id, "filter seed id");
+    } catch (e: unknown) {
+      console.error("[journalModal] openDayFilterModal rejected invalid seed id", { seed, yy }, e);
+      void swalRequestError(e, t("journal.day.filter.load.failure"));
+      return;
+    }
     filterModalOpen.value = true;
     filterModalLoading.value = true;
     filterModalPayload.value = null;
     try {
       const yearsUrl = seed.type === "meta"
-        ? `/api/journal/day/metas/${seed.id}/years`
-        : `/api/journal/day/tag/${seed.id}/years`;
+        ? `/api/journal/day/metas/${seedId}/years`
+        : `/api/journal/day/tag/${seedId}/years`;
       const yearsRes = await axios.get(yearsUrl);
       const yyList: string[] = (yearsRes.data?.rsltList ?? []).map(String);
       /** 태그 시드에서 yy === "" 이면 전체 연도 조회 */
@@ -423,8 +432,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         yyList.length > 0 ? (yyList.includes(currentYy) ? currentYy : yyList[0]) : currentYy
       );
       const dayParams: Record<string, unknown> = { viewType: "SEARCH" };
-      if (seed.type === "meta") dayParams.metaId = seed.id;
-      else dayParams.tagId = seed.id;
+      if (seed.type === "meta") dayParams.metaId = seedId;
+      else dayParams.tagId = seedId;
       if (selectedYy) dayParams.yy = selectedYy;
       const daysRes = await axios.get("/api/journal/days", { params: dayParams });
       const yearOptions: Array<{ value: string | number; label: string; selected?: boolean }> =
@@ -436,7 +445,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
           : yyList.map((y) => ({ value: y, label: y, selected: y === selectedYy }));
       filterModalPayload.value = {
         seedType: seed.type,
-        seedId: String(seed.id),
+        seedId,
         seedName: seed.name,
         seedCtgr: seed.ctgr,
         yy: selectedYy,

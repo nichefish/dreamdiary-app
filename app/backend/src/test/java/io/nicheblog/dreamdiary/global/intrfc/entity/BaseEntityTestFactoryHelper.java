@@ -26,7 +26,7 @@ public class BaseEntityTestFactoryHelper {
     public static void setCreatedByInfo(Object obj) throws Exception {
         if (!(obj instanceof BaseAuditRegEntity)) return;
 
-        ((BaseAuditRegEntity) obj).setCreatedAt(DateUtils.asDate("2000-01-01"));
+        ((BaseAuditRegEntity) obj).setCreatedAt(DateUtils.asLocalDateTime("2000-01-01"));
         ((BaseAuditRegEntity) obj).setCreatedBy(TestConstant.TEST_REGSTR_ID);
         ((BaseAuditRegEntity) obj).setCreatedByInfo(AuditorInfo.builder()
                 .username(TestConstant.TEST_REGSTR_ID)
@@ -40,7 +40,7 @@ public class BaseEntityTestFactoryHelper {
     public static void setUpdatedByInfo(Object obj) throws Exception {
         if (!(obj instanceof BaseAuditEntity)) return;
 
-        ((BaseAuditEntity) obj).setUpdatedAt(DateUtils.asDate("2000-01-01"));
+        ((BaseAuditEntity) obj).setUpdatedAt(DateUtils.asLocalDateTime("2000-01-01"));
         ((BaseAuditEntity) obj).setUpdatedBy(TestConstant.TEST_MDFUSR_ID);
         ((BaseAuditEntity) obj).setUpdatedByInfo(AuditorInfo.builder()
                 .username(TestConstant.TEST_MDFUSR_ID)

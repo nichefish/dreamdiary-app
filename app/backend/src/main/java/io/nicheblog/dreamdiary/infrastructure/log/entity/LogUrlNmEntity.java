@@ -13,8 +13,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 로그 작업 URL 한글 매칭.
@@ -42,5 +42,5 @@ public class LogUrlNmEntity
 
     @Column(name = "deleted_at")
     @Comment("삭제 일시")
-    private Date deletedAt;
+    private LocalDateTime deletedAt;
 }

@@ -62,8 +62,10 @@ public interface RelatedContentRepository
     );
 
     @Modifying
+    // 변경 전: SET rc.deletedAt = 'Y' — 날짜 필드에 문자열 리터럴을 대입하던 기존 결함 (LocalDateTime 전환 시 부트 검증 실패 유발).
+    // 변경 후: soft delete 의미에 맞게 현재 시각을 기록한다.
     @Query("UPDATE RelatedContentEntity rc " +
-            "SET rc.deletedAt = 'Y' " +
+            "SET rc.deletedAt = CURRENT_TIMESTAMP " +
             "WHERE rc.createdBy = :createdBy " +
             "  AND ((rc.leftId = :id AND rc.leftContentType = :contentType) " +
             "    OR (rc.rightId = :id AND rc.rightContentType = :contentType))")

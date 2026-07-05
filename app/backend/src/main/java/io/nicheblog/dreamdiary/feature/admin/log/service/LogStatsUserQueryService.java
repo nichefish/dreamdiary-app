@@ -13,9 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +45,7 @@ public class LogStatsUserQueryService {
      */
     @Transactional(readOnly = true)
     public List<LogStatsUserQueryDto> getStatsUserDtoList(final LogStatsSearchParam searchParam) throws Exception {
-        final Date[] range = this.resolveSearchRange(searchParam);
+        final LocalDateTime[] range = this.resolveSearchRange(searchParam);
         return this.toSortedDtoList(logStatsUserRepository.getStatsUserIntrfcList(range[0], range[1]));
     }
 
@@ -57,7 +57,7 @@ public class LogStatsUserQueryService {
      */
     @Transactional(readOnly = true)
     public List<LogStatsUserQueryDto> getStatsNotUserDtoList(final LogStatsSearchParam searchParam) throws Exception {
-        final Date[] range = this.resolveSearchRange(searchParam);
+        final LocalDateTime[] range = this.resolveSearchRange(searchParam);
         return this.toSortedDtoList(logStatsUserRepository.getStatsNotUserIntrfcList(range[0], range[1]));
     }
 
@@ -66,12 +66,12 @@ public class LogStatsUserQueryService {
      * 종료일 미지정 시 시작일과 같은 날의 끝 시간까지.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @return {@link Date} 배열 -- [시작 시간, 끝 시간]
+     * @return {@link LocalDateTime} 배열 -- [시작 시간, 끝 시간]
      */
-    private Date[] resolveSearchRange(final LogStatsSearchParam searchParam) throws Exception {
+    private LocalDateTime[] resolveSearchRange(final LogStatsSearchParam searchParam) throws Exception {
         final String startStr = StringUtils.defaultIfEmpty(searchParam.getSearchStartDt(), DateUtils.getCurrDateStr(DatePtn.DATE));
         final String endStr = StringUtils.defaultIfEmpty(searchParam.getSearchEndDt(), startStr);
-        return new Date[]{ DateUtils.Parser.sDateParse(startStr), DateUtils.Parser.eDateParse(endStr) };
+        return new LocalDateTime[]{ DateUtils.asLocalDateTime(DateUtils.Parser.sDateParse(startStr)), DateUtils.asLocalDateTime(DateUtils.Parser.eDateParse(endStr)) };
     }
 
     /**

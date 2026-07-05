@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.QueryHint;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -31,6 +31,6 @@ public interface ScheduleRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    Optional<ScheduleEntity> findByScheduleCdAndBgnDt(final String groupId, final Date date);
+    Optional<ScheduleEntity> findByScheduleCdAndBgnDt(final String groupId, final LocalDateTime date);
 }
 

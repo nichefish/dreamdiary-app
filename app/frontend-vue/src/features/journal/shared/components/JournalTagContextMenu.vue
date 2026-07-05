@@ -27,6 +27,7 @@ import { useTagContextMenuStore, type TagContextMenuPayload } from "@/features/j
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { assertAuthenticatedBeforePopup } from "@/shared/auth/popupAuth";
+import { joinAppBasePath } from "@/shared/utils/appPath";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useTagContextMenuStore();
@@ -81,8 +82,7 @@ async function openEntrySearchPopup(payload: TagContextMenuPayload): Promise<voi
 
   /* 외부: 새 팝업 창 열기 */
   const params = new URLSearchParams({ type: newType, tagIds: newTagId });
-  const basePath = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/journal/entry/search`;
-  const url = `${basePath}?${params.toString()}`;
+  const url = joinAppBasePath(`/journal/entry/search?${params.toString()}`);
   const popupName = payload.contentType === "JOURNAL_DREAM" ? "journal-entry-search-DREAM" : "journal-entry-search-DIARY";
   const popup = window.open(url, popupName, "width=1960,height=1440,top=0,left=270");
   popup?.focus();

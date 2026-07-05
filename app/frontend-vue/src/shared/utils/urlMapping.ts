@@ -6,6 +6,7 @@
  * 매핑이 없는 URL은 원본 그대로 반환한다.
  * </p>
  */
+import { normalizeRoutePath, stripVueAppPrefix } from "@/shared/utils/appPath";
 
 /** FreeMarker URL → Vue SPA 경로 매핑 */
 const URL_MAP: Record<string, string> = {
@@ -77,16 +78,16 @@ export function toVuePath(url: string | undefined): string {
     parsedUrl.pathname === "/app/board/post/list.do"
       ? mapBoardPostList(parsedUrl.searchParams)
       : null;
-  if (mappedBoardUrl) return mappedBoardUrl;
+  if (mappedBoardUrl) return normalizeRoutePath(stripVueAppPrefix(mappedBoardUrl));
 
   const mappedAnnualDetailUrl = mapJournalAnnualDetail(parsedUrl.pathname);
-  if (mappedAnnualDetailUrl) return mappedAnnualDetailUrl;
+  if (mappedAnnualDetailUrl) return normalizeRoutePath(stripVueAppPrefix(mappedAnnualDetailUrl));
 
   const mappedThreadUrl = mapJournalThreadPath(parsedUrl.pathname, parsedUrl.searchParams);
-  if (mappedThreadUrl) return mappedThreadUrl;
+  if (mappedThreadUrl) return normalizeRoutePath(stripVueAppPrefix(mappedThreadUrl));
 
   const mappedPath = URL_MAP[parsedUrl.pathname];
-  if (mappedPath) return mappedPath;
-  if (url.startsWith("/")) return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
-  return url;
+  const resolved = mappedPath
+    ?? (url.startsWith("/") ? `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}` : url);
+  return normalizeRoutePath(stripVueAppPrefix(resolved));
 }

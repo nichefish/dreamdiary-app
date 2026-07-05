@@ -22,8 +22,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -138,11 +139,11 @@ public class AuthService
         } catch (final Exception ignore) {
             // 정책 조회 실패시 기본값 사용
         }
-        final Date now = new Date();
-        final Date windowStart = userEntity.acntStus.getLoginFailWindowStartedAt();
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime windowStart = userEntity.acntStus.getLoginFailWindowStartedAt();
 
         final long windowMillis = (loginAttemptWindowMinutes == null ? 0L : TimeUnit.MINUTES.toMillis(loginAttemptWindowMinutes));
-        final boolean shouldResetWindow = (windowStart == null) || (windowMillis > 0 && (now.getTime() - windowStart.getTime()) >= windowMillis);
+        final boolean shouldResetWindow = (windowStart == null) || (windowMillis > 0 && Duration.between(windowStart, now).toMillis() >= windowMillis);
 
         if (shouldResetWindow) {
             userEntity.acntStus.setLoginFailCnt(0);
@@ -177,10 +178,10 @@ public class AuthService
         } catch (final Exception ignore) {
             // 정책 조회 실패시 기본값 사용
         }
-        final Date now = new Date();
-        final Date lockExpiresAt = (accountLockDurationMinutes == null)
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime lockExpiresAt = (accountLockDurationMinutes == null)
                 ? null
-                : new Date(now.getTime() + TimeUnit.MINUTES.toMillis(accountLockDurationMinutes));
+                : now.plusMinutes(accountLockDurationMinutes);
 
         // 계정 잠금 처리
         userEntity.acntStus.setLockedYn("Y");
@@ -201,7 +202,7 @@ public class AuthService
         final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
         // 최종 로그인 날짜 세팅 및 실패 카운터 0으로 세팅
-        userEntity.acntStus.setLastLoginAt(new Date());
+        userEntity.acntStus.setLastLoginAt(LocalDateTime.now());
         userEntity.acntStus.setLoginFailCnt(0);
         userEntity.acntStus.setLoginFailWindowStartedAt(null);
         userEntity.acntStus.setLockedYn("N");

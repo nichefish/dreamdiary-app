@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +45,8 @@ public class PopupSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        final Expression<Date> popupStartDtExp = root.get("popupStartDt");
-        final Expression<Date> popupEndDtExp = root.get("popupEndDt");
+        final Expression<LocalDateTime> popupStartDtExp = root.get("popupStartDt");
+        final Expression<LocalDateTime> popupEndDtExp = root.get("popupEndDt");
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -54,11 +54,11 @@ public class PopupSpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(popupStartDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(popupStartDtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(popupEndDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(popupEndDtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

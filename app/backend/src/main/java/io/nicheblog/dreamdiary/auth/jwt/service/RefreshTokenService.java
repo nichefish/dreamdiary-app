@@ -11,11 +11,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Date;
 
 /**
  * RefreshTokenService
@@ -90,8 +90,8 @@ public class RefreshTokenService {
             throw new AuthenticationFailureException();
         }
 
-        final Date now = DateUtils.getCurrDate();
-        if (user.getRefreshTokenExpiresAt().before(now)) {
+        final LocalDateTime now = DateUtils.getCurrLocalDateTime();
+        if (user.getRefreshTokenExpiresAt().isBefore(now)) {
             revoke(user);
             throw new AuthenticationFailureException();
         }
@@ -135,11 +135,11 @@ public class RefreshTokenService {
     private String issueForUser(final UserEntity user) {
         final String refreshToken = generateToken(user.getUsername());
         final String refreshTokenHash = hashToken(refreshToken);
-        final Date now = DateUtils.getCurrDate();
+        final LocalDateTime now = DateUtils.getCurrLocalDateTime();
 
         user.setRefreshTokenHash(refreshTokenHash);
         user.setRefreshTokenIssuedAt(now);
-        user.setRefreshTokenExpiresAt(new Date(now.getTime() + this.getRefreshTokenTtlSeconds() * 1000L));
+        user.setRefreshTokenExpiresAt(now.plusSeconds(this.getRefreshTokenTtlSeconds()));
         userRepository.saveAndFlush(user);
 
         return refreshToken;

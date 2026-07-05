@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.file.model.FileRecordDto;
 import io.nicheblog.dreamdiary.feature.file.service.FileGroupService;
 import io.nicheblog.dreamdiary.feature.file.service.FileRecordService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.global.util.UUIDUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -243,7 +243,7 @@ public class FileUtils {
         return fileRecordList.stream()
                 .peek(fileRecord -> {
                     String atchCtrl = multiRequest.getParameter("atchCtrl" + fileRecord.getId());
-                    if ("D".equals(atchCtrl)) fileRecord.setDeletedAt(new Date());
+                    if ("D".equals(atchCtrl)) fileRecord.setDeletedAt(DateUtils.getCurrLocalDateTime());
                     // TODO: 실제 파일 삭제?
                 })
                 .collect(Collectors.toList());

@@ -28,7 +28,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -91,8 +91,8 @@ public class AuthenticationHelper {
 
         // 잠금여부 체크
         if ("Y".equals(authInfo.getLockedYn())) {
-            final Date lockExpiresAt = authInfo.getLockExpiresAt();
-            final boolean isStillLocked = (lockExpiresAt == null) || lockExpiresAt.after(DateUtils.getCurrDate());
+            final LocalDateTime lockExpiresAt = authInfo.getLockExpiresAt();
+            final boolean isStillLocked = (lockExpiresAt == null) || lockExpiresAt.isAfter(DateUtils.getCurrLocalDateTime());
             if (isStillLocked) throw new LockedException("AbstractUserDetailsAuthenticationProvider.LockedException");
         }
 
@@ -178,8 +178,8 @@ public class AuthenticationHelper {
     public Boolean isPwExpryValid(final AuthInfo authInfo) throws Exception {
         final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
         final Integer passwordChangeCycleDays = authPolicy.getPasswordChangeCycleDays();
-        final Date pwExprDt = DateUtils.getDateAddDay(authInfo.getPasswordChangedAt(), passwordChangeCycleDays);
-        final boolean isPwExprd = (pwExprDt == null || pwExprDt.compareTo(DateUtils.getCurrDate()) < 0);
+        final LocalDateTime pwExprDt = (authInfo.getPasswordChangedAt() == null) ? null : authInfo.getPasswordChangedAt().plusDays(passwordChangeCycleDays);
+        final boolean isPwExprd = (pwExprDt == null || pwExprDt.isBefore(DateUtils.getCurrLocalDateTime()));
         return !isPwExprd;
     }
 
@@ -191,10 +191,10 @@ public class AuthenticationHelper {
         final Integer expiryMinutes = (authPolicy == null || authPolicy.getPasswordResetTokenExpiryMinutes() == null)
                 ? 30
                 : authPolicy.getPasswordResetTokenExpiryMinutes();
-        final Date issuedAt = authInfo.getPasswordResetTokenIssuedAt();
+        final LocalDateTime issuedAt = authInfo.getPasswordResetTokenIssuedAt();
         if (issuedAt == null) return false;
 
-        final Date expiresAt = new Date(issuedAt.getTime() + (expiryMinutes.longValue() * 60L * 1000L));
-        return expiresAt.after(DateUtils.getCurrDate());
+        final LocalDateTime expiresAt = issuedAt.plusMinutes(expiryMinutes.longValue());
+        return expiresAt.isAfter(DateUtils.getCurrLocalDateTime());
     }
 }

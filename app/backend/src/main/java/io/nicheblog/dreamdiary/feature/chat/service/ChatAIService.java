@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEnti
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.type.JournalEntityRoleType;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -1558,7 +1560,7 @@ public class ChatAIService {
     private RagTimelineSummary buildRagTimelineSummary(final List<RagSearchResult> results) {
         final Map<String, Integer> contentKindCountMap = new LinkedHashMap<>();
         final Map<String, Integer> monthCountMap = new LinkedHashMap<>();
-        final List<Date> dateList = new ArrayList<>();
+        final List<LocalDate> dateList = new ArrayList<>();
 
         if (results != null) {
             for (final RagSearchResult result : results) {
@@ -1567,7 +1569,7 @@ public class ChatAIService {
                 final String contentKind = StringUtils.defaultIfBlank(result.getEntity().getContentKind(), "UNKNOWN");
                 contentKindCountMap.merge(contentKind, 1, Integer::sum);
 
-                final Date journalDate = result.getEntity().getJournalDate();
+                final LocalDate journalDate = result.getEntity().getJournalDate();
                 if (journalDate == null) continue;
 
                 dateList.add(journalDate);
@@ -1575,7 +1577,7 @@ public class ChatAIService {
             }
         }
 
-        dateList.sort(Date::compareTo);
+        dateList.sort(LocalDate::compareTo);
         final String firstDate = dateList.isEmpty() ? null : formatDate(dateList.get(0), "yyyy-MM-dd");
         final String lastDate = dateList.isEmpty() ? null : formatDate(dateList.get(dateList.size() - 1), "yyyy-MM-dd");
         return new RagTimelineSummary(results == null ? 0 : results.size(), firstDate, lastDate, contentKindCountMap, monthCountMap);
@@ -1598,9 +1600,13 @@ public class ChatAIService {
     /**
      * 날짜를 지정한 패턴 문자열로 변환합니다.
      */
-    private String formatDate(final Date date, final String pattern) {
+    private String formatDate(final Object date, final String pattern) {
         if (date == null) return null;
-        return new SimpleDateFormat(pattern).format(date);
+        try {
+            return new SimpleDateFormat(pattern).format(DateUtils.asDate(date));
+        } catch (final Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -1899,7 +1905,7 @@ public class ChatAIService {
         if (StringUtils.isBlank(response)) return true;
         if (isPersonMeaningScaffoldLeak(response)) return true;
         if (isPersonAttitudeQuery(queryText)) {
-            return isHollowPersonStanceResponse(response, ragContext);
+            return isDegradedPersonStanceRichResponse(response);
         }
         if (isThirdPersonPersonalityProfile(response)) return true;
         if (isPersonMeaningQuoteParade(response)) return true;
@@ -1929,19 +1935,7 @@ public class ChatAIService {
         if (StringUtils.isBlank(response)) return "empty_response";
         if (containsDisallowedHanScript(response)) return "language_guard";
         if (isPersonAttitudeQuery(queryText)) {
-            if (isPersonStanceCoachingTone(response)) return "person_stance_coaching_tone";
-            if (isPersonStanceAdvisoryTone(response)) return "person_stance_advisory_tone";
-            if (isPersonStanceRecordEvasion(response)) return "person_stance_record_evasion";
-            if (isThirdPersonPersonalityProfile(response)) return "person_stance_third_person_profile";
-            if (isPersonStanceGenericOrgNarrative(response)) return "person_stance_org_narrative";
-            if (isPersonStanceMissingSectionShape(response)) return "person_stance_missing_sections";
-            if (isPersonStanceDirectQuoteHeavy(response)) return "person_stance_direct_quote";
-            if (isPersonStanceThirdPersonDominant(response, ragContext)) return "person_stance_third_person_dominant";
-            if (!hasPersonStanceMirrorMarkers(response)) return "person_stance_missing_mirror";
-            if (!hasPersonStanceAnalyticEvidence(response, ragContext)) return "person_stance_missing_axis_evidence";
-            if (isPersonStanceUngroundedPsychLabel(response, ragContext)) return "person_stance_ungrounded_psych_label";
-            if (isPersonStanceEpisodeNarrationHeavy(response, ragContext)) return "person_stance_episode_heavy";
-            if (isPersonStanceOtherBehaviorFocus(response, ragContext)) return "person_stance_other_behavior";
+            return describePersonStanceRichGuardFailure(response);
         }
         if (isHollowPersonMeaningResponse(response, ragContext, queryText)) return "person_meaning_hollow";
         return "person_guard_rejected";
@@ -1970,13 +1964,6 @@ public class ChatAIService {
         if (isHollowPersonMeaningResponse(response, ragContext, queryText)) {
             return true;
         }
-        if (ragContext != null
-                && ragContext.intent() == RagIntent.SYNTHESIS
-                && ragContext.personFocus() != null
-                && isPersonAttitudeQuery(queryText)
-                && (isPersonStanceCoachingTone(response) || isThirdPersonPersonalityProfile(response))) {
-            return true;
-        }
         if (ragContext == null || ragContext.intent() != RagIntent.LOOKUP) {
             return false;
         }
@@ -1999,6 +1986,35 @@ public class ChatAIService {
         if (!hasGenericBucket) return false;
 
         return !StringUtils.containsAny(response, "#", "기록상", "반복", "태그");
+    }
+
+    /**
+     * 태도 질문 "풍부 신뢰" 모드(Option A)의 최소 거부 게이트.
+     *
+     * <p>형식(4섹션)·코칭/조직 톤·3인칭 서술·에피소드 나열·인용은 더 이상 거부 사유가 아니다.
+     * 큰 SNAPSHOT을 읽고 자연스러운 산문으로 태도를 서술하도록 허용하며, 빈 응답·너무 짧은 답·
+     * 스캐폴드 유출·기록 근거 없는 일반 버킷 나열만 거부한다. 한글 언어 가드는 상위 흐름에서 별도 처리한다.</p>
+     */
+    private boolean isDegradedPersonStanceRichResponse(final String response) {
+        if (StringUtils.isBlank(response)) return true;
+        if (StringUtils.length(StringUtils.normalizeSpace(response)) < 40) return true;
+        if (isPersonMeaningScaffoldLeak(response)) return true;
+        return isGenericPersonBucketHallucination(response);
+    }
+
+    /**
+     * 태도 질문 "풍부 신뢰" 모드에서 거부 사유 코드를 반환한다.
+     *
+     * <p>{@link #isDegradedPersonStanceRichResponse(String)}와 동일한 판정을 코드로 표현한다.</p>
+     */
+    private String describePersonStanceRichGuardFailure(final String response) {
+        if (StringUtils.isBlank(response)
+                || StringUtils.length(StringUtils.normalizeSpace(response)) < 40) {
+            return "person_stance_too_short";
+        }
+        if (isPersonMeaningScaffoldLeak(response)) return "person_stance_scaffold_leak";
+        if (isGenericPersonBucketHallucination(response)) return "person_stance_generic_bucket";
+        return "person_guard_rejected";
     }
 
     /**

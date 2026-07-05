@@ -15,9 +15,9 @@
           >{{ day.stdrdDt }}</span>
           <span v-else>{{ day.stdrdDt }}</span>
           <!--end::날짜-->
-          <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ day.journalDateWeekDay }})</span>
-          <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">{{ day.journalDatePrecision }}</span>
-          <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">{{ day.journalDatePrecision }}</span>
+          <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
+          <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.approximate") }}</span>
+          <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.unknown") }}</span>
           <span class="fs-7 ms-4 text-muted" v-html="day.weather"></span>
           <div v-if="day.holydayNm" class="w-100 ps-5 fs-6 fw-normal text-truncate">{{ day.holydayNm }}</div>
         </div>
@@ -31,7 +31,7 @@
           @click="openChapterRegist"
         >
           <i class="bi bi-list-columns-reverse fs-4 pe-1"></i>
-          저널 챕터 등록
+          {{ t('journal.chapter.reg') }}
         </button>
         <!--end::챕터 등록 버튼-->
         <!--begin::꿈 등록 버튼-->
@@ -42,7 +42,7 @@
           @click="openDreamRegist()"
         >
           <i class="bi bi-moon-stars fs-4 pe-1"></i>
-          저널 꿈 등록
+          {{ t('journal.dream.reg') }}
         </button>
         <!--end::꿈 등록 버튼-->
         <!--begin::컨텍스트 메뉴 (⋯)-->
@@ -52,18 +52,18 @@
             class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
             data-kt-menu-trigger="click"
             data-kt-menu-placement="bottom-end"
-            title="메뉴"
+            :title="t('common.menu')"
           >
             <i class="ki-solid ki-dots-horizontal fs-2x"></i>
           </button>
           <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
             <div class="menu-item px-3">
-              <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">저널 일자</div>
+              <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t('journal.day.label') }}</div>
             </div>
             <!--begin::주간 뷰로 이동 (월간 등; 주간 화면에서는 미표시)-->
             <div v-if="showGotoWeeklyMenu" class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="gotoWeekly">
-                주간 뷰로 이동
+                {{ t('common.go-to-weekly-view') }}
                 <i class="bi bi-calendar-week fs-8"></i>
               </div>
             </div>
@@ -71,7 +71,7 @@
             <!--begin::새 창으로 열기 (일자 뷰)-->
             <div class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="openDayView">
-                새 창으로 열기 (일자 뷰)
+                {{ t('journal.day.open-daily-window') }}
                 <i class="bi bi-box-arrow-up-right fs-8"></i>
               </div>
             </div>
@@ -80,7 +80,7 @@
             <!--begin::수정-->
             <div class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="openRegist">
-                수정
+                {{ t('common.edit') }}
                 <i class="bi bi-pencil-square fs-8"></i>
               </div>
             </div>
@@ -88,7 +88,7 @@
             <!--begin::상태 서브메뉴-->
             <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
               <a href="#" class="menu-link px-3" @click.prevent>
-                <span class="menu-title">상태</span>
+                <span class="menu-title">{{ t('common.status') }}</span>
                 <span class="menu-arrow"></span>
               </a>
               <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -96,7 +96,7 @@
                   <div class="menu-content px-3">
                     <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
                       <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="hasState('IMPRTC')" />
-                      <span class="form-check-label text-muted fs-7">중요</span>
+                      <span class="form-check-label text-muted fs-7">{{ t('state.important') }}</span>
                     </label>
                   </div>
                 </div>
@@ -104,7 +104,7 @@
                   <div class="menu-content px-3">
                     <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
                       <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="hasState('COLLAPSED')" @click.prevent="toggleCollapsed" />
-                      <span class="form-check-label text-muted fs-7">접힘</span>
+                      <span class="form-check-label text-muted fs-7">{{ t('journal.day.state.collapsed') }}</span>
                     </label>
                   </div>
                 </div>
@@ -115,7 +115,7 @@
             <!--begin::삭제-->
             <div class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3 text-danger" @click="deleteDay">
-                삭제
+                {{ t('common.delete') }}
                 <i class="bi bi-trash text-danger p-0 fs-8"></i>
               </div>
             </div>
@@ -130,7 +130,7 @@
             class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
             data-bs-toggle="dropdown"
             data-bs-auto-close="true"
-            title="메타"
+            :title="t('common.meta')"
           >
             <i class="bi bi-bar-chart"></i>
           </button>
@@ -184,8 +184,8 @@
       <template v-if="showDiaries">
         <div v-if="hiddenChapterCtgrList.length > 0" class="d-flex align-items-center mb-3">
           <div class="d-flex flex-wrap align-items-center gap-2 ps-1 ps-md-5">
-            <span class="badge badge-light-warning text-warning fw-semibold">CHAPTER FILTER</span>
-            <span class="text-muted fs-7">숨겨진 카테고리:</span>
+            <span class="badge badge-light-warning text-warning fw-semibold">{{ t("journal.day.list.chapter-filter") }}</span>
+            <span class="text-muted fs-7">{{ t('journal.day.list.hidden-chapter-ctgr') }}</span>
             <span
               v-for="ctgr in hiddenChapterCtgrList"
               :key="ctgr.categoryCode"
@@ -221,7 +221,7 @@
           <div class="col ps-1 ps-md-5">
             <span class="badge badge-light-secondary text-muted fw-normal">
               <i class="bi bi-moon-stars me-1"></i>
-              꿈 숨김
+              {{ t('journal.day.list.dreams-hidden') }}
             </span>
           </div>
         </div>
@@ -249,6 +249,8 @@ import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue"
 import JournalDreamVirtualSection from "../../dream/components/JournalDreamVirtualSection.vue";
 import { hasDreamSections } from "@/features/journal/utils/journalDream";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
+import { joinAppBasePath } from "@/shared/utils/appPath";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const props = defineProps<{
   day: JournalDayDto;
@@ -261,6 +263,7 @@ const router = useRouter();
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
 const tagContextMenuStore = useTagContextMenuStore();
+const { t } = useLocaleStore();
 
 const tagList = computed(() => props.day.tag?.list ?? []);
 const metaList = computed(() => props.day.meta?.list ?? []);
@@ -291,10 +294,9 @@ function gotoWeekly(): void {
 
 /** 일자 뷰(daily) 새 창으로 열기 — features 지정으로 탭이 아닌 새 창 강제 */
 function openDayView(): void {
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   const w = Math.min(1600, window.screen.availWidth);
   const h = Math.min(1080, window.screen.availHeight);
-  window.open(`${base}/journal/daily?stdrdDt=${props.day.stdrdDt}`, "_blank", `width=${w},height=${h}`);
+  window.open(joinAppBasePath(`/journal/daily?stdrdDt=${props.day.stdrdDt}`), "_blank", `width=${w},height=${h}`);
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */
@@ -328,14 +330,14 @@ async function toggleCollapsed(): Promise<void> {
 /** 일자 삭제 */
 async function deleteDay(): Promise<void> {
   if (!props.day.id) return;
-  if (!await swalConfirm("삭제하시겠습니까?")) return;
+  if (!await swalConfirm(t("common.confirm.del"))) return;
   try {
     const res = await axios.delete(`/api/journal/day/${props.day.id}`);
     if (res.data?.rslt) {
-      await swalAlert(res.data?.message ?? "삭제되었습니다.");
+      await swalAlert(res.data?.message ?? t("common.result.deleted"));
       scrollAfterFetch();
     } else {
-      void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+      void swalAlert(res.data?.message ?? t("journal.day.delete.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -364,7 +366,6 @@ function openChapterRegist() {
   modalStore.openChapterRegist({
     journalDayId: props.day.id,
     stdrdDt: props.day.stdrdDt,
-    journalDateWeekDay: props.day.journalDateWeekDay,
   });
 }
 
@@ -402,7 +403,7 @@ function htmlToPlainText(html: string): string {
 /** 꿈 엔트리 목록을 클립보드에 복사한다. 레거시 형식: 날짜(요일)\n#순번\n본문 */
 async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   const lines: string[] = [];
-  const weekDay = props.day.journalDateWeekDay ?? getWeekDayStr(props.day.stdrdDt);
+  const weekDay = getWeekDayStr(props.day.stdrdDt, t);
   const dateLine = weekDay
     ? `${props.day.stdrdDt} (${weekDay})`
     : (props.day.stdrdDt ?? "");
@@ -418,9 +419,9 @@ async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   const text = lines.join("\n").trim();
   try {
     await navigator.clipboard.writeText(text);
-    void swalAlert("클립보드에 복사되었습니다.");
+    void swalAlert(t("common.copy.success"));
   } catch {
-    void swalAlert("복사에 실패했습니다.");
+    void swalAlert(t("common.copy.failure"));
   }
 }
 
@@ -436,7 +437,6 @@ function openDreamRegist(dreamerName = "") {
   void modalStore.openDreamEntryRegist({
     journalDayId: props.day.id,
     stdrdDt: props.day.stdrdDt ?? "",
-    journalDateWeekDay: props.day.journalDateWeekDay,
     dreamerName,
   });
 }

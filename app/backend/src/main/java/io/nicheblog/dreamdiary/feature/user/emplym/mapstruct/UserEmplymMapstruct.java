@@ -53,8 +53,8 @@ public interface UserEmplymMapstruct
      */
     @Override
     @Mapping(target = "apntcYn", expression = "java(Code.RANK_STAFF.equals(dto.getRankCd()) ? dto.getApntcYn() : null)")
-    @Mapping(target = "ecnyDt", expression = "java(DateUtils.asDate(dto.getEcnyDt()))")
-    @Mapping(target = "retireDt", expression = "java(\"Y\".equals(dto.getRetireYn()) ? DateUtils.asDate(dto.getRetireDt()) : null)")
+    @Mapping(target = "ecnyDt", expression = "java(DateUtils.asLocalDate(dto.getEcnyDt()))")
+    @Mapping(target = "retireDt", expression = "java(\"Y\".equals(dto.getRetireYn()) ? DateUtils.asLocalDateTime(dto.getRetireDt()) : null)")
     @Mapping(target = "emplymEmail", expression = "java(dto.getEmplymEmailId() + \"@\" + dto.getEmplymEmailDomain())")
     @Mapping(target = "acntNo", expression = "java(StringUtils.isNotEmpty(dto.getAcntNo()) ? CryptoUtils.AES128.encrypt(dto.getAcntNo()) : null)")
     UserEmplymEntity toEntity(final UserEmplymDto dto) throws Exception;
@@ -68,8 +68,8 @@ public interface UserEmplymMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "apntcYn", expression = "java(\"STAFF\".equals(dto.getRankCd()) ? dto.getApntcYn() : null)")
-    @Mapping(target = "ecnyDt", expression = "java(DateUtils.asDate(dto.getEcnyDt()))")
-    @Mapping(target = "retireDt", expression = "java(DateUtils.asDate(dto.getRetireDt()))")
+    @Mapping(target = "ecnyDt", expression = "java(DateUtils.asLocalDate(dto.getEcnyDt()))")
+    @Mapping(target = "retireDt", expression = "java(DateUtils.asLocalDateTime(dto.getRetireDt()))")
     @Mapping(target = "emplymEmail", expression = "java(dto.getEmplymEmailId() + \"@\" + dto.getEmplymEmailDomain())")
     @Mapping(target = "acntNo", expression = "java(StringUtils.isNotEmpty(dto.getAcntNo()) ?  CryptoUtils.AES128.encrypt(dto.getAcntNo()) : null)")
     void updateFromDto(final UserEmplymDto dto, final @MappingTarget UserEmplymEntity entity) throws Exception;

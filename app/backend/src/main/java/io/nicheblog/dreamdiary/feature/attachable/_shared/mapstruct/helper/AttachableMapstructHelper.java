@@ -139,7 +139,7 @@ public class AttachableMapstructHelper {
     public static <Entity extends BaseAttachableEntity, Dto extends BaseAttachableDto> Boolean determineIfAttachableNew(final Entity entity) throws Exception {
         if (((ManagtEmbedModule) entity).getManagt() == null || ((ManagtEmbedModule) entity).getManagt().getManagtDt() == null) return false;
         // 최종수정 이후 7일 지난 글은 새 글이 아님
-        if (!((ManagtEmbedModule) entity).getManagt().getManagtDt().after(DateUtils.getCurrDateAddDay(-7))) return false;
+        if (!((ManagtEmbedModule) entity).getManagt().getManagtDt().isAfter(DateUtils.getCurrLocalDateTime().minusDays(7))) return false;
         // 내가 최종수정자면 false
         if (AuthUtils.isCreatedBy(((ManagtEmbedModule) entity).getManagt().getManagtrId())) return false;
         // 열람자에 내가 없으면 true

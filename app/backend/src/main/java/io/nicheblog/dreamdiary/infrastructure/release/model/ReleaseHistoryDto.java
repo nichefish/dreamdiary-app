@@ -5,7 +5,9 @@ import io.nicheblog.dreamdiary.infrastructure.release.type.ReleaseEventType;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * ReleaseHistoryDto
@@ -23,13 +25,17 @@ public class ReleaseHistoryDto {
     private final String appVersion;
     private final String commitHash;
     private final String releaseKey;
-    private final Date startedAt;
-    private final Date deployedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime startedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime deployedAt;
     private final String profile;
     private final String hostName;
     private final String instanceId;
     private final String createdBy;
-    private final Date createdAt;
+    /** 등록일시 — LocalDateTime 전환 후에도 API 직렬화 포맷(yyyy-MM-dd HH:mm:ss) 계약 유지 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime createdAt;
 
     public static ReleaseHistoryDto fromEntity(final ReleaseHistoryEntity entity) {
         return ReleaseHistoryDto.builder()

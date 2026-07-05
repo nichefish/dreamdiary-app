@@ -7,7 +7,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  * UserSignupRequestEntity
@@ -57,8 +58,8 @@ public class UserSignupRequestEntity extends BaseAuditEntity {
     private String status = "PENDING";
 
     @Column(name = "approved_at")
-    private Date approvedAt;
+    private LocalDateTime approvedAt;
 
     @Column(name = "rejected_at")
-    private Date rejectedAt;
+    private LocalDateTime rejectedAt;
 }

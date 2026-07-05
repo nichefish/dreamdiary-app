@@ -10,8 +10,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +76,7 @@ public class JournalChapterSpec
         final List<Predicate> predicate = new ArrayList<>();
         // expressions
         final Join<JournalChapterEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
+        final Expression<LocalDate> effectiveDtExp = journalDayJoin.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교
@@ -87,11 +87,11 @@ public class JournalChapterSpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "yy":
                     // 9999 = 모든 년

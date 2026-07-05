@@ -23,8 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +141,7 @@ public class UserSignupRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> userSignupApprovalListAjax() {
 
-        final DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         final List<UserSignupRequestEntity> pendingEntities =
                 userSignupRequestRepository.findByStatusOrderByCreatedAtDesc("PENDING");
@@ -171,7 +170,7 @@ public class UserSignupRestController
      * @param fmt 날짜 포맷터
      * @return {@link Map}
      */
-    private Map<String, Object> toRow(final UserSignupRequestEntity req, final DateFormat fmt) {
+    private Map<String, Object> toRow(final UserSignupRequestEntity req, final DateTimeFormatter fmt) {
         final Map<String, Object> row = new HashMap<>();
         row.put("id", req.getId());
         row.put("username", req.getUsername());

@@ -34,7 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,7 +226,7 @@ public class JournalDayService
     public boolean dupChckByUser(final String username, final JournalDayDto journalDay) throws Exception {
         if (StringUtils.isBlank(journalDay.getJournalDate())) return false;
 
-        final Date journalDate = DateUtils.asDate(journalDay.getJournalDate());
+        final LocalDate journalDate = DateUtils.asLocalDate(journalDay.getJournalDate());
         final String createdBy = AuthUtils.requireUsername(username);
         final Integer isDup = repository.countByJournalDate(journalDate, createdBy);
 
@@ -241,7 +241,7 @@ public class JournalDayService
      */
     @Transactional(readOnly = true)
     public Integer getDupKeyByUser(final String username, final JournalDayDto journalDay) throws Exception {
-        final Date journalDate = DateUtils.asDate(journalDay.getJournalDate());
+        final LocalDate journalDate = DateUtils.asLocalDate(journalDay.getJournalDate());
         final String createdBy = AuthUtils.requireUsername(username);
         final JournalDayEntity existingEntity = repository.findByJournalDate(journalDate, createdBy);
 

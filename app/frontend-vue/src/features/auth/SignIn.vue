@@ -272,6 +272,8 @@ import axios from "axios";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore, type SupportedLocale } from "@/shared/i18n/stores/locale";
 import { swalConfirm } from "@/shared/utils/swal";
+import { normalizeRoutePath } from "@/shared/utils/appPath";
+import type { RouteLocationRaw } from "vue-router";
 
 const localeStore = useLocaleStore();
 const t = (key: string) => localeStore.t(key);
@@ -280,6 +282,13 @@ const supportedLocales: { code: SupportedLocale; flag: string; label: string }[]
   { code: "ko", flag: "🇰🇷", label: "한국어" },
   { code: "en", flag: "🇺🇸", label: "English" },
 ];
+
+/** 로그인 후 redirect query 를 안전한 Vue Router 경로로 정규화한다. (`//` 포함 시 기본 화면) */
+function resolvePostLoginRoute(redirect: string): RouteLocationRaw {
+  const trimmed = redirect.trim();
+  if (!trimmed || trimmed.includes("//")) return { name: "journal-weekly" };
+  return normalizeRoutePath(trimmed);
+}
 
 const router = useRouter();
 const route = useRoute();
@@ -440,7 +449,7 @@ async function confirmDuplicateLoginAndRetry(): Promise<void> {
   try {
     await authStore.login({ username: form.value.username, password: form.value.password });
     const redirect = typeof route.query.redirect === "string" ? route.query.redirect : "";
-    await router.push(redirect || { name: "journal-weekly" });
+    await router.push(resolvePostLoginRoute(redirect));
   } catch {
     const msgs = authStore.errors.length > 0 ? authStore.errors : [t("auth.login.failure")];
     setLoginErrorLines(msgs);
@@ -468,7 +477,7 @@ async function handleLogin(): Promise<void> {
   try {
     await authStore.login({ username: form.value.username, password: form.value.password });
     const redirect = typeof route.query.redirect === "string" ? route.query.redirect : "";
-    await router.push(redirect || { name: "journal-weekly" });
+    await router.push(resolvePostLoginRoute(redirect));
   } catch {
     const msgs = authStore.errors.length > 0 ? authStore.errors : [t("auth.login.failure")];
     setLoginErrorLines(msgs);

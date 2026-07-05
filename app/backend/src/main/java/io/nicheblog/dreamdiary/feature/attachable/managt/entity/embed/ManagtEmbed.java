@@ -15,8 +15,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.persistence.OrderBy;
+import java.time.LocalDateTime;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,10 +57,9 @@ public class ManagtEmbed
     private Boolean isManagtr;
 
     /** 조치(작업)일시 */
-    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "managt_dt")
-    private Date managtDt;
+    private LocalDateTime managtDt;
 
     /** 게시물 조치자 목록 */
     @OneToMany(fetch = FetchType.EAGER)
@@ -82,7 +81,7 @@ public class ManagtEmbed
     }
     public ManagtEmbed(Boolean updtManagtDt) {
         this();
-        if (updtManagtDt) this.managtDt = DateUtils.getCurrDate();
+        if (updtManagtDt) this.managtDt = DateUtils.getCurrLocalDateTime();
     }
 
     /**

@@ -32,12 +32,15 @@
           <div class="schedule-view-toolbar__tools d-none d-md-flex align-items-center flex-shrink-0 pe-5 mt-3 gap-2">
             <div class="d-flex align-items-center gap-2">
               <label for="schedule_anchor_date" class="form-label mb-0 text-nowrap fs-7 fw-bold">{{ t('schedule.anchor-date') }}</label>
+              <!--저장 모달과 동일하게 readonly 텍스트 input + flatpickr — 클릭 시 달력 표시 (변경 전: 네이티브 type="date")-->
               <input
                 id="schedule_anchor_date"
-                v-model="anchorDateText"
-                type="date"
+                ref="anchorDtInputRef"
+                :value="anchorDateText"
+                type="text"
                 class="form-control form-control-sm form-control-solid schedule-view-toolbar__date-input"
-                @change="goToAnchorDate"
+                autocomplete="off"
+                readonly
               />
             </div>
             <div class="input-group input-group-sm">
@@ -343,7 +346,7 @@ import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { bindSingleDatePicker, destroySingleDatePicker } from "@/shared/utils/flatpickrSingleDate";
 import type { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
-import { computed, nextTick, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -375,10 +378,12 @@ const registModalEl = ref<HTMLElement | null>(null);
 const detailModalEl = ref<HTMLElement | null>(null);
 const bgnDtInputRef = ref<HTMLInputElement | null>(null);
 const endDtInputRef = ref<HTMLInputElement | null>(null);
+const anchorDtInputRef = ref<HTMLInputElement | null>(null);
 let registModal: Modal | null = null;
 let detailModal: Modal | null = null;
 let bgnDtFp: FlatpickrInstance | null = null;
 let endDtFp: FlatpickrInstance | null = null;
+let anchorDtFp: FlatpickrInstance | null = null;
 
 const today = new Date();
 const queryRange = ref<ScheduleQueryRange>(queryRangeForMonth(today));
@@ -690,10 +695,36 @@ async function deleteDetail() {
   }
 }
 
+/** 이동일 flatpickr 바인딩 — 툴바 input 은 상시 존재하므로 mount 시 1회 attach, unmount 시 destroy. */
+function attachAnchorDatePicker(): void {
+  if (!anchorDtInputRef.value) return;
+  anchorDtFp = bindSingleDatePicker(anchorDtInputRef.value, {
+    initial: anchorDateText.value,
+    onValue: (dateStr) => {
+      anchorDateText.value = dateStr;
+      goToAnchorDate();
+    },
+  });
+}
+
+// 달력 이동(datesSet) 등 외부에서 이동일이 갱신되면 flatpickr 표시값도 동기화한다.
+watch(anchorDateText, (next) => {
+  if (anchorDtFp && anchorDtInputRef.value?.value !== next) {
+    anchorDtFp.setDate(next, false);
+  }
+});
+
 onMounted(async () => {
   if (registModalEl.value) registModal = new Modal(registModalEl.value);
   if (detailModalEl.value) detailModal = new Modal(detailModalEl.value);
+  attachAnchorDatePicker();
   await scheduleStore.fetchBootstrap();
+});
+
+onBeforeUnmount(() => {
+  destroySingleDatePicker(anchorDtFp);
+  anchorDtFp = null;
+  destroyRegistDatePickers();
 });
 </script>
 

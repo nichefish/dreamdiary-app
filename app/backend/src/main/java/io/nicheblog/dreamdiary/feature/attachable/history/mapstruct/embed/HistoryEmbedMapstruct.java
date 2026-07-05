@@ -43,7 +43,7 @@ public interface HistoryEmbedMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "historyTriggeredAt", expression = "java(DateUtils.asDate(dto.getHistoryTriggeredAt()))")
+    @Mapping(target = "historyTriggeredAt", expression = "java(DateUtils.asLocalDateTime(dto.getHistoryTriggeredAt()))")
     HistoryEmbed toEntity(final HistoryCmpstn dto) throws Exception;
 
     /**

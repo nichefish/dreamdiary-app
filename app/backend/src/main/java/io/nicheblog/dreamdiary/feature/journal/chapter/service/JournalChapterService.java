@@ -38,8 +38,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -440,7 +440,7 @@ public class JournalChapterService
         final String username = AuthUtils.getLoginUsername();
 
         // 대상 일자 찾기
-        final Date journalDate = DateUtils.asDate(targetStdrdDt);
+        final LocalDate journalDate = DateUtils.asLocalDate(targetStdrdDt);
         JournalDayEntity targetDay = journalDayRepository.findByJournalDate(journalDate, username);
         if (targetDay == null) {
             // 대상 일자가 없으면 신규 등록

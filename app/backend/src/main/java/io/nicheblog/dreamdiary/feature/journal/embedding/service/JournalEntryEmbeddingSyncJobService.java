@@ -13,10 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.time.LocalDateTime;
 import java.net.InetAddress;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -76,7 +75,7 @@ public class JournalEntryEmbeddingSyncJobService {
             }
 
             final long syncTotal = queueService.countJournalEntriesForSync();
-            final Date now = new Date();
+            final LocalDateTime now = LocalDateTime.now();
             job.setStatus(STATUS_RUNNING);
             job.setPhase(PHASE_RUNNING);
             job.setStartedAt(now);
@@ -120,7 +119,7 @@ public class JournalEntryEmbeddingSyncJobService {
             if (job.getTotalCount() == null || processedCount > job.getTotalCount()) {
                 job.setTotalCount((long) processedCount);
             }
-            job.setHeartbeatAt(new Date());
+            job.setHeartbeatAt(LocalDateTime.now());
             jobRepository.save(job);
         });
     }
@@ -128,7 +127,7 @@ public class JournalEntryEmbeddingSyncJobService {
     private void markCompleted(final JournalEntryEmbeddingSyncResultDto syncResult) {
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             final JournalEntryEmbeddingSyncJobEntity job = getOrCreateJobRow(false);
-            final Date now = new Date();
+            final LocalDateTime now = LocalDateTime.now();
             job.setStatus(STATUS_COMPLETED);
             job.setPhase(PHASE_COMPLETED);
             job.setProcessedCount(syncResult.getActiveEntryCount());
@@ -145,7 +144,7 @@ public class JournalEntryEmbeddingSyncJobService {
     private void markFailed(final Exception e) {
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             final JournalEntryEmbeddingSyncJobEntity job = getOrCreateJobRow(false);
-            final Date now = new Date();
+            final LocalDateTime now = LocalDateTime.now();
             job.setStatus(STATUS_FAILED);
             job.setPhase(PHASE_FAILED);
             job.setFinishedAt(now);
@@ -185,7 +184,7 @@ public class JournalEntryEmbeddingSyncJobService {
     private JournalEntryEmbeddingSyncJobEntity markStaleIfNeeded(final JournalEntryEmbeddingSyncJobEntity job) {
         if (!isStale(job)) return job;
 
-        final Date now = new Date();
+        final LocalDateTime now = LocalDateTime.now();
         job.setStatus(STATUS_FAILED);
         job.setPhase(PHASE_FAILED);
         job.setFinishedAt(now);
@@ -206,7 +205,7 @@ public class JournalEntryEmbeddingSyncJobService {
 
     private boolean isStale(final JournalEntryEmbeddingSyncJobEntity job) {
         if (!STATUS_RUNNING.equals(job.getStatus()) || job.getHeartbeatAt() == null) return false;
-        return job.getHeartbeatAt().before(Date.from(Instant.now().minus(STALE_RUNNING_AGE)));
+        return job.getHeartbeatAt().isBefore(LocalDateTime.now().minus(STALE_RUNNING_AGE));
     }
 
     private JournalEntryEmbeddingSyncResultDto readResult(final String resultJson) {

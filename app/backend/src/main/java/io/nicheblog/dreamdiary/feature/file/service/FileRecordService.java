@@ -163,7 +163,7 @@ public class FileRecordService
         fileRecordList.stream()
                 .peek(fileRecord -> {
                     String atchCtrl = multiRequest.getParameter("atchCtrl" + fileRecord.getId());
-                    if ("D".equals(atchCtrl)) fileRecord.setDeletedAt(DateUtils.getCurrDate());
+                    if ("D".equals(atchCtrl)) fileRecord.setDeletedAt(DateUtils.getCurrLocalDateTime());
                     // TODO: 실제 파일 삭제?
                 });
     }

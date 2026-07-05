@@ -77,8 +77,8 @@ class UserEmplymMapstructTest {
         // Then::
         assertNotNull(userEmplymEntity, "변환된 인사정보 Entity는 null일 수 없습니다.");
         // 날짜 변환 체크
-        assertEquals(DateUtils.asDate("2000-01-01"), userEmplymEntity.getEcnyDt(), "직원정보 입사일 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals(DateUtils.asDate("2000-01-01"), userEmplymEntity.getRetireDt(), "직원정보 퇴사일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asLocalDate("2000-01-01"), userEmplymEntity.getEcnyDt(), "직원정보 입사일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asLocalDateTime("2000-01-01"), userEmplymEntity.getRetireDt(), "직원정보 퇴사일 정보가 제대로 매핑되지 않았습니다.");
         // 이메일 변환 로직
         assertEquals(userEmplymEntity.getEmplymEmail(), userEmplymDto.getEmplymEmailId() + "@" + userEmplymDto.getEmplymEmailDomain());
     }

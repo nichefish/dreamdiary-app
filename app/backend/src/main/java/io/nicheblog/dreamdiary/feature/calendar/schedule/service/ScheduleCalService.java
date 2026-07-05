@@ -56,6 +56,11 @@ public class ScheduleCalService {
         if (StringUtils.isNotBlank(searchParam.getEndDt())) {
             searchParam.setSearchEndDt(searchParam.getEndDt());
         }
+        // 정규화 후 alias(bgnDt/endDt) 제거: convertToMap → filterParamMap 에서 "Dt" 로 끝나는 키가
+        // java.util.Date 로 변환되어 ScheduleSpec default(equal) 로 새어들어가 LocalDateTime 필드와
+        // 타입 불일치가 되는 것을 방지한다. (searchStartDt/searchEndDt 단일 경로로 수렴)
+        searchParam.setBgnDt(null);
+        searchParam.setEndDt(null);
     }
 
     /**

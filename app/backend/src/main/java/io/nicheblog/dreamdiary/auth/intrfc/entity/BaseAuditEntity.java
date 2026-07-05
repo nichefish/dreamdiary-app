@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * BaseAuditEntity
@@ -48,10 +48,9 @@ public class BaseAuditEntity
     /** 수정일시 */
     @LastModifiedDate
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "updated_at", insertable = false)
-    protected Date updatedAt;
+    protected LocalDateTime updatedAt;
 
     /** 수정자 정보 :: join 제거하고 캐시 처리 */
     @Transient

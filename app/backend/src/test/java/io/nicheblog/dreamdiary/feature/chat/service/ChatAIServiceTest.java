@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -608,6 +609,47 @@ class ChatAIServiceTest {
         );
         ragContextCtor.setAccessible(true);
         return ragContextCtor.newInstance(RagIntent.SYNTHESIS, List.of(taggedResult), "ctx", personFocus);
+    }
+
+    private static Object buildTestRagContextWithManyTaggedResults(final String target, final int count) throws Exception {
+        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus");
+        final Class<?> ragContextClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+
+        final var personFocusCtor = personFocusClass.getDeclaredConstructor(
+                String.class,
+                List.class,
+                int.class,
+                JournalEntityFocusService.PersonEntityFocusSummary.class
+        );
+        personFocusCtor.setAccessible(true);
+        final Object personFocus = personFocusCtor.newInstance(target, List.of(target), count, null);
+
+        final List<RagSearchResult> results = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            final JournalEntryEmbeddingEntity entity = JournalEntryEmbeddingEntity.builder()
+                    .journalEntryId(101 + i)
+                    .contentKind("DIARY")
+                    .embeddingText("본문 장면" + i + ": " + target + "님과 회의했다")
+                    .embeddingPayloadJson(
+                            "{\"tags\":\"[엔서클]#김민수 [엔서클]#조직역동\","
+                                    + "\"chapterCategory\":\"DYNAMICS\"}"
+                    )
+                    .build();
+            results.add(RagSearchResult.builder()
+                    .entity(entity)
+                    .matchType(RagSearchResult.MATCH_TYPE_TAG)
+                    .score(5.0D + i)
+                    .build());
+        }
+
+        final var ragContextCtor = ragContextClass.getDeclaredConstructor(
+                RagIntent.class,
+                List.class,
+                String.class,
+                personFocusClass
+        );
+        ragContextCtor.setAccessible(true);
+        return ragContextCtor.newInstance(RagIntent.SYNTHESIS, results, "ctx", personFocus);
     }
 
     /**
@@ -1494,7 +1536,7 @@ class ChatAIServiceTest {
         final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
         final Method method = ChatAIService.class.getDeclaredMethod(
                 "buildPersonMeaningRetryPrompt",
-                RagContext.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
                 String.class,
                 String.class
         );

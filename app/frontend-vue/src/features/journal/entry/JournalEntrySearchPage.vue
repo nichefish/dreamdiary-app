@@ -228,6 +228,7 @@ import { swalAlert, swalRequestError } from "@/shared/utils/swal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { joinAppBasePath } from "@/shared/utils/appPath";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import JournalEntryItem from "./components/JournalEntryItem.vue";
 import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
@@ -569,10 +570,9 @@ function exportTxt(): void {
 /** 일자 뷰를 새 창으로 연다. */
 function openDailyView(stdrdDt: string | undefined): void {
   if (!stdrdDt) return;
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   const w = Math.min(1600, window.screen.availWidth);
   const h = Math.min(1080, window.screen.availHeight);
-  window.open(`${base}/journal/daily?stdrdDt=${stdrdDt}`, "_blank", `width=${w},height=${h}`);
+  window.open(joinAppBasePath(`/journal/daily?stdrdDt=${stdrdDt}`), "_blank", `width=${w},height=${h}`);
 }
 
 async function prepareEntrySaveDom(payload?: JournalEntrySaveEvent): Promise<void> {

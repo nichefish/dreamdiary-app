@@ -3,7 +3,9 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.model;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * 관리자 화면에 표시할 저널 엔트리 임베딩 작업 통계 DTO입니다.
@@ -55,8 +57,11 @@ public class JournalEntryEmbeddingStatsDto {
     private final String syncPhase;
     private final long syncProcessed;
     private final long syncTotal;
-    private final Date syncStartedAt;
-    private final Date syncFinishedAt;
+    /** LocalDateTime 전환 후에도 API 직렬화 포맷(yyyy-MM-dd HH:mm:ss) 계약 유지 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime syncStartedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime syncFinishedAt;
     private final JournalEntryEmbeddingSyncResultDto syncResult;
     private final String syncErrorMessage;
 

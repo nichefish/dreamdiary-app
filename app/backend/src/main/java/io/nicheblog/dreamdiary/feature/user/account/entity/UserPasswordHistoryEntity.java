@@ -4,7 +4,8 @@ import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  * UserPasswordHistoryEntity
@@ -43,5 +44,5 @@ public class UserPasswordHistoryEntity {
     /** Password changed timestamp */
     @Column(name = "changed_at", nullable = false)
     @Comment("Password changed timestamp")
-    private Date changedAt;
+    private LocalDateTime changedAt;
 }
