@@ -32,7 +32,10 @@ export interface JournalThreadDto {
   content?: string;
   markdownContent?: string;
   tag?: ThreadTagCmpstn;
-  comment?: { cnt?: number; list?: Array<{ id?: number; markdownContent?: string }> };
+  comment?: {
+    cnt?: number;
+    list?: Array<{ id?: number; content?: string; markdownContent?: string }>;
+  };
   file?: { fileGroupId?: number };
   hasFiles?: boolean;
   createdByNm?: string;

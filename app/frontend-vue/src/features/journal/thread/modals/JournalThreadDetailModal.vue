@@ -56,9 +56,40 @@
             </div>
             <!--end::태그-->
 
-            <!--begin::댓글 영역 (TODO: 댓글 연동 예정)-->
+            <!--begin::댓글 영역-->
             <div class="separator separator-dashed border-gray-200 my-6"></div>
-            <div class="text-muted fs-7 text-center py-3">{{ t("journal.thread.comment.pending") }}</div>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fs-6 fw-bold text-gray-800">{{ t("comment.modal.title") }}</span>
+              <div v-if="store.detailModel.id" class="d-flex gap-1">
+                <button
+                  type="button"
+                  class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
+                  :title="t('comment.register')"
+                  @click="openCommentRegist"
+                >
+                  <i class="bi bi-chat-dots fs-8"></i>
+                </button>
+                <button
+                  v-if="commentCount > 0"
+                  type="button"
+                  class="btn btn-xs btn-light-primary"
+                  :title="t('journal.thread.comments.tooltip')"
+                  @click="openCommentList"
+                >
+                  <i class="bi bi-chat-left-text fs-8 me-1"></i>
+                  {{ commentCount }}
+                </button>
+              </div>
+            </div>
+            <div v-if="commentList.length === 0" class="text-muted fs-7 py-2">{{ t("comment.modal.empty") }}</div>
+            <div v-else class="d-flex flex-column gap-2">
+              <div
+                v-for="cmt in commentList"
+                :key="cmt.id"
+                class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
+                v-html="cmt.markdownContent || cmt.content || ''"
+              ></div>
+            </div>
             <!--end::댓글 영역-->
           </div>
         </div>
@@ -82,9 +113,11 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalThreadStore();
+const attachableStore = useAttachableModalStore();
 const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -92,6 +125,18 @@ let bsModal: InstanceType<typeof Modal> | null = null;
 
 const hasDetailTags = computed(() =>
   Array.isArray(store.detailModel?.tag?.list) && store.detailModel!.tag!.list!.length > 0
+);
+
+const commentList = computed(() => store.detailModel?.comment?.list ?? []);
+
+const commentCount = computed(() => {
+  const cnt = store.detailModel?.comment?.cnt;
+  if (typeof cnt === "number") return cnt;
+  return commentList.value.length;
+});
+
+const threadContentType = computed(
+  () => store.detailModel?.contentType ?? "JOURNAL_THREAD"
 );
 
 onMounted(() => {
@@ -113,5 +158,17 @@ watch(
 
 function close() {
   store.closeDetail();
+}
+
+function openCommentRegist(): void {
+  const id = store.detailModel?.id;
+  if (!id) return;
+  void attachableStore.openCommentRegist(id, threadContentType.value);
+}
+
+function openCommentList(): void {
+  const id = store.detailModel?.id;
+  if (!id) return;
+  void attachableStore.openCommentList(id, threadContentType.value);
 }
 </script>

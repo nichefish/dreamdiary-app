@@ -6,6 +6,7 @@
     <JournalThreadRegistModal />
     <JournalThreadDetailModal />
     <CommentListModal />
+    <CommentRegistModal />
     <!--end::스레드 모달 컨테이너-->
   </div>
   <!--end::스레드 레이아웃-->
@@ -17,6 +18,7 @@ import { useRoute, useRouter } from "vue-router";
 import JournalThreadRegistModal from "./modals/JournalThreadRegistModal.vue";
 import JournalThreadDetailModal from "./modals/JournalThreadDetailModal.vue";
 import CommentListModal from "@/features/attachable/CommentListModal.vue";
+import CommentRegistModal from "@/features/journal/shared/modals/CommentRegistModal.vue";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 
 const route = useRoute();

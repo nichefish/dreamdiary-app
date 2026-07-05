@@ -689,11 +689,13 @@ interface TodoRow {
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadDetailModal.vue`
 
-**데이터**: `useJournalThreadStore.detailModel`의 카테고리·제목·작성자·작성일·본문·태그를 읽기 전용으로 표시한다. 댓글 영역은 후속 연동 예정 안내만 표시한다.
+**데이터**: `useJournalThreadStore.detailModel`의 카테고리·제목·작성자·작성일·본문·태그·`comment.list`를 읽기 전용으로 표시한다.
 
-**i18n**: 모달 제목·댓글 후속 연동 안내·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
+**동작**: 댓글 등록 버튼은 `useAttachableModalStore.openCommentRegist(id, contentType)`를 호출한다. 댓글 수 버튼(목록에 댓글이 있을 때)은 `openCommentList`를 호출한다. 댓글 등록 성공 시 `CommentRegistModal`이 열린 상세가 `JOURNAL_THREAD`이면 상세를 재조회하고 목록의 댓글 수를 갱신한다.
 
-**현재 Vue 동등**: ⚠ 부분 구현 — 상세 조회·표시 구현 완료, 댓글 연동은 미구현
+**i18n**: 모달 제목·댓글 섹션 제목·빈 상태·등록 툴팁·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
+
+**현재 Vue 동등**: ✓ 구현 완료
 
 ---
 

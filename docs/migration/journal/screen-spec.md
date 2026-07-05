@@ -512,11 +512,12 @@
 
 | Modal | 파일 | 열리는 조건 |
 |-------|------|-----------|
-| 댓글 목록 | `_comment_list_modal.ftlh` | 댓글 수 클릭 |
+| 댓글 목록 | `_comment_list_modal.ftlh` | 목록 댓글 수 클릭·상세 모달 댓글 수 버튼 |
+| 댓글 등록 | `_comment_reg_modal.ftlh` | 상세 모달 댓글 등록 버튼 |
 | 파일 목록 | `_file_list_modal.ftlh` | 첨부파일 아이콘 클릭 |
-| 스레드 상세 | `_journal_thread_detail_modal.ftlh` | 모달 아이콘 클릭 |
+| 스레드 상세 | `_journal_thread_detail_modal.ftlh` | 제목 행 클릭 |
 
-`JournalThreadDetailModal.vue`의 제목·댓글 후속 연동 안내·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
+`JournalThreadDetailModal.vue`의 제목·댓글 섹션(인라인 목록·등록·목록 모달 진입)·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. 상세 모달의 댓글 등록은 `CommentRegistModal`을 연다(`JournalThreadLayout`에 마운트).
 
 ### Special behaviors
 
