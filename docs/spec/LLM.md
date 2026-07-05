@@ -1,6 +1,6 @@
 ## 로컬 LLM 구축 및 활용.
 
-AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](migration/chat/ai-chat-spec.md)을 함께 갱신한다.
+AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](CHAT_AI_SPEC.md)을 함께 갱신한다.
 
 ### 1. Ollama 다운로드 및 설치.
 - Ollama란?

@@ -159,7 +159,7 @@
 | 탭 라벨 | text | — | — | `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW` |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 등록 버튼; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
 | 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex`. 신규 등록 성공 시 서버가 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. |
-| 키워드 검색 | include | `_journal_day_keyword_search.ftlh` | 검색 파라미터 | 팝업 형태 — SPA ❌ MISSING |
+| 키워드 검색 | Vue | `JournalDayViewToolbar.vue` | `openSearchTab` → `/journal/entry/search` | 레거시 팝업 대체 ✓ — 툴바 일기·꿈 키워드 입력 후 새 탭 검색 |
 | 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부. 일자/일기/꿈 태그 행의 목록 시작 x좌표는 동일해야 하며, `꿈 태그` 라벨 길이 차이로 들여쓰기 차이가 생기면 안 된다. |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayMonthlyListApp` 마운트 대상 |
 
@@ -669,7 +669,7 @@
 
 **현재 Vue 구현 차이**: `JournalAside.vue`는 `<select>` 대신 그리드+화살표 방식. `id="yy"`, `id="mnth"` 가 없어 레거시 JS 호환 불가. 연도는 최소 2010년부터 현재 연도까지 포함해야 함.
 
-#### 2-b. 주간 네비게이터 (Week section) — **MISSING in Vue SPA**
+#### 2-b. 주간 네비게이터 (Week section) — **✓ Vue SPA (`JournalAside.vue`)**
 
 ```html
     <!-- Week section -->
@@ -719,7 +719,7 @@ type WeekDayItem = {
 
 **주간 범위 라벨**: `weekStartDt ~ weekEndDt` (월요일 ~ 일요일, `MM-DD ~ MM-DD` 형식)
 
-#### 2-c. Pinpoint 섹션 — **MISSING in Vue SPA**
+#### 2-c. Pinpoint 섹션 — **✓ Vue SPA (`JournalAside.vue` + `journalAside` store, localStorage `journal_day_pinpoint`)**
 
 ```html
     <!-- Pinpoint section -->
@@ -1044,9 +1044,9 @@ type TodoRow = {
 | 2. 주간 | 주간 요일 셀 내비게이터 | ✓ `weekDays` computed + `journal-aside-week-days` |
 | 2. 주간 | 이전/다음 주 화살표 | ✓ `store.navigateWeek(-1/1)` |
 | 2. 주간 | 주간 TODAY 버튼 | ✓ 공통 TODAY 버튼 (`store.gotoToday()`) |
-| 2. Pinpoint | 핀 고정 버튼 | ❌ MISSING |
-| 2. Pinpoint | 고정 yy/mnth 표시 | ❌ MISSING |
-| 2. Pinpoint | 돌아가기 버튼 | ❌ MISSING |
+| 2. Pinpoint | 핀 고정 버튼 | ✓ `pinpoint()` → `asideStore.setPinpoint` |
+| 2. Pinpoint | 고정 yy/mnth 표시 | ✓ `pinnedYy` / `pinnedMnth` + 되돌리기 UI |
+| 2. Pinpoint | 돌아가기 버튼 | ✓ `turnback()` — 고정된 yy/mnth 로 이동 (`gotoYyMnth`) |
 | 3. 엔트리 필터 | TAGCLOUD 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | DIARIES 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | CHAPTER CATEGORIES (체크박스, 일기·노트 코드 병합) | ✓ |

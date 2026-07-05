@@ -1,6 +1,6 @@
 # Dreamdiary AI Chat Philosophy
 
-동작 기준과 구현 상태는 [AI Chat Spec](migration/chat/ai-chat-spec.md)을 따른다.
+동작 기준과 구현 상태는 [AI Chat Spec](CHAT_AI_SPEC.md)을 따른다.
 
 ## 핵심 관점
 

@@ -32,8 +32,8 @@ journal_day.journal_date
 | content_type | kind | weight | 이유 |
 | --- | --- | ---: | --- |
 | `JOURNAL_DIARY` | `DIARY` | `1.00` | 기준 개인 기록 |
-| `JOURNAL_DREAM` | `DREAM` | `1.15` | 상징/감정/해석 밀도가 높아 semantic query에서 중요 |
-| `JOURNAL_NOTE` | `NOTE` | `0.90` | 외부 현실/메모 성격이 강해 기본 회상에서는 약간 낮춤 |
+| `JOURNAL_DREAM` | `DREAM` | `1.30` | 상징/감정/해석 밀도가 높아 semantic query에서 중요 (`JournalEntryEmbeddingQueueService.resolveRetrievalWeight`) |
+| `JOURNAL_NOTE` | `NOTE` | `0.85` | 외부 현실/메모 성격이 강해 기본 회상에서는 약간 낮춤 (`JournalEntryEmbeddingQueueService.resolveRetrievalWeight`) |
 
 이 값은 embedding vector를 변형하지 않는다. 검색 결과 ranking 단계에서 score multiplier로 사용한다.
 
@@ -58,27 +58,25 @@ journal_day.journal_date
 모델에 넣는 텍스트는 사람이 읽을 수 있는 labeled text로 만든다.
 
 ```text
-[TYPE] DREAM
-
-[DATE] 2025-04-10
-
-[TITLE] ...
-
-[CHAPTER] ...
-
-[TAGS] 불안, 가족
-
-[STATES] NHTMR
-
-[META] mood=anxious
-
-[CONTENT]
-...
+유형: DREAM
+날짜: 2025-04-10
+챕터: ...
+챕터 분류: 역동(DYNAMICS)
+핵심 태그: [엔서클]#불안 [엔서클]#가족
+주제 태그: [엔서클]#불안 [엔서클]#가족
+태그: [엔서클]#불안 [엔서클]#가족
+제목: ...
+본문: ...
+타인의 꿈 여부: N
+꿈 제공자: ...
 ```
 
-이 방식은 모델에 문맥을 주면서도, 원문을 과도하게 조작하지 않는다.
+`JournalEntryEmbeddingQueueService.buildEmbeddingText()`가 `라벨: 값` 한 줄 형식으로 구성한다. 빈 값 라벨은 생략한다. RAG·person-meaning 스니펫 파서(`본문:` 등)와 동일 계약이므로 테스트 fixture도 이 접두를 따라야 한다.
 
 ## embedding_payload_json
+
+
+> **구현 현황 (2026-07)**: 현재 worker는 아래 v1 중첩 스키마가 아니라 `JournalEntryEmbeddingQueueService.buildPayload()`의 **flat map**(`source`, `journalEntryId`, `contentKind`, `retrievalWeight`, `tags`, `journalDate`, …)을 `embedding_payload_json`에 저장한다. v1 JSON은 목표 구조이며, 수렴 작업 시 flat → v1 마이그레이션을 별도 정의한다.
 
 v1 payload 구조:
 
@@ -90,7 +88,7 @@ v1 payload 구조:
     "id": 123,
     "contentType": "JOURNAL_DREAM",
     "kind": "DREAM",
-    "typeWeight": 1.15
+    "typeWeight": 1.30
   },
   "time": {
     "journalDate": "2025-04-10",
@@ -115,7 +113,7 @@ v1 payload 구조:
     ]
   },
   "weights": {
-    "type": 1.15,
+    "type": 1.30,
     "title": 1.25,
     "content": 1.0,
     "chapter": 0.85,
