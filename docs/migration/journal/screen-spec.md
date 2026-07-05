@@ -888,7 +888,7 @@ const pinnedMnth = ref<number | null>(null);
     <!-- 블록 D: ENTRY FILTER 레이블 -->
     <div class="text-gray-900 fs-6 fw-bold mt-1">ENTRY FILTER</div>
 
-    <!-- 블록 E: 고급 필터 아코디언 (Bootstrap accordion) — MISSING -->
+    <!-- 블록 E: 고급 필터 아코디언 — 이식 대상 아님 (레거시 빈 placeholder; 구현은 JournalEntrySearchPage) -->
     <div class="accordion accordion-flush" id="journal_day_filter_accordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="journal_day_filter_heading_advanced">
@@ -1053,7 +1053,7 @@ type TodoRow = {
 | 3. 엔트리 필터 | 일기 키워드 | ✓ 구현 (위치 다름) |
 | 3. 엔트리 필터 | DREAMS 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | 꿈 키워드 | ✓ 구현 (위치 다름) |
-| 3. 엔트리 필터 | 고급 필터 아코디언 | ❌ MISSING |
+| 3. 엔트리 필터 | 고급 필터 아코디언 (블록 D) | — 이식 대상 아님 — 검색 팝업 고급필터 ✓ |
 | 4. TODO 카드 | "TODO List" 카드 헤더 | ✓ `JournalAsideTodoCard.vue` (현재 locale 카탈로그 사용) |
 | 4. TODO 카드 | TODO 목록 표시 | ✓ `store.fetchTodos()` 월별 목록 표시 |
 | 4. TODO 카드 | TODO 삭제 버튼 | ✓ 삭제 API 성공 후 목록 재조회 |

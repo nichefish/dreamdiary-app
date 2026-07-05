@@ -604,7 +604,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
     dF.JournalDayRuntimeService.handleLegacyActionClick(event);" />
 ```
 
-**현재 Vue 동등**: 부분 구현. 공통 컴포넌트는 아직 없지만, 저널 작성 폼 모달은 `app/frontend-vue/src/shared/utils/safeModalClose.ts`의 `useSafeModalClose()`로 레거시 2회 클릭 안전 닫기(2초 확인 상태)를 적용한다.
+**현재 Vue 동등**: ✓ composable — `shared/utils/safeModalClose.ts`의 `useSafeModalClose()`가 레거시 2회 클릭 안전 닫기(2초 armed 상태)를 구현한다. 별도 `ModalBtnCloseSafe.vue` 추출은 없으며, 저널 등록·수정 모달 10곳+에서 헤더 X·푸터 닫기/취소에 적용 (`journal/component-spec.md` 모달 정책).
 
 ---
 
@@ -712,7 +712,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | `modal_btn_modify` | `_modal_elements.ftlh` | MISSING | 중 |
 | `modal_btn_delete` | `_modal_elements.ftlh` | MISSING | 중 |
 | `modal_btn_close` | `_modal_elements.ftlh` | MISSING | 높음 |
-| `modal_btn_close_safe` | `_modal_elements.ftlh` | PARTIAL (`useSafeModalClose`) | 높음 |
+| `modal_btn_close_safe` | `_modal_elements.ftlh` | ✓ (`useSafeModalClose` composable) | — |
 | `Pagination` | `_pagination.ftlh` | ⚠ 인라인 구현 (공통 컴포넌트 없음) | — |
 
 ---

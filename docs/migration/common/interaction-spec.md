@@ -331,7 +331,7 @@ cF.ui.swalOrConfirm(
 
 ### 모달 닫기 버튼 확인
 
-`modal_btn_close_safe` 패턴: 변경 사항 있을 때 닫기 전 확인 로직을 `data-func` 속성에 주입. Vue 전환 후 `dF.JournalDayRuntimeService.handleLegacyActionClick(event)` 형태로 처리.
+`modal_btn_close_safe` 패턴: 레거시는 `Layout.modalBtnCloseSafe()` + `data-func`. Vue SPA 는 `useSafeModalClose()` composable로 2회 클릭 armed 닫기를 구현 — `common/component-spec.md` §16 ✓.
 
 ---
 

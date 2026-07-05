@@ -93,9 +93,22 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | 일기/꿈 키워드 필터 input (어사이드) | ✓ |
 | 필터 초기화 버튼 | ✓ |
 | TODO List 카드 (등록 + 목록·삭제, `JournalAsideTodoCard`) | ✓ |
-| 고급 필터 아코디언 | — 이식 대상 아님 (레거시가 빈 슬롯 placeholder — 실 필터 컨트롤 없음) |
+| 고급 필터 아코디언 (블록 D) | — 이식 대상 아님 — 검색 팝업 `JournalEntrySearchPage` 참고 |
 
 ---
+
+
+### 저널 필터·검색 정책 (Vue SPA)
+
+> 상세: `journal/screen-spec.md` · `journal/interaction-spec.md` · `journal/component-spec.md`
+
+| 구분 | Vue 위치 | 레거시 | 상태 |
+|------|----------|--------|------|
+| 툴바 전체검색 | `JournalDayViewToolbar.vue` → `openSearchTab()` | `_journal_day_keyword_search.ftlh` 팝업 | ✓ **대체 완료** — 새 탭 `/journal/entry/search` |
+| 어사이드 목록 키워드 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` | aside 인라인 필터 | ✓ 현재 월·주간 **목록 축소** (`fetchDays`) — 툴바 검색과 **상태·동작 분리** |
+| 검색 팝업 고급필터 | `JournalEntrySearchPage.vue` 아코디언 | 검색 화면 고급 필터 | ✓ |
+| 어사이드 고급필터 아코디언 | — (블록 D) | aside accordion **빈 placeholder** | — **이식 대상 아님** — 실제 컨트롤은 검색 팝업에만 존재 |
+| 레이아웃 전역 툴바 | — | `_journal_day_page_header.ftlh` 나머지 | ❌ 미이식 — 고급필터·일정 등록·개인 일정·태그 카테고리 동기화 |
 
 ## 미구현/부분구현 요약
 

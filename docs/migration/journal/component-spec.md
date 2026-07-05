@@ -164,7 +164,7 @@ HTML 요소:
 
 **Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideEntryFiltersApp.ts`
 
-**현재 Vue 동등**: ⚠ 부분구현 — TAGCLOUD/DIARIES/DREAMS, CHAPTER CATEGORIES, 일기·꿈 라이프사이클, 일기·꿈 키워드 필터는 구현. 고급필터 아코디언은 MISSING.
+**현재 Vue 동등**: ✓ — `JournalAside.vue` 인라인. 블록 A–C·라이프사이클·어사이드 목록 키워드 구현. 블록 D(고급필터 아코디언)는 **이식 대상 아님** (`vue-screen-overview.md` 필터·검색 정책).
 
 **5개 블록 구조**:
 
@@ -231,7 +231,7 @@ HTML 요소:
 
 **표시 문구 i18n**: 필터 영역의 고정 영문 제목·토글·섹션명, 로딩·카테고리 조회 실패, 라이프사이클 선택지, 일기·꿈 키워드 placeholder/적용 tooltip, 필터 초기화 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 토글·카테고리·라이프사이클·키워드 필터값과 조회 호출을 변경하지 않는다.
 
-**블록 D — 고급 필터 아코디언 (MISSING)**:
+**블록 D — 고급 필터 아코디언 (이식 대상 아님)**:
 ```html
 <div class="accordion accordion-flush" id="journal_day_filter_accordion">
     <div class="accordion-item">
@@ -249,6 +249,8 @@ HTML 요소:
     </div>
 </div>
 ```
+
+레거시 aside accordion 본문은 placeholder뿐이며 Vue 에서 이식하지 않는다. 멀티 키워드·태그 AND 고급 필터는 `JournalEntrySearchPage.vue` 에만 구현한다.
 
 ---
 
@@ -750,5 +752,5 @@ interface TodoRow {
 | `JournalTagCloudHeader` | `_journal_day_tag_header.ftlh` | ✓ `JournalTagCloudHeader.vue` | 완료 |
 | `JournalAsideFilterHeader` | `JournalDayAsideFilterHeaderApp.ts` | ✓ `JournalAside.vue` (`#journal_aside_header` + 정렬 토글) | 완료 |
 | `JournalAsideYyMnthSection` | `JournalDayAsideYyMnthApp.ts` | ✓ `JournalAside.vue` (연/월/TODAY/Week/Pinpoint 모두 구현) | 완료 |
-| `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ⚠ 부분 (토글·챕터·라이프사이클·키워드 구현; 고급필터 아코디언 없음) | 높음 |
+| `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ✓ (블록 D 제외 — 이식 대상 아님) | — |
 | `JournalAsideTodoCard` | `JournalDayAsideTodoCardApp.ts` | ✓ `JournalAsideTodoCard.vue` (카드 헤더·목록 API·삭제·등록 모달 호출) | 완료 |
