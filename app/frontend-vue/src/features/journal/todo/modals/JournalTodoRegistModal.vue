@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import RichEditor from "@/shared/ui/editor/RichEditor.vue";
@@ -243,11 +243,19 @@ async function submit() {
 
     if (res.data?.rslt) {
       close();
-      await swalAlert(res.data?.message ?? (isModify.value ? t("common.result.modified") : t("common.result.registered")));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: isModify.value ? t("common.result.modified") : t("common.result.registered"),
+      });
       void refreshJournalDaysForRoute(journalStore, route);
       void journalStore.fetchTodos();
     } else {
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);

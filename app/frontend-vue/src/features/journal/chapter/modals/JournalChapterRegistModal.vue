@@ -153,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { Modal } from "bootstrap";
@@ -338,10 +338,18 @@ async function moveChapter(): Promise<void> {
       const targetDt = moveTargetDt.value;
       const savedChapterId = resolveSavedChapterId(res.data ?? {}, fallbackChapterId);
       close();
-      await swalAlert(res.data?.message ?? t("common.result.processed"));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: t("common.result.processed"),
+      });
       refreshCurrentDayView(savedChapterId, targetDt);
     } else {
-      void swalAlert(res.data?.message ?? t("journal.chapter.move.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("journal.chapter.move.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e, t("common.error.processing"));
@@ -381,10 +389,18 @@ async function submit() {
       const savedChapterId = resolveSavedChapterId(res.data ?? {}, fallbackChapterId);
       const savedDate = resolveSavedDate(res.data ?? {}, fallbackDate);
       close();
-      await swalAlert(res.data?.message ?? (wasModify ? t("common.result.modified") : t("common.result.registered")));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
+      });
       refreshCurrentDayView(savedChapterId, savedDate);
     } else {
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e, t("common.error.processing"));

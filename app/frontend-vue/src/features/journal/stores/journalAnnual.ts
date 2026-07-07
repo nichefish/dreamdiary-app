@@ -2,7 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 // ---- 타입 정의 ----
@@ -284,12 +284,20 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     try {
       const res = await axios.post("/api/journal/annual/make-total");
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? t("common.result.processed"));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: t("common.result.processed"),
+        });
         await Promise.all([fetchList(), fetchTotal()]);
         return true;
       }
       console.warn("[JournalAnnual] makeTotalAnnual failed", res.data);
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       console.error("[JournalAnnual] makeTotalAnnual request failed", e);
@@ -357,11 +365,19 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       );
       if (res.data?.rslt) {
         closeRegist();
-        await swalAlert(res.data?.message ?? (wasModify ? t("common.result.modified") : t("common.result.registered")));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
+        });
         void fetchList();
         return true;
       }
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -569,12 +585,20 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       });
       if (res.data?.rslt) {
         closeReviewRegist();
-        await swalAlert(res.data?.message ?? (model.id != null ? t("common.result.modified") : t("common.result.registered")));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: model.id != null ? t("common.result.modified") : t("common.result.registered"),
+        });
         /* 상세 재조회 — 리뷰 목록이 detail DTO 에 포함되어 있어 refetch 로 갱신한다. */
         if (model.yy) void fetchDetail(model.yy);
         return true;
       }
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -596,10 +620,18 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     try {
       const res = await axios.delete(`/api/journal/annual/review/${id}`);
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? t("common.result.deleted"));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: t("common.result.deleted"),
+        });
         if (yy) void fetchDetail(yy);
       } else {
-        void swalAlert(res.data?.message ?? t("journal.annual.review.delete.failure"));
+        void swalAjaxResult({
+          rslt: false,
+          message: res.data?.message,
+          failureFallback: t("journal.annual.review.delete.failure"),
+        });
       }
     } catch (e: unknown) {
       void swalRequestError(e);

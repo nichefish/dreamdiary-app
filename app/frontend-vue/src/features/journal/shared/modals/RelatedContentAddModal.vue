@@ -182,7 +182,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
@@ -276,10 +276,14 @@ async function save() {
     const result = await attachableStore.saveRelated();
     if (result.rslt) {
       close();
-      await swalAlert(result.message ?? t("common.result.saved"));
+      await swalAjaxResult({
+        rslt: true,
+        message: result.message,
+        successFallback: t("common.result.saved"),
+      });
       void refreshJournalDaysForRoute(journalStore, route);
     } else if (result.message) {
-      void swalAlert(result.message);
+      void swalAjaxResult({ rslt: false, message: result.message });
     }
   } finally {
     saving.value = false;

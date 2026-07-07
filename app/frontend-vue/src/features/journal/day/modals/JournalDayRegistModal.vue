@@ -191,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import type { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
@@ -378,10 +378,18 @@ async function submit() {
       modalStore.applyCategoryMapsFromSaveResponse(res.data?.rsltMap);
       const savedDate = model.value?.journalDate ?? undefined;
       close();
-      await swalAlert(res.data?.message ?? (isEdit ? t("common.result.modified") : t("common.result.registered")));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: isEdit ? t("common.result.modified") : t("common.result.registered"),
+      });
       refreshCurrentDayView(savedDate);
     } else {
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);

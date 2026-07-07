@@ -396,7 +396,7 @@
 
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useUserAdminStore, type UserRow } from "@/features/admin/stores/userAdmin";
@@ -499,7 +499,7 @@ async function submit() {
 async function passwordReset(id: number) {
   if (!await swalConfirm(t("user.admin.reset-password.confirm"))) return;
   try {
-    void swalAlert(await store.passwordReset(id));
+    void swalFire({ icon: "success", text: await store.passwordReset(id) });
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : t("user.admin.reset-password.failure"));
   }
@@ -520,7 +520,12 @@ async function checkUsername() {
     return;
   }
   const result = await store.usernameDuplicateCheck(store.form.username.trim());
-  void swalAlert(result.message || (result.ok ? t("user.admin.dup-check.username.usable") : t("user.admin.dup-check.username.duplicated")));
+  void swalAjaxResult({
+    rslt: result.ok,
+    message: result.message,
+    successFallback: t("user.admin.dup-check.username.usable"),
+    failureFallback: t("user.admin.dup-check.username.duplicated"),
+  });
 }
 
 async function checkEmail() {
@@ -530,7 +535,12 @@ async function checkEmail() {
     return;
   }
   const result = await store.emailDuplicateCheck(email);
-  void swalAlert(result.message || (result.ok ? t("user.admin.dup-check.email.usable") : t("user.admin.dup-check.email.duplicated")));
+  void swalAjaxResult({
+    rslt: result.ok,
+    message: result.message,
+    successFallback: t("user.admin.dup-check.email.usable"),
+    failureFallback: t("user.admin.dup-check.email.duplicated"),
+  });
 }
 
 onMounted(async () => {

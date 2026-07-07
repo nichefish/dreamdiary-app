@@ -235,7 +235,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import { ref, computed, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
@@ -334,10 +334,18 @@ async function deleteDay(): Promise<void> {
   try {
     const res = await axios.delete(`/api/journal/day/${props.day.id}`);
     if (res.data?.rslt) {
-      await swalAlert(res.data?.message ?? t("common.result.deleted"));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: t("common.result.deleted"),
+      });
       scrollAfterFetch();
     } else {
-      void swalAlert(res.data?.message ?? t("journal.day.delete.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("journal.day.delete.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -419,9 +427,9 @@ async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   const text = lines.join("\n").trim();
   try {
     await navigator.clipboard.writeText(text);
-    void swalAlert(t("common.copy.success"));
+    void swalFire({ icon: "success", text: t("common.copy.success") });
   } catch {
-    void swalAlert(t("common.copy.failure"));
+    void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }
 

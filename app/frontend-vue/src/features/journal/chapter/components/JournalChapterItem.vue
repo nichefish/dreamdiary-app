@@ -158,7 +158,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import { computed, ref, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
@@ -344,10 +344,18 @@ async function deleteChapter(): Promise<void> {
   try {
     const res = await axios.delete(`/api/journal/chapter/${props.chapter.id}`);
     if (res.data?.rslt) {
-      await swalAlert(res.data?.message ?? t("common.result.deleted"));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: t("common.result.deleted"),
+      });
       scrollAfterFetch(stdrdDt);
     } else {
-      void swalAlert(res.data?.message ?? t("journal.chapter.delete.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("journal.chapter.delete.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e, t("common.error.processing"));
@@ -393,9 +401,9 @@ async function copyChapter(): Promise<void> {
   const text = lines.join("\n").trim();
   try {
     await navigator.clipboard.writeText(text);
-    void swalAlert(t("common.copy.success"));
+    void swalFire({ icon: "success", text: t("common.copy.success") });
   } catch {
-    void swalAlert(t("common.copy.failure"));
+    void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }
 </script>

@@ -306,7 +306,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import { ref, computed, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
@@ -504,9 +504,9 @@ async function copyEntry(): Promise<void> {
   const text = [dateLine, raw].filter(Boolean).join("\n");
   try {
     await navigator.clipboard.writeText(text);
-    void swalAlert(t("common.copy.success"));
+    void swalFire({ icon: "success", text: t("common.copy.success") });
   } catch {
-    void swalAlert(t("common.copy.failure"));
+    void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }
 
@@ -571,7 +571,7 @@ async function setLifecycle(lifecycleKey: string): Promise<void> {
     if (res.data?.rslt) {
       scrollAfterFetch();
     } else {
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalFire({ icon: "error", text: res.data?.message ?? t("common.result.failure") });
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -591,7 +591,7 @@ async function toggleState(stateKey: string): Promise<void> {
     if (res.data?.rslt) {
       scrollAfterFetch();
     } else {
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalFire({ icon: "error", text: res.data?.message ?? t("common.result.failure") });
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -607,10 +607,18 @@ async function deleteEntry(): Promise<void> {
   try {
     const res = await axios.delete(`/api/journal/entry/${props.entry.id}`);
     if (res.data?.rslt) {
-      await swalAlert(res.data?.message ?? t("common.result.deleted"));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: t("common.result.deleted"),
+      });
       scrollAfterFetch(stdrdDt);
     } else {
-      void swalAlert(res.data?.message ?? t("journal.entry.delete.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("journal.entry.delete.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);

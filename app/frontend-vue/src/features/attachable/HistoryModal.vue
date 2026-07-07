@@ -158,7 +158,7 @@
 
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalFire } from "@/shared/utils/swal";
 import { ref, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
@@ -202,7 +202,7 @@ async function onRestore(historyId: number | string) {
     close();
     emit("success");
   } else {
-    void swalAlert(t("history.restore.failure"));
+    void swalFire({ icon: "error", text: t("history.restore.failure") });
   }
 }
 
@@ -210,7 +210,7 @@ async function onRestore(historyId: number | string) {
 async function onDelete(historyId: number | string) {
   if (!await swalConfirm(t("history.delete.confirm"))) return;
   const ok = await attachableStore.deleteHistory(historyId);
-  if (!ok) void swalAlert(t("history.delete.failure"));
+  if (!ok) void swalFire({ icon: "error", text: t("history.delete.failure") });
 }
 
 /** HTML 마크업을 제거하고 평문으로 변환한다 (복사 시 사용). */
@@ -233,9 +233,9 @@ async function copyHistory(item: { markdownContent?: string; previewContent?: st
   const plain = htmlToPlainText(item.markdownContent ?? item.previewContent ?? "");
   try {
     await navigator.clipboard.writeText(plain);
-    void swalAlert(t("history.copy.success"));
+    void swalFire({ icon: "success", text: t("history.copy.success") });
   } catch {
-    void swalAlert(t("history.copy.failure"));
+    void swalFire({ icon: "error", text: t("history.copy.failure") });
   }
 }
 
@@ -247,7 +247,7 @@ async function onClear() {
     close();
     emit("success");
   } else {
-    void swalAlert(t("history.delete-all.failure"));
+    void swalFire({ icon: "error", text: t("history.delete-all.failure") });
   }
 }
 </script>

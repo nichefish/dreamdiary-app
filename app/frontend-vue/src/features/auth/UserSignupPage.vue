@@ -275,7 +275,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalAjaxResult } from "@/shared/utils/swal";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -465,7 +465,12 @@ async function submit(): Promise<void> {
   }
 
   const result = await store.submitSignup(fd);
-  await swalAlert(result.message);
+  await swalAjaxResult({
+    rslt: result.ok,
+    message: result.message,
+    successFallback: t("common.result.registered"),
+    failureFallback: t("common.result.failure"),
+  });
   if (result.ok) {
     await router.push("/sign-in");
   }

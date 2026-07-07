@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from "vue";
 import axios from "axios";
-import { swalAlert, swalConfirm, swalRequestError } from "@/shared/utils/swal";
+import { swalAlert, swalConfirm, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
@@ -68,11 +68,15 @@ async function deleteTodo(id: number): Promise<void> {
   if (!await swalConfirm(t("journal.todo.delete.confirm"))) return;
   try {
     const res = await axios.delete(`/api/journal/todo/${id}`);
-    if (res.data?.rslt) {
-      void swalAlert(res.data?.message ?? t("common.result.deleted"));
+    const ok = res.data?.rslt === true;
+    await swalAjaxResult({
+      rslt: ok,
+      message: res.data?.message,
+      successFallback: t("common.result.deleted"),
+      failureFallback: t("common.result.failure"),
+    });
+    if (ok) {
       void store.fetchTodos();
-    } else {
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
     }
   } catch (e: unknown) {
     void swalRequestError(e);
