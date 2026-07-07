@@ -175,7 +175,7 @@
 | 메타 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_META_VIEW)` | 메타 보기 페이지로 이동 |
 | 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayRegist()`) |
 
-**레이아웃 전역 툴바** (`_journal_day_page_header.ftlh` 나머지): 고급필터·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ❌ MISSING (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
+**레이아웃 전역 툴바** (`JournalDayViewToolbar.vue`): 고급필터(사이드 패널 토글)·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ✓ (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
 **인증 만료 후 복귀**: 월간 VIEW 의 현재 기간은 URL query `yy`/`mnth`가 SSOT다. 월 이동, 연도 변경, 월 버튼, TODAY, Pinpoint 되돌리기는 `/journal/monthly?yy=YYYY&mnth=M` 형태로 주소를 갱신하며, 세션 만료로 로그인 화면에 이동할 때 해당 `fullPath`를 `redirect`로 넘긴다. 로그인 성공 후 동일 query로 복귀하면 `JournalDayMonthly`가 query를 store에 복원한 뒤 목록과 태그 클라우드를 조회한다.
 

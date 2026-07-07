@@ -347,6 +347,7 @@ import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { bindSingleDatePicker, destroySingleDatePicker } from "@/shared/utils/flatpickrSingleDate";
 import type { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -372,6 +373,8 @@ import {
 const scheduleStore = useScheduleStore();
 const asideStore = useScheduleAsideStore();
 const { t } = useLocaleStore();
+const route = useRoute();
+const router = useRouter();
 
 const calendarRef = ref<any>(null);
 const registModalEl = ref<HTMLElement | null>(null);
@@ -719,6 +722,13 @@ onMounted(async () => {
   if (detailModalEl.value) detailModal = new Modal(detailModalEl.value);
   attachAnchorDatePicker();
   await scheduleStore.fetchBootstrap();
+  const registQuery = route.query.regist;
+  if (registQuery === "1" || registQuery === "private") {
+    await openRegist(registQuery === "private");
+    const nextQuery = { ...route.query };
+    delete nextQuery.regist;
+    void router.replace({ query: nextQuery });
+  }
 });
 
 onBeforeUnmount(() => {

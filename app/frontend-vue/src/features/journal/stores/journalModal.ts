@@ -63,6 +63,11 @@ export async function preloadCategoryMaps(): Promise<void> {
   await useJournalModalStore().preloadAllCategoryMaps();
 }
 
+/** 태그·메타 categoryMap 을 서버에서 다시 조회한다. (레거시 태그 카테고리 동기화) */
+export async function syncCategoryMaps(): Promise<void> {
+  await useJournalModalStore().syncAllCategoryMaps();
+}
+
 // ---- 타입 정의 ----
 
 /** 저널 일자 등록/수정 폼 모델 */
@@ -620,6 +625,15 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   }
 
   /**
+   * 앱 세션 categoryMap 을 서버 기준으로 다시 적재한다.
+   * 레거시 상단 「태그 카테고리 동기화」와 동일 목적.
+   */
+  async function syncAllCategoryMaps(): Promise<void> {
+    resetCategoryMaps();
+    await preloadAllCategoryMaps();
+  }
+
+  /**
    * 엔트리 신규 등록 모달을 연다. (DIARY/NOTE: 챕터 목록을 caller 가 전달)
    * categoryMap 과 챕터 옵션을 병렬로 조회한 뒤 모달 로딩을 해제한다.
    * @param payload - contentType, journalDayId, stdrdDt 등 초기값
@@ -923,6 +937,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     openEntryModify,
     closeEntryRegist,
     preloadAllCategoryMaps,
+    syncAllCategoryMaps,
     applyCategoryMapsFromSaveResponse,
     resetCategoryMaps,
   };
