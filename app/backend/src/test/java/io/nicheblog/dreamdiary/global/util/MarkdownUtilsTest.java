@@ -100,10 +100,10 @@ class MarkdownUtilsTest {
     @Test
     @DisplayName("normalize splits direct br separated editor paragraphs")
     void normalizeSplitsDirectBrSeparatedEditorParagraphs() {
-        final String result = MarkdownUtils.normalize("<p>오후 대화.<br>지연님: <span class=\"md-text-dialog\">\"메뉴가\"</span><br>나: 확인해볼게요</p>");
+        final String result = MarkdownUtils.normalize("<p>오후 대화.<br>상대: <span class=\"md-text-dialog\">\"메뉴가\"</span><br>나: 확인해볼게요</p>");
 
         assertTrue(result.contains("<p>오후 대화.</p>"));
-        assertTrue(result.contains("<p>지연님: <span class=\"md-text-dialog\">\"메뉴가\"</span></p>"));
+        assertTrue(result.contains("<p>상대: <span class=\"md-text-dialog\">\"메뉴가\"</span></p>"));
         assertTrue(result.contains("<p>나: 확인해볼게요</p>"));
         assertFalse(result.contains("<br>"));
     }

@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -61,7 +62,11 @@ class JournalEntryEmbeddingQualityEvalServiceTest {
      */
     @Test
     void runEval_shouldRecommendReviewWhenParaphraseSimilarityIsLow() {
-        when(ollamaClient.embed(anyString())).thenReturn(List.of(0.0D, 1.0D));
+        final AtomicInteger embedCall = new AtomicInteger(0);
+        when(ollamaClient.embed(anyString())).thenAnswer(invocation ->
+                (embedCall.getAndIncrement() % 2 == 0)
+                        ? List.of(1.0D, 0.0D, 0.0D)
+                        : List.of(0.0D, 1.0D, 0.0D));
         when(searchService.sampleCachedJournalEntryIds(12)).thenReturn(List.of());
 
         final JournalEntryEmbeddingQualityEvalReportDto report = service.runEval();
@@ -79,19 +84,13 @@ class JournalEntryEmbeddingQualityEvalServiceTest {
     void runEval_shouldRecommendKeepWhenAllSuitesPass() {
         when(ollamaClient.embed(anyString())).thenAnswer(invocation -> {
             final String text = invocation.getArgument(0, String.class);
+            if (isUnrelatedDistinctFixture(text)) {
+                return List.of(0.0D, 0.0D, 1.0D);
+            }
             if (text.contains("꿈") || text.contains("바다")) {
                 return List.of(1.0D, 0.0D, 0.0D);
             }
-            if (text.contains("회의") || text.contains("길") || text.contains("오래")) {
-                return List.of(0.9D, 0.1D, 0.0D);
-            }
-            if (text.contains("영화") || text.contains("점심 메뉴") || text.contains("고양이")) {
-                return List.of(0.0D, 0.0D, 1.0D);
-            }
-            if (text.contains("충돌") || text.contains("말다툼") || text.contains("미팅")) {
-                return List.of(0.8D, 0.2D, 0.0D);
-            }
-            return List.of(0.5D, 0.5D, 0.0D);
+            return List.of(0.88D, 0.12D, 0.0D);
         });
 
         when(searchService.sampleCachedJournalEntryIds(12)).thenReturn(List.of(10));
@@ -136,6 +135,18 @@ class JournalEntryEmbeddingQualityEvalServiceTest {
         assertTrue(report.getSuites().isEmpty());
         assertFalse(report.getOllamaHealth().isReachable());
         assertTrue(report.getSummary().contains("연결"));
+    }
+
+    private static boolean isUnrelatedDistinctFixture(final String text) {
+        return text.contains("영화")
+                || text.contains("점심 메뉴")
+                || text.contains("고양이")
+                || text.contains("버스")
+                || text.contains("세탁기")
+                || text.contains("라면")
+                || text.contains("택배")
+                || text.contains("운동화")
+                || text.contains("비 오는");
     }
 
     private static OllamaHealthDto healthyOllamaHealth() {

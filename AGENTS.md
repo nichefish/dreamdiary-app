@@ -88,3 +88,14 @@ alwaysApply: true
 - 인코딩 게이트: `scripts/check_encoding.py`. npm 없으면 `python scripts/check_encoding.py` (Windows: `py -3 scripts/check_encoding.py`). `npm run check:encoding` 과 동일.
 - `gradlew` 자체가 `JAVA_HOME` 미설정 등으로 실패할 때만 환경 한계를 보고한다. npm 부재만으로 검증 생략은 하지 않는다.
 - 상세: `docs/DEV_NOTES.md` § Agent / CI 빌드 검증, `.cursor/rules/agent-build-toolchain.mdc`
+
+
+## 9. 개인 정보 금지 (테스트·스펙·예시)
+
+- 테스트·스펙·예시·시드·fixture·데모·주석·커밋 메시지에 **실제 인물명·호칭·대화 인용·저널 스니펫·본인 기록에서 유래한 문구**를 넣지 마라.
+- 대상: `**/test/**`, `**/*Test.java`, `**/*.spec.ts`, `**/*.test.ts`, `docs/spec/**`, `docs/migration/**` 예시, 샘플·시드·fixture 헬퍼.
+- **가상 픽스처만** 허용한다. 예: `민수`/`김민수`, `지연`/`박지연`, `Alice`/`Bob`, 비개인 태그(`#조직역동`). 테스트 클래스 상단 `FIXTURE_*` 상수로 고정하고 헬퍼가 재사용한다.
+- 프로덕션 로그·실제 DB·본인 저널·채팅/RAG 개발 메모를 테스트 데이터 SSOT로 쓰지 마라. 개발 중 쓰던 RAG/채팅 예시를 그대로 복사하지 마라.
+- “레거시에 있어서” 실명 픽스처를 유지·확장하지 마라. 발견 즉시 가상 픽스처로 교체하고, 기존 실명이 남아 있으면 새 작업에 끼워 넣지 말고 별도 정리 커밋으로 처리한다.
+- 변경 묶음에 테스트·스펙·예시가 포함되면 **커밋·push 직전** 저장소 grep과 `git diff`로 실명·대사 유출이 없는지 확인한다. 원격에 개인 문자열이 올라가면 **히스토리 정리가 필요한 사고**다.
+- 상세: `.cursor/rules/no-personal-test-fixtures.mdc`

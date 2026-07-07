@@ -545,7 +545,7 @@ User asked:
 Bad response pattern:
 
 ```text
-민수가라는 분과 관련된您的问题似乎...
+민수라는 분과 관련된 질문인데 이전 기록과 무관하다고 답함
 ```
 
 Problems:

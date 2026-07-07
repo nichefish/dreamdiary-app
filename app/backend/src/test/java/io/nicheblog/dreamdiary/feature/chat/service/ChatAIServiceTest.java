@@ -28,6 +28,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ChatAIServiceTest {
 
+    /** 테스트 전용 가상 인물 A (태도/의미 질문 기본 픽스처). */
+    private static final String FIXTURE_PERSON_A = "민수";
+    private static final String FIXTURE_PERSON_A_TAG = "[엔서클]#김민수";
+
+    /** 테스트 전용 가상 인물 B (등장/appearance 질문 픽스처). */
+    private static final String FIXTURE_PERSON_B = "지연";
+    private static final String FIXTURE_PERSON_B_TAG = "[엔서클]#박지연";
+    private static final String FIXTURE_PERSON_B_CANONICAL = "박지연";
+    private static final String FIXTURE_PERSON_B_FALSE_POSITIVE_TAG = "[유명인]#문지연";
+
+
     @BeforeAll
     static void bindMessageSourceForChatCatalog() throws Exception {
         final ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -555,6 +566,14 @@ class ChatAIServiceTest {
         assertTrue(cited);
     }
 
+
+    private static String fixturePersonTagFor(final String target) {
+        if (FIXTURE_PERSON_B.equals(target)) {
+            return FIXTURE_PERSON_B_TAG;
+        }
+        return FIXTURE_PERSON_A_TAG;
+    }
+
     private static Object buildTestPersonFocus(final String target) throws Exception {
         final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus");
         final var personFocusCtor = personFocusClass.getDeclaredConstructor(
@@ -603,12 +622,13 @@ class ChatAIServiceTest {
         personFocusCtor.setAccessible(true);
         final Object personFocus = personFocusCtor.newInstance(target, List.of(target), 1, null);
 
+        final String personTag = fixturePersonTagFor(target);
         final JournalEntryEmbeddingEntity entity = JournalEntryEmbeddingEntity.builder()
                 .journalEntryId(101)
                 .contentKind("DIARY")
-                .embeddingText("본문: 민수님과 회의했다")
+                .embeddingText("본문: " + target + "님과 회의했다")
                 .embeddingPayloadJson(
-                        "{\"tags\":\"[엔서클]#김민수 [엔서클]#조직역동\","
+                        "{\"tags\":\"" + personTag + " [엔서클]#조직역동\","
                                 + "\"chapterCategory\":\"DYNAMICS\"}"
                 )
                 .build();
@@ -648,7 +668,7 @@ class ChatAIServiceTest {
                     .contentKind("DIARY")
                     .embeddingText("본문: 장면" + i + " " + target + "님과 회의했다")
                     .embeddingPayloadJson(
-                            "{\"tags\":\"[엔서클]#김민수 [엔서클]#조직역동\","
+                            "{\"tags\":\"" + fixturePersonTagFor(target) + " [엔서클]#조직역동\","
                                     + "\"chapterCategory\":\"DYNAMICS\"}"
                     )
                     .build();
@@ -717,7 +737,7 @@ class ChatAIServiceTest {
 
         final RagIntent intent = (RagIntent) method.invoke(
                 service,
-                "나는 민수가를 어떻게 느끼고 있지?"
+                "나는 민수이를 어떻게 느끼고 있지?"
         );
 
         assertEquals(RagIntent.SYNTHESIS, intent);
@@ -757,7 +777,7 @@ class ChatAIServiceTest {
 
         final boolean personMeaning = (boolean) method.invoke(
                 service,
-                "나는 민수가를 어떻게 느끼고 있지?"
+                "나는 민수이를 어떻게 느끼고 있지?"
         );
 
         assertTrue(personMeaning);
@@ -937,7 +957,7 @@ class ChatAIServiceTest {
 
         final Object ragContext = buildTestRagContextWithTaggedResults("지연");
         final String shallowResponse =
-                "기록상 #박지연 축에 묶여 있고, \"일회용 접시.....\" 또는 \"식재료만 사는 중....\" 등의 말을 하면서 등장합니다. "
+                "기록상 #박지연 축에 묶여 있고, \"점심 메뉴를 물었다\" 또는 \"회의실로 가자고 했다\" 등의 말을 하면서 등장합니다. "
                         + "이로 부터 추론하자면, 친근하고 자연스러운 인물로 등장하는 것 같아.";
 
         final boolean degraded = (boolean) method.invoke(
@@ -1419,10 +1439,10 @@ class ChatAIServiceTest {
 
         final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String hybridStyleResponse =
-                "네가 기록에 남긴 바로는, 김민수은 주로 조직 내 역동과 관련된 상황에서 언급되는 경향이 있다. "
+                "네가 기록에 남긴 바로는, 김민수는 주로 조직 내 역동과 관련된 상황에서 언급되는 경향이 있다. "
                         + "특히 #박지연이라는 인물과 함께 자주 등장한다. "
-                        + "예를 들어 \"예상과 달랐다고 아니었어요\" 와 같은 문장은 민수에 대한 개인적 기대감이나 실망감을 드러낸다. "
-                        + "김민수과 함께 묶인 축으로는 #조직역동, #박지연 등이 있다. "
+                        + "예를 들어 \"예상과 달랐어요\" 와 같은 문장은 민수에 대한 개인적 기대감이나 실망감을 드러낸다. "
+                        + "김민수와 함께 묶인 축으로는 #조직역동, #박지연 등이 있다. "
                         + "확실하지 않은 점으로는 민수가 조직 내에서 어떤 위치를 차지하는지는 더 자세히 알기 어렵다.";
 
         final boolean degraded = (boolean) method.invoke(
@@ -1453,7 +1473,7 @@ class ChatAIServiceTest {
         final String structuredResponse =
                 "네가 기록에 남긴 바로는, #김민수 축에서 기대와 실망이 반복된다.\n"
                         + "(1) 내 태도·정서: 네가 민수에 대해 기대감을 적어 두고 있다.\n"
-                        + "(2) 반복 패턴: #김민수과 #조직역동이 잡히 등장한다.\n"
+                        + "(2) 반복 패턴: #김민수와 #조직역동이 잡히 등장한다.\n"
                         + "(3) 함께 묶인 축: #박지연, #조직역동\n"
                         + "(4) 확정 불가: 조직 역할을 단정할 규거는 부족하다.";
 
@@ -1482,7 +1502,7 @@ class ChatAIServiceTest {
 
         final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String groundedResponse =
-                "네가 기록에 남긴 바로는, 조직 내 역동 맥락에서 #조직역동과 #김민수이 반복된다.\n"
+                "네가 기록에 남긴 바로는, 조직 내 역동 맥락에서 #조직역동과 #김민수가 반복된다.\n"
                         + "(1) 내 태도·정서: 기대와 실망이 교차한다.\n"
                         + "(2) 반복 패턴: #조직역동, #박지연\n"
                         + "(3) 함께 묶인 축: #김민수\n"
@@ -1617,7 +1637,7 @@ class ChatAIServiceTest {
 
         final String compact = (String) method.invoke(
                 service,
-                "... \"기대했던 너낌이\" \"아니었어요\" 지연님: \"오전 회의\" 나: \"스티커\" 민수님은 옆에서 지켜봤고."
+                "... \"예상과 달랐다고\" \"말했다\" 지연님: \"오전 회의\" 나: \"자료 확인\" 민수님은 옆에서 지켜봤고."
         );
 
         assertFalse(compact.contains("\""));
