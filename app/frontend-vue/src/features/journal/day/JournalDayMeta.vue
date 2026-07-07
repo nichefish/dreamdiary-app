@@ -208,6 +208,7 @@ function openMetaContextMenu(event: MouseEvent, item: MetaDto) {
     name: item.name ?? "",
     ctgr: item.ctgr ?? "",
     unit: item.unit,
+    contentSize: item.contentSize,
   });
 }
 

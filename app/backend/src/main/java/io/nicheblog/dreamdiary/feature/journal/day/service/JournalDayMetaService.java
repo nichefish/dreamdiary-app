@@ -1,7 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.meta.model.MetaDto;
+import io.nicheblog.dreamdiary.feature.attachable.meta.repository.jpa.MetaRepository;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayMetaEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.mapstruct.JournalDayMetaMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayMetaRepository;
@@ -38,6 +40,7 @@ public class JournalDayMetaService
     @Getter
     private final JournalDayMetaRepository repository;
     private final JournalDayRepository journalDayRepository;
+    private final MetaRepository metaRepository;
     @Getter
     private final JournalDayMetaSpec spec;
     @Getter
@@ -88,6 +91,25 @@ public class JournalDayMetaService
                             return tag.getCtgr();
                         }, Collectors.toList())
                 ));
+    }
+
+    /**
+     * 로그인 사용자 기준 메타 상세 Dto.
+     * {@code contentSize}는 해당 사용자의 JOURNAL_DAY 메타 기록 수다.
+     *
+     * @param id 메타 ID
+     * @param username 사용자 계정명
+     * @return 메타 상세 Dto
+     */
+    public MetaDto getDtlDtoForUser(final Integer id, final String username) throws Exception {
+        final MetaDto dto = this.getDtlDto(id);
+        final Integer size = metaRepository.countMetaSize(
+                id,
+                ContentType.JOURNAL_DAY.key,
+                AuthUtils.requireUsername(username)
+        );
+        dto.setContentSize(size != null ? size : 0);
+        return dto;
     }
 }
 

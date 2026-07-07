@@ -628,11 +628,13 @@ interface TodoRow {
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/shared/modals/JournalMetaProfileModal.vue`
 
-**데이터**: `GET /api/journal/day/metas/{id}` → `journalModalStore.metaProfileModel` (이름·카테고리·단위·기록 수 등 조회·표시)
+**데이터**: `GET /api/journal/day/metas/{id}` → 로그인 사용자 기준 `contentSize`(JOURNAL_DAY 기록 수)를 포함한 `journalModalStore.metaProfileModel`. 컨텍스트 메뉴 seed(이름·카테고리·단위·기록 수)와 API 응답을 병합한다.
+
+**동작**: 조회 전용 모달이다(`spec/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §17.2). 태그 프로필처럼 색·메모 편집은 `meta_profile` 엔티티/API가 없으며 본 모달 범위 밖이다.
 
 **i18n**: 모달 제목·배지·필드 레이블·조회 실패 문구·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
-**현재 Vue 동등**: ⚠ 조회·표시만 (태그 프로필 수준의 색·메모 편집 API 없음)
+**현재 Vue 동등**: ✓ 구현 완료 (조회 전용)
 
 ---
 

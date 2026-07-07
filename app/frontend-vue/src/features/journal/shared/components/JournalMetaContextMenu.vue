@@ -84,6 +84,7 @@ function onSettings(): void {
     name: payload.name,
     ctgr: payload.ctgr,
     unit: payload.unit,
+    contentSize: payload.contentSize,
   });
 }
 

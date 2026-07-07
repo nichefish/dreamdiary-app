@@ -485,20 +485,29 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     name?: string;
     ctgr?: string;
     unit?: string;
+    contentSize?: number;
   }): Promise<void> {
     if (!await assertAuthenticatedBeforeModal()) return;
     metaProfileOpen.value = true;
     metaProfileLoading.value = true;
-    metaProfileModel.value = {
+    const seedModel: MetaDto = {
       id: Number(seed.id),
       name: seed.name,
       ctgr: seed.ctgr,
       unit: seed.unit,
+      contentSize: seed.contentSize,
     };
+    metaProfileModel.value = seedModel;
     try {
       const res = await axios.get(`/api/journal/day/metas/${seed.id}`);
-      if (res.data?.rsltObj) {
-        metaProfileModel.value = res.data.rsltObj as MetaDto;
+      const fetched = res.data?.rsltObj as MetaDto | undefined;
+      if (fetched) {
+        metaProfileModel.value = {
+          ...seedModel,
+          ...fetched,
+          contentSize: fetched.contentSize ?? seedModel.contentSize ?? 0,
+          unit: fetched.unit || seedModel.unit || "",
+        };
       }
     } catch (e: unknown) {
       console.error("[journalModal] openMetaProfile failed", { metaId: seed.id }, e);

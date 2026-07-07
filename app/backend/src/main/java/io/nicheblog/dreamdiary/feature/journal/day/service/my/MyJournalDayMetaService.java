@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.my;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.attachable.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayMetaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -43,5 +44,16 @@ public class MyJournalDayMetaService {
     public List<Integer> getMyYyListByMetaId(final Integer metaId) {
         final String username = AuthUtils.requireLoginUsername();
         return journalDayMetaService.getYyListByMetaIdAndUser(metaId, username);
+    }
+
+    /**
+     * 로그인 사용자 기준 메타 상세 Dto를 반환한다.
+     *
+     * @param id 메타 ID
+     * @return 메타 상세 Dto
+     */
+    public MetaDto getMyDtlDto(final Integer id) throws Exception {
+        final String username = AuthUtils.requireLoginUsername();
+        return journalDayMetaService.getDtlDtoForUser(id, username);
     }
 }
