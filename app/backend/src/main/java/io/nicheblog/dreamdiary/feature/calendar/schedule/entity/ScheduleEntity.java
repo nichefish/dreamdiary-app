@@ -15,7 +15,7 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,12 +109,12 @@ public class ScheduleEntity
     /** 시작일 */
     @Column(name = "bgn_dt")
     @Comment("시작일")
-    private Date bgnDt;
+    private LocalDateTime bgnDt;
 
     /** 일정 종료일 */
     @Column(name = "end_dt")
     @Comment("종료일")
-    private Date endDt;
+    private LocalDateTime endDt;
 
     /** 개인일정 여부 (Y/N) */
     @Builder.Default

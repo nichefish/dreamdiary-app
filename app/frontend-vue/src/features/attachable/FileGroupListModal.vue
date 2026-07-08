@@ -34,11 +34,11 @@
                   <span class="border-bottom text-primary opacity-hover">{{ file.orgnFileNm }}</span>
                 </td>
                 <td class="col-lg-3 text-start hidden-table fs-small">
-                  ({{ numberFormat(file.fileSize) }} bytes)
+                  ({{ numberFormat(file.fileSize) }} {{ t('attach.file-size.unit.plural') }})
                 </td>
                 <td class="col-lg-2 col-3 text-start">
                   <div class="badge badge-sm btn-primary badge-light-primary btn-outlined fw-normal">
-                    <i class="fas fa-download fs-7 pe-1"></i>Download
+                    <i class="fas fa-download fs-7 pe-1"></i>{{ t('attach.download.label') }}
                   </div>
                 </td>
               </tr>

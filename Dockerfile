@@ -4,9 +4,11 @@
 # 빌드된 Docker 이미지를 기반으로 컨테이너를 실행합니다.
 # docker network ls
 # docker run -d --name dreamdiary -p 8080:8080 --network="dreamdiary_network" dreamdiary
+#
+# 런타임: build.gradle sourceCompatibility/targetCompatibility Java 17 과 일치.
 ##
 
-FROM openjdk:11-jre
+FROM eclipse-temurin:17-jre-jammy
 
 # 필요한 패키지 설치 (필요 시)
 # RUN apt-get update; apt-get install -y fontconfig libfreetype6

@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 
 // ---- 타입 정의 ----
 
@@ -221,11 +221,19 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       });
       if (res.data?.rslt) {
         closeRegist();
-        await swalAlert(res.data?.message ?? t("common.result.saved"));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: t("common.result.saved"),
+        });
         void fetchList(0);
         return true;
       }
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -248,10 +256,18 @@ export const useBoardPostStore = defineStore("boardPost", () => {
     try {
       const res = await axios.delete(`/api/board/posts/${id}`);
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? t("common.result.deleted"));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: t("common.result.deleted"),
+        });
         void fetchList(0);
       } else {
-        void swalAlert(res.data?.message ?? t("board.post.delete.failure"));
+        void swalAjaxResult({
+          rslt: false,
+          message: res.data?.message,
+          failureFallback: t("board.post.delete.failure"),
+        });
       }
     } catch (e: unknown) {
       void swalRequestError(e);

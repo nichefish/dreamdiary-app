@@ -6,9 +6,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -60,7 +59,7 @@ public class JournalEntryEntityWorker {
      * @return successfully processed row count
      */
     public int processPendingBatch(final Integer batchSize) {
-        queueService.requeueStaleProcessing(Date.from(Instant.now().minus(STALE_PROCESSING_AGE)), batchSize);
+        queueService.requeueStaleProcessing(LocalDateTime.now().minus(STALE_PROCESSING_AGE), batchSize);
 
         final List<JournalEntryEntityJobEntity> jobList = queueService.claimPendingBatch(batchSize);
         if (jobList.isEmpty()) return 0;

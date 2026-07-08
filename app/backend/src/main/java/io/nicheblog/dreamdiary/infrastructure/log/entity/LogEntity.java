@@ -21,6 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -66,11 +67,10 @@ public class LogEntity
     private AuditorInfo userInfo;
 
     @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "created_at", updatable = false)
     @Comment("기록 일시")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "log_type", length = 20)

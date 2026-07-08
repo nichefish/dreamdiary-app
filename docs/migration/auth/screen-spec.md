@@ -51,7 +51,7 @@
 - 신규 계정 신청 폼 (이름, 이메일, 비밀번호 등)
 - 신청 완료 → `POST /api/user/signup-requests`
 - 신청 완료 후 안내 메시지 표시
-- **i18n**: 화면 내 모든 UI 텍스트는 `useLocaleStore.t()` 카탈로그 키로 표시 (`user.signup.*`, `user.form.*`, `user.profile.*`, `user.emplym.*`). 관련 messages_ko/en.properties 키 일괄 정의 완료.
+- **i18n**: 화면 내 모든 UI 텍스트는 `useLocaleStore.t()` 카탈로그 키로 표시 (`user.signup.*`, `user.form.*`, `user.profile.*`, `user.emplym.*`). 이메일 필드 레이블도 `user.form.email`을 사용하며 관련 messages_ko/en.properties 키를 동일하게 제공한다.
 
 ---
 

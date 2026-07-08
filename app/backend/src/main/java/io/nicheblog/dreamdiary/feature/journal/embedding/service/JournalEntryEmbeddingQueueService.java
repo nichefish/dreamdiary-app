@@ -24,10 +24,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -271,7 +271,7 @@ public class JournalEntryEmbeddingQueueService {
      * @return 재대기 처리한 작업 건수
      */
     @Transactional
-    public int requeueStaleProcessing(final Date staleBefore, final Integer batchSize) {
+    public int requeueStaleProcessing(final LocalDateTime staleBefore, final Integer batchSize) {
         final int normalizedBatchSize = normalizeBatchSize(batchSize);
         final List<JournalEntryEmbeddingEntity> entityList =
                 repository.findAllByEmbeddingStatusAndUpdatedAtBeforeOrderByUpdatedAtAscIdAsc(
@@ -311,7 +311,7 @@ public class JournalEntryEmbeddingQueueService {
             entity.setEmbeddingStatus(STATUS_EMBEDDED);
             entity.setEmbeddingModel(embeddingModel);
             entity.setEmbeddingVectorJson(embeddingVectorJson);
-            entity.setEmbeddedAt(new Date());
+            entity.setEmbeddedAt(LocalDateTime.now());
             entity.setErrorMessage(null);
         });
     }
@@ -620,7 +620,7 @@ public class JournalEntryEmbeddingQueueService {
      * @param date 날짜 값
      * @return 날짜 문자열, 변환할 수 없으면 {@code null}
      */
-    private String formatDate(final Date date) {
+    private String formatDate(final Object date) {
         try {
             return DateUtils.asStr(date, DatePtn.DATE);
         } catch (final Exception e) {

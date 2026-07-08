@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> 
         final Join<JournalEntryEntity, JournalChapterSmpEntity> chapterJoin = root.join("journalChapter", JoinType.INNER);
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
         final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
-        final Expression<Date> dateExp = journalDayJoin.get("journalDate");
+        final Expression<LocalDate> dateExp = journalDayJoin.get("journalDate");
         order.add("desc".equals(sort) ? builder.desc(dateExp) : builder.asc(dateExp));
         order.add(builder.asc(chapterJoin.get("sortOrder")));
         order.add(builder.asc(root.get("sortOrder")));
@@ -69,7 +69,7 @@ public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> 
         final ContentType contentType = resolveContentType(searchParamMap);
         final Join<JournalEntryEntity, JournalChapterSmpEntity> chapterJoin = root.join("journalChapter", JoinType.INNER);
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
+        final Expression<LocalDate> effectiveDtExp = journalDayJoin.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
         predicate.add(builder.equal(root.get("contentType"), contentType.key));
 
@@ -79,10 +79,10 @@ public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> 
             final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
-                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "searchEndDt":
-                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "yy":
                     final Integer yy = (Integer) value;

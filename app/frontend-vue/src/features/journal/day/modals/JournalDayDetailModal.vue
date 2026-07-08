@@ -28,7 +28,7 @@
                 <i class="bi bi-calendar3 fs-6 me-1"></i>
                 {{ day.stdrdDt }}
                 <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">
-                  ({{ day.journalDateWeekDay }})
+                  ({{ getWeekDayStr(day.stdrdDt, t) }})
                 </span>
                 <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.approximate") }}</span>
                 <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.unknown") }}</span>
@@ -106,6 +106,7 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
 import JournalDreamVirtualSection from "../../dream/components/JournalDreamVirtualSection.vue";
 

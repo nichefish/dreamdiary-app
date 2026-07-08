@@ -33,22 +33,6 @@ public class DateParser {
     }
 
     /**
-     * 해당날짜의 시작시간 문자열 반환 (ex: "2021-09-15 00:00:00")
-     */
-    public static String sDateParseStr(final Object paramDate, final DatePtn ptn) throws Exception {
-        final Date sDate = sDateParse(paramDate);
-        return dateToStr(sDate, ptn);
-    }
-
-    /**
-     * 해당날짜의 시작시간 문자열 반환 (ex: "2021-09-15 00:00:00")
-     */
-    public static String sDateParseStr(final Object paramDate) throws Exception {
-        final Date sDate = sDateParse(paramDate);
-        return dateToStr(sDate, DatePtn.DATE);
-    }
-
-    /**
      * 해당날짜의 끝 시간 반환 (ex: 2021-09-15 23:59:59)
      */
     public static Date eDateParse(final Object paramDate) throws Exception {
@@ -89,7 +73,7 @@ public class DateParser {
      */
     public static String dateToStr(final Date date, final DatePtn ptn) {
         if (date == null) return "";
-        return ptn.df.format(date);
+        return ptn.format(date);
     }
 
     /**
@@ -104,7 +88,8 @@ public class DateParser {
                 .toArray(String[]::new);
         // microsecond 포함/미포함이 섞여서 넘어오는 문제 해결 위해 microsecond 미사용 처리
         final String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
-        return DateUtils.parseDateStrictly(dateStr, parsePatterns);
+        // 변경 전: DateUtils(lang3 상속)의 parseDateStrictly 사용. 변경 후: 상속 제거로 lang3 를 직접 호출 (동작 동일).
+        return org.apache.commons.lang3.time.DateUtils.parseDateStrictly(dateStr, parsePatterns);
     }
 
     /**
@@ -116,7 +101,7 @@ public class DateParser {
 
         // microsecond 포함/미포함이 섞여서 넘어오는 문제 해결 위해 microsecond 미사용 처리
         final String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
-        return ptn.df.parse(dateStr);
+        return ptn.parse(dateStr);
     }
 
     /**

@@ -23,9 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.time.LocalDateTime;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Date;
 
 /**
  * UserMyService
@@ -72,7 +72,7 @@ public class UserMyService {
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
         retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
-        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrLocalDateTime());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
         userPasswordHistoryService.recordPasswordChange(modified, previousPasswordHash);
         refreshTokenService.revoke(username);
@@ -137,7 +137,7 @@ public class UserMyService {
         retrievedEntity.acntStus.setNeedsPasswordReset("N");
         retrievedEntity.acntStus.setPasswordResetTokenHash(null);
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
-        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrLocalDateTime());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
         userPasswordHistoryService.recordPasswordChange(modified, previousPasswordHash);
         refreshTokenService.revoke(loginUsername);
@@ -209,14 +209,14 @@ public class UserMyService {
         }
     }
 
-    private boolean isPasswordResetTokenWindowValid(final Date issuedAt) throws Exception {
+    private boolean isPasswordResetTokenWindowValid(final LocalDateTime issuedAt) throws Exception {
         if (issuedAt == null) return false;
 
         final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
         final Integer expiryMinutes = (authPolicy == null || authPolicy.getPasswordResetTokenExpiryMinutes() == null)
                 ? 30
                 : authPolicy.getPasswordResetTokenExpiryMinutes();
-        final Date expiresAt = new Date(issuedAt.getTime() + (expiryMinutes.longValue() * 60L * 1000L));
-        return expiresAt.after(DateUtils.getCurrDate());
+        final LocalDateTime expiresAt = issuedAt.plusMinutes(expiryMinutes.longValue());
+        return expiresAt.isAfter(DateUtils.getCurrLocalDateTime());
     }
 }

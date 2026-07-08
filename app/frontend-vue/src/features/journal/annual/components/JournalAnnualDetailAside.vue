@@ -8,7 +8,7 @@
 
     <div class="card-header min-h-auto mb-5 px-0 border-0">
       <h3 class="card-title text-gray-900 fw-bold fs-3 mb-0">
-        <i class="bi bi-filter fs-2 me-1"></i> FILTER
+        <i class="bi bi-filter fs-2 me-1"></i> {{ t("journal.annual.filter.title") }}
       </h3>
     </div>
 
@@ -27,15 +27,15 @@
             :checked="store.showTagCloud"
             @change="toggleTagCloud"
           />
-          <span class="form-check-label text-muted fs-7">TAGCLOUD</span>
+          <span class="form-check-label text-muted fs-7">{{ t("journal.annual.filter.tagcloud") }}</span>
         </label>
       </div>
 
       <div class="d-flex flex-column gap-2">
-        <div class="text-gray-900 fs-6 fw-bold">ENTRY FILTER</div>
+        <div class="text-gray-900 fs-6 fw-bold">{{ t("journal.annual.filter.entry") }}</div>
 
         <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
+          <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.annual.filter.diary-keywords") }}</div>
           <div class="input-group input-group-sm">
             <input
               v-model="store.diaryKeyword"
@@ -52,7 +52,7 @@
         </div>
 
         <div>
-          <div class="text-muted fs-8 fw-bold mb-1">- DREAM KEYWORDS</div>
+          <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.annual.filter.dream-keywords") }}</div>
           <div class="input-group input-group-sm">
             <input
               v-model="store.dreamKeyword"

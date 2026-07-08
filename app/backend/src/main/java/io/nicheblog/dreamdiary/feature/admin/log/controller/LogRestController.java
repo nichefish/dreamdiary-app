@@ -2,10 +2,12 @@ package io.nicheblog.dreamdiary.feature.admin.log.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.log.model.LogQueryDto;
 import io.nicheblog.dreamdiary.feature.admin.log.service.LogQueryService;
+import io.nicheblog.dreamdiary.feature.admin.log.service.LogStatsUserQueryService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.model.LogSearchParam;
+import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsSearchParam;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 /**
  * LogRestController
  */
@@ -39,6 +43,7 @@ public class LogRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LOG;
 
     private final LogQueryService logQueryService;
+    private final LogStatsUserQueryService logStatsUserQueryService;
 
     /**
      * 로그 목록 조회 (Ajax)
@@ -55,6 +60,24 @@ public class LogRestController
         final Page<LogQueryDto> pageResult = logQueryService.getPageDto(searchParam, pageRequest);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(pageResult));
+    }
+
+    /**
+     * 사용자별 로그 통계 조회 (Ajax)
+     * (기간 미지정 시 오늘 통계 — 레거시 log_stats_user_list 기본 노출과 동일.)
+     */
+    @GetMapping(Url.LOG_STATS_USER)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> getLogStatsUser(
+            @ModelAttribute final LogStatsSearchParam searchParam
+    ) throws Exception {
+        final Map<String, Object> statsMap = Map.of(
+                "userList", logStatsUserQueryService.getStatsUserDtoList(searchParam),
+                "anonymousList", logStatsUserQueryService.getStatsNotUserDtoList(searchParam)
+        );
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(statsMap));
     }
 
     /**

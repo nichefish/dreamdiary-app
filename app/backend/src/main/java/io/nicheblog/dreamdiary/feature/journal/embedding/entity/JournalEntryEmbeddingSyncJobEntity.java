@@ -11,7 +11,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "journal_entry_embedding_sync_job")
@@ -51,20 +51,17 @@ public class JournalEntryEmbeddingSyncJobEntity
     @Comment("처리 대상 entry 수")
     private Long totalCount;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "started_at")
     @Comment("작업 시작 일시")
-    private Date startedAt;
+    private LocalDateTime startedAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "finished_at")
     @Comment("작업 종료 일시")
-    private Date finishedAt;
+    private LocalDateTime finishedAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "heartbeat_at")
     @Comment("작업 heartbeat 일시")
-    private Date heartbeatAt;
+    private LocalDateTime heartbeatAt;
 
     @Column(name = "locked_by", length = 120)
     @Comment("작업 실행 노드")

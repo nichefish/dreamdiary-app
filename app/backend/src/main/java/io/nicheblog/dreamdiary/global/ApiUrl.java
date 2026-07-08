@@ -171,6 +171,7 @@ public interface ApiUrl {
 
     /** 로그 조회 */
     String LOGS = Prefix.API + "/logs";
+    String LOG_STATS_USER = Prefix.API + "/logs/stats-user";
     String LOG = Prefix.API + "/logs/{id}";
     String LOG_LIST_XLSX_DOWNLOAD = Prefix.API + "/log/list-xlsx-download.do";
 

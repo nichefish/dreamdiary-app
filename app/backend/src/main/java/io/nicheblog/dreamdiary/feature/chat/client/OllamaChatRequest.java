@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Ollama chat API에 전달하는 요청 payload입니다.
@@ -22,6 +23,13 @@ public class OllamaChatRequest {
 
     /** 시스템 프롬프트와 대화 맥락을 순서대로 담은 메시지 목록입니다. */
     private List<Message> messages;
+
+    /**
+     * Ollama 생성 옵션 ({@code temperature}, {@code num_predict} 등).
+     *
+     * <p>{@link io.nicheblog.dreamdiary.feature.chat.config.OllamaProperties}에서 주입합니다.</p>
+     */
+    private Map<String, Object> options;
 
     /**
      * Ollama chat API가 요구하는 단일 메시지 항목입니다.

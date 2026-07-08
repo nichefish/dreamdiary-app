@@ -144,7 +144,7 @@ public class UserSignupService {
         final UserEntity updatedEntity = userRepository.saveAndFlush(userEntity);
 
         req.setStatus("APPROVED");
-        req.setApprovedAt(DateUtils.getCurrDate());
+        req.setApprovedAt(DateUtils.getCurrLocalDateTime());
         userSignupRequestRepository.save(req);
 
         return ServiceResponse.builder()
@@ -163,7 +163,7 @@ public class UserSignupService {
         final UserSignupRequestEntity req =
                 userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException());
         req.setStatus("REJECTED");
-        req.setRejectedAt(DateUtils.getCurrDate());
+        req.setRejectedAt(DateUtils.getCurrLocalDateTime());
         final UserSignupRequestEntity updatedEntity = userSignupRequestRepository.saveAndFlush(req);
 
         return ServiceResponse.builder()

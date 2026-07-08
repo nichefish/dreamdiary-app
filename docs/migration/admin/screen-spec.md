@@ -17,7 +17,7 @@
 | 메뉴 관리 | `/admin/menu` | `MenuAdminPage.vue` | ✓ |
 | 계정 관리 | `/admin/users` | `UserAdminPage.vue` | ✓ |
 | 로그 관측 | `/admin/log` | `LogAdminPage.vue` | ✓ |
-| 사용자별 로그 통계 | `/admin/log/stats-user` | `LogAdminPage.vue` (route로 분기) | ⚠ placeholder |
+| 사용자별 로그 통계 | `/admin/log/stats-user` | `LogAdminPage.vue` (route로 분기) | ✓ |
 | 계정 신청 승인 관리 | `/user/signup/approval` | `UserSignupApprovalList.vue` | ✓ |
 
 ---
@@ -97,7 +97,7 @@
 - 분류 코드(code_group) 목록/등록/수정/삭제
 - 분류 코드별 상세 코드(code_item) 목록/등록/삭제
 - 상세 코드 정렬 순서 변경
-- 상세 코드 등록/수정 시 영문 코드명(`codeNameEn`) 선택 입력 가능. 미입력 시 한국어 `codeName` 을 fallback 으로 사용한다.
+- 상세 코드 등록/수정 시 영문 코드명(`codeNameEn`) 선택 입력 가능. 레이블과 placeholder는 현재 locale의 클라이언트 카탈로그를 사용하며 미입력 시 한국어 `codeName` 을 fallback 으로 사용한다.
 - 다국어 번역은 `code_item_i18n` 테이블(code_item_id, locale, code_name 복합PK)에 저장. 현재 `en` 언어만 지원.
 - API: `GET/POST /api/code/groups`, `GET/PATCH/DELETE /api/code/group/{id}`
 - API: `GET/POST /api/code/items`, `GET/DELETE /api/code/item`, `PUT /api/code/items/sort-orders`
@@ -124,6 +124,7 @@
 - `protectedYn=Y`는 메뉴 자체의 수정·사용여부 변경·삭제와 자기 자신 드래그 이동을 막는 시스템 보호 의미다. 보호 메뉴는 drag source와 sibling drop target이 되지 않지만, 보호 메뉴 아래에도 하위 메뉴를 추가하거나 다른 하위 메뉴를 이동할 수 있다.
 - `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. 메뉴 관리에서는 행 컨텍스트 메뉴를 숨기고 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시한다. BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
 - 메뉴 트리 행의 액션은 `...` 컨텍스트 메뉴로 제공한다. 메뉴 항목은 하위 메뉴 추가, 수정, 사용/미사용 전환, 삭제이며 각 항목은 시스템 보호 상태에 따라 비활성화한다.
+- 메뉴 등록·수정 폼의 URL 레이블은 현재 locale의 `common.technical.url` 카탈로그를 사용하며 URL 입력·검증 계약은 유지한다.
 - `submenuExpandType=NO_SUB`는 해당 메뉴가 하위 메뉴를 생성하거나 이동받을 수 없는 leaf 메뉴임을 의미한다. `submenuExpandType=BOARD`도 게시판 관리 소유 메뉴이므로 하위 메뉴 추가 액션과 상위 메뉴 후보, 트리 이동 대상 부모에서 제외한다.
 - 메뉴 트리의 보호/숨김 아이콘은 Bootstrap tooltip을 `v-tooltip` directive로 활성화한다. `protectedYn=Y` 메뉴는 `bi-shield-lock text-warning`와 `시스템 보호 메뉴`로 표시하며, `sidebarVisibleYn=N` 메뉴는 `bi-eye-slash text-muted`와 `사이드바 숨김 메뉴`로 표시한다. 아이콘 hover cursor는 도움말(`help`)이다.
 - 하위 메뉴 등록/수정 모달의 상위 메뉴는 호출한 부모 또는 기존 부모를 읽기 전용으로 표시한다. 상위 메뉴 변경은 트리 드래그 앤 드롭과 `PUT /api/menus/tree` 전용이며, 일반 수정 API는 `parentMenuId` 변경 요청을 거부한다.
@@ -143,6 +144,7 @@
 - 계정 삭제 (본인 계정 삭제 불가)
 - 비밀번호 초기화. 초기화 전 비밀번호 해시는 `user_password_history`에 기록되어 `auth_policy.password_history_count` 재사용 제한에 포함된다.
 - 중복 체크 (아이디/이메일)
+- 고용정보 이메일 ID·도메인 입력을 유지하며 도메인 placeholder는 현재 locale의 `user.form.email-domain-placeholder` 카탈로그를 사용한다.
 - 엑셀 다운로드
 - API: `GET/POST /api/users`, `GET/POST/DELETE /api/users/{id}`, `POST .../password-reset`, `GET .../xlsx-download`
 
@@ -157,8 +159,9 @@
 - 본문 상단 목록/통계 전환 버튼 표시. 화면 설명은 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 운영 로그 목록/검색/상세 모달
 - `/admin/log` → 전체 로그 관측 뷰 (`isStatsView = false`)
-- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`, ⚠ placeholder)
-- API: `GET /api/logs`, `GET /api/logs/{id}`
+- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**(레거시 `log_stats_user_list` 기본 노출 동일). 통계 뷰 진입 시 조회
+- 로그 목록·검색·상세의 URL·URI·Trace·IP·Referer와 응답시간 `ms` 단위는 현재 locale의 공통 기술 카탈로그를 사용하며 기술 표기 자체는 한·영에서 동일하게 유지한다.
+- API: `GET /api/logs`, `GET /api/logs/{id}`, `GET /api/logs/stats-user` (`LogStatsUserQueryService` — 레거시 서비스를 현행 flat 패키지로 복원, 응답 `rsltObj = { userList, anonymousList }`)
 
 ---
 
@@ -171,5 +174,6 @@
 - breadcrumb와 중복되는 본문 상단 제목은 표시하지 않는다.
 - 승인 대기 신청 목록 조회
 - 최근 신청 내역 (최근 30건)
+- 승인 대기·최근 신청 표의 ID·이메일 열 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다.
 - 신청 승인 → `POST /api/user/signup-requests/{id}/approval`
 - 신청 반려 → `POST /api/user/signup-requests/{id}/rejection`

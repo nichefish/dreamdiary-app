@@ -2,15 +2,15 @@
   <div v-if="status.error" class="app-runtime-status app-runtime-status--error" role="alert">
     <div class="app-runtime-status__panel">
       <div class="app-runtime-status__eyebrow">{{ status.error.source ?? "runtime" }}</div>
-      <h1 class="app-runtime-status__title">{{ status.error.title }}</h1>
-      <p class="app-runtime-status__message">{{ status.error.message }}</p>
+      <h1 class="app-runtime-status__title">{{ t(status.error.titleKey) }}</h1>
+      <p class="app-runtime-status__message">{{ displayMessage(status.error.message) }}</p>
       <pre v-if="status.error.detail" class="app-runtime-status__detail">{{ status.error.detail }}</pre>
       <div class="app-runtime-status__actions">
         <button type="button" class="btn btn-sm btn-light-primary" @click="reload">
-          <i class="bi bi-arrow-clockwise"></i>새로고침
+          <i class="bi bi-arrow-clockwise"></i>{{ t("runtime.action.reload") }}
         </button>
         <button type="button" class="btn btn-sm btn-light" @click="goHome">
-          <i class="bi bi-house"></i>메인으로
+          <i class="bi bi-house"></i>{{ t("error.page.action.home") }}
         </button>
       </div>
     </div>
@@ -18,7 +18,7 @@
   <div v-else-if="showPending" class="app-runtime-status app-runtime-status--pending" role="status">
     <div class="app-runtime-status__pending">
       <span class="spinner-border spinner-border-sm text-primary" aria-hidden="true"></span>
-      <span>{{ status.pendingLabel || "화면을 준비하고 있습니다." }}</span>
+      <span>{{ t(status.pendingLabelKey) }}</span>
     </div>
   </div>
 </template>
@@ -26,9 +26,15 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { appRuntimeStatus as status, clearRuntimeError } from "@/shared/utils/appRuntimeStatus";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import {
+  appRuntimeStatus as status,
+  clearRuntimeError,
+  resolveRuntimeErrorMessage,
+} from "@/shared/utils/appRuntimeStatus";
 
 const router = useRouter();
+const { t } = useLocaleStore();
 const showPending = ref(false);
 let pendingTimer: number | undefined;
 
@@ -51,6 +57,10 @@ onBeforeUnmount(() => {
 });
 
 const homeTarget = computed(() => ({ path: "/" }));
+
+function displayMessage(message: string): string {
+  return resolveRuntimeErrorMessage(message);
+}
 
 function reload() {
   window.location.reload();

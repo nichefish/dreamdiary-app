@@ -11,9 +11,11 @@ import org.hibernate.annotations.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+
+import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * UserEmplymEntity
@@ -155,11 +157,10 @@ public class UserEmplymEntity
     private String apntcYn = "N";
 
     /** 입사일 */
-    @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = DateUtils.PTN_DATE)
     @Column(name = "ecny_dt")
     @Comment("입사일")
-    private Date ecnyDt;
+    private LocalDate ecnyDt;
 
     /** 퇴사 여부 (Y/N) */
     @Builder.Default
@@ -168,11 +169,10 @@ public class UserEmplymEntity
     private String retireYn = "N";
 
     /** 퇴사일 */
-    @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = DateUtils.PTN_DATE)
     @Column(name = "retire_dt")
     @Comment("퇴사일")
-    private Date retireDt;
+    private LocalDateTime retireDt;
 
     /** (급여계좌) 은행 */
     @Column(name = "acnt_bank", length = 20)

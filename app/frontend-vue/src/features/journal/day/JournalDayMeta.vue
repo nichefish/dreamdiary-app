@@ -10,7 +10,7 @@
         <div id="journal_meta_header" class="mb-6 ms-4 w-100">
           <div class="row align-items-center mb-4 ms-4 min-h-42px">
             <div class="col-auto d-none d-md-flex text-center fs-6">
-              <b>메타 : </b>
+              <b>{{ t("journal.day.meta.header-label") }}</b>
             </div>
             <!--begin::메타 헤더 목록-->
             <div class="col flex-grow-1">
@@ -27,7 +27,7 @@
                     <button
                       type="button"
                       class="btn btn-link py-2 px-0 cursor-pointer opacity-hover text-decoration-none d-inline-flex align-items-center"
-                      title="메타 메뉴"
+                      :title="t('journal.day.meta.menu.tooltip')"
                       @click.stop="openMetaContextMenu($event, item)"
                     >
                       <span
@@ -43,7 +43,7 @@
                     <i
                       v-if="store.isMetaSelected(item)"
                       class="bi bi-x-circle-fill text-primary cursor-pointer opacity-75 ms-1"
-                      :title="(item.name ?? '') + ' 그래프에서 제거'"
+                      :title="t('journal.day.meta.remove-from-graph.tooltip').replace('{0}', item.name ?? '')"
                       @click.stop="removeMetaFromGraph(item)"
                     ></i>
                   </span>
@@ -66,7 +66,7 @@
 
           <!--begin::메타 미선택-->
           <div v-if="store.selectedMetas.length === 0" class="d-flex justify-content-center align-items-center text-muted py-10">
-            위 목록에서 메타를 눌러 검색·그래프·설정 메뉴를 여세요.
+            {{ t("journal.day.meta.selection.empty-guide") }}
           </div>
           <!--end::메타 미선택-->
 
@@ -76,9 +76,9 @@
 
               <!--begin::연도 선택-->
               <div class="d-flex align-items-center gap-2">
-                <label class="fw-bold fs-7 mb-0">연도</label>
+                <label class="fw-bold fs-7 mb-0">{{ t("common.year") }}</label>
                 <select class="form-select form-select-sm w-auto" :value="graphYy" @change="onYyChange">
-                  <option :value="GRAPH_YY_ALL">전체</option>
+                  <option :value="GRAPH_YY_ALL">{{ t("journal.day.meta.graph.all-years") }}</option>
                   <option v-for="y in yyList" :key="y" :value="y">{{ y }}</option>
                 </select>
               </div>
@@ -86,20 +86,20 @@
 
               <!--begin::임계값 입력-->
               <div class="d-flex align-items-center gap-2">
-                <label class="fw-bold fs-7 mb-0">임계값</label>
+                <label class="fw-bold fs-7 mb-0">{{ t("journal.day.meta.graph.threshold") }}</label>
                 <input
                   type="number"
                   class="form-control form-control-sm"
                   style="width: 90px;"
                   :value="threshold ?? ''"
-                  placeholder="없음"
+                  :placeholder="t('journal.day.meta.graph.none')"
                   @change="onThresholdChange"
                 />
               </div>
               <!--end::임계값 입력-->
 
               <div v-if="store.selectedMetas.length === 1" class="text-muted fs-8 ms-1">
-                비교하려면 다른 메타에서 「그래프로 보기」를 선택하세요.
+                {{ t("journal.day.meta.graph.compare-guide") }}
               </div>
 
             </div>
@@ -124,14 +124,14 @@
                 v-if="getStats(selMeta.id)"
                 class="d-flex align-items-center gap-3 flex-wrap fs-7"
               >
-                <span><span class="text-muted">합계</span> <b>{{ getStats(selMeta.id)!.sum }}{{ selMeta.unit ?? "" }}</b></span>
-                <span><span class="text-muted">평균</span> <b>{{ getStats(selMeta.id)!.avg }}{{ selMeta.unit ?? "" }}</b></span>
+                <span><span class="text-muted">{{ t("journal.day.meta.stats.sum") }}</span> <b>{{ getStats(selMeta.id)!.sum }}{{ selMeta.unit ?? "" }}</b></span>
+                <span><span class="text-muted">{{ t("journal.day.meta.stats.avg") }}</span> <b>{{ getStats(selMeta.id)!.avg }}{{ selMeta.unit ?? "" }}</b></span>
                 <span class="text-success">
-                  <span class="text-muted">최고</span> <b>{{ getStats(selMeta.id)!.max }}{{ selMeta.unit ?? "" }}</b>
+                  <span class="text-muted">{{ t("journal.day.meta.stats.max") }}</span> <b>{{ getStats(selMeta.id)!.max }}{{ selMeta.unit ?? "" }}</b>
                   <span class="text-muted fs-8 ms-1">{{ getStats(selMeta.id)!.maxDt }}</span>
                 </span>
                 <span class="text-danger">
-                  <span class="text-muted">최저</span> <b>{{ getStats(selMeta.id)!.min }}{{ selMeta.unit ?? "" }}</b>
+                  <span class="text-muted">{{ t("journal.day.meta.stats.min") }}</span> <b>{{ getStats(selMeta.id)!.min }}{{ selMeta.unit ?? "" }}</b>
                   <span class="text-muted fs-8 ms-1">{{ getStats(selMeta.id)!.minDt }}</span>
                 </span>
               </div>
@@ -156,7 +156,7 @@
             <!--end::비교 라인 차트-->
 
             <div v-else class="d-flex justify-content-center text-muted py-8">
-              데이터가 없습니다.
+              {{ t("journal.day.meta.graph.empty") }}
             </div>
 
           </template>
@@ -179,9 +179,11 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { useMetaContextMenuStore } from "@/features/journal/stores/metaContextMenu";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
 import type { JournalDayDto, MetaContentItem, MetaDto } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalStore();
 const metaContextMenuStore = useMetaContextMenuStore();
+const { t } = useLocaleStore();
 
 type GraphPoint = { dt: string; value: number };
 type GraphStats = { sum: number; avg: number; max: number; min: number; maxDt: string; minDt: string };
@@ -206,6 +208,7 @@ function openMetaContextMenu(event: MouseEvent, item: MetaDto) {
     name: item.name ?? "",
     ctgr: item.ctgr ?? "",
     unit: item.unit,
+    contentSize: item.contentSize,
   });
 }
 
@@ -341,7 +344,7 @@ function getStats(metaId: number | string | undefined): GraphStats | null {
 }
 
 function metaSeriesLabel(meta: MetaDto): string {
-  return meta.ctgr ? `[${meta.ctgr}] ${meta.name ?? ""}` : (meta.name ?? "값");
+  return meta.ctgr ? `[${meta.ctgr}] ${meta.name ?? ""}` : (meta.name ?? t("journal.day.meta.value-fallback"));
 }
 
 /** 비교 차트 X축: 선택된 모든 메타의 일자 합집합(오름차순) */
@@ -393,7 +396,7 @@ const combinedChartOptions = computed(() => {
       borderColor: "#f1416c",
       strokeDashArray: 4,
       label: {
-        text: thrUnit ? `임계 ${threshold.value}${thrUnit}` : `임계 ${threshold.value}`,
+        text: `${t("journal.day.meta.graph.threshold-short")} ${threshold.value}${thrUnit}`,
         style: { color: "#fff", background: "#f1416c" },
       },
     });
@@ -409,13 +412,13 @@ const combinedChartOptions = computed(() => {
         y: stats.max,
         borderColor: "#50cd89",
         strokeDashArray: 2,
-        label: { text: `최고 ${stats.max}${unit}`, position: "right", style: { color: "#fff", background: "#50cd89" } },
+        label: { text: `${t("journal.day.meta.stats.max")} ${stats.max}${unit}`, position: "right", style: { color: "#fff", background: "#50cd89" } },
       });
       yaxis.push({
         y: stats.min,
         borderColor: "#f1416c",
         strokeDashArray: 2,
-        label: { text: `최저 ${stats.min}${unit}`, position: "right", style: { color: "#fff", background: "#f1416c" } },
+        label: { text: `${t("journal.day.meta.stats.min")} ${stats.min}${unit}`, position: "right", style: { color: "#fff", background: "#f1416c" } },
       });
     }
   }

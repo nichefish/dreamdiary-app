@@ -1,6 +1,6 @@
 ## 로컬 LLM 구축 및 활용.
 
-AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](migration/chat/ai-chat-spec.md)을 함께 갱신한다.
+AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](CHAT_AI_SPEC.md)을 함께 갱신한다.
 
 ### 1. Ollama 다운로드 및 설치.
 - Ollama란?
@@ -24,8 +24,10 @@ AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](migration/c
 | `app.ollama.base-url` | `http://localhost:11434` | Ollama API |
 | `app.ollama.chat-model` | `qwen2.5:7b` | 채팅·person synthesis hybrid |
 | `app.ollama.embedding-model` | `nomic-embed-text` | RAG 쿼리 임베딩·백필 worker |
+| `app.ollama.chat-temperature` | `0.35` | chat temperature |
+| `app.ollama.num-predict` | `768` | chat max tokens |
 
-로컬에서 14B 시험 시 `application-local.yml`에 `app.ollama.chat-model: qwen2.5:14b`를 두고 `ollama pull qwen2.5:14b` 후 백엔드를 재기동합니다.
+로컬에서 14B 시험 시 `application-local.yml`에 `app.ollama.chat-model: qwen2.5:14b`와 `app.ollama.chat-temperature: 0.28`(기본 0.35보다 낮게, 형식·근거 이탈 완화)을 두고 `ollama pull qwen2.5:14b` 후 백엔드를 재기동합니다.
 
 ---
 

@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, watch, onMounted } from "vue";
 import RichEditor from "@/shared/ui/editor/RichEditor.vue";
@@ -73,6 +73,7 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
@@ -136,10 +137,26 @@ async function submit() {
     });
     if (res.data?.rslt) {
       close();
-      await swalAlert(res.data?.message ?? (isModify ? t("common.result.modified") : t("common.result.registered")));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: isModify ? t("common.result.modified") : t("common.result.registered"),
+      });
       void refreshJournalDaysForRoute(journalStore, route);
+      if (attachableStore.commentRefContentType === "JOURNAL_THREAD") {
+        const threadStore = useJournalThreadStore();
+        const refId = Number(attachableStore.commentRefId);
+        if (threadStore.detailOpen && threadStore.detailModel?.id === refId) {
+          void threadStore.openDetail(refId);
+        }
+        void threadStore.fetchList(threadStore.currentPage);
+      }
     } else {
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);

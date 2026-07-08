@@ -27,7 +27,7 @@
                   <th>{{ t('log.col.user') }}</th>
                   <th class="hidden-table">{{ t('log.col.role') }}</th>
                   <th class="text-center">{{ t('log.col.count') }}</th>
-                  <th class="hidden-table">URL</th>
+                  <th class="hidden-table">{{ t('common.technical.url') }}</th>
                   <th class="text-center hidden-table">{{ t('log.col.result') }}</th>
                 </tr>
               </thead>
@@ -77,7 +77,7 @@
         </div>
         <div class="log-admin-metric">
           <span>{{ t('log.summary.avg-response') }}</span>
-          <strong>{{ formatNumber(store.pageAvgDurationMs) }} ms</strong>
+          <strong>{{ formatNumber(store.pageAvgDurationMs) }} {{ t('common.unit.milliseconds-short') }}</strong>
         </div>
       </div>
 
@@ -86,8 +86,8 @@
           <div class="log-admin-listbar">
             <div class="log-admin-search">
               <select v-model="store.searchType" class="form-select form-select-solid log-admin-search-type">
-                <option value="requestUri">URI</option>
-                <option value="traceId">Trace</option>
+                <option value="requestUri">{{ t('common.technical.uri') }}</option>
+                <option value="traceId">{{ t('common.technical.trace') }}</option>
                 <option value="username">{{ t('log.col.user') }}</option>
                 <option value="message">{{ t('log.search.by-message') }}</option>
                 <option value="signature">{{ t('log.col.handler') }}</option>
@@ -146,9 +146,9 @@
                     <th>{{ t('log.col.time') }}</th>
                     <th>{{ t('log.col.result') }}</th>
                     <th>{{ t('log.col.request') }}</th>
-                    <th>URI</th>
+                    <th>{{ t('common.technical.uri') }}</th>
                     <th class="hidden-table">{{ t('log.col.user') }}</th>
-                    <th>Trace</th>
+                    <th>{{ t('common.technical.trace') }}</th>
                     <th class="text-end">{{ t('log.col.detail') }}</th>
                   </tr>
                 </thead>
@@ -175,7 +175,7 @@
                     <td>
                       <div class="log-admin-request">
                         <strong>{{ row.httpMethod || "-" }} {{ row.httpStatus ?? "-" }}</strong>
-                        <span :class="{ 'text-warning': isSlow(row) }">{{ formatNumber(row.durationMs) }} ms</span>
+                        <span :class="{ 'text-warning': isSlow(row) }">{{ formatNumber(row.durationMs) }} {{ t('common.unit.milliseconds-short') }}</span>
                       </div>
                     </td>
                     <td>
@@ -239,7 +239,7 @@
               >
                 <span>{{ row.logDt || "-" }}</span>
                 <strong>{{ row.httpMethod || "-" }} {{ row.requestUri || "-" }}</strong>
-                <em>{{ row.httpStatus ?? "-" }} · {{ formatNumber(row.durationMs) }} ms · {{ row.signature || "-" }}</em>
+                <em>{{ row.httpStatus ?? "-" }} · {{ formatNumber(row.durationMs) }} {{ t('common.unit.milliseconds-short') }} · {{ row.signature || "-" }}</em>
               </button>
             </aside>
           </div>
@@ -289,7 +289,7 @@
               <template v-else-if="store.detail">
                 <div class="log-admin-detail-grid">
                   <div>
-                    <span>Trace</span>
+                    <span>{{ t('common.technical.trace') }}</span>
                     <strong>{{ store.detail.traceId || "-" }}</strong>
                   </div>
                   <div>
@@ -310,18 +310,18 @@
                   </div>
                   <div>
                     <span>{{ t('log.col.duration') }}</span>
-                    <strong>{{ store.detail.durationMs != null ? `${formatNumber(store.detail.durationMs)} ms` : "-" }}</strong>
+                    <strong>{{ store.detail.durationMs != null ? `${formatNumber(store.detail.durationMs)} ${t('common.unit.milliseconds-short')}` : "-" }}</strong>
                   </div>
                   <div>
-                    <span>URL</span>
+                    <span>{{ t('common.technical.url') }}</span>
                     <strong>{{ store.detail.url || store.detail.requestUri || "-" }}</strong>
                   </div>
                   <div>
-                    <span>IP</span>
+                    <span>{{ t('common.technical.ip') }}</span>
                     <strong>{{ store.detail.ipAddr || "-" }}</strong>
                   </div>
                   <div>
-                    <span>Referer</span>
+                    <span>{{ t('common.technical.referer') }}</span>
                     <strong>{{ store.detail.referer || "-" }}</strong>
                   </div>
                   <div>
@@ -421,11 +421,19 @@ async function openDetail(id: number) {
 }
 
 onMounted(async () => {
-  if (!isStatsView.value) await store.fetchLogs(0);
+  if (isStatsView.value) {
+    await store.fetchStatsUser();
+    return;
+  }
+  await store.fetchLogs(0);
 });
 
 watch(isStatsView, async (next) => {
-  if (!next && !store.rows.length) await store.fetchLogs(0);
+  if (next) {
+    await store.fetchStatsUser();
+    return;
+  }
+  if (!store.rows.length) await store.fetchLogs(0);
 });
 </script>
 

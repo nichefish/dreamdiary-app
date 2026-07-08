@@ -39,25 +39,25 @@ const routes: Array<RouteRecordRaw> = [
             path: "monthly",
             name: "journal-monthly",
             component: () => import("@/features/journal/day/JournalDayMonthly.vue"),
-            meta: { pageTitle: "월간 일기", breadcrumbs: ["일기"] },
+            meta: { pageTitleKey: "route.title.journal-monthly" },
           },
           {
             path: "weekly",
             name: "journal-weekly",
             component: () => import("@/features/journal/day/JournalDayWeekly.vue"),
-            meta: { pageTitle: "주간 일기", breadcrumbs: ["일기"] },
+            meta: { pageTitleKey: "route.title.journal-weekly" },
           },
           {
             path: "calendar",
             name: "journal-calendar",
             component: () => import("@/features/journal/day/JournalDayCalendar.vue"),
-            meta: { pageTitle: "일기 캘린더", breadcrumbs: ["일기"] },
+            meta: { pageTitleKey: "route.title.journal-calendar" },
           },
           {
             path: "meta",
             name: "journal-meta",
             component: () => import("@/features/journal/day/JournalDayMeta.vue"),
-            meta: { pageTitle: "일기 메타", breadcrumbs: ["일기"] },
+            meta: { pageTitleKey: "route.title.journal-meta" },
           },
         ],
       },
@@ -70,13 +70,13 @@ const routes: Array<RouteRecordRaw> = [
             path: "",
             name: "annual-list",
             component: () => import("@/features/journal/annual/JournalAnnualList.vue"),
-            meta: { pageTitle: "연간 결산", breadcrumbs: ["일기", "결산"] },
+            meta: { pageTitleKey: "route.title.annual-list" },
           },
           {
             path: ":yy",
             name: "annual-detail",
             component: () => import("@/features/journal/annual/JournalAnnualDetail.vue"),
-            meta: { pageTitle: "연간 결산 상세", breadcrumbs: ["일기", "결산"] },
+            meta: { pageTitleKey: "route.title.annual-detail" },
           },
         ],
       },
@@ -89,25 +89,25 @@ const routes: Array<RouteRecordRaw> = [
             path: "",
             name: "thread-list",
             component: () => import("@/features/journal/thread/JournalThreadList.vue"),
-            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+            meta: { pageTitleKey: "route.title.journal-thread" },
           },
           {
             path: "new",
             name: "thread-create",
             component: () => import("@/features/journal/thread/JournalThreadList.vue"),
-            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+            meta: { pageTitleKey: "route.title.journal-thread" },
           },
           {
             path: ":id",
             name: "thread-detail",
             component: () => import("@/features/journal/thread/JournalThreadList.vue"),
-            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+            meta: { pageTitleKey: "route.title.journal-thread" },
           },
           {
             path: ":id/edit",
             name: "thread-edit",
             component: () => import("@/features/journal/thread/JournalThreadList.vue"),
-            meta: { pageTitle: "일기 스레드", breadcrumbs: ["일기", "스레드"] },
+            meta: { pageTitleKey: "route.title.journal-thread" },
           },
         ],
       },
@@ -115,67 +115,67 @@ const routes: Array<RouteRecordRaw> = [
         path: "/schedule",
         name: "schedule-calendar",
         component: () => import("@/features/calendar/ScheduleCalendar.vue"),
-        meta: { pageTitle: "일정 캘린더", breadcrumbs: ["일정"] },
+        meta: { pageTitleKey: "route.title.schedule-calendar" },
       },
       {
         path: "/admin",
         name: "admin-page",
         component: () => import("@/features/admin/AdminPage.vue"),
-        meta: { pageTitle: "사이트 관리", breadcrumbs: ["관리"] },
+        meta: { pageTitleKey: "route.title.admin" },
       },
       {
         path: "/admin/auth-policy",
         name: "auth-policy",
         component: () => import("@/features/admin/AuthPolicyPage.vue"),
-        meta: { pageTitle: "인증 정책 관리", breadcrumbs: ["관리", "인증 정책"] },
+        meta: { pageTitleKey: "route.title.auth-policy" },
       },
       {
         path: "/admin/board-group",
         name: "board-group-admin",
         component: () => import("@/features/admin/BoardGroupAdminPage.vue"),
-        meta: { pageTitle: "게시판 그룹 관리", breadcrumbs: ["관리", "게시판 그룹"] },
+        meta: { pageTitleKey: "route.title.board-group-admin" },
       },
       {
         path: "/admin/code",
         name: "code-admin",
         component: () => import("@/features/admin/CodeAdminPage.vue"),
-        meta: { pageTitle: "코드 관리", breadcrumbs: ["관리", "코드"] },
+        meta: { pageTitleKey: "route.title.code-admin" },
       },
       {
         path: "/admin/menu",
         name: "menu-admin",
         component: () => import("@/features/admin/MenuAdminPage.vue"),
-        meta: { pageTitle: "메뉴 관리", breadcrumbs: ["관리", "메뉴"] },
+        meta: { pageTitleKey: "route.title.menu-admin" },
       },
       {
         path: "/admin/users",
         name: "user-admin",
         component: () => import("@/features/admin/UserAdminPage.vue"),
-        meta: { pageTitle: "계정 관리", breadcrumbs: ["관리", "계정"] },
+        meta: { pageTitleKey: "route.title.user-admin" },
       },
       {
         path: "/admin/log",
         name: "log-list",
         component: () => import("@/features/admin/LogAdminPage.vue"),
-        meta: { pageTitle: "로그 목록", breadcrumbs: ["관리", "로그"] },
+        meta: { pageTitleKey: "route.title.log-list" },
       },
       {
         path: "/admin/log/stats-user",
         name: "log-stats-user",
         component: () => import("@/features/admin/LogAdminPage.vue"),
-        meta: { pageTitle: "사용자별 로그 통계", breadcrumbs: ["관리", "로그"] },
+        meta: { pageTitleKey: "route.title.log-stats-user" },
       },
       {
         path: "/my",
         name: "user-my",
         component: () => import("@/features/user/UserMyPage.vue"),
-        meta: { pageTitle: "내 정보", breadcrumbs: ["내 정보"] },
+        meta: { pageTitleKey: "route.title.user-my" },
       },
       {
         path: "/user/signup/approval",
         name: "user-signup-approval",
         component: () => import("@/features/user/signup/UserSignupApprovalList.vue"),
-        meta: { pageTitle: "계정 신청 승인 관리", breadcrumbs: ["관리", "계정 신청"] },
+        meta: { pageTitleKey: "route.title.user-signup-approval" },
       },
       {
         path: "/board",
@@ -186,7 +186,7 @@ const routes: Array<RouteRecordRaw> = [
             path: ":boardKey",
             name: "board-post-list",
             component: () => import("@/features/board/BoardPostList.vue"),
-            meta: { pageTitle: "게시판", breadcrumbs: ["게시판"] },
+            meta: { pageTitleKey: "route.title.board" },
           },
         ],
       },
@@ -200,19 +200,19 @@ const routes: Array<RouteRecordRaw> = [
         path: "/sign-in",
         name: "sign-in",
         component: () => import("@/features/auth/SignIn.vue"),
-        meta: { pageTitle: "로그인" },
+        meta: { pageTitleKey: "route.title.sign-in" },
       },
       {
         path: "/user/signup",
         name: "user-signup",
         component: () => import("@/features/auth/UserSignupPage.vue"),
-        meta: { pageTitle: "계정 신청" },
+        meta: { pageTitleKey: "route.title.user-signup" },
       },
       {
         path: "/auth/verify-result",
         name: "auth-verify-result",
         component: () => import("@/features/auth/VerifyResultPage.vue"),
-        meta: { pageTitle: "계정 인증 결과" },
+        meta: { pageTitleKey: "route.title.auth-verify-result" },
       },
     ],
   },
@@ -229,7 +229,7 @@ const routes: Array<RouteRecordRaw> = [
             path: "",
             name: "journal-daily",
             component: () => import("@/features/journal/day/JournalDayDaily.vue"),
-            meta: { pageTitle: "일간 일기" },
+            meta: { pageTitleKey: "route.title.journal-daily" },
           },
         ],
       },
@@ -237,37 +237,37 @@ const routes: Array<RouteRecordRaw> = [
         path: "/journal/entry/search",
         name: "journal-entry-search",
         component: () => import("@/features/journal/entry/JournalEntrySearchPage.vue"),
-        meta: { pageTitle: "저널 엔트리 검색", middleware: "auth" },
+        meta: { pageTitleKey: "route.title.journal-entry-search", middleware: "auth" },
       },
       {
         path: "/error",
         name: "error",
         component: () => import("@/app/pages/ErrorPage.vue"),
-        meta: { pageTitle: "오류", errorType: "general" },
+        meta: { pageTitleKey: "route.title.error", errorType: "general" },
       },
       {
         path: "/400",
         name: "400",
         component: () => import("@/app/pages/ErrorPage.vue"),
-        meta: { pageTitle: "잘못된 요청", errorType: "bad_request" },
+        meta: { pageTitleKey: "route.title.bad-request", errorType: "bad_request" },
       },
       {
         path: "/403",
         name: "403",
         component: () => import("@/app/pages/ErrorPage.vue"),
-        meta: { pageTitle: "접근 권한 없음", errorType: "access_denied" },
+        meta: { pageTitleKey: "route.title.access-denied", errorType: "access_denied" },
       },
       {
         path: "/404",
         name: "404",
         component: () => import("@/app/pages/ErrorPage.vue"),
-        meta: { pageTitle: "페이지를 찾을 수 없음", errorType: "not_found" },
+        meta: { pageTitleKey: "route.title.not-found", errorType: "not_found" },
       },
       {
         path: "/500",
         name: "500",
         component: () => import("@/app/pages/ErrorPage.vue"),
-        meta: { pageTitle: "서버 오류", errorType: "general" },
+        meta: { pageTitleKey: "route.title.server-error", errorType: "general" },
       },
     ],
   },
@@ -333,9 +333,8 @@ router.beforeEach(async (to, _from, next) => {
   const configStore = useConfigStore();
   const localeStore = useLocaleStore();
 
-  markRuntimePending("화면 이동 중입니다.");
+  markRuntimePending("runtime.pending.navigation");
   try {
-    document.title = `${to.meta.pageTitle ?? ""} - ${import.meta.env.VITE_APP_NAME}`;
     configStore.resetLayoutConfig();
 
     await localeStore.ensureCatalog();
@@ -366,10 +365,10 @@ router.beforeEach(async (to, _from, next) => {
     }
   } catch (error) {
     clearRuntimePending();
-    const title = isAuthVerificationError(error)
-      ? "인증 상태를 확인하는 중 오류가 발생했습니다."
-      : "화면 이동 중 오류가 발생했습니다";
-    reportRuntimeError(error, "router-before-each", title);
+    const titleKey = isAuthVerificationError(error)
+      ? "auth.verification.failure"
+      : "runtime.error.navigation";
+    reportRuntimeError(error, "router-before-each", titleKey);
     next(false);
   }
 });

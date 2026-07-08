@@ -4,7 +4,7 @@
       <button
         class="app-chat-engage-btn"
         type="button"
-        title="AI Chat"
+        :title="t('chat.engage.tooltip')"
         @click="chat.toggle()"
       >
         <i class="ki-duotone ki-messages fs-1 pt-1 mb-2">
@@ -20,7 +20,7 @@
             chat.isConnected ? 'bg-success animation-blink' : 'bg-secondary',
           ]"
         ></span>
-        AI Chat
+        {{ t("chat.engage.label") }}
       </button>
     </div>
 
@@ -38,10 +38,10 @@
               </i>
             </div>
             <div class="chat-shell__title-wrap">
-              <div class="chat-shell__title">Dreamdiary AI</div>
+              <div class="chat-shell__title">{{ t("chat.assistant.name") }}</div>
               <div class="chat-shell__status">
                 <span class="chat-shell__status-dot"></span>
-                <span>{{ chat.isConnected ? "Online" : "Connecting" }}</span>
+                <span>{{ chat.isConnected ? t("chat.status.online") : t("chat.status.connecting") }}</span>
               </div>
             </div>
           </div>
@@ -49,7 +49,7 @@
             class="chat-icon-btn"
             id="kt_drawer_chat_close"
             type="button"
-            title="Close"
+            :title="t('chat.action.close')"
             @click="chat.close()"
           >
             <i class="ki-duotone ki-cross fs-2">
@@ -63,7 +63,7 @@
           <button
             class="chat-session-add-btn"
             type="button"
-            title="New chat"
+            :title="t('chat.action.new-chat')"
             :disabled="chat.isSessionLoading"
             @click="chat.createSession()"
           >
@@ -96,7 +96,7 @@
               </span>
               <span
                 class="chat-session-chip__delete"
-                title="Delete"
+                :title="t('chat.action.delete')"
                 @click.stop="chat.deleteSession(session.id)"
               >
                 <i class="ki-duotone ki-trash fs-5">
@@ -109,7 +109,7 @@
               </span>
             </button>
             <div v-if="chat.sessions.length === 0" class="chat-session-empty">
-              {{ chat.isSessionLoading ? "Preparing chat" : "No chats" }}
+              {{ chat.isSessionLoading ? t("chat.session.preparing") : t("chat.session.empty") }}
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@
               </i>
             </div>
             <div class="chat-empty-state__title">
-              What should we sort out first?
+              {{ t("chat.empty.prompt") }}
             </div>
           </div>
 
@@ -168,15 +168,21 @@
               >
                 <details>
                   <summary>
-                    <span>저널 검색 {{ messageRagMetadata(message)?.ragSourceCount || 0 }}건</span>
+                    <span>{{ tf("chat.rag.source-count", messageRagMetadata(message)?.ragSourceCount || 0) }}</span>
                     <span class="chat-rag__intent">
-                      {{ messageRagMetadata(message)?.ragIntent || "RAG" }}
+                      {{ messageRagMetadata(message)?.ragIntent || t("chat.rag.intent.default") }}
                     </span>
                     <span
                       v-if="responseModeText(messageRagMetadata(message))"
                       class="chat-rag__mode"
                     >
                       {{ responseModeText(messageRagMetadata(message)) }}
+                    </span>
+                    <span
+                      v-if="guardDetailText(messageRagMetadata(message))"
+                      class="chat-rag__guard"
+                    >
+                      {{ guardDetailText(messageRagMetadata(message)) }}
                     </span>
                   </summary>
 
@@ -185,7 +191,7 @@
                       v-if="personFocusText(messageRagMetadata(message))"
                       class="chat-rag__section"
                     >
-                      <div class="chat-rag__label">인물 포커스</div>
+                      <div class="chat-rag__label">{{ t("chat.rag.label.person-focus") }}</div>
                       <div class="chat-rag__text">
                         {{ personFocusText(messageRagMetadata(message)) }}
                       </div>
@@ -195,7 +201,7 @@
                       v-if="topTagText(messageRagMetadata(message))"
                       class="chat-rag__section"
                     >
-                      <div class="chat-rag__label">태그 요약</div>
+                      <div class="chat-rag__label">{{ t("chat.rag.label.tag-summary") }}</div>
                       <div class="chat-rag__text">
                         {{ topTagText(messageRagMetadata(message)) }}
                       </div>
@@ -205,7 +211,7 @@
                       v-if="tagPairText(messageRagMetadata(message))"
                       class="chat-rag__section"
                     >
-                      <div class="chat-rag__label">연결 태그</div>
+                      <div class="chat-rag__label">{{ t("chat.rag.label.tag-pair") }}</div>
                       <div class="chat-rag__text">
                         {{ tagPairText(messageRagMetadata(message)) }}
                       </div>
@@ -215,7 +221,7 @@
                       v-if="timelineText(messageRagMetadata(message))"
                       class="chat-rag__section"
                     >
-                      <div class="chat-rag__label">시간 흐름</div>
+                      <div class="chat-rag__label">{{ t("chat.rag.label.timeline") }}</div>
                       <div class="chat-rag__text">
                         {{ timelineText(messageRagMetadata(message)) }}
                       </div>
@@ -225,7 +231,7 @@
                       v-if="messageRagMetadata(message)?.ragSources?.length"
                       class="chat-rag__section"
                     >
-                      <div class="chat-rag__label">저널 출처</div>
+                      <div class="chat-rag__label">{{ t("chat.rag.label.sources") }}</div>
                       <div class="chat-rag-source-list">
                         <div
                           v-for="source in visibleRagSources(messageRagMetadata(message))"
@@ -233,7 +239,7 @@
                           class="chat-rag-source"
                         >
                           <div class="chat-rag-source__meta">
-                            <span>{{ source.journalDate || "날짜 없음" }}</span>
+                            <span>{{ source.journalDate || t("chat.rag.date.missing") }}</span>
                             <span>{{ source.contentKind || "UNKNOWN" }}</span>
                             <span>{{ source.matchType || "MATCH" }}</span>
                             <span v-if="typeof source.score === 'number'">
@@ -279,11 +285,11 @@
             class="chat-message-row chat-message-row--assistant chat-message-row--pending"
           >
             <div class="chat-message-avatar">
-              <span>AI</span>
+              <span>{{ t("chat.assistant.initials") }}</span>
             </div>
             <div class="chat-message-stack">
               <div class="chat-message-meta">
-                <span class="chat-message-name">Dreamdiary AI</span>
+                <span class="chat-message-name">{{ t("chat.assistant.name") }}</span>
               </div>
               <div
                 class="chat-message-bubble chat-message-bubble--assistant chat-message-bubble--typing"
@@ -302,12 +308,12 @@
               v-model="message"
               class="chat-composer__input"
               rows="2"
-              placeholder="Type a message"
+              :placeholder="t('chat.composer.placeholder')"
               @keydown.enter.exact.prevent="sendMessage"
             ></textarea>
             <div class="chat-composer__settings">
               <label class="chat-memory-select">
-                <span>대화 기억</span>
+                <span>{{ t("chat.memory.label") }}</span>
                 <select
                   v-model.number="chat.setting.recentMessageLimit"
                   :disabled="chat.isSettingSaving"
@@ -318,7 +324,7 @@
                     :key="option"
                     :value="option"
                   >
-                    최근 {{ option }}개
+                    {{ tf("chat.memory.recent-count", option) }}
                   </option>
                 </select>
               </label>
@@ -340,7 +346,7 @@
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
-            <span>{{ chat.isWaitingResponse ? "Stop" : "Send" }}</span>
+            <span>{{ chat.isWaitingResponse ? t("chat.action.stop") : t("chat.action.send") }}</span>
           </button>
         </div>
       </div>
@@ -358,8 +364,19 @@ import {
   useChatStore,
 } from "@/features/chat/stores/chat";
 import { handleProfileImageError } from "@/shared/utils/profileImage";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const authStore = useAuthStore();
+const { t } = useLocaleStore();
+
+/** catalog 메시지의 {0}.. placeholder 를 순서대로 치환한다. */
+function tf(key: string, ...args: (string | number)[]): string {
+  let message = t(key);
+  args.forEach((value, index) => {
+    message = message.replace(`{${index}}`, String(value));
+  });
+  return message;
+}
 const chat = useChatStore();
 const message = ref("");
 const messageList = ref<HTMLElement | null>(null);
@@ -416,6 +433,8 @@ interface PersonFocusMetadata {
 
 interface RagMetadata {
   responseMode?: string;
+  guardDetail?: string;
+  retryGuardDetail?: string;
   ragIntent?: string;
   ragSourceCount?: number;
   personFocus?: PersonFocusMetadata;
@@ -424,16 +443,21 @@ interface RagMetadata {
   ragSources?: RagSource[];
 }
 
-const PERSON_ROLE_LABELS: Record<string, string> = {
-  COLLABORATION: "협업",
-  TENSION: "긴장",
-  EVALUATION: "평가/비교",
-  CARE: "돌봄",
-  CONFLICT: "갈등",
-  DESIRE: "욕망/끌림",
-  SYMBOLIC_FIGURE: "상징적 인물",
-  UNKNOWN: "맥락 미확정",
+const RESPONSE_MODE_KEYS: Record<string, string> = {
+  PERSON_MEANING_FALLBACK: "chat.response-mode.person-meaning-fallback",
+  PERSON_STANCE_FALLBACK: "chat.response-mode.person-stance-fallback",
+  PERSON_APPEARANCE_FALLBACK: "chat.response-mode.person-appearance-fallback",
+  PERSON_SYNTHESIS_HYBRID: "chat.response-mode.person-synthesis-hybrid",
+  RULE_PRIMARY: "chat.response-mode.rule-primary",
+  LANGUAGE_FALLBACK: "chat.response-mode.language-fallback",
+  LLM: "chat.response-mode.llm",
 };
+
+function personRoleLabel(roleCode: string): string {
+  const key = `chat.person-role.${roleCode}`;
+  const label = t(key);
+  return label === key ? roleCode : label;
+}
 
 watch(
   () => authStore.isAuthenticated,
@@ -443,7 +467,7 @@ watch(
         await chat.initialize();
       } catch (error) {
         chat.lastError =
-          error instanceof Error ? error.message : "Unable to initialize chat.";
+          error instanceof Error ? error.message : t("chat.error.init-failure");
       }
       return;
     }
@@ -489,7 +513,7 @@ function updateMemoryLimit(event: Event): void {
 }
 
 function sessionTitle(session: ChatSession): string {
-  return session.title || "New chat";
+  return session.title || t("chat.session.default-title");
 }
 
 function sessionTime(session: ChatSession): string {
@@ -510,13 +534,13 @@ function isOwnMessage(chatMessage: ChatMessage): boolean {
 }
 
 function messageName(chatMessage: ChatMessage): string {
-  if (isAssistantMessage(chatMessage)) return "Dreamdiary AI";
-  return chatMessage.createdByNm || authStore.user?.nickname || "Me";
+  if (isAssistantMessage(chatMessage)) return t("chat.assistant.name");
+  return chatMessage.createdByNm || authStore.user?.nickname || t("chat.user.self");
 }
 
 function messageInitial(chatMessage: ChatMessage): string {
-  if (isAssistantMessage(chatMessage)) return "AI";
-  return messageName(chatMessage).slice(0, 1) || "U";
+  if (isAssistantMessage(chatMessage)) return t("chat.assistant.initials");
+  return messageName(chatMessage).slice(0, 1) || t("chat.user.initials");
 }
 
 function messageTime(chatMessage: ChatMessage): string {
@@ -532,8 +556,17 @@ function messageRagMetadata(chatMessage: ChatMessage): RagMetadata | null {
 
   try {
     const metadata = JSON.parse(chatMessage.metadataJson) as RagMetadata;
-    if (!metadata || !metadata.ragSourceCount) return null;
-    return metadata;
+    if (!metadata) return null;
+    if (
+      metadata.responseMode ||
+      metadata.guardDetail ||
+      metadata.retryGuardDetail ||
+      metadata.personFocus ||
+      (typeof metadata.ragSourceCount === "number" && metadata.ragSourceCount > 0)
+    ) {
+      return metadata;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -549,38 +582,42 @@ function personFocusText(metadata: RagMetadata | null | undefined): string {
 
   const parts: string[] = [];
   const target = personFocus.target || personFocus.canonicalLabel;
-  if (target) parts.push(`대상: ${target}`);
+  if (target) parts.push(tf("chat.rag.person.target", target));
 
   if (
     typeof personFocus.mentionCount === "number" ||
     typeof personFocus.journalEntryCount === "number"
   ) {
     parts.push(
-      `직접 언급 ${personFocus.mentionCount || 0}회, 엔트리 ${
+      tf(
+        "chat.rag.person.mentions",
+        personFocus.mentionCount || 0,
         personFocus.journalEntryCount || 0
-      }건`
+      )
     );
   }
 
   if (personFocus.firstDate || personFocus.lastDate) {
     parts.push(
-      `기간 ${personFocus.firstDate || "?"} ~ ${
+      tf(
+        "chat.rag.person.period",
+        personFocus.firstDate || "?",
         personFocus.lastDate || "?"
-      }`
+      )
     );
   }
 
   const kinds = formatCountItems(personFocus.contentKinds, 4);
-  if (kinds) parts.push(`기록 유형 ${kinds}`);
+  if (kinds) parts.push(tf("chat.rag.person.content-kinds", kinds));
 
   const topRoles = formatRoleList(personFocus.topRoles, 4);
-  if (topRoles) parts.push(`반복 역할 ${topRoles}`);
+  if (topRoles) parts.push(tf("chat.rag.person.roles", topRoles));
 
   const roleAxesKo = formatTextList(personFocus.roleAxesKo, 4);
-  if (roleAxesKo) parts.push(`역할 축 ${roleAxesKo}`);
+  if (roleAxesKo) parts.push(tf("chat.rag.person.role-axes", roleAxesKo));
 
   const surfaceForms = formatTextList(personFocus.surfaceForms, 4);
-  if (surfaceForms) parts.push(`표현형 ${surfaceForms}`);
+  if (surfaceForms) parts.push(tf("chat.rag.person.surface-forms", surfaceForms));
 
   return parts.join(" / ");
 }
@@ -588,14 +625,21 @@ function personFocusText(metadata: RagMetadata | null | undefined): string {
 function responseModeText(metadata: RagMetadata | null | undefined): string {
   const mode = metadata?.responseMode;
   if (!mode) return "";
-  if (mode === "PERSON_MEANING_FALLBACK") return "person fallback";
-  if (mode === "PERSON_STANCE_FALLBACK") return "stance fallback";
-  if (mode === "PERSON_APPEARANCE_FALLBACK") return "appearance fallback";
-  if (mode === "PERSON_SYNTHESIS_HYBRID") return "hybrid";
-  if (mode === "RULE_PRIMARY") return "rule primary";
-  if (mode === "LANGUAGE_FALLBACK") return "language fallback";
-  if (mode === "LLM") return "";
-  return mode;
+  const key = RESPONSE_MODE_KEYS[mode];
+  return key ? t(key) : mode;
+}
+
+function guardDetailText(metadata: RagMetadata | null | undefined): string {
+  const parts: string[] = [];
+  const detail = metadata?.guardDetail;
+  const retryDetail = metadata?.retryGuardDetail;
+  if (detail) {
+    parts.push(tf("chat.guard.prefix", detail));
+  }
+  if (retryDetail && retryDetail !== detail) {
+    parts.push(tf("chat.guard.retry-prefix", retryDetail));
+  }
+  return parts.join(" · ");
 }
 
 function topTagText(metadata: RagMetadata | null | undefined): string {
@@ -647,7 +691,7 @@ function formatRoleList(items: string[] | undefined, limit: number): string {
       if (!match) return item;
 
       const [, roleCode, count] = match;
-      const label = PERSON_ROLE_LABELS[roleCode] || roleCode;
+      const label = personRoleLabel(roleCode);
       return `${label}(${count})`;
     })
     .join(", ");

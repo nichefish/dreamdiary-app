@@ -90,6 +90,46 @@
         </button>
       </div>
       <!--end::꿈 키워드 전체검색-->
+      <!--begin::고급 필터 (사이드 패널 토글)-->
+      <button
+        type="button"
+        class="btn btn-sm btn-icon btn-light"
+        :title="t('journal.day.toolbar.filter.advanced.tooltip')"
+        @click="toggleAdvancedFilter"
+      >
+        <i class="bi bi-funnel fs-7"></i>
+      </button>
+      <!--end::고급 필터-->
+      <!--begin::일정 등록-->
+      <button
+        type="button"
+        class="btn btn-sm btn-light-primary btn-outlined ps-3 pe-2 py-2 text-nowrap"
+        :title="t('schedule.register')"
+        @click="openScheduleRegist(false)"
+      >
+        <i class="bi bi-plus-lg fs-4 pe-1"></i>
+        {{ t('schedule.register') }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-light-primary btn-outlined ps-3 pe-2 py-2 text-nowrap"
+        :title="t('schedule.private')"
+        @click="openScheduleRegist(true)"
+      >
+        <i class="bi bi-lock fs-4 pe-1"></i>
+        {{ t('schedule.private') }}
+      </button>
+      <!--end::일정 등록-->
+      <!--begin::태그 카테고리 동기화-->
+      <button
+        type="button"
+        class="btn btn-sm btn-icon btn-light"
+        :title="t('journal.day.toolbar.tag-category-sync.tooltip')"
+        @click="syncTagCategories"
+      >
+        <i class="bi bi-arrow-repeat fs-7"></i>
+      </button>
+      <!--end::태그 카테고리 동기화-->
       <!--begin::구분자-->
       <div class="vr mx-1 opacity-25"></div>
       <!--end::구분자-->
@@ -114,9 +154,13 @@
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useJournalStore } from "@/features/journal/stores/journal";
-import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useJournalAsideStore } from "@/features/journal/stores/journalAside";
+import { syncCategoryMaps, useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { resolveWeekStartDt } from "@/features/journal/utils/journalDate";
 import { assertAuthenticatedBeforePopup } from "@/shared/auth/popupAuth";
+import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
+import { joinAppBasePath } from "@/shared/utils/appPath";
+import { swalFire, swalRequestError } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 /** 툴바 전체검색 전용 로컬 키워드 — store.diaryKeyword/dreamKeyword(필터)와 분리 */
@@ -125,6 +169,7 @@ const localDreamKw = ref("");
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const asideStore = useJournalAsideStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
@@ -146,9 +191,33 @@ async function openSearchTab(type: "DIARY" | "DREAM", keyword: string): Promise<
   if (!await assertAuthenticatedBeforePopup(router, route)) return;
   const params = new URLSearchParams({ type });
   if (keyword.trim()) params.set("searchKeywords", keyword.trim());
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const popup = window.open(`${base}/journal/entry/search?${params.toString()}`, `journal-entry-search-${type}`, "width=1960,height=1440,top=0,left=270");
+  const popup = window.open(joinAppBasePath(`/journal/entry/search?${params.toString()}`), `journal-entry-search-${type}`, "width=1960,height=1440,top=0,left=270");
   if (popup) popup.focus();
+}
+
+/** 고급 필터: 사이드 패널(필터 영역) 표시 토글 — 레거시 §4.1 */
+function toggleAdvancedFilter(): void {
+  asideStore.toggle();
+}
+
+/** 일정 등록 화면으로 이동하고 등록 모달을 연다 — 레거시 §4.2 */
+async function openScheduleRegist(isPrivate: boolean): Promise<void> {
+  if (!await assertAuthenticatedBeforeModal()) return;
+  void router.push({
+    name: "schedule-calendar",
+    query: { regist: isPrivate ? "private" : "1" },
+  });
+}
+
+/** 태그·메타 categoryMap 서버 재조회 — 레거시 §4.3 */
+async function syncTagCategories(): Promise<void> {
+  if (!await assertAuthenticatedBeforeModal()) return;
+  try {
+    await syncCategoryMaps();
+    void swalFire({ icon: "success", text: t("common.result.processed") });
+  } catch (e: unknown) {
+    void swalRequestError(e);
+  }
 }
 
 /** 신규 저널 일자 등록 모달 */

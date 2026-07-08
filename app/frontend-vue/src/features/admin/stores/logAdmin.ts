@@ -139,6 +139,31 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
     selectedTraceId.value = traceId ?? "";
   }
 
+  /**
+   * 사용자별 로그 통계 조회 — 로그인 사용자/비로그인 구분 목록을 함께 받는다.
+   * (기간 미지정 시 백엔드 기본값 = 오늘 통계, 레거시 log_stats_user_list 동일)
+   */
+  async function fetchStatsUser(searchStartDt?: string, searchEndDt?: string) {
+    loading.value = true;
+    error.value = "";
+    try {
+      const params: Record<string, unknown> = {};
+      if (searchStartDt) params.searchStartDt = searchStartDt;
+      if (searchEndDt) params.searchEndDt = searchEndDt;
+      const res = await axios.get("/api/logs/stats-user", { params });
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.log.list.load.failure"));
+      const statsObj = res.data?.rsltObj ?? {};
+      statsUserRows.value = Array.isArray(statsObj.userList) ? statsObj.userList : [];
+      statsAnonymousRows.value = Array.isArray(statsObj.anonymousList) ? statsObj.anonymousList : [];
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : t("admin.log.list.load.failure");
+      statsUserRows.value = [];
+      statsAnonymousRows.value = [];
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function filterByTrace(traceId?: string) {
     if (!traceId) return;
     searchType.value = "traceId";
@@ -194,6 +219,7 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
     statsUserRows,
     statsAnonymousRows,
     statsRows,
+    fetchStatsUser,
     pageFailureCount,
     pageSlowCount,
     pageAvgDurationMs,

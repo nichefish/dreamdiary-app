@@ -14,7 +14,7 @@
         <div
           class="d-flex align-items-center d-lg-none ms-n3 me-1 me-md-2"
           v-tooltip
-          title="Show sidebar menu"
+          :title="t('navbar.sidebar.open.tooltip')"
         >
           <div
             class="btn btn-icon btn-active-color-primary w-35px h-35px"
@@ -52,6 +52,7 @@ import {
   headerDesktopFixed,
   headerMobileFixed,
 } from "@/app/layouts/default/config/helper";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export default defineComponent({
   name: "layout-header",
@@ -60,11 +61,15 @@ export default defineComponent({
     PageBreadcrumb,
   },
   setup() {
+    const localeStore = useLocaleStore();
+    const t = (key: string) => localeStore.t(key);
+
     return {
       headerWidthFluid,
       headerDisplay,
       headerDesktopFixed,
       headerMobileFixed,
+      t,
     };
   },
 });

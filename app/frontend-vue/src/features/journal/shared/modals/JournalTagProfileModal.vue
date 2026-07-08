@@ -161,7 +161,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
@@ -249,10 +249,18 @@ async function onSave() {
     const result = await attachableStore.saveTagProfile();
     if (result.rslt) {
       close();
-      await swalAlert(result.message ?? t("common.result.saved"));
+      await swalAjaxResult({
+        rslt: true,
+        message: result.message,
+        successFallback: t("common.result.saved"),
+      });
       void refreshJournalDaysForRoute(journalStore, route);
     } else {
-      void swalAlert(result.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: result.message,
+        failureFallback: t("common.result.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);
@@ -270,10 +278,18 @@ async function onDelete() {
     const result = await attachableStore.deleteTagProfile();
     if (result.rslt) {
       close();
-      await swalAlert(result.message ?? t("common.result.deleted"));
+      await swalAjaxResult({
+        rslt: true,
+        message: result.message,
+        successFallback: t("common.result.deleted"),
+      });
       void refreshJournalDaysForRoute(journalStore, route);
     } else {
-      void swalAlert(result.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: result.message,
+        failureFallback: t("common.result.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);

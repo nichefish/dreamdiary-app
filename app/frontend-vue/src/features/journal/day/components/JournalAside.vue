@@ -5,7 +5,7 @@
       <button
         type="button"
         class="btn btn-sm btn-icon btn-light"
-        title="필터 패널 닫기"
+        :title="t('journal.aside.close.tooltip')"
         @click="asideStore.hide()"
       >
         <i class="bi bi-x-lg"></i>
@@ -15,13 +15,13 @@
     <!--begin::필터 카드 헤더 (레거시 journal_aside_header)-->
     <div id="journal_aside_header" class="card-header min-h-auto mb-5 px-0 border-0">
       <h3 class="card-title text-gray-900 fw-bold fs-3 mb-0">
-        <i class="bi bi-filter fs-2 me-1"></i> FILTER
+        <i class="bi bi-filter fs-2 me-1"></i> {{ t("journal.aside.title.filter") }}
       </h3>
       <div class="card-toolbar">
         <button
           type="button"
           class="btn btn-sm btn-icon btn-color-gray-500 btn-light"
-          title="정렬 변경"
+          :title="t('journal.aside.sort.tooltip.short')"
           @click="store.toggleSort()"
         >
           <i :class="sortIconClass" id="sortIcon" class="fs-2 pe-0"></i>
@@ -49,7 +49,7 @@
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
-          <span class="fw-bold fs-6">{{ store.mnth }}월</span>
+          <span class="fw-bold fs-6">{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
@@ -65,7 +65,7 @@
             :class="['btn btn-sm', m === store.mnth ? 'btn-primary' : 'btn-light']"
             @click="gotoYyMnth(store.yy, m)"
           >
-            {{ m }}월
+            {{ m }}{{ t("date.suffix.after-month-number") }}
           </button>
         </div>
         <!--end::월 그리드-->
@@ -81,7 +81,7 @@
           </button>
           <span
             class="fw-bold fs-7 text-center text-hover-primary cursor-pointer"
-            title="날짜 선택"
+            :title="t('journal.aside.date-select.tooltip')"
             @click="openWeekPicker"
           >{{ weekRangeLabel }}</span>
           <input
@@ -119,18 +119,18 @@
 
       <!--begin::TODAY 버튼-->
       <button type="button" class="btn btn-sm btn-light-primary w-100" @click="gotoToday">
-        TODAY
+        {{ t("journal.aside.today") }}
       </button>
       <!--end::TODAY 버튼-->
 
       <!--begin::Pinpoint (현재 년월 고정 → 되돌리기)-->
       <div>
-        <div class="text-gray-900 fs-6 fw-bold d-inline-block mb-2">Pinpoint</div>
+        <div class="text-gray-900 fs-6 fw-bold d-inline-block mb-2">{{ t("journal.aside.pinpoint") }}</div>
         <div class="d-flex align-items-center justify-content-between px-1 mb-2 gap-1">
           <button
             type="button"
             class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
-            title="현재 년월 고정"
+            :title="t('journal.aside.pin.tooltip.short')"
             @click="pinpoint"
           >
             <i class="bi bi-bookmarks pe-0"></i>
@@ -146,7 +146,7 @@
           <button
             type="button"
             class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
-            title="고정한 년월로 돌아가기"
+            :title="t('journal.aside.turnback.tooltip.short')"
             :disabled="asideStore.pinnedYy == null"
             @click="turnback"
           >
@@ -168,7 +168,7 @@
             :checked="store.showTagCloud"
             @change="toggleTagCloud"
           />
-          <span class="form-check-label text-muted fs-7">TAGCLOUD</span>
+          <span class="form-check-label text-muted fs-7">{{ t("journal.aside.tagcloud") }}</span>
         </label>
       </div>
       <!--end::표시 필터 토글-->
@@ -184,14 +184,14 @@
               :checked="store.showDiaries"
               @change="toggleDiaries"
             />
-            <span class="form-check-label text-muted fs-7">DIARIES</span>
+            <span class="form-check-label text-muted fs-7">{{ t("journal.aside.diaries") }}</span>
           </label>
 
           <div v-if="store.showDiaries" class="d-flex flex-column gap-2 ps-3">
             <div>
-              <div class="text-muted fs-8 fw-bold mb-1">- CHAPTER CATEGORIES</div>
-              <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">Loading...</div>
-              <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">카테고리를 불러오지 못했습니다.</div>
+              <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.aside.chapter-categories") }}</div>
+              <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">{{ t("journal.aside.loading") }}</div>
+              <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">{{ t("journal.aside.category-load-failure") }}</div>
               <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
                 <label
                   v-for="ctgr in chapterCategoryOptions"
@@ -210,14 +210,14 @@
             </div>
 
             <div>
-              <div class="text-muted fs-8 fw-bold mb-1">- DIARY LIFECYCLE</div>
+              <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.aside.diary-lifecycle") }}</div>
               <select
                 id="diaryLifecycleFilter"
                 v-model="store.diaryLifecycleKey"
                 class="form-select form-select-sm"
                 @change="store.fetchDays()"
               >
-                <option value="">전체</option>
+                <option value="">{{ t("journal.aside.filter.all") }}</option>
                 <option
                   v-for="option in lifecycleOptions"
                   :key="'diary-lifecycle-' + option.key"
@@ -227,20 +227,20 @@
             </div>
 
             <div>
-              <div class="text-muted fs-8 fw-bold mb-1">- DIARY KEYWORDS</div>
+              <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.aside.diary-keywords") }}</div>
               <div class="input-group input-group-sm">
                 <input
                   v-model="store.diaryKeyword"
                   type="text"
                   class="form-control form-control-sm"
-                  placeholder="일기 키워드"
+                  :placeholder="t('journal.aside.diary-keyword.placeholder')"
                   maxlength="200"
                   @keyup.enter="store.fetchDays()"
                 />
                 <button
                   type="button"
                   class="btn btn-sm btn-icon btn-light"
-                  title="일기 키워드 필터 적용"
+                  :title="t('journal.aside.diary-keyword.apply.tooltip')"
                   @click="store.fetchDays()"
                 >
                   <i class="bi bi-funnel fs-7"></i>
@@ -259,19 +259,19 @@
               :checked="store.showDreams"
               @change="toggleDreams"
             />
-            <span class="form-check-label text-muted fs-7">DREAMS</span>
+            <span class="form-check-label text-muted fs-7">{{ t("journal.aside.dreams") }}</span>
           </label>
 
           <div v-if="store.showDreams" class="d-flex flex-column gap-2 ps-3">
             <div>
-              <div class="text-muted fs-8 fw-bold mb-1">- DREAM LIFECYCLE</div>
+              <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.aside.dream-lifecycle") }}</div>
               <select
                 id="dreamLifecycleFilter"
                 v-model="store.dreamLifecycleKey"
                 class="form-select form-select-sm"
                 @change="store.fetchDays()"
               >
-                <option value="">전체</option>
+                <option value="">{{ t("journal.aside.filter.all") }}</option>
                 <option
                   v-for="option in lifecycleOptions"
                   :key="'dream-lifecycle-' + option.key"
@@ -281,20 +281,20 @@
             </div>
 
             <div>
-              <div class="text-muted fs-8 fw-bold mb-1">- DREAM KEYWORDS</div>
+              <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.aside.dream-keywords") }}</div>
               <div class="input-group input-group-sm">
                 <input
                   v-model="store.dreamKeyword"
                   type="text"
                   class="form-control form-control-sm"
-                  placeholder="꿈 키워드"
+                  :placeholder="t('journal.aside.dream-keyword.placeholder')"
                   maxlength="200"
                   @keyup.enter="store.fetchDays()"
                 />
                 <button
                   type="button"
                   class="btn btn-sm btn-icon btn-light"
-                  title="꿈 키워드 필터 적용"
+                  :title="t('journal.aside.dream-keyword.apply.tooltip')"
                   @click="store.fetchDays()"
                 >
                   <i class="bi bi-funnel fs-7"></i>
@@ -304,7 +304,7 @@
           </div>
         </div>
 
-        <div class="text-gray-900 fs-6 fw-bold mt-1">ENTRY FILTER</div>
+        <div class="text-gray-900 fs-6 fw-bold mt-1">{{ t("journal.aside.entry-filter") }}</div>
       </div>
       <!--end::ENTRY 필터-->
 
@@ -316,24 +316,18 @@
         @click="resetFilters"
       >
         <i class="bi bi-arrow-counterclockwise me-1"></i>
-        필터 초기화
+        {{ t("journal.aside.filter.reset") }}
       </button>
       <!--end::필터 초기화 버튼-->
 
-      <!--begin::할일 등록 버튼-->
-      <button
-        type="button"
-        class="btn btn-sm btn-light-primary w-100"
-        @click="openTodoRegist"
-      >
-        <i class="bi bi-check2-square me-1"></i>
-        할일 등록
-      </button>
-      <!--end::할일 등록 버튼-->
 
     </div>
     <!--end::년월 네비게이션-->
   </div>
+
+  <!--begin::TODO 카드 (레거시 aside 구조 동일 — 필터 카드 밖 별도 카드. 변경 전: 카드 내 '할일 등록' 단독 버튼 → 변경 후: 레거시 TODO List 카드(등록 + 목록·삭제)로 복원)-->
+  <JournalAsideTodoCard />
+  <!--end::TODO 카드-->
   <!--end::저널 사이드 패널-->
 </template>
 
@@ -344,10 +338,13 @@ import { formatLocalDateStr, getWeekStartDateStr } from "@/features/journal/util
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalAsideStore } from "@/features/journal/stores/journalAside";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import JournalAsideTodoCard from "@/features/journal/day/components/JournalAsideTodoCard.vue";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalStore();
 const asideStore = useJournalAsideStore();
 const modalStore = useJournalModalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -383,16 +380,24 @@ interface ChapterCategoryOption {
 
 const chapterCategoryOptions = ref<ChapterCategoryOption[]>([]);
 const chapterCategoryLoading = ref(false);
-const lifecycleOptions = [
-  { key: "OPEN", label: "진행 중" },
-  { key: "PENDING", label: "보류" },
-  { key: "RESOLVED", label: "완료" },
-];
+const lifecycleOptions = computed(() => [
+  { key: "OPEN", label: t("journal.entry.lifecycle.open") },
+  { key: "PENDING", label: t("lifecycle.pending") },
+  { key: "RESOLVED", label: t("status.completed") },
+]);
 
 /** 주간 요일 버튼 목록 (월~일) */
 const weekDays = computed(() => {
   if (!store.weekStartDt) return [];
-  const labels = ["월", "화", "수", "목", "금", "토", "일"];
+  const labels = [
+    t("common.weekday.mon"),
+    t("common.weekday.tue"),
+    t("common.weekday.wed"),
+    t("common.weekday.thu"),
+    t("common.weekday.fri"),
+    t("common.weekday.sat"),
+    t("common.weekday.sun"),
+  ];
   return labels.map((label, i) => {
     const d = new Date(store.weekStartDt! + "T12:00:00");
     d.setDate(d.getDate() + i);
@@ -590,10 +595,6 @@ async function resetFilters(): Promise<void> {
   await store.fetchDays();
 }
 
-/** 할일 등록 모달 열기 */
-function openTodoRegist() {
-  modalStore.openTodoRegist({ yy: store.yy, mnth: store.mnth });
-}
 
 function toggleTagCloud() {
   store.showTagCloud = !store.showTagCloud;

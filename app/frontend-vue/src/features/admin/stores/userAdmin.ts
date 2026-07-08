@@ -4,7 +4,7 @@ import axios from "axios";
 import type { RoleRow } from "@/features/admin/stores/adminPage";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { swalAlert } from "@/shared/utils/swal";
+import { swalAlert, swalFire } from "@/shared/utils/swal";
 
 export interface UserRoleRow {
   roleKey: string;
@@ -402,7 +402,7 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
       if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.save.failure"));
       closeForm();
       const message = res.data?.message ?? t("common.result.saved");
-      await swalAlert(message);
+      await swalFire({ icon: "success", text: message });
       await fetchUsers(id == null ? 0 : currentPage.value);
       if (detail.value?.id === id) await openDetail(id);
       return message;
@@ -428,7 +428,7 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     if (detail.value?.id === id) closeDetail();
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
     const message = res.data?.message ?? t("common.result.deleted");
-    await swalAlert(message);
+    await swalFire({ icon: "success", text: message });
     await fetchUsers(nextPage);
     return message;
   }

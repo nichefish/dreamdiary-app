@@ -17,11 +17,14 @@ export function isAuthExpiredError(e: unknown): e is AuthExpiredError {
   return e instanceof AuthExpiredError;
 }
 
+/** 인증 확인 API i18n 키 — {@link AuthVerificationError} 기본 message 및 라우터 오류 제목에 사용. */
+export const AUTH_VERIFICATION_FAILURE_KEY = "auth.verification.failure";
+
 /** 인증 확인 API가 미인증이 아닌 서버/네트워크 오류로 실패했음을 나타내는 sentinel. */
 export class AuthVerificationError extends Error {
   readonly status?: number;
 
-  constructor(message = "인증 상태를 확인하는 중 오류가 발생했습니다.", status?: number) {
+  constructor(message = AUTH_VERIFICATION_FAILURE_KEY, status?: number) {
     super(message);
     this.name = "AuthVerificationError";
     this.status = status;

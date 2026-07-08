@@ -8,8 +8,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 저널 엔트리 임베딩 작업 Entity.
@@ -52,10 +53,9 @@ public class JournalEntryEmbeddingEntity
     private String contentKind;
 
     /** 저널 기준 일자. 검색에서 의미상 시점으로 사용한다. */
-    @Temporal(TemporalType.DATE)
     @Column(name = "journal_date")
     @Comment("저널 기준 일자. 검색에서 의미상 시점으로 사용")
-    private Date journalDate;
+    private LocalDate journalDate;
 
     /** 저널 일자 정밀도. DAY, MONTH, YEAR, UNKNOWN 등 */
     @Column(name = "journal_date_precision", length = 20)
@@ -101,10 +101,9 @@ public class JournalEntryEmbeddingEntity
     private String contentHash;
 
     /** 벡터 생성 완료 일시 */
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "embedded_at")
     @Comment("벡터 생성 완료 일시")
-    private Date embeddedAt;
+    private LocalDateTime embeddedAt;
 
     /** 임베딩 실패 또는 스킵 사유 */
     @Lob

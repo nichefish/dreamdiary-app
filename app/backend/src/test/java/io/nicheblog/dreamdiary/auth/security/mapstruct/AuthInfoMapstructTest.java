@@ -135,8 +135,8 @@ class AuthInfoMapstructTest {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
         UserStateEntity acntStus = UserStateEntity.builder()
-                .lastLoginAt(DateUtils.asDate("2000-01-11"))
-                .passwordChangedAt(DateUtils.asDate("2000-02-22"))
+                .lastLoginAt(DateUtils.asLocalDateTime("2000-01-11"))
+                .passwordChangedAt(DateUtils.asLocalDateTime("2000-02-22"))
                 .build();
         userEntity.setAcntStus(acntStus);
 
@@ -146,8 +146,8 @@ class AuthInfoMapstructTest {
         // Then::
         assertNotNull(dto);
         // acntStus - lastLoginAt, passwordChangedAt 대신 createdAt 사용
-        assertEquals(dto.getLastLoginAt(), DateUtils.asDate("2000-01-11"));
-        assertEquals(dto.getPasswordChangedAt(), DateUtils.asDate("2000-02-22"));
+        assertEquals(dto.getLastLoginAt(), DateUtils.asLocalDateTime("2000-01-11"));
+        assertEquals(dto.getPasswordChangedAt(), DateUtils.asLocalDateTime("2000-02-22"));
     }
 
     /**
@@ -163,7 +163,7 @@ class AuthInfoMapstructTest {
                 .passwordChangedAt(null)
                 .build();
         userEntity.setAcntStus(acntStus);
-        userEntity.setCreatedAt(DateUtils.asDate("2000-01-31"));
+        userEntity.setCreatedAt(DateUtils.asLocalDateTime("2000-01-31"));
 
         // When::
         AuthInfo dto = authInfoMapstruct.toDto(userEntity);
@@ -171,8 +171,8 @@ class AuthInfoMapstructTest {
         // Then::
         assertNotNull(dto);
         // acntStus - lastLoginAt, passwordChangedAt 대신 createdAt 사용
-        assertEquals(dto.getLastLoginAt(), DateUtils.asDate("2000-01-31"));
-        assertEquals(dto.getPasswordChangedAt(), DateUtils.asDate("2000-01-31"));
+        assertEquals(dto.getLastLoginAt(), DateUtils.asLocalDateTime("2000-01-31"));
+        assertEquals(dto.getPasswordChangedAt(), DateUtils.asLocalDateTime("2000-01-31"));
     }
 
     /**

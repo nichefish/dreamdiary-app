@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +58,7 @@ public class ChatSessionService {
      */
     @Transactional
     public ChatSessionDto create(final ChatSessionDto dto) {
-        final Date now = new Date();
+        final LocalDateTime now = LocalDateTime.now();
         final ChatSessionEntity entity = ChatSessionEntity.builder()
                 .title(StringUtils.defaultIfBlank(dto == null ? null : dto.getTitle(), DEFAULT_TITLE))
                 .status("ACTIVE")
@@ -99,7 +99,7 @@ public class ChatSessionService {
     @Transactional
     public ChatSessionDto touchAfterMessage(final Integer sessionId, final String titleCandidate) {
         final ChatSessionEntity entity = this.getMySessionEntity(sessionId);
-        entity.setLastMessageAt(new Date());
+        entity.setLastMessageAt(LocalDateTime.now());
 
         if (StringUtils.equals(entity.getTitle(), DEFAULT_TITLE) && StringUtils.isNotBlank(titleCandidate)) {
             entity.setTitle(toSessionTitle(titleCandidate));
@@ -174,7 +174,7 @@ public class ChatSessionService {
      * @param date 변환할 날짜 값
      * @return 날짜 문자열, 변환할 수 없으면 {@code null}
      */
-    private String formatDate(final Date date) {
+    private String formatDate(final Object date) {
         try {
             return DateUtils.asStr(date, DatePtn.DATETIME);
         } catch (final Exception e) {

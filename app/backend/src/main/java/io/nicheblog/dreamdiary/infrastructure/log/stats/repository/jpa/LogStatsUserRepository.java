@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.QueryHint;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -42,8 +42,8 @@ public interface LogStatsUserRepository
             "GROUP BY t.username"
     )
     List<LogStatsUserIntrfc> getStatsUserIntrfcList(
-            final @Param("searchStartDt") Date searchStartDt,
-            final @Param("searchEndDt") Date searchEndDt
+            final @Param("searchStartDt") LocalDateTime searchStartDt,
+            final @Param("searchEndDt") LocalDateTime searchEndDt
     );
 
     /**
@@ -63,8 +63,8 @@ public interface LogStatsUserRepository
             "GROUP BY t.username"
     )
     List<LogStatsUserIntrfc> getStatsNotUserIntrfcList(
-            final @Param("searchStartDt") Date searchStartDt,
-            final @Param("searchEndDt") Date searchEndDt
+            final @Param("searchStartDt") LocalDateTime searchStartDt,
+            final @Param("searchEndDt") LocalDateTime searchEndDt
     );
 }
 

@@ -26,21 +26,26 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 | 구분 | Vue 경로 | 레거시 매크로 대응 | 비고 |
 |------|----------|-------------------|------|
-| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달 |
-| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식 |
+| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. |
+| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. |
 | 댓글 목록/등록 | `features/attachable/CommentListModal.vue` 등 | `list_comment`, `CommentList.modal` | `useAttachableModalStore.openCommentList` |
-| 파일 그룹 | `FileGroupListModal.vue`, `FileGroupSection.vue` | `list_file_group` | `openFileList` |
+| 파일 그룹 | `FileGroupListModal.vue`, `FileGroupDetail.vue`, `FileGroupSection.vue` | `list_file_group` | `openFileList`. 다운로드 레이블과 파일 크기 단위는 현재 locale의 클라이언트 카탈로그를 사용하며 다운로드 URL·클릭 흐름은 유지한다. |
 | 이력 | `HistoryModal.vue` | — | `openHistory`. 각 이력 카드에 텍스트 복사 버튼(`bi bi-copy`) 구현 완료 |
 | 태그 목록/프로필 | `JournalTagListModal.vue` 등 | `list_tag`, `dF.Tag.dtlModal` | `openTagList`, `openTagProfile` |
 | 게시판 목록 행 | `BoardPostList.vue` 인라인 | `list_comment`, `list_tag`, `list_dtl_modal` | `useBoardPostStore.fetchList` + 페이지 버튼 |
 | 스레드 목록 행 | `JournalThreadList.vue` 인라인 | 동일 | `useJournalThreadStore` |
 | 페이지네이션 | 목록 Vue 인라인 + `shared/utils/paginationDataService.ts` | `Pagination` / `_pagination.ftlh` | 서버 JSON script 태그 호환 유틸만 존재, `Pagination.vue` 없음 |
-| 페이지 breadcrumb | `app/layouts/default/components/content/PageBreadcrumb.vue` | 레거시 메뉴 경로 표시 | `useMenuStore.menuMetaList` + `toVuePath(menu.url)` 기준 현재 route와 매칭되는 메뉴 트리를 표시. `menuMetaList`가 비어 있으면 로딩 전 fallback으로 `menuList`를 사용한다. 매칭된 메뉴의 `menuDescription`이 있으면 breadcrumb 하단에 설명을 표시하고, 비어 있으면 설명 영역을 렌더링하지 않는다. `route.meta.breadcrumbs/pageTitle`를 표시 원천으로 쓰지 않는다. |
-| Footer | `app/layouts/default/components/footer/Footer.vue` | 레거시 footer | `2024©` tooltip은 프로젝트 기간(`2024.03.20 ~ (진행중)`), 사이트 링크 tooltip은 작업인원(`nysnyari`)을 표시한다. |
+| 페이지 breadcrumb | `app/layouts/default/components/content/PageBreadcrumb.vue` | 레거시 메뉴 경로 표시 | `useMenuStore.menuMetaList` + `toVuePath(menu.url)` 기준 현재 route와 매칭되는 메뉴 트리를 표시. `menuMetaList`가 비어 있으면 로딩 전 fallback으로 `menuList`를 사용한다. 매칭된 메뉴의 `menuDescription`이 있으면 breadcrumb 하단에 설명을 표시하고, 비어 있으면 설명 영역을 렌더링하지 않는다. 홈 레이블은 현재 locale의 클라이언트 카탈로그를 사용하며 `route.meta.breadcrumbs/pageTitleKey`를 표시 원천으로 쓰지 않는다. |
+| 브라우저 탭 제목 | `App.vue`, `app/router/index.ts` | 레거시 페이지 제목 | 모든 최종 route는 `meta.pageTitleKey`를 제공하며, `App.vue`가 현재 locale의 클라이언트 카탈로그로 제목을 해석해 `{페이지 제목} - {VITE_APP_NAME}` 형식으로 표시한다. route 또는 locale 변경 시 같은 단일 경로에서 즉시 갱신한다. |
+| 사이드바 로고 | `app/layouts/default/components/sidebar/SidebarLogo.vue` | 레거시 앱 로고 | 브랜드명은 locale과 무관하게 `DreamDiary`로 고정 표시한다. locale 변경은 브랜드 표기·홈 링크·DOM·CSS를 변경하지 않는다. |
+| Footer | `app/layouts/default/components/footer/Footer.vue` | 레거시 footer | `2024©` tooltip은 프로젝트 기간(`2024.03.20 ~ (진행중)`), 사이트 링크 tooltip은 작업인원(`nysnyari`)을 표시한다. 프로젝트 기간·진행 상태·작업인원·About 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. tooltip은 `v-tooltip`로 locale 변경 시 재생성하며 링크·DOM·배치는 유지한다. |
 | 모달 헤더/버튼 | 각 `modals/*.vue` | `modal_header`, `modal_btn_*` | 공통 추출 **MISSING** |
+| AI 채팅 드로어 | `features/chat/AppChat.vue` | Metronic app-chat | 인증 후 전역 플로팅 버튼·드로어. `chat.*` 카탈로그로 셸 UI·RAG 메타 레이블·person-role·response-mode·guard 문구를 표시한다. locale 변경은 WebSocket·세션 목록·작성 중 메시지를 초기화하지 않는다. |
 | 앱 런타임 상태 | `shared/components/system/AppRuntimeStatus.vue` + `shared/utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
-| 언어 토글 (Navbar) | `app/layouts/default/components/header/Navbar.vue` — 국기 버튼(🇰🇷/🇺🇸), 프로필 아이콘 좌측 | — | `useLocaleStore.setLocale()` ko↔en 토글. `locale` computed → 현재 locale 표시 |
-| 언어 토글 (로그인) | `features/auth/SignIn.vue` — 로그인 패널 우상단 국기 버튼 | — | `localeStore.setLocale()` + `localeStore.t()` 카탈로그로 화면 텍스트 전환 |
+| 오류 화면 | `app/pages/ErrorPage.vue` | legacy 오류 화면 | 오류 분류·제목·설명·메인 이동 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. URL query로 전달된 상세 메시지는 서버 원문을 그대로 표시하며 오류 유형·상태 코드·메인 이동 흐름은 유지한다. |
+| 앱 헤더 Navbar | `app/layouts/default/components/header/Header.vue`, `Navbar.vue` — 테마·사용자/관리자 모드·국기 버튼(🇰🇷/🇺🇸)·프로필·모바일 헤더/사이드바 메뉴 | — | `useLocaleStore.setLocale()` ko↔en 토글. 테마 전환 tooltip, 사용자/관리자 모드 선택지, 언어 전환 tooltip, 프로필 대체 텍스트, 모바일 헤더·사이드바 메뉴 tooltip은 현재 locale의 클라이언트 카탈로그를 사용하며 locale 변경은 테마·메뉴 모드·라우트·인증 상태를 변경하지 않는다. |
+| 사용자 계정 메뉴·사이드바 Footer | `app/layouts/default/components/menus/UserAccountMenu.vue`, `sidebar/SidebarFooter.vue` | — | 사용자 역할·내 정보·관리 홈·메뉴 관리·로그아웃·로그아웃 확인 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 기존 권한별 메뉴 노출, 로그아웃 API, 로그인 화면 이동 흐름은 유지한다. |
+| 언어 토글 (로그인) | `features/auth/SignIn.vue` — 로그인 패널 우상단 국기 버튼 | — | `localeStore.setLocale()` + `localeStore.t()` 카탈로그로 화면 텍스트 전환. 언어 선택지 레이블은 `locale.label.ko` / `locale.label.en` |
 
 화면 위치/제목/설명 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title 또는 메뉴 설명을 별도로 렌더링하지 않고, 필요한 액션 버튼만 둔다.
 
@@ -62,9 +67,10 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 Vue SPA는 빌드가 성공했더라도 라우팅, 동적 import, 렌더링, 전역 Promise 예외가 발생하면 화면에 상태를 표시해야 한다.
 
-- 라우터 이동이 500ms 이상 이어지면 상단에 `화면 이동 중입니다.` 상태를 표시한다.
+- 라우터 이동이 500ms 이상 이어지면 상단 pending 배너에 `runtime.pending.navigation` 카탈로그 문구를 표시한다.
 - Vue 렌더 오류, `app.config.errorHandler`, `router.onError`, `window.error`, `unhandledrejection`은 `AppRuntimeStatus` 패널에 오류 출처와 메시지를 표시한다.
-- 오류 패널에는 `새로고침`과 `메인으로` 액션을 제공한다.
+- 오류 패널 제목·본문·액션(`runtime.action.reload`, `error.page.action.home`)은 현재 locale 카탈로그를 사용한다. 기본 오류 제목은 `runtime.error.default-title`, 라우터 이동 실패는 `runtime.error.navigation`, 인증 확인 실패는 `auth.verification.failure`.
+- `app.mount` 실패 등 Vue mount 이전 부트 오류는 `main.ts`가 `/i18n/{locale}.json`에서 `runtime.boot.failure.title`·`runtime.action.reload`를 조회해 표시한다. catalog fetch 실패 시 `dreamdiary_locale` 기준 최소 ko/en fallback을 사용한다.
 - 오류를 정상 화면처럼 숨기지 않는다. 콘솔에도 같은 오류를 남겨 개발자가 원인을 확인할 수 있어야 한다.
 
 적용 파일:
@@ -329,7 +335,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 **동작 계약**:
 - `files`가 존재하고 비어 있지 않을 때만 첨부파일 상세 영역을 렌더링한다.
 - 영역 라벨과 다운로드 툴팁은 각각 `attach.label`, `attach.download.tooltip` i18n 키를 사용한다.
-- 각 파일은 원본 파일명과 바이트 단위 파일 크기를 표시한다.
+- 각 파일은 원본 파일명과 현재 locale의 `attach.file-size.unit` 카탈로그를 사용한 바이트 단위 파일 크기를 표시한다.
 - 파일 클릭 시 `/api/file/file-download.do?fileGroupId={fileGroupId}&fileId={fileId}`를 새 창으로 열어 다운로드한다.
 
 ---
@@ -598,7 +604,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
     dF.JournalDayRuntimeService.handleLegacyActionClick(event);" />
 ```
 
-**현재 Vue 동등**: 부분 구현. 공통 컴포넌트는 아직 없지만, 저널 작성 폼 모달은 `app/frontend-vue/src/shared/utils/safeModalClose.ts`의 `useSafeModalClose()`로 레거시 2회 클릭 안전 닫기(2초 확인 상태)를 적용한다.
+**현재 Vue 동등**: ✓ composable — `shared/utils/safeModalClose.ts`의 `useSafeModalClose()`가 레거시 2회 클릭 안전 닫기(2초 armed 상태)를 구현한다. 별도 `ModalBtnCloseSafe.vue` 추출은 없으며, 저널 등록·수정 모달 10곳+에서 헤더 X·푸터 닫기/취소에 적용 (`journal/component-spec.md` 모달 정책).
 
 ---
 
@@ -706,7 +712,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | `modal_btn_modify` | `_modal_elements.ftlh` | MISSING | 중 |
 | `modal_btn_delete` | `_modal_elements.ftlh` | MISSING | 중 |
 | `modal_btn_close` | `_modal_elements.ftlh` | MISSING | 높음 |
-| `modal_btn_close_safe` | `_modal_elements.ftlh` | PARTIAL (`useSafeModalClose`) | 높음 |
+| `modal_btn_close_safe` | `_modal_elements.ftlh` | ✓ (`useSafeModalClose` composable) | — |
 | `Pagination` | `_pagination.ftlh` | ⚠ 인라인 구현 (공통 컴포넌트 없음) | — |
 
 ---

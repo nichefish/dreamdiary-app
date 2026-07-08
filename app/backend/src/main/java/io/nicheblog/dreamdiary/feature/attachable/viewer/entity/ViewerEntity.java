@@ -13,7 +13,8 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  * ViewerEntity
@@ -60,9 +61,8 @@ public class ViewerEntity
     /** 마지막 방문 일시 */
     @LastModifiedDate
     @Column(name = "last_visited_at", columnDefinition = "DATE DEFAULT CURRENT_TIMESTAMP")
-    @Temporal(TemporalType.TIMESTAMP)
     @Comment("마지막 방문 일시")
-    private Date lastVisitedAt;
+    private LocalDateTime lastVisitedAt;
 
     /* ----- */
 

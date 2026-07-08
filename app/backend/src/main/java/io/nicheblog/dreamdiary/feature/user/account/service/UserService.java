@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -170,8 +171,8 @@ public class UserService
         retrievedEntity.setPassword(passwordEncoder.encode(initialAdminPassword));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
         retrievedEntity.acntStus.setPasswordResetTokenHash(null);
-        retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
-        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrLocalDateTime());
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrLocalDateTime());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
         userPasswordHistoryService.recordPasswordChange(updatedEntity, previousPasswordHash);
 
@@ -191,7 +192,7 @@ public class UserService
 
         if (user.acntStus == null) user.acntStus = UserStateEntity.builder().build();
         user.acntStus.setPasswordResetTokenHash(this.hashPasswordResetToken(passwordToken));
-        user.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
+        user.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrLocalDateTime());
         repository.saveAndFlush(user);
 
         return passwordToken;
@@ -244,7 +245,7 @@ public class UserService
         final Integer inactiveLockDays = authPolicy.getInactiveLockDays();
 
         final UserEntity user = this.getDtlEntity(username);
-        Date lastLoginDt = user.acntStus.getLastLoginAt();
+        LocalDateTime lastLoginDt = user.acntStus.getLastLoginAt();
         if (lastLoginDt == null) lastLoginDt = user.getCreatedAt();
         final Date dormantDt = DateUtils.getDateAddDay(lastLoginDt, inactiveLockDays);
 
@@ -282,7 +283,7 @@ public class UserService
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");
         retrievedEntity.acntStus.setLoginFailCnt(0);
-        retrievedEntity.acntStus.setLastLoginAt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setLastLoginAt(DateUtils.getCurrLocalDateTime());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()

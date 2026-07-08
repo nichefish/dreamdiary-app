@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.profile.entity;
 
-import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import java.time.LocalDate;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -10,7 +10,7 @@ public class UserProfileEntityTestFactory {
 
     public static UserProfileEntity create() throws Exception {
         return UserProfileEntity.builder()
-                .brthdy(DateUtils.asDate("2000-01-01"))
+                .brthdy(LocalDate.parse("2000-01-01"))
                 .proflCn("test_profl_cn")
                 .build();
     }

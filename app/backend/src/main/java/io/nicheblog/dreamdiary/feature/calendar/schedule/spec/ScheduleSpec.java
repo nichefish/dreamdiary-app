@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -67,8 +67,8 @@ public class ScheduleSpec
         final List<Predicate> predicate = new ArrayList<>();
         Join<ScheduleEntity, SchedulePrtcpntEntity> prtcpntJoin;
         // expressions
-        final Expression<Date> endDtExp = root.get("endDt");
-        final Expression<Date> bgnDtExp = root.get("bgnDt");
+        final Expression<LocalDateTime> endDtExp = root.get("endDt");
+        final Expression<LocalDateTime> bgnDtExp = root.get("bgnDt");
         final Expression<String> privateYnExp = root.get("privateYn");
         final Expression<String> scheduleCdExp = root.get("scheduleCd");
 
@@ -78,11 +78,11 @@ public class ScheduleSpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 case "getHolydayCeremonyOnly":
                     // 휴일/공휴일, 행사 조회

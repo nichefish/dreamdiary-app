@@ -2,7 +2,8 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 // ---- 타입 정의 ----
 
@@ -69,7 +70,6 @@ export interface AnnualEntryDto {
   content?: string;
   markdownContent?: string;
   stdrdDt?: string;
-  journalDateWeekDay?: string;
   sortOrder?: number;
   elseDreamYn?: string;
   tag?: AnnualTagCmpstn;
@@ -101,6 +101,8 @@ export type AnnualSection = "DIARY" | "DREAM";
 // ---- 스토어 ----
 
 export const useJournalAnnualStore = defineStore("journalAnnual", () => {
+  const { t } = useLocaleStore();
+
   // ---- 목록 ----
 
   /** 결산 목록 원본 */
@@ -198,7 +200,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       const res = await axios.get("/api/journal/annuals");
       annualSourceList.value = res.data?.rsltList ?? [];
     } catch {
-      error.value = "결산 목록을 불러오지 못했습니다.";
+      error.value = t("journal.annual.list.load.failure");
       annualSourceList.value = [];
     } finally {
       loading.value = false;
@@ -282,12 +284,20 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     try {
       const res = await axios.post("/api/journal/annual/make-total");
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? "처리되었습니다.");
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: t("common.result.processed"),
+        });
         await Promise.all([fetchList(), fetchTotal()]);
         return true;
       }
       console.warn("[JournalAnnual] makeTotalAnnual failed", res.data);
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       console.error("[JournalAnnual] makeTotalAnnual request failed", e);
@@ -355,11 +365,19 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       );
       if (res.data?.rslt) {
         closeRegist();
-        await swalAlert(res.data?.message ?? (wasModify ? "수정되었습니다." : "등록되었습니다."));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
+        });
         void fetchList();
         return true;
       }
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -567,12 +585,20 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       });
       if (res.data?.rslt) {
         closeReviewRegist();
-        await swalAlert(res.data?.message ?? (model.id != null ? "수정되었습니다." : "등록되었습니다."));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: model.id != null ? t("common.result.modified") : t("common.result.registered"),
+        });
         /* 상세 재조회 — 리뷰 목록이 detail DTO 에 포함되어 있어 refetch 로 갱신한다. */
         if (model.yy) void fetchDetail(model.yy);
         return true;
       }
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -589,15 +615,23 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    * @param yy - 상세 재조회용 연도
    */
   async function deleteReview(id: number, yy?: number) {
-    const confirmed = await swalConfirm("리뷰를 삭제하시겠습니까?");
+    const confirmed = await swalConfirm(t("journal.annual.review.delete.confirm"));
     if (!confirmed) return;
     try {
       const res = await axios.delete(`/api/journal/annual/review/${id}`);
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? "삭제되었습니다.");
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: t("common.result.deleted"),
+        });
         if (yy) void fetchDetail(yy);
       } else {
-        void swalAlert(res.data?.message ?? "삭제에 실패했습니다.");
+        void swalAjaxResult({
+          rslt: false,
+          message: res.data?.message,
+          failureFallback: t("journal.annual.review.delete.failure"),
+        });
       }
     } catch (e: unknown) {
       void swalRequestError(e);

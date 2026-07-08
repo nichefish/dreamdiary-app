@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -187,12 +188,12 @@ public class UserSpec
         final Join<UserEntity, UserEmplymEntity> emplymJoin = root.join("emplym", JoinType.INNER);
         // 2. 기간조건 :: 해당 년도 내에 근무내역이 있음 (입사일 // 퇴사일)
         // 퇴사일 :: 퇴사 안했거나 or 비교일 내에 퇴사했거나
-        final Date startDay = DateUtils.Parser.bfDateParse(DateUtils.asDate(startDtStr));
+        final LocalDateTime startDay = DateUtils.asLocalDateTime(DateUtils.Parser.bfDateParse(DateUtils.asDate(startDtStr)));
         final Predicate notRetired = builder.isNull(emplymJoin.get("retireDt"));
         final Predicate retiredAfterFirstDay = builder.greaterThanOrEqualTo(emplymJoin.get("retireDt"), startDay);
         predicate.add(builder.or(notRetired, retiredAfterFirstDay));
         // 입사일 :: 비교일보다 전에 입사
-        final Date endDay = DateUtils.Parser.bfDateParse(DateUtils.asDate(endDtStr));
+        final LocalDate endDay = DateUtils.asLocalDate(DateUtils.Parser.bfDateParse(DateUtils.asDate(endDtStr)));
         final Predicate hasEcnyDt = builder.isNotNull(emplymJoin.get("ecnyDt"));
         final Predicate enteredBeforeEndDay = builder.lessThanOrEqualTo(emplymJoin.get("ecnyDt"), endDay);
         predicate.add(builder.and(hasEcnyDt, enteredBeforeEndDay));
@@ -219,7 +220,7 @@ public class UserSpec
         // JOIN 조건 세팅
         final Join<UserEntity, UserEmplymEntity> emplymJoin = root.join("emplym", JoinType.INNER);
         final Join<UserEntity, UserProfileEntity> profileJoin = root.join("profile", JoinType.INNER);
-        predicate.add(builder.equal(profileJoin.get("brthdy"), DateUtils.asDate(startDtStr)));
+        predicate.add(builder.equal(profileJoin.get("brthdy"), DateUtils.asLocalDate(startDtStr)));
 
         return predicate;
     }

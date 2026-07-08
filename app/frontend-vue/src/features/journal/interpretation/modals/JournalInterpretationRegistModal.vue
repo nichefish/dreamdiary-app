@@ -6,11 +6,11 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title">저널 해석 등록/수정</h5>
+          <h5 class="modal-title">{{ t('journal.interpretation.modal.title') }}</h5>
           <button
             type="button"
             class="btn-close"
-            :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+            :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
             @click="requestSafeClose"
           ></button>
         </div>
@@ -27,13 +27,13 @@
             <div class="row d-flex mb-8">
               <div class="col-2">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">날짜</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('journal.day.field.date') }}</span>
                 </label>
               </div>
               <div class="col-4 fs-6">
                 <i class="bi bi-calendar3"></i>
                 {{ model.stdrdDt ?? '' }}
-                <span v-if="model.journalDateWeekDay" class="fs-8 text-gray-600">({{ model.journalDateWeekDay }})</span>
+                <span v-if="model.stdrdDt" class="fs-8 text-gray-600">({{ getWeekDayStr(model.stdrdDt, t) }})</span>
               </div>
             </div>
             <!--end::날짜-->
@@ -42,13 +42,13 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">제목</span>
-                  <span class="text-gray-500 fs-9 ms-2">(최대 100자)</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.title') }}</span>
+                  <span class="text-gray-500 fs-9 ms-2">{{ t('journal.field.title-max-100') }}</span>
                 </label>
               </div>
               <div class="col-lg-2">
                 <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid" v-model="model.ctgrCd">
-                  <option value="">-- 카테고리 선택 --</option>
+                  <option value="">{{ t('common.category.select') }}</option>
                   <!--TODO: 해석 카테고리 옵션 서버 조회 미구현-->
                 </select>
               </div>
@@ -59,7 +59,7 @@
                   id="title"
                   class="form-control"
                   v-model="model.title"
-                  placeholder="제목"
+                  :placeholder="t('common.title')"
                   maxlength="100"
                 />
               </div>
@@ -73,7 +73,7 @@
                   min="1"
                   max="99"
                   v-model="model.sortOrder"
-                  placeholder="순서"
+                  :placeholder="t('journal.interpretation.sort-order.placeholder')"
                   maxlength="3"
                 />
               </div>
@@ -84,7 +84,7 @@
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">본문</span>
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.body') }}</span>
                 </label>
                 <RichEditor v-model="model.content" />
               </div>
@@ -105,15 +105,15 @@
               @click="submit"
             >
               <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              저장
+              {{ t('common.save') }}
             </button>
             <button
               type="button"
               class="btn btn-sm"
               :class="closeArmed ? 'btn-light-warning' : 'btn-light'"
-              :title="closeArmed ? '한 번 더 클릭하면 닫힙니다' : '닫기'"
+              :title="closeArmed ? t('common.modal.close-armed.tooltip') : t('common.close')"
               @click="requestSafeClose"
-            >닫기</button>
+            >{{ t('common.close') }}</button>
           </div>
         </div>
         <!--end::Modal Footer-->
@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import RichEditor from "@/shared/ui/editor/RichEditor.vue";
@@ -135,9 +135,12 @@ import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 
 const modalEl = ref<HTMLElement | null>(null);
@@ -182,7 +185,7 @@ function close() {
 async function submit() {
   if (!model.value) return;
 
-  const confirmed = await swalConfirm(isModify.value ? "수정하시겠습니까?" : "등록하시겠습니까?");
+  const confirmed = await swalConfirm(isModify.value ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
 
   submitting.value = true;
@@ -206,10 +209,18 @@ async function submit() {
 
     if (res.data?.rslt) {
       close();
-      await swalAlert(res.data?.message ?? (isModify.value ? "수정되었습니다." : "등록되었습니다."));
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: isModify.value ? t("common.result.modified") : t("common.result.registered"),
+      });
       void refreshJournalDaysForRoute(journalStore, route);
     } else {
-      void swalAlert(res.data?.message ?? "처리에 실패했습니다.");
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
     }
   } catch (e: unknown) {
     void swalRequestError(e);

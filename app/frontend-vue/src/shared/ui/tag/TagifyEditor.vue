@@ -41,7 +41,7 @@
           :id="idPrefix + '_value'"
           type="text"
           class="form-control form-control-sm form-control-solid w-200px"
-          placeholder="예: 30분 / 2회 / 5점"
+          :placeholder="t('tagify.meta.value.placeholder')"
           maxlength="500"
         />
       </div>
@@ -54,6 +54,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
 import Tagify from "@yaireo/tagify";
 import "@yaireo/tagify/dist/tagify.css";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import {
   baseTagifyOptions,
   tagTemplate,
@@ -88,6 +89,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   "update:modelValue": [value: string];
 }>();
+const localeStore = useLocaleStore();
+const { t } = localeStore;
 
 const wrapperRef = ref<HTMLElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
@@ -96,7 +99,7 @@ const inputRef = ref<HTMLInputElement | null>(null);
 const idPrefix = computed(() => (props.metaMode ? "meta" : "tag"));
 
 const ctgrPlaceholder = computed(() =>
-  props.metaMode ? "메타 카테고리를 입력합니다" : "카테고리를 입력하세요",
+  props.metaMode ? t("tagify.meta.category.placeholder") : t("tagify.category.placeholder"),
 );
 
 let tagifyInst: TagifyInstance | null = null;
@@ -139,6 +142,18 @@ function emitValue(): void {
   emit("update:modelValue", serializeTagifyValue(tagifyInst));
 }
 
+/** locale catalog 변경 시 Tagify를 재생성하지 않고 이미 렌더된 접근성·선택지 레이블만 갱신한다. */
+function refreshLocalizedDomLabels(): void {
+  const scope = wrapperRef.value;
+  if (!scope) return;
+  const removeTagAriaLabel = t("tagify.remove-tag.aria-label");
+  scope.querySelectorAll<HTMLElement>(".tagify__tag__removeBtn").forEach((element) => {
+    element.setAttribute("aria-label", removeTagAriaLabel);
+  });
+  const customCategoryOption = scope.querySelector<HTMLOptionElement>('option[value="custom"]');
+  if (customCategoryOption) customCategoryOption.text = t("tagify.category.custom");
+}
+
 
 function destroyTagify(): void {
   tagifyInst?.destroy();
@@ -154,7 +169,12 @@ function initTagify(): void {
 
   tagifyInst = new Tagify(inputRef.value, {
     ...baseTagifyOptions,
-    templates: { tag: props.metaMode ? metaTemplate : tagTemplate },
+    templates: {
+      tag: (tagData: Parameters<typeof metaTemplate>[0]) =>
+        props.metaMode
+          ? metaTemplate(tagData, t("tagify.remove-tag.aria-label"))
+          : tagTemplate(tagData, t("tagify.remove-tag.aria-label")),
+    },
     /* ctgr 모드: 어떤 태그명이든 add 이벤트까지 도달해야 ctgr 프롬프트가 열린다.
        skipInvalid: true 이면 whitelist 에 없는 태그가 add 전에 차단되어 프롬프트가 열리지 않는다. */
     ...(useCategoryMap ? { duplicates: true, skipInvalid: false } : {}),
@@ -168,6 +188,7 @@ function initTagify(): void {
     bindTagifyCtgrInputPrompt(tagifyInst, categoryMapData, {
       hasValueInput: props.metaMode,
       onCommitted: emitValue,
+      getCustomCategoryLabel: () => t("tagify.category.custom"),
     });
     bindTagifyCtgrKeyListener(tagifyInst, {
       hasValueInput: props.metaMode,
@@ -239,6 +260,14 @@ watch(
   async () => {
     await nextTick();
     initTagify();
+  },
+);
+
+watch(
+  () => localeStore.catalog,
+  async () => {
+    await nextTick();
+    refreshLocalizedDomLabels();
   },
 );
 </script>

@@ -30,7 +30,7 @@
             data-bs-placement="top"
             :title="t('attach.download.tooltip')"
           >
-            {{ file.orgnFileNm }} ({{ file.fileSize }}byte)
+            {{ file.orgnFileNm }} ({{ file.fileSize }}{{ t('attach.file-size.unit') }})
           </a>
           <div
             class="badge badge-light btn-primary badge-outlined mx-2 cursor-pointer"

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +69,7 @@ public class JournalInterpretationSpec
         final List<Predicate> predicate = new ArrayList<>();
         // journal_day 직접 join (ref_id → journal_day_id 비정규화 활용)
         final Join<JournalInterpretationEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.LEFT);
-        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
+        final Expression<LocalDate> effectiveDtExp = journalDayJoin.get("journalDate");
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -78,10 +78,10 @@ public class JournalInterpretationSpec
             final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
-                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "searchEndDt":
-                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "yy":
                     final Integer yy = (Integer) value;

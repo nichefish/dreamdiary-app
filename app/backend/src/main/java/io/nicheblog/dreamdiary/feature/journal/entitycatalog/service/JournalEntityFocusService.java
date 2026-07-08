@@ -15,11 +15,11 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -104,7 +104,7 @@ public class JournalEntityFocusService {
 
         final Map<String, Integer> contentKindCountMap = new LinkedHashMap<>();
         final Map<String, Integer> surfaceFormCountMap = new LinkedHashMap<>();
-        final List<Date> journalDateList = new ArrayList<>();
+        final List<LocalDate> journalDateList = new ArrayList<>();
         final Set<Integer> linkedJournalEntryIdSet = new LinkedHashSet<>();
 
         for (final JournalEntryEntityRefEntity refEntity : refList) {
@@ -130,7 +130,7 @@ public class JournalEntityFocusService {
             }
         }
 
-        journalDateList.sort(Date::compareTo);
+        journalDateList.sort(LocalDate::compareTo);
         final String firstDate = journalDateList.isEmpty() ? null : formatDate(journalDateList.get(0));
         final String lastDate = journalDateList.isEmpty() ? null : formatDate(journalDateList.get(journalDateList.size() - 1));
 
@@ -190,11 +190,11 @@ public class JournalEntityFocusService {
             return rightScore > leftScore ? right : left;
         }
 
-        final Date leftUpdatedAt = left.getUpdatedAt();
-        final Date rightUpdatedAt = right.getUpdatedAt();
+        final LocalDateTime leftUpdatedAt = left.getUpdatedAt();
+        final LocalDateTime rightUpdatedAt = right.getUpdatedAt();
         if (leftUpdatedAt == null) return right;
         if (rightUpdatedAt == null) return left;
-        return rightUpdatedAt.after(leftUpdatedAt) ? right : left;
+        return rightUpdatedAt.isAfter(leftUpdatedAt) ? right : left;
     }
 
     /**
@@ -233,9 +233,9 @@ public class JournalEntityFocusService {
     /**
      * Format one journal date into the same yyyy-MM-dd shape used by RAG summaries.
      */
-    private String formatDate(final Date date) {
+    private String formatDate(final LocalDate date) {
         if (date == null) return null;
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+        return date.toString();
     }
 
     /**

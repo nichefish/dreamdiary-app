@@ -76,7 +76,7 @@ public class JournalDayMetaRestController
             final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final MetaDto retrievedDto = journalDayMetaService.getDtlDto(id);
+        final MetaDto retrievedDto = myJournalDayMetaService.getMyDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 

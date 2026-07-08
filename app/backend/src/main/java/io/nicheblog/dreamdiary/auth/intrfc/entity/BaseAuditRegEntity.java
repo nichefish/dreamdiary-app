@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * BaseAuditRegEntity
@@ -47,10 +47,9 @@ public class BaseAuditRegEntity
 
     /** 등록일시 */
     @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "created_at", updatable = false)
-    protected Date createdAt;
+    protected LocalDateTime createdAt;
 
     /** 등록자 정보 :: join 제거하고 캐시 처리 */
     @Transient

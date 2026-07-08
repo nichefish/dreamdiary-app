@@ -9,7 +9,7 @@
           type="button"
           class="btn btn-sm btn-icon btn-light-primary position-absolute"
           style="top: 0; right: 0; z-index: 1;"
-          title="필터 패널"
+          :title="t('journal.aside.open.tooltip')"
           @click="asideStore.show()"
         >
           <i class="bi bi-layout-sidebar-inset-reverse"></i>
@@ -48,6 +48,7 @@
 <script setup lang="ts">
 import { useJournalAsideStore } from "@/features/journal/stores/journalAside";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalAside from "./components/JournalAside.vue";
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
 import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
@@ -67,6 +68,7 @@ import JournalMetaContextMenu from "../shared/components/JournalMetaContextMenu.
 
 const asideStore = useJournalAsideStore();
 const journalStore = useJournalStore();
+const { t } = useLocaleStore();
 
 /** 이력 복원/삭제 성공 시 일지 목록을 다시 조회한다. */
 function onHistorySuccess(): void {

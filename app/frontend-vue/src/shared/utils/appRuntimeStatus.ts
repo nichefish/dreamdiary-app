@@ -1,7 +1,11 @@
 import { reactive } from "vue";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+
+/** {@link resolveErrorMessage} 가 i18n 키를 반환했음을 표시하는 sentinel. */
+export const RUNTIME_RENDER_FAILURE_KEY = "runtime.error.render-failure";
 
 export interface RuntimeErrorState {
-  title: string;
+  titleKey: string;
   message: string;
   detail?: string;
   source?: string;
@@ -9,30 +13,36 @@ export interface RuntimeErrorState {
 
 interface RuntimeStatusState {
   pending: boolean;
-  pendingLabel: string;
+  pendingLabelKey: string;
   error: RuntimeErrorState | null;
 }
 
 export const appRuntimeStatus = reactive<RuntimeStatusState>({
   pending: false,
-  pendingLabel: "",
+  pendingLabelKey: "runtime.pending.default",
   error: null,
 });
 
-export function markRuntimePending(label = "화면을 준비하고 있습니다.") {
+/** 라우팅·초기화 지연 시 상단 pending 배너를 표시한다. labelKey 는 locale 카탈로그 키. */
+export function markRuntimePending(labelKey = "runtime.pending.default") {
   appRuntimeStatus.pending = true;
-  appRuntimeStatus.pendingLabel = label;
+  appRuntimeStatus.pendingLabelKey = labelKey;
 }
 
 export function clearRuntimePending() {
   appRuntimeStatus.pending = false;
-  appRuntimeStatus.pendingLabel = "";
+  appRuntimeStatus.pendingLabelKey = "runtime.pending.default";
 }
 
-export function reportRuntimeError(error: unknown, source: string, title = "앱 화면 오류가 발생했습니다") {
+/** 전역 런타임 오류를 AppRuntimeStatus 패널에 표시한다. titleKey 는 locale 카탈로그 키. */
+export function reportRuntimeError(
+  error: unknown,
+  source: string,
+  titleKey = "runtime.error.default-title"
+) {
   appRuntimeStatus.pending = false;
   appRuntimeStatus.error = {
-    title,
+    titleKey,
     message: resolveErrorMessage(error),
     detail: resolveErrorDetail(error),
     source,
@@ -51,7 +61,7 @@ function resolveErrorMessage(error: unknown): string {
   const candidate = error as { message?: unknown; reason?: unknown };
   if (typeof candidate?.message === "string" && candidate.message.trim()) return candidate.message;
   if (typeof candidate?.reason === "string" && candidate.reason.trim()) return candidate.reason;
-  return "화면을 그리는 중 예외가 발생했습니다.";
+  return RUNTIME_RENDER_FAILURE_KEY;
 }
 
 function resolveErrorDetail(error: unknown): string | undefined {
@@ -60,4 +70,12 @@ function resolveErrorDetail(error: unknown): string | undefined {
   if (typeof candidate?.stack === "string") return candidate.stack;
   if (candidate?.reason instanceof Error) return candidate.reason.stack ?? candidate.reason.message;
   return undefined;
+}
+
+/** AppRuntimeStatus 에서 message 필드를 표시용 문구로 변환한다. */
+export function resolveRuntimeErrorMessage(message: string): string {
+  if (message === RUNTIME_RENDER_FAILURE_KEY) {
+    return useLocaleStore().t(RUNTIME_RENDER_FAILURE_KEY);
+  }
+  return message;
 }

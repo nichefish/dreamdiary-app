@@ -248,20 +248,20 @@ public class UserEntity
         this.acntStus.setRefreshTokenHash(refreshTokenHash);
     }
 
-    public java.util.Date getRefreshTokenIssuedAt() {
+    public java.time.LocalDateTime getRefreshTokenIssuedAt() {
         return this.acntStus == null ? null : this.acntStus.getRefreshTokenIssuedAt();
     }
 
-    public void setRefreshTokenIssuedAt(final java.util.Date refreshTokenIssuedAt) {
+    public void setRefreshTokenIssuedAt(final java.time.LocalDateTime refreshTokenIssuedAt) {
         if (this.acntStus == null) this.acntStus = UserStateEntity.builder().build();
         this.acntStus.setRefreshTokenIssuedAt(refreshTokenIssuedAt);
     }
 
-    public java.util.Date getRefreshTokenExpiresAt() {
+    public java.time.LocalDateTime getRefreshTokenExpiresAt() {
         return this.acntStus == null ? null : this.acntStus.getRefreshTokenExpiresAt();
     }
 
-    public void setRefreshTokenExpiresAt(final java.util.Date refreshTokenExpiresAt) {
+    public void setRefreshTokenExpiresAt(final java.time.LocalDateTime refreshTokenExpiresAt) {
         if (this.acntStus == null) this.acntStus = UserStateEntity.builder().build();
         this.acntStus.setRefreshTokenExpiresAt(refreshTokenExpiresAt);
     }

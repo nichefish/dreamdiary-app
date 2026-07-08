@@ -189,7 +189,7 @@
                   </div>
 
                   <div v-if="store.form.submenuExpandType === 'NO_SUB'" class="menu-admin-form-row">
-                    <label for="url" class="form-label required">URL</label>
+                    <label for="url" class="form-label required">{{ t('common.technical.url') }}</label>
                     <input id="url" v-model.trim="store.form.url" type="text" class="form-control form-control-solid" maxlength="1000" required />
                   </div>
 

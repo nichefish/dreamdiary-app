@@ -2,7 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
-import { swalConfirm, swalAlert, swalRequestError } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 // ---- 타입 정의 ----
@@ -32,7 +32,10 @@ export interface JournalThreadDto {
   content?: string;
   markdownContent?: string;
   tag?: ThreadTagCmpstn;
-  comment?: { cnt?: number; list?: Array<{ id?: number; markdownContent?: string }> };
+  comment?: {
+    cnt?: number;
+    list?: Array<{ id?: number; content?: string; markdownContent?: string }>;
+  };
   file?: { fileGroupId?: number };
   hasFiles?: boolean;
   createdByNm?: string;
@@ -204,11 +207,19 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       });
       if (res.data?.rslt) {
         closeRegist();
-        await swalAlert(res.data?.message ?? (wasModify ? t("common.result.modified") : t("common.result.registered")));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
+        });
         void fetchList(0);
         return true;
       }
-      void swalAlert(res.data?.message ?? t("common.result.failure"));
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("common.result.failure"),
+      });
       return false;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -229,10 +240,18 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     try {
       const res = await axios.delete(`/api/journal/threads/${id}`);
       if (res.data?.rslt) {
-        await swalAlert(res.data?.message ?? t("common.result.deleted"));
+        await swalAjaxResult({
+          rslt: true,
+          message: res.data?.message,
+          successFallback: t("common.result.deleted"),
+        });
         void fetchList(0);
       } else {
-        void swalAlert(res.data?.message ?? t("journal.thread.delete.failure"));
+        void swalAjaxResult({
+          rslt: false,
+          message: res.data?.message,
+          failureFallback: t("journal.thread.delete.failure"),
+        });
       }
     } catch (e: unknown) {
       void swalRequestError(e);

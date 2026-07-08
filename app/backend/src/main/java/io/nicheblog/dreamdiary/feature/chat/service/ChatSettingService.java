@@ -11,7 +11,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 
 /**
  * ChatSettingService
@@ -189,7 +188,7 @@ public class ChatSettingService {
      * @param date 변환할 날짜 값
      * @return 날짜 문자열, 변환할 수 없으면 {@code null}
      */
-    private String formatDate(final Date date) {
+    private String formatDate(final Object date) {
         try {
             return DateUtils.asStr(date, DatePtn.DATETIME);
         } catch (final Exception e) {

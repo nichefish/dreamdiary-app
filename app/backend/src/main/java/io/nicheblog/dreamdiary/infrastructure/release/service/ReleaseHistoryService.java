@@ -14,10 +14,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,7 +50,7 @@ public class ReleaseHistoryService {
                 .appVersion(runtimeMeta.getAppVersion())
                 .commitHash(runtimeMeta.getCommitHash())
                 .releaseKey(runtimeMeta.getReleaseKey())
-                .startedAt(new Date())
+                .startedAt(LocalDateTime.now())
                 .profile(runtimeMeta.getProfile())
                 .hostName(runtimeMeta.getHostName())
                 .instanceId(runtimeMeta.getInstanceId())
@@ -80,7 +80,7 @@ public class ReleaseHistoryService {
                 .appVersion(runtimeMeta.getAppVersion())
                 .commitHash(runtimeMeta.getCommitHash())
                 .releaseKey(runtimeMeta.getReleaseKey())
-                .deployedAt(new Date())
+                .deployedAt(LocalDateTime.now())
                 .profile(runtimeMeta.getProfile())
                 .hostName(runtimeMeta.getHostName())
                 .instanceId(runtimeMeta.getInstanceId())

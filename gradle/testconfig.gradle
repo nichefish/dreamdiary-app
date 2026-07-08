@@ -7,10 +7,13 @@
 
 /**
  * Test 태스크 공통 설정 적용
+ *
+ * 변경(2026-07-05): ignoreFailures=true 제거 — 테스트 실패 시 빌드를 중단한다.
+ * 현재 84건 실패(256 중) 상태이므로 ./gradlew test / check / build 는 실패한다.
+ * bootJar 는 test 에 의존하지 않으므로 배포 jar 빌드는 별도로 가능하다.
  */
 tasks.withType(Test).configureEach {
     useJUnitPlatform()              // JUnit5 플랫폼 사용
-    ignoreFailures = true           // 테스트 실패 시 빌드를 중단하지 않고 계속 진행
     finalizedBy jacocoTestReport    // 테스트 후 자동으로 커버리지 리포트 생성
 }
 
@@ -25,4 +28,33 @@ jacocoTestReport {
         html.required.set(true) // HTML 리포트 생성
         html.destination file("${buildDir}/reports/jacoco") // HTML 리포트 저장 경로
     }
+    finalizedBy jacocoTestCoverageVerification
+}
+
+/**
+ * JaCoCo 커버리지 하한 검증 — 측정 baseline(2026-07-05) 이하로 떨어지면 빌드 실패.
+ * baseline: LINE ~10.6%, INSTRUCTION ~10.5% (jacocoTestReport.xml 기준).
+ * README 30%↑ 목표와 별도로, 우선 커버리지 회귀만 차단한다.
+ */
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.09
+            }
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = 0.09
+            }
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn jacocoTestCoverageVerification
 }

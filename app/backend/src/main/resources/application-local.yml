@@ -68,6 +68,9 @@ app:
             enabled: ${SERVICE_ENTRY_LOG_ENABLED:false}
             log-finish: ${SERVICE_ENTRY_LOG_FINISH:false}
 
-    # 로컬 Ollama chat 모델 (기본 qwen2.5:7b). 14B 시험 시 아래 주석 해제 후 ollama pull.
+    # 로컬 Ollama: 14B 시험 시 chat-model + chat-temperature(0.28) 권장. ollama pull 후 재기동.
+    # num-predict: 태도 질문 풍부 신뢰(Option A) 답변이 잘리지 않도록 로컬에서 출력 상한을 키움(속도 희생 감수).
     ollama:
         chat-model: qwen2.5:14b
+        chat-temperature: 0.28
+        num-predict: 2048

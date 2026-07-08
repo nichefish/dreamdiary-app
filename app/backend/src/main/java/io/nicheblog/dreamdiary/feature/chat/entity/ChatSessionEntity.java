@@ -8,7 +8,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  * ChatSessionEntity
@@ -59,8 +60,7 @@ public class ChatSessionEntity
     private String systemPrompt;
 
     /** 마지막 메시지 작성 일시. 세션 목록 정렬 기준이다. */
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_message_at")
     @Comment("마지막 메시지 작성 일시. 세션 목록 정렬 기준")
-    private Date lastMessageAt;
+    private LocalDateTime lastMessageAt;
 }

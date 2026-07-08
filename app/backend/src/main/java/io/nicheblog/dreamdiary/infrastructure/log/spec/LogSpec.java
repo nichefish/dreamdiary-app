@@ -8,8 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class LogSpec
     ) throws Exception {
 
         final List<Predicate> predicate = new ArrayList<>();
-        final Expression<Date> createdAtExp = root.get("createdAt");
+        final Expression<LocalDateTime> createdAtExp = root.get("createdAt");
 
         predicate.add(builder.or(
                 builder.isNull(root.get("logType")),
@@ -38,10 +38,10 @@ public class LogSpec
             final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
-                    predicate.add(builder.greaterThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(createdAtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 case "searchEndDt":
-                    predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asLocalDateTime(value)));
                     continue;
                 case "rslt":
                     final Expression<Boolean> resultExp = root.get("result");

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.QueryHint;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ public interface JournalDayRepository
     @Query("SELECT COUNT(day.journalDate) " +
             "FROM JournalDayEntity day " +
             "WHERE day.journalDate = :journalDate AND day.createdBy = :createdBy")
-    Integer countByJournalDate(final @Param("journalDate") Date journalDate, final @Param("createdBy") String createdBy);
+    Integer countByJournalDate(final @Param("journalDate") LocalDate journalDate, final @Param("createdBy") String createdBy);
 
     /**
      * 주어진 날짜에 해당하는 {@link JournalDayEntity}를 반환합니다.
@@ -49,7 +49,7 @@ public interface JournalDayRepository
             "FROM JournalDayEntity day " +
             "WHERE day.journalDate = :journalDate AND day.createdBy = :createdBy")
     @EntityGraph(value = "JournalDayEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
-    JournalDayEntity findByJournalDate(final @Param("journalDate") Date journalDate, final @Param("createdBy") String createdBy);
+    JournalDayEntity findByJournalDate(final @Param("journalDate") LocalDate journalDate, final @Param("createdBy") String createdBy);
 
     /**
      * 메타가 기록된 연도 목록을 최신순으로 조회합니다.

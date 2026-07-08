@@ -3,21 +3,26 @@
 
 ## Agent / CI 빌드 검증
 
-Agent shell·일부 CI에는 PATH 
-pm이 없다. **Vue 빌드는 Gradle Node로 돌린다** (uild.gradle → com.github.node-gradle.node, 
-odeProjectDir = app/frontend-vue).
+Agent shell·일부 CI에는 PATH `npm`이 없다. **Vue 빌드는 Gradle Node로 돌린다** (`build.gradle` → `com.github.node-gradle.node`, `nodeProjectDir = app/frontend-vue`).
 
 | 목적 | 명령 |
 |------|------|
-| Vue 프로덕션 빌드 | ./gradlew buildFrontend |
-| npm install | ./gradlew npmInstall |
-| 기타 package.json 스크립트 | ./gradlew npm_run_<script> (	ype-check → 
-pm_run_type_check) |
+| Vue 프로덕션 빌드 | `./gradlew buildFrontend` |
+| npm install | `./gradlew npmInstall` |
+| 기타 package.json 스크립트 | `./gradlew npm_run_<script>` (`type-check` → `npm_run_type_check`) |
 
-인코딩 게이트: python scripts/check_encoding.py (
-pm run check:encoding과 동일).
 
-에이전트용 상세: .cursor/rules/agent-build-toolchain.mdc
+백엔드 테스트·배포 게이트 (`gradle/testconfig.gradle`, `Dockerfile`, 2026-07-05):
+- `ignoreFailures` 제거 — `./gradlew test` / `check` / `build` 는 테스트 실패 시 중단된다. (`bootJar` 는 `test` 비의존.)
+- JaCoCo 하한: LINE·INSTRUCTION 9% (측정 baseline ~10.5%, 회귀 차단용).
+- Docker 런타임: `eclipse-temurin:17-jre-jammy` — build.gradle Java 17 과 일치.
+
+인코딩 게이트: `python scripts/check_encoding.py` (`npm run check:encoding`과 동일).
+
+에이전트용 상세: `.cursor/rules/agent-build-toolchain.mdc`
+
+---
+
 ## 공통 인코딩 게이트
 
 - `npm run check:encoding` → `scripts/check_encoding.py`. 실패 시 **해당 변경 묶음 전체 폐기·되돌림**(부분 통과 없음). `scripts/`에는 검증 외 자동 수정 도구를 두지 않는다(`scripts/README.md`).
@@ -50,6 +55,51 @@ pm run check:encoding과 동일).
 - `feature`는 사용자 시나리오와 비즈니스 규칙에만 집중한다.
 - "`global` 상수는 `auth`/`feature`/`infrastructure`를 import하면 안 된다."
 - "`feature`-`infrastructure` 계층간 협력은 구현체가 아니라 명시적 계약(포트/서비스)으로 연결한다."
+
+---
+
+## 날짜·시간 처리 — java.time 수렴 (Date → LocalDateTime)
+
+- **현황 (2026-07-03 진단)**: 백엔드 날짜 축은 `global/util/date`(DateUtils·DateParser·DatePtn·ChineseCalModule·DayOfWeek, 733줄). `DateUtils` 호출 106파일, `java.util.Date` 사용 79파일, **엔티티 날짜 필드 33건 전부 `Date`**(java.time 필드 0건). 전면 전환은 대수술이라 3단계로 분할한다.
+- **계약**: `DatePtn` 은 SimpleDateFormat 인스턴스를 **스레드 간 공유하지 않는다** — `format(Date)`/`parse(String)` 호출마다 새 인스턴스를 만든다. 파싱은 기존 SimpleDateFormat 의 **lenient 계약**(예: 13월 허용)과 `'S'` 밀리초 표기를 유지한다. `DateTimeFormatter` 전환은 이 해석 계약 변경을 수반하므로 Phase 1 에서 하지 않았다.
+- 유틸의 외부 라이브러리 상속 패턴(FileUtils→commons-io `479e64175`, DateUtils→commons-lang3)은 전부 제거됨 — 새 유틸에서 재도입하지 말 것.
+
+### Phase 1 — 내부 현대화 (완료, `332781c31`)
+
+- `DatePtn`: enum 상수 필드로 공유하던 SimpleDateFormat 16개 제거 → `format`/`parse` 메서드 대체. **동시 요청 시 parse/format 오염 가능하던 스레드 버그 해소.**
+- `DateUtils`: commons-lang3 DateUtils 상속 제거. 실사용 상속 메서드는 동등 시그니처 로컬 정의 — `isSameDay(Date,Date)` 는 Mapstruct 표현식(`ScheduleCalMapstruct`)에서 쓰므로 **unchecked 유지 필수**, `addDays(Date,int)` 동일 계약(null 시 NPE). `parseDateStrictly` 는 `DateParser` 에서 lang3 직접 호출. 미사용 공유 포맷터 `DF_DATE` 제거.
+- 공개 시그니처 무변경 — 호출부 106파일 영향 없음.
+
+### Phase 2 — 엔티티 전환 (진행 중, 전 필드 `LocalDateTime` 통일)
+
+- 원칙: DTO 는 이미 String 날짜(API 계약 불변). `DateUtils` 의 Object-파라미터 API(asDate/asStr/asLocalDateTime)가 전환 브리지.
+
+#### Phase 2-A — 감사 필드 축 (구현 완료, 로컬 빌드 게이트 대기)
+
+- 베이스 3필드 전환: `BaseCrudEntity.deletedAt`·`BaseAuditRegEntity.createdAt`·`BaseAuditEntity.updatedAt` + 자체 선언分 `LogEntity.createdAt`·`LogUrlNmEntity.deletedAt`. `@Temporal` 제거 (Spring auditing/@UpdateTimestamp 는 LocalDateTime 네이티브 지원).
+- Spec 8종: `Expression<LocalDateTime>` + `asLocalDateTime` 비교로 전환. stale-requeue 체인(embedding·entitycatalog repo→service→worker)·LogStats 조회 체인 전환.
+- **임시 브리지 (2-C 에서 acntStus 전환 시 제거)**: `AuthInfoMapstruct` lastLoginAt/passwordChangedAt 표현식의 `DateUtils.asDate(createdAt)`, `UserService` 휴면 판정의 동일 브리지.
+- 겸사 수정: `RelatedContentRepository.softDeleteAllByRef` 의 `SET deletedAt = 'Y'`(날짜 필드에 문자열 대입하던 기존 결함) → `CURRENT_TIMESTAMP`. `ReleaseHistoryDto.createdAt` 은 `@JsonFormat` 으로 직렬화 포맷 계약 유지.
+
+#### Phase 2-B — journal·schedule 도메인 필드 (구현 완료, 로컬 빌드 게이트 대기)
+
+- **DB date 컬럼 필드는 `LocalDate` 채택** (전부 LocalDateTime 통일 합의를 수정 — `journal_day.journal_date`·`week_start_date`·`journal_entry_embedding.journal_date` 가 date 컬럼으로 확인됨): JournalDay(Smp) journalDate/weekStartDt, EmbeddingEntity.journalDate.
+- datetime 컬럼은 `LocalDateTime`: ScheduleEntity.bgnDt/endDt, EmbeddingEntity.embeddedAt, SyncJob started/finished/heartbeatAt, EntityJob.processedAt.
+- toEntity mapstruct 는 asDate → asLocalDate/asLocalDateTime, 조회 API(JsonFormat: EmbeddingStatsDto·SyncJobStatusDto) 직렬화 포맷 계약 유지. `isSameDay(LocalDateTime, LocalDateTime)` unchecked 오버로드 추가 (Mapstruct allDay 표현식용).
+- DTO·SearchParam 의 날짜는 String 그대로 — 화면·API 계약 무변경.
+
+#### Phase 2-C — 잔여 도메인 필드 (구현 완료, 로컬 빌드 게이트 대기)
+
+- auth 축: UserStateEntity 7필드·AuthInfo 4필드 → LocalDateTime. 토큰 만료(plusSeconds)·잠금(plusMinutes)·실패 윈도(Duration.between)·비번 만료(plusDays)·리셋 토큰 창(plusMinutes) 로직을 java.time 연산으로 재작성 (의미 동일). **2-A 임시 브리지(AuthInfoMapstruct·UserService asDate) 제거 완료.**
+- 나머지: signup approved/rejectedAt·emplym retireDt·pwHistory changedAt·chat lastMessageAt·viewer lastVisitedAt·release started/deployedAt(@JsonFormat)·Managt/History embeds·popup 2필드 → LocalDateTime. **date 컬럼**인 emplym.ecnyDt·profile.brthdy → LocalDate.
+- 2-B 전환 필드에 남아 있던 `@Temporal` 잔여 6건 제거 (java.time 필드에 스펙 위반). **엔티티 `java.util.Date` 필드 0건 달성, `@Temporal` 전면 소멸.**
+- attachable "새 글" 판정(managtDt 7일)·비번 만료 판정 등은 isAfter/isBefore 로 전환, mapstruct toEntity 는 asLocalDate(Time) 로 정렬.
+
+### Phase 3 — 유틸 축소 (1차 완료: dead API 제거)
+
+- 호출처 0 인 dead API 제거: DateUtils 19종(월 인덱스·어제/내일·연/분 가산·getDateDiff·요일 한글·@Deprecated 위임·isDateStr 등, 420→300줄) + DateParser.sDateParseStr 오버로드 2종 + DayOfWeek.asKorean. 잔여 참조 0건 검증.
+- 유지 계약: 문자열↔날짜 변환(asDate/asStr/asLocalDate(Time)) + 레거시 호환 연산. **신규 코드는 java.time 직접 사용** (클래스 Javadoc 에 명시).
+- 후속(비긴급): 호출부 java.time 점진 전환 → Object-파라미터 API 축소. lenient 파싱 의존처를 정리한 뒤에만 `DateTimeFormatter` 로 전환한다.
 
 ---
 

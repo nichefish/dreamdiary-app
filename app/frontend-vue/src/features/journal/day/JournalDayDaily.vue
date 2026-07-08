@@ -5,7 +5,7 @@
     <!--begin::일 이동 네비게이션-->
     <div class="d-flex align-items-center justify-content-between mb-4">
       <button type="button" class="btn btn-sm btn-light-primary" @click="movePrev">
-        <i class="bi bi-chevron-left"></i> 이전
+        <i class="bi bi-chevron-left"></i> {{ t("journal.day.daily.previous") }}
       </button>
       <!--begin::날짜 선택 (클릭 시 달력 피커 오픈)-->
       <input
@@ -13,12 +13,12 @@
         :value="currentDt"
         class="fs-5 fw-bold text-center border-0 bg-transparent"
         style="cursor: pointer; width: 12rem;"
-        title="날짜 선택"
+        :title="t('journal.day.daily.date-select.tooltip')"
         @change="onDateSelect"
       />
       <!--end::날짜 선택-->
       <button type="button" class="btn btn-sm btn-light-primary" @click="moveNext">
-        다음 <i class="bi bi-chevron-right"></i>
+        {{ t("journal.day.daily.next") }} <i class="bi bi-chevron-right"></i>
       </button>
     </div>
     <!--end::일 이동 네비게이션-->
@@ -47,7 +47,7 @@
         />
       </template>
       <div v-else class="d-flex-center py-10 text-muted">
-        조회된 저널이 없습니다.
+        {{ t("journal.day.list.empty") }}
       </div>
     </template>
     <!--end::일자 카드-->
@@ -62,10 +62,12 @@ import { useRoute, useRouter } from "vue-router";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { buildDailyFetchParams } from "@/features/journal/utils/journalDayRefresh";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalDayCard from "./components/JournalDayCard.vue";
 
 const store = useJournalStore();
 const modalStore = useJournalModalStore();
+const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
 

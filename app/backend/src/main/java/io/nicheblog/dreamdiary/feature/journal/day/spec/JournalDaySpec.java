@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +73,7 @@ public class JournalDaySpec
 
         final List<Predicate> predicate = new ArrayList<>();
 
-        final Expression<Date> effectiveDtExp = root.get("journalDate");
+        final Expression<LocalDate> effectiveDtExp = root.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교
@@ -85,11 +85,11 @@ public class JournalDaySpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "yy":
                     // 9999 = 모든 년
@@ -101,10 +101,10 @@ public class JournalDaySpec
                     if (mnth != 99) predicate.add(builder.equal(root.get(key), mnth));
                     continue;
                 case "stdrdDt":
-                    predicate.add(builder.equal(effectiveDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.equal(effectiveDtExp, DateUtils.asLocalDate(value)));
                     continue;
                 case "weekStartDt":
-                    predicate.add(builder.equal(root.get(key), DateUtils.asDate(value)));
+                    predicate.add(builder.equal(root.get(key), DateUtils.asLocalDate(value)));
                     continue;
                 case "tagId":
                     resolveTagIdPredicate(predicate, root, builder, value, createdBy, ContentType.JOURNAL_DAY);

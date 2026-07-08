@@ -9,7 +9,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalFire } from "@/shared/utils/swal";
 
 /** 계정 신청 행 DTO */
 export interface SignupRequestRow {
@@ -66,7 +66,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
         if (target) target.status = "APPROVED";
         return true;
       }
-      void swalAlert(res.data?.message || t("common.result.failure"));
+      void swalFire({ icon: "error", text: res.data?.message || t("common.result.failure") });
       return false;
     } catch (e) {
       console.error("[userSignup] approve 실패", e);
@@ -90,7 +90,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
         if (target) target.status = "REJECTED";
         return true;
       }
-      void swalAlert(res.data?.message || t("common.result.failure"));
+      void swalFire({ icon: "error", text: res.data?.message || t("common.result.failure") });
       return false;
     } catch (e) {
       console.error("[userSignup] reject 실패", e);

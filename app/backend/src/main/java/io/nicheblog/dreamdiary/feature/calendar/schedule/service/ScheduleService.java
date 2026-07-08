@@ -187,7 +187,7 @@ public class ScheduleService
         // 공휴일 여부 체크
         final Date asDate = DateUtils.asDate(date);
         final Date sDate = DateUtils.Parser.sDateParse(asDate);
-        final Optional<ScheduleEntity> scheduleDetailWrapper = repository.findByScheduleCdAndBgnDt(Code.SCHEDULE_HOLYDAY, sDate);
+        final Optional<ScheduleEntity> scheduleDetailWrapper = repository.findByScheduleCdAndBgnDt(Code.SCHEDULE_HOLYDAY, DateUtils.asLocalDateTime(sDate));
 
         return scheduleDetailWrapper.isPresent();
     }

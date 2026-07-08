@@ -78,8 +78,6 @@ dependencies {
        이메일 렌더(FreeMarkerConfigurationFactoryBean·FreeMarkerTemplateUtils)용 spring-context-support 를 명시 선언. */
     implementation 'org.freemarker:freemarker:2.3.32'
     implementation 'org.springframework:spring-context-support'
-    /* ↓ Mustache */
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
 
     /** ↓ Cache */
     implementation 'org.springframework.boot:spring-boot-starter-cache'

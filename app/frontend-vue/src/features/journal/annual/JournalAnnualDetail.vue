@@ -48,7 +48,7 @@
         <div class="card-body py-5">
           <!--begin::SUMMARY-->
           <div class="journal-sumry-item">
-            <div class="ms-3 fs-6">SUMMARY</div>
+            <div class="ms-3 fs-6">{{ t("journal.annual.detail.summary") }}</div>
             <div
               class="fs-6 fw-normal text-gray-800 ps-2 pt-2 text-noti"
               v-html="store.annualDetail.markdownContent"
@@ -75,7 +75,7 @@
           <!--begin::REVIEWS-->
           <div class="journal-sumry-review-container mt-8">
             <div class="d-flex-align-center ms-3 fs-6 gap-5">
-              <span>REVIEWS</span>
+              <span>{{ t("journal.annual.detail.reviews") }}</span>
               <button
                 type="button"
                 class="btn btn-sm btn-light-primary btn-outlined ps-2 pe-3 py-1 cursor-pointer"
@@ -179,7 +179,7 @@
                 <b>{{ row.label }} :</b>
               </div>
               <div class="col flex-grow-1">
-                <span v-if="store.entriesLoading" class="text-muted fs-7">Loading...</span>
+                <span v-if="store.entriesLoading" class="text-muted fs-7">{{ t("journal.annual.detail.loading") }}</span>
                 <span v-else-if="row.tags.length === 0" class="text-muted fs-7">-</span>
                 <span v-else class="d-flex flex-wrap align-items-center">
                   <button
@@ -187,7 +187,7 @@
                     :key="`${row.id}-${String(tag.id ?? tag.tagId)}-${tag.name}`"
                     type="button"
                     class="btn btn-link py-2 me-3 px-0 cursor-pointer opacity-hover text-decoration-none d-inline-flex align-items-center"
-                    title="Tag menu"
+                    :title="t('journal.annual.tag.menu.tooltip')"
                     @click.stop="openTagContextMenu($event, tag, row.contentType)"
                   >
                     <span :class="[tag.tagClass, tag.textClass]" class="d-inline-flex align-items-center">
@@ -210,7 +210,7 @@
       <!--begin::토글 체크박스-->
       <div class="d-flex align-items-end justify-content-end mb-2">
         <div class="mx-3">
-          <label for="toggleImprtc" class="me-2 text-muted cursor-help">IMPORTANT</label>
+          <label for="toggleImprtc" class="me-2 text-muted cursor-help">{{ t("journal.annual.filter.important") }}</label>
           <input
             type="checkbox"
             id="toggleImprtc"
@@ -220,7 +220,7 @@
           />
         </div>
         <div class="mx-3">
-          <label for="toggleRefrnc" class="me-2 text-muted cursor-help">REFERENCE</label>
+          <label for="toggleRefrnc" class="me-2 text-muted cursor-help">{{ t("journal.annual.filter.reference") }}</label>
           <input
             type="checkbox"
             id="toggleRefrnc"
@@ -255,8 +255,8 @@
               <!--begin::날짜-->
               <div class="col-1 text-center text-gray-500 fs-7">
                 {{ entry.stdrdDt }}
-                <span v-if="entry.journalDateWeekDay" class="d-block fs-8 text-gray-400">
-                  {{ entry.journalDateWeekDay }}
+                <span v-if="entry.stdrdDt" class="d-block fs-8 text-gray-400">
+                  {{ getWeekDayStr(entry.stdrdDt, t) }}
                 </span>
               </div>
               <!--end::날짜-->
@@ -296,8 +296,8 @@
               <!--begin::날짜-->
               <div class="col-1 text-center text-gray-500 fs-7">
                 {{ entry.stdrdDt }}
-                <span v-if="entry.journalDateWeekDay" class="d-block fs-8 text-gray-400">
-                  {{ entry.journalDateWeekDay }}
+                <span v-if="entry.stdrdDt" class="d-block fs-8 text-gray-400">
+                  {{ getWeekDayStr(entry.stdrdDt, t) }}
                 </span>
               </div>
               <!--end::날짜-->
@@ -347,6 +347,7 @@ import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import type { AnnualSection, AnnualEntryDto, AnnualTagItem, JournalAnnualReviewDto } from "@/features/journal/stores/journalAnnual";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const route = useRoute();
 const store = useJournalAnnualStore();

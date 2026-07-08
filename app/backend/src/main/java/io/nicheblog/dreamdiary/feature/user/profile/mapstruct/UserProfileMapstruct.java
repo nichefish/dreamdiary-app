@@ -21,11 +21,11 @@ public interface UserProfileMapstruct
     UserProfileDto toDto(final UserProfileEntity entity) throws Exception;
 
     @Override
-    @Mapping(target = "brthdy", expression = "java(DateUtils.asDate(dto.getBrthdy()))")
+    @Mapping(target = "brthdy", expression = "java(DateUtils.asLocalDate(dto.getBrthdy()))")
     UserProfileEntity toEntity(final UserProfileDto dto) throws Exception;
 
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "brthdy", expression = "java(DateUtils.asDate(dto.getBrthdy()))")
+    @Mapping(target = "brthdy", expression = "java(DateUtils.asLocalDate(dto.getBrthdy()))")
     void updateFromDto(final UserProfileDto dto, final @MappingTarget UserProfileEntity entity) throws Exception;
 }

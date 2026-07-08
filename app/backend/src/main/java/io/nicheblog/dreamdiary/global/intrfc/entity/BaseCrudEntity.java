@@ -7,7 +7,7 @@ import org.hibernate.annotations.Comment;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * BaseCrudEntity
@@ -31,5 +31,5 @@ public class BaseCrudEntity
     /** 삭제 일시 (NULL이면 미삭제) */
     @Column(name = "deleted_at")
     @Comment("삭제 일시")
-    protected Date deletedAt;
+    protected LocalDateTime deletedAt;
 }

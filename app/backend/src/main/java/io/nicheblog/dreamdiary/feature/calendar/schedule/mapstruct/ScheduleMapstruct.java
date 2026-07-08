@@ -42,8 +42,8 @@ public interface ScheduleMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "bgnDt", expression = "java(DateUtils.asDate(dto.getBgnDt()))")
-    @Mapping(target = "endDt", expression = "java(DateUtils.asDate(dto.getEndDt()))")
+    @Mapping(target = "bgnDt", expression = "java(DateUtils.asLocalDateTime(dto.getBgnDt()))")
+    @Mapping(target = "endDt", expression = "java(DateUtils.asLocalDateTime(dto.getEndDt()))")
     ScheduleEntity toEntity(final ScheduleDto dto) throws Exception;
 
     /**
@@ -54,7 +54,7 @@ public interface ScheduleMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "bgnDt", expression = "java(DateUtils.asDate(dto.getBgnDt()))")
-    @Mapping(target = "endDt", expression = "java(DateUtils.asDate(dto.getEndDt()))")
+    @Mapping(target = "bgnDt", expression = "java(DateUtils.asLocalDateTime(dto.getBgnDt()))")
+    @Mapping(target = "endDt", expression = "java(DateUtils.asLocalDateTime(dto.getEndDt()))")
     void updateFromDto(final ScheduleDto dto, final @MappingTarget ScheduleEntity entity) throws Exception;
 }

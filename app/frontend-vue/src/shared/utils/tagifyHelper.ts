@@ -36,14 +36,17 @@ function isNotEmpty(v: unknown): boolean {
 }
 
 /** 태그 표시 템플릿 (카테고리) */
-export function tagTemplate(tagData: { value?: string; data?: { ctgr?: string } }): string {
+export function tagTemplate(
+  tagData: { value?: string; data?: { ctgr?: string } },
+  removeTagAriaLabel: string,
+): string {
   const ctgr = isNotEmpty(tagData.data?.ctgr) ? String(tagData.data?.ctgr) : "";
   const ctgrSpan = ctgr !== ""
     ? `<span class="tagify__tag-category text-noti me-1">[${ctgr}]</span>`
     : "";
   return `<tag title="${tagData.value}" contenteditable="false" spellcheck="false" tabindex="-1"
                class="tagify__tag" value="${tagData.value}" data-ctgr="${ctgr}">
-            <x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x>
+            <x title="" class="tagify__tag__removeBtn" role="button" aria-label="${removeTagAriaLabel}"></x>
             <div>
               ${ctgrSpan}
               <span class="tagify__tag-text">${tagData.value}</span>
@@ -52,7 +55,10 @@ export function tagTemplate(tagData: { value?: string; data?: { ctgr?: string } 
 }
 
 /** 메타 태그 표시 템플릿 (카테고리 + 값) */
-export function metaTemplate(tagData: { value?: string; data?: { ctgr?: string; value?: string } }): string {
+export function metaTemplate(
+  tagData: { value?: string; data?: { ctgr?: string; value?: string } },
+  removeTagAriaLabel: string,
+): string {
   const ctgr = isNotEmpty(tagData.data?.ctgr) ? String(tagData.data?.ctgr) : "";
   const ctgrSpan = ctgr !== ""
     ? `<span class="tagify__tag-category text-noti me-1">[${ctgr}]</span>`
@@ -65,7 +71,7 @@ export function metaTemplate(tagData: { value?: string; data?: { ctgr?: string; 
   const metaSpan = isNotEmpty(meta) ? `<span class="text-dialog">: ${value}</span>` : "";
   return `<tag title="${tagData.value}" contenteditable="false" spellcheck="false" tabindex="-1"
                class="tagify__tag" value="${tagData.value}" data-ctgr="${ctgr}" data-value="${meta}">
-            <x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x>
+            <x title="" class="tagify__tag__removeBtn" role="button" aria-label="${removeTagAriaLabel}"></x>
             <div>
               ${ctgrSpan}
               <span class="tagify__tag-text">${tagData.value}</span>
@@ -218,7 +224,7 @@ export function bindTagifyAutoComplete(tagify: TagifyInstance, categoryMap: Reco
 export function bindTagifyCtgrInputPrompt(
   tagify: TagifyInstance,
   categoryMap: Record<string, string[]>,
-  options: { hasValueInput?: boolean; onCommitted?: () => void } = {},
+  options: { hasValueInput?: boolean; onCommitted?: () => void; getCustomCategoryLabel: () => string },
 ): void {
   const { hasValueInput = false, onCommitted } = options;
   tagify.committing = false;
@@ -256,7 +262,7 @@ export function bindTagifyCtgrInputPrompt(
     if (tagify.ctgr?.select) {
       tagify.ctgr.select.replaceChildren(
         ...filteredCategories.map((item) => new Option(item, item)),
-        new Option("직접입력", "custom"),
+        new Option(options.getCustomCategoryLabel(), "custom"),
       );
       tagify.ctgr.select.selectedIndex = 0;
       tagify.ctgr.select.size = filteredCategories.length + 1;

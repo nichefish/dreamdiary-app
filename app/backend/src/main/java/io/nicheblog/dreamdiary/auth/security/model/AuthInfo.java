@@ -14,8 +14,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,19 +65,19 @@ public class AuthInfo
     private List<String> allowedIpStrList;
 
     /** 최종접속일시 */
-    private Date lastLoginAt;
+    private LocalDateTime lastLoginAt;
 
     /** 계정 잠금 만료 시각 */
-    private Date lockExpiresAt;
+    private LocalDateTime lockExpiresAt;
 
     /** 최종비밀번호변경일시 */
-    private Date passwordChangedAt;
+    private LocalDateTime passwordChangedAt;
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
     private String needsPasswordReset;
 
     /** 패스워드 리셋 토큰 발급 시각 */
-    private Date passwordResetTokenIssuedAt;
+    private LocalDateTime passwordResetTokenIssuedAt;
 
     /** 사용자 정보 ID */
     private Integer userProfileId;
@@ -183,7 +183,7 @@ public class AuthInfo
     public boolean isAccountNonLocked() {
         if (!"Y".equals(this.getLockedYn())) return true;
         if (this.lockExpiresAt == null) return false;
-        return this.lockExpiresAt.after(new Date()) ? false : true;
+        return this.lockExpiresAt.isAfter(LocalDateTime.now()) ? false : true;
     }
 
     /**
@@ -256,7 +256,7 @@ public class AuthInfo
 
         // ===== 기타 =====
         this.allowedIpStrList = List.of();
-        this.lastLoginAt = new Date();
+        this.lastLoginAt = LocalDateTime.now();
         this.passwordChangedAt = null;
     }
 

@@ -4,12 +4,14 @@
  * 클립보드 복사 등에서 사용하는 요일 문자열 변환.
  */
 
-/** YYYY-MM-DD → 요일 한자(일/월/화/수/목/금/토). stdrdDt 가 없으면 빈 문자열. */
-export function getWeekDayStr(stdrdDt?: string | null): string {
+/** YYYY-MM-DD → 요일 한자(일/월/화/수/목/금/토). stdrdDt 가 없으면 빈 문자열.
+ * 변경 후: 기존 한국어 한자 표기를 보존하면서 현재 locale의 공용 요일 카탈로그를 사용한다. */
+export function getWeekDayStr(stdrdDt: string | null | undefined, t: (key: string) => string): string {
   if (!stdrdDt?.trim()) return "";
-  const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
+  const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
   const d = new Date(stdrdDt.includes("T") ? stdrdDt : `${stdrdDt}T12:00:00`);
-  return days[d.getDay()] ?? "";
+  const day = days[d.getDay()];
+  return day ? t(`journal.weekday.${day}`) : "";
 }
 
 /** Date → YYYY-MM-DD (로컬) */

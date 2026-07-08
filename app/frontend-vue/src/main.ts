@@ -125,22 +125,52 @@ try {
   app.mount("#app");
 } catch (error) {
   reportRuntimeError(error, "app-mount");
-  renderBootFailure(error);
+  void renderBootFailure(error);
 }
 
-function renderBootFailure(error: unknown) {
+const LS_LOCALE_KEY = "dreamdiary_locale";
+
+function readStoredLocale(): "ko" | "en" {
+  const stored = window.localStorage.getItem(LS_LOCALE_KEY);
+  return stored === "en" ? "en" : "ko";
+}
+
+/** Vue mount 이전 부트 실패 화면용 카탈로그 조회. fetch 실패 시 ko/en 최소 fallback. */
+async function loadBootFailureLabels(): Promise<{ title: string; reload: string }> {
+  const locale = readStoredLocale();
+  const fallback =
+    locale === "en"
+      ? { title: "Failed to start the application", reload: "Reload" }
+      : { title: "앱을 시작하지 못했습니다", reload: "새로고침" };
+  try {
+    const response = await fetch(`/i18n/${locale}.json`, {
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) return fallback;
+    const catalog = (await response.json()) as Record<string, string>;
+    return {
+      title: catalog["runtime.boot.failure.title"] || fallback.title,
+      reload: catalog["runtime.action.reload"] || fallback.reload,
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+async function renderBootFailure(error: unknown) {
   document.body.classList.remove("page-loading");
   document.getElementById("splash-screen")?.remove();
   const root = document.getElementById("app");
   if (!root) return;
   const message = error instanceof Error ? error.message : String(error);
+  const labels = await loadBootFailureLabels();
   root.innerHTML = `
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:24px;">
       <div style="max-width:720px;width:100%;background:#fff;border:1px solid #e4e6ef;border-radius:8px;padding:28px;box-shadow:0 12px 32px rgba(15,23,42,.16);">
         <div style="color:#7e8299;font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:8px;">app-mount</div>
-        <h1 style="color:#181c32;font-size:22px;font-weight:700;margin:0 0 10px;">앱을 시작하지 못했습니다</h1>
+        <h1 style="color:#181c32;font-size:22px;font-weight:700;margin:0 0 10px;">${escapeHtml(labels.title)}</h1>
         <p style="color:#5e6278;font-size:14px;white-space:pre-wrap;margin:0 0 18px;">${escapeHtml(message)}</p>
-        <button type="button" onclick="window.location.reload()" style="border:1px solid #e4e6ef;border-radius:6px;background:#f5f8fa;color:#181c32;font-weight:600;padding:8px 12px;cursor:pointer;">새로고침</button>
+        <button type="button" onclick="window.location.reload()" style="border:1px solid #e4e6ef;border-radius:6px;background:#f5f8fa;color:#181c32;font-weight:600;padding:8px 12px;cursor:pointer;">${escapeHtml(labels.reload)}</button>
       </div>
     </div>
   `;

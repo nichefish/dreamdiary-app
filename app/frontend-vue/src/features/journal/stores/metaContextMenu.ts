@@ -11,6 +11,7 @@ export interface MetaContextMenuPayload {
   name: string;
   ctgr: string;
   unit?: string;
+  contentSize?: number;
 }
 
 export const useMetaContextMenuStore = defineStore("metaContextMenu", () => {

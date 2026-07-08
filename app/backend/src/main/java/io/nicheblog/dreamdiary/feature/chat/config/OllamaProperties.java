@@ -25,4 +25,16 @@ public class OllamaProperties {
 
     /** Embeddings API ({@code /api/embeddings})에 사용할 모델 태그 */
     private String embeddingModel = "nomic-embed-text";
+
+    /** Chat 생성 temperature (null이면 Ollama 기본값) */
+    private Double chatTemperature = 0.35D;
+
+    /** Chat 최대 생성 토큰 수 (null이면 Ollama 기본값) */
+    private Integer numPredict = 768;
+
+    /** HTTP connect timeout (ms) */
+    private int connectTimeoutMs = 5_000;
+
+    /** HTTP read timeout (ms). 로컬 14B 응답 대기를 고려해 기본 5분 */
+    private int readTimeoutMs = 300_000;
 }

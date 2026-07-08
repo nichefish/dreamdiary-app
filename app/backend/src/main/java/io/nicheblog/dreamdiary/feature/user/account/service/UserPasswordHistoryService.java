@@ -88,7 +88,7 @@ public class UserPasswordHistoryService {
         userPasswordHistoryRepository.save(UserPasswordHistoryEntity.builder()
                 .userId(user.getId())
                 .passwordHash(previousPasswordHash)
-                .changedAt(DateUtils.getCurrDate())
+                .changedAt(DateUtils.getCurrLocalDateTime())
                 .build());
         this.prune(user.getId(), passwordHistoryCount);
     }
