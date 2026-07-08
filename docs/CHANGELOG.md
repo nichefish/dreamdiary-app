@@ -1,5 +1,33 @@
 # CHANGELOG
 
+### 2026-07-08 | v0.23.0
+- 신규 기능
+  - 다국어(i18n) 확장.
+    - Vue 전 화면·런타임·AppChat·mount 이전 부트 실패 화면을 messages 카탈로그로 수렴.
+    - ChatAIService guard/fallback·intent/RAG·hybrid/SNAPSHOT·retry 프롬프트를 chat.ai.* 카탈로그로 이관(D.3).
+    - code_item_i18n 영문 시드 및 V0.22.0 마이그레이션 정합.
+  - AI 챗봇 고도화.
+    - person-stance 하이브리드 guard·Ollama 튜닝·응답 품질 보정.
+    - 프롬프트·fallback 다국어화 및 스펙( CHAT_AI_SPEC ) 동기화.
+  - 저널 화면·연동.
+    - 저널 달력 화면 이식(마지막 placeholder 해소).
+    - aside TODO List 카드 복원.
+    - 스레드 상세 댓글 연동(P2.1), 메타 프로필 contentSize 연동(P2.2), 레이아웃 전역 툴바 연동(P2.3).
+  - 관리·검색.
+    - 로그 사용자별 통계 화면 이식.
+    - 일자 필터 모달에 태그 입력 검색 추가.
+- 개선 사항
+  - DateUtils java.time 수렴(Phase 1-3).
+  - swal 옵션 기반 API 및 swalAjaxResult 공통화.
+  - 사이드바 브랜드명 DreamDiary 고정.
+  - Dockerfile Java 17 정합 및 테스트 게이트 복원.
+- 구조 정리
+  - FileUtils deprecated API 경고 해소, spring-boot-starter-mustache 제거.
+  - 테스트·스펙·임베딩 fixture에서 실명·개인 대화 스니펫 제거(가상 픽스처·AI 규칙 §9).
+- 문서
+  - P0/P1 spec 정합(Pinpoint/Week·임베딩·Chat AI 링크, 저널 필터·검색 정책).
+  - vue-screen-overview 구현 현황 표 현행화.
+
 ### 2026-07-02 | v0.22.0
 - 신규 기능
   - 다국어(i18n) 지원 도입.
