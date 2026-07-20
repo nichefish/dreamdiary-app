@@ -5,13 +5,15 @@
 
 Agent shell·일부 CI에는 PATH `npm`이 없다. **Vue 빌드는 Gradle Node로 돌린다** (`build.gradle` → `com.github.node-gradle.node`, `nodeProjectDir = app/frontend-vue`).
 
+Java 빌드 계약 (2026-07-19): Gradle wrapper를 실행한 IDE·셸 JBR과 무관하게 Java compiler toolchain과 Gradle Daemon JVM은 17을 사용한다. `build.gradle`의 `java.toolchain`과 `gradle/gradle-daemon-jvm.properties`가 저장소 SSOT이며, 빌드 머신에는 JDK 17이 설치되어 있어야 한다. Lombok 1.18.42는 IntelliJ IDEA 2026.1.1의 JBR 25와 호환하고, `lombok.config`는 버전 갱신 전의 JaCoCo·Jackson annotation 생성 계약을 보존한다.
+
 | 목적 | 명령 |
 |------|------|
 | Vue 프로덕션 빌드 | `./gradlew buildFrontend` |
 | npm install | `./gradlew npmInstall` |
 | 기타 package.json 스크립트 | `./gradlew npm_run_<script>` (`type-check` → `npm_run_type_check`) |
 
-gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬 loopback 연결 실패(`Unable to establish loopback connection`)로 아예 동작하지 않는다 — IntelliJ·일반 터미널에서는 정상이므로 셸 환경 한정 문제다. 이때는 Gradle 이 받아둔 `.gradle/nodejs/node-v<버전>-win-x64` 를 PATH 에 추가하고 `app/frontend-vue` 에서 `npm run build` / `npm run test` 를 직접 실행한다 — `buildFrontend` 와 동일 Node 버전·동일 스크립트라 게이트 등가. (`JAVA_HOME` 미설정이면 `~/.jdks` 아래 JDK 를 지정.)
+gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬 loopback 연결 실패(`Unable to establish loopback connection`)로 아예 동작하지 않는다 — IntelliJ·일반 터미널에서는 정상이므로 셸 환경 한정 문제다. 이때는 Gradle 이 받아둔 `.gradle/nodejs/node-v<버전>-win-x64` 를 PATH 에 추가하고 `app/frontend-vue` 에서 `npm run build` / `npm run test` 를 직접 실행한다 — `buildFrontend` 와 동일 Node 버전·동일 스크립트라 게이트 등가. Java 작업은 폴백 대상이 아니며, JDK 17을 설치해 Gradle Daemon JVM 기준을 충족해야 한다.
 
 
 백엔드 테스트·배포 게이트 (`gradle/testconfig.gradle`, `Dockerfile`, 2026-07-05):

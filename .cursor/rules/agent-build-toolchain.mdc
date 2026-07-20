@@ -7,6 +7,14 @@ alwaysApply: true
 
 Agent shell에는 종종 **PATH `npm`이 없다**. 이를 이유로 프론트 빌드 검증을 생략하지 말고, **루트 `build.gradle`의 `com.github.node-gradle.node` 플러그인**을 사용한다.
 
+## Java·Gradle JVM 계약
+
+- `build.gradle`의 Java compiler toolchain은 17이다.
+- `gradle/gradle-daemon-jvm.properties`의 Gradle Daemon JVM 기준도 17이다.
+- IDE JBR·`JAVA_HOME`이 더 최신이어도 annotation processor는 JDK 17 compiler에서 실행한다.
+- 빌드 머신에 JDK 17이 없으면 우회하지 말고 설치 또는 toolchain provisioning을 구성한다.
+- Lombok은 JBR 25 호환 버전을 사용하며, 생성 코드의 기존 JaCoCo·Jackson annotation 계약은 루트 `lombok.config`가 보존한다.
+
 ## Vue SPA (`app/frontend-vue`)
 
 | 목적 | 명령 |
@@ -35,4 +43,4 @@ python scripts/check_encoding.py
 
 ## `gradlew` 실패 시
 
-`JAVA_HOME` 미설정 등으로 Gradle 자체가 실패하면 그때 환경 한계를 보고한다. **npm 부재만**으로 검증 생략은 하지 않는다.
+JDK 17 부재 등으로 Gradle 자체가 실패하면 그때 환경 한계를 보고한다. **npm 부재만**으로 검증 생략은 하지 않는다.
