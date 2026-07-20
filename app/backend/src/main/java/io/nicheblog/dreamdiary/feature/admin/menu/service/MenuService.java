@@ -9,6 +9,8 @@ import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuI18nReposit
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.feature.admin.menu.spec.MenuSpec;
+import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntity;
+import io.nicheblog.dreamdiary.feature.board.group.jpa.BoardRepository;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SubmenuExpandType;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.MenuType;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
@@ -68,6 +70,8 @@ public class MenuService
 
     private final MenuMapper menuMapper;
     private final MenuI18nRepository menuI18nRepository;
+    /** BOARD 확장 메뉴의 하위 항목(게시판) 구성용. 게시판은 menu 가 아니라 board 테이블이 소유한다. */
+    private final BoardRepository boardRepository;
 
     /** 기준 로케일. 이 로케일의 메뉴명/설명은 menu.menu_name/menu_description 이 단일 원천이라 menu_i18n 에 저장하지 않는다. */
     private static final String BASE_LOCALE = "ko";
@@ -117,7 +121,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.localizeMenuTree(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)));
+        return this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort))));
     }
 
     /**
@@ -136,7 +140,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.localizeMenuTree(this.getListDto(searchParamMap, sort));
+        return this.localizeMenuTree(this.attachBoardSubMenus(this.getListDto(searchParamMap, sort)));
     }
 
     /**
@@ -155,7 +159,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.localizeMenuTree(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)));
+        return this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort))));
     }
 
     /**
@@ -176,7 +180,7 @@ public class MenuService
 
         final List<MenuDto> menuList = this.getListDto(searchParamMap, sort);
         this.addSharedHiddenUserMenuMeta(menuList);
-        return this.localizeMenuTree(menuList);
+        return this.localizeMenuTree(this.attachBoardSubMenus(menuList));
     }
 
     private List<MenuDto> filterSidebarVisible(final List<MenuDto> menuList) {
@@ -237,6 +241,67 @@ public class MenuService
                 if (StringUtils.isNotBlank(translated.getMenuDescription())) menu.setMenuDescription(translated.getMenuDescription());
             }
             this.applyMenuLocale(menu.getSubMenuList(), i18nMap);
+        }
+    }
+
+    /**
+     * BOARD 확장 메뉴({@code submenuExpandType=BOARD})에 사용중 게시판을 하위 항목으로 주입한다.
+     * <p>
+     * 게시판은 menu 테이블이 아니라 board 테이블이 소유하므로 메뉴 트리에 자식 행이 없다.
+     * 그래서 주입 전에는 BOARD 메뉴가 자식도 URL 도 없는 빈 메뉴여서, 게시판을 등록해도
+     * 사이드바에 아무것도 나타나지 않았다. 프론트는 {@code subMenuList} 가 있어야 아코디언으로 펼친다.
+     * <p>
+     * 각 게시판은 {@code /app/board/post/list.do?contentType=<boardKey>} URL 을 가진 메뉴로 변환한다.
+     * 이 URL 은 프론트 {@code urlMapping} 이 {@code /board/<boardKey>} 라우트로 흡수한다.
+     * 게시판 자체는 다국어 대상이 아니므로 {@code localizeMenuTree} 이후에 주입해도 무방하지만,
+     * 호출 순서에 의존하지 않도록 지역화 대상에서 제외되는 이름(board_name)을 그대로 쓴다.
+     *
+     * @param menuList 주입 대상 메뉴 트리 (제자리 수정)
+     * @return 입력과 동일 인스턴스
+     */
+    private List<MenuDto> attachBoardSubMenus(final List<MenuDto> menuList) {
+        if (CollectionUtils.isEmpty(menuList)) return menuList;
+        if (!this.hasBoardExpandMenu(menuList)) return menuList;
+
+        final List<MenuDto> boardMenus = new ArrayList<>();
+        for (final BoardEntity board : boardRepository.findByUseYnOrderBySortOrderAscIdAsc("Y")) {
+            if (board == null || StringUtils.isBlank(board.getBoardKey())) continue;
+            boardMenus.add(MenuDto.builder()
+                    .id(board.getId())
+                    .menuType(MenuType.SUB.name())
+                    .menuName(board.getBoardName())
+                    .url("/app/board/post/list.do?contentType=" + board.getBoardKey())
+                    .submenuExpandType(SubmenuExpandType.NO_SUB.name())
+                    .sortOrder(board.getSortOrder())
+                    .useYn("Y")
+                    .sidebarVisibleYn("Y")
+                    .build());
+        }
+        this.applyBoardSubMenus(menuList, boardMenus);
+        return menuList;
+    }
+
+    /** 트리에 BOARD 확장 메뉴가 하나라도 있는지 (없으면 게시판 조회 자체를 건너뛴다) */
+    private boolean hasBoardExpandMenu(final List<MenuDto> menuList) {
+        if (CollectionUtils.isEmpty(menuList)) return false;
+        for (final MenuDto menu : menuList) {
+            if (menu == null) continue;
+            if (SubmenuExpandType.BOARD.name().equals(menu.getSubmenuExpandType())) return true;
+            if (this.hasBoardExpandMenu(menu.getSubMenuList())) return true;
+        }
+        return false;
+    }
+
+    /** 트리를 재귀 순회하며 BOARD 확장 메뉴의 subMenuList 를 게시판 목록으로 채운다. */
+    private void applyBoardSubMenus(final List<MenuDto> menuList, final List<MenuDto> boardMenus) {
+        if (CollectionUtils.isEmpty(menuList)) return;
+        for (final MenuDto menu : menuList) {
+            if (menu == null) continue;
+            if (SubmenuExpandType.BOARD.name().equals(menu.getSubmenuExpandType())) {
+                menu.setSubMenuList(new ArrayList<>(boardMenus));
+                continue;
+            }
+            this.applyBoardSubMenus(menu.getSubMenuList(), boardMenus);
         }
     }
 

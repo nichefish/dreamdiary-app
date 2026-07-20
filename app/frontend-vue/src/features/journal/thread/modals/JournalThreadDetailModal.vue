@@ -1,6 +1,14 @@
 <template>
   <!--begin::저널 스레드 상세 모달-->
-  <div ref="modalEl" class="modal fade" id="journal_thread_detail_modal" tabindex="-1" aria-hidden="true">
+  <div
+    ref="modalEl"
+    class="modal fade"
+    id="journal_thread_detail_modal"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
     <div class="modal-dialog modal-xxl">
       <div class="modal-content">
 
@@ -141,7 +149,7 @@ const threadContentType = computed(
 
 onMounted(() => {
   if (modalEl.value) {
-    bsModal = new Modal(modalEl.value);
+    bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       store.closeDetail();
     });

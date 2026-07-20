@@ -29,13 +29,14 @@
 
 **기능**:
 - 사이트 관리 본문 상단에는 `일반 관리` / `AI 관리` 탭을 표시한다.
+  - 탭 마크업·여백은 저널 일자 뷰 툴바(`JournalDayViewToolbar`)와 동일 골격이다: `admin-view-toolbar` 래퍼 + `nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0`(헤더와의 상단 간격 `mt-5`).
   - 기본 진입(`/admin`)은 `일반 관리` 탭이다.
   - `AI 관리` 탭은 `/admin?tab=ai`, `일반 관리` 탭은 `/admin?tab=general` query로 상태를 유지한다.
-- 본문 상단 새로고침 버튼 표시. 화면 설명은 `ADMIN_PAGE` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
+- 화면 설명은 `ADMIN_PAGE` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다(브라우저 새로고침 또는 진입·탭 전환 시 자동 조회).
 - `일반 관리` 탭:
   - 운영 도구 모음 (캐시 관리, 공휴일 동기화, Notion 요청)
   - 권한 정보 표시
-  - 일반 관리 탭의 새로고침 버튼은 bootstrap 데이터(권한/meta)를 다시 조회한다.
+  - 탭 진입·전환 시 bootstrap 데이터(권한/meta)를 조회한다.
 - 캐시 목록 조회 → `GET /api/cache/cache-active-map`
 - 캐시 초기화 → `POST /api/cache/cache-evict` / `POST /api/cache-clear`
 - `AI 관리` 탭:
@@ -43,7 +44,7 @@
   - Chat RAG settings card → `GET`/`PATCH /admin/chat/settings` (`rag_enabled`, `rag_top_k`, `rag_min_score`, `rag_summary_top_k`, `rag_synthesis_top_k`, `rag_stance_top_k`, `rag_synthesis_min_score`); under Ollama health on AI tab.
   - Entity Queue Backfill → `GET /api/admin/journal-entry-entities/stats`, `POST /api/admin/journal-entry-entities/sync`, `POST /api/admin/journal-entry-entities/requeue-failed`
   - `GET /api/admin/ollama/health` 상태를 AI 관리 탭의 Embedding 섹션 상단에 표시한다.
-  - AI 관리 탭의 새로고침 버튼은 embedding/entity stats를 다시 조회한다.
+  - 탭 진입·전환 시 embedding/entity stats·Ollama health·RAG settings를 조회한다. Embedding/Entity 카드 안의 Refresh는 해당 섹션만 재조회한다.
   - AI 관리 탭은 AI Embedding Backfill / Entity Queue Backfill 카드를 5:5 컬럼으로 배치한다.
   - 서버 기동 시 `app.journal.embedding.sync-on-startup`(기본 `true`)이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`)
   - `total` = active journal entry count (Entries baseline)
@@ -64,7 +65,7 @@
 **스토어**: `features/admin/stores/authPolicy.ts`
 
 **기능**:
-- 본문 상단 새로고침 버튼 표시. 화면 설명은 `AUTH_POLICY` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
+- 화면 설명은 `AUTH_POLICY` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
 - 인증 정책 단건 조회/수정 (싱글톤)
 - `sessionTimeoutMinutes`: 사용자 체감 로그인 유지 시간(분). `HttpSession#setMaxInactiveInterval`, JWT access token `exp`, JWT 쿠키 max-age, JWT 검증의 `issuedAt + policyTimeout` 기준에 함께 적용
 - `passwordHistoryCount`: 최근 비밀번호 재사용 제한 개수. 기본값은 `2`이며, `0`이면 현재 비밀번호/이전 비밀번호 이력 재사용 검사를 수행하지 않는다.
@@ -80,7 +81,8 @@
 **스토어**: `features/admin/stores/boardGroup.ts`
 
 **기능**:
-- 본문 상단 새로고침/등록 버튼 표시. 화면 설명은 `BOARD_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
+- 등록은 저널 스레드·게시판·코드/계정 관리와 동형인 뷰 툴바(`board-group-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `BOARD_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
+- 목록 관리 열은 메뉴 관리와 동일하게 Bootstrap `⋯` 드롭다운(`data-bs-toggle="dropdown"`, `strategy:fixed`)으로 수정·삭제를 제공한다(변경 전: 아이콘 버튼 → Metronic `data-kt-menu`는 `.table-responsive` overflow에 잘려 미표시). Metronic 재바인딩은 필요 없다.
 - 게시판 그룹 목록/등록/수정/삭제
 - 사용/미사용 토글
 - 드래그로 정렬 순서 변경
@@ -94,7 +96,8 @@
 **스토어**: `features/admin/stores/codeAdmin.ts`
 
 **기능**:
-- 본문 상단 새로고침/분류 코드 등록 버튼 표시. 화면 설명은 `CODE_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
+- 분류 코드 등록은 저널 스레드·게시판과 동형인 뷰 툴바(`code-admin-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `CODE_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
+- 분류 목록·상세 아이템 관리 열은 메뉴 관리와 동일하게 Bootstrap `⋯` 드롭다운(`data-bs-toggle="dropdown"`, `strategy:fixed`)으로 수정·삭제를 제공한다(변경 전: 아이콘 버튼 → Metronic `data-kt-menu`는 `.table-responsive` overflow에 잘려 미표시). 메뉴 클릭은 행의 상세/아이템 수정 이동으로 전파하지 않으며 Metronic 재바인딩은 필요 없다.
 - 분류 코드(code_group) 목록/등록/수정/삭제
 - 분류 코드별 상세 코드(code_item) 목록/등록/삭제
 - 상세 코드 정렬 순서 변경
@@ -117,7 +120,7 @@
 **스토어**: `features/admin/stores/menuAdmin.ts`
 
 **기능**:
-- 본문 상단 새로고침 버튼 표시. 화면 설명은 `MENU_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
+- 화면 설명은 `MENU_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다. 본문 보드(`menu-admin-board`)는 저널 일자 뷰 툴바·사이트 관리 탭과 동일하게 상단 `mt-5` 여백을 둔다.
 - 메뉴 트리 2컬럼 구조 (사용자 메뉴 / 관리자 메뉴)를 유지하고, `sidebarVisibleYn=N` 메뉴는 하단 `숨김·시스템 메뉴` 섹션으로 분리 표시한다.
 - 메뉴 등록/수정/삭제
 - 하위 메뉴 추가, 사용 여부 토글
@@ -128,6 +131,8 @@
 - 메뉴 등록/수정 모달은 사용 여부와 사이드바 표시 여부 토글, 상위 메뉴 읽기 전용 필드를 입력 높이 기준으로 세로 정렬한다. `sidebarVisibleYn=N`은 메뉴 테이블과 breadcrumb/권한/화면 메타 원천에는 남기되 사이드바 트리 렌더링에서 제외한다. `메뉴명`과 필수 `메뉴 라벨`은 기본 정보 row 안에서 병렬 입력으로 배치한다. `URL`은 `submenuExpandType=NO_SUB`일 때만 표시하고 필수로 받으며, 그 외 확장형 메뉴는 저장 시 URL을 빈 값으로 정규화한다. `미열람 카운트`는 스위치와 조건부 입력을 한 줄로 배치하며, 스위치 ON이면 카운트 이름 입력을 필수로 받는다.
 - 메뉴 등록/수정 모달은 선택 메뉴의 `menuDescription`을 `메뉴 설명` textarea로 관리한다. 저장된 설명은 sidebar 메뉴 API 응답에 포함되고, 현재 route에 매칭된 메뉴의 설명이 공통 breadcrumb 하단에 표시된다. 설명이 비어 있으면 breadcrumb 하단 설명 영역은 렌더링하지 않는다.
 - `protectedYn=Y`는 메뉴 자체의 수정·사용여부 변경·삭제와 자기 자신 드래그 이동을 막는 시스템 보호 의미다. 보호 메뉴는 drag source와 sibling drop target이 되지 않지만, 보호 메뉴 아래에도 하위 메뉴를 추가하거나 다른 하위 메뉴를 이동할 수 있다.
+- **BOARD 확장 메뉴의 사이드바 하위 항목**: `submenuExpandType=BOARD` 메뉴(`일반게시판`)는 하위 메뉴를 menu 테이블에 두지 않는다. 게시판은 `board` 테이블이 소유하므로, 서버가 사이드바 조회 시 사용중(`useYn=Y`) 게시판을 `sortOrder` 순으로 `subMenuList` 에 주입한다(`MenuService.attachBoardSubMenus`). 각 게시판은 `/app/board/post/list.do?contentType=<boardKey>` URL 을 가진 `NO_SUB` 메뉴로 변환하며, 프론트 `urlMapping` 이 이를 `/board/<boardKey>` 라우트로 흡수한다. 변경 전에는 주입이 없어 BOARD 메뉴가 자식도 URL 도 없는 빈 메뉴였고, 게시판을 등록해도 사용자 화면에 나타나지 않았다(프론트는 `subMenuList` 가 있어야 아코디언으로 펼친다). BOARD 메뉴 자체는 링크 없이 아코디언 역할만 한다.
+  - 캐시: 사이드바 메뉴 캐시(`userMenuList`/`userMenuMetaList`/`mngrMenuList`/`mngrMenuMetaList`)에 주입 결과가 함께 담긴다. 게시판 등록·수정·삭제·사용여부·정렬 변경 시 `BoardService` 후처리에서 이 캐시들도 무효화해야 새 게시판이 반영된다.
 - `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. `MenuDto.getManagementType()`이 `submenuExpandType=BOARD` 여부로 파생하는 값이며 DB 컬럼이 아니다. 메뉴 관리에서는 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시하고, **`...` 컨텍스트 메뉴도 함께 표시**한다(변경 전: 컨텍스트 메뉴를 숨기고 링크만 표시). BOARD 메뉴도 수정·사용여부 전환·삭제가 가능하며, 하위 메뉴 추가만 노출하지 않는다(백엔드 `MenuService`가 BOARD 부모 아래 하위 메뉴 등록을 거부). BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
 - 메뉴 트리 행의 액션은 `...` 컨텍스트 메뉴로 제공한다. 메뉴 항목은 하위 메뉴 추가, 수정, 사용/미사용 전환, 삭제이며 각 항목은 시스템 보호 상태에 따라 비활성화한다.
 - 메뉴 등록·수정 폼의 URL 레이블은 현재 locale의 `common.technical.url` 카탈로그를 사용하며 URL 입력·검증 계약은 유지한다.
@@ -152,7 +157,7 @@
 **스토어**: `features/admin/stores/userAdmin.ts`
 
 **기능**:
-- 본문 상단 새로고침/계정 등록 버튼 표시. 화면 설명은 `USER_ACCOUNT` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
+- 계정 등록은 저널 스레드·게시판·코드 관리와 동형인 뷰 툴바(`user-admin-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `USER_ACCOUNT` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
 - 계정 삭제 (본인 계정 삭제 불가)

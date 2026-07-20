@@ -14,6 +14,22 @@ export interface ThreadTagItem {
   ctgr?: string;
 }
 
+/** 목록 검색 카드의 태그 클라우드 항목 */
+export interface ThreadTagCloudItem {
+  id: number;
+  name: string;
+  ctgr?: string;
+  contentSize?: number;
+  tagClass?: string;
+  textClass?: string;
+}
+
+/** 저널 스레드 분류 선택지 */
+export interface ThreadCategoryItem {
+  code: string;
+  codeName: string;
+}
+
 /** 태그 컴포지션 */
 export interface ThreadTagCmpstn {
   list?: ThreadTagItem[];
@@ -77,6 +93,18 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const filterKeyword = ref("");
   /** 카테고리 필터 */
   const filterCategory = ref("");
+  /** 태그 필터 (레거시 목록과 동일하게 단일 태그 선택) */
+  const filterTagId = ref<number | null>(null);
+  /** 태그 클라우드 */
+  const tagCloud = ref<ThreadTagCloudItem[]>([]);
+  /** 태그 클라우드 로딩 상태 */
+  const tagCloudLoading = ref(false);
+  /** 태그 클라우드 조회 오류 */
+  const tagCloudError = ref("");
+  /** 분류 선택지 */
+  const categoryOptions = ref<ThreadCategoryItem[]>([]);
+  /** 분류 선택지 조회 오류 */
+  const categoryError = ref("");
 
   // ---- 등록/수정 모달 ----
 
@@ -114,8 +142,12 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         page: targetPage,
         size: pageSize.value,
       };
-      if (filterKeyword.value) params.searchKeyword = filterKeyword.value;
+      if (filterKeyword.value) {
+        params.searchType = "title";
+        params.searchKeyword = filterKeyword.value;
+      }
       if (filterCategory.value) params.categoryCode = filterCategory.value;
+      if (filterTagId.value != null) params.tags = [filterTagId.value];
       const res = await axios.get("/api/journal/threads", { params });
       /* Spring Page<T> → { content, totalElements, totalPages, number, size } */
       const pageResult = res.data?.rsltObj;
@@ -129,6 +161,43 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     } finally {
       loading.value = false;
     }
+  }
+
+  /** 저널 스레드 태그 클라우드를 조회한다. */
+  async function fetchTagCloud(): Promise<void> {
+    tagCloudLoading.value = true;
+    tagCloudError.value = "";
+    try {
+      const res = await axios.get("/api/tags", { params: { contentType: "JOURNAL_THREAD" } });
+      tagCloud.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+    } catch (e: unknown) {
+      console.error("[journalThread] fetchTagCloud failed", e);
+      tagCloud.value = [];
+      tagCloudError.value = t("journal.thread.tag-cloud.load.failure");
+    } finally {
+      tagCloudLoading.value = false;
+    }
+  }
+
+  /** 현재 locale이 적용된 저널 스레드 분류 선택지를 조회한다. */
+  async function fetchCategoryOptions(): Promise<void> {
+    categoryError.value = "";
+    try {
+      const res = await axios.get("/api/journal/threads/categories");
+      categoryOptions.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+    } catch (e: unknown) {
+      console.error("[journalThread] fetchCategoryOptions failed", e);
+      categoryOptions.value = [];
+      categoryError.value = t("journal.thread.category.load.failure");
+    }
+  }
+
+  /** 검색 조건을 비우고 첫 페이지를 조회한다. */
+  async function resetFilters(): Promise<void> {
+    filterKeyword.value = "";
+    filterCategory.value = "";
+    filterTagId.value = null;
+    await fetchList(0);
   }
 
   // ---- 등록/수정 액션 ----
@@ -212,7 +281,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
           message: res.data?.message,
           successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
         });
-        void fetchList(0);
+        void Promise.all([fetchList(0), fetchTagCloud()]);
         return true;
       }
       void swalAjaxResult({
@@ -245,7 +314,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
           message: res.data?.message,
           successFallback: t("common.result.deleted"),
         });
-        void fetchList(0);
+        void Promise.all([fetchList(0), fetchTagCloud()]);
       } else {
         void swalAjaxResult({
           rslt: false,
@@ -297,7 +366,16 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     error,
     filterKeyword,
     filterCategory,
+    filterTagId,
+    tagCloud,
+    tagCloudLoading,
+    tagCloudError,
+    categoryOptions,
+    categoryError,
     fetchList,
+    fetchTagCloud,
+    fetchCategoryOptions,
+    resetFilters,
     // 등록/수정
     registOpen,
     registLoading,

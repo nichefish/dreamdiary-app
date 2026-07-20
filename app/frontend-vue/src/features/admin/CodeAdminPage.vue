@@ -1,18 +1,17 @@
 <template>
   <div class="code-admin-page">
-    <div class="code-admin-toolbar">
-      <div class="code-admin-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchGroups(store.currentPage)">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-primary" @click="store.openGroupCreate">
+    <!--begin::뷰 툴바 — 저널 스레드·게시판 액션 행과 동일(mt-3 mb-1). ASIDE 없음. 탭용 mt-5 빈 여백은 두지 않는다.-->
+    <div class="code-admin-view-toolbar d-flex flex-column-fluid justify-content-end align-items-start align-items-xl-center gap-4 w-100">
+      <div class="d-flex align-items-center flex-shrink-0 pe-5 mt-3 mb-1 gap-2">
+        <button type="button" class="btn btn-sm btn-primary text-nowrap" @click="store.openGroupCreate">
           <i class="bi bi-plus-lg"></i>
           {{ t('code.group.register') }}
         </button>
       </div>
     </div>
+    <!--end::뷰 툴바-->
 
-    <div class="card post">
+    <div class="card post" style="margin-top: 0 !important;">
       <div class="card-body">
         <div class="code-admin-listbar">
           <div class="code-admin-search">
@@ -81,14 +80,36 @@
                   </button>
                 </td>
                 <td class="text-center" @click.stop>
-                  <div class="code-admin-actions justify-content-center">
-                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.edit')" @click="openGroupEdit(row.id)">
-                      <i class="bi bi-pencil-square"></i>
+                  <!--begin::컨텍스트 메뉴
+                    변경 전: Metronic data-kt-menu 를 썼으나 .table-responsive(overflow) 안에서
+                    드롭다운이 잘려 보이지 않았다. 메뉴 관리(MenuAdminTreeNode)와 동일하게
+                    Bootstrap dropdown + strategy:fixed 로 전환한다.
+                  -->
+                  <div class="dropdown d-inline-flex justify-content-center">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                      data-bs-toggle="dropdown"
+                      data-bs-auto-close="true"
+                      data-bs-popper-config='{"strategy":"fixed"}'
+                      aria-expanded="false"
+                      :title="t('common.menu')"
+                    >
+                      <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.delete')" @click="deleteGroup(row)">
-                      <i class="bi bi-trash"></i>
-                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                      <button type="button" class="dropdown-item d-flex flex-stack" @click="openGroupEdit(row.id)">
+                        <span>{{ t('common.edit') }}</span>
+                        <i class="bi bi-pencil-square fs-8"></i>
+                      </button>
+                      <div class="dropdown-divider"></div>
+                      <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="deleteGroup(row)">
+                        <span>{{ t('common.delete') }}</span>
+                        <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                      </button>
+                    </div>
                   </div>
+                  <!--end::컨텍스트 메뉴-->
                 </td>
               </tr>
             </tbody>
@@ -202,14 +223,32 @@
                           </span>
                         </td>
                         <td class="text-center" @click.stop>
-                          <div class="code-admin-actions justify-content-center">
-                            <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.edit')" @click="openItemEdit(item.id)">
-                              <i class="bi bi-pencil-square"></i>
+                          <!--begin::컨텍스트 메뉴 — 분류 목록과 동일(Bootstrap dropdown + strategy:fixed).-->
+                          <div class="dropdown d-inline-flex justify-content-center">
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                              data-bs-toggle="dropdown"
+                              data-bs-auto-close="true"
+                              data-bs-popper-config='{"strategy":"fixed"}'
+                              aria-expanded="false"
+                              :title="t('common.menu')"
+                            >
+                              <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.delete')" @click="deleteItem(item)">
-                              <i class="bi bi-trash"></i>
-                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                              <button type="button" class="dropdown-item d-flex flex-stack" @click="openItemEdit(item.id)">
+                                <span>{{ t('common.edit') }}</span>
+                                <i class="bi bi-pencil-square fs-8"></i>
+                              </button>
+                              <div class="dropdown-divider"></div>
+                              <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="deleteItem(item)">
+                                <span>{{ t('common.delete') }}</span>
+                                <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                              </button>
+                            </div>
                           </div>
+                          <!--end::컨텍스트 메뉴-->
                         </td>
                       </tr>
                     </tbody>
@@ -544,7 +583,6 @@ onMounted(async () => {
   flex: 0 0 auto;
 }
 
-.code-admin-toolbar,
 .code-admin-listbar,
 .code-admin-footer {
   display: flex;
@@ -560,10 +598,6 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.code-admin-toolbar {
-  justify-content: flex-end;
 }
 
 .code-admin-search {
@@ -673,7 +707,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .code-admin-toolbar,
   .code-admin-listbar,
   .code-admin-footer,
   .code-admin-search {

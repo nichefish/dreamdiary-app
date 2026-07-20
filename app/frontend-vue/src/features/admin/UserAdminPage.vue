@@ -1,18 +1,17 @@
 <template>
   <div class="user-admin-page">
-    <div class="user-admin-toolbar">
-      <div class="user-admin-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchUsers(store.currentPage)">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-primary" @click="store.openCreate">
+    <!--begin::뷰 툴바 — 저널 스레드·게시판·코드 관리 액션 행과 동일(mt-3 mb-1). ASIDE 없음. 탭용 mt-5 빈 여백은 두지 않는다.-->
+    <div class="user-admin-view-toolbar d-flex flex-column-fluid justify-content-end align-items-start align-items-xl-center gap-4 w-100">
+      <div class="d-flex align-items-center flex-shrink-0 pe-5 mt-3 mb-1 gap-2">
+        <button type="button" class="btn btn-sm btn-primary text-nowrap" @click="store.openCreate">
           <i class="bi bi-plus-lg"></i>
           {{ t('user.admin.register') }}
         </button>
       </div>
     </div>
+    <!--end::뷰 툴바-->
 
-    <div class="card post">
+    <div class="card post" style="margin-top: 0 !important;">
       <div class="card-body">
         <div class="user-admin-listbar">
           <div class="user-admin-search">
@@ -559,7 +558,6 @@ onMounted(async () => {
   gap: 1rem;
 }
 
-.user-admin-toolbar,
 .user-admin-listbar,
 .user-admin-footer {
   display: flex;
@@ -577,10 +575,6 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.user-admin-toolbar {
-  justify-content: flex-end;
 }
 
 .user-admin-search {
@@ -772,7 +766,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .user-admin-toolbar,
   .user-admin-listbar,
   .user-admin-footer,
   .user-admin-search,

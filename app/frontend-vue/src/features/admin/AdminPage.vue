@@ -1,33 +1,35 @@
 <template>
   <div class="admin-page">
-    <div class="admin-toolbar">
-      <button type="button" class="btn btn-sm btn-light-primary" :disabled="reloadDisabled" @click="reload">
-        <i class="bi bi-arrow-clockwise"></i>
-      </button>
+    <!--begin::뷰 탭 — 저널 일자 JournalDayViewToolbar 와 동일 골격(nav-tabs-line + ps-5 mt-5)-->
+    <div class="admin-view-toolbar d-flex flex-column-fluid w-100">
+      <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1" role="tablist" :aria-label="t('admin.page.aria-label')">
+        <li class="nav-item" role="presentation">
+          <button
+            type="button"
+            class="nav-link px-6"
+            :class="{ active: activeTab === 'general' }"
+            role="tab"
+            :aria-selected="activeTab === 'general'"
+            @click="selectTab('general')"
+          >
+            {{ t('admin.page.tab.general') }}
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            type="button"
+            class="nav-link px-6"
+            :class="{ active: activeTab === 'ai' }"
+            role="tab"
+            :aria-selected="activeTab === 'ai'"
+            @click="selectTab('ai')"
+          >
+            {{ t('admin.page.tab.ai') }}
+          </button>
+        </li>
+      </ul>
     </div>
-
-    <div class="admin-tabs nav nav-tabs nav-line-tabs" role="tablist" :aria-label="t('admin.page.aria-label')">
-      <button
-        type="button"
-        class="nav-link"
-        :class="{ active: activeTab === 'general' }"
-        role="tab"
-        :aria-selected="activeTab === 'general'"
-        @click="selectTab('general')"
-      >
-        {{ t('admin.page.tab.general') }}
-      </button>
-      <button
-        type="button"
-        class="nav-link"
-        :class="{ active: activeTab === 'ai' }"
-        role="tab"
-        :aria-selected="activeTab === 'ai'"
-        @click="selectTab('ai')"
-      >
-        {{ t('admin.page.tab.ai') }}
-      </button>
-    </div>
+    <!--end::뷰 탭-->
 
     <div v-if="store.backfillWorkActive" class="admin-backfill-banner" role="status">
       <i class="bi bi-cloud-check fs-4 text-primary"></i>
@@ -524,11 +526,6 @@ let statsTimer: number | undefined;
 const BACKGROUND_SYNC_NOTE = t("admin.page.background.queue-note");
 
 const activeTab = computed<AdminTab>(() => (route.query.tab === "ai" ? "ai" : "general"));
-const reloadDisabled = computed(() =>
-  activeTab.value === "ai"
-    ? store.embeddingStatsLoading || store.entityQueueStatsLoading || store.chatRagSettingsLoading
-    : store.bootstrapLoading
-);
 const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
 const ollamaHealthBadgeClass = computed(() => {
   const status = store.ollamaHealth?.status ?? "DOWN";
@@ -797,13 +794,6 @@ onUnmounted(() => {
 .admin-page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.admin-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
   gap: 1rem;
 }
 

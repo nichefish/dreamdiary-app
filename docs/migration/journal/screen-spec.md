@@ -164,7 +164,7 @@
 | 달력 탭 | `<a>` | `.nav-link.px-6.cursor-pointer` | `Url.JOURNAL_DAY_CAL` | `bi-sort-down-alt` 아이콘 |
 | 메타 탭 | `<a>` | `.nav-link.px-6.cursor-pointer` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 (Vue) |
 | 탭 라벨 | text | — | — | `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW` |
-| 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 등록 버튼; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
+| 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 검색·등록·aside 열기 액션; 그림자 없이 고정 앱 헤더 아래 sticky floating하며 열린 aside와 상단선 일치; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
 | 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex`. 신규 등록 성공 시 서버가 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. |
 | 키워드 검색 | Vue | `JournalDayViewToolbar.vue` | `openSearchTab` → `/journal/entry/search` | 레거시 팝업 대체 ✓ — 툴바 일기·꿈 키워드 입력 후 새 탭 검색 |
 | 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부. 일자/일기/꿈 태그 행의 목록 시작 x좌표는 동일해야 하며, `꿈 태그` 라벨 길이 차이로 들여쓰기 차이가 생기면 안 된다. |
@@ -183,6 +183,7 @@
 | 달력 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_CAL)` | 달력 보기 페이지로 이동 |
 | 메타 뷰로 전환 | 탭 클릭 | `dF.JournalDayViewService.changeView(Url.JOURNAL_DAY_META_VIEW)` | 메타 보기 페이지로 이동 |
 | 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayRegist()`) |
+| 사이드 필터 열기 | aside 숨김 시 상단 툴바 맨 오른쪽 버튼 | — | `asideStore.show()`로 사이드 필터를 표시. 데스크톱에서는 sticky 툴바와 함께 고정 헤더 아래를 따라가며, 모바일에서는 본문 우상단 전용 버튼을 유지 |
 
 **레이아웃 전역 툴바** (`JournalDayViewToolbar.vue`): 고급필터(사이드 패널 토글)·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ✓ (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
@@ -340,8 +341,8 @@
 
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
-| 결산 등록 | 총 집계 카드 우측 액션 버튼 | `dF.JournalAnnual` 서비스 | 결산 등록 모달 오픈 |
-| 전체 결산 갱신 | 총 집계 카드 우측 `전체 결산 갱신` 버튼 | `dF.JournalAnnual.makeTotalAnnualAjax()` | `POST /api/journal/annual/make-total` 호출 후 성공 알림, 결산 목록과 전체 꿈 통계 재조회 |
+| 결산 등록 | 뷰 툴바(`JournalAnnualViewToolbar`) 우측 액션 버튼 | `dF.JournalAnnual` 서비스 | 결산 등록 모달 오픈 |
+| 전체 결산 갱신 | 뷰 툴바 우측 `전체 결산 갱신` 버튼 | `dF.JournalAnnual.makeTotalAnnualAjax()` | `POST /api/journal/annual/make-total` 호출 후 성공 알림, 결산 목록과 전체 꿈 통계 재조회 |
 | 결산 카드 클릭 | 목록 카드 클릭 | `JournalAnnualListItem` Vue 내부 | 결산 상세 페이지 이동 |
 | 태그 클릭 | 태그 배지 클릭 | `dF.JournalDayTagService.select(...)` | 태그 상세 모달 |
 | 연도 필터 변경 | annual aside select 변경 | Vue store | 연도 필터가 키워드 필터보다 우선하며 AND 조건으로 결합하지 않음 |
@@ -364,7 +365,7 @@
 
 - 결산 등록 후 목록 갱신: `JournalAnnualListApp.init() + listAjax()` (레거시 IIFE 동등)
 - 전체 결산 갱신 후 목록 갱신: 레거시 `blockUIReload()`와 달리 Vue SPA에서는 `JournalAnnualStore.makeTotalAnnual()` 성공 알림 후 `fetchList()`와 `fetchTotal()`을 재호출해 현재 화면의 목록/총 집계를 갱신한다.
-- Vue SPA에서 결산 등록·전체 결산 갱신은 필터 aside가 아니라 총 집계 카드 우측 액션 영역에 배치한다. aside는 연도·키워드 필터 전용 영역으로 유지한다.
+- Vue SPA에서 결산 등록·전체 결산 갱신·aside 열기는 저널 일자 툴바의 **액션 행**과 동형인 `JournalAnnualViewToolbar`에 배치한다(`pe-5 mt-3`, 데스크톱 aside 열기는 툴바 우측). 결산에는 뷰 탭이 없으므로 탭용 `mt-5` 빈 여백은 두지 않고, 총 집계 카드는 `margin-top: 0`으로 툴바에 붙인다. aside는 연도·키워드 필터 전용 영역으로 유지한다.
 - 결산 카드 컨텍스트 메뉴(`data-kt-menu`)는 비동기 목록 렌더, 수정 저장 후 목록 재조회 완료, 필터 DOM 갱신 후 `reinitMetronicAfterDom()`으로 Metronic 메뉴를 재바인딩한다.
 - `preloadJournalDayTagService.js` 별도 적재 (태그 클릭 시 `dF.JournalDayTagService.select` 호출 대비)
 - 꿈 아이콘: `bi bi-moon-stars fs-4`
@@ -473,19 +474,24 @@
 - 히든 폼: `#procForm` (GET, `id` hidden)
 - 마운트 루트: `<div id="journal_thread_list_app" class="d-none">`
 
+**현재 Vue SPA 구조**: `JournalThreadLayout`이 `JournalThreadViewToolbar`(등록, `pe-5 mt-3 mb-1`)를 목록 위에 두고, 그 아래 컴팩트한 2행 태그 클라우드·검색 카드가 있다. ASIDE는 없다. 첫째 행은 태그 아이콘과 텍스트형 태그 칩만 두고, 둘째 행은 얇은 상단 구분선 아래 분류·제목 검색과 검색·초기화 액션을 배치한다. 검색 카드는 `margin-top: 0`으로 툴바에 붙인다. 별도 카드 제목 행은 두지 않으며 기존 목록 카드의 테이블 DOM·클래스와 페이지네이션 구조는 유지한다.
+
 ### Key UI Elements
 
 | Element | Type | Legacy class/id | Data source | Notes |
 |---------|------|----------------|-------------|-------|
 | 태그 필터바 | include | `_tag_list_header.ftlh` | 태그 목록 | 태그 클릭 필터 |
+| 뷰 툴바 | `JournalThreadViewToolbar` | Vue 신규 툴바 | Vue Router `thread-create` | 등록 버튼만. 결산·일자 액션 행과 동형(`pe-5 mt-3 mb-1`). ASIDE 없음. 탭용 `mt-5` 빈 여백 없음 |
+| Vue 태그·검색 카드 | `.card.mb-4` + `margin-top: 0` | Vue 신규 검색 카드 | `/api/tags?contentType=JOURNAL_THREAD`, `/api/journal/threads/categories` | 태그·분류·제목 검색. 등록은 뷰 툴바로 이동. 툴바에 붙는 상단 여백 |
 | 테이블 | `<table>` | `.table.align-middle.table-row-dashed.fs-small.gy-5.table-fixed.hoverTable.mb-3` | 서버 모델 | 고정 레이아웃, 행 hover |
 | 번호 열 | `<th>` | `.text-center.wb-keepall.w-10.hidden-table` | `post.rnum` | 모바일 숨김 |
 | 제목 열 | `<th>` | `.col-lg-9.col-9.text-center.wb-keepall` | `post.title` | `txt.title` i18n |
 | 첨부파일 열 | `<th>` | `.col-lg-1.text-center.wb-keepall.hidden-table` | `post.hasFiles` | 모바일 숨김 |
+| 관리 열 | `<th>` | `.col-lg-1.text-center.wb-keepall.hidden-table` | Vue Router, thread store | ⋯ 컨텍스트 메뉴에서 수정·삭제 |
 | 목록 tbody | `<tbody>` | `#journal_thread_list_div` | `JournalThreadListApp` Vue 텔레포트 | 행 직접 주입 |
 | 페이지네이션 | include | `_pagination.ftlh` | `paginationInfo` | 기존 서버사이드 페이지네이션 유지 |
 
-`JournalThreadList.vue`의 등록 버튼·테이블 헤더·빈 상태·댓글 목록·수정·삭제 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
+`JournalThreadList.vue`의 분류·제목 placeholder·태그 빈 상태와 조회 실패, 등록 버튼·테이블 헤더·빈 상태·댓글 목록·컨텍스트 메뉴·수정·삭제 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 `JournalThreadRegistModal.vue`의 등록·수정 제목, 필드, placeholder, 저장·닫기 버튼 및 확인창은 현재 locale의 클라이언트 카탈로그를 사용한다. 목록·수정·상세 조회 실패와 등록·수정 결과 fallback도 현재 locale을 사용하며, API가 `message`를 반환하면 서버 메시지를 우선 표시한다.
 
@@ -496,7 +502,11 @@
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
 | 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 상세 모달 오픈 + URL `/thread/:id` 동기화 |
-| 등록 모달 열기 | 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
+| 상세 모달 닫기 | 헤더 × 또는 푸터 「닫기」 클릭 | `store.closeDetail()` | 명시적 조작으로만 닫힘. backdrop 클릭과 Escape는 무시하며 URL 이동·조회 실패에 따른 프로그램상 종료는 유지 |
+| 등록 모달 열기 | 뷰 툴바(`JournalThreadViewToolbar`) 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
+| 태그 필터 | 검색 카드의 태그 클릭 | `filterTagId` 설정 후 `fetchList(0)` | 단일 태그 선택·재클릭 해제 후 첫 페이지 조회 |
+| 분류·제목 검색 | 검색 버튼 또는 Enter | `filterCategory`, `filterKeyword` 설정 후 `fetchList(0)` | `categoryCode`, `searchType=title`, `searchKeyword`로 첫 페이지 조회 |
+| 검색 초기화 | 초기화 버튼 클릭 | `resetFilters()` | 태그·분류·제목 조건을 모두 비우고 첫 페이지 조회 |
 | 수정 모달 열기 | 수정 버튼 클릭 | `router.push({ name: "thread-edit", params: { id } })` | 수정 모달 오픈 + URL `/thread/:id/edit` 동기화 |
 | 댓글 모달 | 댓글 수 클릭 | `CommentList.modal(id, contentType)` | 댓글 목록 모달 |
 | 파일 모달 | 첨부파일 아이콘 클릭 | `FileGroupList.modal(fileGroupId)` | 파일 목록 모달 |

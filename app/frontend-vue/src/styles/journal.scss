@@ -62,11 +62,55 @@ $color-else-dream-line-2: rgba(148, 163, 184, 0.4);
 .journal-layout-vue__aside,
 .journal-annual-layout-vue__aside {
     position: sticky;
-    top: 1rem;
     align-self: flex-start;
-    max-height: calc(100vh - 2rem);
     overflow-y: auto;
     scrollbar-gutter: stable;
+}
+
+.journal-layout-vue__aside {
+    top: 0;
+    max-height: 100vh;
+}
+
+.journal-annual-layout-vue__aside {
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+}
+
+/**
+ * 저널 일자·결산·스레드·게시판·코드/계정/게시판그룹 관리 공통 뷰 툴바는 원래 문서 위치를 차지한 채 viewport 상단에 머문다.
+ * 데스크톱의 고정 앱 헤더보다 낮은 z-index와 헤더 높이 offset을 사용해 겹침을 방지한다.
+ */
+.journal-day-view-toolbar,
+.journal-annual-view-toolbar,
+.journal-thread-view-toolbar,
+.board-post-view-toolbar,
+.code-admin-view-toolbar,
+.user-admin-view-toolbar,
+.board-group-view-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+@media (min-width: 992px) {
+    .journal-day-view-toolbar,
+    .journal-annual-view-toolbar,
+    .journal-thread-view-toolbar,
+    .board-post-view-toolbar,
+    .code-admin-view-toolbar,
+    .user-admin-view-toolbar,
+    .board-group-view-toolbar {
+        top: var(--bs-app-header-height, 74px);
+    }
+
+    .journal-layout-vue__aside,
+    .journal-annual-layout-vue__aside {
+        top: var(--bs-app-header-height, 74px);
+        max-height: calc(100vh - var(--bs-app-header-height, 74px));
+    }
 }
 
 .journal-aside-week-days {

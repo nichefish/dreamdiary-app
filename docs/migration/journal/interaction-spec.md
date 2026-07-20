@@ -27,6 +27,7 @@
 | 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
+| 툴바 floating·aside 열기 | `JournalDayViewToolbar` 전체와 열린 저널 일자 aside의 상단선이 고정 앱 헤더 아래에서 sticky로 일치하고, 툴바는 별도 그림자 없이 하단 경계만 사용. aside 숨김 시 우측 끝 버튼이 `asideStore.show()` 호출. 모바일은 본문 우상단 전용 버튼 유지 | ✓ |
 | 어사이드 목록 키워드 필터 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` → `fetchDays()` (목록 축소) | ✓ — 툴바 `openSearchTab` 전체검색과 분리 (`vue-screen-overview.md` 필터·검색 정책) |
 | 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView. 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback | ✓ |
 | 상태/라이프사이클 변경 후 스크롤 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalDaysForRoute`(주간/월간/일간 route 분기) → `#journal-day-{stdrdDt}` scrollIntoView. **일간(`journal-daily`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
@@ -657,6 +658,12 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 검색·목록·메타 조회 실패는 실제 빈 결과와 구분한다. 직전 성공 데이터와 결과 건수를 보존하면서 오류를 기록·표시하고, 일자/엔트리/스레드의 상세·수정용 조회가 실패하면 불완전한 모델로 모달을 열지 않는다. 일자 수정·상세, 꿈 등록, 엔트리 수정 정보 조회 실패는 서버 메시지를 우선 표시하고 없으면 현재 locale의 fallback을 사용한다.
 
 저널 스레드 등록·수정 모달의 확인창과 저장 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 등록·수정 성공 또는 실패 응답에 서버 `message`가 있으면 서버 메시지를 우선 표시하며, 수정·상세 조회 실패 시 모달을 닫고 현재 locale의 조회 실패 안내를 표시한다. 삭제 확인·성공·실패 fallback도 현재 locale을 사용하고 서버 `message`를 우선 표시하며, 성공 알림 확인 후 첫 페이지 목록을 다시 조회한다.
+
+**저널 스레드 상세 닫기 정책**: `JournalThreadDetailModal`은 `backdrop: "static"`, `keyboard: false`로 생성해 모달 바깥 클릭과 Escape 입력으로 닫히지 않는다. 헤더 ×와 푸터 「닫기」는 `store.closeDetail()`을 호출하는 명시적 종료 경로이며, URL 이동·상세 조회 실패에 따른 프로그램상 종료는 유지한다.
+
+**저널 스레드 목록 검색 카드**: 화면 진입 시 목록과 함께 `GET /api/tags?contentType=JOURNAL_THREAD` 태그 클라우드 및 `GET /api/journal/threads/categories` 분류 선택지를 조회한다. 태그는 단일 선택이며 같은 태그를 다시 클릭하면 해제한다. 태그 선택·해제, 분류·제목 검색, 초기화는 모두 `fetchList(0)`으로 첫 페이지부터 조회한다. 제목 키워드는 서버의 `searchType`·`searchKeyword` 쌍 계약에 맞춰 `searchType=title`을 함께 전송하고, 태그는 `tags[]`, 분류는 `categoryCode`로 전송한다. 등록·수정·삭제 성공 후 목록과 태그 클라우드를 함께 갱신해 태그 빈도와 선택 가능 항목을 최신 상태로 맞춘다. 태그·분류 보조 데이터 조회 실패는 빈 상태로 가장하지 않고 오류 로그와 현재 locale 안내를 표시한다. 등록은 `JournalThreadViewToolbar`에 두고 `thread-create` 라우팅을 유지한다(검색 카드에는 두지 않음). ASIDE는 없다.
+
+**저널 스레드 목록 행 액션**: 관리 열은 수정·삭제 개별 버튼 대신 ⋯ 컨텍스트 메뉴를 제공한다. 메뉴 트리거와 항목 클릭은 행의 상세 이동 이벤트로 전파하지 않으며, 수정은 기존 수정 route로 이동하고 삭제는 기존 확인·삭제 store 액션을 유지한다. 비동기 목록 조회가 끝날 때 Metronic 메뉴를 재초기화한다.
 
 저널 할일 등록·수정 모달의 제목 필수 검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API의 서버 `message`가 있으면 우선 표시하고, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route의 저널 목록을 갱신한다.
 

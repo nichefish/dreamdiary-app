@@ -281,6 +281,7 @@ public class BoardService
     @Override
     public void postRegist(final BoardDto updatedDto) {
         EhCacheUtils.clearCache("boardMenuList");
+        this.evictSidebarMenuCache();
     }
 
     /**
@@ -295,6 +296,7 @@ public class BoardService
     @Override
     public void postModify(final BoardDto postDto, final BoardDto updatedDto) {
         EhCacheUtils.clearCache("boardMenuList");
+        this.evictSidebarMenuCache();
         EhCacheUtils.evictCacheByKey("boardMenu", updatedDto.getBoardKey());
     }
 
@@ -309,6 +311,7 @@ public class BoardService
     @Override
     public void postDelete(final BoardDto deletedDto) {
         EhCacheUtils.clearCache("boardMenuList");
+        this.evictSidebarMenuCache();
         EhCacheUtils.evictCacheByKey("boardMenu", deletedDto.getBoardKey());
     }
 
@@ -323,6 +326,7 @@ public class BoardService
     @Override
     public void postSetUse(final BoardEntity updatedEntity) {
         EhCacheUtils.clearCache("boardMenuList");
+        this.evictSidebarMenuCache();
         EhCacheUtils.evictCacheByKey("boardMenu", updatedEntity.getBoardKey());
     }
 
@@ -337,6 +341,21 @@ public class BoardService
     @Override
     public void postSortOrder(final List<BoardDto> sortOrders) {
         EhCacheUtils.clearCache("boardMenuList");
+        this.evictSidebarMenuCache();
         EhCacheUtils.clearCache("boardMenu");
+    }
+
+    /**
+     * 사이드바 메뉴 캐시를 무효화한다.
+     * <p>
+     * 게시판은 {@code MenuService.attachBoardSubMenus} 가 BOARD 확장 메뉴의 하위 항목으로 주입하므로,
+     * 주입 결과가 사이드바 메뉴 캐시에 함께 담긴다. 게시판이 바뀌면 이 캐시도 비워야
+     * 사용자 화면에 반영된다. (locale 별 key 로 나뉘어 있어 리전 전체를 비운다)
+     */
+    private void evictSidebarMenuCache() {
+        EhCacheUtils.clearCache("userMenuList");
+        EhCacheUtils.clearCache("userMenuMetaList");
+        EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("mngrMenuMetaList");
     }
 }

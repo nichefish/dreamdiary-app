@@ -335,9 +335,10 @@ interface TodoRow {
 **사용 화면**: `JournalDayWeekly.vue`, `JournalDayMonthly.vue`, `JournalDayCalendar.vue`, `JournalDayMeta.vue` — 카드(`.card.post`) 위 첫 행
 
 **DOM 구조**:
-- flex 행 (`justify-content-between`): 좌측 `nav-tabs` (router-link 4개) + 우측 등록 버튼 (`d-none d-md-flex pe-5 mt-5`)
+- sticky flex 행 (`journal-day-view-toolbar`, `justify-content-between`): 좌측 `nav-tabs` (router-link 4개) + 우측 액션 영역 (`d-none d-md-flex pe-5 mt-3`)
 - 탭 라벨: `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW`
 - 등록 버튼: `btn btn-sm btn-light-primary btn-outlined`, 아이콘 `bi-calendar-plus`, 라벨 「저널 일자 등록」
+- aside 숨김 시 액션 영역 맨 오른쪽: 구분자 + `bi-layout-sidebar-inset-reverse` 열기 버튼. 일정 툴바와 같은 순서이며 aside가 보이면 렌더하지 않는다.
 - 탭·검색 placeholder/tooltip·등록 버튼 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **동작**:
@@ -356,6 +357,8 @@ interface TodoRow {
 **행동 spec 교차 참조**: `docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.4 (상단 등록 버튼)
 
 **레이아웃 전역 툴바 (2026-07 P2.3)**: `JournalDayViewToolbar.vue` 우측 — 고급필터(사이드 패널 토글), 일정 등록·개인 일정(`/schedule?regist=`), 태그 카테고리 동기화(`syncCategoryMaps`) — `JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3
+
+**Floating 툴바 (2026-07 현재 계약)**: 공통 툴바는 `position: sticky`로 원래 문서 높이를 유지하면서 스크롤 중 viewport 상단에 머문다. 데스크톱(`min-width: 992px`)은 고정 앱 헤더 높이 `var(--bs-app-header-height, 74px)` 아래에 붙고, 그 미만 화면은 `top: 0`을 사용한다. 불투명 흰 배경·하단 경계로 뒤의 저널 본문과 구분하며 별도 그림자는 사용하지 않는다. `z-index: 90`으로 앱 헤더(`100`) 아래에 놓인다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -659,11 +662,11 @@ interface TodoRow {
 
 ### 23-3c. `JournalAnnualDetail`·Annual Aside (연간 결산 상세·필터)
 
-**Vue 구현**: `app/frontend-vue/src/features/journal/annual/JournalAnnualList.vue`, `JournalAnnualDetail.vue`, `components/JournalAnnualDetailAside.vue`, `components/JournalAnnualListAside.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/annual/JournalAnnualList.vue`, `JournalAnnualDetail.vue`, `JournalAnnualLayout.vue`, `components/JournalAnnualViewToolbar.vue`, `components/JournalAnnualDetailAside.vue`, `components/JournalAnnualListAside.vue`, `stores/journalAnnualAside.ts`
 
 **마운트 모달·메뉴** (`JournalAnnualLayout`): `JournalAnnualRegistModal`, `JournalAnnualReviewRegistModal`, `JournalDayMetaModal`(일자 태그 검색), `JournalTagProfileModal`, `JournalTagContextMenu`.
 
-**데이터·동작**: 결산 총 집계 카드 우측 액션 영역(전체 결산 갱신·결산 등록), 결산 상세·리뷰·태그클라우드·중요/참조 토글과 상세/목록 필터를 `useJournalAnnualStore` 상태 및 기존 액션에 연결한다. 목록 aside와 상세 aside는 필터 전용 영역으로 유지하며, 상세 aside에는 결산 등록 액션을 두지 않는다. 결산 목록 카드의 Metronic 컨텍스트 메뉴는 비동기 목록 렌더, 수정 저장 후 목록 재조회 완료, 필터 DOM 갱신 후 `reinitMetronicAfterDom()`으로 재바인딩한다. locale 변경은 선택 연도·활성 탭·태그클라우드·필터값·토글 상태·API 호출을 변경하지 않는다.
+**데이터·동작**: 전체 결산 갱신·결산 등록·aside 열기는 `JournalAnnualViewToolbar`(저널 일자 액션 행과 동형, `mt-3`; 탭용 `mt-5` 빈 여백 없음)에 둔다. 총 집계 카드는 통계만 표시하며 `margin-top: 0`으로 툴바에 붙인다. 결산 상세·리뷰·태그클라우드·중요/참조 토글과 상세/목록 필터를 `useJournalAnnualStore` 상태 및 기존 액션에 연결한다. aside 표시는 `useJournalAnnualAsideStore`가 레이아웃·툴바가 공유한다. 목록 aside와 상세 aside는 필터 전용 영역으로 유지하며, 상세 aside·상세 화면 툴바에는 결산 등록 액션을 두지 않는다(목록 route에서만 툴바에 노출). 결산 목록 카드의 Metronic 컨텍스트 메뉴는 비동기 목록 렌더, 수정 저장 후 목록 재조회 완료, 필터 DOM 갱신 후 `reinitMetronicAfterDom()`으로 재바인딩한다. locale 변경은 선택 연도·활성 탭·태그클라우드·필터값·토글 상태·API 호출을 변경하지 않는다.
 
 **본문 타이포그래피**: 결산 상세 SUMMARY 본문과 DIARY/DREAM 엔트리 본문은 저널 일자 엔트리와 같은 `journal-content p-2` 계약을 따른다. 결산 상세 엔트리 제목은 일자 엔트리 제목과 맞춰 `fs-5` 크기로 표시한다. 결산 상세 DIARY/DREAM 엔트리 목록은 행 왼쪽 날짜 칼럼을 반복하지 않고, 날짜별 `journal-day-header` 아래에 `journal-diary-item`/`journal-dream-item` 본문 행을 배치해 저널 일자 화면의 시각 흐름과 맞춘다. DIARY/DREAM 엔트리 태그는 `JournalEntryItem` 과 동일하게 밑줄 primary `#이름`(ctgr 포함, `bi-tag` 없음)으로 표시하고 클릭 시 태그 컨텍스트 메뉴를 연다(변경 전: `bi-tag` + 단순 `#name`).
 
@@ -718,6 +721,10 @@ interface TodoRow {
 
 **동작**: 댓글 등록 버튼은 `useAttachableModalStore.openCommentRegist(id, contentType)`를 호출한다. 댓글 수 버튼(목록에 댓글이 있을 때)은 `openCommentList`를 호출한다. 댓글 등록 성공 시 `CommentRegistModal`이 열린 상세가 `JOURNAL_THREAD`이면 상세를 재조회하고 목록의 댓글 수를 갱신한다.
 
+**닫기 정책**: 읽는 중인 상세가 backdrop 클릭이나 Escape 입력으로 의도치 않게 닫히지 않도록 루트 DOM에 `data-bs-backdrop="static"`, `data-bs-keyboard="false"`를 선언하고 `Bootstrap Modal`도 `{ backdrop: "static", keyboard: false }`로 생성한다. 헤더 ×와 푸터 「닫기」는 `store.closeDetail()`을 호출하는 명시적 종료 경로로 유지한다. URL 이동·상세 조회 실패에 따른 프로그램상 종료도 유지한다.
+
+**상위 서사·엔트리 소속 계약**: 저널 스레드는 특정 일자 엔트리로 쓰기 어려운 내용을 제목·본문으로 직접 서술하는 독립 상위 서사다. 엔트리를 스레드에 소속시키고 상세에서 소속 엔트리를 모아 보는 기능은 현재 **MISSING**이다. 이는 엔트리끼리 직접 연결하는 RELATED/FLOW 그래프와 별도 저장·조회 계약으로 구현한다.
+
 **i18n**: 모달 제목·댓글 섹션 제목·빈 상태·등록 툴팁·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
@@ -726,11 +733,11 @@ interface TodoRow {
 
 ### 23-6. `JournalThreadList` (저널 스레드 목록)
 
-**Vue 구현**: `app/frontend-vue/src/features/journal/thread/JournalThreadList.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/thread/JournalThreadList.vue`, `JournalThreadLayout.vue`, `components/JournalThreadViewToolbar.vue`
 
-**데이터·동작**: `useJournalThreadStore.threadList`를 테이블로 표시하고, 행 클릭·등록·수정·삭제 버튼은 Vue Router 및 store 액션을 호출한다. 댓글 수 버튼은 `useAttachableModalStore.openCommentList`를 호출한다.
+**데이터·동작**: 등록은 `JournalThreadViewToolbar`(결산·일자 액션 행과 동형, `mt-3 mb-1`; ASIDE 없음; 탭용 `mt-5` 빈 여백 없음)에 두고 `thread-create`로 라우팅한다. 목록 카드 위 컴팩트한 2행 태그 클라우드·검색 카드에서 `JOURNAL_THREAD` 태그 단일 필터, 분류·제목 검색, 전체 초기화를 제공하고 모든 조건 실행은 첫 페이지부터 조회한다. 검색 카드는 `margin-top: 0`으로 툴바에 붙인다. 첫째 행은 태그 아이콘·텍스트형 태그 칩만, 둘째 행은 상단 구분선 아래 검색 컨트롤로 구성하며 별도 제목 행은 두지 않는다. `useJournalThreadStore.threadList`를 기존 테이블 DOM·클래스로 표시하고, 행 클릭은 Vue Router를 호출한다. 관리 열의 ⋯ 컨텍스트 메뉴는 수정 route 이동과 삭제 store 액션을 제공하고, 메뉴 클릭은 행 상세 이동으로 전파하지 않는다. 비동기 목록 조회가 끝나면 Metronic 메뉴를 재초기화한다. 등록·수정·삭제 성공 후 목록과 태그 클라우드를 함께 갱신한다. 댓글 수 버튼은 `useAttachableModalStore.openCommentList`를 호출한다. 분류 선택지는 사용자 권한 전용 `GET /api/journal/threads/categories`, 태그 클라우드는 공통 `GET /api/tags?contentType=JOURNAL_THREAD`를 사용한다.
 
-**i18n**: 등록 버튼·테이블 헤더·빈 상태·댓글 목록·수정·삭제 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
+**i18n**: 분류·제목 placeholder·태그 빈 상태와 조회 실패, 툴바 등록 버튼·테이블 헤더·빈 상태·댓글 목록·컨텍스트 메뉴·수정·삭제 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 분류 API도 현재 요청 locale의 코드명을 반환한다.
 
 **삭제 계약**: 삭제 확인과 실패 fallback은 스레드 전용 현재 locale 메시지를 사용하고, 성공 fallback은 공통 삭제 성공 메시지를 사용한다. 삭제 API가 `message`를 반환하면 서버 메시지를 우선 표시하며, 성공 알림 확인 후 첫 페이지 목록을 다시 조회한다.
 
@@ -756,9 +763,11 @@ interface TodoRow {
 
 **역할**: `<router-view>` + `JournalAside` + 저널·공통 attachable 모달 일괄 마운트
 
-**Aside 스크롤 동작**: `journal.scss`에서 `.journal-layout-vue__aside`에 `position: sticky`, `top: 1rem`, `max-height: calc(100vh - 2rem)`, `overflow-y: auto`를 적용한다. 본문 스크롤 중 필터 패널이 viewport 안에서 따라오며, 패널 내용이 화면보다 길면 aside 내부만 스크롤된다. 연간 결산 aside(`.journal-annual-layout-vue__aside`)도 같은 규칙을 공유한다.
+**Aside 스크롤 동작**: `journal.scss`에서 `.journal-layout-vue__aside`에 `position: sticky`와 `overflow-y: auto`를 적용한다. 데스크톱(`min-width: 992px`)에서는 `top: var(--bs-app-header-height, 74px)`와 `max-height: calc(100vh - var(--bs-app-header-height, 74px))`를 사용해 floating 툴바와 같은 상단선에 고정하고, 그 미만 화면에서는 `top: 0; max-height: 100vh`를 사용한다. 본문 스크롤 중 필터 패널이 추가 여백 없이 viewport 안에서 따라오며, 패널 내용이 화면보다 길면 aside 내부만 스크롤된다. 연간 결산 aside(`.journal-annual-layout-vue__aside`)는 기존 `top: 1rem`, `max-height: calc(100vh - 2rem)` 규칙을 유지한다.
 
 **Aside 열기 i18n**: aside가 숨겨졌을 때 표시되는 필터 패널 열기 버튼 tooltip은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 aside 표시 상태를 변경하지 않는다.
+
+**Aside 열기 버튼 위치**: aside 숨김 시 데스크톱 열기 버튼(`bi-layout-sidebar-inset-reverse`)은 `JournalDayViewToolbar` 액션 행의 맨 오른쪽에서 일정 화면과 같은 구분자+아이콘 슬롯으로 표시되고, sticky 툴바와 함께 스크롤을 따라간다. 기존 본문 컨테이너의 `position-absolute; top: 4rem; right: 0` 버튼은 툴바 액션 영역이 숨겨지는 모바일(`d-md-none`)에서만 유지한다. 변경 전에는 모든 화면 크기에서 본문 우상단에 떠 있어 데스크톱 액션 행과 정렬되지 않았다.
 
 **마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`. (`JournalEntryRegistModal`·`JournalEntryViewModal`은 채팅 RAG 원문 딥링크를 위해 `App.vue`에서 비팝업 전역 마운트 — 레이아웃 중복 마운트 없음. 출처 클릭은 읽기 전용 뷰, 편집은 뷰 footer에서 수정 모달로 전환.)
 

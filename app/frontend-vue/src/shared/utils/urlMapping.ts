@@ -29,6 +29,7 @@ const URL_MAP: Record<string, string> = {
   "/app/user/regist-form.do": "/admin/users",
   "/app/user/detail.do": "/admin/users",
   "/app/user/modify-form.do": "/admin/users",
+  "/app/user/signup/list.do": "/user/signup/approval",
   "/app/log/list.do": "/admin/log",
   "/app/log/stats/list.do": "/admin/log/stats-user",
   "/app/user/my/page.do": "/my",

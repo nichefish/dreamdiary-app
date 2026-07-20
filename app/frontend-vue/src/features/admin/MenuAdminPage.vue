@@ -1,14 +1,7 @@
 <template>
   <div class="menu-admin-page">
-    <div class="menu-admin-toolbar">
-      <div class="menu-admin-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchTree">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="menu-admin-board">
+    <!--begin::본문 — 저널 일자 툴바·사이트 관리 탭과 동일 상단 여백(mt-5)-->
+    <div class="menu-admin-board mt-5">
       <section class="menu-admin-column">
         <div class="menu-admin-column-header">
           <div>
@@ -494,23 +487,6 @@ watch(
   min-width: 0;
 }
 
-.menu-admin-toolbar,
-.menu-admin-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.menu-admin-toolbar {
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.menu-admin-actions {
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
 .menu-admin-loading {
   display: flex;
   align-items: center;
@@ -641,11 +617,6 @@ watch(
 @media (max-width: 768px) {
   .menu-admin-board {
     grid-template-columns: 1fr;
-  }
-
-  .menu-admin-toolbar {
-    align-items: stretch;
-    width: 100%;
   }
 
   .menu-admin-form-row,

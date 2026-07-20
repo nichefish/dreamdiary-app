@@ -1,18 +1,17 @@
 <template>
   <div class="board-group-page">
-    <div class="board-group-toolbar">
-      <div class="board-group-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-primary" @click="store.openCreate">
+    <!--begin::뷰 툴바 — 저널 스레드·게시판·코드/계정 관리 액션 행과 동일(mt-3 mb-1). ASIDE 없음. 탭용 mt-5 빈 여백은 두지 않는다.-->
+    <div class="board-group-view-toolbar d-flex flex-column-fluid justify-content-end align-items-start align-items-xl-center gap-4 w-100">
+      <div class="d-flex align-items-center flex-shrink-0 pe-5 mt-3 mb-1 gap-2">
+        <button type="button" class="btn btn-sm btn-primary text-nowrap" @click="store.openCreate">
           <i class="bi bi-plus-lg"></i>
           {{ t('common.register') }}
         </button>
       </div>
     </div>
+    <!--end::뷰 툴바-->
 
-    <div class="card post">
+    <div class="card post" style="margin-top: 0 !important;">
       <div class="card-body">
         <div class="board-group-listbar">
           <div class="board-group-search">
@@ -121,15 +120,36 @@
                     {{ isUse(row) ? t('status.use') : t('status.unuse') }}
                   </button>
                 </td>
-                <td class="text-center">
-                  <div class="board-group-row-actions">
-                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.edit')" @click="store.openEdit(row.id)">
-                      <i class="bi bi-pencil-square"></i>
+                <td class="text-center" @click.stop>
+                  <!--begin::컨텍스트 메뉴
+                    변경 전: Metronic data-kt-menu 를 썼으나 .table-responsive(overflow) 안에서
+                    드롭다운이 잘려 보이지 않았다. 메뉴 관리와 동일하게 Bootstrap dropdown + strategy:fixed.
+                  -->
+                  <div class="dropdown d-inline-flex justify-content-center">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                      data-bs-toggle="dropdown"
+                      data-bs-auto-close="true"
+                      data-bs-popper-config='{"strategy":"fixed"}'
+                      aria-expanded="false"
+                      :title="t('common.menu')"
+                    >
+                      <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.delete')" @click="deleteBoard(row)">
-                      <i class="bi bi-trash"></i>
-                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                      <button type="button" class="dropdown-item d-flex flex-stack" @click="store.openEdit(row.id)">
+                        <span>{{ t('common.edit') }}</span>
+                        <i class="bi bi-pencil-square fs-8"></i>
+                      </button>
+                      <div class="dropdown-divider"></div>
+                      <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="deleteBoard(row)">
+                        <span>{{ t('common.delete') }}</span>
+                        <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                      </button>
+                    </div>
                   </div>
+                  <!--end::컨텍스트 메뉴-->
                 </td>
               </tr>
             </tbody>
@@ -305,10 +325,6 @@ function validateForm(): boolean {
   return true;
 }
 
-async function reload() {
-  await store.fetchList(store.currentPage);
-}
-
 async function onPageSizeChange(event: Event) {
   const target = event.target as HTMLSelectElement;
   await store.changePageSize(Number(target.value));
@@ -367,7 +383,6 @@ onMounted(async () => {
   gap: 1rem;
 }
 
-.board-group-toolbar,
 .board-group-listbar,
 .board-group-footer {
   display: flex;
@@ -377,18 +392,12 @@ onMounted(async () => {
   flex-wrap: wrap;
 }
 
-.board-group-actions,
 .board-group-search,
 .board-group-list-actions,
-.board-group-row-actions,
 .board-group-order {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.board-group-toolbar {
-  justify-content: flex-end;
 }
 
 .board-group-search {
@@ -466,7 +475,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .board-group-toolbar,
   .board-group-listbar,
   .board-group-footer,
   .board-group-search,

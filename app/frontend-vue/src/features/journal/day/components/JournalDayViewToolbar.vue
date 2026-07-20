@@ -1,6 +1,6 @@
 <template>
   <!--begin::저널 일자 뷰 툴바 (탭 + 일자 등록)-->
-  <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4 w-100">
+  <div class="journal-day-view-toolbar d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4 w-100">
     <!--begin::보기 타입 탭-->
     <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1">
       <li class="nav-item">
@@ -144,6 +144,19 @@
         {{ t('journal.day.toolbar.register') }}
       </button>
       <!--end::저널 일자 등록 버튼-->
+      <!--begin::aside 열기 버튼 — 일정 툴바와 동일하게 액션 행 맨 오른쪽에 배치-->
+      <template v-if="!asideStore.visible">
+        <div class="vr mx-1 opacity-25"></div>
+        <button
+          type="button"
+          class="btn btn-sm btn-icon btn-light"
+          :title="t('journal.aside.open.tooltip')"
+          @click="asideStore.show()"
+        >
+          <i class="bi bi-layout-sidebar-inset-reverse"></i>
+        </button>
+      </template>
+      <!--end::aside 열기 버튼-->
     </div>
     <!--end::키워드 검색 + 등록 버튼-->
   </div>

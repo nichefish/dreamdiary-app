@@ -11,7 +11,7 @@
     <template v-else-if="store.annualDetail">
 
       <!--begin::결산 요약 카드-->
-      <div id="journal_annual_detail_div" class="card post">
+      <div id="journal_annual_detail_div" class="card post" style="margin-top: 0 !important;">
         <!--begin::Card header-->
         <div class="card-header py-5">
           <div class="col-2 d-flex align-items-center">

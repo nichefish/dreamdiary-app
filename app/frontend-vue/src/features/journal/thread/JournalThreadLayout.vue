@@ -1,6 +1,9 @@
 <template>
   <!--begin::스레드 레이아웃 (모달 컨테이너 포함)-->
   <div class="journal-thread-layout-vue">
+    <!--begin::뷰 툴바 — 등록은 결산·일자와 동일하게 툴바 우측. ASIDE 없음.-->
+    <JournalThreadViewToolbar />
+    <!--end::뷰 툴바-->
     <router-view />
     <!--begin::스레드 모달 컨테이너-->
     <JournalThreadRegistModal />
@@ -15,6 +18,7 @@
 <script setup lang="ts">
 import { watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import JournalThreadViewToolbar from "./components/JournalThreadViewToolbar.vue";
 import JournalThreadRegistModal from "./modals/JournalThreadRegistModal.vue";
 import JournalThreadDetailModal from "./modals/JournalThreadDetailModal.vue";
 import CommentListModal from "@/features/attachable/CommentListModal.vue";

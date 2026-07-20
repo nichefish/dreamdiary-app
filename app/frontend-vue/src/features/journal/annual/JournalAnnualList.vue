@@ -2,39 +2,21 @@
   <!--begin::결산 목록-->
   <div class="journal-annual-list-vue">
 
-    <!--begin::총 집계 카드-->
-    <div class="card post mb-4">
+    <!--begin::총 집계 카드 — 액션(전체 갱신·등록)은 JournalAnnualViewToolbar 로 이동(저널 일자 툴바와 동형)-->
+    <div class="card post mb-4" style="margin-top: 0 !important;">
       <div class="card-body">
-        <div class="d-flex-between fs-5">
-          <div class="d-flex fs-5">
-            <div class="text-gray-700 d-flex-center me-5">
-              <span class="fw-bold me-2">{{ t('journal.annual.total.dream-record') }}</span>
-              <i class="bi bi-moon-stars fs-4 me-2"></i>
-              <template v-if="store.totalLoading">
-                <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
-              </template>
-              <template v-else-if="store.totalAnnual">
-                (<span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamDayCnt ?? 0 }}</span>{{ t('common.unit.day') }}
-                /
-                <span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamCnt ?? 0 }}</span>{{ t('common.unit.count') }})
-              </template>
-            </div>
-          </div>
-          <div class="d-flex justify-content-end align-items-center gap-2">
-            <button
-              type="button"
-              class="btn btn-sm btn-primary"
-              :disabled="store.syncing"
-              @click="makeTotalAnnual"
-            >
-              <span v-if="store.syncing" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              <i v-else class="bi bi-arrow-repeat me-1"></i>
-              {{ t('journal.annual.refresh-all') }}
-            </button>
-            <button type="button" class="btn btn-sm btn-light-primary" @click="store.openRegist()">
-              <i class="bi bi-plus-circle me-1"></i>
-              {{ t('journal.annual.register') }}
-            </button>
+        <div class="d-flex fs-5">
+          <div class="text-gray-700 d-flex-center me-5">
+            <span class="fw-bold me-2">{{ t('journal.annual.total.dream-record') }}</span>
+            <i class="bi bi-moon-stars fs-4 me-2"></i>
+            <template v-if="store.totalLoading">
+              <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+            </template>
+            <template v-else-if="store.totalAnnual">
+              (<span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamDayCnt ?? 0 }}</span>{{ t('common.unit.day') }}
+              /
+              <span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamCnt ?? 0 }}</span>{{ t('common.unit.count') }})
+            </template>
           </div>
         </div>
       </div>
@@ -217,11 +199,6 @@ function gotoDetail(yy: number) {
 /** 결산 수정 모달을 연다. */
 function openModify(yy: number) {
   void store.openModify(yy);
-}
-
-/** 전체 결산 갱신 버튼 클릭 처리 */
-function makeTotalAnnual() {
-  void store.makeTotalAnnual();
 }
 
 /** 태그 보유 여부 확인 */

@@ -79,6 +79,7 @@ public interface ApiUrl {
 
     /** 저널 스레드 */
     String JOURNAL_THREAD_API_LIST = Prefix.API + "/journal/threads";
+    String JOURNAL_THREAD_CATEGORIES = Prefix.API + "/journal/threads/categories";
     String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
 
     /** 저널 연간 */
@@ -100,6 +101,8 @@ public interface ApiUrl {
     /** 게시판 */
     String BOARD_POSTS = Prefix.API + "/board/posts";
     String BOARD_POST = Prefix.API + "/board/posts/{id}";
+    /** 게시판별 분류 코드 목록 (사용자 화면 검색 필터용) */
+    String BOARD_CATEGORIES = Prefix.API + "/board/{boardKey}/categories";
 
     /** 사용자 관리 */
     String USERS = Prefix.API + "/users";

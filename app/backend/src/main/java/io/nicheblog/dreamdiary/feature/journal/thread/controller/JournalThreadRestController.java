@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.controller;
 
 import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemDto;
+import io.nicheblog.dreamdiary.feature.admin.code.service.CodeItemService;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadSearchParam;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadService;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * JournalThreadRestController
@@ -44,6 +47,24 @@ public class JournalThreadRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;      // 작업 카테고리 (로그 적재용)
 
     private final JournalThreadService journalThreadService;
+    private final CodeItemService codeItemService;
+
+    /**
+     * 저널 스레드 분류 목록 조회 (Ajax).
+     * 관리 화면 API를 우회하지 않고 사용자 화면이 읽을 수 있는 전용 읽기 계약을 제공한다.
+     *
+     * @return {@link ResponseEntity} -- 현재 locale이 적용된 분류 코드 목록
+     */
+    @GetMapping(Url.JOURNAL_THREAD_CATEGORIES)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalThreadCategoryListAjax() {
+        final List<CodeItemDto> categoryList = codeItemService.getCdDtoListByGroupCode("JOURNAL_THREAD_CTGR_CD");
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(categoryList));
+    }
 
     /**
      * 저널 스레드 목록 조회 (Ajax)
