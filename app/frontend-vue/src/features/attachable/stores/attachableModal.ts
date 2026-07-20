@@ -110,12 +110,15 @@ export interface TagProfileModel {
   name: string;
   categoryTextClassCd: string;
   textClassCd: string;
+  /** 클라우드 크기 최대 고정 (ts-9). */
+  forceMax: boolean;
   content: string;
 }
 
+
 /**
  * 관련 글·흐름 연결 모달의 대상 콘텐츠 유형 선택지.
- * `RelatedContentAddModal` 의 select 옵션과 같은 집합이어야 한다.
+ * RelatedContentAddModal 의 select 옵션과 같은 집합이어야 한다.
  */
 const RELATED_TARGET_CONTENT_TYPES = ["JOURNAL_DIARY", "JOURNAL_DREAM"];
 
@@ -678,7 +681,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   const tagProfileModel = ref<TagProfileModel>({
     id: "", categoryProfileId: "", tagId: "", tagCategoryId: "",
     contentType: "", contentTypeLabel: "", ctgr: "", name: "",
-    categoryTextClassCd: "", textClassCd: "", content: "",
+    categoryTextClassCd: "", textClassCd: "", forceMax: false, content: "",
   });
 
   /**
@@ -698,6 +701,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       name: String(payload.name ?? ""),
       categoryTextClassCd: String(payload.categoryTextClassCd ?? ""),
       textClassCd: String(payload.textClassCd ?? ""),
+      forceMax: payload.forceMax === true,
       content: String(payload.content ?? ""),
     };
     tagProfileOpen.value = true;
@@ -743,6 +747,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       fd.append("contentType", m.contentType);
       fd.append("categoryTextClassCd", m.categoryTextClassCd);
       fd.append("textClassCd", m.textClassCd);
+      fd.append("forceMax", m.forceMax ? "true" : "false");
       fd.append("content", m.content);
       const res = await axios.post(`/api/tags/${m.tagId}/profile`, fd, {
         headers: { "Content-Type": "multipart/form-data" },

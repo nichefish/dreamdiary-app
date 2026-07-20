@@ -52,7 +52,7 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 `useAttachableModalStore` (`features/attachable/stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openRelatedFlow`, `openTagList`, `openTagProfile`, `openFileList`.
 `RelatedContentAddModal.vue`의 제목·필드·옵션·검색 상태·검증·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 연결 대상 검색은 선택 유형을 `DIARY|DREAM`으로 변환해 통합 `GET /api/journal/entries`를 호출하고 제목 또는 본문 일치 결과를 최신순 최대 8건 표시한다. 요청 실패는 오류 메시지로 표시해 정상 0건과 구분한다. `openRelatedFlow` 진입에서는 관계 유형을 `FLOW`로 고정하고 무방향·날짜순·동일 쌍 기존 유형 교체 계약을 저장 전에 안내한다.
 현재 `RelatedContentAddModal.vue`와 `/api/related` API는 일기·꿈 사이의 직접 관련글 1단계 연결과 FLOW 연결을 구현했다. 엔트리 관련글 행의 직접 관계 해제와 FLOW 분리 가능성 확인도 **구현 완료(✓)**다. `JournalEntryFlowModal.vue`는 앵커 엔트리 기준 연결 컴포넌트를 서버 정렬 순서 그대로 종단 표시하고, 직접 간선 관리와 전체 평문 복사·TXT 다운로드를 제공한다. 두 흐름 병합 결과 안내만 **미구현(❌)**이다. FLOW는 기존 `left/right` 쌍 정규화를 유지하는 무방향 관계이며 일반 관련글 조회와 달리 FLOW 간선만 전이적으로 탐색한다.
-`JournalTagProfileModal.vue`의 제목·필드·선택지·버튼·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장·삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
+`JournalTagProfileModal.vue`의 제목·필드·선택지·버튼·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장·삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 크기 최대(`forceMax`)는 태그클라우드에서 `ts-9`로 고정하며 엔트리 본문 태그줄에는 적용하지 않는다.
 `JournalTagListModal.vue`의 제목·빈 상태·분류·버튼·태그별 일자 목록 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
 `CommentRegistModal.vue`의 제목·필드·버튼·검증·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 등록·수정 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
@@ -819,4 +819,4 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 - 화면이 `static/vue/global`을 직접 import하지 않는다.
 - 공통 상태는 Pinia store 또는 composable로 들어간다.
 - 공통 Ajax/URL/i18n/helper는 `src/services`, `src/utils`, `src/core` 중 하나의 명확한 경계로 들어간다.
-- legacy global을 임시로 참조해야 하면 migration spec에 남은 의존성을 기록하고 제거 기준을 둔다.
+- legacy global을 임시로 참조해야 하면 migration spec에 남은 의존성을 기록하고 제거 기준을 둔다.크기 최대(orceMax)는 태그클라우드에서 	s-9로 고정하며 엔트리 본문 태그줄에는 적용하지 않는다. 

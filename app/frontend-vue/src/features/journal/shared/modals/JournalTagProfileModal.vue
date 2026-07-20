@@ -104,6 +104,25 @@
                 <!--end::개별 태그 색상-->
               </div>
 
+              <!--begin::크기 최대 (태그클라우드 전용)-->
+              <div class="mb-4 form-check form-check-custom form-check-solid">
+                <input
+                  id="tagForceMax"
+                  v-model="model.forceMax"
+                  type="checkbox"
+                  name="forceMax"
+                  class="form-check-input"
+                >
+                <label for="tagForceMax" class="form-check-label fw-bold">
+                  {{ t("attachable.tag.profile.force-max") }}
+                </label>
+                <div class="fs-8 text-muted mt-1">
+                  {{ t("attachable.tag.profile.force-max.guide") }}
+                </div>
+              </div>
+              <!--end::크기 최대-->
+
+
               <!--begin::프로필-->
               <label for="tagProfileCn" class="form-label fw-bold">{{ t("attachable.tag.profile.profile") }}</label>
               <textarea
@@ -183,6 +202,7 @@ const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
 
 const model = computed(() => attachableStore.tagProfileModel);
+
 
 const hasTagCategory = computed(() => {
   const id = String(model.value.tagCategoryId ?? "");

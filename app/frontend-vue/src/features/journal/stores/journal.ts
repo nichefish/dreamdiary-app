@@ -242,7 +242,7 @@ export interface TagCloudItem {
   /** 연결된 컨텐츠 수 */
   contentSize: number;
   tagClass?: string;
-  /** 글자 크기 CSS 클래스 (ts-1~ts-9) */
+  /** 글자 크기 CSS 클래스 (ts-1~ts-9) — 실제로는 tagClass 가 ts-N */
   textClass?: string;
 }
 
