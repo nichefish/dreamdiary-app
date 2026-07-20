@@ -192,7 +192,15 @@
 
       <!--begin::일정 aside (년월 내비게이션, 폭 280px = 저널 aside 와 동일)-->
       <aside v-if="asideStore.visible" class="schedule-calendar-page__aside flex-shrink-0">
-        <ScheduleAside :yy="asideYy" :mnth="asideMnth" @goto="onAsideGoto" @today="onAsideToday" />
+        <ScheduleAside
+          :yy="asideYy"
+          :mnth="asideMnth"
+          :show-all-months="viewMode === 'list'"
+          :all-months="listAllMonths"
+          @goto="onAsideGoto"
+          @today="onAsideToday"
+          @update:all-months="onListAllMonthsChange"
+        />
       </aside>
       <!--end::일정 aside-->
     </div>
@@ -391,6 +399,13 @@ let anchorDtFp: FlatpickrInstance | null = null;
 const today = new Date();
 const queryRange = ref<ScheduleQueryRange>(queryRangeForMonth(today));
 const anchorDateText = ref(formatDate(today));
+/**
+ * 목록 VIEW 전용 `전체 월` 토글.
+ * 해제(기본)면 달력이 잡아둔 월 범위, 체크면 이동일 연도 전체를 조회한다.
+ * 필터 패널 체크박스와 달리 localStorage 에 저장하지 않는다 — 화면에 진입할 때마다
+ * 항상 해제 상태(= 기존 월 단위 조회)로 시작해야 한다.
+ */
+const listAllMonths = ref(false);
 const searchKeyword = ref("");
 const submitting = ref(false);
 const isPrivateRegist = ref(false);
@@ -479,12 +494,33 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
 
+/**
+ * 목록 VIEW 조회 범위.
+ * 기본은 달력이 잡아둔 월 범위(queryRange)를 그대로 쓰고,
+ * `전체 월` 체크 시 이동일이 속한 연도 전체(1/1~12/31)로 넓힌다.
+ * 달력 VIEW 는 항상 queryRange(가시 구간)를 쓰므로 이 값의 영향을 받지 않는다.
+ */
+const listQueryRange = computed<ScheduleQueryRange>(() =>
+  listAllMonths.value ? queryRangeForYear(parseDate(anchorDateText.value)) : queryRange.value
+);
+
 async function reloadActiveView() {
   if (viewMode.value === "list") {
-    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, scheduleStore.listCurrentPage);
+    await scheduleStore.fetchList(listQueryRange.value, searchKeyword.value, scheduleStore.listCurrentPage);
     return;
   }
   await scheduleStore.fetchEvents(queryRange.value, searchKeyword.value);
+}
+
+/** `전체 월` 토글(aside) → 페이지를 처음으로 되돌리고 재조회한다. */
+async function onListAllMonthsChange(value: boolean) {
+  listAllMonths.value = value;
+  scheduleStore.listCurrentPage = 0;
+  try {
+    await scheduleStore.fetchList(listQueryRange.value, searchKeyword.value, 0);
+  } catch (error) {
+    void swalAlert(error instanceof Error ? error.message : t("schedule.list.load.failure"));
+  }
 }
 
 async function switchToCalendarView() {
@@ -498,7 +534,7 @@ async function switchToListView() {
   viewMode.value = "list";
   scheduleStore.listCurrentPage = 0;
   try {
-    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, 0);
+    await scheduleStore.fetchList(listQueryRange.value, searchKeyword.value, 0);
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : t("schedule.list.load.failure"));
   }
@@ -506,7 +542,7 @@ async function switchToListView() {
 
 async function goListPage(page: number) {
   try {
-    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, page);
+    await scheduleStore.fetchList(listQueryRange.value, searchKeyword.value, page);
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : t("schedule.list.load.failure"));
   }
@@ -516,7 +552,7 @@ async function onListPageSizeChange(event: Event) {
   const size = Number((event.target as HTMLSelectElement).value);
   await scheduleStore.changeListPageSize(size);
   try {
-    await scheduleStore.fetchList(queryRange.value, searchKeyword.value, 0);
+    await scheduleStore.fetchList(listQueryRange.value, searchKeyword.value, 0);
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : t("schedule.list.load.failure"));
   }
@@ -535,12 +571,24 @@ function goToAnchorDate() {
     calendarRef.value?.getApi().gotoDate(next);
     return;
   }
-  queryRange.value = queryRangeForYear(next);
+  /*
+   * 목록 VIEW 이동일 변경 → 해당 '월' 범위.
+   * 변경 전: queryRangeForYear(연 전체)로 조회했다. 그 결과 aside 월 그리드가 파랗게
+   * 표시하는 달과 실제 조회 범위(연 전체)가 어긋나, 월을 골라도 12개월치가 나왔다.
+   * 변경 후: 하이라이트된 달과 조회 범위를 일치시킨다. 연 전체 조회는 `전체 월` 토글로 분리했고,
+   * 그 경우 listQueryRange 가 queryRangeForYear 를 대신 사용한다.
+   */
+  queryRange.value = queryRangeForMonth(next);
   void reloadActiveView();
 }
 
-/** aside 연/월 선택 → 이동일을 해당 월 1일로 갱신 후 기존 이동일 경로(goToAnchorDate)로 반영한다. */
+/**
+ * aside 연/월 선택 → 이동일을 해당 월 1일로 갱신 후 기존 이동일 경로(goToAnchorDate)로 반영한다.
+ * 특정 월을 고르는 행위는 `전체 월`(연 전체)과 양립하지 않으므로 토글을 해제한다.
+ * (해제하지 않으면 월을 눌러도 계속 연 전체가 조회돼 클릭이 무반응처럼 보인다)
+ */
 function onAsideGoto(yy: number, mnth: number) {
+  listAllMonths.value = false;
   anchorDateText.value = formatDate(new Date(yy, mnth - 1, 1));
   goToAnchorDate();
 }

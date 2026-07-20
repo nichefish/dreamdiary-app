@@ -349,14 +349,15 @@ interface TodoRow {
 | 일기 키워드 검색 | `v-model="localDiaryKw"`, Enter/버튼 클릭 → 일기 전체검색 새 탭 오픈 |
 | 꿈 키워드 검색 | `v-model="localDreamKw"`, Enter/버튼 클릭 → 꿈 전체검색 새 탭 오픈 |
 | 고급 필터 | `asideStore.toggle()` — 사이드 필터 패널 표시/숨김 |
-| 일정 등록 / 개인 일정 | `router.push({ name: "schedule-calendar", query: { regist } })` → `ScheduleCalendar` 등록 모달 |
+| 우측 끝 aside 열기 | aside 숨김 시 `asideStore.show()` — 사이드 필터 패널 표시 |
+| 일정 등록 / 개인 일정 | 저널 날짜·엔트리 맥락을 전달하지 않는 교차 도메인 액션이므로 저널 툴바에서는 미제공. 일정 화면에서만 제공 |
 | 태그 카테고리 동기화 | `syncCategoryMaps()` — 4종 categoryMap 서버 재조회 |
 
 **추가 구현 (2026-05-19, 현재 계약)**: 우측 영역에 일기·꿈 키워드 검색 input + 돋보기 버튼 추가. 툴바는 `localDiaryKw` / `localDreamKw` 로컬 ref를 사용해 새 탭 전체검색을 실행하며, `JournalAside`의 `store.diaryKeyword` / `store.dreamKeyword` 현재 목록 필터와 상태를 공유하지 않는다.
 
 **행동 spec 교차 참조**: `docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.4 (상단 등록 버튼)
 
-**레이아웃 전역 툴바 (2026-07 P2.3)**: `JournalDayViewToolbar.vue` 우측 — 고급필터(사이드 패널 토글), 일정 등록·개인 일정(`/schedule?regist=`), 태그 카테고리 동기화(`syncCategoryMaps`) — `JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3
+**레이아웃 전역 툴바 (2026-07 현재 계약)**: `JournalDayViewToolbar.vue` 우측 — 고급필터(사이드 패널 토글), 태그 카테고리 동기화(`syncCategoryMaps`), 저널 일자 등록, aside 열기. P2.3에서 추가됐던 일정 등록·개인 일정(`/schedule?regist=`)은 저널 맥락을 전달하지 않는 중복 진입점이라 제거했으며 일정 화면에서만 제공한다 — `JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3
 
 **Floating 툴바 (2026-07 현재 계약)**: 공통 툴바는 `position: sticky`로 원래 문서 높이를 유지하면서 스크롤 중 viewport 상단에 머문다. 데스크톱(`min-width: 992px`)은 고정 앱 헤더 높이 `var(--bs-app-header-height, 74px)` 아래에 붙고, 그 미만 화면은 `top: 0`을 사용한다. 불투명 흰 배경·하단 경계로 뒤의 저널 본문과 구분하며 별도 그림자는 사용하지 않는다. `z-index: 90`으로 앱 헤더(`100`) 아래에 놓인다.
 

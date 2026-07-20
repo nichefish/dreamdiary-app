@@ -54,7 +54,7 @@
 ### 일정 캘린더 (`ScheduleCalendar.vue`)
 
 - **탭·툴바**: `JournalDayViewToolbar` 와 동일 상하감 — 탭(`nav-tabs-line ps-5 mt-5`) 상단, 이동일·검색·필터·등록은 탭 오른쪽(`pe-5 mt-3`). 카드 `margin-top: 0`. 달력 VIEW(FullCalendar) · 목록 VIEW(테이블)
-- **aside (년월 내비게이션)**: `ScheduleAside.vue` — 저널 aside 와 동일 폭(280px 고정)·sticky(상단 1rem, 자체 스크롤). 연도 select + 월 prev/next + 월 3열 그리드 + TODAY 버튼만 배치(필터·검색·등록은 툴바 유지). 연/월 선택·TODAY 는 이동일(anchorDate)을 갱신 후 기존 이동일 경로 재사용 — 달력 VIEW `gotoDate`, 목록 VIEW 해당 연도 재조회. 표시/숨김 토글은 `scheduleAside` 스토어(localStorage `schedule_aside_visible`) — 닫기 버튼은 aside 내부, 숨김 시 툴바 끝에 열기 아이콘 버튼(`bi-layout-sidebar-inset-reverse`) 표시. 저널과 달리 Pinpoint·필터 없음
+- **aside (년월 내비게이션)**: `ScheduleAside.vue` — 저널 aside 와 동일 폭(280px 고정)·sticky(상단 1rem, 자체 스크롤). 연도 select + 월 prev/next + 월 3열 그리드 + TODAY 버튼만 배치(필터·검색·등록은 툴바 유지). 연/월 선택·TODAY 는 이동일(anchorDate)을 갱신 후 기존 이동일 경로 재사용 — 달력 VIEW `gotoDate`, 목록 VIEW 해당 **월** 재조회(`전체 월` 토글 시 연 전체). 표시/숨김 토글은 `scheduleAside` 스토어(localStorage `schedule_aside_visible`) — 닫기 버튼은 aside 내부, 숨김 시 툴바 끝에 열기 아이콘 버튼(`bi-layout-sidebar-inset-reverse`) 표시. 저널과 달리 Pinpoint·필터 없음
 - **저장 모달 날짜 입력**: 시작일·종료일은 레거시(`ScheduleRegModal` — readonly 텍스트 input + `cF.datepicker.singleDatePicker`)와 동일하게 **readonly 텍스트 input + flatpickr**(`bindSingleDatePicker`, 저널 등록 모달과 동일 유틸). input 아무 곳이나 클릭하면 달력이 뜬다. 모달 열 때마다 재초기화(attach), 닫기 버튼에서 destroy. 종료일 칸은 레거시 `#endDtDiv`(display:none 토글)와 동일하게 `v-show` — 공휴일 선택 시 숨기고 `endDt=bgnDt` 로 덮어쓰며 flatpickr 표시값도 `setDate` 동기화. **툴바 이동일 input 도 동일 패턴** — 상시 존재하므로 mount 시 1회 attach·unmount 시 destroy, 달력 이동(datesSet) 등 외부 갱신은 watch 로 flatpickr 표시값 동기화. (변경 전: 네이티브 `<input type="date">` — 마이그레이션 시 이탈분을 레거시로 수렴)
 - **목록 API**: `GET /api/schedule/list` — 달력과 동일 `bgnDt`/`endDt`·고급필터·검색어, `ScheduleDto` 페이징
 - **목록 행 클릭**: 휴가·생일 코드는 상세 모달 생략(달력과 동일), 그 외 `GET /api/schedule/cal-dtl` 상세 모달
@@ -185,7 +185,7 @@
 | 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayRegist()`) |
 | 사이드 필터 열기 | aside 숨김 시 상단 툴바 맨 오른쪽 버튼 | — | `asideStore.show()`로 사이드 필터를 표시. 데스크톱에서는 sticky 툴바와 함께 고정 헤더 아래를 따라가며, 모바일에서는 본문 우상단 전용 버튼을 유지 |
 
-**레이아웃 전역 툴바** (`JournalDayViewToolbar.vue`): 고급필터(사이드 패널 토글)·일정 등록·개인 일정·태그 카테고리 동기화 — SPA ✓ (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
+**레이아웃 전역 툴바** (`JournalDayViewToolbar.vue`): 고급필터(사이드 패널 토글)·태그 카테고리 동기화·저널 일자 등록·aside 열기 — SPA ✓. 일정 등록·개인 일정은 저널 맥락을 전달하지 않는 중복 진입점이므로 일정 화면에서만 제공한다 (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
 **인증 만료 후 복귀**: 월간 VIEW 의 현재 기간은 URL query `yy`/`mnth`가 SSOT다. 월 이동, 연도 변경, 월 버튼, TODAY, Pinpoint 되돌리기는 `/journal/monthly?yy=YYYY&mnth=M` 형태로 주소를 갱신하며, 세션 만료로 로그인 화면에 이동할 때 해당 `fullPath`를 `redirect`로 넘긴다. 로그인 성공 후 동일 query로 복귀하면 `JournalDayMonthly`가 query를 store에 복원한 뒤 목록과 태그 클라우드를 조회한다.
 
@@ -199,7 +199,7 @@
 - 챕터 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과는 현재 locale 카탈로그를 사용하며, 삭제 API의 서버 `message`가 있으면 우선 표시
 - 꿈 가상 섹션 제목은 서버가 요청 locale로 조립하고, 내 꿈 섹션의 등록·복사·TXT 액션 문구는 현재 locale의 클라이언트 카탈로그를 사용
 - 해석 아이템의 펼침/접힘·접힌 상태·액션 툴팁·메뉴·라이프사이클·상태 라벨과 상태 변경 실패·복사·삭제 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. API 응답에 `message`가 있으면 서버 메시지를 우선 표시
-- 엔트리 아이템의 펼침/접힘·꿈 상태 배지·액션 툴팁·메뉴·라이프사이클·상태 라벨과 상태 변경 실패·복사·삭제 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. 관련글 행은 관계 유형·대상 유형·대상 제목·사유를 표시하고 제목 클릭으로 원문을 열며, 일반 관련글과 FLOW 연결을 별도 메뉴로 제공한다. FLOW 연결 모달은 무방향·날짜순·동일 쌍 기존 유형 교체 계약을 안내하고 유형을 FLOW로 고정한다. 관계 해제는 FLOW일 때 흐름 분리 가능성을 별도 확인한다. 직접 FLOW가 있으면 「흐름 보기」에서 서버 시간순 연결 컴포넌트를 앵커가 강조된 읽기 전용 카드 목록으로 표시한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시
+- 엔트리 아이템의 펼침/접힘·꿈 상태 배지·액션 툴팁·메뉴·라이프사이클·상태 라벨과 상태 변경 실패·복사·삭제 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. 일반 관련글 행은 관계 유형·대상 유형·대상 제목·사유를 표시하고 제목 클릭으로 원문을 연다. FLOW는 직접 간선별 ID 행 대신 전체 컴포넌트의 기록 수·시작/종료 날짜 한 행을 표시한다. FLOW 연결 모달은 무방향·날짜순·동일 쌍 기존 유형 교체 계약을 안내하고 유형을 FLOW로 고정한다. 「흐름 보기」는 서버 시간순 연결 컴포넌트와 앵커를 표시하며, 원본 엔트리 본문 영역과 같은 너비로 카드 본문을 렌더해 데스크톱 줄바꿈을 유지한다. 작은 화면에서는 뷰포트 너비를 우선한다. 제목 없는 카드는 `#ID` 대체 제목을 표시하지 않으며 헤더에서 전체 흐름을 ID·저널 순번 없이 한 번에 복사하거나 TXT로 다운로드한다. 직접 연결 관리에서는 ID 대신 양 끝의 날짜·제목과 해제 후 분리 영향을 안내한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시
 - 꿈 엔트리(`JOURNAL_DREAM`)의 태그에 사용자별 프로필 본문(`tag.list[].profileContent`)이 있으면 해당 꿈 본문 아래에 표시한다. 일기/노트 태그 프로필 본문은 일자 카드 본문 아래에 표시하지 않는다.
 - 정렬, 필터, 검색 파라미터 반영
 
@@ -234,7 +234,7 @@
 | 이력 | `_history_modal.ftlh` | 이력 버튼 클릭 |
 | 댓글 등록 | `_comment_reg_modal.ftlh` | 댓글 등록 버튼 클릭 |
 | 관련 글/FLOW 연결 | `RelatedContentAddModal.vue` | 엔트리 ⋯ 메뉴의 「관련 글 추가」 또는 「흐름 연결」 클릭. 선택한 일기/꿈 유형에서 제목·본문 키워드로 최신 8건을 검색하며 실패와 정상 0건을 구분 |
-| FLOW 종단 보기 | `JournalEntryFlowModal.vue` | 직접 FLOW 관계가 있는 엔트리 ⋯ 메뉴의 「흐름 보기」 클릭 |
+| FLOW 종단 보기·연결 관리 | `JournalEntryFlowModal.vue` | FLOW 요약 행 또는 엔트리 ⋯ 메뉴의 「흐름 보기」 클릭. 전체 연결 컴포넌트 조회와 직접 간선 해제 |
 
 `JournalDayRegistModal.vue`의 모달 제목·안전 닫기 안내·날짜·날짜 정확도 선택지·날씨·일기 완료 여부·태그·메타 안내·저장·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 입력값과 저장 payload를 변경하지 않는다.
 
