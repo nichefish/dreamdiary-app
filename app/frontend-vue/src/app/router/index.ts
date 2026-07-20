@@ -172,10 +172,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { pageTitleKey: "route.title.user-my" },
       },
       {
+        /*
+         * 계정 신청 승인은 계정 관리의 `계정 신청 승인` 탭으로 흡수됐다.
+         * 북마크·레거시 진입을 흘려보내기 위해 리다이렉트만 남긴다.
+         */
         path: "/user/signup/approval",
-        name: "user-signup-approval",
-        component: () => import("@/features/user/signup/UserSignupApprovalList.vue"),
-        meta: { pageTitleKey: "route.title.user-signup-approval" },
+        redirect: { name: "user-admin", query: { tab: "signup" } },
       },
       {
         path: "/board",
@@ -293,7 +295,8 @@ function isPopupProtectedRoute(name: unknown): boolean {
 }
 
 function isManagerMenuRoute(path: string): boolean {
-  return path === "/admin" || path.startsWith("/admin/") || path === "/user/signup/approval";
+  /* 계정 신청 승인이 /admin/users 탭으로 흡수되어 /admin 밖 예외 경로가 사라졌다. */
+  return path === "/admin" || path.startsWith("/admin/");
 }
 
 function isUserMenuRoute(path: string): boolean {

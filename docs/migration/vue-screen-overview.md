@@ -32,7 +32,7 @@
 | `/admin/users` | `user-admin` | `UserAdminPage.vue` | Default | ✓ |
 | `/admin/log` | `log-list` | `LogAdminPage.vue` | Default | ✓ |
 | `/admin/log/stats-user` | `log-stats-user` | `LogAdminPage.vue` | Default | ✓ 사용자별/비로그인 통계 |
-| `/user/signup/approval` | `user-signup-approval` | `UserSignupApprovalList.vue` | Default | ✓ |
+| `/admin/users?tab=signup` | `user-admin` (탭) | `UserSignupApprovalList.vue` | Default | ✓ |
 | `/sign-in` | `sign-in` | `SignIn.vue` | Auth | ✓ |
 | `/user/signup` | `user-signup` | `UserSignupPage.vue` | Auth | ✓ |
 | `/auth/verify-result` | `auth-verify-result` | `VerifyResultPage.vue` | Auth | ✓ |

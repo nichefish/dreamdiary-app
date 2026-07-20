@@ -773,7 +773,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | 사이드바 메뉴 | `layouts/default/components/sidebar/SidebarMenu.vue`, `SidebarMenuItem.vue` | 첫 진입 화면에서도 사용자가 이동할 수 있는 메뉴가 보여야 한다. 메뉴 accordion은 항상 펼쳐진 상태로 표시하고, `menuLabel`은 최상위 섹션 라벨에만 사용한다. |
 | 동적 메뉴 | `app/frontend-vue/src/shared/menu/stores/menu.ts` | `GET /api/menus?mode=USER|MNGR` 결과는 `sidebarVisibleYn=Y`인 사이드바 메뉴만 렌더링 대상으로 보존한다. `GET /api/menus?mode=USER|MNGR&includeHidden=true` 결과는 `sidebarVisibleYn=N`인 숨김/시스템 메뉴까지 포함한 breadcrumb·화면 설명 메타 원천으로 보존한다. 하드코딩된 1차원 메뉴는 fallback으로만 허용한다. |
 | 사용자/관리자 전환 | `Navbar.vue` + `useMenuStore.setMenuMode()` | 관리자 권한이 있을 때만 `MNGR` 모드 진입. 모드 전환 시 메뉴 캐시를 무효화하고 다시 조회한다. |
-| 경로별 메뉴 모드 복구 | `app/router/index.ts` + `useMenuStore.setMenuMode()` | 세션 만료 후 재로그인 redirect, 직접 URL 진입, 새로고침으로 관리자 경로(`/admin/**`, `/user/signup/approval`)에 들어오면 관리자 권한 계정에 한해 사이드바 메뉴 모드를 `MNGR`로 복구한다. 사용자 경로(`/journal/**`, `/annual/**`, `/thread/**`, `/schedule`, `/board/**`)에 들어오면 사이드바 메뉴 모드를 `USER`로 복구한다. `/my`는 현재 사용자/관리자 메뉴 모드를 유지하는 계정 화면이며, 모드 전환 트리거로 쓰지 않는다. |
+| 경로별 메뉴 모드 복구 | `app/router/index.ts` + `useMenuStore.setMenuMode()` | 세션 만료 후 재로그인 redirect, 직접 URL 진입, 새로고침으로 관리자 경로(`/admin/**`)에 들어오면 관리자 권한 계정에 한해 사이드바 메뉴 모드를 `MNGR`로 복구한다. 사용자 경로(`/journal/**`, `/annual/**`, `/thread/**`, `/schedule`, `/board/**`)에 들어오면 사이드바 메뉴 모드를 `USER`로 복구한다. `/my`는 현재 사용자/관리자 메뉴 모드를 유지하는 계정 화면이며, 모드 전환 트리거로 쓰지 않는다. |
 | legacy URL 매핑 | `app/frontend-vue/src/shared/utils/urlMapping.ts` | `.do`/FTL 진입 URL은 Vue route로 흡수한다. 서버 redirect와 클라이언트 라우터가 같은 목적지를 가리켜야 한다. |
 | Bootstrap tooltip | `app/frontend-vue/src/main.ts` 전역 `v-tooltip` directive | Vue 렌더링 생명주기에 맞춰 Bootstrap Tooltip 인스턴스를 mount/update/unmount에서 생성·정리한다. Vue 템플릿에서는 `data-bs-toggle="tooltip"`을 직접 반복하지 않고 `v-tooltip` + `title`로 활성화한다. |
 
@@ -785,7 +785,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | 코드 관리 | `/admin/code` | `features/admin/CodeAdminPage.vue`, `features/admin/stores/codeAdmin.ts` | 코드그룹 + 상세코드 CRUD, 정렬/사용여부 동작을 검수한다. |
 | 메뉴 관리 | `/admin/menu` | `features/admin/MenuAdminPage.vue`, `features/admin/MenuAdminTreeNode.vue`, `features/admin/stores/menuAdmin.ts` | tree depth, 사용자/관리자 구분, `submenuExpandType`, `sidebarVisibleYn` 기준 사이드바 표시/숨김 분리, 순서 변경을 legacy 기준으로 검수한다. |
 | 계정 관리 | `/admin/users` | `features/admin/UserAdminPage.vue`, `features/admin/stores/userAdmin.ts` | 검색/권한 필터/상세/등록·수정/프로필·고용정보 서브폼을 검수한다. |
-| 계정 신청 승인 | `/user/signup/approval` | `UserSignupApprovalList.vue` | 관리자 메뉴에서 접근 가능해야 한다. |
+| 계정 신청 승인 | `/admin/users?tab=signup` | `UserSignupApprovalList.vue` | 계정 관리 화면의 `계정 신청 승인` 탭. 구 경로 `/user/signup/approval` 은 이 탭으로 리다이렉트된다. |
 | 로그 | `/admin/log` | `features/admin/LogAdminPage.vue`, `features/admin/stores/logAdmin.ts` | 운영 로그 목록/검색/상세 모달을 검수한다. |
 | `stats_user` | `/admin/log/stats-user` | `LogAdminPage.vue` | 현재 있는 사용자별 통계 + placeholder만 둔다. 없는 기능을 새로 만든 것처럼 표시하지 않는다. |
 | 인증 결과 | `/auth/verify-result` | `VerifyResultPage.vue` | legacy `verify_success.ftlh`, `verify_failure.ftlh`를 단일 Vue 결과 화면으로 흡수한다. success/failure는 query/status로 구분한다. |

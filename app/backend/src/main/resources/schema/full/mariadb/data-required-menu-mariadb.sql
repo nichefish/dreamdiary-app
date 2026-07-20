@@ -69,11 +69,8 @@ SELECT M.id, 'SUB', '계정 관리', '/app/user/list.do', NULL, 12, 'nichefish',
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
-INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, use_yn )
-WITH T AS ( SELECT 'USER' AS upper_label )
-SELECT M.id, 'SUB', '계정 신청 승인관리', '/app/user/signup/list.do', NULL, 13, 'nichefish', 'NO_SUB', 'USER_SIGNUP_APPROVAL', 'N', 'Y', 'Y'
-FROM T
-INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
+-- 계정 신청 승인관리 메뉴는 두지 않는다.
+-- 해당 화면은 계정 관리(/admin/users)의 `계정 신청 승인` 탭으로 흡수됐다. (V0.24.5 에서 기존 행 제거)
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, use_yn )
 WITH T AS ( SELECT 'USER' AS upper_label )
@@ -143,7 +140,6 @@ SET menu_description = CASE menu_label
   WHEN 'CODE_ADMIN' THEN '분류 코드와 상세 코드를 관리합니다.'
   WHEN 'BOARD_ADMIN' THEN '게시판 그룹과 카테고리 코드, 사용 여부, 노출 순서를 관리합니다.'
   WHEN 'USER_ACCOUNT' THEN '사용자 계정과 권한을 관리합니다.'
-  WHEN 'USER_SIGNUP_APPROVAL' THEN '계정 신청 승인 요청을 확인하고 승인 또는 반려합니다.'
   WHEN 'AUTH_POLICY' THEN '로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.'
   WHEN 'LOG_LIST' THEN '실패, 지연, trace 흐름을 중심으로 운영 로그를 확인합니다.'
   WHEN 'LOG_STATS_USER' THEN '사용자별 활동 로그 통계를 확인합니다.'
@@ -156,7 +152,6 @@ WHERE menu_label IN (
     'CODE_ADMIN',
     'BOARD_ADMIN',
     'USER_ACCOUNT',
-    'USER_SIGNUP_APPROVAL',
     'AUTH_POLICY',
     'LOG_LIST',
     'LOG_STATS_USER',

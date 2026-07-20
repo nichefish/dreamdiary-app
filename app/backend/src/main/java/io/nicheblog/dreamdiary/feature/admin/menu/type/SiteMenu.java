@@ -38,7 +38,6 @@ public enum SiteMenu {
 
     USER,
     USER_ACCOUNT,
-    USER_SIGNUP_APPROVAL,
     USER_SIGNUP,
     USER_MY,
 

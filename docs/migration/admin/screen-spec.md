@@ -18,7 +18,7 @@
 | 계정 관리 | `/admin/users` | `UserAdminPage.vue` | ✓ |
 | 로그 관측 | `/admin/log` | `LogAdminPage.vue` | ✓ |
 | 사용자별 로그 통계 | `/admin/log/stats-user` | `LogAdminPage.vue` (route로 분기) | ✓ |
-| 계정 신청 승인 관리 | `/user/signup/approval` | `UserSignupApprovalList.vue` | ✓ |
+| 계정 신청 승인 관리 | `/admin/users?tab=signup` (계정 관리 탭) | `UserSignupApprovalList.vue` | ✓ |
 
 ---
 
@@ -158,6 +158,7 @@
 
 **기능**:
 - 계정 등록은 저널 스레드·게시판·코드 관리와 동형인 뷰 툴바(`user-admin-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `USER_ACCOUNT` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
+- 목록 관리 열은 메뉴 관리·코드/게시판 그룹 관리와 동일하게 Bootstrap ⋯ 드롭다운(strategy:fixed)으로 수정·삭제를 제공한다(변경 전: 수정·삭제 아이콘 버튼 2개). 본인 계정(isMe) 삭제는 disabled다.
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
 - 계정 삭제 (본인 계정 삭제 불가)
@@ -188,6 +189,13 @@
 
 **Vue view**: `app/frontend-vue/src/features/user/signup/UserSignupApprovalList.vue`  
 **스토어**: `features/user/stores/userSignup.ts`
+
+**계정 관리 탭으로 흡수**: 이 화면은 독립 메뉴/화면이 아니라 **계정 관리(`/admin/users`)의 `계정 신청 승인` 탭**으로 표시한다. 컴포넌트 자체는 그대로 두고 `UserAdminPage` 가 탭 본문으로 마운트한다.
+- 탭 상태는 `AdminPage` 와 동일하게 `?tab=` query 로 유지한다(`accounts` 기본 / `signup`).
+- **스토어는 합치지 않는다.** 계정 관리(`/api/users`)와 신청 승인(신청 API)은 데이터 원천이 완전히 분리돼 있어, 화면만 탭으로 묶고 `userAdmin`·`userSignup` 스토어는 각자 유지한다.
+- 탭 라벨에 **승인 대기 건수 배지**를 표시한다. 메뉴가 분리돼 있을 때는 대기 건수가 눈에 띄었으나 탭 안으로 들어가면 묻히므로, 어느 탭에 있든 보이도록 화면 진입 시 신청 목록을 함께 조회하고 계정 탭으로 돌아올 때 갱신한다(승인·반려 결과 반영).
+- 등록 버튼은 `계정 관리` 탭에서만 노출한다. 상세·수정 모달은 탭과 무관하게 항상 마운트해 탭 전환 중에도 유지된다.
+- 기존 라우트 `/user/signup/approval` 은 **2단계에서 제거**한다(메뉴 DB 행 정리·라우터 예외·`urlMapping` 정리와 함께). 그때까지는 유지된다.
 
 **기능**:
 - breadcrumb와 중복되는 본문 상단 제목은 표시하지 않는다.
