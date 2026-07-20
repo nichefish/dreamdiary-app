@@ -123,7 +123,7 @@
 - 메뉴 등록/수정 모달은 사용 여부와 사이드바 표시 여부 토글, 상위 메뉴 읽기 전용 필드를 입력 높이 기준으로 세로 정렬한다. `sidebarVisibleYn=N`은 메뉴 테이블과 breadcrumb/권한/화면 메타 원천에는 남기되 사이드바 트리 렌더링에서 제외한다. `메뉴명`과 필수 `메뉴 라벨`은 기본 정보 row 안에서 병렬 입력으로 배치한다. `URL`은 `submenuExpandType=NO_SUB`일 때만 표시하고 필수로 받으며, 그 외 확장형 메뉴는 저장 시 URL을 빈 값으로 정규화한다. `미열람 카운트`는 스위치와 조건부 입력을 한 줄로 배치하며, 스위치 ON이면 카운트 이름 입력을 필수로 받는다.
 - 메뉴 등록/수정 모달은 선택 메뉴의 `menuDescription`을 `메뉴 설명` textarea로 관리한다. 저장된 설명은 sidebar 메뉴 API 응답에 포함되고, 현재 route에 매칭된 메뉴의 설명이 공통 breadcrumb 하단에 표시된다. 설명이 비어 있으면 breadcrumb 하단 설명 영역은 렌더링하지 않는다.
 - `protectedYn=Y`는 메뉴 자체의 수정·사용여부 변경·삭제와 자기 자신 드래그 이동을 막는 시스템 보호 의미다. 보호 메뉴는 drag source와 sibling drop target이 되지 않지만, 보호 메뉴 아래에도 하위 메뉴를 추가하거나 다른 하위 메뉴를 이동할 수 있다.
-- `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. 메뉴 관리에서는 행 컨텍스트 메뉴를 숨기고 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시한다. BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
+- `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. `MenuDto.getManagementType()`이 `submenuExpandType=BOARD` 여부로 파생하는 값이며 DB 컬럼이 아니다. 메뉴 관리에서는 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시하고, **`...` 컨텍스트 메뉴도 함께 표시**한다(변경 전: 컨텍스트 메뉴를 숨기고 링크만 표시). BOARD 메뉴도 수정·사용여부 전환·삭제가 가능하며, 하위 메뉴 추가만 노출하지 않는다(백엔드 `MenuService`가 BOARD 부모 아래 하위 메뉴 등록을 거부). BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
 - 메뉴 트리 행의 액션은 `...` 컨텍스트 메뉴로 제공한다. 메뉴 항목은 하위 메뉴 추가, 수정, 사용/미사용 전환, 삭제이며 각 항목은 시스템 보호 상태에 따라 비활성화한다.
 - 메뉴 등록·수정 폼의 URL 레이블은 현재 locale의 `common.technical.url` 카탈로그를 사용하며 URL 입력·검증 계약은 유지한다.
 - `submenuExpandType=NO_SUB`는 해당 메뉴가 하위 메뉴를 생성하거나 이동받을 수 없는 leaf 메뉴임을 의미한다. `submenuExpandType=BOARD`도 게시판 관리 소유 메뉴이므로 하위 메뉴 추가 액션과 상위 메뉴 후보, 트리 이동 대상 부모에서 제외한다.
