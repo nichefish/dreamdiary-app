@@ -40,6 +40,7 @@
 - 서버는 `AcceptHeaderLocaleResolver`(Spring MVC) 로 `Accept-Language` 헤더를 읽어 `LocaleContextHolder` locale 설정 → `MessageUtils.getMessage()` 응답 메시지 다국어 반환.
 - 앱 초기 로드 시 `applyLocaleHeader()` (`ApiService.ts`) 가 localStorage 값을 읽어 axios 헤더를 초기화한다.
 - 라우터 `beforeEach`는 인증 상태 확인과 화면 마운트보다 먼저 `localeStore.ensureCatalog()`를 호출한다. 같은 locale의 catalog가 이미 준비됐으면 재요청하지 않으며, 직접 URL 진입·새로고침에서도 번역 키 대신 현재 locale 메시지를 표시한다.
+- `i18nCatalogService.t(catalog, key)`는 catalog에 키가 있으면 그 값을 쓴다. **빈 문자열도 유효한 번역**이다(예: en `date.suffix.after-month-number` → 월 접미사 없음 → `7`). 키가 없을 때만 key 문자열을 그대로 반환한다. `value || key`로 빈 값을 키로 되돌리면 안 된다.
 - 로그인 화면(`SignIn.vue`): 국기 버튼(🇰🇷/🇺🇸) — `localeStore.setLocale()` 호출, 화면 텍스트 `localeStore.t()` 카탈로그로 전환.
 - 앱 헤더 Navbar: 국기 버튼 클릭 → ko↔en 토글. 테마 전환·사용자/관리자 모드·언어 전환·프로필·모바일 헤더 메뉴의 사용자 노출 레이블은 현재 locale의 클라이언트 카탈로그를 사용하며, locale 변경은 기존 테마·메뉴 모드·라우트·인증 상태를 보존한다.
 - 브라우저 탭 제목은 최종 route의 `meta.pageTitleKey`를 현재 locale의 클라이언트 카탈로그로 해석한다. route 또는 locale 변경 시 `App.vue`의 단일 반응형 경로가 제목을 즉시 갱신하며, locale 변경은 현재 route와 인증 상태를 변경하지 않는다.

@@ -1,9 +1,11 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.service;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuEntity;
+import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuI18nEntity;
 import io.nicheblog.dreamdiary.feature.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.feature.admin.menu.mapstruct.MenuMapstruct;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.*;
+import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuI18nRepository;
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.feature.admin.menu.spec.MenuSpec;
@@ -25,6 +27,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -64,6 +67,10 @@ public class MenuService
     }
 
     private final MenuMapper menuMapper;
+    private final MenuI18nRepository menuI18nRepository;
+
+    /** 기준 로케일. 이 로케일의 메뉴명/설명은 menu.menu_name/menu_description 이 단일 원천이라 menu_i18n 에 저장하지 않는다. */
+    private static final String BASE_LOCALE = "ko";
 
     private final ApplicationContext context;
     private MenuService getSelf() {
@@ -71,10 +78,15 @@ public class MenuService
     }
 
     /**
-     * 메인 메뉴(사용자, 관리자, 공통 포함) 목록 조회
+     * 메인 메뉴(사용자, 관리자, 공통 포함) 목록 조회. 메뉴 관리 트리 렌더링용.
+     * <p>
+     * 표시명은 요청 locale 로 지역화한다. 편집 폼은 이 목록이 아니라 상세 조회
+     * ({@code GET /menu/{id}}, 지역화하지 않음)를 원천으로 쓰므로, 트리를 번역해도
+     * 수정 대상(ko 원본)과 어긋나지 않는다.
+     * 캐시가 없어 locale 별 캐시 key 를 둘 필요도 없다.
      *
      * @param searchParam 검색 파라미터
-     * @return {@link Page} 메인 메뉴 목록
+     * @return {@link Page} 메인 메뉴 목록 (요청 locale 로 지역화됨)
      */
     @Transactional(readOnly = true)
     public List<MenuDto> getMainMenuList(
@@ -84,7 +96,7 @@ public class MenuService
 
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
         searchParamMap.put("menuType", MenuType.MAIN.name());
-        return this.getSelf().getListDto(searchParamMap, sort);
+        return this.localizeMenuTree(this.getSelf().getListDto(searchParamMap, sort));
     }
 
     /* ----- */
@@ -95,7 +107,7 @@ public class MenuService
      * @return {@link List} 사용 가능한 포털 사이드바 메뉴 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="userMenuList")
+    @Cacheable(value="userMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
     public List<MenuDto> getUserMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -105,7 +117,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.filterSidebarVisible(this.getListDto(searchParamMap, sort));
+        return this.localizeMenuTree(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)));
     }
 
     /**
@@ -115,7 +127,7 @@ public class MenuService
      * @return {@link List} 사용자 메뉴 메타 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="userMenuMetaList")
+    @Cacheable(value="userMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
     public List<MenuDto> getUserMenuMetaList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -124,7 +136,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.getListDto(searchParamMap, sort);
+        return this.localizeMenuTree(this.getListDto(searchParamMap, sort));
     }
 
     /**
@@ -133,7 +145,7 @@ public class MenuService
      * @return {@link Page} 관리자 메인 메뉴 목록을 담고 있는 페이지 객체
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="mngrMenuList")
+    @Cacheable(value="mngrMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
     public List<MenuDto> getMngrMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -143,7 +155,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.filterSidebarVisible(this.getListDto(searchParamMap, sort));
+        return this.localizeMenuTree(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)));
     }
 
     /**
@@ -153,7 +165,7 @@ public class MenuService
      * @return {@link List} 관리자 메뉴 메타 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="mngrMenuMetaList")
+    @Cacheable(value="mngrMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
     public List<MenuDto> getMngrMenuMetaList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -164,7 +176,7 @@ public class MenuService
 
         final List<MenuDto> menuList = this.getListDto(searchParamMap, sort);
         this.addSharedHiddenUserMenuMeta(menuList);
-        return menuList;
+        return this.localizeMenuTree(menuList);
     }
 
     private List<MenuDto> filterSidebarVisible(final List<MenuDto> menuList) {
@@ -187,6 +199,99 @@ public class MenuService
             menu.setSubMenuList(this.filterSidebarVisible(subMenuList));
         }
         return menu;
+    }
+
+    /**
+     * 요청 locale({@link LocaleContextHolder}) 기준으로 메뉴 트리의 menuName/menuDescription 을
+     * 번역값으로 덮는다. 번역이 없는 메뉴는 기본값(menu_name/menu_description)을 그대로 둔다.
+     * <p>
+     * 기준 로케일(ko)이면 번역 조회 없이 원본을 반환한다. 사이드바 조회 메서드가 locale 별로 캐시되므로
+     * (캐시 key = locale) 이 메서드는 캐시 미스 시에만 실행된다. locale 변경 시 프론트가 메뉴를 재조회해야
+     * 새 언어가 반영된다.
+     *
+     * @param menuList 지역화할 메뉴 트리 (제자리 수정)
+     * @return 지역화된 메뉴 트리 (입력과 동일 인스턴스)
+     */
+    private List<MenuDto> localizeMenuTree(final List<MenuDto> menuList) {
+        final String locale = LocaleContextHolder.getLocale().getLanguage();
+        if (BASE_LOCALE.equals(locale) || CollectionUtils.isEmpty(menuList)) return menuList;
+
+        final Map<Integer, MenuI18nEntity> i18nMap = new HashMap<>();
+        for (final MenuI18nEntity entity : menuI18nRepository.findByLocale(locale)) {
+            i18nMap.put(entity.getMenuId(), entity);
+        }
+        if (i18nMap.isEmpty()) return menuList;
+
+        this.applyMenuLocale(menuList, i18nMap);
+        return menuList;
+    }
+
+    /** 메뉴 트리를 재귀 순회하며 번역이 있는 노드의 menuName/menuDescription 을 덮는다. */
+    private void applyMenuLocale(final List<MenuDto> menuList, final Map<Integer, MenuI18nEntity> i18nMap) {
+        if (CollectionUtils.isEmpty(menuList)) return;
+        for (final MenuDto menu : menuList) {
+            if (menu == null) continue;
+            final MenuI18nEntity translated = i18nMap.get(menu.getId());
+            if (translated != null) {
+                if (StringUtils.isNotBlank(translated.getMenuName())) menu.setMenuName(translated.getMenuName());
+                if (StringUtils.isNotBlank(translated.getMenuDescription())) menu.setMenuDescription(translated.getMenuDescription());
+            }
+            this.applyMenuLocale(menu.getSubMenuList(), i18nMap);
+        }
+    }
+
+    /**
+     * 메뉴 다국어 저장. 기존 번역을 전부 삭제하고 전달된 목록으로 교체한다.
+     * ko 는 menu.menu_name/menu_description 이 기준이라 저장에서 제외한다.
+     * 번역명이 비어 있는 행은 건너뛴다(menu_name 이 NOT NULL 이라 고아 행을 만들지 않기 위함).
+     *
+     * @param menuId 저장 대상 메뉴 ID
+     * @param i18nList 번역 목록 (없으면 전체 삭제만 수행)
+     */
+    private void saveMenuI18n(final Integer menuId, final List<MenuI18nDto> i18nList) {
+        if (menuId == null) return;
+        menuI18nRepository.deleteByMenuId(menuId);
+        if (CollectionUtils.isEmpty(i18nList)) return;
+
+        for (final MenuI18nDto dto : i18nList) {
+            if (dto == null) continue;
+            final String locale = StringUtils.trimToNull(dto.getLocale());
+            final String menuName = StringUtils.trimToNull(dto.getMenuName());
+            if (locale == null || menuName == null) continue;
+            if (BASE_LOCALE.equals(locale)) {
+                log.warn("[saveMenuI18n] ko 는 menu.menu_name 이 기준이라 i18n 저장에서 제외. menuId={}", menuId);
+                continue;
+            }
+            menuI18nRepository.save(
+                    MenuI18nEntity.builder()
+                            .menuId(menuId)
+                            .locale(locale)
+                            .menuName(menuName)
+                            .menuDescription(StringUtils.trimToNull(dto.getMenuDescription()))
+                            .build()
+            );
+        }
+    }
+
+    /**
+     * 메뉴 id 기준 다국어 번역 목록 조회 (관리 화면 상세용).
+     * ko 는 기준값이라 결과에 포함되지 않는다.
+     *
+     * @param menuId 메뉴 ID
+     * @return 번역 목록 (없으면 빈 목록)
+     */
+    @Transactional(readOnly = true)
+    public List<MenuI18nDto> getMenuI18nList(final Integer menuId) {
+        final List<MenuI18nDto> result = new ArrayList<>();
+        if (menuId == null) return result;
+        for (final MenuI18nEntity entity : menuI18nRepository.findByMenuId(menuId)) {
+            result.add(MenuI18nDto.builder()
+                    .locale(entity.getLocale())
+                    .menuName(entity.getMenuName())
+                    .menuDescription(entity.getMenuDescription())
+                    .build());
+        }
+        return result;
     }
 
     /**
@@ -239,6 +344,27 @@ public class MenuService
      */
     public SiteAcsInfo getSiteAceInfoFromMenu(final MenuDto menu) {
         return mapstruct.toSiteAcsInfo(menu);
+    }
+
+    /**
+     * 등록 (dto level) override.
+     * <p>
+     * i18nList 는 폼 전용 필드라 엔티티에 매핑되지 않는다. 상위 {@code regist} 는 후처리에
+     * 엔티티에서 만든 {@code updatedDto} 를 넘겨 {@code postRegist} 에서는 폼의 i18nList 를 볼 수 없다.
+     * 반대로 폼 DTO({@code registDto})에는 등록 전 id 가 없다. 두 값(폼 i18n + 새 id)을 모두 확보하려면
+     * 이 레벨에서 처리해야 한다. 상위 등록으로 새 id 를 받은 뒤 그 id 로 번역을 저장한다.
+     *
+     * @param registDto 등록할 폼 DTO (i18nList 보유)
+     * @return {@link ServiceResponse} 등록 결과
+     */
+    @Override
+    @Transactional
+    public ServiceResponse regist(final MenuPostDto registDto) throws Exception {
+        final ServiceResponse response = BaseDtoWritableService.super.regist(registDto);
+        if (response.getRsltObj() instanceof MenuDto saved && saved.getId() != null) {
+            this.saveMenuI18n(saved.getId(), registDto.getI18nList());
+        }
+        return response;
     }
 
     /**
@@ -362,6 +488,8 @@ public class MenuService
      */
     @Override
     public void postModify(final MenuPostDto postDto, final MenuDto updatedDto) throws Exception {
+        // 폼 값(i18nList)을 가진 postDto 로 저장한다. updatedDto 는 엔티티 기반이라 i18n 이 비어 있다.
+        this.saveMenuI18n(updatedDto.getId(), postDto.getI18nList());
         EhCacheUtils.clearCache("userMenuList");
         EhCacheUtils.clearCache("mngrMenuList");
         EhCacheUtils.clearCache("userMenuMetaList");

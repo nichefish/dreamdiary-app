@@ -12,9 +12,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,6 +62,19 @@ public class MenuDto
     /** 메뉴 breadcrumb 하단에 표시할 설명 */
     @Size(max = 1000)
     private String menuDescription;
+
+    /**
+     * 다국어 번역 목록 (locale 별 메뉴명/설명).
+     * 한국어(ko)는 {@link #menuName} / {@link #menuDescription} 이 단일 원천이라 포함하지 않는다.
+     * <p>
+     * 사이드바 조회 응답에는 담지 않는다 — 서버가 요청 locale 로 이미 확정한 값을
+     * {@code menuName} / {@code menuDescription} 에 넣어 내려주기 때문이다.
+     * 관리 화면 상세 조회·등록·수정에서만 사용한다.
+     * 폼 바인딩: {@code i18nList[0].locale}, {@code i18nList[0].menuName} ...
+     */
+    @Valid
+    @Builder.Default
+    private List<MenuI18nDto> i18nList = new ArrayList<>();
 
     /** 미열람 카운트 이름 (model) */
     @Size(max = 100)

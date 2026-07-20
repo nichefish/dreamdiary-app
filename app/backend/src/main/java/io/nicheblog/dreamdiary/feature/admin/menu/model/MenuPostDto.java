@@ -5,8 +5,10 @@ import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -57,6 +59,14 @@ public class MenuPostDto
     /** 메뉴 breadcrumb 하단에 표시할 설명 */
     @Size(max = 1000)
     private String menuDescription;
+
+    /**
+     * 다국어 번역 목록 (locale 별 메뉴명/설명). 한국어(ko)는 menuName/menuDescription 이 기준이라 제외한다.
+     * 폼 바인딩: i18nList[0].locale, i18nList[0].menuName, i18nList[0].menuDescription ...
+     */
+    @Valid
+    @Builder.Default
+    private java.util.List<MenuI18nDto> i18nList = new java.util.ArrayList<>();
 
     /** 미열람 카운트 이름 (model) */
     @Size(max = 100)

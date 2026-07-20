@@ -131,6 +131,10 @@ public class MenuRestController
     ) throws Exception {
 
         final MenuDto retrievedDto = menuService.getDtlDto(id);
+        // 다국어 번역 목록 주입 (locale 별 메뉴명/설명, ko 는 menu_name 기준이라 제외)
+        if (retrievedDto != null) {
+            retrievedDto.setI18nList(menuService.getMenuI18nList(id));
+        }
         final boolean isSuccess = retrievedDto != null;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 

@@ -2,8 +2,22 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
-import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { BASE_LOCALE, SUPPORTED_LOCALES, useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
+
+/**
+ * 메뉴 다국어 입력에서 고를 수 있는 로케일.
+ * 기준 로케일(ko)의 메뉴명/설명은 menu.menu_name/menu_description 이 단일 원천이라 제외한다.
+ * SUPPORTED_LOCALES 에 로케일을 추가하면 코드 수정 없이 여기에 자동 반영된다.
+ */
+export const MENU_I18N_LOCALE_OPTIONS: readonly string[] = SUPPORTED_LOCALES.filter((locale) => locale !== BASE_LOCALE);
+
+/** 서버 응답/폼에서 다루는 메뉴 다국어 한 행 (menu_i18n 한 행에 대응). */
+export interface MenuI18nRow {
+  locale: string;
+  menuName: string;
+  menuDescription?: string;
+}
 
 export interface MenuNode {
   id: number;
@@ -26,6 +40,8 @@ export interface MenuNode {
   submenuExpandTypeName?: string;
   upperMenuNm?: string;
   subMenuList?: MenuNode[];
+  /** 관리 상세 조회에만 포함되는 locale 별 번역 목록 (ko 제외). 사이드바 응답에는 없다. */
+  i18nList?: MenuI18nRow[];
 }
 
 export interface MenuForm {
@@ -35,6 +51,8 @@ export interface MenuForm {
   menuName: string;
   menuLabel: string;
   menuDescription: string;
+  /** 다국어 번역 행 목록 (locale 별 메뉴명/설명). ko 는 위 menuName/menuDescription 이 기준이라 제외. */
+  i18nRows: MenuI18nRow[];
   icon: string;
   unreadCntEnabled: boolean;
   unreadCntNm: string;
@@ -51,24 +69,40 @@ export interface SubmenuExpandOption {
 
 export type MenuTargetMode = "USER" | "MNGR";
 
-const EMPTY_FORM: MenuForm = {
-  id: null,
-  parentMenuId: null,
-  upperMenuNm: "",
-  menuName: "",
-  menuLabel: "",
-  menuDescription: "",
-  icon: "",
-  unreadCntEnabled: false,
-  unreadCntNm: "",
-  submenuExpandType: "NO_SUB",
-  url: "",
-  useYn: "Y",
-  sidebarVisibleYn: "Y",
-};
+/**
+ * 빈 메뉴 폼을 새로 만든다.
+ * i18nRows 가 배열이라 상수를 얕은 복사(`{ ...EMPTY }`)하면 배열 참조가 공유되어
+ * 행 추가가 다른 폼 인스턴스를 오염시킨다. 그래서 상수 대신 매번 새 객체를 만드는 팩토리로 둔다.
+ */
+function emptyForm(): MenuForm {
+  return {
+    id: null,
+    parentMenuId: null,
+    upperMenuNm: "",
+    menuName: "",
+    menuLabel: "",
+    menuDescription: "",
+    i18nRows: [],
+    icon: "",
+    unreadCntEnabled: false,
+    unreadCntNm: "",
+    submenuExpandType: "NO_SUB",
+    url: "",
+    useYn: "Y",
+    sidebarVisibleYn: "Y",
+  };
+}
 
 function yn(value: string | undefined): string {
   return String(value ?? "N").toUpperCase() === "Y" ? "Y" : "N";
+}
+
+/** 서버 응답의 i18nList 를 폼 행 목록으로 정규화한다. ko 는 menuName 기준이라 제외, 빈 값 방어. */
+function toI18nRows(i18nList?: MenuI18nRow[]): MenuI18nRow[] {
+  if (!Array.isArray(i18nList)) return [];
+  return i18nList
+    .filter((row) => row && row.locale && row.locale !== BASE_LOCALE && row.menuName)
+    .map((row) => ({ locale: row.locale, menuName: row.menuName, menuDescription: row.menuDescription ?? "" }));
 }
 
 function cloneForm(row?: Partial<MenuNode>): MenuForm {
@@ -79,6 +113,7 @@ function cloneForm(row?: Partial<MenuNode>): MenuForm {
     menuName: row?.menuName ?? "",
     menuLabel: row?.menuLabel ?? "",
     menuDescription: row?.menuDescription ?? "",
+    i18nRows: toI18nRows(row?.i18nList),
     icon: row?.icon ?? "",
     unreadCntEnabled: Boolean(row?.unreadCntNm),
     unreadCntNm: row?.unreadCntNm ?? "",
@@ -96,6 +131,17 @@ function toFormData(form: MenuForm): FormData {
   fd.append("menuName", form.menuName.trim());
   fd.append("menuLabel", form.menuLabel.trim());
   fd.append("menuDescription", form.menuDescription.trim());
+  /* Spring 인덱스 리스트 바인딩: i18nList[n].locale / .menuName / .menuDescription. 빈 번역명 행·ko 는 제외. */
+  let i18nIdx = 0;
+  for (const row of form.i18nRows) {
+    const locale = row.locale.trim();
+    const name = row.menuName.trim();
+    if (!locale || locale === BASE_LOCALE || !name) continue;
+    fd.append(`i18nList[${i18nIdx}].locale`, locale);
+    fd.append(`i18nList[${i18nIdx}].menuName`, name);
+    fd.append(`i18nList[${i18nIdx}].menuDescription`, (row.menuDescription ?? "").trim());
+    i18nIdx++;
+  }
   fd.append("icon", form.icon.trim());
   fd.append("unreadCntNm", form.unreadCntEnabled ? form.unreadCntNm.trim() : "");
   fd.append("submenuExpandType", form.submenuExpandType);
@@ -117,7 +163,7 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
   const saving = ref(false);
   const sortSaving = ref(false);
   const modalOpen = ref(false);
-  const form = ref<MenuForm>({ ...EMPTY_FORM });
+  const form = ref<MenuForm>(emptyForm());
   const submenuExpandOptions = computed<SubmenuExpandOption[]>(() => [
     { code: "EXTEND", codeName: t("enum.submenu-expand-type.extend") },
     { code: "LIST", codeName: t("enum.submenu-expand-type.list") },
@@ -146,7 +192,7 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
   async function openSubCreate(parent: MenuNode) {
     if (!await assertAuthenticatedBeforeModal()) return;
     form.value = {
-      ...EMPTY_FORM,
+      ...emptyForm(),
       parentMenuId: parent.id,
       upperMenuNm: parent.menuName ?? "",
     };
@@ -164,7 +210,23 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
 
   function closeModal() {
     modalOpen.value = false;
-    form.value = { ...EMPTY_FORM };
+    form.value = emptyForm();
+  }
+
+  /**
+   * 다국어 행 추가. 아직 쓰지 않은 로케일을 기본 선택한다.
+   * 남은 로케일이 없으면 아무 것도 하지 않는다 (locale 은 menu_i18n 복합 PK 라 중복 불가).
+   */
+  function addI18nRow() {
+    const used = new Set(form.value.i18nRows.map((row) => row.locale));
+    const next = MENU_I18N_LOCALE_OPTIONS.find((locale) => !used.has(locale));
+    if (!next) return;
+    form.value.i18nRows.push({ locale: next, menuName: "", menuDescription: "" });
+  }
+
+  /** 다국어 행 제거. 저장 시 해당 locale 번역은 삭제된다. */
+  function removeI18nRow(index: number) {
+    form.value.i18nRows.splice(index, 1);
   }
 
   /**
@@ -286,6 +348,8 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     isEdit,
     getMenuTargetMode,
     fetchTree,
+    addI18nRow,
+    removeI18nRow,
     openSubCreate,
     openEdit,
     closeModal,

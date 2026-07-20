@@ -98,7 +98,12 @@
 - 분류 코드(code_group) 목록/등록/수정/삭제
 - 분류 코드별 상세 코드(code_item) 목록/등록/삭제
 - 상세 코드 정렬 순서 변경
-- 상세 코드 등록/수정 시 영문 코드명(`codeNameEn`) 선택 입력 가능. 레이블과 placeholder는 현재 locale의 클라이언트 카탈로그를 사용하며 미입력 시 한국어 `codeName` 을 fallback 으로 사용한다.
+- 상세 코드 등록/수정 시 다국어 번역명을 `로케일 select + 번역명` 행으로 관리한다. `+` 버튼으로 행을 추가하고 `-` 버튼으로 제거하며, 저장 시 남아 있는 행 전체가 해당 코드의 번역을 교체한다(제거한 행의 번역은 삭제된다). 레이블·placeholder·안내는 현재 locale의 클라이언트 카탈로그를 사용하고, 번역이 없는 locale 은 한국어 `codeName` 을 fallback 으로 사용한다.
+  - **변경 전**: 영문 전용 단일 입력(`codeNameEn`)이었고, 서버는 `locale='en'` 한 건만 저장했다. `saveI18n()`이 기존 번역을 전부 지운 뒤 en 만 다시 써서, en 이외 locale 행은 저장할 때마다 유실됐다. **변경 후**: DTO 계약이 `i18nNames: Map<locale, 번역명>`으로 일반화되어 어떤 locale 도 보존된다. 읽기 모델 `CodeLookupItem.i18nNames` 와 같은 모양이다.
+  - 로케일 선택지는 `SUPPORTED_LOCALES`(`shared/i18n/stores/locale.ts`)에서 기준 로케일 `ko` 를 제외한 값이다. 지원 로케일을 추가하면 코드 수정 없이 선택지에 반영된다. 현재는 `ko`,`en` 만 지원하므로 선택 가능한 값은 `en` 뿐이다.
+  - `ko` 는 `code_item.code_name` 이 단일 원천이므로 `code_item_i18n` 과 번역명 목록에서 제외한다. 한국어는 `코드명` 필드가 담당한다. 서버는 `ko` 가 들어와도 저장하지 않고 경고 로그를 남긴다.
+  - 같은 locale 행은 중복될 수 없다(`code_item_i18n` 복합 PK). 이미 사용 중인 locale 은 다른 행의 select 선택지에서 제외하고, 남은 로케일이 없으면 `+` 버튼을 비활성화한다.
+  - 폼 전송은 기존 `FormData`(@ModelAttribute 바인딩)를 유지하며 `i18nNames[<locale>]=<번역명>` 형식을 사용한다.
 - 다국어 번역은 `code_item_i18n` 테이블(code_item_id, locale, code_name 복합PK)에 저장. 현재 `en` 언어만 지원.
 - API: `GET/POST /api/code/groups`, `GET/PATCH/DELETE /api/code/group/{id}`
 - API: `GET/POST /api/code/items`, `GET/DELETE /api/code/item`, `PUT /api/code/items/sort-orders`
@@ -126,6 +131,14 @@
 - `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. `MenuDto.getManagementType()`이 `submenuExpandType=BOARD` 여부로 파생하는 값이며 DB 컬럼이 아니다. 메뉴 관리에서는 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시하고, **`...` 컨텍스트 메뉴도 함께 표시**한다(변경 전: 컨텍스트 메뉴를 숨기고 링크만 표시). BOARD 메뉴도 수정·사용여부 전환·삭제가 가능하며, 하위 메뉴 추가만 노출하지 않는다(백엔드 `MenuService`가 BOARD 부모 아래 하위 메뉴 등록을 거부). BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
 - 메뉴 트리 행의 액션은 `...` 컨텍스트 메뉴로 제공한다. 메뉴 항목은 하위 메뉴 추가, 수정, 사용/미사용 전환, 삭제이며 각 항목은 시스템 보호 상태에 따라 비활성화한다.
 - 메뉴 등록·수정 폼의 URL 레이블은 현재 locale의 `common.technical.url` 카탈로그를 사용하며 URL 입력·검증 계약은 유지한다.
+- **메뉴명·설명 다국어**: 사이드바 메뉴명(`menuName`)과 설명(`menuDescription`)은 `menu_i18n (menu_id, locale)` 테이블에 locale 별 번역을 둔다. 한국어(ko)는 `menu.menu_name`/`menu.menu_description` 이 단일 원천이라 `menu_i18n` 에 저장하지 않는다. 조회 시 요청 locale(`Accept-Language` → `AcceptHeaderLocaleResolver`)의 번역이 있으면 그 값으로, 없으면 기본값으로 fallback 한다.
+  - 사이드바 조회(`getUserMenuList`/`getUserMenuMetaList`/`getMngrMenuList`/`getMngrMenuMetaList`)는 트리를 재귀 지역화하며, `@Cacheable` 캐시 key 에 locale(`LocaleContextHolder.getLocale().getLanguage()`)을 포함해 언어별로 분리 캐시한다(변경 전: locale 무관 단일 엔트리라 먼저 접속한 언어가 전체에 노출되던 결함). `ko` 는 번역 조회 없이 원본을 반환한다.
+  - 메뉴 관리 트리 조회(`menu-main-list` → `getMainMenuList`)도 같은 방식으로 지역화한다. 편집 폼은 이 목록이 아니라 상세 조회(`GET /menu/{id}`, 지역화하지 않음)를 원천으로 쓰므로, 트리에 번역이 보여도 수정 대상(ko 원본)과 어긋나지 않는다. 이 조회는 캐시가 없어 locale 별 캐시 key 가 필요 없다. 하위 메뉴 추가 시 `상위 메뉴` 읽기 전용 필드에는 트리의 번역된 이름이 표시되지만 저장 payload 에는 포함되지 않는다(표시 전용). `MenuAdminPage` 는 locale 변경을 watch 해 `fetchTree()` 로 트리를 재조회한다.
+  - 관리 상세 조회(`GET /menu/{id}`)는 `MenuDto.i18nList`(locale 별 `menuName`/`menuDescription` 레코드 목록)를 함께 내려준다. 등록/수정은 폼에서 `i18nList[n].locale`/`menuName`/`menuDescription` 로 전송하며, 서버는 기존 번역을 전부 지우고 전달 목록으로 교체한다(번역명이 빈 행·`ko` 행은 제외). 저장 시 사이드바 캐시 4종을 무효화한다.
+  - 메뉴 등록/수정 모달은 `메뉴 설명` 아래에 다국어 번역 영역을 둔다. 각 행은 `로케일 select + 번역된 메뉴명 + 번역된 설명`이며 `+`로 추가, `-`로 제거한다. 로케일 선택지는 `MENU_I18N_LOCALE_OPTIONS`(= `SUPPORTED_LOCALES` − `ko`)이고, 이미 다른 행이 쓰는 로케일은 select에서 제외하며 남은 로케일이 없으면 `+`를 비활성화한다(같은 locale 중복 불가 — 복합 PK). 레이블·placeholder·안내는 현재 locale의 클라이언트 카탈로그를 사용한다.
+  - 클라이언트 `localeStore.setLocale`은 catalog 재로드 후 `menuStore.refreshMenu()`로 사이드바를 재조회해 새 언어의 메뉴명/설명을 반영한다(모듈 순환 회피 위해 지연 import). 재조회 실패는 콘솔 경고로 남기고 기존 메뉴를 유지한다.
+  - i18n 계약을 `code_item` 처럼 `Map<locale, 번역명>` 이 아니라 `List<MenuI18nDto>` 레코드로 둔 이유: 메뉴는 번역 필드가 `menuName`+`menuDescription` 둘이라, 맵 두 개로 쪼개면 두 맵의 locale 키 집합이 어긋난 고아 행이 생길 수 있어서다.
+  - locale 전환 시 사이드바 반영: 클라이언트 `setLocale` 이 메뉴 재조회를 트리거해야 새 언어가 사이드바에 나타난다(서버 캐시는 locale 별로 분리되어 있으므로 재조회만으로 반영됨).
 - `submenuExpandType=NO_SUB`는 해당 메뉴가 하위 메뉴를 생성하거나 이동받을 수 없는 leaf 메뉴임을 의미한다. `submenuExpandType=BOARD`도 게시판 관리 소유 메뉴이므로 하위 메뉴 추가 액션과 상위 메뉴 후보, 트리 이동 대상 부모에서 제외한다.
 - 메뉴 트리의 보호/숨김 아이콘은 Bootstrap tooltip을 `v-tooltip` directive로 활성화한다. `protectedYn=Y` 메뉴는 `bi-shield-lock text-warning`와 `시스템 보호 메뉴`로 표시하며, `sidebarVisibleYn=N` 메뉴는 `bi-eye-slash text-muted`와 `사이드바 숨김 메뉴`로 표시한다. 아이콘 hover cursor는 도움말(`help`)이다.
 - 하위 메뉴 등록/수정 모달의 상위 메뉴는 호출한 부모 또는 기존 부모를 읽기 전용으로 표시한다. 상위 메뉴 변경은 트리 드래그 앤 드롭과 `PUT /api/menus/tree` 전용이며, 일반 수정 API는 `parentMenuId` 변경 요청을 거부한다.
