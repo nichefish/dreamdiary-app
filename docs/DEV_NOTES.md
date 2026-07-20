@@ -11,6 +11,8 @@ Agent shell·일부 CI에는 PATH `npm`이 없다. **Vue 빌드는 Gradle Node�
 | npm install | `./gradlew npmInstall` |
 | 기타 package.json 스크립트 | `./gradlew npm_run_<script>` (`type-check` → `npm_run_type_check`) |
 
+gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬 loopback 연결 실패(`Unable to establish loopback connection`)로 아예 동작하지 않는다 — IntelliJ·일반 터미널에서는 정상이므로 셸 환경 한정 문제다. 이때는 Gradle 이 받아둔 `.gradle/nodejs/node-v<버전>-win-x64` 를 PATH 에 추가하고 `app/frontend-vue` 에서 `npm run build` / `npm run test` 를 직접 실행한다 — `buildFrontend` 와 동일 Node 버전·동일 스크립트라 게이트 등가. (`JAVA_HOME` 미설정이면 `~/.jdks` 아래 JDK 를 지정.)
+
 
 백엔드 테스트·배포 게이트 (`gradle/testconfig.gradle`, `Dockerfile`, 2026-07-05):
 - `ignoreFailures` 제거 — `./gradlew test` / `check` / `build` 는 테스트 실패 시 중단된다. (`bootJar` 는 `test` 비의존.)

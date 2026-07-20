@@ -17,17 +17,17 @@
       </button>
       <!--end::고급 필터 토글-->
       <!--begin::초기화-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-secondary text-dark" @click="resetSearch">
+      <button type="button" class="btn btn-sm btn-outline btn-light-secondary text-dark" :disabled="isActionLocked" @click="resetSearch">
         {{ t("common.reset") }}
       </button>
       <!--end::초기화-->
       <!--begin::정렬 토글-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :title="t('journal.entry.search.sort.tooltip')" @click="toggleSort">
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="isActionLocked" :title="t('journal.entry.search.sort.tooltip')" @click="toggleSort">
         <i class="bi" :class="sort === 'asc' ? 'bi-sort-down-alt' : 'bi-sort-up'"></i>
       </button>
       <!--end::정렬 토글-->
       <!--begin::검색-->
-      <button type="button" class="btn btn-sm btn-primary" @click="doSearch">
+      <button type="button" class="btn btn-sm btn-primary" :disabled="isActionLocked" @click="doSearch">
         {{ t("common.search") }}
       </button>
       <!--end::검색-->
@@ -35,12 +35,12 @@
       <div class="border-start border-gray-300 h-25px ms-1"></div>
       <!--end::구분선-->
       <!--begin::전체 복사-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :title="t('journal.entry.search.copy-all.tooltip')" @click="copyAll">
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.tooltip')" @click="copyAll">
         <i class="bi bi-copy"></i>
       </button>
       <!--end::전체 복사-->
       <!--begin::TXT 내보내기-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt">
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canExportResults" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt">
         <i class="fas fa-download"></i>
       </button>
       <!--end::TXT 내보내기-->
@@ -50,6 +50,7 @@
           v-for="kw in searchKeywords"
           :key="kw"
           class="badge badge-light-secondary fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-gray-700 cursor-pointer"
+          :title="t('journal.entry.search.keyword.remove.tooltip')"
           @click="removeKeyword(kw)"
         >
           {{ kw }}
@@ -63,6 +64,7 @@
           v-for="tagId in tagIds"
           :key="tagId"
           class="badge badge-light-primary fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary cursor-pointer"
+          :title="t('journal.entry.search.tag.remove.tooltip')"
           @click="removeTag(tagId)"
         >
           #{{ tagLabelMap[tagId] ?? tagId }}
@@ -71,12 +73,20 @@
       </div>
       <!--end::태그 배지 목록-->
       <!--begin::결과 건수-->
-      <span class="text-muted fs-7 ms-auto">{{ resultLabel }}</span>
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <span class="text-muted fs-8">{{ conditionSummaryLabel }}</span>
+        <span v-if="resultStatusLabel" class="text-muted fs-8">{{ resultStatusLabel }}</span>
+        <span class="text-muted fs-7">{{ resultLabel }}</span>
+      </div>
       <!--end::결과 건수-->
     </div>
     <!--end::컨트롤 바-->
 
     <!--begin::고급 필터 아코디언-->
+    <div v-if="searchErrorMessage" class="alert alert-warning py-3 px-4 mb-4 fs-7">
+      {{ searchErrorMessage }}
+    </div>
+
     <div v-show="showAdvanced" class="mb-4 px-4 py-3 bg-light rounded">
       <!--begin::유형 선택-->
       <div class="d-flex align-items-center gap-2 mb-3">
@@ -99,16 +109,21 @@
       <div class="d-flex align-items-center gap-2">
         <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("common.keyword") }}</span>
         <input
+          ref="keywordInputEl"
           v-model="keywordInput"
           type="text"
           class="form-control form-control-sm journal-entry-search-input"
           :placeholder="t('journal.entry.search.keyword.placeholder')"
+          :title="t('journal.entry.search.input.enter-to-add')"
           maxlength="200"
           @keydown.enter.prevent="addKeyword"
         />
         <button type="button" class="btn btn-sm btn-light-primary w-100px" @click="addKeyword">
           + {{ t("common.add") }}
         </button>
+      </div>
+      <div class="text-muted fs-8 mt-1" style="padding-left: 60px;">
+        {{ t("journal.entry.search.input.enter-to-add") }}
       </div>
       <!--end::키워드 입력-->
       <!--begin::태그 입력-->
@@ -119,9 +134,11 @@
           type="text"
           class="form-control form-control-sm journal-entry-search-input"
           :placeholder="t('journal.entry.search.tag.placeholder')"
+          :title="tagInputTitle"
           maxlength="100"
           list="journal-entry-search-tag-options"
           autocomplete="off"
+          :disabled="isTagCategoryChoicePending"
           @focus="ensureTagSelectorData()"
           @keydown.enter.prevent="addTagFromInput"
         />
@@ -132,9 +149,12 @@
             :value="tagName"
           />
         </datalist>
-        <button type="button" class="btn btn-sm btn-light-primary w-100px" @click="addTagFromInput">
+        <button type="button" class="btn btn-sm btn-light-primary w-100px" :disabled="isTagCategoryChoicePending" @click="addTagFromInput">
           + {{ t("common.add") }}
         </button>
+      </div>
+      <div class="text-muted fs-8 mt-1" style="padding-left: 60px;">
+        {{ tagInputHint }}
       </div>
       <div v-if="tagCategoryChoices.length > 0" class="d-flex align-items-center gap-2 mt-2" style="padding-left: 60px;">
         <span class="text-muted fs-8">{{ t("journal.entry.search.category.select") }}</span>
@@ -151,14 +171,34 @@
           {{ t("common.cancel") }}
         </button>
       </div>
+      <div v-if="hasPendingSearchInputs" class="text-primary fs-8 mt-3" style="padding-left: 60px;">
+        {{ t("journal.entry.search.pending-inputs") }}
+      </div>
       <!--end::태그 입력-->
     </div>
     <!--end::고급 필터 아코디언-->
 
     <!--begin::결과 목록-->
-    <div v-if="loading" class="text-muted fs-7 py-10">{{ t("journal.entry.search.loading") }}</div>
-    <div v-else-if="entries.length === 0" class="text-muted fs-7 py-10">{{ t("common.search.rslt.empty") }}</div>
+    <div v-if="!hasSearchConditions" class="text-muted fs-7 py-10">
+      <div class="mb-3">{{ t("journal.entry.search.no-condition") }}</div>
+      <button type="button" class="btn btn-sm btn-light-primary" @click="openConditionEditor">
+        {{ t("journal.entry.search.add-condition") }}
+      </button>
+    </div>
+    <div v-else-if="loading && entries.length === 0" class="text-muted fs-7 py-10">{{ t("journal.entry.search.loading") }}</div>
+    <div v-else-if="!loading && searchAttempted && entries.length === 0" class="text-muted fs-7 py-10">
+      <div class="mb-3">{{ t("common.search.rslt.empty") }}</div>
+      <button type="button" class="btn btn-sm btn-light-primary" @click="openConditionEditor">
+        {{ t("journal.entry.search.refine-condition") }}
+      </button>
+    </div>
     <div v-else class="d-flex flex-column">
+      <div v-if="loading" class="text-muted fs-8 px-2 pb-2">
+        {{ t("journal.entry.search.refreshing.keep-previous") }}
+      </div>
+      <div class="text-muted fs-8 px-2 pb-2">
+        {{ resultSummaryLabel }}
+      </div>
       <template v-for="(entry, idx) in entries" :key="entry.id">
         <!--begin::월 구분선 (월이 바뀔 때만)-->
         <div
@@ -177,6 +217,9 @@
         >
           <span>{{ entry.stdrdDt }}</span>
           <span v-if="entry.stdrdDt" class="text-muted fs-7">({{ getDisplayWeekDayStr(entry.stdrdDt) }})</span>
+          <span v-if="entry.stdrdDt" class="badge badge-light-secondary fw-lighter">
+            {{ getDateEntryCountLabel(entry.stdrdDt) }}
+          </span>
           <button
             v-if="entry.stdrdDt"
             type="button"
@@ -191,6 +234,7 @@
         <JournalEntryItem
           :dom-id="entry.id ? 'journal-entry-search-' + entry.id : undefined"
           :entry="entry"
+          :highlight-keywords="searchKeywords"
           :is-dream="entry.contentType === 'JOURNAL_DREAM'"
         />
       </template>
@@ -230,6 +274,11 @@ import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
+import {
+  buildEntrySearchParams,
+  buildEntrySearchRouteQuery,
+  parseEntrySearchQuery,
+} from "@/features/journal/utils/entrySearchQuery";
 import JournalEntryItem from "./components/JournalEntryItem.vue";
 import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
 import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
@@ -265,7 +314,10 @@ const { t } = useLocaleStore();
 
 const entries = ref<JournalEntryDto[]>([]);
 const loading = ref(false);
+const actionInProgress = ref(false);
+const conditionChangedMessage = ref("");
 const keywordInput = ref("");
+const keywordInputEl = ref<HTMLInputElement | null>(null);
 const tagInput = ref("");
 const tagCategoryMap = ref<Record<string, string[]>>({});
 const tagCatalog = ref<SearchTagDto[]>([]);
@@ -278,21 +330,62 @@ const type = ref("DIARY");
 const sort = ref("desc");
 const tagIds = ref<string[]>([]);
 const searchKeywords = ref<string[]>([]);
+const searchAttempted = ref(false);
+const searchErrorMessage = ref("");
 
 /** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
 const tagLabelMap = ref<Record<string, string>>({});
 
+const hasSearchConditions = computed(() => searchKeywords.value.length > 0 || tagIds.value.length > 0);
+const hasPendingSearchInputs = computed(() => keywordInput.value.trim().length > 0 || tagInput.value.trim().length > 0);
+const isTagCategoryChoicePending = computed(() => tagCategoryChoices.value.length > 0);
+const isActionLocked = computed(() => loading.value || actionInProgress.value);
+const canCopyResults = computed(() => !isActionLocked.value && (entries.value.length > 0 || hasPendingSearchInputs.value));
+const canExportResults = computed(() => !isActionLocked.value && (hasSearchConditions.value || hasPendingSearchInputs.value));
 const resultLabel = computed(() => t("journal.entry.search.result-count").replace("{0}", String(entries.value.length)));
+const resultSummaryLabel = computed(() =>
+  t("journal.entry.search.result-summary")
+    .replace("{0}", String(entries.value.length))
+    .replace("{1}", String(resultDateCount.value))
+    .replace("{2}", String(resultMonthCount.value))
+);
+const typeLabel = computed(() => type.value === "DREAM" ? t("common.dream") : t("common.diary"));
+const sortLabel = computed(() => sort.value === "asc" ? t("journal.entry.search.sort.asc") : t("journal.entry.search.sort.desc"));
+const resultStatusLabel = computed(() => {
+  if (!hasSearchConditions.value) return "";
+  if (loading.value && entries.value.length > 0) return t("journal.entry.search.refreshing");
+  if (conditionChangedMessage.value) return conditionChangedMessage.value;
+  return t("journal.entry.search.result-basis");
+});
+const conditionSummaryLabel = computed(() =>
+  t("journal.entry.search.condition-summary")
+    .replace("{0}", typeLabel.value)
+    .replace("{1}", sortLabel.value)
+    .replace("{2}", String(searchKeywords.value.length))
+    .replace("{3}", String(tagIds.value.length))
+);
 
 const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
+const resultDateCount = computed(() => new Set(entries.value.map((entry) => entry.stdrdDt).filter(Boolean)).size);
+const resultMonthCount = computed(() => new Set(entries.value.map((entry) => getYyMm(entry.stdrdDt)).filter(Boolean)).size);
+const tagInputHint = computed(() => isTagCategoryChoicePending.value
+  ? t("journal.entry.search.tag.category.pending")
+  : t("journal.entry.search.input.enter-to-add"));
+const tagInputTitle = computed(() => isTagCategoryChoicePending.value
+  ? t("journal.entry.search.tag.category.pending")
+  : t("journal.entry.search.input.enter-to-add"));
 
 /** route query 를 파싱해 로컬 ref 에 반영한다. */
 function syncFromRoute(): void {
-  type.value = String(route.query.type ?? "DIARY").toUpperCase();
-  sort.value = String(route.query.sort ?? "desc").toLowerCase() === "asc" ? "asc" : "desc";
-  tagIds.value = normalizeQueryList(route.query.tagIds);
-  searchKeywords.value = normalizeQueryList(route.query.searchKeywords);
+  const cond = parseEntrySearchQuery(route.query);
+  type.value = cond.type;
+  sort.value = cond.sort;
+  tagIds.value = cond.tagIds;
+  searchKeywords.value = cond.searchKeywords;
   keywordInput.value = "";
+  tagInput.value = "";
+  cancelTagCategoryChoice();
+  searchErrorMessage.value = "";
 }
 
 watch(() => route.fullPath, () => {
@@ -301,21 +394,35 @@ watch(() => route.fullPath, () => {
 }, { immediate: true });
 
 async function loadEntries(): Promise<void> {
+  if (!hasSearchConditions.value) {
+    entries.value = [];
+    loading.value = false;
+    searchAttempted.value = false;
+    searchErrorMessage.value = "";
+    conditionChangedMessage.value = "";
+    return;
+  }
+
   loading.value = true;
+  searchAttempted.value = true;
+  searchErrorMessage.value = "";
   try {
-    const params = new URLSearchParams();
-    params.set("type", type.value);
-    params.set("sort", sort.value);
-    tagIds.value.forEach((tagId) => params.append("tagIds", tagId));
-    searchKeywords.value.forEach((kw) => params.append("searchKeywords", kw));
+    const params = buildEntrySearchParams({
+      type: type.value,
+      sort: sort.value,
+      tagIds: tagIds.value,
+      searchKeywords: searchKeywords.value,
+    });
 
     const res = await axios.get("/api/journal/entries", { params });
     entries.value = res.data?.rsltList ?? [];
+    conditionChangedMessage.value = "";
     hydrateTagNamesFromEntries(entries.value);
     void hydrateMissingTagNames();
   } catch (e: unknown) {
     console.error("[JournalEntrySearchPage] entry search failed", e);
-    void swalRequestError(e, t("journal.entry.search.load.failure"));
+    searchErrorMessage.value = t("journal.entry.search.load.failure.keep-previous")
+      .replace("{0}", String(entries.value.length));
   } finally {
     loading.value = false;
     void reinitMetronicAfterDom();
@@ -406,24 +513,24 @@ function findKnownTagName(input: string): string {
   return tagNameOptions.value.find((name) => name.toLowerCase() === normalized.toLowerCase()) ?? normalized;
 }
 
-async function addTagFromInput(): Promise<void> {
+async function addTagFromInput(): Promise<boolean> {
   await ensureTagSelectorData();
   const tagName = findKnownTagName(tagInput.value);
   const categories = tagCategoryMap.value[tagName] ?? [];
   if (!tagName || categories.length === 0) {
     void swalAlert(t("journal.entry.search.tag.select-existing"));
-    return;
+    return false;
   }
   if (categories.length === 1) {
-    addTagByNameAndCategory(tagName, categories[0]);
-    return;
+    return addTagByNameAndCategory(tagName, categories[0]);
   }
   pendingTagName.value = tagName;
   tagCategoryChoices.value = categories;
+  return false;
 }
 
 function selectTagCategory(ctgr: string): void {
-  addTagByNameAndCategory(pendingTagName.value, ctgr);
+  void addTagByNameAndCategory(pendingTagName.value, ctgr);
 }
 
 function cancelTagCategoryChoice(): void {
@@ -431,7 +538,7 @@ function cancelTagCategoryChoice(): void {
   tagCategoryChoices.value = [];
 }
 
-function addTagByNameAndCategory(tagName: string, ctgr: string): void {
+async function addTagByNameAndCategory(tagName: string, ctgr: string): Promise<boolean> {
   const matchedTag = tagCatalog.value.find((tag) =>
     String(tag.name ?? "") === tagName && String(tag.ctgr ?? "") === ctgr
   );
@@ -439,15 +546,19 @@ function addTagByNameAndCategory(tagName: string, ctgr: string): void {
   if (tagId === undefined || tagId === null) {
     console.warn("[JournalEntrySearchPage] selected tag id not found.", { tagName, ctgr });
     void swalAlert(t("journal.entry.search.tag.not-found"));
-    return;
+    return false;
   }
 
   const nextTagId = String(tagId);
   cacheTagName(nextTagId, tagName);
   tagInput.value = "";
   cancelTagCategoryChoice();
-  if (tagIds.value.includes(nextTagId)) return;
-  pushQuery({ tagIds: [...tagIds.value, nextTagId] });
+  if (tagIds.value.includes(nextTagId)) {
+    void swalAlert(t("journal.entry.search.tag.duplicate"));
+    return false;
+  }
+  await pushQuery({ tagIds: [...tagIds.value, nextTagId] });
+  return true;
 }
 
 async function fetchEntryDetail(entryId: number | string): Promise<JournalEntryDto | null> {
@@ -492,80 +603,118 @@ async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
 }
 
 /** 현재 로컬 ref 상태를 URL query 로 replace한다. */
-function pushQuery(overrides: Partial<{ type: string; sort: string; tagIds: string[]; searchKeywords: string[] }> = {}): void {
+async function pushQuery(overrides: Partial<{ type: string; sort: string; tagIds: string[]; searchKeywords: string[] }> = {}, statusMessage = ""): Promise<void> {
+  conditionChangedMessage.value = statusMessage;
   const t = overrides.type ?? type.value;
   const s = overrides.sort ?? sort.value;
   const ids = overrides.tagIds ?? tagIds.value;
   const kws = overrides.searchKeywords ?? searchKeywords.value;
-  const query: Record<string, string | string[]> = { type: t };
-  if (s === "asc") query.sort = "asc";
-  if (ids.length > 0) query.tagIds = ids;
-  if (kws.length > 0) query.searchKeywords = kws;
-  void router.replace({ name: "journal-entry-search", query });
+  const query = buildEntrySearchRouteQuery({ type: t, sort: s, tagIds: ids, searchKeywords: kws });
+  await router.replace({ name: "journal-entry-search", query });
 }
 
-/** 키워드 추가 (중복 무시) */
-function addKeyword(): void {
+/** 키워드 추가. 중복 입력은 사용자에게 알려 검색 조건 변화가 없음을 명시한다. */
+async function addKeyword(): Promise<boolean> {
   const kw = keywordInput.value.trim();
-  if (!kw) return;
-  if (searchKeywords.value.map((k) => k.toLowerCase()).includes(kw.toLowerCase())) return;
+  if (!kw) return false;
+  if (searchKeywords.value.map((k) => k.toLowerCase()).includes(kw.toLowerCase())) {
+    keywordInput.value = "";
+    void swalAlert(t("journal.entry.search.keyword.duplicate"));
+    return false;
+  }
   const next = [...searchKeywords.value, kw];
   keywordInput.value = "";
-  pushQuery({ searchKeywords: next });
+  await pushQuery({ searchKeywords: next });
+  return true;
 }
 
 /** 키워드 배지 X 클릭 → 제거 후 재검색 */
 function removeKeyword(kw: string): void {
-  pushQuery({ searchKeywords: searchKeywords.value.filter((k) => k !== kw) });
+  pushQuery(
+    { searchKeywords: searchKeywords.value.filter((k) => k !== kw) },
+    t("journal.entry.search.condition.keyword-removed"),
+  );
 }
 
 /** 태그 배지 X 클릭 → 캐시·URL 에서 제거 후 재검색 */
 function removeTag(tagId: string): void {
   delete tagLabelMap.value[tagId];
-  pushQuery({ tagIds: tagIds.value.filter((id) => id !== tagId) });
+  pushQuery(
+    { tagIds: tagIds.value.filter((id) => id !== tagId) },
+    t("journal.entry.search.condition.tag-removed"),
+  );
 }
 
 /** 검색 실행 (고급 필터 아코디언의 "검색" 버튼) */
-function doSearch(): void {
-  /* 현재 keywordInput 에 값이 있으면 키워드로 추가 */
-  if (keywordInput.value.trim()) {
-    addKeyword();
+async function doSearch(): Promise<void> {
+  if (isActionLocked.value) return;
+  if (!await finalizePendingSearchInputs()) return;
+  if (!hasSearchConditions.value) {
+    entries.value = [];
+    searchAttempted.value = false;
+    searchErrorMessage.value = "";
+    conditionChangedMessage.value = "";
     return;
   }
   /* 이미 URL 과 일치하므로 강제 재조회만 수행 */
   void loadEntries();
 }
 
+/** 실행 버튼들이 같은 규칙으로 입력 중인 키워드/태그를 URL 검색 조건에 먼저 반영한다. */
+async function finalizePendingSearchInputs(): Promise<boolean> {
+  if (keywordInput.value.trim() && !await addKeyword()) return false;
+  if (tagInput.value.trim() && !await addTagFromInput()) return false;
+  return true;
+}
+
+async function openConditionEditor(): Promise<void> {
+  showAdvanced.value = true;
+  await nextTick();
+  keywordInputEl.value?.focus();
+}
+
 /** 정렬 토글 */
 function toggleSort(): void {
-  pushQuery({ sort: sort.value === "desc" ? "asc" : "desc" });
+  pushQuery({ sort: sort.value === "desc" ? "asc" : "desc" }, t("journal.entry.search.condition.sort-changed"));
 }
 
 /** 유형 변경 (키워드·태그 유지) */
 function changeType(newType: string): void {
   tagInput.value = "";
   cancelTagCategoryChoice();
-  pushQuery({ type: newType });
+  pushQuery({ type: newType }, t("journal.entry.search.condition.type-changed"));
 }
 
 /** 초기화 */
 function resetSearch(): void {
   tagLabelMap.value = {};
+  entries.value = [];
+  searchAttempted.value = false;
+  searchErrorMessage.value = "";
+  conditionChangedMessage.value = "";
   void router.replace({ name: "journal-entry-search", query: { type: type.value } });
 }
 
 /** TXT 내보내기. 레거시 exportUrl = /api/journal/entries/export */
-function exportTxt(): void {
-  if (searchKeywords.value.length === 0 && tagIds.value.length === 0) {
-    void swalAlert(t("journal.entry.search.condition.required"));
-    return;
+async function exportTxt(): Promise<void> {
+  if (isActionLocked.value) return;
+  actionInProgress.value = true;
+  try {
+    if (!await finalizePendingSearchInputs()) return;
+    if (searchKeywords.value.length === 0 && tagIds.value.length === 0) {
+      void swalAlert(t("journal.entry.search.condition.required"));
+      return;
+    }
+    const params = buildEntrySearchParams({
+      type: type.value,
+      sort: sort.value,
+      tagIds: tagIds.value,
+      searchKeywords: searchKeywords.value,
+    });
+    window.location.href = `/api/journal/entries/export?${params.toString()}`;
+  } finally {
+    actionInProgress.value = false;
   }
-  const params = new URLSearchParams();
-  params.set("type", type.value);
-  params.set("sort", sort.value);
-  tagIds.value.forEach((id) => params.append("tagIds", id));
-  searchKeywords.value.forEach((kw) => params.append("searchKeywords", kw));
-  window.location.href = `/api/journal/entries/export?${params.toString()}`;
 }
 
 /** 일자 뷰를 새 창으로 연다. */
@@ -620,34 +769,47 @@ function onHistorySuccess(): void {
  *   날짜(요일)\n#순번\n본문 — 날짜가 바뀔 때만 날짜 헤더 삽입, 엔트리 간 빈 줄.
  */
 async function copyAll(): Promise<void> {
-  if (entries.value.length === 0) {
-    void swalAlert(t("journal.entry.search.copy.empty"));
-    return;
-  }
-  let prevDate: string | null = null;
-  const blocks = entries.value.map((entry) => {
-    const dt = entry.stdrdDt ?? "";
-    const weekDay = getWeekDayStr(dt, t);
-    const dateLabel = dt ? (weekDay ? `${dt} (${weekDay})` : dt) : "";
-    const content = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
-    let block = "";
-    if (dateLabel !== prevDate) {
-      block += `\r\n${dateLabel}\r\n`;
-      prevDate = dateLabel;
-    }
-    block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
-    return block;
-  });
-  const text = blocks.join("\r\n\r\n").trim();
+  if (isActionLocked.value) return;
+  actionInProgress.value = true;
   try {
-    await navigator.clipboard.writeText(text);
-    void Swal.fire({
-      text: t("journal.entry.search.copy.success-count").replace("{0}", String(entries.value.length)),
-      timer: 1500,
-      showConfirmButton: false,
+    const hasPendingInput = keywordInput.value.trim().length > 0 || tagInput.value.trim().length > 0;
+    if (!await finalizePendingSearchInputs()) return;
+    if (hasPendingInput) {
+      await loadEntries();
+      if (searchErrorMessage.value) return;
+    }
+    if (entries.value.length === 0) {
+      void swalAlert(t("journal.entry.search.copy.empty"));
+      return;
+    }
+    let prevDate: string | null = null;
+    const blocks = entries.value.map((entry) => {
+      const dt = entry.stdrdDt ?? "";
+      const weekDay = getWeekDayStr(dt, t);
+      const dateLabel = dt ? (weekDay ? `${dt} (${weekDay})` : dt) : "";
+      const content = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
+      let block = "";
+      if (dateLabel !== prevDate) {
+        block += `\r\n${dateLabel}\r\n`;
+        prevDate = dateLabel;
+      }
+      block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
+      return block;
     });
-  } catch {
-    void swalAlert(t("common.copy.failure"));
+    const text = blocks.join("\r\n\r\n").trim();
+    try {
+      await navigator.clipboard.writeText(text);
+      void Swal.fire({
+        text: t(hasPendingInput ? "journal.entry.search.copy.success-with-pending" : "journal.entry.search.copy.success-count")
+          .replace("{0}", String(entries.value.length)),
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch {
+      void swalAlert(t("common.copy.failure"));
+    }
+  } finally {
+    actionInProgress.value = false;
   }
 }
 
@@ -686,12 +848,9 @@ function getDisplayWeekDayStr(stdrdDt?: string | null): string {
   return getWeekDayStr(stdrdDt, t);
 }
 
-function normalizeQueryList(value: unknown): string[] {
-  const rawList = Array.isArray(value) ? value : [value];
-  return rawList
-    .flatMap((item) => String(item ?? "").split(","))
-    .map((item) => item.trim())
-    .filter(Boolean);
+function getDateEntryCountLabel(stdrdDt?: string | null): string {
+  const count = entries.value.filter((entry) => entry.stdrdDt === stdrdDt).length;
+  return t("journal.entry.search.date-entry-count").replace("{0}", String(count));
 }
 
 /* 인라인 상태/lifecycle 변경(JournalEntryItem → fetchDays) 완료 후 검색 목록 갱신 */

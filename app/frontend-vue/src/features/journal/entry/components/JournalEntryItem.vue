@@ -43,7 +43,7 @@
       <div
         v-if="!isCollapsed && entry.markdownContent"
         class="journal-content p-2"
-        v-html="entry.markdownContent"
+        v-html="displayMarkdownContent"
       ></div>
       <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">{{ t("journal.entry.collapsed") }}</div>
       <!--end::마크다운 본문-->
@@ -328,6 +328,8 @@ const props = defineProps<{
   forceCollapsed?: boolean | null;
   /** Parent-provided DOM id, used by popup/search contexts that render the same entry component. */
   domId?: string;
+  /** Search-only keyword highlights. Empty by default so monthly/weekly/chapter renders stay unchanged. */
+  highlightKeywords?: string[];
 }>();
 
 const modalStore = useJournalModalStore();
@@ -389,6 +391,7 @@ function hasState(key: string): boolean {
 }
 
 const tagList = computed(() => props.entry.tag?.list ?? []);
+const displayMarkdownContent = computed(() => highlightKeywordsInHtml(props.entry.markdownContent ?? "", props.highlightKeywords ?? []));
 /** 변경 전: 태그 프로필은 설정 모달에서만 보였음. 변경 후: 꿈 엔트리에서만 본문 아래에 프로필을 표시. */
 const dreamTagProfileList = computed(() => {
   if (!(props.isDream || props.entry.contentType === "JOURNAL_DREAM")) return [];
@@ -397,6 +400,80 @@ const dreamTagProfileList = computed(() => {
 const relatedList = computed(() => props.entry.relatedContentList ?? []);
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const interpretationList = computed(() => props.entry.journalInterpretationList ?? []);
+
+function highlightKeywordsInHtml(html: string, keywords: string[]): string {
+  const uniqueKeywords = Array.from(new Set(keywords.map((keyword) => keyword.trim()).filter(Boolean)));
+  if (!html || uniqueKeywords.length === 0 || typeof document === "undefined") return html;
+
+  const template = document.createElement("template");
+  template.innerHTML = html;
+
+  const textNodes: Text[] = [];
+  const skippedTags = new Set(["MARK", "SCRIPT", "STYLE", "TEXTAREA"]);
+  const lowerKeywords = uniqueKeywords.map((keyword) => keyword.toLowerCase());
+  const walker = document.createTreeWalker(
+    template.content,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode(node) {
+        const parent = node.parentElement;
+        const value = node.nodeValue ?? "";
+        if (!parent || skippedTags.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+        return lowerKeywords.some((keyword) => value.toLowerCase().includes(keyword))
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT;
+      },
+    }
+  );
+
+  while (walker.nextNode()) {
+    textNodes.push(walker.currentNode as Text);
+  }
+
+  textNodes.forEach((node) => {
+    const text = node.nodeValue ?? "";
+    const lowerText = text.toLowerCase();
+    const fragment = document.createDocumentFragment();
+    let cursor = 0;
+
+    while (cursor < text.length) {
+      const nextMatch = findNextKeywordMatch(lowerText, lowerKeywords, cursor);
+      if (!nextMatch) {
+        fragment.appendChild(document.createTextNode(text.slice(cursor)));
+        break;
+      }
+      if (nextMatch.index > cursor) {
+        fragment.appendChild(document.createTextNode(text.slice(cursor, nextMatch.index)));
+      }
+
+      const mark = document.createElement("mark");
+      mark.className = "journal-entry-search-keyword-mark";
+      mark.textContent = text.slice(nextMatch.index, nextMatch.index + nextMatch.length);
+      fragment.appendChild(mark);
+      cursor = nextMatch.index + nextMatch.length;
+    }
+
+    node.parentNode?.replaceChild(fragment, node);
+  });
+
+  return template.innerHTML;
+}
+
+function findNextKeywordMatch(
+  lowerText: string,
+  lowerKeywords: string[],
+  cursor: number,
+): { index: number; length: number } | null {
+  let best: { index: number; length: number } | null = null;
+  lowerKeywords.forEach((keyword) => {
+    const index = lowerText.indexOf(keyword, cursor);
+    if (index === -1) return;
+    if (!best || index < best.index || (index === best.index && keyword.length > best.length)) {
+      best = { index, length: keyword.length };
+    }
+  });
+  return best;
+}
 
 function parseCacheNumber(value: unknown): number | undefined {
   const parsed = typeof value === "number" ? value : Number(value);
@@ -625,3 +702,14 @@ async function deleteEntry(): Promise<void> {
   }
 }
 </script>
+
+<style scoped>
+:deep(.journal-entry-search-keyword-mark) {
+  background-color: #fff3cd;
+  border-radius: 0.25rem;
+  box-shadow: inset 0 -0.35em 0 rgba(255, 193, 7, 0.35);
+  color: inherit;
+  font-weight: 700;
+  padding: 0 0.12em;
+}
+</style>

@@ -330,6 +330,8 @@ cF.ui.swalOrConfirm(
 
 각 서비스 모듈 내부에서 `cF.ui.swalOrConfirm()` 또는 `Swal.fire({ showCancelButton: true })` 형태로 구현. 레거시 코드에서 삭제 전 확인 다이얼로그는 서비스별로 개별 구현.
 
+Vue SPA에서 Bootstrap 모달이 열린 상태의 SweetAlert2 확인 다이얼로그는 활성 모달 위에 표시한다. `App.vue`는 `body.modal-open .swal2-container` z-index를 6110으로 올려, 모달 내부 저장·수정·삭제 확인창이 모달 뒤로 가려지지 않게 한다.
+
 ### 모달 닫기 버튼 확인
 
 `modal_btn_close_safe` 패턴: 레거시는 `Layout.modalBtnCloseSafe()` + `data-func`. Vue SPA 는 `useSafeModalClose()` composable로 2회 클릭 armed 닫기를 구현 — `common/component-spec.md` §16 ✓.
