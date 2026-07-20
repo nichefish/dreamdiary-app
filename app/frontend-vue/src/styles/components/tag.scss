@@ -74,3 +74,8 @@
         line-height: 1.5;
     }
 }
+
+/** Tagify 자동완성 dropdown 은 body 에 append 되므로 Bootstrap 모달보다 위에 둔다. */
+.tagify__dropdown {
+    z-index: 6120 !important;
+}

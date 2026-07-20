@@ -209,6 +209,7 @@ import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import type { InterpretationItem } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const props = defineProps<{
@@ -319,17 +320,13 @@ async function copyInterpretation(): Promise<void> {
   const dateLine = weekDay
     ? `${props.interpretation.stdrdDt} (${weekDay})`
     : (props.interpretation.stdrdDt ?? "");
-  const raw = (props.interpretation.markdownContent ?? props.interpretation.content ?? "")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .trim();
+  const raw = htmlToPlainText(props.interpretation.markdownContent ?? props.interpretation.content ?? "");
   const text = [dateLine, raw].filter(Boolean).join("\n");
   try {
     await navigator.clipboard.writeText(text);
     void swalFire({ icon: "success", text: t("common.copy.success") });
-  } catch {
+  } catch (error: unknown) {
+    console.error("[journal-interpretation] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }

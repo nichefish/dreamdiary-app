@@ -273,7 +273,8 @@
               >
                 <!--begin::본문-->
                 <div class="journal-diary-content flex-grow-1 p-2">
-                  <div v-if="entry.title" class="fw-bold fs-7 mb-1">{{ entry.title }}</div>
+                  <!-- 제목 크기는 일자 엔트리(JournalEntryItem)와 동일 계약: 본문 1rem 대비 한 단계 위 fs-5 (변경 전 fs-7) -->
+                  <div v-if="entry.title" class="fw-bold fs-5 mb-1">{{ entry.title }}</div>
                   <div
                     class="journal-content p-2 text-noti"
                     v-html="entry.markdownContent"
@@ -330,7 +331,8 @@
               >
                 <!--begin::본문-->
                 <div class="journal-dream-content flex-grow-1 p-2">
-                  <div v-if="entry.title" class="fw-bold fs-7 mb-1">{{ entry.title }}</div>
+                  <!-- 제목 크기는 일자 엔트리(JournalEntryItem)와 동일 계약: 본문 1rem 대비 한 단계 위 fs-5 (변경 전 fs-7) -->
+                  <div v-if="entry.title" class="fw-bold fs-5 mb-1">{{ entry.title }}</div>
                   <div
                     class="journal-content p-2 text-noti"
                     v-html="entry.markdownContent"

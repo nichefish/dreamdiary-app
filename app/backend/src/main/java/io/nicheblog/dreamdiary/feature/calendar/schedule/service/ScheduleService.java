@@ -230,6 +230,12 @@ public class ScheduleService
         EhCacheUtils.clearCache("holydayEntityList");
         EhCacheUtils.clearCache("isHolyday");
         EhCacheUtils.clearCache("isHolydayOrWeekend");
+        /*
+         * holydayMap 은 저널 일자 목록의 공휴일 표시(isHolyday) 원천이다.
+         * 이걸 비우지 않으면 공휴일 일정을 등록·수정·삭제해도 목록 색상이 갱신되지 않았다.
+         * 비운 뒤 재생성은 JournalDayQueryService.getHolydayMap() 이 미스 시 수행한다.
+         */
+        EhCacheUtils.clearCache("holydayMap");
     }
 
     /**

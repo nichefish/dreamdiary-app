@@ -58,7 +58,14 @@
 - **저장 모달 날짜 입력**: 시작일·종료일은 레거시(`ScheduleRegModal` — readonly 텍스트 input + `cF.datepicker.singleDatePicker`)와 동일하게 **readonly 텍스트 input + flatpickr**(`bindSingleDatePicker`, 저널 등록 모달과 동일 유틸). input 아무 곳이나 클릭하면 달력이 뜬다. 모달 열 때마다 재초기화(attach), 닫기 버튼에서 destroy. 종료일 칸은 레거시 `#endDtDiv`(display:none 토글)와 동일하게 `v-show` — 공휴일 선택 시 숨기고 `endDt=bgnDt` 로 덮어쓰며 flatpickr 표시값도 `setDate` 동기화. **툴바 이동일 input 도 동일 패턴** — 상시 존재하므로 mount 시 1회 attach·unmount 시 destroy, 달력 이동(datesSet) 등 외부 갱신은 watch 로 flatpickr 표시값 동기화. (변경 전: 네이티브 `<input type="date">` — 마이그레이션 시 이탈분을 레거시로 수렴)
 - **목록 API**: `GET /api/schedule/list` — 달력과 동일 `bgnDt`/`endDt`·고급필터·검색어, `ScheduleDto` 페이징
 - **목록 행 클릭**: 휴가·생일 코드는 상세 모달 생략(달력과 동일), 그 외 `GET /api/schedule/cal-dtl` 상세 모달
-- **공휴일 DB SSOT**: `schedule.schedule_cd` = `HOLYDAY` (`SCHEDULE_CD` 코드·`ScheduleSpec` 조회와 동일). 레거시 `SCHDUL_CD`/`HLDY`/`content_type` `schdul` 은 `data-required-cd-mariadb.sql` 하단 정합 섹션으로 수렴 — `HOLYDAY` 행과 날짜·제목이 완전 중복인 `HLDY` 행은 삭제, 나머지는 rename. 상세 코드 영문(en) 명칭은 같은 파일 하단 `code_item_i18n` INSERT 섹션(재실행 무해)으로 시드한다. **이동일**은 달력/목록 이동용(데이터 필터 아님). 달력 API `bgnDt`/`endDt` = FullCalendar `datesSet` visible 구간. 목록 VIEW는 동일 구간(달력에서 넘어온 경우) 또는 이동일 변경 시 해당 **연도 전체**.
+- **공휴일 표시(`isHolyday`) 캐시 계약**: 저널 일자 목록의 날짜 빨간색은 `JournalDayDto.isHolyday`(`JournalDayCard.vue`)로 결정되고, 이 값은 `holydayMap` 캐시를 원천으로 `JournalDayHolydayHelper` 가 채운다. `holydayMap` 은 `@Cacheable` 이 아니라 수동 put 캐시라 자동 로딩되지 않으므로, **캐시 미스 시 `JournalDayQueryService.getHolydayMap()` 이 `ScheduleService.resyncHolydayMap()` 으로 재생성한 뒤 다시 읽는다**. 재생성에 실패하면 휴일 정보 없이 조회를 계속한다(로그만 남김).
+  - **변경 전**: 캐시를 읽기만 하고 미스면 `null` 을 반환했고, 헬퍼는 `null` 이면 조용히 return 해 `isHolyday` 를 설정하지 않았다. 채우는 곳이 기동 시 워밍업(`ScheduleCacheWarmupTask`)과 공휴일 API 동기화뿐인데 ehcache `defaultTemplate` TTL 이 1일이라, **기동 후 하루가 지나면 만료된 채 아무도 다시 채우지 않아 공휴일 빨간색이 사라졌다**(증상이 간헐적으로 보인 이유는 만료 시점에 좌우됐기 때문).
+  - 공휴일 일정 등록·수정·삭제 시 `ScheduleService.evictCache()` 가 `holydayMap` 도 비운다(변경 전에는 `isHolyday`/`isHolydayOrWeekend` 만 비워, 공휴일을 고쳐도 목록 색상이 갱신되지 않았다). 비운 뒤 재생성은 위 미스 처리에서 수행한다.
+- **공휴일 DB SSOT**: `schedule.schedule_cd` = `HOLYDAY` (`SCHEDULE_CD` 코드·`ScheduleSpec` 조회와 동일). 레거시 `SCHDUL_CD`/`HLDY`/`content_type` `schdul` 은 `data-required-cd-mariadb.sql` 하단 정합 섹션으로 수렴 — `HOLYDAY` 행과 날짜·제목이 완전 중복인 `HLDY` 행은 삭제, 나머지는 rename. 상세 코드 영문(en) 명칭은 같은 파일 하단 `code_item_i18n` INSERT 섹션(재실행 무해)으로 시드한다. **이동일**은 달력/목록 이동용(데이터 필터 아님). 달력 API `bgnDt`/`endDt` = FullCalendar `datesSet` visible 구간. 목록 VIEW는 동일 구간(달력에서 넘어온 경우) 또는 이동일 변경 시 해당 **월** 범위.
+- **목록 VIEW 이동일 변경 = 월 범위**: aside 연/월 선택·TODAY 로 이동일이 바뀌면 목록은 그 **달**을 조회한다(`queryRangeForMonth`). 변경 전에는 `queryRangeForYear`(연 전체)로 조회해, aside 월 그리드가 파랗게 표시하는 달과 실제 조회 범위가 어긋났다(월을 골라도 12개월치가 나옴). 연 전체 조회는 아래 `전체 월` 토글로 분리했다.
+- **목록 VIEW `전체 월` 토글**: **aside 월 그리드 바로 아래(TODAY 위)** 에 두는 스위치로, 월 선택과 같은 자리에서 `월로 좁혀보기 / 전체 월 보기`를 고르게 한다. 목록 VIEW 에서만 노출한다(`showAllMonths` prop; 달력 VIEW 는 항상 한 달을 그리므로 숨김). 해제(기본)면 월 범위로, 체크면 이동일이 속한 **연도 전체(1/1~12/31, `queryRangeForYear`)** 로 조회한다.
+  - 체크 시 aside 월 그리드의 활성 월 강조를 **끈다** — 특정 월로 좁혀 보는 상태가 아니므로 강조가 남으면 표시와 조회 범위가 어긋난다.
+  - 반대로 특정 월을 클릭하면 토글을 **자동 해제**한다. 해제하지 않으면 월을 눌러도 연 전체가 유지돼 클릭이 무반응처럼 보인다. 이 토글은 필터 패널 체크박스와 달리 **localStorage 에 저장하지 않아** 화면 진입 시 항상 해제 상태(월 단위)로 시작한다. 토글·페이지 크기 변경 시 페이지를 0으로 되돌리고 재조회하며, 달력 VIEW 조회 범위에는 영향을 주지 않는다.
 - **i18n**: 목록·상세 조회와 등록·수정·삭제 결과 메시지는 서버 `message`를 우선 사용하고, 서버 메시지가 없을 때 현재 locale의 클라이언트 카탈로그 메시지를 표시한다.
 
 ### 저널 일간 화면 (journal-daily) 스펙
@@ -164,6 +171,8 @@
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayMonthlyListApp` 마운트 대상 |
 
 `JournalDayViewToolbar.vue`의 주간·월간·달력·메타 탭, 일기·꿈 전체검색 placeholder/tooltip, 저널 일자 등록 문구와 월간·주간·일간 목록의 빈 상태는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 라벨만 바꾸며 탭 route, 로컬 검색어, 새 탭 검색 URL과 등록 모달 호출, 목록 조회 조건은 유지한다.
+
+저널 일자 목록과 엔트리 검색 화면에서 완료된 꿈 엔트리는 일기 완료의 초록과 구분되는 은은한 보라 배경·테두리·좌측선으로 표시한다. 접힌 완료 표시·순번·라이프사이클 메뉴의 완료 라벨도 보라색이며, 중요·참조의 빨강·노랑 상태선은 완료 보라선과 함께 유지한다. 일기·노트·해석 및 챕터 완료 집계는 기존 초록색을 유지한다.
 
 ### Action Buttons & Interactions
 
@@ -433,6 +442,8 @@
 
 - 탭 active 상태는 서버 변수 `section` 에 따라 초기 설정 (`DIARY` 또는 `DREAM`)
 - 토글 체크박스 2개: 기본 모두 checked 상태
+- **엔트리 중요/참조 색상**: 상세 엔트리 행은 저널 일자 엔트리와 동일하게 `data-imprtc`/`data-refrnc` 속성을 렌더해 `journal.scss` 의 일기 `$journal-paired-states`와 꿈 `$journal-dream-paired-states`로 **중요=빨강, 참조=노랑** 좌측선을 표시한다. 꿈 엔트리는 `data-else-dream` 도 함께 내려 타인 꿈 팔레트(`$journal-else-dream-paired-states`)와 구분한다. 변경 전에는 `journal-diary-item`/`journal-dream-item` 클래스만 있고 상태 속성이 없어 CSS 규칙이 걸리지 않았다(스타일은 이미 존재했고 속성만 빠져 있었다). 결산 상세의 `AnnualEntryDto`는 lifecycle을 제공하지 않으므로 이 화면에서는 RESOLVED 보라 팔레트를 판정하지 않는다.
+- **중요·참조 모두 해제 = 빈 결과**: 두 토글이 모두 해제되면 상세 엔트리 목록은 빈 결과를 반환한다(`JournalAnnualRestController.isNoStateSelected` 가 조회 없이 빈 목록 응답). 변경 전에는 **전체가 조회됐다** — 공통 `BaseAttachableSpec.resolveStatesPredicate` 가 states 가 비면 상태 조건을 걸지 않고 return 하기 때문이다. 공통 스펙의 의미를 바꾸면 저널 일자·검색 등 다른 화면에 회귀 위험이 있어 결산 상세 경로에서만 처리한다.
 - 결산 상세의 SUMMARY·REVIEWS·로딩·태그 메뉴 tooltip·IMPORTANT·REFERENCE와 상세/목록 aside의 FILTER·TAGCLOUD·ENTRY FILTER·SUMMARY FILTER·키워드 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. 영어는 기존 대문자 표기를 유지하며 locale 변경은 선택 연도·활성 탭·필터값·토글 상태를 변경하지 않는다.
 - Vue SPA의 상세 aside는 연도 이동·태그클라우드·엔트리 필터 전용 영역이며 결산 등록 액션을 두지 않는다. 신규 결산 등록은 목록 화면 총 집계 카드 우측 액션 영역에서 수행한다.
 - 결산 상세의 SUMMARY 본문과 DIARY/DREAM 엔트리 본문은 저널 일자 엔트리와 같은 `journal-content p-2` 타이포그래피 계약을 따른다. 상세 엔트리 제목도 일자 엔트리와 맞춰 `fs-5 fw-bold` 크기로 표시한다(변경 전 `fs-7`). 본문(`.journal-content`)은 fs 클래스 없이 base 1rem 을 상속하므로, 제목은 본문보다 한 단계 위 크기가 된다. 상세 엔트리 목록은 행 왼쪽 날짜 칼럼을 반복하지 않고, 저널 일자 카드처럼 `journal-day-header` 날짜 헤더 아래에 해당 날짜의 엔트리 본문을 배치한다. DIARY/DREAM 엔트리 태그는 일자 `JournalEntryItem` 과 동일하게 밑줄 primary `#이름`(ctgr·클릭 메뉴 포함, `bi-tag` 없음)으로 표시한다(변경 전: `bi-tag` + 단순 `#name`).
@@ -1098,7 +1109,7 @@ type TodoRow = {
 - 태그 컨텍스트 메뉴의 액션과 태그 프로필 콘텐츠 유형 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다.
 - 일기/꿈 태그의 `검색` 액션은 현재 월간/주간 목록 필터를 변경하지 않고 새 창 검색 화면으로 이동한다.
 - 검색 팝업 내부에서 일기/꿈 태그의 `검색` 액션을 누르면 새 팝업을 열지 않고 같은 창의 URL query를 바꿔 결과를 재조회한다.
-- 검색 팝업 내부의 `태그 설정` 액션은 `JournalTagProfileModal`을 같은 창에서 연다.
+- 검색 팝업 내부의 `태그 설정` 액션은 `JournalTagProfileModal`을 같은 창에서 연다. 저장·삭제 성공 후 `success` 이벤트로 검색 결과(`loadEntries`)를 재조회한다.
 - 검색 팝업 내부 검색 결과에 저널 해석이 표시되면, 해석 행의 수정 액션은 `JournalInterpretationRegistModal`을 같은 창에서 열어야 한다.
 - 각 검색 결과는 수정/삭제가 가능하다. 수정 저장 성공 시 성공 알림 표시 전에 현재 검색 조건 목록 또는 수정 대상 DOM을 준비하고, 성공 알림 OK 이후 저장한 결과 위치로 스크롤하며, 삭제 성공 시 결과 목록에서 제거한다.
 - 검색 팝업 내부에서 엔트리 본문/태그 프로필 다음에 이어지는 저널 해석 행은 같은 결과 묶음으로 읽히도록 공통 저널 행 간격보다 좁게 붙여 표시한다.
@@ -1114,7 +1125,7 @@ type TodoRow = {
 - 검색 조회 중이거나 복사/TXT 내보내기 실행 중이면 검색·정렬·초기화·결과 복사·TXT 내보내기 버튼을 비활성화한다. 결과 복사는 현재 결과가 있거나 확정 전 입력 조건이 남아 있을 때만 활성화하고, TXT 내보내기는 URL 검색 조건이 있거나 확정 전 입력 조건이 남아 있을 때만 활성화한다.
 - 키워드/태그 배지 제거, 정렬 변경, 유형 변경으로 검색 조건이 바뀌면 결과 상태 라벨에 변경 사유를 표시한다. 직전 결과가 있는 상태에서 새 조회가 진행 중이면 목록을 비우지 않고 유지하며, 목록 위에 갱신 중 안내를 표시한다.
 - 검색 API 실패는 `0건`으로 표시하지 않는다. 직전 성공 결과와 건수를 보존하고 서버 오류 메시지 또는 검색 실패 안내를 표시한다.
-- `결과 복사` 버튼은 현재 검색 결과 전체를 legacy 포맷(`날짜 (요일)`, `#정렬번호`, 본문)으로 클립보드에 복사한다. 확정 전 입력값을 조건에 반영한 뒤 복사한 경우 성공 알림은 조건 반영 후 복사임을 구분해 표시한다.
+- `결과 복사` 버튼은 현재 검색 결과 전체를 legacy 포맷(`날짜 (요일)`, `#정렬번호`, 본문)으로 클립보드에 복사한다. 본문의 이름·10진수·16진수 HTML 엔티티는 화면 렌더링과 동일하게 문자로 디코딩한다. 확정 전 입력값을 조건에 반영한 뒤 복사한 경우 성공 알림은 조건 반영 후 복사임을 구분해 표시한다.
 - 컨트롤 바·고급 필터·유형/키워드/태그 입력·입력 힌트·확정 전 입력 안내·배지 제거 tooltip·카테고리 선택·카테고리 선택 대기 안내·조건 요약·결과 상태 라벨·검색 전 안내와 조건 추가 CTA·빈 결과 조건 수정 CTA·로딩/빈 결과·갱신 중 안내·결과 요약·일자 새 창 tooltip과 결과 건수·연월 구분선·날짜별 결과 건수는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
 - 검색 결과/엔트리 상세 조회 실패, 태그 선택·검색 조건 검증, 중복 조건 안내, 복사 대상 없음과 복사 성공/실패 알림도 현재 locale의 클라이언트 카탈로그를 사용한다. 클립보드와 TXT 본문은 기존 레거시 출력 포맷을 유지한다.
 - 각 검색 결과 행의 복사 버튼은 해당 엔트리 하나만 같은 포맷으로 복사한다.

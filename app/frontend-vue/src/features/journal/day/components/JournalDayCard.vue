@@ -251,6 +251,7 @@ import { hasDreamSections } from "@/features/journal/utils/journalDream";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 
 const props = defineProps<{
   day: JournalDayDto;
@@ -392,22 +393,6 @@ function toggleDreamSection(sectionKey: string): void {
 }
 
 /** HTML을 일반 텍스트로 변환한다 (클립보드 복사용). */
-function htmlToPlainText(html: string): string {
-  return html
-    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
-    .replace(/<\s*br\s*\/?>/gi, "\n")
-    .replace(/<\s*\/?p[^>]*>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .split("\n").map((l) => l.trim()).join("\n")
-    .replace(/\n+/g, "\n")
-    .trim();
-}
-
 /** 꿈 엔트리 목록을 클립보드에 복사한다. 레거시 형식: 날짜(요일)\n#순번\n본문 */
 async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   const lines: string[] = [];
@@ -428,7 +413,8 @@ async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
     void swalFire({ icon: "success", text: t("common.copy.success") });
-  } catch {
+  } catch (error: unknown) {
+    console.error("[journal-dream-section] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }

@@ -168,6 +168,7 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import type { JournalChapterDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
 
@@ -249,6 +250,18 @@ const allEntriesResolved = computed(() => {
   return list.length > 0 && list.every((e) => e.lifecycle?.lifecycleKey === 'RESOLVED');
 });
 
+/**
+ * 하위 엔트리 중 데이터 규칙(RESOLVED 자동 접힘 · 서버 COLLAPSED)으로 접히는 것이 있는지 여부.
+ * 엔트리 개별 로컬 토글(localCollapsedOverride)은 각 엔트리가 소유해 챕터에서 볼 수 없으므로
+ * 데이터 기준으로만 판정한다 — 사용자가 손으로 접은 엔트리는 감지하지 못하는 근사치다.
+ */
+const hasDataCollapsedEntry = computed(() =>
+  entryList.value.some((e) =>
+    e.lifecycle?.lifecycleKey === 'RESOLVED'
+    || (e.state?.list ?? []).some((s) => s.stateKey === 'COLLAPSED')
+  )
+);
+
 /** 챕터 접힘 상태 태그 클릭 컨텍스트 메뉴 열기 */
 function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; name: string; ctgr?: string }): void {
   const contentType = isDreamChapter.value
@@ -293,8 +306,25 @@ function openEntryNew() {
   });
 }
 
-/** 클라이언트 접힘/펼침 (서버 상태 저장 없음) */
+/**
+ * 클라이언트 접힘/펼침 (서버 상태 저장 없음).
+ *
+ * 변경 전: 항상 `!isCollapsed` 로 토글했다. 챕터가 펼쳐진 상태에서 하위 엔트리만 접혀 있으면
+ * (일부 엔트리만 RESOLVED 등) 첫 클릭이 챕터를 접어버려, 엔트리를 펼치려면 접기→펼치기 2클릭이 필요했다.
+ * 원인은 엔트리에 넘기는 forceCollapsed(=localCollapsedOverride)가 토글 전까지 null 이라
+ * "챕터가 펼쳐져 있다"는 신호가 엔트리에 전달되지 않았기 때문이다.
+ *
+ * 변경 후: 아직 사용자가 토글하지 않았고(override=null) 챕터가 펼쳐져 있는데 데이터 규칙으로
+ * 접힌 엔트리가 있으면, 접기 대신 override=false 로 하위 엔트리를 전체 펼친다(1클릭).
+ * 이후 클릭부터는 override 가 non-null 이므로 기존대로 접기/펼치기 토글이 동작한다.
+ *
+ * 트레이드오프: 이 상태에서 "챕터를 접으려면" 전체 펼침 후 한 번 더 눌러야 한다(접기 2클릭).
+ */
 function toggleChapter(): void {
+  if (localCollapsedOverride.value === null && !isCollapsed.value && hasDataCollapsedEntry.value) {
+    localCollapsedOverride.value = false;
+    return;
+  }
   localCollapsedOverride.value = !isCollapsed.value;
 }
 
@@ -363,22 +393,6 @@ async function deleteChapter(): Promise<void> {
 }
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
-function htmlToPlainText(html: string): string {
-  return html
-    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
-    .replace(/<\s*br\s*\/?>/gi, "\n")
-    .replace(/<\s*\/?p[^>]*>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .split("\n").map((l) => l.trim()).join("\n")
-    .replace(/\n+/g, "\n")
-    .trim();
-}
-
 /** 챕터 전체 내용을 클립보드에 복사. 레거시 형식: 날짜(요일) / 카테고리 / 제목\n#순번\n본문 */
 async function copyChapter(): Promise<void> {
   const lines: string[] = [];
@@ -402,7 +416,8 @@ async function copyChapter(): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
     void swalFire({ icon: "success", text: t("common.copy.success") });
-  } catch {
+  } catch (error: unknown) {
+    console.error("[journal-chapter] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }

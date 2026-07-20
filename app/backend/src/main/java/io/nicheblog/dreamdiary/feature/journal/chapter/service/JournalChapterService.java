@@ -137,14 +137,24 @@ public class JournalChapterService
     }
 
     /**
-     * 새 챕터의 정렬값을 계산하고, 첫 DIARY 챕터에는 기본 SUMMARY 카테고리를 보정한다.
+     * 새 챕터의 정렬값을 계산하고, 첫 일반(non-DREAM) 챕터에는 기본 SUMMARY 카테고리를 보정한다.
+     * <p>
+     * 변경 전: {@code sortOrder == 1} 을 기준으로 SUMMARY 를 부여했다. 그러나 sortOrder 는
+     * DREAM 챕터까지 포함해 계산되므로, 꿈 챕터가 먼저 있던 날에 첫 일반 챕터를 등록하면
+     * sortOrder 가 2 이상이 되어 SUMMARY 가 누락됐다.
+     * 변경 후: DREAM 은 항상 마지막에 배치되는 개념 챕터이므로 판정에서 제외하고,
+     * "기존 non-DREAM 챕터가 없을 때"를 첫 일반 챕터로 보아 SUMMARY 를 부여한다.
+     * sortOrder 계산 자체는 그대로 두어 배치/순서에는 영향을 주지 않는다.
      *
      * @param registDto 등록할 챕터 DTO
      */
     private void applyNewChapterSortOrderAndDefaultCategory(final JournalChapterDto registDto) throws Exception {
         applyNewChapterSortOrder(registDto);
-        if (registDto.getSortOrder() == 1 && StringUtils.isBlank(registDto.getCategoryCode())) {
+        final boolean hasNonDreamChapter = repository.existsByJournalDayIdAndChapterTypeNot(registDto.getJournalDayId(), ChapterType.DREAM);
+        if (!hasNonDreamChapter && StringUtils.isBlank(registDto.getCategoryCode())) {
             registDto.setCategoryCode(FIRST_CHAPTER_CTGR_CD);
+            log.debug("[applyNewChapterSortOrderAndDefaultCategory] 첫 일반 챕터 → SUMMARY 부여. journalDayId={}, sortOrder={}",
+                    registDto.getJournalDayId(), registDto.getSortOrder());
         }
     }
 

@@ -14,7 +14,7 @@
   >
     <!--begin::순번-->
     <div class="d-none d-md-flex flex-column align-items-center pt-1 ps-2" style="width:56px; min-width:56px;">
-      <span :class="['fw-bold fs-7', isResolved ? 'text-success' : 'text-muted']">#{{ entry.sortOrder }}</span>
+      <span :class="['fw-bold fs-7', isResolved ? (isDreamEntry ? 'text-dream' : 'text-success') : 'text-muted']">#{{ entry.sortOrder }}</span>
       <span v-if="lcKey === 'PENDING'" class="badge badge-light-warning fs-8 mt-1">{{ t("journal.entry.pending-badge") }}</span>
       <!--begin::클라이언트 임시 접힘/펼침 버튼-->
       <button
@@ -35,9 +35,17 @@
       <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
         <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!{{ t('state.nightmare') }}</span>
         <span v-if="hasState('HALLUC')" class="badge badge-light-secondary">!{{ t('state.hallucination') }}</span>
-        <span v-if="entry.title" class="fw-bold fs-7">{{ entry.title }}</span>
       </div>
       <!--end::꿈 상태 배지-->
+
+      <!--begin::엔트리 제목 (유형 무관, title 있을 때만)
+        변경 전: 꿈 엔트리에서만 배지 행에 인라인(fs-7)으로 표시 → 일기·노트는 제목이 보이지 않았음
+        변경 후: 모든 유형에서 배지 행 아래 독립 행으로 표시. 본문(.journal-content = 1rem) 대비
+                 한 단계 위인 fs-5(1.15rem) + fw-bold.
+        접힘(isCollapsed) 상태와 무관하게 항상 표시한다 (기존 꿈 제목 동작 유지 — 본문만 숨김).
+        .journal-content 밖이라 유형별 본문 색상을 상속하지 않고 기본 텍스트색을 쓴다. -->
+      <div v-if="entry.title" class="fw-bold fs-5 mb-1">{{ entry.title }}</div>
+      <!--end::엔트리 제목-->
 
       <!--begin::마크다운 본문-->
       <div
@@ -318,6 +326,7 @@ import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayR
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
+import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
 
@@ -344,6 +353,9 @@ interface JournalCacheContext {
   mnth?: number;
   weekStartDt?: string;
 }
+
+/** 현재 엔트리가 꿈 유형인지 여부. 꿈 RESOLVED 전용 보라색 표시 계약에 사용한다. */
+const isDreamEntry = computed(() => props.isDream || props.entry.contentType === "JOURNAL_DREAM");
 
 /** 엔트리 타입별 외부 item 클래스 (journal.scss 의 data-* 셀렉터 연동) */
 const itemClass = computed(() => {
@@ -524,7 +536,7 @@ function resolveJournalCacheContext(): JournalCacheContext {
 const lifecycleOptions = computed(() => [
   { key: "OPEN", label: t("journal.entry.lifecycle.open"), activeClass: "text-gray-800" },
   { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-primary" },
-  { key: "RESOLVED", label: t("status.completed"), activeClass: "text-success" },
+  { key: "RESOLVED", label: t("status.completed"), activeClass: isDreamEntry.value ? "text-dream" : "text-success" },
 ]);
 
 /** 상태 옵션 (중요/참조) */
@@ -554,22 +566,6 @@ function toggleEntry(): void {
   localCollapsedOverride.value = !isCollapsed.value;
 }
 /** HTML 마크업을 제거하고 평문으로 변환한다 (복사 시 사용). */
-function htmlToPlainText(html: string): string {
-  return html
-    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
-    .replace(/<\s*br\s*\/?>/gi, "\n")
-    .replace(/<\s*\/?p[^>]*>/gi, "\n")   /* <p> 와 </p> 모두 줄바꿈으로 — 레거시 동일 */
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .split("\n").map((l) => l.trim()).join("\n")   /* 각 줄 앞뒤 공백 제거 */
-    .replace(/\n+/g, "\n")                         /* 연속 빈줄 → 단일 줄바꿈 */
-    .trim();
-}
-
 /** 엔트리 내용을 클립보드에 복사한다. 레거시 copy() 와 동일 형식: 날짜(요일)\n마크다운 원문 */
 async function copyEntry(): Promise<void> {
   const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
@@ -582,7 +578,8 @@ async function copyEntry(): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
     void swalFire({ icon: "success", text: t("common.copy.success") });
-  } catch {
+  } catch (error: unknown) {
+    console.error("[journal-entry] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }

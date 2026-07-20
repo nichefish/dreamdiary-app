@@ -161,7 +161,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
+import { swalConfirm, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
@@ -170,6 +170,8 @@ import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+
+const emit = defineEmits<{ success: [] }>();
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
@@ -303,7 +305,7 @@ async function onSave() {
         message: result.message,
         successFallback: t("common.result.saved"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      await refreshAfterTagProfileChange();
     } else {
       void swalAjaxResult({
         rslt: false,
@@ -332,7 +334,7 @@ async function onDelete() {
         message: result.message,
         successFallback: t("common.result.deleted"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      await refreshAfterTagProfileChange();
     } else {
       void swalAjaxResult({
         rslt: false,

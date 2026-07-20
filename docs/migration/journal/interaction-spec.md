@@ -273,6 +273,19 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ---
 
+### 첫 일반 챕터 SUMMARY 자동 부여
+**트리거**: 챕터 신규 등록 (`JournalChapterService.preRegist` — 수동 등록 및 `JournalDayBootstrapService` 자동 등록 공통)
+
+**동작**:
+1. 새 챕터의 `sortOrder` 는 같은 일자의 마지막 순번+1로 계산한다. 이 계산에는 DREAM 챕터도 포함된다.
+2. SUMMARY 기본 카테고리 부여 판정은 **"기존 non-DREAM 챕터가 없는가"** 기준이다. DREAM 은 항상 마지막에 배치되는 개념 챕터이므로 판정에서 제외한다.
+3. 기존 non-DREAM 챕터가 없고 `categoryCode` 가 비어 있으면 첫 일반 챕터로 보고 `SUMMARY` 를 부여한다. 이미 카테고리가 있으면 덮지 않는다.
+4. 결과적으로 꿈 챕터가 먼저 있는 날에 첫 일기·노트 챕터를 등록해도 SUMMARY 가 정상 부여된다.
+
+**변경 전/후**: 변경 전에는 `sortOrder == 1` 을 기준으로 판정해, 꿈 챕터가 먼저 있으면 첫 일반 챕터의 `sortOrder` 가 2 이상이 되어 SUMMARY 가 누락됐다. 기존 데이터는 `V0.24.2__journal-chapter-summary-backfill-mariadb.sql` 로 각 일자의 가장 앞선 non-DREAM 챕터(빈 카테고리)에 SUMMARY 를 백필한다.
+
+---
+
 ### 등록/수정 후 엔트리 위치 스크롤
 
 **트리거**: `JournalEntryRegistModal` submit 성공 (등록 및 수정 공통)
@@ -366,7 +379,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **우측 액션 영역 구조**:
 - 댓글 등록 버튼 (⋯ 밖, 단독 버튼) → `attachableStore.openCommentRegist(id, contentType)`
-- 복사 버튼 (`bi-copy`, ⋯ 밖, 단독 버튼) → `copyEntry()` — 날짜(요일)·`htmlToPlainText(content)` 클립보드 복사. `content` = TinyMCE HTML 원문; HTML 제거 후 평문. (레거시 `copy()` 동일 포맷)
+- 복사 버튼 (`bi-copy`, ⋯ 밖, 단독 버튼) → `copyEntry()` — 날짜(요일)·`htmlToPlainText(content)` 클립보드 복사. `content` = TinyMCE HTML 원문; 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML을 제거한 평문. (레거시 `copy()` 동일 포맷)
 - ⋯ 드롭다운:
   - 헤더: contentLabel (일기/꿈)
   - 수정 → `modalStore.openEntryModify(id)`
@@ -386,6 +399,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **액션 메시지 i18n**: 클립보드 복사 성공·실패, 라이프사이클·상태 변경 실패, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, 상태 변경·삭제 성공 후 기존 현재 route 재조회와 `#journal-day-{stdrdDt}` 스크롤 순서를 유지한다. 검색 팝업에서는 재조회 중인 `journalStore.loading` 완료를 감지해 검색 결과를 다시 조회한다.
 
 **RESOLVED 자동 접힘**: `isCollapsed` computed에서 `localCollapsedOverride` 없고 `lifecycleKey === "RESOLVED"`이면 `true` 반환. 상태 서버 저장 없이 클라이언트에서 자동 접힘 처리.
+
+**꿈 RESOLVED 표시**: `JOURNAL_DREAM`의 완료 상태는 일기·노트·해석의 초록과 구분해 보라색을 사용한다. 펼친 행은 은은한 보라 배경·테두리·좌측선, 자동 접힌 행은 보라 접힘 표시와 순번, 라이프사이클 메뉴는 보라 완료 라벨을 사용한다. 중요·참조를 함께 지정하면 완료 보라선과 중요 빨강·참조 노랑선을 모두 유지한다. 이 표시 차이는 lifecycle 저장 payload와 RESOLVED 자동 접힘 우선순위를 변경하지 않는다.
 
 **검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `prepare-success` 이벤트에서 현재 검색 목록 또는 수정 대상 article DOM을 성공 알림 전에 준비한다. 모달의 `success` 이벤트는 성공 알림 OK 이후 저장한 엔트리 article 스크롤만 담당한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 저널 해석 수정 액션은 `JournalInterpretationRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회가 성공한 뒤 제목/본문/순번을 채운 폼을 표시한다. 해석 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 해석 저장 후 모달 내부의 `journalStore.fetchDays()` 완료를 감지해 검색 목록을 재조회한다.
 
@@ -431,10 +446,30 @@ function toggleEntry(): void {
 
 **주요 동기**: RESOLVED 챕터는 모든 엔트리가 RESOLVED → 챕터·엔트리 모두 자동 접힘. 챕터를 펼치면 엔트리도 함께 펼쳐져야 하나, 엔트리는 각자 `isResolved → true`를 유지하므로 챕터 펼침만으로는 엔트리가 열리지 않던 문제를 해결.
 
+**스마트 토글 (첫 클릭 보정)**: 챕터는 `allEntriesResolved`(전부 RESOLVED)일 때만 자동 접히므로, **일부만** RESOLVED면 챕터는 펼쳐진 채 일부 엔트리만 접힌 상태가 된다. 이때 `localCollapsedOverride`가 아직 `null`이라 "챕터가 펼쳐져 있다"는 신호가 엔트리에 전달되지 않는다. 변경 전에는 이 상태에서 첫 클릭이 챕터를 접어버려 엔트리를 펼치려면 2클릭이 필요했다.
+
+변경 후 `toggleChapter()`는 다음 조건을 모두 만족하면 접기 대신 `override=false`로 **하위 엔트리를 전체 펼친다**(1클릭):
+- `localCollapsedOverride === null` (사용자가 아직 토글하지 않음)
+- `!isCollapsed` (챕터가 펼쳐져 있음)
+- `hasDataCollapsedEntry` (데이터 규칙으로 접힌 엔트리가 있음)
+
+`hasDataCollapsedEntry`는 엔트리의 `lifecycleKey==='RESOLVED'` 또는 서버 `COLLAPSED` 상태로만 판정한다. 엔트리 개별 로컬 토글은 각 엔트리가 소유해 챕터에서 볼 수 없으므로 감지하지 못하는 근사치다.
+
+이후 클릭부터는 `override`가 non-null 이라 기존 토글(`!isCollapsed`)이 동작한다. **트레이드오프**: 이 상태에서 챕터를 접으려면 전체 펼침 후 한 번 더 눌러야 한다(접기 2클릭).
+
 **구현**:
 ```vue
 <!-- JournalChapterItem.vue -->
 <JournalEntryItem :force-collapsed="localCollapsedOverride" ... />
+```
+```js
+function toggleChapter(): void {
+  if (localCollapsedOverride.value === null && !isCollapsed.value && hasDataCollapsedEntry.value) {
+    localCollapsedOverride.value = false;
+    return;
+  }
+  localCollapsedOverride.value = !isCollapsed.value;
+}
 ```
 
 ---
@@ -495,7 +530,7 @@ async function copyChapter(): Promise<void> {
 본문 평문 (HTML 태그 제거)
 ```
 
-**구현**: `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일.
+**구현**: 공통 `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일.
 
 ---
 

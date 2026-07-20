@@ -42,6 +42,13 @@ public interface JournalChapterRepository
     /** 동일 일자의 꿈(DREAM) 챕터 1건 (없으면 empty) */
     Optional<JournalChapterEntity> findFirstByJournalDayIdAndChapterType(Integer journalDayId, ChapterType chapterType);
 
+    /**
+     * 동일 일자에 지정 타입이 아닌 챕터가 하나라도 존재하는지 여부.
+     * SUMMARY 자동 부여 판정에서 DREAM 챕터를 제외하기 위해 사용한다.
+     * (DREAM 은 항상 마지막에 배치되는 개념 챕터라 "첫 일반 챕터" 판정 대상이 아니다.)
+     */
+    boolean existsByJournalDayIdAndChapterTypeNot(Integer journalDayId, ChapterType chapterType);
+
     /** 동일 일자의 전체 챕터 (삭제 제외, @Where 적용) */
     List<JournalChapterEntity> findAllByJournalDayId(Integer journalDayId);
 }

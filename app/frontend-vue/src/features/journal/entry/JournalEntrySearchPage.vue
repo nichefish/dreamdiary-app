@@ -252,7 +252,7 @@
     <HistoryModal @success="onHistorySuccess" />
     <RelatedContentAddModal />
     <JournalTagContextMenu />
-    <JournalTagProfileModal />
+    <JournalTagProfileModal @success="onTagProfileSuccess" />
     <!--end::모달 컨테이너-->
   </div>
 </template>
@@ -272,6 +272,7 @@ import { swalAlert, swalRequestError } from "@/shared/utils/swal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import {
@@ -763,6 +764,11 @@ function onHistorySuccess(): void {
   void loadEntries();
 }
 
+/** 태그 프로필 저장·삭제 후 검색 결과(프로필 본문 등)를 다시 조회한다. */
+function onTagProfileSuccess(): void {
+  void loadEntries();
+}
+
 /**
  * 현재 검색 결과 전체를 클립보드에 복사.
  * 레거시 JournalEntrySearch.copy() 와 동일 포맷:
@@ -805,7 +811,8 @@ async function copyAll(): Promise<void> {
         timer: 1500,
         showConfirmButton: false,
       });
-    } catch {
+    } catch (error: unknown) {
+      console.error("[journal-entry-search] clipboard copy failed", error);
       void swalAlert(t("common.copy.failure"));
     }
   } finally {
@@ -814,22 +821,6 @@ async function copyAll(): Promise<void> {
 }
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존). 레거시 cF.util.htmlToText 와 동일 동작. */
-function htmlToPlainText(html: string): string {
-  return html
-    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
-    .replace(/<\s*br\s*\/?>/gi, "\n")
-    .replace(/<\s*\/?p[^>]*>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .split("\n").map((l) => l.trim()).join("\n")
-    .replace(/\n+/g, "\n")
-    .trim();
-}
-
 /** YYYY-MM-DD → "YYYY-MM" (월 변경 감지용) */
 function getYyMm(stdrdDt?: string | null): string {
   return stdrdDt?.slice(0, 7) ?? "";

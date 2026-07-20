@@ -534,7 +534,11 @@ interface TodoRow {
 **scss 클래스 바인딩**:
 - 외부 div: `itemClass` computed (contentType/isDream 기준) → `journal-dream-item` / `journal-note-item` / `journal-diary-item`
 - 콘텐츠 div: `contentClass` computed → `journal-dream-content` / `journal-note-content` / `journal-diary-content`
-- data 속성: `:data-imprtc`, `:data-refrnc`, `:data-resolved`, `:data-else-dream`, `:data-id` — journal.scss CSS 선택자 연동. 타인 꿈(`hasDreamerName` → `data-else-dream="Y"`)은 RESOLVED 초록 1줄 대신 **회색 이중선**(slate 0/2px) 기본; RESOLVED·중요·참조는 그 뒤 4px·6px·8px inset 에 기존 색으로 추가(`$journal-else-dream-paired-states`)
+- data 속성: `:data-imprtc`, `:data-refrnc`, `:data-resolved`, `:data-else-dream`, `:data-id` — journal.scss CSS 선택자 연동. 타인 꿈(`hasDreamerName` → `data-else-dream="Y"`)은 일반 꿈의 RESOLVED 보라 1줄 대신 **회색 이중선**(slate 0/2px) 기본; RESOLVED·중요·참조는 그 뒤 4px·6px·8px inset 에 완료=보라·중요=빨강·참조=노랑으로 추가(`$journal-else-dream-paired-states`)
+
+**꿈 RESOLVED 팔레트**: 변경 전에는 일기와 꿈이 `$journal-paired-states`의 초록 완료색을 공유했다. 변경 후 일반 꿈은 `$journal-dream-paired-states`의 은은한 보라 배경·테두리·좌측선을 사용하고, 접힌 표시·순번·라이프사이클 메뉴의 선택된 완료 라벨도 보라색으로 맞춘다. 중요·참조가 함께 있으면 완료 보라선을 유지하면서 기존 빨강·노랑 상태선을 조합한다. 일기·노트·해석과 챕터의 완료 집계는 기존 초록 계약을 유지한다.
+
+**엔트리 제목 표시**: `entry.title` 이 있으면 유형(일기/꿈/노트) 무관하게 꿈 상태 배지 행 아래·마크다운 본문 위에 독립 행으로 `fw-bold fs-5 mb-1` 표시한다. 본문 `.journal-content` 는 fs 클래스 없이 base 1rem 을 상속하므로 제목은 본문보다 한 단계 위 크기가 된다. 접힘(`isCollapsed`)과 무관하게 항상 표시하며 본문만 숨긴다. 제목은 `.journal-content` 밖이라 유형별 본문 색상(꿈 보라 등)을 상속하지 않고 기본 텍스트색을 쓴다. 변경 전: 꿈 엔트리에서만 배지 행에 인라인 `fs-7` 로 표시했고 일기·노트는 제목이 렌더되지 않았다. 결산 상세(`JournalAnnualDetail.vue`)의 엔트리 제목도 같은 `fs-5 fw-bold` 계약을 따른다.
 
 **우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/라이프사이클/상태/삭제)
 
@@ -542,7 +546,7 @@ interface TodoRow {
 
 **액션 결과 i18n**: 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 라이프사이클·상태 변경 실패, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하고, 변경·삭제 성공 후 현재 route 기준 목록 재조회와 일자 스크롤을 유지한다.
 
-**엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + `htmlToPlainText(content)` (TinyMCE HTML → 평문, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음 — 레거시 `copy()` 동일)
+**엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + 공통 `htmlToPlainText(content)` (TinyMCE HTML을 브라우저 HTML 파서로 이름·10진수·16진수 엔티티 디코딩 후 평문 변환, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음 — 레거시 `copy()` 동일)
 
 **본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-interpretation-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
 

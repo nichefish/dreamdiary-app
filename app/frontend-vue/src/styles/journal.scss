@@ -9,6 +9,11 @@
 @use "abstracts/_mixins" as mixin;
 
 $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
+/** 꿈 RESOLVED 표시 — 일기·챕터 완료의 초록과 구분하는 은은한 보라 팔레트 */
+$color-dream-resolved-bg: rgba(95, 0, 130, 0.04);
+$color-dream-resolved-border: rgba(95, 0, 130, 0.13);
+$color-dream-resolved-line: rgba(95, 0, 130, 0.66);
+$color-dream-resolved-muted: #9a78aa;
 /** 가상 섹션·챕터 헤더 「꿈」「{이름} 꿈」 — 본문 보라보다 옅게, 일기 헤더 gray 와 큰 차이 없이 */
 $color-dream-section-title: color.mix($color-dream, #5e6278, 22%);
 /** 타인 꿈(지정 꿈꾼) 엔트리 좌측 이중선 — RESOLVED·중요·참조와 별도, 눈에 덜 띄는 회색 */
@@ -257,7 +262,7 @@ $journal-else-dream-paired-states: (
         bg: rgba(100, 116, 139, 0.035),
         border: rgba(148, 163, 184, 0.11),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line)
     ),
     '[data-refrnc="Y"]': (
         bg: rgba(100, 116, 139, 0.04),
@@ -275,13 +280,13 @@ $journal-else-dream-paired-states: (
         bg: rgba(100, 116, 139, 0.04),
         border: rgba(148, 163, 184, 0.11),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82), 6px 0 0 rgba(245, 158, 11, 0.82))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line, 6px 0 0 rgba(245, 158, 11, 0.82))
     ),
     '[data-resolved="Y"][data-imprtc="Y"]': (
         bg: rgba(100, 116, 139, 0.04),
         border: rgba(148, 163, 184, 0.11),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82), 6px 0 0 rgba(239, 68, 68, 0.8))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line, 6px 0 0 rgba(239, 68, 68, 0.8))
     ),
     '[data-imprtc="Y"][data-refrnc="Y"]': (
         bg: rgba(100, 116, 139, 0.045),
@@ -293,7 +298,7 @@ $journal-else-dream-paired-states: (
         bg: rgba(100, 116, 139, 0.045),
         border: rgba(148, 163, 184, 0.12),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82), 6px 0 0 rgba(239, 68, 68, 0.8), 8px 0 0 rgba(245, 158, 11, 0.82))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line, 6px 0 0 rgba(239, 68, 68, 0.8), 8px 0 0 rgba(245, 158, 11, 0.82))
     )
 );
 $journal-paired-states: (
@@ -337,6 +342,52 @@ $journal-paired-states: (
         bg: rgba(245, 208, 120, 0.1),
         border: rgba(234, 179, 8, 0.2),
         before-bg: rgba(34, 197, 94, 0.82),
+        before-shadow: (2px 0 0 rgba(239, 68, 68, 0.8), 4px 0 0 rgba(245, 158, 11, 0.82))
+    )
+);
+
+/** 꿈 엔트리는 RESOLVED 축만 보라색으로 분리하고 중요·참조의 빨강·노랑 의미는 유지한다. */
+$journal-dream-paired-states: (
+    '[data-resolved="Y"]': (
+        bg: $color-dream-resolved-bg,
+        border: $color-dream-resolved-border,
+        before-bg: $color-dream-resolved-line,
+        before-shadow: none
+    ),
+    '[data-refrnc="Y"]': (
+        bg: rgba(245, 158, 11, 0.07),
+        border: rgba(245, 158, 11, 0.16),
+        before-bg: rgba(245, 158, 11, 0.82),
+        before-shadow: none
+    ),
+    '[data-imprtc="Y"]': (
+        bg: rgba(239, 68, 68, 0.06),
+        border: rgba(239, 68, 68, 0.15),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: none
+    ),
+    '[data-resolved="Y"][data-refrnc="Y"]': (
+        bg: rgba(234, 179, 8, 0.08),
+        border: rgba(234, 179, 8, 0.17),
+        before-bg: $color-dream-resolved-line,
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"]': (
+        bg: rgba(248, 113, 113, 0.08),
+        border: rgba(239, 68, 68, 0.16),
+        before-bg: $color-dream-resolved-line,
+        before-shadow: 2px 0 0 rgba(239, 68, 68, 0.8)
+    ),
+    '[data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(251, 191, 36, 0.09),
+        border: rgba(245, 158, 11, 0.18),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(245, 208, 120, 0.1),
+        border: rgba(234, 179, 8, 0.2),
+        before-bg: $color-dream-resolved-line,
         before-shadow: (2px 0 0 rgba(239, 68, 68, 0.8), 4px 0 0 rgba(245, 158, 11, 0.82))
     )
 );
@@ -535,10 +586,13 @@ $journal-paired-states: (
 }
 
 .journal-diary-item[data-resolved="Y"] .journal-diary-content .journal-content.collapsed::before,
-.journal-dream-item[data-resolved="Y"] .journal-dream-content .journal-content.collapsed::before,
 .journal-interpretation-item[data-resolved="Y"] .journal-interpretation-content .journal-content.collapsed::before,
 .journal-note-item[data-resolved="Y"] .journal-note-content .journal-content.collapsed::before {
     color: #8ab89a;
+}
+
+.journal-dream-item[data-resolved="Y"] .journal-dream-content .journal-content.collapsed::before {
+    color: $color-dream-resolved-muted;
 }
 
 .journal-diary-content, .journal-interpretation-content {
@@ -842,7 +896,17 @@ $journal-paired-states: (
 }
 
 @each $selector, $state in $journal-paired-states {
-    .journal-diary-item#{$selector},
+    .journal-diary-item#{$selector} {
+        @include journal-paired-state(
+            map-get($state, bg),
+            map-get($state, border),
+            map-get($state, before-bg),
+            map-get($state, before-shadow)
+        );
+    }
+}
+
+@each $selector, $state in $journal-dream-paired-states {
     .journal-dream-item#{$selector}:not([data-else-dream="Y"]) {
         @include journal-paired-state(
             map-get($state, bg),

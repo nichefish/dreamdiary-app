@@ -27,7 +27,7 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 | 구분 | Vue 경로 | 레거시 매크로 대응 | 비고 |
 |------|----------|-------------------|------|
 | 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. |
-| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. |
+| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. 자동완성 dropdown은 `document.body`에 append 하고 Bootstrap 모달보다 높은 z-index로 표시한다. |
 | 댓글 목록/등록 | `features/attachable/CommentListModal.vue` 등 | `list_comment`, `CommentList.modal` | `useAttachableModalStore.openCommentList` |
 | 파일 그룹 | `FileGroupListModal.vue`, `FileGroupDetail.vue`, `FileGroupSection.vue` | `list_file_group` | `openFileList`. 다운로드 레이블과 파일 크기 단위는 현재 locale의 클라이언트 카탈로그를 사용하며 다운로드 URL·클릭 흐름은 유지한다. |
 | 이력 | `HistoryModal.vue` | — | `openHistory`. 각 이력 카드에 텍스트 복사 버튼(`bi bi-copy`) 구현 완료 |
@@ -87,6 +87,8 @@ Vue SPA는 빌드가 성공했더라도 라우팅, 동적 import, 렌더링, 전
 `TagifyEditor.vue`는 Tagify가 생성한 `.tagify` 래퍼와 내부 `.tagify__input`에 좌우 padding을 명시한다. 원본 input의 Bootstrap `form-control` 스타일과 Tagify 기본 스타일이 섞여 입력 커서 영역이 테두리나 태그에 딱 붙어 보이는 문제를 막기 위한 보정이다.
 
 적용 위치: `app/frontend-vue/src/styles/components/tag.scss`
+
+같은 파일은 body에 append 된 `.tagify__dropdown`을 Bootstrap 모달(`body.modal-open .modal`, z-index 6100)보다 위인 z-index 6120으로 둔다.
 
 ---
 
