@@ -18,7 +18,7 @@ public class OllamaChatRequest {
     /** 응답 생성에 사용할 Ollama 채팅 모델명입니다. */
     private String model;
 
-    /** 스트리밍 응답 사용 여부입니다. 현재 화면 흐름에서는 동기 응답을 사용합니다. */
+    /** 스트리밍 응답 사용 여부입니다. 본경로 생성은 {@code true}, hybrid/retry·language-guard 재시도는 {@code false}. */
     private Boolean stream;
 
     /** 시스템 프롬프트와 대화 맥락을 순서대로 담은 메시지 목록입니다. */

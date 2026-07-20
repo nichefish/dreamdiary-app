@@ -148,6 +148,109 @@
             </div>
           </div>
 
+          <div class="admin-rag-settings mb-4">
+            <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-2">
+              <div>
+                <h4 class="fs-6 fw-bold mb-1">{{ t('admin.page.rag.title') }}</h4>
+                <div class="text-muted fs-8">{{ t('admin.page.rag.desc') }}</div>
+              </div>
+              <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving"
+                @click="saveRagSettings"
+              >
+                <span v-if="store.chatRagSettingsSaving" class="spinner-border spinner-border-sm me-1"></span>
+                {{ t('admin.page.rag.save') }}
+              </button>
+            </div>
+            <div v-if="store.chatRagSettingsError" class="alert alert-warning py-2">
+              {{ store.chatRagSettingsError }}
+            </div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-check form-switch">
+                  <input
+                    v-model="store.chatRagSettings.ragEnabled"
+                    class="form-check-input"
+                    type="checkbox"
+                    :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving"
+                  />
+                  <span class="form-check-label">{{ t('admin.page.rag.enabled') }}</span>
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="50"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.min-score') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragMinScore"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="0.05"
+                  max="0.95"
+                  step="0.01"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.summary-top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragSummaryTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="100"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.synthesis-top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragSynthesisTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="100"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.stance-top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragStanceTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="100"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.synthesis-min-score') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragSynthesisMinScore"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="0.05"
+                  max="0.95"
+                  step="0.01"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+            </div>
+            <div class="text-muted fs-8 mt-2">{{ t('admin.page.rag.note') }}</div>
+          </div>
+
           <div v-if="store.embeddingQualityEvalError" class="alert alert-warning py-2">
             {{ store.embeddingQualityEvalError }}
           </div>
@@ -423,7 +526,7 @@ const BACKGROUND_SYNC_NOTE = t("admin.page.background.queue-note");
 const activeTab = computed<AdminTab>(() => (route.query.tab === "ai" ? "ai" : "general"));
 const reloadDisabled = computed(() =>
   activeTab.value === "ai"
-    ? store.embeddingStatsLoading || store.entityQueueStatsLoading
+    ? store.embeddingStatsLoading || store.entityQueueStatsLoading || store.chatRagSettingsLoading
     : store.bootstrapLoading
 );
 const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
@@ -577,7 +680,12 @@ function displayCacheKey(cacheKey: string): string {
 
 async function reload() {
   if (activeTab.value === "ai") {
-    await Promise.all([store.fetchEmbeddingStats(), store.fetchEntityQueueStats()]);
+    await Promise.all([
+      store.fetchEmbeddingStats(),
+      store.fetchEntityQueueStats(),
+      store.fetchOllamaHealth(),
+      store.fetchChatRagSettings(),
+    ]);
     return;
   }
   await store.fetchBootstrap();
@@ -655,6 +763,15 @@ async function clearAllCaches() {
     void swalAlert(await store.clearAllCaches());
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : t("admin.page.cache.all.delete.failure"));
+  }
+}
+
+async function saveRagSettings() {
+  try {
+    const msg = await store.saveChatRagSettings();
+    await swalAlert(msg);
+  } catch (error) {
+    await swalAlert(error instanceof Error ? error.message : t("admin.page.rag.save.failure"));
   }
 }
 

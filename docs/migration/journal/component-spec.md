@@ -413,6 +413,12 @@ interface TodoRow {
 
 ---
 
+### 22-4b. `JournalEntryViewModal` 읽기 전용 원문
+
+**Vue**: `JournalEntryViewModal.vue` → `journal_entry_view_modal`
+
+채팅 RAG 출처 딥링크용 읽기 전용 모달이다. `GET /api/journal/entry/{id}`로 조회한 `markdownContent`를 목록과 동일한 `journal-content` HTML로 표시하고, 날짜·제목·태그·꿈꾼(해당 시)만 보여 준다. 저장 폼은 없다. footer 편집은 `openEntryModifyFromView`로 `JournalEntryRegistModal`을 연다. 비팝업 라우트에서는 `App.vue`가 전역 마운트한다.
+
 ### 22-4. `JournalEntryRegistModal` 등록/수정 폼 여백
 
 **Vue**: `JournalEntryRegistModal.vue` → `journal-entry-regist-modal__body`, `journal-entry-regist-form`
@@ -540,6 +546,8 @@ interface TodoRow {
 
 **본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-interpretation-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
 
+**검색 키워드 하이라이트**: 검색 팝업은 `highlightKeywords` prop으로 URL 검색 키워드를 전달할 수 있다. prop이 비어 있으면 기존 월간/주간/챕터/꿈 섹션 렌더는 변경하지 않는다. 키워드가 있으면 `markdownContent` HTML의 텍스트 노드만 `<mark class="journal-entry-search-keyword-mark">`로 감싸며, `mark`/`script`/`style`/`textarea` 내부는 건드리지 않는다.
+
 **클라이언트 접힘 토글**: 왼쪽 열 `#sortOrder` 아래 `bi-arrows-expand`/`bi-arrows-collapse` 버튼 — 서버 상태 무변경, `localCollapsedOverride ref`로 임시 제어
 
 **태그 클릭**: `@click.stop="openTagContextMenu($event, tag)"` → `tagContextMenuStore.open(event, payload)`
@@ -643,9 +651,9 @@ interface TodoRow {
 
 ### 23-3c. `JournalAnnualDetail`·Annual Aside (연간 결산 상세·필터)
 
-**Vue 구현**: `app/frontend-vue/src/features/journal/annual/JournalAnnualDetail.vue`, `components/JournalAnnualDetailAside.vue`, `components/JournalAnnualListAside.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/annual/JournalAnnualList.vue`, `JournalAnnualDetail.vue`, `components/JournalAnnualDetailAside.vue`, `components/JournalAnnualListAside.vue`
 
-**데이터·동작**: 결산 상세·리뷰·태그클라우드·중요/참조 토글과 상세/목록 필터를 `useJournalAnnualStore` 상태 및 기존 액션에 연결한다. locale 변경은 선택 연도·활성 탭·태그클라우드·필터값·토글 상태·API 호출을 변경하지 않는다.
+**데이터·동작**: 결산 목록 상단 액션 헤더(전체 결산 갱신·결산 등록), 결산 상세·리뷰·태그클라우드·중요/참조 토글과 상세/목록 필터를 `useJournalAnnualStore` 상태 및 기존 액션에 연결한다. 목록 aside는 필터 전용 영역으로 유지한다. 결산 목록 카드의 Metronic 컨텍스트 메뉴는 비동기 목록 렌더 및 필터 DOM 갱신 후 `reinitMetronicAfterDom()`으로 재바인딩한다. locale 변경은 선택 연도·활성 탭·태그클라우드·필터값·토글 상태·API 호출을 변경하지 않는다.
 
 **i18n**: 상세의 SUMMARY·REVIEWS·로딩·태그 메뉴 tooltip·IMPORTANT·REFERENCE와 두 aside의 FILTER·TAGCLOUD·ENTRY FILTER·SUMMARY FILTER·키워드 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. 영어는 기존 대문자 표기를 유지한다.
 
@@ -740,7 +748,7 @@ interface TodoRow {
 
 **Aside 열기 i18n**: aside가 숨겨졌을 때 표시되는 필터 패널 열기 버튼 tooltip은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 aside 표시 상태를 변경하지 않는다.
 
-**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalEntryRegistModal`, `JournalDayTagDtlModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagListModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`
+**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`. (`JournalEntryRegistModal`·`JournalEntryViewModal`은 채팅 RAG 원문 딥링크를 위해 `App.vue`에서 비팝업 전역 마운트 — 레이아웃 중복 마운트 없음. 출처 클릭은 읽기 전용 뷰, 편집은 뷰 footer에서 수정 모달로 전환.)
 
 `JournalDayMetaModal.vue`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 

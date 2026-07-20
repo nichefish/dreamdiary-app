@@ -153,6 +153,141 @@ public class MarkdownUtils {
      *
      * @param htmlContent Elements
      */
+
+    /**
+     * 채팅 AI 평문(마크다운 기호 포함)을 버블용 안전 HTML로 변환한다.
+     *
+     * <p>저널 TinyMCE HTML용 {@link #markdown(String)}과 달리, 입력은 평문이며
+     * HTML은 먼저 escape한 뒤 제한된 마크다운만 태그로 복원한다.</p>
+     *
+     * @param plainText 저장·브로드캐스트용 평문 응답
+     * @return 버블에 v-html로 넣을 HTML (빈 입력이면 "-")
+     */
+    public static String renderChatMarkdown(final String plainText) {
+        if (StringUtils.isEmpty(plainText)) return "-";
+
+        String text = plainText.replace("\r\n", "\n").replace('\r', '\n').trim();
+        if (text.isEmpty()) return "-";
+
+        final List<String> codeBlocks = new ArrayList<>();
+        final Matcher codeBlockMatcher = Pattern.compile("(?s)```[^\\n]*\\n?(.*?)```").matcher(text);
+        final StringBuffer codeBlockBuf = new StringBuffer();
+        while (codeBlockMatcher.find()) {
+            final String body = codeBlockMatcher.group(1) == null ? "" : codeBlockMatcher.group(1);
+            final String placeholder = "%%CHAT_CODE_BLOCK_" + codeBlocks.size() + "%%";
+            codeBlocks.add("<pre class=\"chat-md-pre\"><code>"
+                    + StringEscapeUtils.escapeHtml4(body.trim())
+                    + "</code></pre>");
+            codeBlockMatcher.appendReplacement(codeBlockBuf, Matcher.quoteReplacement(placeholder));
+        }
+        codeBlockMatcher.appendTail(codeBlockBuf);
+        text = codeBlockBuf.toString();
+
+        text = StringEscapeUtils.escapeHtml4(text);
+
+        text = text.replaceAll("`([^`\\n]+)`", "<code class=\"chat-md-code\">$1</code>");
+        text = text.replaceAll("(?m)^######\\s+(.+)$", "<h6 class=\"chat-md-h\">$1</h6>");
+        text = text.replaceAll("(?m)^#####\\s+(.+)$", "<h5 class=\"chat-md-h\">$1</h5>");
+        text = text.replaceAll("(?m)^####\\s+(.+)$", "<h4 class=\"chat-md-h\">$1</h4>");
+        text = text.replaceAll("(?m)^###\\s+(.+)$", "<h3 class=\"chat-md-h\">$1</h3>");
+        text = text.replaceAll("(?m)^##\\s+(.+)$", "<h2 class=\"chat-md-h\">$1</h2>");
+        text = text.replaceAll("(?m)^#\\s+(.+)$", "<h1 class=\"chat-md-h\">$1</h1>");
+        text = text.replaceAll("\\*\\*\\*(.+?)\\*\\*\\*", "<strong><em>$1</em></strong>");
+        text = text.replaceAll("\\*\\*(.+?)\\*\\*", "<strong>$1</strong>");
+        text = text.replaceAll("__(.+?)__", "<strong>$1</strong>");
+        text = text.replaceAll("(?<!\\*)\\*([^\\*\\n]+)\\*(?!\\*)", "<em>$1</em>");
+        text = text.replaceAll("(?<!_)_([^_\\n]+)_(?!_)", "<em>$1</em>");
+
+        text = wrapChatMarkdownBlocks(text);
+
+        for (int i = 0; i < codeBlocks.size(); i++) {
+            text = text.replace("%%CHAT_CODE_BLOCK_" + i + "%%", codeBlocks.get(i));
+        }
+        return text;
+    }
+
+    /**
+     * escape·인라인 처리된 채팅 마크다운을 문단·목록 블록 HTML로 감싼다.
+     *
+     * @param escapedInlineHtml HTML-escape 및 인라인 태그 치환이 끝난 본문
+     * @return 문단/목록이 감싸진 HTML
+     */
+    private static String wrapChatMarkdownBlocks(final String escapedInlineHtml) {
+        final String[] lines = escapedInlineHtml.split("\\n", -1);
+        final StringBuilder out = new StringBuilder();
+        final StringBuilder paragraph = new StringBuilder();
+        List<String> listItems = null;
+        boolean ordered = false;
+
+        for (final String line : lines) {
+            final Matcher ul = Pattern.compile("^\\s*[-\\*\\+]\\s+(.+)$").matcher(line);
+            final Matcher ol = Pattern.compile("^\\s*\\d+\\.\\s+(.+)$").matcher(line);
+
+            if (ul.matches() || ol.matches()) {
+                if (paragraph.length() > 0) {
+                    out.append("<p>").append(paragraph.toString().replace("\n", "<br>")).append("</p>");
+                    paragraph.setLength(0);
+                }
+                final boolean nextOrdered = ol.matches();
+                if (listItems == null || ordered != nextOrdered) {
+                    if (listItems != null) {
+                        appendChatList(out, listItems, ordered);
+                    }
+                    listItems = new ArrayList<>();
+                    ordered = nextOrdered;
+                }
+                listItems.add(ul.matches() ? ul.group(1) : ol.group(1));
+                continue;
+            }
+
+            if (listItems != null) {
+                appendChatList(out, listItems, ordered);
+                listItems = null;
+            }
+
+            if (line.isBlank()) {
+                if (paragraph.length() > 0) {
+                    out.append("<p>").append(paragraph.toString().replace("\n", "<br>")).append("</p>");
+                    paragraph.setLength(0);
+                }
+                continue;
+            }
+
+            if (line.startsWith("<h") && line.contains("class=\"chat-md-h\"")) {
+                if (paragraph.length() > 0) {
+                    out.append("<p>").append(paragraph.toString().replace("\n", "<br>")).append("</p>");
+                    paragraph.setLength(0);
+                }
+                out.append(line);
+                continue;
+            }
+
+            if (paragraph.length() > 0) paragraph.append("\n");
+            paragraph.append(line);
+        }
+
+        if (listItems != null) {
+            appendChatList(out, listItems, ordered);
+        }
+        if (paragraph.length() > 0) {
+            out.append("<p>").append(paragraph.toString().replace("\n", "<br>")).append("</p>");
+        }
+        return out.length() == 0 ? "<p></p>" : out.toString();
+    }
+
+    private static void appendChatList(
+            final StringBuilder out,
+            final List<String> listItems,
+            final boolean ordered
+    ) {
+        out.append(ordered ? "<ol class=\"chat-md-ol\">" : "<ul class=\"chat-md-ul\">");
+        for (final String item : listItems) {
+            out.append("<li>").append(item).append("</li>");
+        }
+        out.append(ordered ? "</ol>" : "</ul>");
+    }
+
+
     /*
      * Rendering-time contract:
      * - Stored editor HTML may contain real TinyMCE tags such as p/table/span.

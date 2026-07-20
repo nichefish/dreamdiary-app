@@ -78,17 +78,39 @@
                 {
                   'chat-session-chip--active':
                     session.id === chat.activeSessionId,
+                  'chat-session-chip--renaming':
+                    renamingSessionId === session.id,
                 },
               ]"
               type="button"
-              @click="chat.selectSession(session.id)"
+              @click="onSessionChipClick(session)"
             >
               <span class="chat-session-chip__body">
-                <span class="chat-session-chip__title">
+                <input
+                  v-if="renamingSessionId === session.id"
+                  :ref="(el) => setRenameInputRef(session.id, el)"
+                  v-model="renameDraft"
+                  class="chat-session-chip__title-input"
+                  type="text"
+                  maxlength="200"
+                  :placeholder="t('chat.session.rename.placeholder')"
+                  :disabled="isRenamingSaving"
+                  @click.stop
+                  @dblclick.stop
+                  @keydown.enter.prevent="commitRename(session)"
+                  @keydown.esc.prevent="cancelRename"
+                  @blur="commitRename(session)"
+                />
+                <span
+                  v-else
+                  class="chat-session-chip__title"
+                  :title="t('chat.session.rename.hint')"
+                  @dblclick.stop="startRename(session)"
+                >
                   {{ sessionTitle(session) }}
                 </span>
                 <span
-                  v-if="sessionTime(session)"
+                  v-if="sessionTime(session) && renamingSessionId !== session.id"
                   class="chat-session-chip__time"
                 >
                   {{ sessionTime(session) }}
@@ -129,6 +151,19 @@
             <div class="chat-empty-state__title">
               {{ t("chat.empty.prompt") }}
             </div>
+            <div class="chat-empty-state__seeds" role="list">
+              <button
+                v-for="seed in emptySeedPrompts"
+                :key="seed.key"
+                type="button"
+                class="chat-empty-seed"
+                role="listitem"
+                :disabled="chat.isWaitingResponse"
+                @click="sendSeedPrompt(seed.text)"
+              >
+                {{ seed.text }}
+              </button>
+            </div>
           </div>
 
           <div
@@ -159,7 +194,15 @@
                   {{ messageTime(message) }}
                 </span>
               </div>
-              <div :class="['chat-message-bubble', messageBubbleClass(message)]">
+              <div
+                v-if="isAssistantMessage(message)"
+                :class="['chat-message-bubble', messageBubbleClass(message), 'chat-message-bubble--md']"
+                v-html="assistantHtml(message)"
+              ></div>
+              <div
+                v-else
+                :class="['chat-message-bubble', messageBubbleClass(message)]"
+              >
                 {{ messageText(message) }}
               </div>
               <div
@@ -233,10 +276,19 @@
                     >
                       <div class="chat-rag__label">{{ t("chat.rag.label.sources") }}</div>
                       <div class="chat-rag-source-list">
-                        <div
-                          v-for="source in visibleRagSources(messageRagMetadata(message))"
+                        <button
+                          v-for="source in visibleRagSources(message, messageRagMetadata(message))"
                           :key="`${source.rank}-${source.journalEntryId}`"
+                          type="button"
                           class="chat-rag-source"
+                          :class="{ 'chat-rag-source--linkable': !!source.journalEntryId }"
+                          :title="
+                            source.journalEntryId
+                              ? t('chat.rag.source.open-entry')
+                              : undefined
+                          "
+                          :disabled="!source.journalEntryId"
+                          @click="openRagSourceEntry(source)"
                         >
                           <div class="chat-rag-source__meta">
                             <span>{{ source.journalDate || t("chat.rag.date.missing") }}</span>
@@ -255,7 +307,20 @@
                           <div class="chat-rag-source__snippet">
                             {{ source.snippet }}
                           </div>
-                        </div>
+                        </button>
+                        <button
+                          v-if="hiddenRagSourceCount(message, messageRagMetadata(message)) > 0"
+                          type="button"
+                          class="chat-rag-source-more"
+                          @click="expandRagSources(message)"
+                        >
+                          {{
+                            tf(
+                              "chat.rag.source.more",
+                              hiddenRagSourceCount(message, messageRagMetadata(message))
+                            )
+                          }}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -292,11 +357,21 @@
                 <span class="chat-message-name">{{ t("chat.assistant.name") }}</span>
               </div>
               <div
+                v-if="chat.streamingContent"
+                class="chat-message-bubble chat-message-bubble--assistant chat-message-bubble--streaming"
+              >
+                {{ chat.streamingContent }}
+              </div>
+              <div
+                v-else
                 class="chat-message-bubble chat-message-bubble--assistant chat-message-bubble--typing"
               >
                 <span class="chat-typing-dot"></span>
                 <span class="chat-typing-dot"></span>
                 <span class="chat-typing-dot"></span>
+                <span v-if="waitingPhaseLabel()" class="chat-typing-phase">
+                  {{ waitingPhaseLabel() }}
+                </span>
               </div>
             </div>
           </div>
@@ -355,7 +430,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { nextTick, onBeforeUnmount, reactive, ref, watch, computed } from "vue";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import {
   type ChatMessage,
@@ -363,6 +438,7 @@ import {
   MEMORY_LIMIT_OPTIONS,
   useChatStore,
 } from "@/features/chat/stores/chat";
+import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { handleProfileImageError } from "@/shared/utils/profileImage";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
@@ -378,8 +454,19 @@ function tf(key: string, ...args: (string | number)[]): string {
   return message;
 }
 const chat = useChatStore();
+const journalModalStore = useJournalModalStore();
 const message = ref("");
 const messageList = ref<HTMLElement | null>(null);
+/** message key -> expanded source list (default shows RAG_SOURCE_PREVIEW_LIMIT) */
+const expandedRagSourceKeys = reactive<Record<string, boolean>>({});
+const RAG_SOURCE_PREVIEW_LIMIT = 5;
+/** 세션 칩 제목 인라인 편집 중인 세션 ID */
+const renamingSessionId = ref<number | null>(null);
+const renameDraft = ref("");
+const isRenamingSaving = ref(false);
+const renameInputEls = new Map<number, HTMLInputElement>();
+/** blur와 Esc 취소가 경합하지 않도록 커밋 중인지 표시 */
+let renameCommitLocked = false;
 
 interface RagCountItem {
   name?: string;
@@ -478,7 +565,7 @@ watch(
 );
 
 watch(
-  () => [chat.messages.length, chat.isWaitingResponse, chat.isOpen],
+  () => [chat.messages.length, chat.isWaitingResponse, chat.isOpen, chat.streamingContent],
   () => {
     scrollToBottom();
   }
@@ -495,10 +582,42 @@ function scrollToBottom(): void {
   });
 }
 
+function waitingPhaseLabel(): string {
+  const phase = chat.responsePhase;
+  if (phase === "SEARCHING") return t("chat.waiting.searching");
+  if (phase === "GENERATING") return t("chat.waiting.generating");
+  return "";
+}
+
+const EMPTY_SEED_KEYS = [
+  "chat.empty.seed.1",
+  "chat.empty.seed.2",
+  "chat.empty.seed.3",
+  "chat.empty.seed.4",
+] as const;
+
+const emptySeedPrompts = computed(() =>
+  EMPTY_SEED_KEYS.map((key) => ({
+    key,
+    text: t(key),
+  })).filter((seed) => !!seed.text && seed.text !== seed.key)
+);
+
 async function sendMessage(): Promise<void> {
   const nextMessage = message.value.trim();
   if (!nextMessage) return;
 
+  message.value = "";
+  await chat.sendMessage(nextMessage);
+  scrollToBottom();
+}
+
+/**
+ * 빈 세션 시드 질문을 즉시 전송한다. composer 입력값은 비운다.
+ */
+async function sendSeedPrompt(seedText: string): Promise<void> {
+  const nextMessage = seedText.trim();
+  if (!nextMessage || chat.isWaitingResponse) return;
   message.value = "";
   await chat.sendMessage(nextMessage);
   scrollToBottom();
@@ -514,6 +633,78 @@ function updateMemoryLimit(event: Event): void {
 
 function sessionTitle(session: ChatSession): string {
   return session.title || t("chat.session.default-title");
+}
+
+function setRenameInputRef(sessionId: number, el: unknown): void {
+  if (el instanceof HTMLInputElement) {
+    renameInputEls.set(sessionId, el);
+  } else {
+    renameInputEls.delete(sessionId);
+  }
+}
+
+function onSessionChipClick(session: ChatSession): void {
+  if (renamingSessionId.value === session.id) return;
+  chat.selectSession(session.id);
+}
+
+/**
+ * 세션 칩 제목 인라인 편집을 시작한다.
+ */
+function startRename(session: ChatSession): void {
+  if (!session.id || isRenamingSaving.value) return;
+  renamingSessionId.value = session.id;
+  renameDraft.value = session.title || "";
+  renameCommitLocked = false;
+  nextTick(() => {
+    const input = renameInputEls.get(session.id);
+    if (!input) return;
+    input.focus();
+    input.select();
+  });
+}
+
+function cancelRename(): void {
+  renameCommitLocked = true;
+  renamingSessionId.value = null;
+  renameDraft.value = "";
+  isRenamingSaving.value = false;
+}
+
+/**
+ * 인라인 제목 편집을 저장한다. 비어 있으면 취소한다.
+ */
+async function commitRename(session: ChatSession): Promise<void> {
+  if (renameCommitLocked) return;
+  if (renamingSessionId.value !== session.id) return;
+
+  const nextTitle = renameDraft.value.trim();
+  const currentTitle = (session.title || "").trim();
+  if (!nextTitle) {
+    chat.lastError = t("chat.session.rename.empty");
+    cancelRename();
+    return;
+  }
+  if (nextTitle === currentTitle) {
+    cancelRename();
+    return;
+  }
+
+  renameCommitLocked = true;
+  isRenamingSaving.value = true;
+  try {
+    const updated = await chat.renameSession(session.id, nextTitle);
+    if (!updated) {
+      chat.lastError = t("chat.session.rename.failure");
+    }
+  } catch (e) {
+    console.error("[AppChat] renameSession failed", { sessionId: session.id }, e);
+    chat.lastError = t("chat.session.rename.failure");
+  } finally {
+    isRenamingSaving.value = false;
+    renamingSessionId.value = null;
+    renameDraft.value = "";
+  }
 }
 
 function sessionTime(session: ChatSession): string {
@@ -551,6 +742,26 @@ function messageText(chatMessage: ChatMessage): string {
   return chatMessage.content || "";
 }
 
+/**
+ * assistant 버블용 HTML. 서버 `markdownContent`(renderChatMarkdown)를 우선하고,
+ * 구 메시지·폴백은 content 평문을 escape해 문단으로 감싼다.
+ */
+function assistantHtml(chatMessage: ChatMessage): string {
+  const html = (chatMessage.markdownContent || "").trim();
+  if (html && html !== "-") return html;
+  const plain = messageText(chatMessage);
+  if (!plain) return "";
+  return `<p>${escapeHtml(plain).replace(/\n/g, "<br>")}</p>`;
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function messageRagMetadata(chatMessage: ChatMessage): RagMetadata | null {
   if (!chatMessage.metadataJson) return null;
 
@@ -572,8 +783,43 @@ function messageRagMetadata(chatMessage: ChatMessage): RagMetadata | null {
   }
 }
 
-function visibleRagSources(metadata: RagMetadata | null | undefined): RagSource[] {
-  return (metadata?.ragSources || []).slice(0, 5);
+function ragMessageKey(chatMessage: ChatMessage): string {
+  return String(chatMessage.id ?? `${chatMessage.role}-${chatMessage.createdAt}-${chatMessage.content}`);
+}
+
+function visibleRagSources(
+  chatMessage: ChatMessage,
+  metadata: RagMetadata | null | undefined
+): RagSource[] {
+  const sources = metadata?.ragSources || [];
+  if (expandedRagSourceKeys[ragMessageKey(chatMessage)]) return sources;
+  return sources.slice(0, RAG_SOURCE_PREVIEW_LIMIT);
+}
+
+function hiddenRagSourceCount(
+  chatMessage: ChatMessage,
+  metadata: RagMetadata | null | undefined
+): number {
+  const total = metadata?.ragSources?.length || 0;
+  if (expandedRagSourceKeys[ragMessageKey(chatMessage)]) return 0;
+  return Math.max(0, total - RAG_SOURCE_PREVIEW_LIMIT);
+}
+
+function expandRagSources(chatMessage: ChatMessage): void {
+  expandedRagSourceKeys[ragMessageKey(chatMessage)] = true;
+}
+
+/**
+ * Opens the referenced journal entry in read-only view from a RAG source row.
+ * Uses JournalEntryViewModal (global App.vue mount on non-popup routes).
+ */
+function openRagSourceEntry(source: RagSource): void {
+  const entryId = source.journalEntryId;
+  if (entryId == null || !Number.isFinite(Number(entryId))) {
+    console.warn("[AppChat] RAG source missing journalEntryId", source);
+    return;
+  }
+  void journalModalStore.openEntryView(Number(entryId));
 }
 
 function personFocusText(metadata: RagMetadata | null | undefined): string {
@@ -960,6 +1206,25 @@ function messageBubbleClass(chatMessage: ChatMessage): string {
   font-weight: 800;
 }
 
+.chat-session-chip__title-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.3;
+  outline: 1px solid rgba(21, 150, 166, 0.55);
+}
+
+.chat-session-chip--renaming {
+  border-color: rgba(21, 150, 166, 0.58);
+  background: #e8f7f8;
+}
+
 .chat-session-chip__time {
   margin-top: 3px;
   color: #94a3b8;
@@ -1039,6 +1304,42 @@ function messageBubbleClass(chatMessage: ChatMessage): string {
   font-weight: 700;
 }
 
+.chat-empty-state__seeds {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 420px;
+  margin-top: 16px;
+}
+
+.chat-empty-seed {
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dbe4f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.chat-empty-seed:hover:not(:disabled) {
+  border-color: #9ad0d8;
+  background: #f4fbfd;
+  color: #0f766e;
+}
+
+.chat-empty-seed:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .chat-message-row {
   display: flex;
   align-items: flex-end;
@@ -1111,6 +1412,63 @@ function messageBubbleClass(chatMessage: ChatMessage): string {
   background: #ffffff;
   color: #172033;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.chat-message-bubble--md {
+  white-space: normal;
+}
+
+.chat-message-bubble--md > :first-child {
+  margin-top: 0;
+}
+
+.chat-message-bubble--md > :last-child {
+  margin-bottom: 0;
+}
+
+.chat-message-bubble--md p {
+  margin: 0 0 0.55em;
+}
+
+.chat-message-bubble--md p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-message-bubble--md .chat-md-ul,
+.chat-message-bubble--md .chat-md-ol {
+  margin: 0.35em 0 0.55em;
+  padding-left: 1.25em;
+}
+
+.chat-message-bubble--md .chat-md-h {
+  margin: 0.55em 0 0.35em;
+  font-size: 1em;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.chat-message-bubble--md .chat-md-code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: #f1f5f9;
+  font-size: 0.92em;
+}
+
+.chat-message-bubble--md .chat-md-pre {
+  margin: 0.45em 0;
+  padding: 0.65em 0.75em;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.88em;
+  line-height: 1.45;
+}
+
+.chat-message-bubble--md .chat-md-pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
 }
 
 .chat-message-bubble--other {
@@ -1202,9 +1560,48 @@ function messageBubbleClass(chatMessage: ChatMessage): string {
 }
 
 .chat-rag-source {
+  display: block;
+  width: 100%;
   padding: 8px;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: #f8fafc;
+  text-align: left;
+  cursor: default;
+}
+
+.chat-rag-source--linkable {
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+
+.chat-rag-source--linkable:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.chat-rag-source:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.chat-rag-source-more {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 4px 8px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chat-rag-source-more:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
 }
 
 .chat-rag-source__meta {
@@ -1260,6 +1657,11 @@ function messageBubbleClass(chatMessage: ChatMessage): string {
 
 .chat-message-row--pending {
   margin-top: -6px;
+}
+
+.chat-message-bubble--streaming {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .chat-message-bubble--typing {

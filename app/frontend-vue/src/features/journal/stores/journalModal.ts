@@ -2,7 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
-import type { JournalDayDto, MetaDto } from "@/features/journal/stores/journal";
+import type { JournalDayDto, JournalEntryDto, MetaDto } from "@/features/journal/stores/journal";
 import { formatLocalDateStr } from "@/features/journal/utils/journalDate";
 import { mergeTagifyListIntoCategoryMap } from "@/shared/utils/tagifyHelper";
 import { requireApiPathSegment } from "@/shared/utils/appPath";
@@ -840,6 +840,60 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     entryRegistModel.value = null;
   }
 
+  // ---- 엔트리 읽기 전용 뷰 모달 (채팅 RAG 원문 등) ----
+
+  /** 엔트리 읽기 전용 모달 오픈 여부 */
+  const entryViewOpen = ref(false);
+  /** 엔트리 읽기 전용 로딩 여부 */
+  const entryViewLoading = ref(false);
+  /** 엔트리 읽기 전용 표시 모델 */
+  const entryViewModel = ref<JournalEntryDto | null>(null);
+
+  /**
+   * 엔트리 읽기 전용 모달을 연다. 수정 폼이 아니라 목록과 동일한 markdownContent 본문을 보여 준다.
+   * @param id - 엔트리 ID
+   */
+  async function openEntryView(id: number) {
+    if (!await assertAuthenticatedBeforeModal()) return;
+    closeEntryRegist();
+    entryViewOpen.value = true;
+    entryViewLoading.value = true;
+    entryViewModel.value = null;
+    try {
+      const res = await axios.get(`/api/journal/entry/${id}`);
+      const entry = res.data?.rsltObj as JournalEntryDto | undefined;
+      if (!entry) {
+        entryViewOpen.value = false;
+        return;
+      }
+      entryViewModel.value = entry;
+    } catch (e: unknown) {
+      console.error("[journalModal] openEntryView failed", { entryId: id }, e);
+      entryViewModel.value = null;
+      entryViewOpen.value = false;
+      void swalRequestError(e, t("journal.entry.view.load.failure"));
+    } finally {
+      entryViewLoading.value = false;
+    }
+  }
+
+  /** 엔트리 읽기 전용 모달을 닫는다. */
+  function closeEntryView() {
+    entryViewOpen.value = false;
+    entryViewModel.value = null;
+  }
+
+  /**
+   * 읽기 전용 모달에서 수정 모달로 전환한다.
+   * 뷰를 닫은 뒤 기존 openEntryModify 경로를 재사용한다.
+   */
+  async function openEntryModifyFromView() {
+    const id = entryViewModel.value?.id;
+    closeEntryView();
+    if (id == null) return;
+    await openEntryModify(id);
+  }
+
   /**
    * 저장 성공 응답 rsltMap 으로 앱 세션 categoryMap 을 교체한다.
    * 변경 전: Tagify JSON 병합만(삭제 미반영).
@@ -936,6 +990,13 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     openDreamEntryRegist,
     openEntryModify,
     closeEntryRegist,
+    // 엔트리 읽기 전용
+    entryViewOpen,
+    entryViewLoading,
+    entryViewModel,
+    openEntryView,
+    closeEntryView,
+    openEntryModifyFromView,
     preloadAllCategoryMaps,
     syncAllCategoryMaps,
     applyCategoryMapsFromSaveResponse,

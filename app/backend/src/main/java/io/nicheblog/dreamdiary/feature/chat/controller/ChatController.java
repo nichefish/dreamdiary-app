@@ -146,6 +146,27 @@ public class ChatController {
     }
 
     /**
+     * 채팅 세션 제목을 수정한다.
+     *
+     * @param sessionId 수정할 채팅 세션 ID
+     * @param sessionDto 새 제목이 담긴 요청 본문
+     * @return 갱신된 채팅 세션을 담은 Ajax 응답
+     */
+    @PatchMapping("/chat/sessions/{sessionId}")
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> renameChatSession(
+            final @PathVariable("sessionId") Integer sessionId,
+            final @RequestBody ChatSessionDto sessionDto
+    ) {
+        final ChatSessionDto updated = chatSessionService.updateTitle(
+                sessionId,
+                sessionDto == null ? null : sessionDto.getTitle()
+        );
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(updated));
+    }
+
+    /**
      * 세션의 채팅 메시지를 DB에서 가져온다.
      * 변경 전: {@code GET /chat/messages}가 검색 파라미터만으로 기존 채팅 메시지를 DB에서 가져왔다.
      * 변경 후: 세션 소유권을 먼저 검증하는 이 경로만 메시지 이력을 제공한다.

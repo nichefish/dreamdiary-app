@@ -23,7 +23,7 @@ It must help the user continue thinking with their own journal data, but it must
 | --- | --- | --- |
 | WebSocket endpoint | `ChatController` | STOMP send/cancel handling |
 | Chat orchestration | `ChatAIService` | Save user message, build context, call LLM, save/broadcast assistant message |
-| Session management | `ChatSessionService` | Session ownership, default prompt, last-message timestamp/title |
+| Session management | `ChatSessionService` | Session ownership, default prompt, last-message timestamp/title, manual title rename (`PATCH /chat/sessions/{id}`) |
 | Message history | `ChatMessageService` | Recent context messages |
 | LLM client | `OllamaClient` | Ollama chat and embedding API calls |
 | Ollama settings | `OllamaProperties` | `app.ollama.*` base URL and model names (`application.yml`, profile overrides) |
@@ -76,6 +76,7 @@ User message
   -> ChatAIService.processChat()
   -> save USER chat_message
   -> broadcast USER message
+  -> broadcast PROGRESS phase=SEARCHING
   -> build RAG context from journal_entry_embedding
       -> classify RagIntent
       -> keyword search for names/tags/proper nouns
@@ -83,16 +84,44 @@ User message
       -> return RagSearchResult metadata
       -> merge keyword results first, vector results second by journalEntryId
       -> log selected source IDs, match types, scores, tokens, and snippets
+  -> broadcast PROGRESS phase=GENERATING
   -> build guarded system prompt
-  -> OllamaClient.chat(systemPrompt, recentContextMessages)
-  -> language guard validation (Accept-Language / LocaleContextHolder)
-      -> ko: if Chinese/Han script is detected, retry once with stricter Korean-only prompt
-      -> en: if excessive Hangul or Han script is detected, retry once with English-only prompt
+  -> main LLM path: OllamaClient.chatStream(...) broadcasts DELTA chunks on the same session topic
+      -> hybrid / person-retry / language-guard retry still use non-streaming OllamaClient.chat(...)
+  -> language guard validation (Accept-Language / LocaleContextHolder) on the completed text
+      -> ko: if Chinese/Han script is detected, retry once with stricter Korean-only prompt (non-stream)
+      -> en: if excessive Hangul or Han script is detected, retry once with English-only prompt (non-stream)
       -> if retry still violates guard, replace with locale catalog fallback (`chat.ai.language-fallback.*`)
-  -> strip markdown symbols
+  -> strip leftover internal RAG citations ([N] / [N] 기록); keep markdown symbols in stored content
   -> save ASSISTANT chat_message with RAG source metadataJson
-  -> broadcast ASSISTANT message
+  -> mapstruct sets markdownContent via MarkdownUtils.renderChatMarkdown(content)
+  -> broadcast ASSISTANT message (client replaces the temporary streaming bubble with the final message)
 ```
+
+### Progress Events
+
+While `processChat` runs, the server may broadcast non-message progress payloads on the same session topic:
+
+```json
+{ "rslt": true, "rsltObj": { "type": "PROGRESS", "sessionId": 1, "phase": "SEARCHING" } }
+```
+
+Phases:
+
+| Phase | When |
+| --- | --- |
+| `SEARCHING` | Immediately before RAG context build |
+| `GENERATING` | After RAG context is ready, before LLM / hybrid response generation |
+
+Clients must not append progress payloads to the message list. The chat drawer shows the phase next to the typing indicator (`chat.waiting.searching` / `chat.waiting.generating`) and clears it when the assistant message arrives or the user cancels.
+
+While `GENERATING` runs on the **main LLM path**, the server may also broadcast token/chunk deltas:
+
+```json
+{ "rslt": true, "rsltObj": { "type": "DELTA", "sessionId": 1, "delta": "..." } }
+```
+
+Clients accumulate `delta` into a temporary assistant bubble (`streamingContent`) and must not push DELTA events into `messages`. When the final ASSISTANT message arrives (or the user cancels / switches session), the temporary bubble is cleared. Hybrid and retry paths do not emit DELTA.
 
 ## i18n (server chat responses)
 
@@ -161,11 +190,13 @@ Current constants:
 
 | Constant | Value | Meaning |
 | --- | --- | --- |
-| `RAG_TOP_K` | `5` | Maximum records for `LOOKUP` |
-| `RAG_SUMMARY_TOP_K` | `12` | Maximum records for `SUMMARY` |
-| `RAG_SYNTHESIS_TOP_K` | `25` | Maximum records for `SYNTHESIS` |
-| `RAG_MIN_SCORE` | `0.35` | Minimum weighted vector similarity for `LOOKUP`/`SUMMARY` |
-| `RAG_SYNTHESIS_MIN_SCORE` | `0.25` | Wider vector threshold for `SYNTHESIS` |
+| `RAG_TOP_K` (admin `chat_setting.rag_top_k`) | default `5` | Maximum records for `LOOKUP` (ADMIN GLOBAL; `PATCH /admin/chat/settings`) |
+| `RAG_SUMMARY_TOP_K` (admin `chat_setting.rag_summary_top_k`) | default `12` | Maximum records for `SUMMARY` |
+| `RAG_SYNTHESIS_TOP_K` (admin `chat_setting.rag_synthesis_top_k`) | default `25` | Maximum records for non-stance `SYNTHESIS` |
+| `PERSON_STANCE_RAG_TOP_K` (admin `chat_setting.rag_stance_top_k`) | default `50` | Maximum records for person-stance (attitude) retrieval |
+| `RAG_MIN_SCORE` (admin `chat_setting.rag_min_score`) | default `0.35` | Minimum weighted vector similarity for `LOOKUP`/`SUMMARY` |
+| `RAG_SYNTHESIS_MIN_SCORE` (admin `chat_setting.rag_synthesis_min_score`) | default `0.25` | Wider vector threshold for `SYNTHESIS` |
+| `rag_enabled` (admin) | default `true` | When false, `buildRagContext` returns empty and chat continues without journal RAG |
 | `RAG_TEXT_MAX_LENGTH` | `300` | Max characters per retrieved record |
 | `RAG_SYNTHESIS_TEXT_MAX_LENGTH` | `220` | Max snippet characters per synthesis source |
 | `RAG_PERSON_FOCUS_SNIPPET_MAX_LENGTH` | `400` | Max snippet characters for person-focused synthesis sources |
@@ -327,7 +358,14 @@ Shape:
 
 This metadata is available through the existing chat message DTO and WebSocket payload.
 
-The current chat drawer UI renders `personFocus` inside the existing RAG details block as a compact human-readable summary string. It still does not expose raw `ragSources`/`personFocus` JSON as a separate structured inspector.
+The chat drawer (`AppChat.vue`) renders a collapsible RAG details block under each assistant message when `metadataJson` carries RAG evidence:
+
+- summary chip: `ragSourceCount`, `ragIntent`, optional `responseMode` / guard detail
+- sections: `personFocus` (compact human-readable string), tag summary, tag pairs, timeline
+- `ragSources` list: date, content kind, match type, score, tags, snippet (default first 5; expandable via “+N more”)
+- each source row with `journalEntryId` opens read-only `JournalEntryViewModal` via `journalModal.openEntryView(id)` (global mount on non-popup routes in `App.vue`; optional Edit switches to `JournalEntryRegistModal`)
+
+It still does not expose raw `ragSources`/`personFocus` JSON as a separate structured inspector.
 
 `personFocus` is optional. It is present only when a synthesis question is recognized as a person-meaning question and the entity catalog resolves a matching `PERSON` row or the prompt aid still has matched RAG sources to prioritize.
 
@@ -343,7 +381,16 @@ Modes:
 | `SUMMARY` | Summarize a set of records | wider top-K, compact source lines |
 | `SYNTHESIS` | Interpret patterns, meanings, symbols, emotional arcs, whole context | widest top-K, lower vector threshold, compact source lines |
 
-First-pass intent detection is heuristic-based. Words such as `의미`, `통섭`, `상징`, `패턴`, `흐름`, `반복`, `변화`, `전체 맥락`, `해석`, `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, and `어떤 느낌` trigger `SYNTHESIS`.
+First-pass intent detection lives in `RagIntentClassifier` (pure rules; `ChatAIService#detectRagIntent` only supplies the person-about flag). Priority order:
+
+1. Person-about lookup (`isPersonAboutLookupQuery`) → `SYNTHESIS`
+2. Explicit search cues (`찾아줘`, `검색해`, `어디에 있`, …) → `LOOKUP` (beats synthesis/summary keywords)
+3. Synthesis cues (`의미`, `통섭`, `엮`, `상징`, `패턴`, `흐름`, `반복`, `변화`, `전체 맥락`, `해석`, `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, `어떤 느낌`, `어떻게 느끼`, `느끼고`, …) → `SYNTHESIS`
+4. Summary verbs (`요약`, `정리`, `모아`, `묶어`, `전체적으로`, `한번에`, `돌아봐`) → `SUMMARY`
+5. `최근` alone is **not** `SUMMARY`; `최근` + a summary companion (`요약`/`정리`/`흐름`/`패턴`/…) → `SUMMARY`
+6. Else → `LOOKUP`
+
+When the first-pass heuristic sees **both** SUMMARY and SYNTHESIS cues (and no LOOKUP-force cue), `ChatAIService#detectRagIntent` runs an **ambiguity-gated LLM second pass**: one non-streaming Ollama call with `chat.ai.prompt.intent-classify` that must answer `LOOKUP` / `SUMMARY` / `SYNTHESIS` only. Parse failure or Ollama error falls back to the heuristic label. Person-about and LOOKUP-force paths never call the second pass.
 
 Person-meaning hint detection (`isPersonMeaningQuery`) also treats `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, and `어떤 느낌` as person-centric synthesis signals. Example: `나는 민수님을 어떻게 생각하고 있니?` must route to `SYNTHESIS` + person-meaning tag-only retrieval, not `LOOKUP`.
 
@@ -495,7 +542,7 @@ The assistant response must follow these rules even if the session prompt is wea
 6. Keep the answer conversational and useful, not defensive.
 7. Do not assign a real-world relationship role to a person unless that role is directly present in retrieved records.
 8. For person/symbol meaning questions, separate confirmed appearance context, repeated axes, emotional function, and uncertain points.
-9. Do not expose RAG internal record indexes such as `[1]`, `[2]` in the saved assistant text. Cite by date, scene, or tag instead. The server strips leftover `[N]` / `[N] 기록` patterns after markdown removal.
+9. Do not expose RAG internal record indexes such as `[1]`, `[2]` in the saved assistant text. Cite by date, scene, or tag instead. The server strips leftover `[N]` / `[N] 기록` patterns before save; markdown symbols are kept so the chat drawer can render limited HTML via `markdownContent`.
 
 
 ### Person-Meaning Response Guard
@@ -531,6 +578,8 @@ Current behavior:
 ```
 
 This prevents a bad stored assistant message from contaminating later responses in the same session.
+
+Retry prompt text comes from locale catalog key `chat.ai.guard.language-retry` via `languageRetryPrompt()`. Deterministic fallbacks use `chat.ai.language-fallback.*` via `buildLanguageFallback(...)`. Regression coverage: `ChatAIServiceTest` language-guard methods.
 
 ## Bad Response Guardrail
 
@@ -587,24 +636,26 @@ The vector cache may contain many users' records, but `JournalEntryEmbeddingSear
 | Vector cache empty | Continue chat without RAG context |
 | No result above threshold | Continue chat without RAG context |
 | Ollama chat API fails | Surface chat error to client |
-| User cancels response | Do not save or broadcast assistant response after cancellation flag is set |
+| User cancels response | Set cancel flag; main-path stream reader stops and skips save/final broadcast. Non-stream hybrid/retry waits for HTTP completion then skips save |
 | LLM response mixes Chinese/Han script | Retry once; if still invalid, save Korean fallback |
 
 ## Current Limitations
 
-- RAG result score is carried by `RagSearchResult` and persisted to message metadata, but not yet exposed in UI.
-- RAG source snippets are persisted to message metadata, but not shown to the user.
+- Chat UI exposes RAG score/snippet/source rows from `metadataJson` (collapsible details; default preview 5 sources with expand).
+- Source rows deep-link to read-only `JournalEntryViewModal` (markdownContent HTML, same as list). Edit is optional via the view modal footer.
+- Assistant bubbles render limited markdown HTML from `ChatMessageDto.markdownContent` (`MarkdownUtils.renderChatMarkdown`). USER bubbles stay plain text. Stored `content` remains plain markdown (not stripped).
+- Empty sessions show catalog seed prompts (`chat.empty.seed.1`..`4`) under `chat.empty.prompt`. Clicking a seed sends it immediately via `chat.sendMessage` (not personalized / not RAG-derived).
+- Session chip titles can be renamed with double-click inline edit (`PATCH /chat/sessions/{id}`). Manual titles are not overwritten by first-message auto-title (`DEFAULT_TITLE` only).
+- Main-path assistant generation streams via Ollama NDJSON (`chatStream`) and WS `DELTA` events; hybrid/retry/language-guard retry remain non-streaming. Final saved text still passes language/person guards before persist.
 - Per-message logs include query length, merged RAG counts, source IDs, match types, scores, tokens, and compact snippets.
-- Similarity thresholds and top-K values are hard-coded.
+- LOOKUP/SUMMARY/SYNTHESIS/stance top-K, LOOKUP-SUMMARY min-score, SYNTHESIS min-score, and `rag_enabled` are admin-configurable via `chat_setting` (`GET`/`PATCH /admin/chat/settings`, Admin AI tab). Code constants remain defaults only.
 - Existing chat sessions may contain older weak `systemPrompt`; response guard rules are appended at runtime to compensate.
 - Han-script detection may also catch legitimate Korean Hanja usage; this is intentional for now because the chat UX should be Korean Hangul-first.
 - Keyword extraction is heuristic-based and Korean-particle aware, not a full morphological analyzer.
-- `personFocus.topRoles` is currently heuristic keyword matching around direct mention context, not a full relation extractor.
+- `personFocus.topRoles` comes from entity-catalog role rows (`journal_entry_entity_role`) produced by `JournalEntityRoleExtractor` (hardened keyword heuristics: noise cues like `조금`/`작업`/`처럼` removed; multi-hit confidence boost). Still not a full LLM relation extractor; roles refresh when the entity sync worker reprocesses entries.
 
 ## Next Candidates
 
-1. Add source preview toggle in chat UI using `chat_message.metadataJson`.
-2. Add an endpoint/link target to open a referenced journal entry from a chat source.
-3. Add admin setting for `RAG_TOP_K`, `RAG_MIN_SCORE`, and RAG on/off.
-4. Add a stronger classifier if heuristic `RagIntent` becomes too noisy.
-5. Add a small automated test for Korean-only guard prompt construction.
+1. _(shipped)_ SUMMARY/SYNTHESIS/STANCE-specific top-K and synthesis min-score are admin-configurable (`rag_summary_top_k`, `rag_synthesis_top_k`, `rag_stance_top_k`, `rag_synthesis_min_score`).
+2. _(shipped)_ Ambiguity-gated LLM second-pass when SUMMARY+SYNTHESIS cues overlap (`RagIntentClassifier#needsLlmSecondPass` + `chat.ai.prompt.intent-classify`); heuristic fallback on failure.
+3. _(shipped)_ Korean-only guard prompt construction covered by `ChatAIServiceTest` (`languageRetryPrompt_*`, `containsDisallowedHanScript_*`, `buildLanguageFallback_*`).

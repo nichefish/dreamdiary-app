@@ -40,6 +40,7 @@
 - 캐시 초기화 → `POST /api/cache/cache-evict` / `POST /api/cache-clear`
 - `AI 관리` 탭:
   - AI Embedding Backfill → `GET /api/admin/journal-entry-embeddings/stats`, `POST /api/admin/journal-entry-embeddings/sync`, `POST /api/admin/journal-entry-embeddings/requeue-failed`
+  - Chat RAG settings card → `GET`/`PATCH /admin/chat/settings` (`rag_enabled`, `rag_top_k`, `rag_min_score`, `rag_summary_top_k`, `rag_synthesis_top_k`, `rag_stance_top_k`, `rag_synthesis_min_score`); under Ollama health on AI tab.
   - Entity Queue Backfill → `GET /api/admin/journal-entry-entities/stats`, `POST /api/admin/journal-entry-entities/sync`, `POST /api/admin/journal-entry-entities/requeue-failed`
   - `GET /api/admin/ollama/health` 상태를 AI 관리 탭의 Embedding 섹션 상단에 표시한다.
   - AI 관리 탭의 새로고침 버튼은 embedding/entity stats를 다시 조회한다.

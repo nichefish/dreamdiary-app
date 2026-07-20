@@ -1,6 +1,12 @@
 <template>
   <RouterView />
   <AppChat v-if="authStore.isAuthenticated && !isPopup" />
+  <!--
+    Chat RAG source deep-link opens read-only entry view (and optional edit) on non-popup routes.
+    Popup routes keep their own JournalEntryRegistModal mount (AppChat is hidden there).
+  -->
+  <JournalEntryRegistModal v-if="authStore.isAuthenticated && !isPopup" />
+  <JournalEntryViewModal v-if="authStore.isAuthenticated && !isPopup" />
   <AppRuntimeStatus />
 </template>
 
@@ -9,6 +15,8 @@ import { computed, onErrorCaptured, onMounted, watchEffect } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import AppRuntimeStatus from "@/shared/components/system/AppRuntimeStatus.vue";
 import AppChat from "@/features/chat/AppChat.vue";
+import JournalEntryRegistModal from "@/features/journal/entry/modals/JournalEntryRegistModal.vue";
+import JournalEntryViewModal from "@/features/journal/entry/modals/JournalEntryViewModal.vue";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";
@@ -75,5 +83,21 @@ onErrorCaptured((error) => {
 
 #app {
   display: contents;
+}
+
+/*
+ * AppChat drawer uses z-index 6002 (above Metronic chrome).
+ * Bootstrap modals and SweetAlert confirmations default to ~1055/1060, so
+ * entry/detail modals opened from chat RAG sources and modal-scoped confirms
+ * would render under the drawer or the active modal without this raise.
+ */
+body.modal-open .modal {
+  z-index: 6100;
+}
+body.modal-open .modal-backdrop {
+  z-index: 6090;
+}
+body.modal-open .swal2-container {
+  z-index: 6110;
 }
 </style>

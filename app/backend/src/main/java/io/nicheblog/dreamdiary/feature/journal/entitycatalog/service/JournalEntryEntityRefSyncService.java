@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
  * Syncs direct person mentions from journal entries into the normalized entity catalog.
  *
  * <p>This first phase intentionally stays heuristic and person-only. The schema is
- * entity-oriented, but extraction currently opens {@code PERSON} direct mentions only.</p>
+ * entity-oriented, but extraction currently opens {@code PERSON} direct mentions only.
+ * Role axes are delegated to {@link JournalEntityRoleExtractor}.</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -316,60 +317,22 @@ public class JournalEntryEntityRefSyncService {
 
     /**
      * Extract a narrow set of first-phase roles from one mention context.
+     *
+     * <p>규칙 본문은 {@link JournalEntityRoleExtractor}에 위임한다.
+     * UNKNOWN만 남을 때는 mention evidence를 근거로 보강한다.</p>
      */
     private List<ExtractedEntityRole> extractEntityRoles(final ExtractedPersonMention mention) {
-        final String roleContext = StringUtils.defaultString(mention.roleContextSnippet());
-        final String normalizedContext = StringUtils.lowerCase(roleContext);
-        final Map<JournalEntityRoleType, ExtractedEntityRole> roleMap = new LinkedHashMap<>();
-
-        collectRole(roleMap, normalizedContext, JournalEntityRoleType.COLLABORATION, 0.84D,
-                "\uD568\uAED8", "\uAC19\uC774", "\uD611\uC5C5", "\uC791\uC5C5", "\uB3C4\uC640", "\uB3C4\uC640\uC92C", "\uC774\uC57C\uAE30");
-        collectRole(roleMap, normalizedContext, JournalEntityRoleType.TENSION, 0.82D,
-                "\uAE34\uC7A5", "\uBD88\uC548", "\uBD80\uB2F4", "\uB208\uCE58", "\uC870\uAE08", "\uB5A8\uB9BC");
-        collectRole(roleMap, normalizedContext, JournalEntityRoleType.EVALUATION, 0.83D,
-                "\uD3C9\uAC00", "\uC778\uC815", "\uBE44\uAD50", "\uAC80\uC99D", "\uC798\uD574", "\uC798\uD588", "\uCCAD\uC911");
-        collectRole(roleMap, normalizedContext, JournalEntityRoleType.CARE, 0.8D,
-                "\uC704\uB85C", "\uB3CC\uBD04", "\uCC59\uACA8", "\uC5FC\uB824", "\uB2EC\uB798", "\uBCF4\uC0B4");
-        collectRole(roleMap, normalizedContext, JournalEntityRoleType.CONFLICT, 0.86D,
-                "\uC2F8\uC6C0", "\uB2E4\uD23C", "\uAC08\uB4F1", "\uD654\uB0A8", "\uBD84\uB178", "\uBBF8\uC6C0");
-        collectRole(roleMap, normalizedContext, JournalEntityRoleType.DESIRE, 0.79D,
-                "\uC6D0\uD588", "\uBC14\uB78C", "\uAC00\uAE4C\uC6CC", "\uB2FF\uACE0", "\uADF8\uB9AC\uC6C0", "\uB3D9\uACBD");
-        collectRole(roleMap, normalizedContext, JournalEntityRoleType.SYMBOLIC_FIGURE, 0.77D,
-                "\uC0C1\uC9D5", "\uCC98\uB7FC", "\uB300\uC2E0", "\uBC18\uBCF5", "\uADF8 \uC0AC\uB78C", "\uB290\uB08C\uC73C\uB85C");
-
-        if (roleMap.isEmpty()) {
-            roleMap.put(
-                    JournalEntityRoleType.UNKNOWN,
-                    new ExtractedEntityRole(
-                            JournalEntityRoleType.UNKNOWN,
-                            StringUtils.defaultIfBlank(mention.evidenceSnippet(), mention.roleContextSnippet()),
-                            0.35D
-                    )
-            );
+        final List<JournalEntityRoleExtractor.ExtractedRole> extracted =
+                JournalEntityRoleExtractor.extract(mention == null ? null : mention.roleContextSnippet());
+        final List<ExtractedEntityRole> roles = new ArrayList<>(extracted.size());
+        for (final JournalEntityRoleExtractor.ExtractedRole role : extracted) {
+            String evidence = role.evidenceSnippet();
+            if (role.roleType() == JournalEntityRoleType.UNKNOWN && mention != null) {
+                evidence = StringUtils.defaultIfBlank(mention.evidenceSnippet(), mention.roleContextSnippet());
+            }
+            roles.add(new ExtractedEntityRole(role.roleType(), evidence, role.confidence()));
         }
-
-        return new ArrayList<>(roleMap.values());
-    }
-
-    /**
-     * Collect one role when any heuristic keyword appears in the local mention context.
-     */
-    private void collectRole(
-            final Map<JournalEntityRoleType, ExtractedEntityRole> roleMap,
-            final String normalizedContext,
-            final JournalEntityRoleType roleType,
-            final Double confidence,
-            final String... keywords
-    ) {
-        if (roleMap.containsKey(roleType) || StringUtils.isBlank(normalizedContext) || keywords == null) return;
-
-        for (final String keyword : keywords) {
-            if (StringUtils.isBlank(keyword)) continue;
-            if (!StringUtils.contains(normalizedContext, StringUtils.lowerCase(keyword))) continue;
-
-            roleMap.put(roleType, new ExtractedEntityRole(roleType, normalizedContext, confidence));
-            return;
-        }
+        return roles;
     }
 
     /**

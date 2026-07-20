@@ -522,13 +522,31 @@ async function copyChapter(): Promise<void> {
 
 레거시 `journal_entry_search_module.ts` 의 멀티키워드·멀티태그 AND 검색을 Vue SPA 로 재현.
 
-**컨트롤 바 (1행)**: 고급 필터 토글 | 초기화 | 정렬 토글(asc/desc) | 검색 || 전체 복사 | TXT 내보내기 | 키워드 배지들 | 태그 배지들 | 결과 건수
+**컨트롤 바 (1행)**: 고급 필터 토글 | 초기화 | 정렬 토글(asc/desc) | 검색 || 전체 복사 | TXT 내보내기 | 키워드 배지들 | 태그 배지들 | 조건 요약(유형/정렬/키워드 수/태그 수) | 결과 상태 라벨 | 결과 건수
 
-**고급 필터 아코디언**: 유형 토글(일기/꿈) + 키워드 입력 + 추가 버튼 + 태그 입력 + 추가 버튼. `v-show` 로 토글.
+**고급 필터 아코디언**: 유형 토글(일기/꿈) + 키워드 입력 + 추가 버튼 + 태그 입력 + 추가 버튼. 키워드/태그 입력은 Enter 로 조건 추가가 가능함을 현재 locale 힌트와 title로 안내한다. `v-show` 로 토글.
 
-**멀티키워드 AND 검색**: 키워드는 `searchKeywords[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 키워드 제거 후 URL replace → 자동 재조회.
+**멀티키워드 AND 검색**: 키워드는 `searchKeywords[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 키워드 제거 후 URL replace → 자동 재조회. 키워드 배지는 제거 tooltip을 제공한다.
 
-**멀티태그 AND 검색**: 태그는 `tagIds[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 태그 제거. 팝업 고급 필터에서 태그를 직접 입력할 때는 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 조회해 자동완성 후보를 제공하고, 태그명+카테고리로 특정 태그 ID를 확정한 뒤 `tagIds[]`에 추가한다. 같은 이름에 여러 카테고리가 있으면 카테고리 선택 버튼을 먼저 표시한다.
+**키워드 하이라이트**: 검색 팝업은 URL `searchKeywords[]`를 `JournalEntryItem.highlightKeywords`로 전달해 엔트리 본문 `markdownContent`의 일치 텍스트를 표시한다. 하이라이트는 검색 화면 전용 표시 보조이며 검색 조건, 복사/TXT 내보내기 본문, 월간/주간/챕터 화면 렌더를 변경하지 않는다.
+
+**멀티태그 AND 검색**: 태그는 `tagIds[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 태그 제거. 태그 배지는 제거 tooltip을 제공한다. 팝업 고급 필터에서 태그를 직접 입력할 때는 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 조회해 자동완성 후보를 제공하고, 태그명+카테고리로 특정 태그 ID를 확정한 뒤 `tagIds[]`에 추가한다. 같은 이름에 여러 카테고리가 있으면 카테고리 선택 버튼을 먼저 표시하고, 선택 또는 취소 전까지 태그 입력과 추가 버튼을 잠가 카테고리 선택 대기 상태를 명확히 한다.
+
+**검색 전/빈 결과/실패 상태**: `searchKeywords[]`와 `tagIds[]`가 모두 비어 있으면 `type`만으로 `GET /api/journal/entries`를 호출하지 않고 검색 전 안내를 표시한다. 검색 전 안내에는 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 추가 CTA를 제공한다. 검색 결과가 0건이면 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 수정 CTA를 제공한다. 초기화는 조건·결과·오류 상태를 비우고 검색 전 상태로 돌아간다. 검색 실패 시 기존 결과 배열과 결과 건수를 비우지 않고 inline 오류 안내를 표시해 실제 0건과 조회 실패를 구분한다.
+
+**실행 전 입력 확정**: 검색, 전체 복사, TXT 내보내기는 키워드/태그 입력칸에 남아 있는 값을 먼저 URL 검색 조건으로 확정한 뒤 실행한다. 태그명이 여러 카테고리에 걸쳐 있으면 카테고리 선택이 완료될 때까지 검색·복사·내보내기 실행을 보류한다. 이미 추가된 키워드/태그를 다시 입력하면 조건을 조용히 무시하지 않고 locale 메시지로 중복 상태를 안내한다.
+
+**route 동기화 입력 초기화**: route query가 로컬 검색 조건으로 동기화될 때 확정 전 키워드/태그 입력과 태그 카테고리 선택 대기 상태를 비운다. URL 검색 조건(`searchKeywords[]`, `tagIds[]`)과 표시용 태그명 캐시는 유지한다.
+
+**액션 잠금**: 검색 조회 중이거나 복사/TXT 내보내기 실행 중이면 검색·정렬·초기화·복사·TXT 내보내기 버튼을 비활성화해 중복 실행을 막는다. 복사 버튼은 현재 결과가 있거나 입력칸에 확정 전 조건이 남아 있을 때만 활성화한다. TXT 내보내기 버튼은 URL 검색 조건이 있거나 입력칸에 확정 전 조건이 남아 있을 때만 활성화한다.
+
+**조건 변경 피드백**: 키워드/태그 배지 제거, 정렬 변경, 유형 변경은 URL query를 갱신하면서 결과 상태 라벨에 변경 사유를 표시한다. 새 조회가 진행 중이고 직전 결과가 남아 있으면 결과 목록을 비우지 않고 유지하며, 목록 위와 결과 상태 라벨에 갱신 중임을 표시한다. 조회 성공 후에는 변경 사유 라벨을 지우고 현재 조건 기준 라벨로 돌아간다.
+
+**결과 읽기 보조**: 날짜 헤더는 해당 날짜에 묶인 현재 검색 결과 건수를 locale 라벨로 함께 표시한다. 건수는 현재 `entries` 배열 기준으로 계산하며, 검색 조건·정렬·locale 변경 외의 별도 상태를 만들지 않는다.
+
+**결과 요약 바**: 결과 목록 위에는 현재 `entries` 배열 기준 총 건수, 고유 기준일 수, 고유 연월 수를 locale 라벨로 표시한다. 검색 전/빈 결과 상태에서는 별도 요약 바를 표시하지 않는다.
+
+**확정 전 입력 안내**: 키워드/태그 입력칸에 값이 남아 있으면 `hasPendingSearchInputs` 기준으로 고급 필터 영역에 검색 실행 시 현재 입력값도 조건에 포함된다는 locale 안내를 표시한다. 안내는 URL query, 검색 실행 순서, 입력값 확정 규칙을 변경하지 않는다.
 
 **태그 컨텍스트 메뉴에서 태그 추가** (`JournalTagContextMenu.vue`):
 - 팝업 외부: 새 창 열기 (`tagIds` 파라미터)
@@ -536,9 +554,9 @@ async function copyChapter(): Promise<void> {
 
 **TXT 내보내기**: `GET /api/journal/entries/export?type=...&sort=...&tagIds=...&searchKeywords=...`
 
-**전체 복사 포맷**: 레거시 `JournalEntrySearch.copy()` 동일 — 날짜가 바뀔 때만 `날짜(요일)` 헤더, `#순번\n본문`, 엔트리 간 빈 줄, `\r\n` 줄바꿈. 요일은 현재 locale의 공용 요일 카탈로그를 사용한다.
+**전체 복사 포맷**: 레거시 `JournalEntrySearch.copy()` 동일 — 날짜가 바뀔 때만 `날짜(요일)` 헤더, `#순번\n본문`, 엔트리 간 빈 줄, `\r\n` 줄바꿈. 요일은 현재 locale의 공용 요일 카탈로그를 사용한다. 확정 전 입력값을 URL 검색 조건으로 반영하고 재조회한 뒤 복사한 경우 성공 알림은 조건 반영 후 복사임을 구분한다.
 
-**액션 메시지 i18n**: 검색 결과/엔트리 상세 조회 실패, 태그 선택·검색 조건 검증, 복사 대상 없음과 복사 성공/실패 알림은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색·복사 실행과 클립보드/TXT 본문 포맷을 변경하지 않는다.
+**액션 메시지 i18n**: 검색 결과/엔트리 상세 조회 실패, 태그 선택·검색 조건 검증, 검색 전 안내와 조건 추가 CTA, 빈 결과 조건 수정 CTA, 조건 요약과 결과 상태 라벨, 결과 요약, 날짜별 결과 건수, 입력 힌트, 확정 전 입력 안내, 배지 제거 tooltip, 카테고리 선택 대기 안내, 중복 조건 안내, 복사 대상 없음과 복사 성공/실패 알림은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색·복사 실행과 클립보드/TXT 본문 포맷을 변경하지 않는다.
 
 ---
 
@@ -559,6 +577,35 @@ async function copyChapter(): Promise<void> {
 const isPopup = computed(() => ["journal-entry-search", "journal-daily"].includes(String(route.name)));
 // template: <AppChat v-if="authStore.isAuthenticated && !isPopup" />
 ```
+
+### AI 챗 세션 제목 편집 (`AppChat.vue`, `chat.ts`)
+
+세션 칩 제목을 더블클릭하면 인라인 input으로 전환된다. Enter/블러 시 `PATCH /chat/sessions/{id}` `{ title }`로 저장하고, Esc는 취소한다. 비어 있는 제목은 저장하지 않고 `chat.session.rename.empty`를 표시한다. 수동 제목은 서버 `DEFAULT_TITLE`(`새 대화`) 자동 축약 대상에서 빼지며, 클라이언트 `bumpActiveSession`도 `새 대화`/`New chat`일 때만 자동 제목을 동기화한다.
+
+### AI 챗 빈 세션 시드 질문 (`AppChat.vue`)
+
+메시지가 없을 때 empty state에 `chat.empty.prompt`와 함께 `chat.empty.seed.1`..`4` 칩을 표시한다. 칩 클릭은 composer에 넣지 않고 `chat.sendMessage(seedText)`로 즉시 전송한다. 응답 대기 중(`isWaitingResponse`) 시드는 비활성화된다. 시드 문구는 카탈로그 고정값이며 개인화/개인 기록 기반 추천이 아니다.
+
+### AI 챗 assistant 마크다운 렌더 (`AppChat.vue`)
+
+assistant 메시지는 서버가 저장한 평문 `content`(마크다운 기호 유지)를 `MarkdownUtils.renderChatMarkdown`으로 HTML화한 `markdownContent`를 버블에 `v-html`로 표시한다. USER·기타 역할은 평문 `content`만 표시한다. `markdownContent`가 없거나 `-`인 구 메시지는 content를 escape한 뒤 `<p>`/`<br>`로 폴백한다.
+
+### AI 챗 응답 스트리밍 (`AppChat.vue`, `chat.ts`)
+
+`ChatAIService` 본경로(LLM) 생성은 `OllamaClient.chatStream`으로 NDJSON을 읽으며 같은 `/topic/chat/session/{id}`에 `rsltObj.type=DELTA` (`delta` 청크)를 브로드캐스트한다. 클라이언트는 `streamingContent`에 누적해 임시 assistant 버블(평문)로 보이고, 메시지 목록에는 넣지 않는다. 완성 ASSISTANT 메시지·취소·세션 전환 시 `streamingContent`를 비운다. hybrid/retry·language-guard 재시도는 비스트림이며 DELTA를 보내지 않는다. 스트림 중 버블은 마크다운 HTML이 아니라 평문이며, 완성 메시지만 `markdownContent` `v-html`을 쓰는다.
+
+### AI 챗 응답 대기 단계 (`AppChat.vue`, `chat.ts`)
+
+`ChatAIService.processChat`은 USER 메시지 broadcast 이후 같은 `/topic/chat/session/{id}`로 `rsltObj.type=PROGRESS` 이벤트를 보낸다 (`phase=SEARCHING` → RAG, `phase=GENERATING` → LLM/하이브리드). 클라이언트는 메시지 목록에 넣지 않고 `responsePhase`만 갱신하며, typing 인디케이터 옆에 `chat.waiting.searching` / `chat.waiting.generating`을 표시한다. ASSISTANT 메시지 수신·취소·세션 전환·연결 오류 시 phase를 비운다.
+
+### AI 챗 RAG 근거 → 원문 열기 (`AppChat.vue`)
+
+assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalModalStore().openEntryView(journalEntryId)`로 읽기 전용 엔트리 모달(`JournalEntryViewModal`)을 연다. 본문은 목록과 동일하게 `markdownContent` HTML(`journal-content`)을 표시한다. footer **편집**은 `openEntryModifyFromView`로 기존 `JournalEntryRegistModal`로 전환한다.
+
+- 모달 마운트: 비팝업 인증 라우트에서는 `App.vue`가 `JournalEntryViewModal`과 `JournalEntryRegistModal`을 전역 마운트한다 (`JournalDayLayout`에서는 등록/수정 모달 중복 마운트하지 않음).
+- 팝업 라우트(`journal-entry-search`, `journal-daily`)는 각자 레이아웃/페이지에 등록/수정 모달을 유지하고, `AppChat` 자체가 숨겨지므로 채팅 출처 딥링크 경로가 없다.
+- 채팅 드로어 z-index(6002)보다 모달이 위에 오도록 `App.vue`가 `body.modal-open`일 때 `.modal` / `.modal-backdrop` z-index를 6100 / 6090으로 올린다. 모달 내부 저장·삭제 확인 SweetAlert2 컨테이너는 활성 모달보다 위에 보여야 하므로 같은 조건에서 `.swal2-container` z-index를 6110으로 올린다.
+- 출처 목록은 기본 5건 미리보기이며, 숨은 건수가 있으면 `chat.rag.source.more`로 전체 펼친다.
 
 ### 팝업 직접 진입 세션 만료 처리 (`router/index.ts`, `sessionExpired.ts`)
 

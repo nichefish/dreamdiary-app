@@ -43,7 +43,20 @@ export interface ChatSession {
   createdAt?: string;
 }
 
+export interface ChatProgressEvent {
+  type: "PROGRESS";
+  sessionId: number;
+  phase: "SEARCHING" | "GENERATING";
+}
+
+export interface ChatDeltaEvent {
+  type: "DELTA";
+  sessionId: number;
+  delta: string;
+}
+
 export interface ChatMessage {
+
   id?: number;
   isCreatedBy?: boolean;
   title?: string;
@@ -103,6 +116,10 @@ export const useChatStore = defineStore("chat", () => {
   const isInitialized = ref(false);
   const isConnected = ref(false);
   const isWaitingResponse = ref(false);
+  /** AI 응답 진행 단계: SEARCHING | GENERATING | null */
+  const responsePhase = ref<"SEARCHING" | "GENERATING" | null>(null);
+  /** 본경로 스트리밍 중 임시 assistant 본문 (완성 메시지 도착 시 비움) */
+  const streamingContent = ref("");
   const isSessionLoading = ref(false);
   const isSettingSaving = ref(false);
   const lastError = ref("");
@@ -163,16 +180,52 @@ export const useChatStore = defineStore("chat", () => {
   function handleMessageFrame(body: string): void {
     if (!body) return;
 
-    const response = JSON.parse(body) as AjaxResponse<ChatMessage>;
-    const nextMessage = response.rsltObj;
-    if (!nextMessage || nextMessage.sessionId !== activeSessionId.value) return;
+    const response = JSON.parse(body) as AjaxResponse<
+      ChatMessage | ChatProgressEvent | ChatDeltaEvent
+    >;
+    const nextPayload = response.rsltObj;
+    if (!nextPayload || nextPayload.sessionId !== activeSessionId.value) return;
 
-    messages.value.push(nextMessage);
-    bumpActiveSession(nextMessage);
-
-    if (isAssistantMessage(nextMessage) || nextMessage.isCreatedBy === false) {
-      isWaitingResponse.value = false;
+    if (isProgressEvent(nextPayload)) {
+      if (isWaitingResponse.value) {
+        responsePhase.value = nextPayload.phase;
+      }
+      return;
     }
+
+    if (isDeltaEvent(nextPayload)) {
+      if (!isWaitingResponse.value) return;
+      streamingContent.value += nextPayload.delta || "";
+      if (responsePhase.value !== "GENERATING") {
+        responsePhase.value = "GENERATING";
+      }
+      return;
+    }
+
+    messages.value.push(nextPayload);
+    bumpActiveSession(nextPayload);
+
+    if (isAssistantMessage(nextPayload) || nextPayload.isCreatedBy === false) {
+      isWaitingResponse.value = false;
+      responsePhase.value = null;
+      streamingContent.value = "";
+    }
+  }
+
+  function isProgressEvent(
+    payload: ChatMessage | ChatProgressEvent | ChatDeltaEvent
+  ): payload is ChatProgressEvent {
+    return (
+      (payload as ChatProgressEvent).type === "PROGRESS" &&
+      ((payload as ChatProgressEvent).phase === "SEARCHING" ||
+        (payload as ChatProgressEvent).phase === "GENERATING")
+    );
+  }
+
+  function isDeltaEvent(
+    payload: ChatMessage | ChatProgressEvent | ChatDeltaEvent
+  ): payload is ChatDeltaEvent {
+    return (payload as ChatDeltaEvent).type === "DELTA";
   }
 
   function handleFrame(rawFrame: string): void {
@@ -199,6 +252,8 @@ export const useChatStore = defineStore("chat", () => {
     if (frame.command === "ERROR") {
       lastError.value = frame.body || "Chat connection error.";
       isWaitingResponse.value = false;
+      responsePhase.value = null;
+      streamingContent.value = "";
     }
   }
 
@@ -218,6 +273,8 @@ export const useChatStore = defineStore("chat", () => {
     socket.onerror = () => {
       lastError.value = "Unable to connect to chat server.";
       isWaitingResponse.value = false;
+      responsePhase.value = null;
+      streamingContent.value = "";
     };
     socket.onclose = () => {
       isConnected.value = false;
@@ -331,6 +388,8 @@ export const useChatStore = defineStore("chat", () => {
 
     activeSessionId.value = sessionId;
     isWaitingResponse.value = false;
+    responsePhase.value = null;
+    streamingContent.value = "";
     messages.value = [];
     subscribeToSession(sessionId);
     await fetchMessages(sessionId);
@@ -363,6 +422,16 @@ export const useChatStore = defineStore("chat", () => {
     await open();
   }
 
+
+/**
+ * 서버 기본 제목(`새 대화`) 및 레거시/카탈로그 `New chat`을 동일한 미설정 제목으로 본다.
+ * 수동 제목은 이 조건에 걸리지 않으므로 자동 축약으로 덮어쓰지 않는다.
+ */
+function isDefaultSessionTitle(title: string | undefined | null): boolean {
+  const value = (title || "").trim();
+  return !value || value === "New chat" || value === "새 대화";
+}
+
   function bumpActiveSession(message: ChatMessage): void {
     const session = sessions.value.find(
       (item) => item.id === activeSessionId.value
@@ -370,7 +439,7 @@ export const useChatStore = defineStore("chat", () => {
     if (!session) return;
 
     session.lastMessageAt = message.createdAt || session.lastMessageAt;
-    if ((!session.title || session.title === "New chat") && message.role === "USER") {
+    if (isDefaultSessionTitle(session.title) && message.role === "USER") {
       const compact = (message.content || "").replace(/\s+/g, " ").trim();
       session.title = compact.length > 28 ? `${compact.slice(0, 28)}...` : compact;
     }
@@ -389,6 +458,8 @@ export const useChatStore = defineStore("chat", () => {
     if (!activeSessionId.value) return;
 
     isWaitingResponse.value = true;
+    responsePhase.value = null;
+    streamingContent.value = "";
     const sent = sendFrame(
       "SEND",
       {
@@ -400,6 +471,8 @@ export const useChatStore = defineStore("chat", () => {
 
     if (!sent) {
       isWaitingResponse.value = false;
+      responsePhase.value = null;
+      streamingContent.value = "";
       lastError.value = "Chat connection is not ready yet.";
     }
   }
@@ -410,6 +483,8 @@ export const useChatStore = defineStore("chat", () => {
       destination: `/app/chat/session/${activeSessionId.value}/cancel`,
     });
     isWaitingResponse.value = false;
+    responsePhase.value = null;
+    streamingContent.value = "";
   }
 
   async function initialize(): Promise<void> {
@@ -426,6 +501,8 @@ export const useChatStore = defineStore("chat", () => {
     isOpen.value = false;
     isInitialized.value = false;
     isWaitingResponse.value = false;
+    responsePhase.value = null;
+    streamingContent.value = "";
     isSessionLoading.value = false;
     isSettingSaving.value = false;
     setting.value = { recentMessageLimit: DEFAULT_MEMORY_LIMIT };
@@ -434,11 +511,29 @@ export const useChatStore = defineStore("chat", () => {
     messages.value = [];
   }
 
+
+  async function renameSession(sessionId: number, title: string): Promise<ChatSession | null> {
+    const trimmed = title.trim();
+    if (!sessionId || !trimmed) return null;
+
+    const { data } = await axios.patch(`/chat/sessions/${sessionId}`, { title: trimmed });
+    const response = assertSuccess<ChatSession>(data);
+    const updated = response.rsltObj || null;
+    if (!updated) return null;
+
+    sessions.value = sessions.value.map((item) =>
+      item.id === sessionId ? { ...item, ...updated } : item
+    );
+    return updated;
+  }
+
   return {
     isOpen,
     isInitialized,
     isConnected,
     isWaitingResponse,
+    responsePhase,
+    streamingContent,
     isSessionLoading,
     isSettingSaving,
     lastError,
@@ -454,6 +549,7 @@ export const useChatStore = defineStore("chat", () => {
     selectSession,
     createSession,
     deleteSession,
+    renameSession,
     updateSetting,
     sendMessage,
     cancelMessage,

@@ -167,6 +167,28 @@ class MarkdownUtilsTest {
         assertTrue(result.contains("<p>A<br>B</p>"));
     }
 
+
+    @Test
+    @DisplayName("renderChatMarkdown escapes html then restores limited markdown")
+    void renderChatMarkdownEscapesHtmlThenRestoresLimitedMarkdown() {
+        final String result = MarkdownUtils.renderChatMarkdown(
+                "Hello <script>x</script>\n\n**bold** and `code`\n\n- one\n- two"
+        );
+
+        assertTrue(result.contains("<strong>bold</strong>"));
+        assertTrue(result.contains("<code class=\"chat-md-code\">code</code>"));
+        assertTrue(result.contains("<ul class=\"chat-md-ul\">"));
+        assertTrue(result.contains("&lt;script&gt;"));
+        assertFalse(result.contains("<script>"));
+    }
+
+    @Test
+    @DisplayName("renderChatMarkdown returns dash for empty input")
+    void renderChatMarkdownReturnsDashForEmptyInput() {
+        assertEquals("-", MarkdownUtils.renderChatMarkdown(""));
+        assertEquals("-", MarkdownUtils.renderChatMarkdown(null));
+    }
+
     private String normalizeSingleLine(final String html) {
         return MarkdownUtils.normalize(html).replace("\n", "\\n");
     }

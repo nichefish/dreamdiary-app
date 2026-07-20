@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.feature.chat.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.chat.config.OllamaProperties;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
 import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
@@ -10,16 +12,25 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +47,7 @@ public class OllamaClient {
 
     private final OllamaProperties ollamaProperties;
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * @param ollamaProperties {@code app.ollama.*} 설정
@@ -70,18 +82,7 @@ public class OllamaClient {
     public String chat(final String systemPrompt, final List<ChatMessageDto> contextMessages) {
 
         final long start = System.currentTimeMillis();
-        final OllamaChatRequest request = new OllamaChatRequest();
-
-        request.setModel(getChatModel());
-        request.setStream(false);
-        request.setOptions(buildChatOptions());
-
-        final List<OllamaChatRequest.Message> messages = new ArrayList<>();
-        messages.add(new OllamaChatRequest.Message("system", systemPrompt));
-        contextMessages.stream()
-                .filter(message -> message.getContent() != null && !message.getContent().trim().isEmpty())
-                .forEach(message -> messages.add(new OllamaChatRequest.Message(toOllamaRole(message.getRole()), message.getContent())));
-        request.setMessages(messages);
+        final OllamaChatRequest request = buildChatRequest(systemPrompt, contextMessages, false);
 
         final HttpHeaders headers = new HttpHeaders();
 
@@ -108,6 +109,84 @@ public class OllamaClient {
                 getChatModel(),
                 System.currentTimeMillis() - start,
                 StringUtils.length(content));
+
+        return content;
+    }
+
+    /**
+     * 시스템 프롬프트와 대화 맥락으로 Ollama chat API를 NDJSON 스트리밍 호출한다.
+     *
+     * <p>토큰(또는 청크)이 도착할 때마다 {@code onDelta}를 호출하고, 최종 누적 본문을 반환한다.
+     * {@code cancelFlag}가 true이면 읽기를 중단하고 그때까지 누적된 본문을 반환한다.
+     * 비스트리밍 {@link #chat(String, List)}는 hybrid/retry·language-guard 재시도 등에서 계속 사용한다.</p>
+     *
+     * @param systemPrompt AI에게 적용할 시스템 지시문
+     * @param contextMessages 최근 대화 맥락과 현재 사용자 메시지 목록
+     * @param onDelta 부분 텍스트 콜백 (null 허용)
+     * @param cancelFlag 취소 플래그 (null이면 취소 검사 생략)
+     * @return 스트리밍이 끝난 시점의 누적 assistant 본문
+     * @throws IllegalStateException Ollama 스트림이 비어 있거나 파싱에 실패한 경우
+     */
+    public String chatStream(
+            final String systemPrompt,
+            final List<ChatMessageDto> contextMessages,
+            final Consumer<String> onDelta,
+            final AtomicBoolean cancelFlag
+    ) {
+        final long start = System.currentTimeMillis();
+        final OllamaChatRequest request = buildChatRequest(systemPrompt, contextMessages, true);
+
+        final RequestCallback requestCallback = (final ClientHttpRequest clientRequest) -> {
+            clientRequest.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            objectMapper.writeValue(clientRequest.getBody(), request);
+        };
+
+        final ResponseExtractor<String> responseExtractor = (final ClientHttpResponse clientResponse) -> {
+            final StringBuilder accumulated = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(clientResponse.getBody(), StandardCharsets.UTF_8)
+            )) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (cancelFlag != null && cancelFlag.get()) {
+                        log.info("Ollama chat stream cancelled. model={}, accumulatedChars={}",
+                                getChatModel(), accumulated.length());
+                        break;
+                    }
+                    if (StringUtils.isBlank(line)) continue;
+                    final JsonNode root = objectMapper.readTree(line);
+                    final JsonNode messageNode = root.path("message");
+                    final String delta = messageNode.path("content").asText(null);
+                    if (StringUtils.isNotEmpty(delta)) {
+                        accumulated.append(delta);
+                        if (onDelta != null) {
+                            onDelta.accept(delta);
+                        }
+                    }
+                    if (root.path("done").asBoolean(false)) {
+                        break;
+                    }
+                }
+            }
+            return accumulated.toString();
+        };
+
+        final String content = restTemplate.execute(
+                resolveApiUrl("/api/chat"),
+                HttpMethod.POST,
+                requestCallback,
+                responseExtractor
+        );
+
+        if (content == null) {
+            throw new IllegalStateException("Ollama stream response is empty");
+        }
+
+        log.info("Ollama chat stream completed. model={}, latencyMs={}, responseChars={}, cancelled={}",
+                getChatModel(),
+                System.currentTimeMillis() - start,
+                StringUtils.length(content),
+                cancelFlag != null && cancelFlag.get());
 
         return content;
     }
@@ -301,6 +380,38 @@ public class OllamaClient {
         if (!chatModelReady) missing.add(chatModel);
         if (!embeddingModelReady) missing.add(embeddingModel);
         return "missing models: " + String.join(", ", missing);
+    }
+
+    /**
+     * Ollama chat 요청 payload를 구성한다.
+     *
+     * @param systemPrompt 시스템 지시문
+     * @param contextMessages 대화 맥락
+     * @param stream 스트리밍 여부
+     * @return Ollama chat 요청
+     */
+    private OllamaChatRequest buildChatRequest(
+            final String systemPrompt,
+            final List<ChatMessageDto> contextMessages,
+            final boolean stream
+    ) {
+        final OllamaChatRequest request = new OllamaChatRequest();
+        request.setModel(getChatModel());
+        request.setStream(stream);
+        request.setOptions(buildChatOptions());
+
+        final List<OllamaChatRequest.Message> messages = new ArrayList<>();
+        messages.add(new OllamaChatRequest.Message("system", systemPrompt));
+        if (contextMessages != null) {
+            contextMessages.stream()
+                    .filter(message -> message.getContent() != null && !message.getContent().trim().isEmpty())
+                    .forEach(message -> messages.add(new OllamaChatRequest.Message(
+                            toOllamaRole(message.getRole()),
+                            message.getContent()
+                    )));
+        }
+        request.setMessages(messages);
+        return request;
     }
 
     /**
