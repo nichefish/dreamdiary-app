@@ -543,36 +543,23 @@ interface TodoRow {
 
 **엔트리 제목 표시**: `entry.title` 이 있으면 유형(일기/꿈/노트) 무관하게 꿈 상태 배지 행 아래·마크다운 본문 위에 독립 행으로 `fw-bold fs-5 mb-1` 표시한다. 본문 `.journal-content` 는 fs 클래스 없이 base 1rem 을 상속하므로 제목은 본문보다 한 단계 위 크기가 된다. 접힘(`isCollapsed`)과 무관하게 항상 표시하며 본문만 숨긴다. 제목은 `.journal-content` 밖이라 유형별 본문 색상(꿈 보라 등)을 상속하지 않고 기본 텍스트색을 쓴다. 변경 전: 꿈 엔트리에서만 배지 행에 인라인 `fs-7` 로 표시했고 일기·노트는 제목이 렌더되지 않았다. 결산 상세(`JournalAnnualDetail.vue`)의 엔트리 제목도 같은 `fs-5 fw-bold` 계약을 따른다.
 
-**우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/라이프사이클/상태/삭제)
+**우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/FLOW 연결/FLOW 보기/라이프사이클/상태/삭제)
 
-**i18n**: 펼침/접힘, 보류 badge·접힌 상태 문구, 꿈 상태 배지, 액션 툴팁, 일기·꿈 메뉴 헤더, 수정·해석 등록·이력·관련 글 추가, 라이프사이클·상태·삭제 메뉴와 각 옵션 라벨은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 엔트리 상태·태그·댓글·관련글 데이터와 액션 호출을 변경하지 않는다.
+**스레드·FLOW 액션 경계 (수렴 진행 중)**: FLOW 를 저널 스레드 소속으로 수렴하는 중이다(근거·단계는 `docs/spec/DESIGN_NOTES.md`). **변경 후 현황** — 「흐름 보기」 종단 보기(타임라인 모달 `JournalEntryFlowModal`)와 본문 FLOW 요약 행은 **제거(❌)**됐다. 「흐름 연결」(`openRelatedFlow`, `RelatedContentAddModal` FLOW 고정 모드)과 백엔드 `flowSummary` 계산은 아직 남아 있으며 후속 단계(나-2b·다-2)에서 제거한다. 새 축인 스레드 소속은 `JournalEntryDto.threadList` 로 엔트리에 실린다(백엔드 완료, 소속 지정 UI 는 나-2c).
 
-**액션 결과 i18n**: 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 라이프사이클·상태 변경 실패, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하고, 변경·삭제 성공 후 현재 route 기준 목록 재조회와 일자 스크롤을 유지한다.
+**관련 글/FLOW 대상 유형 기본값**: 모달을 열 때 대상 콘텐츠 유형은 **출발 엔트리와 같은 유형**을 기본 선택한다(일기에서 열면 일기, 꿈에서 열면 꿈). 변경 전에는 반대 유형(일기 → 꿈)을 기본값으로 잡아, 흐름 연결처럼 같은 성격의 기록을 잇는 경우 매번 되돌려야 했다. 자기 자신(같은 유형 + 같은 id) 연결은 저장 시 self 검증이 막는다. 대상 유형 select 는 일기/꿈만 제공하므로 그 밖의 출발 유형(노트 등)은 일기로 떨어뜨린다 — 빈 선택으로 두면 저장 시 검증에 걸려 원인을 알기 어렵다. FLOW·REFERENCE 두 모드가 같은 초기화 경로(`openRelatedWithMode`)를 쓰므로 기본값 규칙도 동일하다.
+
+**관련 글/FLOW 대상 검색**: `RelatedContentAddModal`은 선택한 대상 유형만 통합 `GET /api/journal/entries?type=DIARY|DREAM`에서 검색한다. 키워드는 제목 또는 본문에 일치하며, 복수 키워드가 전달되면 키워드 사이는 AND다. 요청 실패는 인라인 오류로 표시해 정상 0건과 구분한다.
+
+**관련 관계 행**: 변경 전에는 일반 관련글과 FLOW 직접 간선을 모두 `RelatedContentDto`별 행으로 표시해 하나의 연결 컴포넌트가 여러 FLOW ID 행처럼 보였다. 변경 후 일반 관련글만 `relationType/reason/targetId/targetContentType/targetTitle`별 행을 유지하고, 대상 제목은 `openEntryView(targetId)`로 읽기 전용 원문을 열며 관계 ID로 해제한다. (변경 후) FLOW 본문 요약 행과 「흐름 보기」는 제거됐다. 백엔드 `flowSummary` 필드는 아직 응답에 남아 있으나 어느 화면도 표시하지 않으며 다-2 에서 제거한다.
+
+**i18n**: 펼침/접힘, 보류 badge·접힌 상태 문구, 꿈 상태 배지, 액션 툴팁, 일기·꿈 메뉴 헤더, 수정·해석 등록·이력·관련 글 추가·흐름 연결·관련글 열기/해제, 라이프사이클·상태·삭제 메뉴와 각 옵션 라벨은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 엔트리 상태·태그·댓글·관련글 데이터와 액션 호출을 변경하지 않는다.
+
+**액션 결과 i18n**: 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 라이프사이클·상태 변경 실패, 관련 관계 연결·해제와 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하고, 관계 해제·변경·삭제 성공 후 현재 route 기준 목록 재조회와 일자 스크롤을 유지한다.
 
 **엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + 공통 `htmlToPlainText(content)` (TinyMCE HTML을 브라우저 HTML 파서로 이름·10진수·16진수 엔티티 디코딩 후 평문 변환, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음 — 레거시 `copy()` 동일)
 
 **본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-interpretation-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
-
-**검색 키워드 하이라이트**: 검색 팝업은 `highlightKeywords` prop으로 URL 검색 키워드를 전달할 수 있다. prop이 비어 있으면 기존 월간/주간/챕터/꿈 섹션 렌더는 변경하지 않는다. 키워드가 있으면 `markdownContent` HTML의 텍스트 노드만 `<mark class="journal-entry-search-keyword-mark">`로 감싸며, `mark`/`script`/`style`/`textarea` 내부는 건드리지 않는다.
-
-**클라이언트 접힘 토글**: 왼쪽 열 `#sortOrder` 아래 `bi-arrows-expand`/`bi-arrows-collapse` 버튼 — 서버 상태 무변경, `localCollapsedOverride ref`로 임시 제어
-
-**태그 클릭**: `@click.stop="openTagContextMenu($event, tag)"` → `tagContextMenuStore.open(event, payload)`
-
-**꿈 태그 프로필 표시**: 펼쳐진 `JOURNAL_DREAM` 엔트리에서만 `tag.list[].profileContent` 값이 있는 태그 프로필을 엔트리 태그 줄 아래에 표시한다. 접힌 엔트리와 일기/노트 엔트리는 같은 필드가 응답에 있더라도 렌더하지 않는다. 태그 줄은 기존 검색/설정용 태그 역할 그대로 유지하고, 프로필은 그 아래에서 `#태그명 | 프로필 내용` 구조로 별도 표시한다. 프로필 태그명 칸은 고정폭(`4.5rem`)으로 두어 여러 프로필 행의 본문 시작선이 맞아야 한다. 태그 프로필 본문은 `.journal-dream-tag-profile__content { white-space: pre-line; }` 로 줄바꿈을 보존한다.
-
-**데이터 보강**: 백엔드 `TagProfileService.applyProfileContent(...)`가 사용자별 `tag_profile.content`를 `TagContentDto.profileContent`에 병합한다. 월간/주간/일간 일자 응답은 `JournalDayQueryService`, 검색/연간/상세 엔트리 응답은 `JournalEntryMyViewService`에서 `JOURNAL_DREAM`에 한정해 병합한다.
-
-**스크롤 앵커**: root 요소는 `:id="'journal-entry-' + entry.id"`와 `:data-id="entry.id"`를 가진다. 메인 월간/주간 목록은 id를, 일자 상세 팝업 내부 스크롤은 modal 내부 `[data-id]`를 사용한다. 엔트리 수정은 현재 목록 route를 유지한 채 `JournalEntryRegistModal`을 직접 열며, 수정 모달 open/close는 URL을 변경하지 않는다.
-
-**⋯ 메뉴 API**:
-| 액션 | 엔드포인트 |
-|------|-----------|
-| 라이프사이클 설정 | `PUT /api/lifecycles { id, contentType, lifecycleKey, cacheContext }` |
-| 상태 토글 | `POST /api/states { id, contentType, stateKey, cacheContext }` |
-| 삭제 | `DELETE /api/journal/entry/{id}` |
-
----
 
 ### 23-2a. `JournalInterpretationItem` (저널 해석 아이템)
 
@@ -723,7 +710,13 @@ interface TodoRow {
 
 **닫기 정책**: 읽는 중인 상세가 backdrop 클릭이나 Escape 입력으로 의도치 않게 닫히지 않도록 루트 DOM에 `data-bs-backdrop="static"`, `data-bs-keyboard="false"`를 선언하고 `Bootstrap Modal`도 `{ backdrop: "static", keyboard: false }`로 생성한다. 헤더 ×와 푸터 「닫기」는 `store.closeDetail()`을 호출하는 명시적 종료 경로로 유지한다. URL 이동·상세 조회 실패에 따른 프로그램상 종료도 유지한다.
 
-**상위 서사·엔트리 소속 계약**: 저널 스레드는 특정 일자 엔트리로 쓰기 어려운 내용을 제목·본문으로 직접 서술하는 독립 상위 서사다. 엔트리를 스레드에 소속시키고 상세에서 소속 엔트리를 모아 보는 기능은 현재 **MISSING**이다. 이는 엔트리끼리 직접 연결하는 RELATED/FLOW 그래프와 별도 저장·조회 계약으로 구현한다.
+**상위 서사·엔트리 소속 계약**: 저널 스레드는 특정 일자 엔트리로 쓰기 어려운 내용을 제목·본문으로 직접 서술하는 독립 상위 서사다. 엔트리를 스레드에 소속시키는 기능은 **⚠ 부분 구현** — 백엔드(테이블 `journal_thread_entry` + 소속 등록/해제/조회 API)는 완료됐고, **화면은 아직 없다**(소속 지정 UI·스레드 상세의 소속 엔트리 목록 모두 ❌ 미구현).
+
+- 소속은 스레드 1 : 엔트리 N 이 아니라 **N:M** 이다. 한 엔트리가 여러 스레드에 속할 수 있다.
+- 등록·해제 모두 **멱등**이며, 해제는 소프트 삭제다. 해제했던 소속을 다시 등록하면 새 행을 만들지 않고 기존 행을 되살린다.
+- API: `GET|POST /api/journal/threads/{id}/entries`, `DELETE /api/journal/threads/{id}/entries/{entryId}`, `GET /api/journal/entries/{entryId}/threads`
+- **엔트리 응답에 소속이 실린다**: `JournalEntryDto.threadList` (소속 없으면 빈 목록). 엔트리마다 단건 조회하면 목록 화면에서 N+1 이 나므로 `JournalEntryRelatedEnricher`·`JournalDayQueryService.mergeRelatedContents` 가 엔트리 목록 단위로 **일괄 주입**한다. 조회 대상 사용자는 `username` 파라미터로 받는다 (`getRelatedContentMapByRefs`·`getFlowSummaryMap` 과 동일한 계약).
+- **변경 전**: 이 계약은 RELATED/FLOW 그래프와 «별도» 축으로 유지할 계획이었다. **변경 후**: FLOW 를 이 소속 구조로 **수렴**시키고 FLOW 는 제거한다 (근거·단계는 `docs/spec/DESIGN_NOTES.md` 참조). FLOW 간선 이관·제거는 후속 단계이며, 그때까지 두 경로가 잠시 공존한다.
 
 **i18n**: 모달 제목·댓글 섹션 제목·빈 상태·등록 툴팁·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 

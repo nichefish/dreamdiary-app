@@ -4,7 +4,9 @@ import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventList
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemDto;
 import io.nicheblog.dreamdiary.feature.admin.code.service.CodeItemService;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadSearchParam;
+import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -47,6 +49,7 @@ public class JournalThreadRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;      // 작업 카테고리 (로그 적재용)
 
     private final JournalThreadService journalThreadService;
+    private final JournalThreadEntryService journalThreadEntryService;
     private final CodeItemService codeItemService;
 
     /**
@@ -158,5 +161,100 @@ public class JournalThreadRestController
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 스레드 소속 엔트리 목록 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param id 스레드 식별자
+     * @return {@link ResponseEntity} -- 소속 목록 (sort_order 우선, NULL 은 뒤로)
+     */
+    @GetMapping(Url.JOURNAL_THREAD_ENTRIES)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalThreadEntryListAjax(
+            final @PathVariable("id") Integer id
+    ) throws Exception {
+
+        final List<JournalThreadEntryDto> resultList = journalThreadEntryService.getListByThread(id);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(resultList));
+    }
+
+    /**
+     * 엔트리를 스레드에 소속시킨다 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     * <p>
+     * 멱등하다. 이미 소속돼 있으면 변경 없이 성공으로 응답하고,
+     * 해제됐던 소속이면 되살린다.
+     *
+     * @param id 스레드 식별자
+     * @param entryId 엔트리 식별자
+     * @param sortOrder 스레드 내 표시 순서 (미지정 시 엔트리 일자순 정렬)
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @PostMapping(Url.JOURNAL_THREAD_ENTRIES)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalThreadEntryRegistAjax(
+            final @PathVariable("id") Integer id,
+            final @RequestParam("entryId") Integer entryId,
+            final @RequestParam(value = "sortOrder", required = false) Integer sortOrder
+    ) throws Exception {
+
+        final ServiceResponse result = journalThreadEntryService.regist(id, entryId, sortOrder);
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 엔트리의 스레드 소속을 해제한다 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     * <p>
+     * 소프트 삭제이며 멱등하다. 이미 해제된 소속이면 변경 없이 성공으로 응답한다.
+     *
+     * @param id 스레드 식별자
+     * @param entryId 엔트리 식별자
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @DeleteMapping(Url.JOURNAL_THREAD_ENTRY)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalThreadEntryDeleteAjax(
+            final @PathVariable("id") Integer id,
+            final @PathVariable("entryId") Integer entryId
+    ) throws Exception {
+
+        final ServiceResponse result = journalThreadEntryService.delete(id, entryId);
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 엔트리가 속한 스레드 목록 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     * <p>
+     * 한 엔트리가 여러 스레드에 속할 수 있어 목록으로 돌려준다.
+     *
+     * @param entryId 엔트리 식별자
+     * @return {@link ResponseEntity} -- 소속 목록 (등록 순)
+     */
+    @GetMapping(Url.JOURNAL_ENTRY_THREADS)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalEntryThreadListAjax(
+            final @PathVariable("entryId") Integer entryId
+    ) throws Exception {
+
+        final List<JournalThreadEntryDto> resultList = journalThreadEntryService.getListByEntry(entryId);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(resultList));
     }
 }

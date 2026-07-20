@@ -86,17 +86,37 @@
       <!--end::꿈 태그 프로필-->
 
       <!--begin::관련글-->
-      <div v-if="relatedList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
+      <div v-if="normalRelatedList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
         <div
-          v-for="rel in relatedList"
+          v-for="rel in normalRelatedList"
           :key="rel.id"
-          class="d-flex align-items-center gap-2 p-2 bg-light rounded fs-8 text-muted"
+          class="d-flex align-items-center flex-wrap gap-2 p-2 bg-light rounded fs-8 text-muted"
         >
           <i class="bi bi-link-45deg"></i>
-          <span v-if="rel.contentType" class="badge badge-light-secondary">{{ rel.contentType }}</span>
-          <span v-if="rel.refTitle">{{ rel.refTitle }}</span>
-          <span v-if="rel.relReason" class="fst-italic">({{ rel.relReason }})</span>
+          <span v-if="rel.relationType" class="badge badge-light-primary">{{ relationTypeLabel(rel.relationType) }}</span>
+          <span v-if="rel.targetContentType" class="badge badge-light-secondary">{{ relatedContentTypeLabel(rel.targetContentType) }}</span>
+          <button
+            v-if="rel.targetId"
+            type="button"
+            class="btn btn-link p-0 fs-8 text-primary text-start"
+            :title="t('related-content.open.tooltip')"
+            @click.stop="openRelatedTarget(rel.targetId)"
+          >
+            {{ rel.targetTitle || '#' + rel.targetId }}
+          </button>
+          <span v-else>{{ rel.targetTitle }}</span>
+          <span v-if="rel.reason" class="fst-italic">({{ rel.reason }})</span>
+          <button
+            v-if="rel.id"
+            type="button"
+            class="btn btn-xs btn-icon btn-light-danger ms-auto"
+            :title="t('related-content.unlink.tooltip')"
+            @click.stop="unlinkRelated(rel)"
+          >
+            <i class="bi bi-x-lg fs-9"></i>
+          </button>
         </div>
+
       </div>
       <!--end::관련글-->
 
@@ -197,6 +217,16 @@
             </div>
           </div>
           <!--end::관련 글 추가-->
+
+          <!--begin::흐름 연결 (다른 사람 꿈 제외)-->
+          <div v-if="!hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="openRelatedFlow">
+              {{ t('journal.entry.flow.connect') }}
+              <i class="bi bi-bezier2 fs-8"></i>
+            </div>
+          </div>
+          <!--end::흐름 연결-->
+
 
           <div class="separator my-2"></div>
 
@@ -323,7 +353,7 @@ import { useAttachableModalStore } from "@/features/attachable/stores/attachable
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
-import type { JournalEntryDto } from "@/features/journal/stores/journal";
+import type { JournalEntryDto, RelatedContentItem } from "@/features/journal/stores/journal";
 import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
@@ -409,7 +439,15 @@ const dreamTagProfileList = computed(() => {
   if (!(props.isDream || props.entry.contentType === "JOURNAL_DREAM")) return [];
   return tagList.value.filter((tag) => typeof tag.profileContent === "string" && tag.profileContent.trim() !== "");
 });
-const relatedList = computed(() => props.entry.relatedContentList ?? []);
+/** 연결 해제 성공 직후 재조회 전에도 현재 행에서 제거된 관계를 숨긴다. */
+const unlinkedRelatedIds = ref<Set<number>>(new Set());
+const relatedList = computed(() => (props.entry.relatedContentList ?? []).filter(
+  (related) => related.id == null || !unlinkedRelatedIds.value.has(related.id)
+));
+/** 일반 관련글은 직접 관계별 행을 유지하고 FLOW 직접 간선은 목록 행에서 숨긴다. */
+const normalRelatedList = computed(() => relatedList.value.filter(
+  (related) => related.relationType !== "FLOW"
+));
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const interpretationList = computed(() => props.entry.journalInterpretationList ?? []);
 
@@ -606,6 +644,78 @@ function openHistory() {
 function openRelated() {
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openRelated(props.entry.contentType, props.entry.id);
+}
+
+/** FLOW 연결 모달 열기 */
+function openRelatedFlow() {
+  if (!props.entry.id || !props.entry.contentType) return;
+  attachableStore.openRelatedFlow(props.entry.contentType, props.entry.id);
+}
+
+/** 관련 엔트리 원문 열기 */
+function openRelatedTarget(targetId: number): void {
+  void modalStore.openEntryView(targetId);
+}
+
+/** 관련 콘텐츠 유형을 현재 locale 레이블로 변환한다. */
+function relatedContentTypeLabel(contentType: string): string {
+  if (contentType === "JOURNAL_DIARY") return t("related-content.content-type.diary");
+  if (contentType === "JOURNAL_DREAM") return t("related-content.content-type.dream");
+  return contentType;
+}
+
+/** 관계 유형을 현재 locale 레이블로 변환한다. */
+function relationTypeLabel(relationType: string): string {
+  const normalized = relationType.toLowerCase();
+  if (["reference", "extension", "parallel", "cause", "flow"].includes(normalized)) {
+    return t(`enum.relation-type.${normalized}`);
+  }
+  return relationType;
+}
+
+/** 변경 전: 관련 글 연결 해제. FLOW는 경로 분리 가능성을 별도 확인한다.
+ * 변경 후: 목록에서는 일반 관련글만 해제하고 FLOW 직접 연결 관리는 전체 흐름 모달에서 수행한다. */
+async function unlinkRelated(related: RelatedContentItem): Promise<void> {
+  if (!related.id) {
+    console.warn("[journal-entry] related content id missing for unlink", {
+      entryId: props.entry.id,
+      relationType: related.relationType,
+      targetId: related.targetId,
+    });
+    return;
+  }
+  if (!await swalConfirm(t("related-content.unlink.confirm"))) return;
+  try {
+    const res = await axios.delete(`/api/related/${related.id}`);
+    if (res.data?.rslt) {
+      unlinkedRelatedIds.value = new Set([...unlinkedRelatedIds.value, related.id]);
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: t("related-content.unlink.success"),
+      });
+      scrollAfterFetch();
+    } else {
+      console.warn("[journal-entry] related content unlink rejected", {
+        entryId: props.entry.id,
+        relatedContentId: related.id,
+        relationType: related.relationType,
+        message: res.data?.message,
+      });
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("related-content.unlink.failure"),
+      });
+    }
+  } catch (e: unknown) {
+    console.error("[journal-entry] related content unlink failed", {
+      entryId: props.entry.id,
+      relatedContentId: related.id,
+      relationType: related.relationType,
+    }, e);
+    void swalRequestError(e, t("related-content.unlink.failure"));
+  }
 }
 
 /** 해석 등록 모달 열기 */

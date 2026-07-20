@@ -6,7 +6,7 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title fw-bold">{{ t("related-content.modal.title") }}</h5>
+          <h5 class="modal-title fw-bold">{{ modalTitle }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -24,15 +24,26 @@
           </div>
           <!--end::출처-->
 
+          <!--begin::FLOW 연결 계약 안내-->
+          <div v-if="isFlowMode" class="rounded border border-info bg-light-info text-info px-4 py-3 fs-7 mb-4">
+            {{ t("related-content.flow.guide") }}
+          </div>
+          <!--end::FLOW 연결 계약 안내-->
+
           <!--begin::관련 유형 + 대상 유형 + 검색-->
           <div class="row g-3 mb-4">
             <div class="col-md-4">
               <label class="form-label fw-semibold text-gray-700">{{ t("related-content.relation-type") }}</label>
-              <select v-model="attachableStore.relatedRelationType" class="form-select form-select-solid">
-                <option value="REFERENCE">{{ t("enum.relation-type.reference") }}</option>
-                <option value="EXTENSION">{{ t("enum.relation-type.extension") }}</option>
-                <option value="PARALLEL">{{ t("enum.relation-type.parallel") }}</option>
-                <option value="CAUSE">{{ t("enum.relation-type.cause") }}</option>
+              <select
+                v-model="attachableStore.relatedRelationType"
+                class="form-select form-select-solid"
+                :disabled="isFlowMode"
+              >
+                <option v-if="isFlowMode" value="FLOW">{{ t("enum.relation-type.flow") }}</option>
+                <option v-if="!isFlowMode" value="REFERENCE">{{ t("enum.relation-type.reference") }}</option>
+                <option v-if="!isFlowMode" value="EXTENSION">{{ t("enum.relation-type.extension") }}</option>
+                <option v-if="!isFlowMode" value="PARALLEL">{{ t("enum.relation-type.parallel") }}</option>
+                <option v-if="!isFlowMode" value="CAUSE">{{ t("enum.relation-type.cause") }}</option>
               </select>
             </div>
             <div class="col-md-4">
@@ -97,6 +108,15 @@
           </div>
           <!--end::유효성 메시지-->
 
+          <!--begin::검색 실패 메시지-->
+          <div
+            v-if="attachableStore.relatedSearchErrorMsg"
+            class="rounded border border-danger bg-light-danger px-4 py-3 text-danger fs-7 mb-4"
+          >
+            {{ attachableStore.relatedSearchErrorMsg }}
+          </div>
+          <!--end::검색 실패 메시지-->
+
           <!--begin::검색 중-->
           <div
             v-if="attachableStore.relatedSearching"
@@ -109,7 +129,7 @@
           <!--begin::검색 결과-->
           <template v-else-if="attachableStore.relatedSearchAttempted">
             <div
-              v-if="attachableStore.relatedSearchResults.length === 0"
+              v-if="!attachableStore.relatedSearchErrorMsg && attachableStore.relatedSearchResults.length === 0"
               class="rounded border border-dashed border-gray-300 px-4 py-3 text-muted fs-7 mb-4"
             >
               {{ t("common.search.rslt.empty") }}
@@ -203,6 +223,13 @@ let bsModal: InstanceType<typeof Modal> | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
   attachableStore.closeRelated();
 });
+
+/** FLOW 연결 진입 여부. 일반 관련 글과 다른 계약 안내·고정 유형을 적용한다. */
+const isFlowMode = computed(() => attachableStore.relatedMode === "FLOW");
+/** 진입 모드별 모달 제목 */
+const modalTitle = computed(() =>
+  t(isFlowMode.value ? "related-content.flow.modal.title" : "related-content.modal.title")
+);
 
 /** 콘텐츠 타입 → 한글 레이블 */
 /** 변경: 위 기존 한글 전용 계약을 현재 locale catalog 레이블로 확장한다. */

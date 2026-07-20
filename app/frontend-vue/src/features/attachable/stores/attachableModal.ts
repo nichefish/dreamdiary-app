@@ -27,6 +27,9 @@ export interface RelatedTargetItem {
   content: string;
 }
 
+/** 관련 글 모달 진입 모드 */
+export type RelatedModalMode = "RELATED" | "FLOW";
+
 /** 댓글 목록 항목 */
 export interface CommentListItem {
   id: number | string;
@@ -109,6 +112,12 @@ export interface TagProfileModel {
   textClassCd: string;
   content: string;
 }
+
+/**
+ * 관련 글·흐름 연결 모달의 대상 콘텐츠 유형 선택지.
+ * `RelatedContentAddModal` 의 select 옵션과 같은 집합이어야 한다.
+ */
+const RELATED_TARGET_CONTENT_TYPES = ["JOURNAL_DIARY", "JOURNAL_DREAM"];
 
 // ---- 스토어 ----
 
@@ -320,6 +329,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
 
   /** 관련 글 추가 모달 오픈 여부 */
   const relatedOpen = ref(false);
+  /** 관련 글 모달 진입 모드 — 일반 직접 관계와 FLOW 연결을 UI에서 구분한다. */
+  const relatedMode = ref<RelatedModalMode>("RELATED");
   /** 출처 콘텐츠 타입 */
   const relatedSrcContentType = ref<string>("");
   /** 출처 게시물 번호 */
@@ -340,6 +351,8 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   const relatedSearching = ref(false);
   /** 검색 시도 여부 */
   const relatedSearchAttempted = ref(false);
+  /** 검색 요청 실패 메시지 — 정상 0건과 구분한다. */
+  const relatedSearchErrorMsg = ref<string>("");
   /** 유효성 메시지 */
   const relatedValidationMsg = ref<string>("");
 
@@ -349,17 +362,49 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param id - 출처 게시물 번호
    */
   async function openRelated(contentType: string, id: number): Promise<void> {
+    await openRelatedWithMode(contentType, id, "RELATED");
+  }
+
+  /**
+   * FLOW 연결 모드로 관련 글 추가 모달을 연다.
+   * @param contentType - 출처 콘텐츠 타입
+   * @param id - 출처 게시물 번호
+   */
+  async function openRelatedFlow(contentType: string, id: number): Promise<void> {
+    await openRelatedWithMode(contentType, id, "FLOW");
+  }
+
+  /** 관련 글 모달의 공통 초기화 경로. */
+  async function openRelatedWithMode(
+    contentType: string,
+    id: number,
+    mode: RelatedModalMode,
+  ): Promise<void> {
     if (!await assertAuthenticatedBeforeModal()) return;
+    relatedMode.value = mode;
     relatedSrcContentType.value = contentType;
     relatedSrcId.value = id;
-    relatedRelationType.value = "REFERENCE";
-    relatedTargetContentType.value = contentType === "JOURNAL_DIARY" ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
+    relatedRelationType.value = mode === "FLOW" ? "FLOW" : "REFERENCE";
+    /*
+     * 대상 유형 기본값은 출발 엔트리와 같은 유형이다.
+     * 변경 전: 반대 유형(일기 → 꿈, 꿈 → 일기)을 기본값으로 잡았다. 그러나 흐름(FLOW)은
+     * 같은 성격의 기록을 시간순으로 잇는 쓰임이 많아, 일기에서 열면 꿈이 선택돼 있어
+     * 매번 되돌려야 했다. 같은 유형이 기본이어야 자연스럽다.
+     * 자기 자신(같은 유형 + 같은 id) 연결은 saveRelated 의 self 검증이 막는다.
+     *
+     * 대상 유형 select 는 일기/꿈만 제공하므로, 노트 등 그 밖의 출발 유형은
+     * 일기로 떨어뜨린다(빈 선택으로 두면 저장 시 검증에 걸려 사용자가 원인을 알기 어렵다).
+     */
+    relatedTargetContentType.value = RELATED_TARGET_CONTENT_TYPES.includes(contentType)
+      ? contentType
+      : "JOURNAL_DIARY";
     relatedKeyword.value = "";
     relatedSearchResults.value = [];
     relatedSelectedTarget.value = null;
     relatedReason.value = "";
     relatedSearching.value = false;
     relatedSearchAttempted.value = false;
+    relatedSearchErrorMsg.value = "";
     relatedValidationMsg.value = "";
     relatedOpen.value = true;
   }
@@ -374,11 +419,13 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     relatedSearchResults.value = [];
     relatedSelectedTarget.value = null;
     relatedSearchAttempted.value = false;
+    relatedSearchErrorMsg.value = "";
   }
 
   /** 관련 글 검색을 실행한다. */
   async function searchRelatedTargets(): Promise<void> {
     relatedValidationMsg.value = "";
+    relatedSearchErrorMsg.value = "";
     if (!relatedKeyword.value.trim()) {
       relatedSearchResults.value = [];
       relatedSearchAttempted.value = false;
@@ -387,16 +434,38 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     relatedSearching.value = true;
     relatedSearchAttempted.value = true;
     try {
-      const urlMap: Record<string, string> = {
-        JOURNAL_DIARY: "/api/journal/diaries",
-        JOURNAL_DREAM: "/api/journal/dreams",
+      const typeMap: Record<string, string> = {
+        JOURNAL_DIARY: "DIARY",
+        JOURNAL_DREAM: "DREAM",
       };
-      const url = urlMap[relatedTargetContentType.value] ?? "";
-      if (!url) { relatedSearchResults.value = []; return; }
-      const res = await axios.get(url, {
-        params: { searchKeywords: relatedKeyword.value, pageSize: 8, sort: "DESC" },
+      const targetType = typeMap[relatedTargetContentType.value] ?? "";
+      if (!targetType) {
+        console.warn("[attachable-modal] unsupported related target content type", {
+          targetContentType: relatedTargetContentType.value,
+          mode: relatedMode.value,
+        });
+        relatedSearchResults.value = [];
+        relatedSearchErrorMsg.value = t("related-content.search.failure");
+        return;
+      }
+      const res = await axios.get("/api/journal/entries", {
+        params: {
+          type: targetType,
+          searchKeywords: relatedKeyword.value.trim(),
+          pageSize: 8,
+          sort: "DESC",
+        },
       });
-      if (!res.data?.rslt) { relatedSearchResults.value = []; return; }
+      if (!res.data?.rslt) {
+        console.warn("[attachable-modal] related target search rejected", {
+          targetContentType: relatedTargetContentType.value,
+          mode: relatedMode.value,
+          message: res.data?.message,
+        });
+        relatedSearchResults.value = [];
+        relatedSearchErrorMsg.value = res.data?.message ?? t("related-content.search.failure");
+        return;
+      }
       relatedSearchResults.value = (
         Array.isArray(res.data.rsltList) ? res.data.rsltList : []
       )
@@ -410,7 +479,12 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
         .filter((item: RelatedTargetItem) => Number.isInteger(item.id) && item.id > 0);
     } catch (e: unknown) {
       if (isAuthExpiredError(e)) throw e;
+      console.error("[attachable-modal] related target search failed", {
+        targetContentType: relatedTargetContentType.value,
+        mode: relatedMode.value,
+      }, e);
       relatedSearchResults.value = [];
+      relatedSearchErrorMsg.value = t("related-content.search.failure");
     } finally {
       relatedSearching.value = false;
     }
@@ -448,6 +522,15 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       relatedValidationMsg.value = t("related-content.validate.relation-type");
       return { rslt: false };
     }
+    if (relatedMode.value === "FLOW" && relatedRelationType.value !== "FLOW") {
+      console.error("[attachable-modal] FLOW mode relation type contract violated", {
+        relationType: relatedRelationType.value,
+        srcContentType: relatedSrcContentType.value,
+        srcId: relatedSrcId.value,
+      });
+      relatedValidationMsg.value = t("related-content.validate.relation-type");
+      return { rslt: false };
+    }
     try {
       const res = await axios.post(
         `/api/related/${relatedSrcContentType.value}/${relatedSrcId.value}`,
@@ -460,10 +543,30 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
           reason: relatedReason.value,
         }
       );
-      return { rslt: res.data?.rslt === true, message: res.data?.message as string | undefined };
+      const result = { rslt: res.data?.rslt === true, message: res.data?.message as string | undefined };
+      if (!result.rslt) {
+        console.warn("[attachable-modal] related content save rejected", {
+          mode: relatedMode.value,
+          relationType: relatedRelationType.value,
+          srcContentType: relatedSrcContentType.value,
+          srcId: relatedSrcId.value,
+          targetContentType: relatedTargetContentType.value,
+          targetId: relatedSelectedTarget.value.id,
+          message: result.message,
+        });
+      }
+      return result;
     } catch (e: unknown) {
       if (isAuthExpiredError(e)) throw e;
-      return { rslt: false };
+      console.error("[attachable-modal] related content save failed", {
+        mode: relatedMode.value,
+        relationType: relatedRelationType.value,
+        srcContentType: relatedSrcContentType.value,
+        srcId: relatedSrcId.value,
+        targetContentType: relatedTargetContentType.value,
+        targetId: relatedSelectedTarget.value.id,
+      }, e);
+      return { rslt: false, message: t("related-content.save.failure") };
     }
   }
 
@@ -735,6 +838,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     clearHistory,
     // 관련 글 추가
     relatedOpen,
+    relatedMode,
     relatedSrcContentType,
     relatedSrcId,
     relatedRelationType,
@@ -745,8 +849,10 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     relatedReason,
     relatedSearching,
     relatedSearchAttempted,
+    relatedSearchErrorMsg,
     relatedValidationMsg,
     openRelated,
+    openRelatedFlow,
     closeRelated,
     onRelatedTargetTypeChange,
     searchRelatedTargets,

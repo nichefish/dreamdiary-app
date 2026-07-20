@@ -219,7 +219,14 @@ public class RelatedContentService {
         }
     }
 
-    private String requireOwnedContent(final BaseAttachableKey refKey) {
+    /**
+     * 지원 콘텐츠 타입과 로그인 사용자 소유권을 검증한다.
+     *
+     * @param refKey 검증할 콘텐츠 키
+     * @return 콘텐츠 등록자 아이디
+     */
+    String requireOwnedContent(final BaseAttachableKey refKey) {
+        this.validateReadableKey(refKey);
         final String createdBy = this.resolveCreatedBy(refKey);
         if (StringUtils.isBlank(createdBy)) {
             throw new EntityNotFoundException("this.to-read");

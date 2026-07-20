@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentFlowSummaryDto;
+import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentFlowService;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagProfileService;
@@ -17,6 +19,8 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilt
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalDreamSectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
@@ -32,6 +36,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.function.Consumer;
 
 /**
@@ -51,6 +56,8 @@ public class JournalDayQueryService {
     /** holydayMap 캐시 미스 시 재생성용 (resyncHolydayMap) */
     private final ScheduleService scheduleService;
     private final RelatedContentQueryService relatedContentQueryService;
+    private final RelatedContentFlowService relatedContentFlowService;
+    private final JournalThreadEntryService journalThreadEntryService;
     private final JournalInterpretationQueryService journalInterpretationQueryService;
     private final LifecycleService lifecycleService;
     private final TagProfileService tagProfileService;
@@ -253,11 +260,21 @@ public class JournalDayQueryService {
 
         final Map<String, List<RelatedContentDto>> relatedMap =
                 relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
+        final Map<BaseAttachableKey, RelatedContentFlowSummaryDto> flowSummaryMap =
+                relatedContentFlowService.getFlowSummaryMap(refKeyList, username);
+        // 흐름(스레드) 소속. 엔트리마다 단건 조회하면 N+1 이라 일자 트리 전체를 한 번에 받는다.
+        final List<Integer> entryIdList = refKeyList.stream()
+                .map(BaseAttachableKey::getId)
+                .collect(Collectors.toList());
+        final Map<Integer, List<JournalThreadEntryDto>> threadMap =
+                journalThreadEntryService.getMapByEntryIds(entryIdList, username);
 
         for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.values()) {
-            this.forEachEntryByType(listDto, policy.contentType, entry ->
-                    entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()))
-            );
+            this.forEachEntryByType(listDto, policy.contentType, entry -> {
+                entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()));
+                entry.setFlowSummary(flowSummaryMap.get(new BaseAttachableKey(entry.getId(), policy.contentType)));
+                entry.setThreadList(threadMap.getOrDefault(entry.getId(), List.of()));
+            });
         }
     }
 

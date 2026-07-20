@@ -9,6 +9,8 @@ import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCm
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentFlowSummaryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
@@ -70,6 +72,19 @@ public class JournalEntryDto extends BaseAttachableDto
 
     @Builder.Default
     private List<RelatedContentDto> relatedContentList = List.of();
+
+    /** 직접 간선 목록과 별개로 표시하는 전체 FLOW 연결 컴포넌트 요약 */
+    private RelatedContentFlowSummaryDto flowSummary;
+
+    /**
+     * 이 엔트리가 속한 흐름(저널 스레드) 목록.
+     * <p>
+     * 한 엔트리가 여러 스레드에 속할 수 있어 목록이다. 소속이 없으면 빈 목록이다.
+     * FLOW 를 대체하는 축이며, {@link #flowSummary} 는 FLOW 제거 단계에서 함께 사라진다.
+     * 목록 화면 N+1 을 피하려고 엔트리 목록 단위로 일괄 주입한다.
+     */
+    @Builder.Default
+    private List<JournalThreadEntryDto> threadList = List.of();
 
     private List<JournalInterpretationDto> journalInterpretationList;
 

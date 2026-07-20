@@ -59,10 +59,24 @@ export interface CommentCmpstn {
 /** 관련글 항목 */
 export interface RelatedContentItem {
   id?: number;
-  contentType?: string;
-  refContentNo?: number;
-  refTitle?: string;
-  relReason?: string;
+  leftId?: number;
+  leftContentType?: string;
+  rightId?: number;
+  rightContentType?: string;
+  relationType?: string;
+  reason?: string;
+  originType?: string;
+  targetId?: number;
+  targetContentType?: string;
+  targetTitle?: string;
+}
+
+/** 목록 엔트리에 병합된 전체 FLOW 연결 컴포넌트 요약 */
+export interface JournalFlowSummary {
+  entryCount: number;
+  relationCount: number;
+  startStdrdDt?: string;
+  endStdrdDt?: string;
 }
 
 /** 이력 컴포지션 — 백엔드 HistoryCmpstn 직렬화 구조 */
@@ -107,6 +121,7 @@ export interface JournalEntryDto {
   history?: HistoryCmpstn;
   comment?: CommentCmpstn;
   relatedContentList?: RelatedContentItem[];
+  flowSummary?: JournalFlowSummary;
   journalInterpretationList?: InterpretationItem[];
 }
 

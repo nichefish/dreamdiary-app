@@ -19,7 +19,8 @@ public enum RelationType implements LocalizedEnum {
     REFERENCE("REFERENCE", "참조"),
     EXTENSION("EXTENSION", "확장"),
     PARALLEL("PARALLEL", "병렬"),
-    CAUSE("CAUSE", "원인");
+    CAUSE("CAUSE", "원인"),
+    FLOW("FLOW", "흐름");
 
     public final String key;
     public final String desc;

@@ -35,6 +35,18 @@ public interface RelatedContentRepository
             final @Param("createdBy") String createdBy
     );
 
+    /**
+     * 사용자·관계 유형 기준 관련글을 생성 순서로 조회한다.
+     *
+     * @param relationType 관계 유형
+     * @param createdBy 등록자 아이디
+     * @return 관련글 목록
+     */
+    List<RelatedContentEntity> findAllByRelationTypeAndCreatedByOrderByCreatedAtAsc(
+            String relationType,
+            String createdBy
+    );
+
     @Query("SELECT rc " +
             "FROM RelatedContentEntity rc " +
             "WHERE rc.createdBy = :createdBy " +
@@ -75,4 +87,3 @@ public interface RelatedContentRepository
             final @Param("createdBy") String createdBy
     );
 }
-
