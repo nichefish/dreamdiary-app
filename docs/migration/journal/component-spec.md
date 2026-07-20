@@ -599,6 +599,10 @@ interface TodoRow {
 
 메뉴 액션과 태그 프로필의 콘텐츠 유형 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
+**태그 프로필·일자 필터 모달 마운트 계약**: `JournalTagContextMenu` 의 `프로필`은 `attachableStore.openTagProfile()` 로, `JOURNAL_DAY` `검색`은 `journalModalStore.openDayFilterModal(...)` 로 **상태만** 켠다. 따라서 그 상태를 구독해 실제로 렌더하는 `JournalTagProfileModal`·`JournalDayMetaModal` 이 **같은 화면에 함께 마운트돼 있어야** 화면이 열린다. 컨텍스트 메뉴를 마운트하는 화면은 짝 모달도 반드시 마운트한다 — `JournalDayLayout`·`JournalDayDailyLayout`은 둘 다, `JournalEntrySearchPage`는 프로필만(일자 태그 검색 없음), `JournalAnnualLayout`은 둘 다. 결산에서 프로필·일자 태그 검색이 무반응처럼 보이던 원인은 각각 짝 모달 미마운트였다.
+
+**태그 프로필 저장·삭제 후 갱신** (`JournalTagProfileModal`): 월간/주간/일간 등은 성공 알림 확인 후 `refreshJournalDaysForRoute` + contentType 대응 `fetchTagCloud`(day/diary/dream). 결산 상세(`annual-detail`)는 일자 `fetchTagCloud`가 아니라 `useJournalAnnualStore.fetchTagRows(yy, activeSection)`로 태그클라우드 행을 재조회한다(SSOT: `/api/journal/annual/{yy}/tags`). 검색 팝업은 일자/클라우드 재조회 없이 `@success` → `loadEntries()`.
+
 **검색 팝업 내부 동작**: 현재 route가 `journal-entry-search`이면 `검색` 액션은 새 창을 열지 않고 같은 창에서 `router.replace({ name: "journal-entry-search", query })`를 호출한다. `JournalEntrySearchPage`가 route 변경을 watch해 목록을 즉시 갱신한다.
 
 **보존 기준**:
@@ -607,7 +611,7 @@ interface TodoRow {
 - 일기/꿈 태그 검색은 현재 목록 필터가 아니라 새 창 검색 화면이다.
 - 닫기는 외부 클릭, ESC, 스크롤/리사이즈에서 동작한다.
 
-**마운트 위치**: `JournalDayLayout.vue` 및 `JournalEntrySearchPage.vue` — `<JournalTagContextMenu />` (Teleport to body)
+**마운트 위치**: `JournalDayLayout.vue`·`JournalDayDailyLayout.vue`·`JournalEntrySearchPage.vue`·`JournalAnnualLayout.vue` — `<JournalTagContextMenu />` (Teleport to body). 결산은 일자 태그 검색을 위해 `<JournalDayMetaModal />`도 함께 마운트한다.
 
 ---
 
@@ -653,7 +657,11 @@ interface TodoRow {
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/annual/JournalAnnualList.vue`, `JournalAnnualDetail.vue`, `components/JournalAnnualDetailAside.vue`, `components/JournalAnnualListAside.vue`
 
-**데이터·동작**: 결산 목록 상단 액션 헤더(전체 결산 갱신·결산 등록), 결산 상세·리뷰·태그클라우드·중요/참조 토글과 상세/목록 필터를 `useJournalAnnualStore` 상태 및 기존 액션에 연결한다. 목록 aside는 필터 전용 영역으로 유지한다. 결산 목록 카드의 Metronic 컨텍스트 메뉴는 비동기 목록 렌더 및 필터 DOM 갱신 후 `reinitMetronicAfterDom()`으로 재바인딩한다. locale 변경은 선택 연도·활성 탭·태그클라우드·필터값·토글 상태·API 호출을 변경하지 않는다.
+**마운트 모달·메뉴** (`JournalAnnualLayout`): `JournalAnnualRegistModal`, `JournalAnnualReviewRegistModal`, `JournalDayMetaModal`(일자 태그 검색), `JournalTagProfileModal`, `JournalTagContextMenu`.
+
+**데이터·동작**: 결산 총 집계 카드 우측 액션 영역(전체 결산 갱신·결산 등록), 결산 상세·리뷰·태그클라우드·중요/참조 토글과 상세/목록 필터를 `useJournalAnnualStore` 상태 및 기존 액션에 연결한다. 목록 aside와 상세 aside는 필터 전용 영역으로 유지하며, 상세 aside에는 결산 등록 액션을 두지 않는다. 결산 목록 카드의 Metronic 컨텍스트 메뉴는 비동기 목록 렌더, 수정 저장 후 목록 재조회 완료, 필터 DOM 갱신 후 `reinitMetronicAfterDom()`으로 재바인딩한다. locale 변경은 선택 연도·활성 탭·태그클라우드·필터값·토글 상태·API 호출을 변경하지 않는다.
+
+**본문 타이포그래피**: 결산 상세 SUMMARY 본문과 DIARY/DREAM 엔트리 본문은 저널 일자 엔트리와 같은 `journal-content p-2` 계약을 따른다. 결산 상세 엔트리 제목은 일자 엔트리 제목과 맞춰 `fs-5` 크기로 표시한다. 결산 상세 DIARY/DREAM 엔트리 목록은 행 왼쪽 날짜 칼럼을 반복하지 않고, 날짜별 `journal-day-header` 아래에 `journal-diary-item`/`journal-dream-item` 본문 행을 배치해 저널 일자 화면의 시각 흐름과 맞춘다. DIARY/DREAM 엔트리 태그는 `JournalEntryItem` 과 동일하게 밑줄 primary `#이름`(ctgr 포함, `bi-tag` 없음)으로 표시하고 클릭 시 태그 컨텍스트 메뉴를 연다(변경 전: `bi-tag` + 단순 `#name`).
 
 **i18n**: 상세의 SUMMARY·REVIEWS·로딩·태그 메뉴 tooltip·IMPORTANT·REFERENCE와 두 aside의 FILTER·TAGCLOUD·ENTRY FILTER·SUMMARY FILTER·키워드 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. 영어는 기존 대문자 표기를 유지한다.
 

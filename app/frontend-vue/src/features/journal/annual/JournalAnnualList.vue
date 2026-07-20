@@ -20,6 +20,22 @@
               </template>
             </div>
           </div>
+          <div class="d-flex justify-content-end align-items-center gap-2">
+            <button
+              type="button"
+              class="btn btn-sm btn-primary"
+              :disabled="store.syncing"
+              @click="makeTotalAnnual"
+            >
+              <span v-if="store.syncing" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              <i v-else class="bi bi-arrow-repeat me-1"></i>
+              {{ t('journal.annual.refresh-all') }}
+            </button>
+            <button type="button" class="btn btn-sm btn-light-primary" @click="store.openRegist()">
+              <i class="bi bi-plus-circle me-1"></i>
+              {{ t('journal.annual.register') }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -161,20 +177,37 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
 import type { JournalAnnualDto } from "@/features/journal/stores/journalAnnual";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 
 const router = useRouter();
 const store = useJournalAnnualStore();
 const { t } = useLocaleStore();
 
-onMounted(() => {
-  void store.fetchList();
+onMounted(async () => {
+  const listPromise = store.fetchList();
   void store.fetchTotal();
+  await listPromise;
+  void reinitMetronicAfterDom();
 });
+
+watch(
+  () => store.annualList.map((annual) => annual.yy ?? annual.id).join(","),
+  () => {
+    void reinitMetronicAfterDom();
+  }
+);
+
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
 
 /** 결산 상세 페이지로 이동한다. */
 function gotoDetail(yy: number) {
@@ -184,6 +217,11 @@ function gotoDetail(yy: number) {
 /** 결산 수정 모달을 연다. */
 function openModify(yy: number) {
   void store.openModify(yy);
+}
+
+/** 전체 결산 갱신 버튼 클릭 처리 */
+function makeTotalAnnual() {
+  void store.makeTotalAnnual();
 }
 
 /** 태그 보유 여부 확인 */

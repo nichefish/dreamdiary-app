@@ -72,13 +72,6 @@
           {{ t('journal.annual.filter.reset') }}
         </button>
       </div>
-
-      <div class="separator"></div>
-
-      <button type="button" class="btn btn-sm btn-light-primary w-100" @click="store.openRegist()">
-        <i class="bi bi-plus-circle me-1"></i>
-        {{ t('journal.annual.register') }}
-      </button>
     </div>
   </div>
 </template>

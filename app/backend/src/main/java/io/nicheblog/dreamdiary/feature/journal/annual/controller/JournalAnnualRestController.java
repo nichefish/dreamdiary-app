@@ -25,6 +25,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -129,6 +130,11 @@ public class JournalAnnualRestController
             final JournalEntrySearchParam searchParam
     ) throws Exception {
 
+        if (isNoStateSelected(showImprtc, showRefrnc)) {
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
+                    .withList(Collections.emptyList()));
+        }
+
         searchParam.setYy(yy);
         searchParam.resolveStates(showImprtc, showRefrnc);
         final List<JournalEntryDto> journalEntryYyAnnualStatedListByUser = journalEntryMyViewService.getMyAnnualList(searchParam, ContentType.JOURNAL_DIARY);
@@ -154,6 +160,11 @@ public class JournalAnnualRestController
             final @RequestParam(defaultValue = "false") boolean showRefrnc,
             final JournalEntrySearchParam searchParam
     ) throws Exception {
+
+        if (isNoStateSelected(showImprtc, showRefrnc)) {
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
+                    .withList(Collections.emptyList()));
+        }
 
         searchParam.setYy(yy);
         searchParam.resolveStates(showImprtc, showRefrnc);
@@ -265,5 +276,22 @@ public class JournalAnnualRestController
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 중요·참조 토글이 모두 해제됐는지 여부.
+     * <p>
+     * 이 경우 결산 상세 엔트리 목록은 <b>빈 결과</b>여야 한다.
+     * 공통 {@code BaseAttachableSpec.resolveStatesPredicate} 는 states 가 비면 상태 조건을
+     * 걸지 않고 return 하므로, 그대로 두면 필터를 모두 끈 상태가 "전체 조회"로 동작한다.
+     * 공통 스펙의 의미를 바꾸면 저널 일자·검색 등 다른 화면에 영향이 가므로,
+     * 결산 상세 경로에서만 조회 없이 빈 목록을 반환한다.
+     *
+     * @param showImprtc 중요 표시 포함 여부
+     * @param showRefrnc 참조 표시 포함 여부
+     * @return 둘 다 해제면 true
+     */
+    private boolean isNoStateSelected(final boolean showImprtc, final boolean showRefrnc) {
+        return !showImprtc && !showRefrnc;
     }
 }

@@ -434,6 +434,9 @@
 - 탭 active 상태는 서버 변수 `section` 에 따라 초기 설정 (`DIARY` 또는 `DREAM`)
 - 토글 체크박스 2개: 기본 모두 checked 상태
 - 결산 상세의 SUMMARY·REVIEWS·로딩·태그 메뉴 tooltip·IMPORTANT·REFERENCE와 상세/목록 aside의 FILTER·TAGCLOUD·ENTRY FILTER·SUMMARY FILTER·키워드 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. 영어는 기존 대문자 표기를 유지하며 locale 변경은 선택 연도·활성 탭·필터값·토글 상태를 변경하지 않는다.
+- Vue SPA의 상세 aside는 연도 이동·태그클라우드·엔트리 필터 전용 영역이며 결산 등록 액션을 두지 않는다. 신규 결산 등록은 목록 화면 총 집계 카드 우측 액션 영역에서 수행한다.
+- 결산 상세의 SUMMARY 본문과 DIARY/DREAM 엔트리 본문은 저널 일자 엔트리와 같은 `journal-content p-2` 타이포그래피 계약을 따른다. 상세 엔트리 제목도 일자 엔트리와 맞춰 `fs-5 fw-bold` 크기로 표시한다(변경 전 `fs-7`). 본문(`.journal-content`)은 fs 클래스 없이 base 1rem 을 상속하므로, 제목은 본문보다 한 단계 위 크기가 된다. 상세 엔트리 목록은 행 왼쪽 날짜 칼럼을 반복하지 않고, 저널 일자 카드처럼 `journal-day-header` 날짜 헤더 아래에 해당 날짜의 엔트리 본문을 배치한다. DIARY/DREAM 엔트리 태그는 일자 `JournalEntryItem` 과 동일하게 밑줄 primary `#이름`(ctgr·클릭 메뉴 포함, `bi-tag` 없음)으로 표시한다(변경 전: `bi-tag` + 단순 `#name`).
+- Vue SPA `JournalAnnualLayout`은 태그 컨텍스트 메뉴와 짝으로 `JournalTagProfileModal`·`JournalDayMetaModal`을 마운트한다. 일자(`JOURNAL_DAY`) 태그 검색은 `openDayFilterModal` → `JournalDayMetaModal`이며, 짝 모달 미마운트 시 무반응처럼 보였다.
 - 부트 순서: `journalAnnualCrudService` → `journalAnnualStateService` → `journalAnnualService` → `JournalAnnualDetailCardApp` → `JournalAnnualEntryTagListApp` → `JournalAnnualEntryListApp` → `JournalAnnualDetailPageBoot`
 - `preloadJournalDayTagService.js` 적재 (태그 클릭 대비)
 - Vue SPA의 결산 상세 날짜 요일·리뷰 등록 모달 표시 문구, 툴팁, 확인창은 `useLocaleStore.t()`를 사용하며 `journal.annual.*`와 공통 i18n 키를 한국어/영어 카탈로그에서 동일하게 제공한다.

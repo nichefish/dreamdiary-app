@@ -305,6 +305,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 저널 월간/주간 태그클라우드 헤더: `JournalTagCloudHeader.vue`
 - 일자 카드의 일자 태그: `JournalDayCard.vue`
 - 일기/꿈 엔트리 태그: `JournalEntryItem.vue`
+- 결산 상세 태그클라우드·DIARY/DREAM 엔트리 태그: `JournalAnnualDetail.vue` (`JournalAnnualLayout`에 메뉴·짝 모달 마운트)
 
 **컨텍스트 메뉴**: `JournalTagContextMenu.vue`
 - 버튼: `검색`, `태그 설정`
@@ -312,7 +313,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 닫기: 외부 클릭, ESC, scroll/resize
 
 **검색 액션**:
-- `JOURNAL_DAY`: `journalModalStore.openDayFilterModal({ type: 'tag', id: tagId, name, ctgr })` 으로 일자 필터 모달(메타+태그 통합) 오픈
+- `JOURNAL_DAY`: `journalModalStore.openDayFilterModal({ type: 'tag', id: tagId, name, ctgr })` 으로 일자 필터 모달(메타+태그 통합) 오픈. 모달이 실제로 뜨려면 현재 화면에 `JournalDayMetaModal`이 마운트돼 있어야 한다(결산: `JournalAnnualLayout`).
 - `JOURNAL_DIARY`: 새 창 `/vue-app/journal/entry/search?type=DIARY&tagIds={tagId}`
 - `JOURNAL_DREAM`: 새 창 `/vue-app/journal/entry/search?type=DREAM&tagIds={tagId}`
 - 단, 현재 route가 `journal-entry-search`인 검색 팝업 내부에서는 새 창을 다시 열지 않고 같은 창의 query를 `router.replace(...)`로 갱신한다. 검색 페이지는 `route.fullPath` watch로 즉시 재조회한다.
@@ -322,6 +323,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - `GET /api/tags/{tagId}/profile?contentType=...` 로 기존 프로필 조회
 - `attachableStore.openTagProfile(...)` 로 태그 프로필 모달 오픈
 - 저장된 `JOURNAL_DREAM` 태그 프로필 본문은 목록/검색/상세의 꿈 엔트리 본문 아래에 표시된다. 일기(`JOURNAL_DIARY`) 태그 프로필은 설정 모달과 태그 색상 의미에만 사용하고, 엔트리 본문 아래에는 표시하지 않는다.
+- 저장·삭제 성공 알림 확인 후 화면 갱신: 월간/주간/일간 등에서는 `refreshJournalDaysForRoute` + contentType 대응 `fetchTagCloud`(`JOURNAL_DAY`→day, `JOURNAL_DIARY`→diary, `JOURNAL_DREAM`→dream). 결산 상세(`annual-detail`)에서는 `fetchTagRows(yy, activeSection)`로 결산 태그클라우드를 재조회한다. 검색 팝업(`journal-entry-search`)에서는 일자/클라우드 재조회 없이 `success` → `loadEntries()`만 수행한다.
 
 **중요 보존 규칙**:
 - 일기/꿈 태그 검색은 현재 목록의 `diaryKeyword` / `dreamKeyword` 필터로 대체하지 않는다.

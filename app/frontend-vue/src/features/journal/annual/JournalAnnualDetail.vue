@@ -50,7 +50,7 @@
           <div class="journal-sumry-item">
             <div class="ms-3 fs-6">{{ t("journal.annual.detail.summary") }}</div>
             <div
-              class="fs-6 fw-normal text-gray-800 ps-2 pt-2 text-noti"
+              class="journal-content p-2 text-noti"
               v-html="store.annualDetail.markdownContent"
             ></div>
             <!--begin::요약 태그-->
@@ -247,39 +247,55 @@
             <div v-if="!store.diaryEntries.length" class="text-center text-muted py-6 fs-7">
               {{ t('journal.annual.diary.empty') }}
             </div>
-            <div
-              v-for="entry in store.diaryEntries"
-              :key="entry.id"
-              class="row journal-entry-row mb-3 align-items-center"
-            >
-              <!--begin::날짜-->
-              <div class="col-1 text-center text-gray-500 fs-7">
-                {{ entry.stdrdDt }}
-                <span v-if="entry.stdrdDt" class="d-block fs-8 text-gray-400">
-                  {{ getWeekDayStr(entry.stdrdDt, t) }}
-                </span>
-              </div>
-              <!--end::날짜-->
-              <!--begin::본문-->
-              <div class="col journal-diary-content p-2">
-                <div v-if="entry.title" class="fw-bold fs-6 mb-1">{{ entry.title }}</div>
-                <div
-                  class="fs-6 fw-normal text-gray-800 text-noti"
-                  v-html="entry.markdownContent"
-                ></div>
-                <div v-if="hasEntryTags(entry)" class="mt-2">
-                  <i class="bi bi-tag fs-7"></i>
-                  <span
-                    v-for="tag in entry.tag?.list"
-                    :key="String(tag.tagId)"
-                    class="text-muted fs-8 pe-1"
-                  >
-                    #{{ tag.name }}
+            <template v-for="group in diaryEntryGroups" :key="'diary-group-' + group.stdrdDt">
+              <!--begin::날짜 헤더-->
+              <div class="journal-day-header mt-4 mb-1" :data-date="group.stdrdDt">
+                <div class="d-flex flex-wrap align-items-center fs-5 fw-bold">
+                  <i class="bi bi-calendar3 fs-6 me-1"></i>
+                  <span>{{ group.stdrdDt }}</span>
+                  <span v-if="group.stdrdDt" class="fs-8 text-gray-600">
+                    ({{ getWeekDayStr(group.stdrdDt, t) }})
                   </span>
                 </div>
               </div>
-              <!--end::본문-->
-            </div>
+              <!--end::날짜 헤더-->
+              <!-- data-imprtc/data-refrnc 는 journal.scss 의 $journal-paired-states 셀렉터
+                   (.journal-diary-item[data-imprtc="Y"] 등)와 연동해 중요=빨강·참조=노랑 좌측선을 낸다.
+                   일자 엔트리(JournalEntryItem)와 동일 계약. -->
+              <div
+                v-for="entry in group.entries"
+                :key="entry.id"
+                class="journal-diary-item d-flex gap-2 py-1"
+                :data-id="entry.id"
+                :data-imprtc="hasEntryState(entry, 'IMPRTC') ? 'Y' : 'N'"
+                :data-refrnc="hasEntryState(entry, 'REFRNC') ? 'Y' : 'N'"
+                :data-stdrd-dt="entry.stdrdDt"
+              >
+                <!--begin::본문-->
+                <div class="journal-diary-content flex-grow-1 p-2">
+                  <div v-if="entry.title" class="fw-bold fs-7 mb-1">{{ entry.title }}</div>
+                  <div
+                    class="journal-content p-2 text-noti"
+                    v-html="entry.markdownContent"
+                  ></div>
+                  <!--begin::엔트리 태그 — 저널 일자 JournalEntryItem 과 동일(밑줄 primary, bi-tag 없음, 클릭 메뉴)-->
+                  <div v-if="hasEntryTags(entry)" class="d-flex flex-wrap gap-1 mt-1 ps-2">
+                    <span
+                      v-for="tag in entry.tag?.list"
+                      :key="String(tag.tagId)"
+                      class="text-muted cursor-pointer pe-1"
+                      @click.stop="openTagContextMenu($event, tag, 'JOURNAL_DIARY')"
+                    >
+                      #<span class="border-bottom text-primary fw-lighter opacity-hover">
+                        <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.name }}
+                      </span>
+                    </span>
+                  </div>
+                  <!--end::엔트리 태그-->
+                </div>
+                <!--end::본문-->
+              </div>
+            </template>
           </div>
           <!--end::DIARY 목록-->
 
@@ -288,39 +304,55 @@
             <div v-if="!store.dreamEntries.length" class="text-center text-muted py-6 fs-7">
               {{ t('journal.annual.dream.empty') }}
             </div>
-            <div
-              v-for="entry in store.dreamEntries"
-              :key="entry.id"
-              class="row journal-entry-row mb-3 align-items-center"
-            >
-              <!--begin::날짜-->
-              <div class="col-1 text-center text-gray-500 fs-7">
-                {{ entry.stdrdDt }}
-                <span v-if="entry.stdrdDt" class="d-block fs-8 text-gray-400">
-                  {{ getWeekDayStr(entry.stdrdDt, t) }}
-                </span>
-              </div>
-              <!--end::날짜-->
-              <!--begin::본문-->
-              <div class="col journal-dream-content p-2">
-                <div v-if="entry.title" class="fw-bold fs-6 mb-1">{{ entry.title }}</div>
-                <div
-                  class="fs-6 fw-normal text-gray-800 text-noti"
-                  v-html="entry.markdownContent"
-                ></div>
-                <div v-if="hasEntryTags(entry)" class="mt-2">
-                  <i class="bi bi-tag fs-7"></i>
-                  <span
-                    v-for="tag in entry.tag?.list"
-                    :key="String(tag.tagId)"
-                    class="text-muted fs-8 pe-1"
-                  >
-                    #{{ tag.name }}
+            <template v-for="group in dreamEntryGroups" :key="'dream-group-' + group.stdrdDt">
+              <!--begin::날짜 헤더-->
+              <div class="journal-day-header mt-4 mb-1" :data-date="group.stdrdDt">
+                <div class="d-flex flex-wrap align-items-center fs-5 fw-bold">
+                  <i class="bi bi-calendar3 fs-6 me-1"></i>
+                  <span>{{ group.stdrdDt }}</span>
+                  <span v-if="group.stdrdDt" class="fs-8 text-gray-600">
+                    ({{ getWeekDayStr(group.stdrdDt, t) }})
                   </span>
                 </div>
               </div>
-              <!--end::본문-->
-            </div>
+              <!--end::날짜 헤더-->
+              <!-- 중요=빨강·참조=노랑 좌측선 (journal.scss $journal-paired-states 연동).
+                   꿈은 data-else-dream="Y" 일 때 별도 팔레트를 쓰므로 타인 꿈 여부도 함께 내린다. -->
+              <div
+                v-for="entry in group.entries"
+                :key="entry.id"
+                class="journal-dream-item d-flex gap-2 py-1"
+                :data-id="entry.id"
+                :data-imprtc="hasEntryState(entry, 'IMPRTC') ? 'Y' : 'N'"
+                :data-refrnc="hasEntryState(entry, 'REFRNC') ? 'Y' : 'N'"
+                :data-else-dream="entry.elseDreamYn === 'Y' ? 'Y' : 'N'"
+                :data-stdrd-dt="entry.stdrdDt"
+              >
+                <!--begin::본문-->
+                <div class="journal-dream-content flex-grow-1 p-2">
+                  <div v-if="entry.title" class="fw-bold fs-7 mb-1">{{ entry.title }}</div>
+                  <div
+                    class="journal-content p-2 text-noti"
+                    v-html="entry.markdownContent"
+                  ></div>
+                  <!--begin::엔트리 태그 — 저널 일자 JournalEntryItem 과 동일(밑줄 primary, bi-tag 없음, 클릭 메뉴)-->
+                  <div v-if="hasEntryTags(entry)" class="d-flex flex-wrap gap-1 mt-1 ps-2">
+                    <span
+                      v-for="tag in entry.tag?.list"
+                      :key="String(tag.tagId)"
+                      class="text-muted cursor-pointer pe-1"
+                      @click.stop="openTagContextMenu($event, tag, 'JOURNAL_DREAM')"
+                    >
+                      #<span class="border-bottom text-primary fw-lighter opacity-hover">
+                        <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.name }}
+                      </span>
+                    </span>
+                  </div>
+                  <!--end::엔트리 태그-->
+                </div>
+                <!--end::본문-->
+              </div>
+            </template>
           </div>
           <!--end::DREAM 목록-->
         </template>
@@ -365,6 +397,32 @@ const reviewList = computed<JournalAnnualReviewDto[]>(() =>
     ? store.annualDetail!.journalAnnualReviewList!
     : []
 );
+
+interface AnnualEntryGroup {
+  stdrdDt: string;
+  entries: AnnualEntryDto[];
+}
+
+function groupAnnualEntriesByDate(entries: AnnualEntryDto[]): AnnualEntryGroup[] {
+  const groups: AnnualEntryGroup[] = [];
+  const groupMap = new Map<string, AnnualEntryGroup>();
+
+  entries.forEach((entry) => {
+    const stdrdDt = entry.stdrdDt ?? "";
+    let group = groupMap.get(stdrdDt);
+    if (!group) {
+      group = { stdrdDt, entries: [] };
+      groupMap.set(stdrdDt, group);
+      groups.push(group);
+    }
+    group.entries.push(entry);
+  });
+
+  return groups;
+}
+
+const diaryEntryGroups = computed(() => groupAnnualEntriesByDate(store.diaryEntries));
+const dreamEntryGroups = computed(() => groupAnnualEntriesByDate(store.dreamEntries));
 
 const tagCloudRows = computed(() =>
   store.activeSection === "DIARY"
@@ -469,5 +527,14 @@ function hasReviewTags(rev: JournalAnnualReviewDto): boolean {
 /** 엔트리 태그 보유 여부 */
 function hasEntryTags(entry: AnnualEntryDto): boolean {
   return Array.isArray(entry.tag?.list) && entry.tag!.list!.length > 0;
+}
+
+/**
+ * 엔트리 상태 보유 여부 (IMPRTC=중요, REFRNC=참조).
+ * 일자 엔트리(JournalEntryItem.hasState)와 같은 판정으로, journal.scss 의
+ * data-imprtc/data-refrnc 셀렉터에 넘길 값을 만든다.
+ */
+function hasEntryState(entry: AnnualEntryDto, stateKey: string): boolean {
+  return (entry.state?.list ?? []).some((s) => s?.stateKey === stateKey);
 }
 </script>
