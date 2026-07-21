@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.day.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
@@ -203,6 +204,9 @@ public final class JournalDayViewHelper {
                     }
                 }
 
+                // 자체 태그 저장을 없앤 뒤(엔티티 TagEmbed 제거) DTO.tag 가 매핑되지 않아 null 일 수 있다.
+                // 집계 컨테이너를 여기서 보장한다.
+                if (chapter.getTag() == null) chapter.setTag(new TagCmpstn());
                 chapter.getTag().setList(new ArrayList<>(tagMap.values()));
             }
         }

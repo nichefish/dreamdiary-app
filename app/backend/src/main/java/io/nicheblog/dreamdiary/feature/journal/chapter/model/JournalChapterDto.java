@@ -98,8 +98,12 @@ public class JournalChapterDto
         return this.id;
     }
 
-    /** 태그 컴포지션 모듈 */
-    public TagCmpstn tag;
+    /** 태그 컴포지션 모듈.
+     * 자체 태그 저장은 하지 않는다(엔티티 TagEmbed 제거). 이 필드는 화면 표시용 집계 컨테이너로,
+     * JournalDayViewHelper.applyChapterTagSummary 가 소속 diary 엔트리 태그를 여기에 집계해 넣는다.
+     * 엔티티에서 매핑되지 않으므로 non-null 로 초기화해 집계 시 NPE 를 막는다. */
+    @Builder.Default
+    public TagCmpstn tag = new TagCmpstn();
     /** 상태 컴포지션 모듈 */
     public StateCmpstn state;
 }

@@ -4,6 +4,7 @@ import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import type { JournalEntryDto } from "@/features/journal/stores/journal";
 
 // ---- 타입 정의 ----
 
@@ -15,15 +16,6 @@ export interface ThreadTagItem {
 }
 
 /** 목록 검색 카드의 태그 클라우드 항목 */
-export interface ThreadTagCloudItem {
-  id: number;
-  name: string;
-  ctgr?: string;
-  contentSize?: number;
-  tagClass?: string;
-  textClass?: string;
-}
-
 /** 저널 스레드 분류 선택지 */
 export interface ThreadCategoryItem {
   code: string;
@@ -65,7 +57,6 @@ export interface JournalThreadRegistModel {
   categoryCode?: string;
   title?: string;
   content?: string;
-  tag?: { tagListStrWithCtgr?: string };
 }
 
 // ---- 스토어 ----
@@ -94,13 +85,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   /** 카테고리 필터 */
   const filterCategory = ref("");
   /** 태그 필터 (레거시 목록과 동일하게 단일 태그 선택) */
-  const filterTagId = ref<number | null>(null);
-  /** 태그 클라우드 */
-  const tagCloud = ref<ThreadTagCloudItem[]>([]);
-  /** 태그 클라우드 로딩 상태 */
-  const tagCloudLoading = ref(false);
-  /** 태그 클라우드 조회 오류 */
-  const tagCloudError = ref("");
   /** 분류 선택지 */
   const categoryOptions = ref<ThreadCategoryItem[]>([]);
   /** 분류 선택지 조회 오류 */
@@ -125,6 +109,10 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const detailLoading = ref(false);
   /** 상세 DTO */
   const detailModel = ref<JournalThreadDto | null>(null);
+  /** 상세의 소속 엔트리 목록 (일자순, 카드 표시용) */
+  const detailEntries = ref<JournalEntryDto[]>([]);
+  /** 소속 엔트리 로딩 여부 */
+  const detailEntriesLoading = ref(false);
 
   // ---- 목록 액션 ----
 
@@ -147,7 +135,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         params.searchKeyword = filterKeyword.value;
       }
       if (filterCategory.value) params.categoryCode = filterCategory.value;
-      if (filterTagId.value != null) params.tags = [filterTagId.value];
       const res = await axios.get("/api/journal/threads", { params });
       /* Spring Page<T> → { content, totalElements, totalPages, number, size } */
       const pageResult = res.data?.rsltObj;
@@ -164,20 +151,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   }
 
   /** 저널 스레드 태그 클라우드를 조회한다. */
-  async function fetchTagCloud(): Promise<void> {
-    tagCloudLoading.value = true;
-    tagCloudError.value = "";
-    try {
-      const res = await axios.get("/api/tags", { params: { contentType: "JOURNAL_THREAD" } });
-      tagCloud.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
-    } catch (e: unknown) {
-      console.error("[journalThread] fetchTagCloud failed", e);
-      tagCloud.value = [];
-      tagCloudError.value = t("journal.thread.tag-cloud.load.failure");
-    } finally {
-      tagCloudLoading.value = false;
-    }
-  }
 
   /** 현재 locale이 적용된 저널 스레드 분류 선택지를 조회한다. */
   async function fetchCategoryOptions(): Promise<void> {
@@ -196,7 +169,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   async function resetFilters(): Promise<void> {
     filterKeyword.value = "";
     filterCategory.value = "";
-    filterTagId.value = null;
     await fetchList(0);
   }
 
@@ -210,7 +182,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       categoryCode: "",
       title: "",
       content: "",
-      tag: { tagListStrWithCtgr: "" },
     };
     registOpen.value = true;
   }
@@ -233,7 +204,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         categoryCode: dto.categoryCode ?? "",
         title: dto.title ?? "",
         content: dto.content ?? "",
-        tag: { tagListStrWithCtgr: dto.tag?.tagListStrWithCtgr ?? "" },
       };
     } catch (e: unknown) {
       console.error("[journalThread] openRegist failed", { id }, e);
@@ -266,7 +236,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       fd.append("categoryCode", registModel.value.categoryCode ?? "");
       fd.append("title", registModel.value.title ?? "");
       fd.append("content", registModel.value.content ?? "");
-      fd.append("tag.tagListStr", registModel.value.tag?.tagListStrWithCtgr ?? "");
 
       const url = registModel.value.id != null
         ? `/api/journal/threads/${registModel.value.id}`
@@ -281,7 +250,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
           message: res.data?.message,
           successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
         });
-        void Promise.all([fetchList(0), fetchTagCloud()]);
+        void fetchList(0);
         return true;
       }
       void swalAjaxResult({
@@ -314,7 +283,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
           message: res.data?.message,
           successFallback: t("common.result.deleted"),
         });
-        void Promise.all([fetchList(0), fetchTagCloud()]);
+        void fetchList(0);
       } else {
         void swalAjaxResult({
           rslt: false,
@@ -339,6 +308,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     try {
       const res = await axios.get(`/api/journal/threads/${id}`);
       detailModel.value = res.data?.rsltObj ?? null;
+      void fetchDetailEntries(id);
     } catch (e: unknown) {
       console.error("[journalThread] openDetail failed", { id }, e);
       detailModel.value = null;
@@ -353,6 +323,25 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   function closeDetail() {
     detailOpen.value = false;
     detailModel.value = null;
+    detailEntries.value = [];
+  }
+
+  /**
+   * 스레드 상세의 소속 엔트리를 조회한다. (GET /api/journal/threads/{id}/entries)
+   * 실패해도 상세 모달 자체는 유지한다 — 엔트리 섹션만 비운다.
+   */
+  async function fetchDetailEntries(id: number) {
+    detailEntriesLoading.value = true;
+    detailEntries.value = [];
+    try {
+      const res = await axios.get(`/api/journal/threads/${id}/entries`);
+      detailEntries.value = (res.data?.rsltList ?? []) as JournalEntryDto[];
+    } catch (e: unknown) {
+      console.error("[journalThread] fetchDetailEntries failed", { id }, e);
+      detailEntries.value = [];
+    } finally {
+      detailEntriesLoading.value = false;
+    }
   }
 
   return {
@@ -366,14 +355,9 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     error,
     filterKeyword,
     filterCategory,
-    filterTagId,
-    tagCloud,
-    tagCloudLoading,
-    tagCloudError,
     categoryOptions,
     categoryError,
     fetchList,
-    fetchTagCloud,
     fetchCategoryOptions,
     resetFilters,
     // 등록/수정
@@ -388,6 +372,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     deleteThread,
     // 상세 모달
     detailOpen,
+    detailEntries,
+    detailEntriesLoading,
     detailLoading,
     detailModel,
     openDetail,

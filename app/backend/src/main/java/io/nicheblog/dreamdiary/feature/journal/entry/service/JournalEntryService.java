@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
@@ -265,6 +266,28 @@ public class JournalEntryService
         searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         searchParam.setContentType(policy.contentType.key);
         return this.getListDto(searchParam);
+    }
+
+    /**
+     * 엔트리 ID 집합으로 본인 소유 엔트리를 조회해 일자순으로 정렬한다.
+     * <p>
+     * 스레드 상세의 소속 엔트리 목록처럼 «ID 로 지정된 엔트리들»을 화면 카드로 보여줄 때 쓴다.
+     * 타 유형(일기·꿈·노트)이 섞여 있어도 한 번에 조회하며, 소유권은 {@code createdBy} 로 거른다.
+     * 정렬은 {@link JournalEntryDto#compareTo} 계약(기준일자순)을 따른다.
+     *
+     * @param ids 엔트리 ID 집합 (비어 있으면 빈 목록)
+     * @return 소유·정렬된 엔트리 DTO 목록
+     */
+    public List<JournalEntryDto> getListDtoByIds(final Collection<Integer> ids) throws Exception {
+        if (CollectionUtils.isEmpty(ids)) return List.of();
+        final String username = AuthUtils.requireLoginUsername();
+        final List<JournalEntryDto> list = new ArrayList<>();
+        for (final JournalEntryEntity entity : repository.findAllById(ids)) {
+            final JournalEntryDto dto = mapstruct.toDto(entity);
+            if (dto.getIsCreatedBy(username)) list.add(dto);
+        }
+        Collections.sort(list);
+        return list;
     }
 
     /**

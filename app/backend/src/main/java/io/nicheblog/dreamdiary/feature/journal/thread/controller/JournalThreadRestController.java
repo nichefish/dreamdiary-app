@@ -3,7 +3,9 @@ package io.nicheblog.dreamdiary.feature.journal.thread.controller;
 import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemDto;
 import io.nicheblog.dreamdiary.feature.admin.code.service.CodeItemService;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadSearchParam;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService;
@@ -51,6 +53,36 @@ public class JournalThreadRestController
     private final JournalThreadService journalThreadService;
     private final JournalThreadEntryService journalThreadEntryService;
     private final CodeItemService codeItemService;
+
+    /**
+     * 엔트리 소속 메뉴용 저널 스레드 후보 조회 (Ajax).
+     * <p>
+     * 현재 소속 여부, 최근 소속 추가 시각, 활성 소속 수와 스레드 수정 시각을
+     * 서버에서 집계해 결정적인 우선순위로 반환한다.
+     *
+     * @param entryId 후보를 요청한 엔트리 식별자
+     * @param keyword 제목 검색어
+     * @param categoryCode 분류 코드
+     * @param limit 최대 후보 수 (서버에서 1~20으로 제한)
+     * @return {@link ResponseEntity} -- 경량 스레드 후보 목록
+     */
+    @GetMapping(Url.JOURNAL_THREAD_CANDIDATES)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalThreadCandidateListAjax(
+            final @RequestParam("entryId") Integer entryId,
+            final @RequestParam(value = "keyword", required = false) String keyword,
+            final @RequestParam(value = "categoryCode", required = false) String categoryCode,
+            final @RequestParam(value = "limit", defaultValue = "7") Integer limit
+    ) throws Exception {
+
+        final List<JournalThreadCandidateDto> resultList =
+                journalThreadService.getCandidates(entryId, keyword, categoryCode, limit);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(resultList));
+    }
 
     /**
      * 저널 스레드 분류 목록 조회 (Ajax).
@@ -164,11 +196,11 @@ public class JournalThreadRestController
     }
 
     /**
-     * 스레드 소속 엔트리 목록 조회 (Ajax)
+     * 스레드 소속 엔트리 목록 조회 (Ajax) — 상세 화면 카드 표시용 full 엔트리.
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param id 스레드 식별자
-     * @return {@link ResponseEntity} -- 소속 목록 (sort_order 우선, NULL 은 뒤로)
+     * @return {@link ResponseEntity} -- 소속 엔트리(JournalEntryDto) 목록, 일자순
      */
     @GetMapping(Url.JOURNAL_THREAD_ENTRIES)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -177,7 +209,7 @@ public class JournalThreadRestController
             final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final List<JournalThreadEntryDto> resultList = journalThreadEntryService.getListByThread(id);
+        final List<JournalEntryDto> resultList = journalThreadEntryService.getEntriesByThread(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 

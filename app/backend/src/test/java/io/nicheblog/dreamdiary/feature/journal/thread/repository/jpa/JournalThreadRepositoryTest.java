@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa;
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateProjection;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -13,10 +15,13 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +44,8 @@ class JournalThreadRepositoryTest {
 
     @Resource
     private JournalThreadRepository journalThreadRepository;
+    @Resource
+    private JournalThreadEntryRepository journalThreadEntryRepository;
 
     private JournalThreadEntity journalThreadEntity;
 
@@ -115,5 +122,85 @@ class JournalThreadRepositoryTest {
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");
     }
-}
 
+    /**
+     * 소속 후보 정렬·제목 검색·분류 필터 계약 검증.
+     */
+    @Test
+    void findCandidatesRanksMembershipContextAndAppliesFilters() {
+        final String username = "candidate_user";
+        final int currentEntryId = 7001;
+        final JournalThreadEntity current = candidateThread(
+                "현재 소속 흐름", "CASE", username, LocalDateTime.of(2026, 7, 1, 10, 0));
+        final JournalThreadEntity recent = candidateThread(
+                "최근 사용 흐름", "CASE", username, LocalDateTime.of(2026, 7, 2, 10, 0));
+        final JournalThreadEntity frequent = candidateThread(
+                "자주 사용한 흐름", "REVIEW", username, LocalDateTime.of(2026, 7, 3, 10, 0));
+        final JournalThreadEntity unused = candidateThread(
+                "미사용 흐름", "CASE", username, LocalDateTime.of(2026, 7, 4, 10, 0));
+        journalThreadRepository.saveAll(List.of(current, recent, frequent, unused));
+        journalThreadRepository.flush();
+
+        journalThreadEntryRepository.saveAll(List.of(
+                candidateMembership(current.getId(), currentEntryId, username, LocalDateTime.of(2026, 7, 5, 10, 0)),
+                candidateMembership(recent.getId(), 7002, username, LocalDateTime.of(2026, 7, 20, 10, 0)),
+                candidateMembership(frequent.getId(), 7003, username, LocalDateTime.of(2026, 7, 10, 10, 0)),
+                candidateMembership(frequent.getId(), 7004, username, LocalDateTime.of(2026, 7, 11, 10, 0))
+        ));
+        journalThreadEntryRepository.flush();
+
+        final List<JournalThreadCandidateProjection> ranked = journalThreadRepository.findCandidates(
+                username, currentEntryId, "", "", PageRequest.of(0, 10));
+        assertEquals(
+                List.of("현재 소속 흐름", "최근 사용 흐름", "자주 사용한 흐름", "미사용 흐름"),
+                ranked.stream().map(JournalThreadCandidateProjection::getTitle).toList()
+        );
+        assertEquals(1L, ranked.get(0).getCurrentEntryMembershipCount().longValue());
+        assertEquals(2L, ranked.get(2).getMembershipCount().longValue());
+
+        final List<JournalThreadCandidateProjection> titleFiltered = journalThreadRepository.findCandidates(
+                username, currentEntryId, "사용", "", PageRequest.of(0, 10));
+        assertEquals(
+                List.of("최근 사용 흐름", "자주 사용한 흐름", "미사용 흐름"),
+                titleFiltered.stream().map(JournalThreadCandidateProjection::getTitle).toList()
+        );
+
+        final List<JournalThreadCandidateProjection> categoryFiltered = journalThreadRepository.findCandidates(
+                username, currentEntryId, "", "CASE", PageRequest.of(0, 10));
+        assertEquals(
+                List.of("현재 소속 흐름", "최근 사용 흐름", "미사용 흐름"),
+                categoryFiltered.stream().map(JournalThreadCandidateProjection::getTitle).toList()
+        );
+    }
+
+    /** 후보 쿼리용 가상 스레드 픽스처를 만든다. */
+    private JournalThreadEntity candidateThread(
+            final String title,
+            final String categoryCode,
+            final String username,
+            final LocalDateTime createdAt
+    ) {
+        return JournalThreadEntity.builder()
+                .contentType("JOURNAL_THREAD")
+                .title(title)
+                .categoryCode(categoryCode)
+                .createdBy(username)
+                .createdAt(createdAt)
+                .build();
+    }
+
+    /** 후보 쿼리용 가상 소속 픽스처를 만든다. */
+    private JournalThreadEntryEntity candidateMembership(
+            final Integer threadId,
+            final Integer entryId,
+            final String username,
+            final LocalDateTime createdAt
+    ) {
+        return JournalThreadEntryEntity.builder()
+                .threadId(threadId)
+                .entryId(entryId)
+                .createdBy(username)
+                .createdAt(createdAt)
+                .build();
+    }
+}

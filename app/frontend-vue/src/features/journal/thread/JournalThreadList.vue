@@ -2,36 +2,11 @@
   <!--begin::저널 스레드 목록-->
   <div class="journal-thread-list-vue">
 
-    <!--begin::태그 클라우드·검색 카드 — 등록은 JournalThreadViewToolbar. 카드는 툴바에 붙인다(margin-top: 0).-->
+    <!--begin::검색 카드 — 등록은 JournalThreadViewToolbar. 카드는 툴바에 붙인다(margin-top: 0).-->
     <div class="card mb-4" style="margin-top: 0 !important;">
       <div class="card-body px-4 py-3">
-        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
-          <!--begin::태그 클라우드-->
-          <div class="d-flex flex-wrap align-items-center gap-1 flex-grow-1 py-1" style="min-width:0;">
-            <i class="bi bi-tags text-muted me-1"></i>
-            <span v-if="store.tagCloudLoading" class="text-muted fs-7">{{ t("common.loading") }}...</span>
-            <span v-else-if="store.tagCloudError" class="text-danger fs-7">{{ store.tagCloudError }}</span>
-            <span v-else-if="!store.tagCloud.length" class="text-muted fs-7">{{ t("journal.thread.tag-cloud.empty") }}</span>
-            <template v-else>
-              <button
-                v-for="tag in store.tagCloud"
-                :key="tag.id"
-                type="button"
-                class="btn btn-sm py-1 px-2"
-                :class="store.filterTagId === tag.id ? 'btn-light-primary border border-primary' : 'btn-light text-gray-600'"
-                @click="toggleTagFilter(tag.id)"
-              >
-                <span v-if="tag.ctgr" class="fs-9 text-muted me-1">[{{ tag.ctgr }}]</span>
-                <span :class="[tag.tagClass, tag.textClass]">#{{ tag.name }}</span>
-                <span class="fs-9 text-muted ms-1">{{ tag.contentSize ?? 0 }}</span>
-              </button>
-            </template>
-          </div>
-          <!--end::태그 클라우드-->
-        </div>
-
         <!--begin::검색 폼-->
-        <form class="d-flex flex-wrap align-items-center gap-2 border-top pt-3" @submit.prevent="search">
+        <form class="d-flex flex-wrap align-items-center gap-2" @submit.prevent="search">
           <select v-model="store.filterCategory" class="form-select form-select-sm form-select-solid w-auto flex-shrink-0">
             <option value="">{{ t("journal.thread.filter.all-categories") }}</option>
             <option v-for="category in store.categoryOptions" :key="category.code" :value="category.code">
@@ -52,7 +27,7 @@
         <!--end::검색 폼-->
       </div>
     </div>
-    <!--end::태그 클라우드·검색 카드-->
+    <!--end::검색 카드-->
 
     <div class="card post">
       <div class="card-body">
@@ -188,7 +163,6 @@
   onMounted(() => {
     void Promise.all([
       store.fetchList(0),
-      store.fetchTagCloud(),
       store.fetchCategoryOptions(),
     ]);
   });
@@ -206,11 +180,6 @@
 
   function resetFilters(): void {
     void store.resetFilters();
-  }
-
-  function toggleTagFilter(tagId: number): void {
-    store.filterTagId = store.filterTagId === tagId ? null : tagId;
-    void store.fetchList(0);
   }
 
   function openDetail(id: number): void {

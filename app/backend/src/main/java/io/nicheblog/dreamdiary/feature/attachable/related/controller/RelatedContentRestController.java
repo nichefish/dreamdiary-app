@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.attachable.related.controller;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
-import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentFlowDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentPostDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.my.MyRelatedContentService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -51,27 +50,6 @@ public class RelatedContentRestController
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(relatedList));
     }
 
-    /**
-     * 앵커 엔트리의 FLOW 연결 컴포넌트를 시간순으로 조회한다.
-     *
-     * @param contentType 앵커 콘텐츠 타입
-     * @param id 앵커 엔트리 ID
-     * @return FLOW 조회 결과
-     * @throws Exception 조회 중 예외
-     */
-    @GetMapping(value = {Url.RELATED_FLOW})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> relatedContentFlowAjax(
-            final @PathVariable("contentType") String contentType,
-            final @PathVariable("id") Integer id
-    ) throws Exception {
-        final ContentType resolvedContentType = ContentType.get(contentType);
-        final RelatedContentFlowDto flow = myRelatedContentService.getMyFlowDto(resolvedContentType, id);
-        return ResponseEntity.ok(
-                AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(flow)
-        );
-    }
 
     @PostMapping(value = {Url.RELATEDS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

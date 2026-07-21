@@ -57,16 +57,6 @@
             </div>
             <!--end::본문-->
 
-            <!--begin::태그-->
-            <div class="row d-flex mb-8">
-              <div class="col-12">
-                <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.tag') }}</span>
-                </label>
-                <TagifyEditor v-model="tagListStrWithCtgr" />
-              </div>
-            </div>
-            <!--end::태그-->
           </form>
         </div>
         <!--end::Modal Body-->
@@ -104,7 +94,6 @@ import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import RichEditor from "@/shared/ui/editor/RichEditor.vue";
-import TagifyEditor from "@/shared/ui/tag/TagifyEditor.vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -121,14 +110,6 @@ const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() =>
 const model = computed(() => store.registModel);
 const isModify = computed(() => !!model.value?.id);
 
-const tagListStrWithCtgr = computed({
-  get: () => model.value?.tag?.tagListStrWithCtgr ?? "",
-  set: (v: string) => {
-    if (!model.value) return;
-    model.value.tag = model.value.tag ?? {};
-    model.value.tag.tagListStrWithCtgr = v;
-  },
-});
 
 onMounted(() => {
   if (modalEl.value) {

@@ -86,9 +86,9 @@
       <!--end::꿈 태그 프로필-->
 
       <!--begin::관련글-->
-      <div v-if="normalRelatedList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
+      <div v-if="relatedList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
         <div
-          v-for="rel in normalRelatedList"
+          v-for="rel in relatedList"
           :key="rel.id"
           class="d-flex align-items-center flex-wrap gap-2 p-2 bg-light rounded fs-8 text-muted"
         >
@@ -107,11 +107,10 @@
           <span v-else>{{ rel.targetTitle }}</span>
           <span v-if="rel.reason" class="fst-italic">({{ rel.reason }})</span>
           <button
-            v-if="rel.id"
+            v-if="axisWritable && rel.id"
             type="button"
             class="btn btn-xs btn-icon btn-light-danger ms-auto"
             :title="t('related-content.unlink.tooltip')"
-            v-if="axisWritable"
             @click.stop="unlinkRelated(rel)"
           >
             <i class="bi bi-x-lg fs-9"></i>
@@ -120,6 +119,22 @@
 
       </div>
       <!--end::관련글-->
+
+      <!--begin::소속 흐름 (스레드 소속)-->
+      <div v-if="entryThreadList.length > 0" class="d-flex flex-wrap align-items-center gap-1 mt-2 ps-2">
+        <i class="bi bi-diagram-3 fs-8 text-muted"></i>
+        <button
+          v-for="th in entryThreadList"
+          :key="'thread-' + th.id"
+          type="button"
+          class="badge badge-light-primary border-0 fs-8 cursor-pointer"
+          :title="t('journal.entry.thread.open.tooltip')"
+          @click.stop="openThreadDetail(th.threadId)"
+        >
+          {{ th.threadTitle || ('#' + th.threadId) }}
+        </button>
+      </div>
+      <!--end::소속 흐름-->
 
       <!--begin::댓글-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
@@ -220,15 +235,113 @@
           </div>
           <!--end::관련 글 추가-->
 
-          <!--begin::흐름 연결 (다른 사람 꿈 제외)-->
-          <div v-if="axisWritable && !hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openRelatedFlow">
-              {{ t('journal.entry.flow.connect') }}
-              <i class="bi bi-bezier2 fs-8"></i>
+          <!--begin::흐름에 추가 서브메뉴 (다른 사람 꿈 제외)-->
+          <div
+            v-if="axisWritable && !hasDreamerName(entry)"
+            class="menu-item px-3"
+            data-kt-menu-trigger="hover"
+            data-kt-menu-placement="right-end"
+            @mouseenter="ensureThreadOptions"
+          >
+            <a href="#" class="menu-link px-3" @click.prevent>
+              <span class="menu-title">{{ t('journal.entry.thread.add') }}</span>
+              <span class="menu-arrow"></span>
+            </a>
+            <div class="menu-sub menu-sub-dropdown py-3" style="width: 280px;">
+              <!--begin::새 흐름으로 시작-->
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3 text-primary" @click="startNewThread">
+                  {{ t('journal.entry.thread.new') }}
+                  <i class="bi bi-plus-lg fs-8"></i>
+                </div>
+              </div>
+              <!--end::새 흐름으로 시작-->
+
+              <div class="separator my-2"></div>
+
+              <!--begin::흐름 후보 검색·분류-->
+              <div
+                class="menu-item px-3"
+                data-kt-menu-dismiss="false"
+                @click.stop
+                @keydown.stop
+              >
+                <div class="menu-content px-3 py-1 w-100">
+                  <input
+                    v-model="membershipStore.optionKeyword"
+                    type="search"
+                    class="form-control form-control-sm"
+                    :placeholder="t('journal.thread.filter.keyword.placeholder')"
+                    data-kt-menu-dismiss="false"
+                    @input="scheduleThreadCandidateSearch"
+                  />
+                  <select
+                    v-model="membershipStore.optionCategory"
+                    class="form-select form-select-sm mt-2"
+                    :disabled="membershipStore.categoriesLoading"
+                    data-kt-menu-dismiss="false"
+                    @change="refreshThreadCandidates"
+                  >
+                    <option value="">{{ t("journal.thread.filter.all-categories") }}</option>
+                    <option
+                      v-for="category in membershipStore.categoryOptions"
+                      :key="'thread-category-' + category.code"
+                      :value="category.code"
+                    >
+                      {{ category.codeName }}
+                    </option>
+                  </select>
+                  <div v-if="membershipStore.categoryError" class="text-danger fs-9 mt-1">
+                    {{ membershipStore.categoryError }}
+                  </div>
+                </div>
+              </div>
+              <!--end::흐름 후보 검색·분류-->
+
+              <div class="separator my-2"></div>
+
+              <!--begin::흐름 후보 목록-->
+              <div v-if="membershipStore.optionsLoading" class="menu-item px-3">
+                <span class="menu-link px-3 text-muted fs-8">{{ t('common.loading') }}</span>
+              </div>
+              <div v-if="membershipStore.optionsError" class="menu-item px-3">
+                <span class="menu-content px-3 text-danger fs-8">{{ membershipStore.optionsError }}</span>
+              </div>
+              <div
+                v-if="!membershipStore.optionsLoading
+                  && !membershipStore.optionsError
+                  && membershipStore.threadOptions.length === 0"
+                class="menu-item px-3"
+              >
+                <span class="menu-content px-3 text-muted fs-8">
+                  {{ hasThreadCandidateFilter
+                    ? t('journal.entry.thread.search.empty')
+                    : t('journal.entry.thread.empty') }}
+                </span>
+              </div>
+              <template v-if="membershipStore.threadOptions.length > 0">
+                <div
+                  v-for="opt in membershipStore.threadOptions"
+                  :key="'thread-opt-' + opt.id"
+                  class="menu-item px-3 my-1 cursor-pointer"
+                >
+                  <div class="menu-link flex-stack px-3" @click="toggleThread(opt)">
+                    <span class="min-w-0">
+                      <span class="d-block text-truncate">
+                        {{ opt.title || t('journal.entry.thread.untitled') }}
+                      </span>
+                      <span v-if="opt.categoryCode" class="d-block text-muted fs-9">
+                        {{ threadCategoryName(opt.categoryCode) }}
+                      </span>
+                    </span>
+                    <i v-if="opt.member" class="bi bi-check-lg fs-8 text-success"></i>
+                  </div>
+                </div>
+              </template>
+              <!--end::흐름 후보 목록-->
             </div>
           </div>
-          <!--end::흐름 연결-->
-
+          <!--end::흐름에 추가 서브메뉴-->
 
           <div v-if="axisWritable" class="separator my-2"></div>
 
@@ -350,11 +463,15 @@
 
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
-import { ref, computed, nextTick, provide } from "vue";
-import { useRoute } from "vue-router";
+import { ref, computed, nextTick, onBeforeUnmount, provide } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
+import {
+  useJournalThreadMembershipStore,
+  type ThreadOption,
+} from "@/features/journal/stores/journalThreadMembership";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
@@ -365,9 +482,9 @@ import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
 import {
-  JOURNAL_DAY_RESOLVED_KEY,
-  mergeDayResolvedAxis,
   useJournalDayResolved,
+  mergeDayResolvedAxis,
+  JOURNAL_DAY_RESOLVED_KEY,
 } from "@/features/journal/utils/journalDayResolved";
 
 const props = defineProps<{
@@ -386,6 +503,8 @@ const attachableStore = useAttachableModalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();
 const route = useRoute();
+const router = useRouter();
+const membershipStore = useJournalThreadMembershipStore();
 const { t } = useLocaleStore();
 
 interface JournalCacheContext {
@@ -470,10 +589,6 @@ const dreamTagProfileList = computed(() => {
 const unlinkedRelatedIds = ref<Set<number>>(new Set());
 const relatedList = computed(() => (props.entry.relatedContentList ?? []).filter(
   (related) => related.id == null || !unlinkedRelatedIds.value.has(related.id)
-));
-/** 일반 관련글은 직접 관계별 행을 유지하고 FLOW 직접 간선은 목록 행에서 숨긴다. */
-const normalRelatedList = computed(() => relatedList.value.filter(
-  (related) => related.relationType !== "FLOW"
 ));
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const interpretationList = computed(() => props.entry.journalInterpretationList ?? []);
@@ -666,7 +781,9 @@ function openCommentRegist() {
 /** 이력 모달 열기 */
 function openHistory() {
   if (!props.entry.id || !props.entry.contentType) return;
-  void attachableStore.openHistory(props.entry.contentType, props.entry.id, { writeLocked: !axisWritable.value });
+  void attachableStore.openHistory(props.entry.contentType, props.entry.id, {
+    writeLocked: !axisWritable.value,
+  });
 }
 
 /** 관련 글 추가 모달 열기 */
@@ -676,12 +793,100 @@ function openRelated() {
   attachableStore.openRelated(props.entry.contentType, props.entry.id);
 }
 
-/** FLOW 연결 모달 열기 */
-function openRelatedFlow() {
-  if (!guardAxisWrite()) return;
-  if (!props.entry.id || !props.entry.contentType) return;
-  attachableStore.openRelatedFlow(props.entry.contentType, props.entry.id);
+/** 이 엔트리가 속한 흐름(스레드) 목록. */
+const entryThreadList = computed(() => props.entry.threadList ?? []);
+
+/** 검색·분류가 적용 중인지 여부. 정상 빈 목록의 안내 문구를 구분한다. */
+const hasThreadCandidateFilter = computed(() =>
+  membershipStore.optionKeyword.trim() !== "" || membershipStore.optionCategory !== "",
+);
+
+/** 제목 입력마다 API를 호출하지 않도록 마지막 입력 뒤 250ms에 조회한다. */
+let threadCandidateSearchTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** 서브메뉴 진입 시 현재 엔트리 기준 후보와 분류를 조회한다. */
+function ensureThreadOptions(): void {
+  if (!props.entry.id) return;
+  void membershipStore.openThreadOptions(props.entry.id);
 }
+
+/** 제목 검색을 debounce하여 현재 엔트리 후보를 갱신한다. */
+function scheduleThreadCandidateSearch(): void {
+  if (threadCandidateSearchTimer) clearTimeout(threadCandidateSearchTimer);
+  const entryId = props.entry.id;
+  if (!entryId) return;
+  threadCandidateSearchTimer = setTimeout(() => {
+    if (membershipStore.candidateEntryId === entryId) {
+      void membershipStore.fetchThreadOptions(entryId);
+    }
+  }, 250);
+}
+
+/** 분류 변경 시 현재 엔트리 후보를 즉시 갱신한다. */
+function refreshThreadCandidates(): void {
+  if (threadCandidateSearchTimer) clearTimeout(threadCandidateSearchTimer);
+  const entryId = props.entry.id;
+  if (!entryId || membershipStore.candidateEntryId !== entryId) return;
+  void membershipStore.fetchThreadOptions(entryId);
+}
+
+/** 후보 분류 코드를 현재 locale의 표시명으로 변환한다. */
+function threadCategoryName(categoryCode: string): string {
+  return membershipStore.categoryOptions.find((category) => category.code === categoryCode)?.codeName
+    ?? categoryCode;
+}
+
+/** 흐름 소속 토글: 속해 있으면 제외, 아니면 추가. 성공 시 목록 갱신. */
+async function toggleThread(option: ThreadOption): Promise<void> {
+  if (!guardAxisWrite()) return;
+  if (!props.entry.id) return;
+  const entryId = props.entry.id;
+  const ok = option.member
+    ? await membershipStore.removeFromThread(option.id, entryId)
+    : await membershipStore.addToThread(option.id, entryId);
+  if (ok) {
+    if (membershipStore.candidateEntryId === entryId) {
+      await membershipStore.fetchThreadOptions(entryId);
+    }
+    scrollAfterFetch();
+  }
+}
+
+/** 제목만 받아 새 흐름을 만들고 이 엔트리를 소속시킨다. */
+async function startNewThread(): Promise<void> {
+  if (!guardAxisWrite()) return;
+  if (!props.entry.id) return;
+  const result = await swalFire({
+    input: "text",
+    inputLabel: t("journal.entry.thread.new.prompt"),
+    inputPlaceholder: t("journal.entry.thread.new.placeholder"),
+    showCancelButton: true,
+    confirmButtonText: t("common.save"),
+    cancelButtonText: t("common.cancel"),
+    inputValidator: (value: string) =>
+      value && value.trim() ? null : t("journal.entry.thread.new.required"),
+  });
+  const title = typeof result.value === "string" ? result.value.trim() : "";
+  if (!title) return;
+  const entryId = props.entry.id;
+  const ok = await membershipStore.createThreadAndAdd(title, entryId);
+  if (ok) {
+    if (membershipStore.candidateEntryId === entryId) {
+      await membershipStore.fetchThreadOptions(entryId);
+    }
+    scrollAfterFetch();
+  }
+}
+
+onBeforeUnmount(() => {
+  if (threadCandidateSearchTimer) clearTimeout(threadCandidateSearchTimer);
+});
+
+/** 흐름(스레드) 상세로 이동한다. */
+function openThreadDetail(threadId: number): void {
+  void router.push({ name: "thread-detail", params: { id: String(threadId) } });
+}
+
 
 /** 관련 엔트리 원문 열기 */
 function openRelatedTarget(targetId: number): void {
@@ -698,14 +903,13 @@ function relatedContentTypeLabel(contentType: string): string {
 /** 관계 유형을 현재 locale 레이블로 변환한다. */
 function relationTypeLabel(relationType: string): string {
   const normalized = relationType.toLowerCase();
-  if (["reference", "extension", "parallel", "cause", "flow"].includes(normalized)) {
+  if (["reference", "extension", "parallel", "cause"].includes(normalized)) {
     return t(`enum.relation-type.${normalized}`);
   }
   return relationType;
 }
 
-/** 변경 전: 관련 글 연결 해제. FLOW는 경로 분리 가능성을 별도 확인한다.
- * 변경 후: 목록에서는 일반 관련글만 해제하고 FLOW 직접 연결 관리는 전체 흐름 모달에서 수행한다. */
+/** 관련 글 연결 해제. FLOW 축은 스레드 소속으로 수렴·제거됐으므로 목록에는 일반 관련글만 남는다. */
 async function unlinkRelated(related: RelatedContentItem): Promise<void> {
   if (!guardAxisWrite()) return;
   if (!related.id) {

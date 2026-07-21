@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service.helper;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
-import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentFlowSummaryDto;
-import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentFlowService;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
@@ -22,7 +20,6 @@ import java.util.stream.Collectors;
 public class JournalEntryRelatedEnricher {
 
     private final RelatedContentQueryService relatedContentQueryService;
-    private final RelatedContentFlowService relatedContentFlowService;
     private final JournalThreadEntryService journalThreadEntryService;
 
     /**
@@ -47,8 +44,6 @@ public class JournalEntryRelatedEnricher {
 
         final Map<String, List<RelatedContentDto>> relatedMap =
                 relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
-        final Map<BaseAttachableKey, RelatedContentFlowSummaryDto> flowSummaryMap =
-                relatedContentFlowService.getFlowSummaryMap(refKeyList, username);
         // 흐름(스레드) 소속. 엔트리마다 단건 조회하면 N+1 이라 목록 단위로 한 번에 받는다.
         final Map<Integer, List<JournalThreadEntryDto>> threadMap =
                 journalThreadEntryService.getMapByEntryIds(
@@ -63,7 +58,6 @@ public class JournalEntryRelatedEnricher {
             dto.setRelatedContentList(
                     relatedMap.getOrDefault(String.format("%s:%d", contentType.key, dto.getId()), List.of())
             );
-            dto.setFlowSummary(flowSummaryMap.get(new BaseAttachableKey(dto.getId(), contentType)));
             dto.setThreadList(threadMap.getOrDefault(dto.getId(), List.of()));
         }
     }

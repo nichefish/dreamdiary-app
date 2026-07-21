@@ -13,8 +13,8 @@
 | 일자 카드 ⋯ 컨텍스트 메뉴 | `JournalDayCard.vue` — Metronic dropdown | ✓ |
 | 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
 | 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴; 태그 입력 검색 — 컨트롤 행의 태그 입력(모달 내 datalist 미표시 대응: 인라인 typeahead 미리보기; 모달 오픈·포커스 시 `journalModalStore.dayTagCategoryMap`(SSOT)과 `/api/journal/day/tags` 를 병합해 최초 1회 로드)으로 기존 태그만 AND 필터에 추가(엔트리 검색과 동일 `findKnownTagName`·categoryMap 매칭); 카탈로그에 없는 이름은 Swal 대신 인라인 안내(모달 유지), 동명 태그(다중 카테고리)는 카테고리 선택 버튼으로 분기; 모달 닫힘 시 입력·힌트·카테고리 선택 상태 초기화(카탈로그 캐시는 유지) | ✓코드 |
-| 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/FLOW 연결·보기/삭제 | ✓ |
-| FLOW 연결 (수렴 진행 중) | FLOW 를 스레드 소속으로 수렴하는 중이다(`docs/spec/DESIGN_NOTES.md`). 「흐름 보기」 종단 보기와 본문 FLOW 요약 행은 제거됐다. 「흐름 연결」(`openRelatedFlow`)은 나-2b 에서, 백엔드 `flowSummary` 는 다-2 에서 제거한다. | ⚠ |
+| 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/흐름에 추가/삭제 | ✓ |
+| FLOW 연결 (수렴 완료) | FLOW 를 스레드 소속으로 수렴 완료했다(`docs/spec/DESIGN_NOTES.md`). 「흐름 보기」·본문 요약 행·「흐름 연결」 UI 는 모두 제거됐다(나-2a·나-2b). 백엔드 `flowSummary` 와 `related_content` FLOW 행도 다-2 에서 제거됐다. | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 버튼 | `JournalChapterItem.vue` — `copyChapter()`, 날짜(요일)·카테고리·엔트리 전체 텍스트 클립보드 복사 | ✓ |
 | 꿈 복사 버튼 | `JournalDayCard.vue` — `copyDreams()`, 날짜(요일) 헤더 + 꿈 엔트리 전체 클립보드 복사 | ✓ |
@@ -39,7 +39,11 @@
 
 **일자 필터 모달 i18n**: 제목·결과 건수·연도/전체 연도·연월 구분선·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·모든 필터 제거 시 빈 결과·연도 변경 시 필터 유지 계약을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 
-**FLOW 종단 추적 계약 (수렴 진행 중 — 종단 보기 ❌ 제거)**: FLOW 를 스레드 소속으로 수렴하는 중이다(`docs/spec/DESIGN_NOTES.md`). 「흐름 보기」 종단 보기(타임라인 모달)와 본문 FLOW 요약 행은 나-2a 에서 제거됐다. 백엔드 `flowSummary` 배치 계산과 `GET /api/related/{contentType}/{id}/flow`, 「흐름 연결」(`openRelatedFlow`, 방향 없는 `FLOW` RELATED 저장)은 아직 남아 있으며 나-2b·다-2 에서 제거한다. 저널 스레드 연결은 독립 상위 서사에 엔트리를 소속시키는 새 축이며, FLOW 간선 29건은 V0.24.8 에서 스레드 4건·소속 33건으로 이미 이관됐다.
+**FLOW 종단 추적 계약 (수렴 완료 — 종단 보기 ❌ 제거)**: FLOW 를 스레드 소속으로 수렴 완료했다(`docs/spec/DESIGN_NOTES.md`). 「흐름 보기」 종단 보기(타임라인 모달)와 본문 FLOW 요약 행은 나-2a 에서 제거됐다. 「흐름 연결」(`openRelatedFlow`) UI 도 나-2b 에서 제거됐고, `RelatedContentAddModal` 은 일반 관련 글 전용이 됐다. 백엔드 `flowSummary` 배치 계산·`GET /api/related/{contentType}/{id}/flow`·`RelationType.FLOW` enum·`related_content` FLOW 행도 모두 제거됐다(다-2). FLOW 축은 수렴 완료. 저널 스레드 연결은 독립 상위 서사에 엔트리를 소속시키는 새 축이며, FLOW 간선 29건은 V0.24.8 에서 스레드 4건·소속 33건으로 이미 이관됐다.
+
+**스레드 소속 등록 서버 경계**: `POST /api/journal/threads/{id}/entries`는 소속 행을 조회·복원·저장하기 전에 대상 스레드와 엔트리가 모두 존재하고 현재 사용자 소유인지 검증한다. 엔트리가 없으면 not found, 타인 소유이면 access denied로 응답하며, 두 실패 모두 기존 소속 조회·복원·INSERT를 수행하지 않는다. 변경 전에는 스레드 소유권만 검사해 직접 API 요청으로 타인 엔트리 소속 행이 만들어질 수 있었고, 변경 후에는 서버 쓰기 경계에서 이를 차단한다.
+
+**스레드 소속 후보 계약**: `GET /api/journal/threads/candidates?entryId=...&keyword=...&categoryCode=...&limit=...`는 현재 사용자 소유 스레드만 경량 후보로 반환한다. 정렬은 현재 엔트리 소속 여부 → 가장 최근 활성 소속 `created_at` → 활성 소속 수 → 스레드 수정·생성 시각 → ID 역순이며, 소프트 삭제된 소속은 집계하지 않는다. 제목 검색과 분류 필터는 정렬 전에 후보 집합을 좁히고, `limit`는 서버에서 1~20으로 보정한다. 별도 사용 시각 컬럼이 없으므로 최근 사용은 최근 활성 소속 추가 시각으로 정의한다. 「흐름에 추가」 서브메뉴는 진입한 엔트리 ID로 매번 후보를 조회하며 다른 엔트리로 전환하면 이전 필터와 후보를 비운다. 제목 입력은 250ms debounce, 분류 변경은 즉시 재조회한다. 요청 순번으로 늦게 끝난 이전 엔트리 응답을 폐기하고, 같은 엔트리의 재조회 실패는 직전 성공 후보를 보존하면서 오류를 별도 표시한다. 소속 추가·해제·새 흐름 생성 성공 후 현재 메뉴가 같은 엔트리를 가리킬 때 후보를 다시 조회해 체크와 랭킹을 갱신한다.
 
 ---
 
@@ -402,7 +406,6 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
   - 수정 → `modalStore.openEntryModify(id)`
   - 이력 → `attachableStore.openHistory(contentType, id)`
   - 관련 글 추가 (지정 꿈꾼 이름 없을 때만 — `hasDreamerName(entry)` false) → `attachableStore.openRelated(contentType, id)`
-  - 흐름 연결 (지정 꿈꾼 이름 없을 때만) → `attachableStore.openRelatedFlow(contentType, id)`; 관계 유형은 `FLOW`로 고정하고 무방향·날짜순·동일 쌍 기존 유형 교체 계약을 모달에서 안내
   - 구분선
   - 라이프사이클 서브메뉴 (OPEN/PENDING/RESOLVED radio) → `PUT /api/lifecycles { id, contentType, lifecycleKey, cacheContext }`
   - 상태 서브메뉴 toggle → `POST /api/states { id, contentType, stateKey, cacheContext }`
@@ -414,9 +417,11 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤.
 
-**관련 관계 표시·해제**: 일반 관련글은 엔트리 아래에서 `RelatedContentDto.relationType/reason/targetId/targetContentType/targetTitle`별 행을 표시하고 제목 클릭으로 원문을 열며 ×로 해제한다. (변경 후) FLOW 본문 요약 행·「흐름 보기」·전체 흐름 모달은 제거됐다. 백엔드 `flowSummary` 는 응답에 남아 있으나 표시하지 않으며 다-2 에서 제거한다.
+**관련 관계 표시·해제**: 일반 관련글은 엔트리 아래에서 `RelatedContentDto.relationType/reason/targetId/targetContentType/targetTitle`별 행을 표시하고 제목 클릭으로 원문을 열며 ×로 해제한다. (변경 후) FLOW 본문 요약 행·「흐름 보기」·전체 흐름 모달·백엔드 `flowSummary` 는 모두 제거됐다(나-2·다-2). 흐름은 스레드 소속으로 수렴.
 
-**관련 글/FLOW 연결 대상 검색**: 대상 유형 select의 `JOURNAL_DIARY|JOURNAL_DREAM`을 `DIARY|DREAM`으로 변환해 `GET /api/journal/entries?type=...&searchKeywords=...&pageSize=8&sort=DESC`를 호출한다. 키워드별 제목 OR 본문, 복수 키워드 사이는 AND다. API 실패는 별도 인라인 오류를 표시하고 정상 0건 문구를 함께 표시하지 않는다.
+**스레드 소속 후보 메뉴**: 「흐름에 추가」 hover 서브메뉴는 일반 스레드 목록 상태와 분리된 `journalThreadMembership` store를 사용한다. 후보의 `member`가 소속 토글 판정의 SSOT이며, 엔트리 본문의 `threadList`는 소속 칩 표시를 담당한다. 제목 검색·분류 입력은 메뉴를 닫지 않고 후보 API만 갱신한다. 후보 조회 실패와 분류 선택지 조회 실패를 정상 빈 결과로 가장하지 않으며, 분류 조회 실패는 다음 메뉴 진입에서 재시도한다.
+
+**관련 글 대상 검색**: 대상 유형 select의 `JOURNAL_DIARY|JOURNAL_DREAM`을 `DIARY|DREAM`으로 변환해 `GET /api/journal/entries?type=...&searchKeywords=...&pageSize=8&sort=DESC`를 호출한다. 키워드별 제목 OR 본문, 복수 키워드 사이는 AND다. API 실패는 별도 인라인 오류를 표시하고 정상 0건 문구를 함께 표시하지 않는다.
 
 **액션 메시지 i18n**: 클립보드 복사 성공·실패, 라이프사이클·상태 변경 실패, 관련글 열기·연결·해제, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, 상태 변경·관계 해제·삭제 성공 후 기존 현재 route 재조회와 `#journal-day-{stdrdDt}` 스크롤 순서를 유지한다. 검색 팝업에서는 재조회 중인 `journalStore.loading` 완료를 감지해 검색 결과를 다시 조회한다.
 
@@ -693,7 +698,7 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 **저널 스레드 상세 닫기 정책**: `JournalThreadDetailModal`은 `backdrop: "static"`, `keyboard: false`로 생성해 모달 바깥 클릭과 Escape 입력으로 닫히지 않는다. 헤더 ×와 푸터 「닫기」는 `store.closeDetail()`을 호출하는 명시적 종료 경로이며, URL 이동·상세 조회 실패에 따른 프로그램상 종료는 유지한다.
 
-**저널 스레드 목록 검색 카드**: 화면 진입 시 목록과 함께 `GET /api/tags?contentType=JOURNAL_THREAD` 태그 클라우드 및 `GET /api/journal/threads/categories` 분류 선택지를 조회한다. 태그는 단일 선택이며 같은 태그를 다시 클릭하면 해제한다. 태그 선택·해제, 분류·제목 검색, 초기화는 모두 `fetchList(0)`으로 첫 페이지부터 조회한다. 제목 키워드는 서버의 `searchType`·`searchKeyword` 쌍 계약에 맞춰 `searchType=title`을 함께 전송하고, 태그는 `tags[]`, 분류는 `categoryCode`로 전송한다. 등록·수정·삭제 성공 후 목록과 태그 클라우드를 함께 갱신해 태그 빈도와 선택 가능 항목을 최신 상태로 맞춘다. 태그·분류 보조 데이터 조회 실패는 빈 상태로 가장하지 않고 오류 로그와 현재 locale 안내를 표시한다. 등록은 `JournalThreadViewToolbar`에 두고 `thread-create` 라우팅을 유지한다(검색 카드에는 두지 않음). ASIDE는 없다.
+**저널 스레드 목록 검색 카드**: 화면 진입 시 목록과 함께 `GET /api/journal/threads/categories` 분류 선택지를 조회한다. 분류·제목 검색, 초기화는 모두 `fetchList(0)`으로 첫 페이지부터 조회한다. 제목 키워드는 서버의 `searchType`·`searchKeyword` 쌍 계약에 맞춰 `searchType=title`을 함께 전송하고, 분류는 `categoryCode`로 전송한다. 등록·수정·삭제 성공 후 목록을 갱신한다. 분류 보조 데이터 조회 실패는 빈 상태로 가장하지 않고 오류 로그와 현재 locale 안내를 표시한다. 등록은 `JournalThreadViewToolbar`에 두고 `thread-create` 라우팅을 유지한다(검색 카드에는 두지 않음). ASIDE는 없다. **태그 클라우드·태그 필터는 2c-A 에서 제거됐다** — 스레드가 자체 태그를 소유하지 않게 되면서(2b) 자체 태그 기반 클라우드/필터가 무의미해졌다(소속 엔트리 태그 집계 기반 복원은 백로그).
 
 **저널 스레드 목록 행 액션**: 관리 열은 수정·삭제 개별 버튼 대신 ⋯ 컨텍스트 메뉴를 제공한다. 메뉴 트리거와 항목 클릭은 행의 상세 이동 이벤트로 전파하지 않으며, 수정은 기존 수정 route로 이동하고 삭제는 기존 확인·삭제 store 액션을 유지한다. 비동기 목록 조회가 끝날 때 Metronic 메뉴를 재초기화한다.
 

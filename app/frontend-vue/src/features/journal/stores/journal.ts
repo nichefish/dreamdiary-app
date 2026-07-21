@@ -71,12 +71,17 @@ export interface RelatedContentItem {
   targetTitle?: string;
 }
 
-/** 목록 엔트리에 병합된 전체 FLOW 연결 컴포넌트 요약 */
-export interface JournalFlowSummary {
-  entryCount: number;
-  relationCount: number;
-  startStdrdDt?: string;
-  endStdrdDt?: string;
+/**
+ * 엔트리가 속한 흐름(저널 스레드) 소속 항목.
+ * 백엔드 JournalThreadEntryDto 와 대응한다. FLOW 를 대체하는 축이다.
+ */
+export interface JournalThreadEntryDto {
+  id: number;
+  threadId: number;
+  entryId: number;
+  sortOrder?: number;
+  threadTitle?: string;
+  entryContentType?: string;
 }
 
 /** 이력 컴포지션 — 백엔드 HistoryCmpstn 직렬화 구조 */
@@ -110,10 +115,6 @@ export interface JournalEntryDto {
   content?: string;
   markdownContent?: string;
   journalDayId?: number;
-  /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
-  diaryResolvedYn?: string;
-  /** 소속 일자 꿀 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
-  dreamResolvedYn?: string;
   journalChapterId?: number;
   stdrdDt?: string;
   sortOrder?: number;
@@ -125,8 +126,13 @@ export interface JournalEntryDto {
   history?: HistoryCmpstn;
   comment?: CommentCmpstn;
   relatedContentList?: RelatedContentItem[];
-  flowSummary?: JournalFlowSummary;
+  /** 이 엔트리가 속한 흐름(스레드) 목록. 소속이 없으면 빈 목록. */
+  threadList?: JournalThreadEntryDto[];
   journalInterpretationList?: InterpretationItem[];
+  /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
+  diaryResolvedYn?: string;
+  /** 소속 일자 꿈 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
+  dreamResolvedYn?: string;
 }
 
 /** 저널 챕터 */

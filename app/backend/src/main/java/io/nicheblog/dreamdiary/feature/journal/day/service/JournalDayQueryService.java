@@ -8,8 +8,6 @@ import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.VacationDayInfo;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleVacationQueryService;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
-import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentFlowSummaryDto;
-import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentFlowService;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagProfileService;
@@ -60,7 +58,6 @@ public class JournalDayQueryService {
     private final ScheduleService scheduleService;
     private final ScheduleVacationQueryService scheduleVacationQueryService;
     private final RelatedContentQueryService relatedContentQueryService;
-    private final RelatedContentFlowService relatedContentFlowService;
     private final JournalThreadEntryService journalThreadEntryService;
     private final JournalInterpretationQueryService journalInterpretationQueryService;
     private final LifecycleService lifecycleService;
@@ -287,8 +284,6 @@ public class JournalDayQueryService {
 
         final Map<String, List<RelatedContentDto>> relatedMap =
                 relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
-        final Map<BaseAttachableKey, RelatedContentFlowSummaryDto> flowSummaryMap =
-                relatedContentFlowService.getFlowSummaryMap(refKeyList, username);
         // 흐름(스레드) 소속. 엔트리마다 단건 조회하면 N+1 이라 일자 트리 전체를 한 번에 받는다.
         final List<Integer> entryIdList = refKeyList.stream()
                 .map(BaseAttachableKey::getId)
@@ -299,7 +294,6 @@ public class JournalDayQueryService {
         for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.values()) {
             this.forEachEntryByType(listDto, policy.contentType, entry -> {
                 entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()));
-                entry.setFlowSummary(flowSummaryMap.get(new BaseAttachableKey(entry.getId(), policy.contentType)));
                 entry.setThreadList(threadMap.getOrDefault(entry.getId(), List.of()));
             });
         }

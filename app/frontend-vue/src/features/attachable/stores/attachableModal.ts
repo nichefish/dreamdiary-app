@@ -27,8 +27,6 @@ export interface RelatedTargetItem {
   content: string;
 }
 
-/** 관련 글 모달 진입 모드 */
-export type RelatedModalMode = "RELATED" | "FLOW";
 
 /** 댓글 목록 항목 */
 export interface CommentListItem {
@@ -336,8 +334,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
 
   /** 관련 글 추가 모달 오픈 여부 */
   const relatedOpen = ref(false);
-  /** 관련 글 모달 진입 모드 — 일반 직접 관계와 FLOW 연결을 UI에서 구분한다. */
-  const relatedMode = ref<RelatedModalMode>("RELATED");
   /** 출처 콘텐츠 타입 */
   const relatedSrcContentType = ref<string>("");
   /** 출처 게시물 번호 */
@@ -369,34 +365,15 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
    * @param id - 출처 게시물 번호
    */
   async function openRelated(contentType: string, id: number): Promise<void> {
-    await openRelatedWithMode(contentType, id, "RELATED");
-  }
-
-  /**
-   * FLOW 연결 모드로 관련 글 추가 모달을 연다.
-   * @param contentType - 출처 콘텐츠 타입
-   * @param id - 출처 게시물 번호
-   */
-  async function openRelatedFlow(contentType: string, id: number): Promise<void> {
-    await openRelatedWithMode(contentType, id, "FLOW");
-  }
-
-  /** 관련 글 모달의 공통 초기화 경로. */
-  async function openRelatedWithMode(
-    contentType: string,
-    id: number,
-    mode: RelatedModalMode,
-  ): Promise<void> {
     if (!await assertAuthenticatedBeforeModal()) return;
-    relatedMode.value = mode;
     relatedSrcContentType.value = contentType;
     relatedSrcId.value = id;
-    relatedRelationType.value = mode === "FLOW" ? "FLOW" : "REFERENCE";
+    relatedRelationType.value = "REFERENCE";
     /*
      * 대상 유형 기본값은 출발 엔트리와 같은 유형이다.
-     * 변경 전: 반대 유형(일기 → 꿈, 꿈 → 일기)을 기본값으로 잡았다. 그러나 흐름(FLOW)은
-     * 같은 성격의 기록을 시간순으로 잇는 쓰임이 많아, 일기에서 열면 꿈이 선택돼 있어
-     * 매번 되돌려야 했다. 같은 유형이 기본이어야 자연스럽다.
+     * 변경 전: 반대 유형(일기 → 꿈, 꿈 → 일기)을 기본값으로 잡았다. 그러나 같은 성격의
+     * 기록을 잇는 쓰임이 많아, 일기에서 열면 꿈이 선택돼 있어 매번 되돌려야 했다.
+     * 같은 유형이 기본이어야 자연스럽다.
      * 자기 자신(같은 유형 + 같은 id) 연결은 saveRelated 의 self 검증이 막는다.
      *
      * 대상 유형 select 는 일기/꿈만 제공하므로, 노트 등 그 밖의 출발 유형은
@@ -449,7 +426,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       if (!targetType) {
         console.warn("[attachable-modal] unsupported related target content type", {
           targetContentType: relatedTargetContentType.value,
-          mode: relatedMode.value,
         });
         relatedSearchResults.value = [];
         relatedSearchErrorMsg.value = t("related-content.search.failure");
@@ -466,7 +442,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       if (!res.data?.rslt) {
         console.warn("[attachable-modal] related target search rejected", {
           targetContentType: relatedTargetContentType.value,
-          mode: relatedMode.value,
           message: res.data?.message,
         });
         relatedSearchResults.value = [];
@@ -488,7 +463,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       if (isAuthExpiredError(e)) throw e;
       console.error("[attachable-modal] related target search failed", {
         targetContentType: relatedTargetContentType.value,
-        mode: relatedMode.value,
       }, e);
       relatedSearchResults.value = [];
       relatedSearchErrorMsg.value = t("related-content.search.failure");
@@ -529,15 +503,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       relatedValidationMsg.value = t("related-content.validate.relation-type");
       return { rslt: false };
     }
-    if (relatedMode.value === "FLOW" && relatedRelationType.value !== "FLOW") {
-      console.error("[attachable-modal] FLOW mode relation type contract violated", {
-        relationType: relatedRelationType.value,
-        srcContentType: relatedSrcContentType.value,
-        srcId: relatedSrcId.value,
-      });
-      relatedValidationMsg.value = t("related-content.validate.relation-type");
-      return { rslt: false };
-    }
     try {
       const res = await axios.post(
         `/api/related/${relatedSrcContentType.value}/${relatedSrcId.value}`,
@@ -553,7 +518,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       const result = { rslt: res.data?.rslt === true, message: res.data?.message as string | undefined };
       if (!result.rslt) {
         console.warn("[attachable-modal] related content save rejected", {
-          mode: relatedMode.value,
           relationType: relatedRelationType.value,
           srcContentType: relatedSrcContentType.value,
           srcId: relatedSrcId.value,
@@ -566,7 +530,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     } catch (e: unknown) {
       if (isAuthExpiredError(e)) throw e;
       console.error("[attachable-modal] related content save failed", {
-        mode: relatedMode.value,
         relationType: relatedRelationType.value,
         srcContentType: relatedSrcContentType.value,
         srcId: relatedSrcId.value,
@@ -848,7 +811,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     clearHistory,
     // 관련 글 추가
     relatedOpen,
-    relatedMode,
     relatedSrcContentType,
     relatedSrcId,
     relatedRelationType,
@@ -862,7 +824,6 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     relatedSearchErrorMsg,
     relatedValidationMsg,
     openRelated,
-    openRelatedFlow,
     closeRelated,
     onRelatedTargetTypeChange,
     searchRelatedTargets,

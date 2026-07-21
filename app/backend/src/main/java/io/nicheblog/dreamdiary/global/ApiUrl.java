@@ -81,6 +81,8 @@ public interface ApiUrl {
 
     /** 저널 스레드 */
     String JOURNAL_THREAD_API_LIST = Prefix.API + "/journal/threads";
+    /** 엔트리 소속 메뉴용 저널 스레드 후보 */
+    String JOURNAL_THREAD_CANDIDATES = Prefix.API + "/journal/threads/candidates";
     String JOURNAL_THREAD_CATEGORIES = Prefix.API + "/journal/threads/categories";
     String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
     /** 스레드 소속 엔트리 목록 조회 / 소속 등록 */
@@ -139,7 +141,6 @@ public interface ApiUrl {
 
     /** 관련글 */
     String RELATEDS = Prefix.API + "/related/{contentType}/{id}";
-    String RELATED_FLOW = Prefix.API + "/related/{contentType}/{id}/flow";
     String RELATED = Prefix.API + "/related/{relatedContentId}";
 
     /** 상태 */

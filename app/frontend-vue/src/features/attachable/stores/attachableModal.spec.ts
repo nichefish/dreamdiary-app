@@ -1,5 +1,5 @@
 /**
- * attachableModal store — 관련 글/FLOW 연결 대상 검색 계약 단위 테스트.
+ * attachableModal store — 관련 글 연결 대상 검색 계약 단위 테스트.
  * 통합 엔트리 API와 실패/빈 결과 분리 상태를 가상 데이터로 검증한다.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -84,14 +84,14 @@ describe("관련 글 연결 대상 검색", () => {
     await store.openRelated("JOURNAL_DIARY", 10);
     expect(store.relatedTargetContentType).toBe("JOURNAL_DIARY");
 
-    await store.openRelatedFlow("JOURNAL_DREAM", 20);
+    await store.openRelated("JOURNAL_DREAM", 20);
     expect(store.relatedTargetContentType).toBe("JOURNAL_DREAM");
   });
 
   it("대상 유형 select 에 없는 출발 유형(노트)은 일기로 떨어뜨린다", async () => {
     const store = useAttachableModalStore();
 
-    await store.openRelatedFlow("JOURNAL_NOTE", 30);
+    await store.openRelated("JOURNAL_NOTE", 30);
 
     expect(store.relatedTargetContentType).toBe("JOURNAL_DIARY");
   });
@@ -99,7 +99,7 @@ describe("관련 글 연결 대상 검색", () => {
   it("검색 요청 실패는 정상 0건과 구분하는 오류 상태를 남긴다", async () => {
     mockedGet.mockRejectedValueOnce(new Error("search request failed"));
     const store = useAttachableModalStore();
-    await store.openRelatedFlow("JOURNAL_DREAM", 20);
+    await store.openRelated("JOURNAL_DREAM", 20);
     store.relatedKeyword = "검색어";
 
     await store.searchRelatedTargets();
