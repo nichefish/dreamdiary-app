@@ -72,6 +72,7 @@ public class ScheduleCalRestController
         payload.put("brthdyCd", Code.SCHEDULE_BRTHDY);
         payload.put("holyDayCode", Code.SCHEDULE_HOLYDAY);
         payload.put("codeOptions", codeLookupService.getCdItemListByGroupCode(Code.SCHEDULE_CD));
+        payload.put("vcatnCodeOptions", codeLookupService.getCdItemListByGroupCode(Code.VCATN_CD));
         payload.put("jandiTopicOptions", codeLookupService.getCdItemListByGroupCode(Code.JANDI_TOPIC_CD));
         payload.put("userOptions", userList.stream()
                 .map(user -> {

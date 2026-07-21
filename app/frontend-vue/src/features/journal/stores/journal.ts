@@ -192,6 +192,9 @@ export interface JournalChapterCtgrHintDto {
   categoryName?: string;
 }
 
+/** 저널 일자에 투영된 현재 사용자 휴가의 시간 범위 상태 */
+export type VacationDayStatus = "NONE" | "FULL_DAY" | "AM_HALF" | "PM_HALF" | "UNKNOWN";
+
 /** 저널 일자 */
 export interface JournalDayDto {
   id: number;
@@ -204,6 +207,10 @@ export interface JournalDayDto {
   weekStartDt?: string;
   isHolyday?: boolean;
   holydayNm?: string;
+  /** 현재 사용자 참가 휴가 상태 — 전역 공휴일·주말 축과 별도 */
+  vacationDayStatus?: VacationDayStatus;
+  /** 휴가 일정 제목 목록 — 일자 헤더 표시용 */
+  vacationReasonList?: string[];
   weather?: string;
   journalChapterList?: JournalChapterDto[];
   journalDreamSectionList?: JournalDreamSectionDto[];

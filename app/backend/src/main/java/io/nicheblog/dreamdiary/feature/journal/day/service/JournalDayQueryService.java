@@ -5,6 +5,8 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableK
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.model.VacationDayInfo;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleVacationQueryService;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentFlowSummaryDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentFlowService;
@@ -17,6 +19,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilterHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayVacationHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
@@ -55,6 +58,7 @@ public class JournalDayQueryService {
     private final JournalDayService journalDayService;
     /** holydayMap 캐시 미스 시 재생성용 (resyncHolydayMap) */
     private final ScheduleService scheduleService;
+    private final ScheduleVacationQueryService scheduleVacationQueryService;
     private final RelatedContentQueryService relatedContentQueryService;
     private final RelatedContentFlowService relatedContentFlowService;
     private final JournalThreadEntryService journalThreadEntryService;
@@ -159,7 +163,7 @@ public class JournalDayQueryService {
 
     /**
      * 목록 공통 enrich 처리.
-     * 1) 휴일 정보 매핑 2) 해석 정보 병합 3) 상태 병합 4) 태그 요약 적용 5) 관련글 병합
+     * 1) 전역 휴일 정보 매핑 2) 사용자 휴가 투영 3) 해석 정보 병합 4) 상태 병합 5) 태그 요약 적용 6) 관련글 병합
      *
      * @param username 사용자 계정명
      * @param listDto 조회 결과 리스트
@@ -170,6 +174,7 @@ public class JournalDayQueryService {
         if (listDto == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        this.mergeVacationInfo(username, listDto);
         this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeStates(username, listDto, searchParam);
@@ -194,6 +199,7 @@ public class JournalDayQueryService {
         if (listDto == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        this.mergeVacationInfo(username, listDto);
         this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
@@ -217,6 +223,7 @@ public class JournalDayQueryService {
         if (retrieved == null) return null;
 
         JournalDayHolydayHelper.setHolydayInfo(retrieved, getHolydayMap());
+        this.mergeVacationInfo(username, List.of(retrieved));
         this.mergeInterpretations(username, List.of(retrieved));
         JournalDayViewHelper.mergeStates(username, retrieved);
         this.mergeLifecycles(List.of(retrieved));
@@ -224,6 +231,26 @@ public class JournalDayQueryService {
         this.mergeDreamTagProfiles(List.of(retrieved));
 
         return retrieved;
+    }
+
+    /**
+     * 반환할 저널 일자 범위에 겹치는 현재 사용자 참가 휴가를 한 번 조회해 DTO에 적용한다.
+     * 캐시된 일자 DTO도 매 요청마다 NONE 또는 최신 값으로 덮어써 일정 변경을 즉시 반영한다.
+     *
+     * @param username 사용자 계정명
+     * @param listDto 저널 일자 목록
+     */
+    private void mergeVacationInfo(final String username, final List<JournalDayDto> listDto) {
+        if (listDto == null || listDto.isEmpty()) return;
+        final List<String> dateList = listDto.stream()
+                .filter(java.util.Objects::nonNull)
+                .map(JournalDayDto::getStdrdDt)
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toList();
+        final Map<String, VacationDayInfo> vacationDayMap =
+                scheduleVacationQueryService.getVacationDayMapByUser(username, dateList);
+        JournalDayVacationHelper.setVacationInfo(listDto, vacationDayMap);
     }
 
     private void mergeInterpretations(final String username, final List<JournalDayDto> listDto) throws Exception {

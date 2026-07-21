@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS schedule (
     content_type VARCHAR(50) DEFAULT 'SCHEDULE' COMMENT '컨텐츠 타입',
     --
     schedule_cd VARCHAR(30) COMMENT '일정 코드',
+    vcatn_cd VARCHAR(30) COMMENT '휴가 구분 코드 (schedule_cd=VCATN)',
     bgn_dt DATETIME DEFAULT NULL COMMENT '시작일자',
     end_dt DATETIME DEFAULT NULL COMMENT '종료일자',
     private_yn CHAR(1) DEFAULT 'N' COMMENT '개인일정 여부 (Y/N)',

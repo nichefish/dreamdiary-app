@@ -135,7 +135,7 @@
                     class="schedule-list-table__row"
                     @click="openListRow(row)"
                   >
-                    <td>{{ row.scheduleNm || row.scheduleCd }}</td>
+                    <td>{{ scheduleCodeName(row.scheduleCd) }}</td>
                     <td>
                       <span v-if="row.privateYn === 'Y'" class="me-1 text-muted" :title="t('schedule.private')">
                         <i class="bi bi-lock-fill"></i>
@@ -233,6 +233,18 @@
                 </div>
               </div>
 
+              <div v-if="isVacationRegist" class="row g-3 mb-3">
+                <div class="col-md-4">
+                  <label class="form-label required" for="scheduleVcatnCd">{{ t('schedule.form.vacation-type') }}</label>
+                  <select id="scheduleVcatnCd" v-model="registForm.vcatnCd" class="form-select form-select-solid" required>
+                    <option value="">{{ t('schedule.form.select-placeholder') }}</option>
+                    <option v-for="code in scheduleStore.vcatnCodeOptions" :key="code.code" :value="code.code">
+                      {{ code.codeName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
                   <label class="form-label required" for="scheduleBgnDt">{{ t('schedule.list.col.start-date') }}</label>
@@ -324,6 +336,10 @@
                 <span class="schedule-detail-row__label"><i class="bi bi-people"></i> {{ t('schedule.list.col.participants') }}</span>
                 <span>{{ detail.prtcpnt || "-" }}</span>
               </div>
+              <div v-if="isDetailVacation" class="schedule-detail-row">
+                <span class="schedule-detail-row__label"><i class="bi bi-calendar2-check"></i> {{ t('schedule.form.vacation-type') }}</span>
+                <span>{{ detailVacationName }}</span>
+              </div>
               <div class="schedule-detail-row">
                 <span class="schedule-detail-row__label"><i class="bi bi-info-circle"></i> {{ t('schedule.detail.label.description') }}</span>
                 <span class="schedule-detail-row__content">{{ detail.content || "-" }}</span>
@@ -335,10 +351,10 @@
             </template>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-light-primary" :disabled="!detail || isDetailHolyday" @click="modifyDetail">
+            <button type="button" class="btn btn-sm btn-light-primary" :disabled="!canManageDetail" @click="modifyDetail">
               {{ t('common.mdf') }}
             </button>
-            <button type="button" class="btn btn-sm btn-light-danger" :disabled="!detail || isDetailHolyday" @click="deleteDetail">
+            <button type="button" class="btn btn-sm btn-light-danger" :disabled="!canManageDetail" @click="deleteDetail">
               {{ t('common.del') }}
             </button>
             <button type="button" class="btn btn-sm btn-light" @click="closeDetail">{{ t('common.close') }}</button>
@@ -415,6 +431,7 @@ const viewMode = ref<"calendar" | "list">("calendar");
 
 const registForm = reactive<ScheduleForm>({
   scheduleCd: "",
+  vcatnCd: "",
   title: "",
   content: "",
   bgnDt: formatDate(today),
@@ -440,11 +457,21 @@ const filteredCodeOptions = computed(() => {
 
 const detailTitle = computed(() => {
   if (!detail.value) return "";
-  const prefix = detail.value.scheduleNm ? `[${detail.value.scheduleNm}] ` : "";
+  const scheduleName = scheduleCodeName(detail.value.scheduleCd);
+  const prefix = scheduleName ? `[${scheduleName}] ` : "";
   return `${prefix}${detail.value.title ?? ""}`;
 });
 
 const isDetailHolyday = computed(() => detail.value?.scheduleCd === scheduleStore.holyDayCode);
+/** 공휴일이 아니면서 서버가 현재 사용자를 작성자로 판정한 일정만 수정·삭제할 수 있다. */
+const canManageDetail = computed(() => Boolean(detail.value?.isCreatedBy) && !isDetailHolyday.value);
+const isVacationRegist = computed(() => registForm.scheduleCd === scheduleStore.bootstrap.vcatnCd);
+const isDetailVacation = computed(() => detail.value?.scheduleCd === scheduleStore.bootstrap.vcatnCd);
+const detailVacationName = computed(() => {
+  const vcatnCd = detail.value?.vcatnCd;
+  if (!vcatnCd) return "-";
+  return scheduleStore.vcatnCodeOptions.find((item) => item.code === vcatnCd)?.codeName ?? vcatnCd;
+});
 
 const listPageNumbers = computed(() => {
   const total = scheduleStore.listTotalPages;
@@ -492,6 +519,11 @@ function parseDate(value: string): Date {
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("ko-KR").format(value);
+}
+
+/** 일정 엔티티의 transient 이름 대신 bootstrap 코드 SSOT에서 표시명을 찾는다. */
+function scheduleCodeName(scheduleCd: string): string {
+  return scheduleStore.codeOptions.find((item) => item.code === scheduleCd)?.codeName ?? scheduleCd;
 }
 
 /**
@@ -606,7 +638,7 @@ function toggleFilter(key: keyof ScheduleFilter, event: Event) {
 }
 
 async function openListRow(row: ScheduleListRow) {
-  if (row.scheduleCd === scheduleStore.bootstrap.vcatnCd || row.scheduleCd === scheduleStore.bootstrap.brthdyCd) return;
+  if (row.scheduleCd === scheduleStore.bootstrap.brthdyCd) return;
   if (!await assertAuthenticatedBeforeModal()) return;
   try {
     detail.value = await scheduleStore.fetchDetail(row.id);
@@ -618,7 +650,7 @@ async function openListRow(row: ScheduleListRow) {
 
 async function onEventClick(arg: EventClickArg) {
   const scheduleCd = arg.event.groupId || "";
-  if (scheduleCd === scheduleStore.bootstrap.vcatnCd || scheduleCd === scheduleStore.bootstrap.brthdyCd) return;
+  if (scheduleCd === scheduleStore.bootstrap.brthdyCd) return;
   if (!await assertAuthenticatedBeforeModal()) return;
   try {
     detail.value = await scheduleStore.fetchDetail(arg.event.id);
@@ -632,6 +664,7 @@ function resetRegistForm(isPrivate: boolean, source?: ScheduleDetail) {
   isPrivateRegist.value = isPrivate;
   registForm.id = source?.id;
   registForm.scheduleCd = source?.scheduleCd ?? "";
+  registForm.vcatnCd = source?.vcatnCd ?? "";
   registForm.title = source?.title ?? "";
   registForm.content = source?.content ?? "";
   registForm.bgnDt = source?.bgnDt ?? formatDate(today);
@@ -692,6 +725,7 @@ function removeParticipant(index: number) {
 
 function onScheduleCodeChange() {
   showEndDate.value = registForm.scheduleCd !== scheduleStore.holyDayCode;
+  if (!isVacationRegist.value) registForm.vcatnCd = "";
   if (!showEndDate.value) {
     registForm.endDt = registForm.bgnDt;
     // 종료일을 프로그램으로 덮어쓴 경우 flatpickr 표시값도 동기화한다 (재표시 시 불일치 방지).
@@ -702,6 +736,14 @@ function onScheduleCodeChange() {
 async function submitRegist() {
   if (!registForm.scheduleCd || !registForm.title || !registForm.bgnDt) {
     void swalAlert(t("schedule.validate.required"));
+    return;
+  }
+  if (isVacationRegist.value && !registForm.vcatnCd) {
+    void swalAlert(t("schedule.validate.vacation-type"));
+    return;
+  }
+  if (showEndDate.value && registForm.endDt && registForm.endDt < registForm.bgnDt) {
+    void swalAlert(t("schedule.validate.date-range"));
     return;
   }
   if (!await swalConfirm(registForm.id ? t("schedule.confirm.edit") : t("schedule.confirm.register"))) return;
@@ -724,7 +766,7 @@ async function submitRegist() {
 }
 
 async function modifyDetail() {
-  if (!detail.value) return;
+  if (!detail.value || !canManageDetail.value) return;
   if (!await assertAuthenticatedBeforeModal()) return;
   closeDetail();
   resetRegistForm(detail.value.privateYn === "Y", detail.value);
@@ -734,7 +776,7 @@ async function modifyDetail() {
 }
 
 async function deleteDetail() {
-  if (!detail.value?.id) return;
+  if (!detail.value?.id || !canManageDetail.value) return;
   if (!await swalConfirm(t("schedule.delete.confirm"))) return;
   try {
     const message = await scheduleStore.deleteSchedule(detail.value.id);

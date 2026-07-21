@@ -75,6 +75,8 @@ public class ScheduleDto
 
     /** 일정 코드 */
     private String scheduleCd;
+    /** 휴가 구분 코드 :: scheduleCd=VCATN일 때 필수 */
+    private String vcatnCd;
     /** 일정 분류 코드 이름 */
     private String scheduleNm;
 
@@ -126,4 +128,3 @@ public class ScheduleDto
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
 }
-

@@ -29,8 +29,10 @@ public interface ScheduleCalMapstruct
 
     /**
      * ScheduleEntity -> Dto 변환
-     * 달력에선 종료일자에 시간 데이터(23:59:59)를 붙여줘야 한다.
-     * 하루짜리 이벤트일 때만 allDay=true를 붙여준다.
+     * 변경 전 계약: 달력에선 종료일자에 시간 데이터(23:59:59)를 붙여줘야 한다.
+     * 변경 전 계약: 하루짜리 이벤트일 때만 allDay=true를 붙여준다.
+     * 변경 전에는 FullCalendar end에 시작일을 넣고 다일 일정을 allDay=false로 내려 기간 표시가 잘렸다.
+     * 변경 후에는 DB의 inclusive 종료일 다음 날을 exclusive end로 내려 모든 일정의 날짜 범위를 보존한다.
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
@@ -38,11 +40,24 @@ public interface ScheduleCalMapstruct
     @Mapping(target = "display", expression = "java(Code.SCHEDULE_HOLYDAY.equals(entity.getScheduleCd()) ? \"background\" : null)")
     @Mapping(target = "color", expression = "java(Code.SCHEDULE_HOLYDAY.equals(entity.getScheduleCd()) ? \"red\" : null)")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
-    @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.ZDATETIME))")
+    @Mapping(target = "endDt", expression = "java(toExclusiveCalendarEnd(entity))")
     @Mapping(target = "start", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
-    @Mapping(target = "end", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.ZDATETIME))")
-    @Mapping(target = "allDay", expression = "java(entity.getEndDt() == null || DateUtils.isSameDay(entity.getBgnDt(), entity.getEndDt()))")
+    @Mapping(target = "end", expression = "java(toExclusiveCalendarEnd(entity))")
+    @Mapping(target = "allDay", constant = "true")
     ScheduleCalDto toCalDto(final ScheduleEntity entity) throws Exception;
+
+    /**
+     * 저장된 inclusive 종료일을 FullCalendar all-day 이벤트의 exclusive 종료일로 변환한다.
+     *
+     * @param entity 일정 엔티티
+     * @return 종료 다음 날(yyyy-MM-dd), 시작일도 없으면 null
+     */
+    default String toExclusiveCalendarEnd(final ScheduleEntity entity) throws Exception {
+        if (entity == null) return null;
+        if (entity.getEndDt() != null) return DateUtils.asStr(entity.getEndDt().plusDays(1), DatePtn.DATE);
+        if (entity.getBgnDt() != null) return DateUtils.asStr(entity.getBgnDt().plusDays(1), DatePtn.DATE);
+        return null;
+    }
 
     /** 
      * 일정분류에 따른 FullCalender 표시 설정 세팅
@@ -77,6 +92,8 @@ public interface ScheduleCalMapstruct
             case INDT:
                 dto.setColor("lightgray");
                 break;
+            case VCATN:
+                break;
             case ETC:
                 dto.setColor("lightgray");
                 dto.setClassName("text-dark" + (!dto.hasPassed() ? " blink" : ""));
@@ -89,4 +106,3 @@ public interface ScheduleCalMapstruct
         dto.setTitle(title);
     }
 }
-

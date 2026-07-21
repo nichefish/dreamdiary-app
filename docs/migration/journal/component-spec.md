@@ -496,6 +496,8 @@ interface TodoRow {
 
 **일간 뷰 새 창 열기**: ✓ 구현 완료 — 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` 새 창 강제 (features 지정)
 
+**사용자 휴가 표시**: ✓ 구현 완료 — `JournalDayVacationIndicator.vue`가 서버 확정 `vacationDayStatus`와 `vacationReasonList`를 월간·주간·일간 카드, 일자 상세, 메타 일자 목록에 동일하게 표시한다. `FULL_DAY`는 공휴일·주말과 같은 날짜 빨강 + 휴가 배지, `AM_HALF`·`PM_HALF`는 날짜 색 유지 + 구분 배지, `UNKNOWN`은 경고 배지다. 프론트는 제목이나 사유로 휴가 상태를 추정하지 않는다.
+
 ---
 
 ### 23-1. `JournalChapterItem` (저널 챕터 아이템)

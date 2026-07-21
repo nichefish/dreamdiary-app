@@ -168,11 +168,16 @@
                   <!--begin::날짜 영역 (고정, 세로 상단 정렬)-->
                   <div
                     class="d-flex align-items-center gap-1 flex-shrink-0 pt-1"
-                    :class="{ 'text-danger': day.isHolyday }"
+                    :class="{ 'text-danger': isJournalDayOff(day) }"
                   >
-                    <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': day.isHolyday }"></i>
+                    <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': isJournalDayOff(day) }"></i>
                     {{ day.stdrdDt }}
-                    <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
+                    <span class="fs-8" :class="isJournalDayOff(day) ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
+                    <JournalDayVacationIndicator
+                      :status="day.vacationDayStatus"
+                      :reason-list="day.vacationReasonList"
+                      compact
+                    />
                     <button
                       type="button"
                       class="btn btn-icon btn-sm btn-light-primary"
@@ -288,6 +293,8 @@ import type { JournalDayDto, MetaContentItem, TagItem } from "@/features/journal
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { joinAppBasePath } from "@/shared/utils/appPath";
+import { isJournalDayOff } from "@/features/journal/utils/journalVacation";
+import JournalDayVacationIndicator from "../components/JournalDayVacationIndicator.vue";
 
 const modalStore = useJournalModalStore();
 const { t } = useLocaleStore();

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.calendar.schedule.service;
 
+import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
@@ -11,10 +12,12 @@ import io.nicheblog.dreamdiary.feature.calendar.schedule.repository.jpa.Schedule
 import io.nicheblog.dreamdiary.feature.calendar.schedule.spec.ScheduleSpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,6 +65,7 @@ public class ScheduleService
     }
 
     private final ApplicationEventPublisherWrapper publisher;
+    private final CodeLookupService codeLookupService;
 
     @Resource(name="jCacheManager")
     private CacheManager cacheManager;
@@ -77,8 +82,7 @@ public class ScheduleService
      */
     @Override
     public void preRegist(final ScheduleDto registDto) throws Exception {
-        // 종료일자 없을시 자동으로 시작일자와 같게 처리
-        if (StringUtils.isEmpty(registDto.getEndDt())) registDto.setEndDt(registDto.getBgnDt());
+        this.normalizeAndValidateSchedule(registDto);
 
         // 개인 일정시 = '나' 자동으로 넣어줌 :: 메소드 분리
         if (registDto.getIsPrvt()) this.setMeToSchedule(registDto);
@@ -105,11 +109,72 @@ public class ScheduleService
      */
     @Override
     public void preModify(final ScheduleDto modifyDto) throws Exception {
-        // 종료일자 없을시 자동으로 시작일자와 같게 처리
-        if (StringUtils.isEmpty(modifyDto.getEndDt())) modifyDto.setEndDt(modifyDto.getBgnDt());
+        this.normalizeAndValidateSchedule(modifyDto);
 
         // 개인 일정시 = '나' 자동으로 넣어줌 :: 메소드 분리
         if (modifyDto.getIsPrvt()) this.setMeToSchedule(modifyDto);
+    }
+
+    /**
+     * 일정 저장 계약을 정규화하고 검증한다.
+     * <p>종료일 미입력은 시작일과 같은 날짜로 정규화하며 공휴일은 단일 일자만 허용한다.</p>
+     * <p>변경 전에는 종료일이 시작일보다 빠르면 시작일로 조용히 덮어썼고, 기존 단일 일정은
+     * 수정 시 다일 일정으로 늘릴 수 없었다. 변경 후에는 역전된 기간을 명시적으로 거부하고
+     * 요청에 담긴 유효한 종료일을 그대로 보존한다.</p>
+     * <p>휴가 구분은 {@code scheduleCd=VCATN}일 때만 저장하며 활성 {@code VCATN_CD} 코드가 필수다.</p>
+     *
+     * @param scheduleDto 등록 또는 수정할 일정
+     */
+    private void normalizeAndValidateSchedule(final ScheduleDto scheduleDto) throws Exception {
+        if (StringUtils.isBlank(scheduleDto.getScheduleCd()) || StringUtils.isBlank(scheduleDto.getBgnDt())) {
+            log.warn("SCHEDULE_VALIDATION_FAILED reason=required id={} scheduleCd={} bgnDt={}",
+                    scheduleDto.getId(), scheduleDto.getScheduleCd(), scheduleDto.getBgnDt());
+            throw new IllegalArgumentException(MessageUtils.getMessage("schedule.validate.required"));
+        }
+
+        if (StringUtils.isBlank(scheduleDto.getEndDt())) scheduleDto.setEndDt(scheduleDto.getBgnDt());
+        if (Code.SCHEDULE_HOLYDAY.equals(scheduleDto.getScheduleCd())) {
+            log.debug("SCHEDULE_DATE_NORMALIZED reason=holyday-single-date id={} bgnDt={}",
+                    scheduleDto.getId(), scheduleDto.getBgnDt());
+            scheduleDto.setEndDt(scheduleDto.getBgnDt());
+        }
+
+        final LocalDate bgnDate;
+        final LocalDate endDate;
+        try {
+            bgnDate = DateUtils.asLocalDate(scheduleDto.getBgnDt());
+            endDate = DateUtils.asLocalDate(scheduleDto.getEndDt());
+        } catch (final Exception e) {
+            log.warn("SCHEDULE_VALIDATION_FAILED reason=date-format id={} bgnDt={} endDt={}",
+                    scheduleDto.getId(), scheduleDto.getBgnDt(), scheduleDto.getEndDt());
+            throw new IllegalArgumentException(MessageUtils.getMessage("schedule.validate.date-format"), e);
+        }
+        if (bgnDate == null || endDate == null) {
+            log.warn("SCHEDULE_VALIDATION_FAILED reason=date-required id={} bgnDt={} endDt={}",
+                    scheduleDto.getId(), scheduleDto.getBgnDt(), scheduleDto.getEndDt());
+            throw new IllegalArgumentException(MessageUtils.getMessage("schedule.validate.required"));
+        }
+        if (endDate.isBefore(bgnDate)) {
+            log.warn("SCHEDULE_VALIDATION_FAILED reason=end-before-start id={} bgnDt={} endDt={}",
+                    scheduleDto.getId(), scheduleDto.getBgnDt(), scheduleDto.getEndDt());
+            throw new IllegalArgumentException(MessageUtils.getMessage("schedule.validate.date-range"));
+        }
+
+        if (Code.SCHEDULE_VCATN.equals(scheduleDto.getScheduleCd())) {
+            final String vcatnCd = scheduleDto.getVcatnCd();
+            if (StringUtils.isBlank(vcatnCd) || codeLookupService.getCodeName(Code.VCATN_CD, vcatnCd) == null) {
+                log.warn("SCHEDULE_VALIDATION_FAILED reason=invalid-vacation-type id={} vcatnCd={}",
+                        scheduleDto.getId(), vcatnCd);
+                throw new IllegalArgumentException(MessageUtils.getMessage("schedule.validate.vacation-type"));
+            }
+            return;
+        }
+
+        if (StringUtils.isNotBlank(scheduleDto.getVcatnCd())) {
+            log.info("SCHEDULE_VACATION_TYPE_CLEARED reason=non-vacation id={} scheduleCd={} vcatnCd={}",
+                    scheduleDto.getId(), scheduleDto.getScheduleCd(), scheduleDto.getVcatnCd());
+            scheduleDto.setVcatnCd(null);
+        }
     }
 
     /**
@@ -141,21 +206,69 @@ public class ScheduleService
     }
 
     /**
+     * 일정 상세를 현재 사용자 가시성 계약으로 조회한다.
+     * 공개 일정은 모든 인증 사용자가 볼 수 있고, 개인 일정은 작성자 또는 참가자만 볼 수 있다.
+     *
+     * @param key 일정 식별자
+     * @return 조회 가능한 일정 DTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ScheduleDto getDtlDto(final Integer key) throws Exception {
+        final ScheduleEntity retrievedEntity = this.getDtlEntity(key);
+        this.assertCanViewSchedule(retrievedEntity);
+        return mapstruct.toDto(retrievedEntity);
+    }
+
+    /**
+     * 개인 일정의 조회 권한을 검증한다.
+     *
+     * @param entity 조회 대상 일정
+     */
+    private void assertCanViewSchedule(final ScheduleEntity entity) {
+        if (!"Y".equals(entity.getPrivateYn())) return;
+
+        final String username = AuthUtils.requireLoginUsername();
+        final boolean isOwner = username.equals(entity.getCreatedBy());
+        final boolean isParticipant = CollectionUtils.isNotEmpty(entity.getPrtcpntList())
+                && entity.getPrtcpntList().stream()
+                .anyMatch(participant -> username.equals(participant.getUsername()));
+        if (isOwner || isParticipant) return;
+
+        log.warn("SCHEDULE_ACCESS_DENIED action=view id={} username={} createdBy={}",
+                entity.getId(), username, entity.getCreatedBy());
+        throw new NotAuthorizedException("common.result.access-not-authorized");
+    }
+
+    /**
+     * 일정 수정 권한은 작성자에게만 부여한다.
+     * 참가자는 개인 일정을 조회할 수 있지만 작성자 대신 수정·삭제할 수 없다.
+     *
+     * @param entity 변경 대상 일정
+     * @param action 로그에 기록할 작업명
+     */
+    private void assertCanManageSchedule(final ScheduleEntity entity, final String action) {
+        if (AuthUtils.isCreatedBy(entity.getCreatedBy())) return;
+
+        log.warn("SCHEDULE_ACCESS_DENIED action={} id={} username={} createdBy={}",
+                action, entity.getId(), AuthUtils.getLoginUsername(), entity.getCreatedBy());
+        throw new NotAuthorizedException("common.result.access-not-authorized");
+    }
+
+    /**
      * 일정관리 > 일정 수정
      * Clears Cache : holydayEntityList, isHolyday, isHolydayOrWeekend
      */
     @Override
     @Transactional
     public ServiceResponse modify(final ScheduleDto modifyDto) throws Exception {
+        final ScheduleEntity modifyEntity = this.getDtlEntity(modifyDto.getKey());       // Entity 레벨 조회
+        this.assertCanManageSchedule(modifyEntity, "modify");
         // 수정 전처리
         this.preModify(modifyDto);
-
-        final ScheduleEntity modifyEntity = this.getDtlEntity(modifyDto.getKey());       // Entity 레벨 조회
-        final boolean wasSingleDate = DateUtils.isSameDay(modifyEntity.getBgnDt(), modifyEntity.getEndDt());
-        final boolean isInvalidEndDate = modifyDto.getBgnDt()
-                                            .compareTo(modifyDto.getEndDt()) > 0;
-        if (wasSingleDate || isInvalidEndDate) modifyDto.setEndDt(modifyDto.getBgnDt());
         mapstruct.updateFromDto(modifyDto, modifyEntity);
+        // null 무시 update 계약에서도 VCATN → 비휴가 전환 시 고아 휴가 코드는 반드시 제거한다.
+        if (!Code.SCHEDULE_VCATN.equals(modifyDto.getScheduleCd())) modifyEntity.setVcatnCd(null);
         // update
         final ScheduleEntity updatedEntity = this.updt(modifyEntity);
         final ScheduleDto updatedDto = mapstruct.toDto(updatedEntity);
@@ -164,6 +277,20 @@ public class ScheduleService
                 .rslt(updatedEntity.getId() != null)
                 .rsltObj(updatedDto)
                 .build();
+    }
+
+    /**
+     * 일정 삭제 전 작성자 권한을 검증한다.
+     *
+     * @param deletedDto 삭제 대상 일정
+     */
+    @Override
+    public void preDelete(final ScheduleDto deletedDto) {
+        if (AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) return;
+
+        log.warn("SCHEDULE_ACCESS_DENIED action=delete id={} username={} createdBy={}",
+                deletedDto.getId(), AuthUtils.getLoginUsername(), deletedDto.getCreatedBy());
+        throw new NotAuthorizedException("common.result.access-not-authorized");
     }
 
     /**
@@ -265,4 +392,3 @@ public class ScheduleService
         if (cache != null) cache.put(SimpleKey.EMPTY, holydayMap);
     }
 }
-

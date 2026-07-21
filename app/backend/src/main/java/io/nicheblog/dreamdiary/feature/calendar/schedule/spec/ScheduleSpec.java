@@ -98,11 +98,30 @@ public class ScheduleSpec
                     Predicate notCeremony = builder.notEqual(scheduleCdExp, Code.SCHEDULE_CEREMONY);
                     predicate.add(builder.and(notHolyday, notCeremony));
                     continue;
-                case "getPrvtOnly":
-                    // 개인 일정 조회
-                    predicate.add(builder.equal(privateYnExp, "Y"));
-                    prtcpntJoin = root.join("prtcpntList", JoinType.INNER);
-                    predicate.add(builder.equal(prtcpntJoin.get("username"), AuthUtils.getLoginUsername()));
+                case "prvtChked":
+                    /*
+                     * 개인 일정 조회.
+                     * 변경 전 getPrvtOnly 별도 조회는 호출 파라미터(prevOnly)와 키가 달라 적용되지 않았다.
+                     * 변경 후 공개 일정은 항상 허용하고, 개인 일정은 체크 상태이면서 현재 사용자가
+                     * 참가자인 경우에만 같은 조회에서 허용한다.
+                     */
+                    if ("Y".equals(value)) {
+                        final String username = AuthUtils.requireLoginUsername();
+                        prtcpntJoin = root.join("prtcpntList", JoinType.LEFT);
+                        final Predicate publicSchedule = builder.equal(privateYnExp, "N");
+                        final Predicate privateSchedule = builder.equal(privateYnExp, "Y");
+                        final Predicate currentParticipant = builder.equal(prtcpntJoin.get("username"), username);
+                        predicate.add(builder.or(publicSchedule, builder.and(privateSchedule, currentParticipant)));
+                        query.distinct(true);
+                    } else {
+                        predicate.add(builder.equal(privateYnExp, "N"));
+                    }
+                    continue;
+                case "vcatnChked":
+                    // 휴가 표시를 끄면 VCATN 일정을 제외한다.
+                    if ("N".equals(value)) {
+                        predicate.add(builder.notEqual(scheduleCdExp, Code.SCHEDULE_VCATN));
+                    }
                     continue;
                 case "indtChked":
                     // 내근 조회
@@ -122,13 +141,14 @@ public class ScheduleSpec
                         predicate.add(builder.notEqual(scheduleCdExp,Code.SCHEDULE_TLCMMT));
                     }
                     continue;
-                // case "myPaprChked":
-                //     // 내가 속한 일정 조회
-                //     if ("Y".equals(value)) {
-                //         prtcpntJoin = root.join("prtcpntList", JoinType.INNER);
-                //         predicate.add(builder.equal(prtcpntJoin.get("username"), AuthUtils.getLoginUsername()));
-                //     }
-                //     continue;
+                case "myPaprChked":
+                    // 내가 속한 일정 조회
+                    if ("Y".equals(value)) {
+                        prtcpntJoin = root.join("prtcpntList", JoinType.INNER);
+                        predicate.add(builder.equal(prtcpntJoin.get("username"), AuthUtils.requireLoginUsername()));
+                        query.distinct(true);
+                    }
+                    continue;
                 case "searchKeyword":
                     // 입력 키워드 검색
                     final String keyword = (String) value;
@@ -149,4 +169,3 @@ public class ScheduleSpec
     }
 
 }
-

@@ -5,8 +5,8 @@
     <!--begin::헤더-->
     <div class="journal-day-header" :data-date="day.stdrdDt">
       <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
-        <div :class="{ 'text-danger': day.isHolyday }" style="column-gap: .25rem">
-          <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': day.isHolyday }"></i>
+        <div :class="{ 'text-danger': isDayOff }" style="column-gap: .25rem">
+          <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': isDayOff }"></i>
           <!--begin::날짜 (클릭 → 상세 모달)-->
           <span
             v-if="day.id"
@@ -15,11 +15,16 @@
           >{{ day.stdrdDt }}</span>
           <span v-else>{{ day.stdrdDt }}</span>
           <!--end::날짜-->
-          <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
+          <span class="fs-8" :class="isDayOff ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
           <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.approximate") }}</span>
           <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.unknown") }}</span>
           <span class="fs-7 ms-4 text-muted" v-html="day.weather"></span>
           <div v-if="day.holydayNm" class="w-100 ps-5 fs-6 fw-normal text-truncate">{{ day.holydayNm }}</div>
+          <JournalDayVacationIndicator
+            :status="day.vacationDayStatus"
+            :reason-list="day.vacationReasonList"
+            class="w-100 ps-5 mt-1"
+          />
         </div>
       </div>
       <div class="col-3 d-none d-md-flex align-items-center gap-2">
@@ -276,6 +281,8 @@ import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import { isJournalDayOff } from "@/features/journal/utils/journalVacation";
+import JournalDayVacationIndicator from "./JournalDayVacationIndicator.vue";
 import {
   provideJournalDayResolved,
   isResolvedYn,
@@ -293,6 +300,7 @@ const diaryWritable = computed(() => !isResolvedYn(props.day.diaryResolvedYn));
 const dreamWritable = computed(() => !isResolvedYn(props.day.dreamResolvedYn));
 const isDiaryResolved = computed(() => isResolvedYn(props.day.diaryResolvedYn));
 const isDreamResolved = computed(() => isResolvedYn(props.day.dreamResolvedYn));
+const isDayOff = computed(() => isJournalDayOff(props.day));
 
 const route = useRoute();
 const router = useRouter();

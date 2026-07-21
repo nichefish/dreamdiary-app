@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ScheduleCalService {
 
-    private final ScheduleService scheduleService;
     private final ScheduleCalMapstruct scheduleCalMapstruct = ScheduleCalMapstruct.INSTANCE;
     private final ScheduleMapstruct scheduleMapstruct = ScheduleMapstruct.INSTANCE;
     private final ScheduleSpec scheduleSpec;
@@ -65,32 +63,19 @@ public class ScheduleCalService {
 
     /**
      * 일정 > 전체 일정 (일정 및 휴가) 데이터 조회
+     * <p>변경 전에는 공휴일·행사, 일반 일정, 개인 일정을 각각 조회한 뒤 메모리에서 병합했다.</p>
+     * <p>변경 후에는 공개 일정과 현재 사용자가 참가한 개인 일정을 단일 가시성 조건으로 조회한다.</p>
+     * <p>변경 전 분리 경로의 의미: 생일 달력 목록 검색은 이미 비활성 상태였고,
+     * 일정(공휴일, 행사) 달력 목록 검색·일정(재택근무, 외근) 달력 목록 검색·
+     * 개인 일정 달력 목록 검색을 순서대로 더했다. 개인 일정 전용 {@code getPrvtCalList}도
+     * 같은 단일 조회로 흡수하여 별도 공개 메서드를 남기지 않는다.</p>
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 일정 및 휴가 목록
      */
     public List<BaseCalDto> getScheduleTotalCalList(final ScheduleSearchParam searchParam) throws Exception {
         applyCalendarDateRange(searchParam);
-        final List<BaseCalDto> totalScheduleCalList = new ArrayList<>();
-
-        // 생일 달력 목록 검색
-        // final List<ScheduleCalDto> brthdyCalList = this.getBrthdyCalList(searchParam);
-        // totalScheduleCalList.addAll(brthdyCalList);
-
-        // 일정(공휴일, 행사) 달력 목록 검색
-        final List<BaseCalDto> holydayCalList = this.getHolydayCalList(searchParam);
-        totalScheduleCalList.addAll(holydayCalList);
-
-        // 일정(재택근무, 외근) 달력 목록 검색
-        final List<ScheduleCalDto> scheduleCalList = this.getScheduleCalList(searchParam);
-        totalScheduleCalList.addAll(scheduleCalList);
-
-        // 개인 일정 달력 목록 검색
-        final boolean prvtChked = "Y".equals(searchParam.getPrvtChked());
-        if (prvtChked) {
-            final List<ScheduleCalDto> prvtCalList = this.getPrvtCalList(searchParam);
-            totalScheduleCalList.addAll(prvtCalList);
-        }
+        final List<BaseCalDto> totalScheduleCalList = scheduleEntityListToCalDto(findScheduleEntities(searchParam));
 
         totalScheduleCalList.sort(Comparator.naturalOrder());
 
@@ -182,33 +167,17 @@ public class ScheduleCalService {
             final Pageable pageable
     ) throws Exception {
         applyCalendarDateRange(searchParam);
-        final List<ScheduleEntity> merged = collectListViewEntities(searchParam);
-        final int total = merged.size();
-        final int start = (int) pageable.getOffset();
-        if (start >= total) {
-            return new PageImpl<>(List.of(), pageable, total);
-        }
-        final int end = Math.min(start + pageable.getPageSize(), total);
-        final List<ScheduleDto> content = scheduleMapstruct.toDtoList(merged.subList(start, end));
-        return new PageImpl<>(content != null ? content : Collections.emptyList(), pageable, total);
-    }
-
-    private List<ScheduleEntity> collectListViewEntities(final ScheduleSearchParam searchParam) throws Exception {
-        final Map<Integer, ScheduleEntity> byId = new LinkedHashMap<>();
-        for (final ScheduleEntity entity : findHolydayEntities(searchParam)) {
-            byId.put(entity.getId(), entity);
-        }
-        for (final ScheduleEntity entity : findScheduleEntities(searchParam)) {
-            byId.put(entity.getId(), entity);
-        }
-        if ("Y".equals(searchParam.getPrvtChked())) {
-            for (final ScheduleEntity entity : findPrvtEntities(searchParam)) {
-                byId.put(entity.getId(), entity);
+        final Page<ScheduleEntity> entityPage = scheduleRepository.findAll(
+                scheduleSpec.searchWith(buildVisibleSearchParamMap(searchParam)),
+                pageable
+        );
+        return entityPage.map(entity -> {
+            try {
+                return scheduleMapstruct.toDto(entity);
+            } catch (final Exception e) {
+                throw new IllegalStateException("schedule dto mapping failed. id=" + entity.getId(), e);
             }
-        }
-        return byId.values().stream()
-                .sorted(Comparator.comparing(ScheduleEntity::getBgnDt, Comparator.nullsLast(Comparator.reverseOrder())))
-                .collect(Collectors.toList());
+        });
     }
 
     private List<ScheduleEntity> findHolydayEntities(final BaseSearchParam searchParam) throws Exception {
@@ -234,16 +203,21 @@ public class ScheduleCalService {
     }
 
     private List<ScheduleEntity> findScheduleEntities(final ScheduleSearchParam searchParam) throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
-        return scheduleRepository.findAll(scheduleSpec.searchWith(filteredSearchKey));
+        return scheduleRepository.findAll(scheduleSpec.searchWith(buildVisibleSearchParamMap(searchParam)));
     }
 
-    private List<ScheduleEntity> findPrvtEntities(final ScheduleSearchParam searchParam) throws Exception {
-        final ScheduleSearchParam prvtParam = searchParam.toBuilder().prevOnly(true).build();
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(prvtParam);
+    /**
+     * 일정 화면 조회 파라미터를 단일 가시성 계약으로 변환한다.
+     * 요청에서 개인 일정 선택값이 빠져도 공개 일정만 조회하도록 N을 강제한다.
+     *
+     * @param searchParam 일정 검색 조건
+     * @return Specification 입력 맵
+     */
+    private Map<String, Object> buildVisibleSearchParamMap(final ScheduleSearchParam searchParam) throws Exception {
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
         final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
-        return scheduleRepository.findAll(scheduleSpec.searchWith(filteredSearchKey));
+        filteredSearchKey.put("prvtChked", "Y".equals(searchParam.getPrvtChked()) ? "Y" : "N");
+        return filteredSearchKey;
     }
 
     /**
@@ -262,21 +236,4 @@ public class ScheduleCalService {
         return dtoList != null ? dtoList : Collections.emptyList();
     }
 
-    /**
-     * 개인 일정 달력 목록 검색
-     *
-     * @param searchParam 일정 검색 파라미터
-     * @return {@link List} -- 개인 일정 달력 목록 Dto 리스트
-     */
-    public List<ScheduleCalDto> getPrvtCalList(final ScheduleSearchParam searchParam) throws Exception {
-        applyCalendarDateRange(searchParam);
-        final List<ScheduleEntity> scheduleEntityList = findPrvtEntities(searchParam);
-        if (scheduleEntityList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        final List<ScheduleCalDto> dtoList = ScheduleCalMapstruct.INSTANCE.toDtoList(scheduleEntityList);
-        return dtoList != null ? dtoList : Collections.emptyList();
-    }
-
 }
-
