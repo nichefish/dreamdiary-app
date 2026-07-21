@@ -39,6 +39,8 @@ public interface ApiUrl {
     /** 저널 일자 */
     String JOURNAL_DAYS = Prefix.API + "/journal/days";
     String JOURNAL_DAY = Prefix.API + "/journal/day/{id}";
+    /** 저널 일자 축별 완결 플래그 토글 */
+    String JOURNAL_DAY_RESOLVED = Prefix.API + "/journal/day/{id}/resolved";
     /** 저널 일자 태그 */
     String JOURNAL_DAY_TAGS = Prefix.API + "/journal/day/tags";
     String JOURNAL_DAY_TAG_GROUP_LIST = Prefix.API + "/journal/day/tag/group-list";

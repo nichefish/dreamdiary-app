@@ -23,9 +23,9 @@
         </div>
       </div>
       <div class="col-3 d-none d-md-flex align-items-center gap-2">
-        <!--begin::챕터 등록 버튼-->
+        <!--begin::챕터 등록 / 일기 완결 배지 (같은 슬롯, 세로 가운데는 부모 align-items-center)-->
         <button
-          v-if="showDiaries"
+          v-if="showDiaries && diaryWritable"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
           @click="openChapterRegist"
@@ -33,10 +33,14 @@
           <i class="bi bi-list-columns-reverse fs-4 pe-1"></i>
           {{ t('journal.chapter.reg') }}
         </button>
-        <!--end::챕터 등록 버튼-->
-        <!--begin::꿈 등록 버튼-->
+        <span
+          v-else-if="isDiaryResolved"
+          class="badge badge-light-success"
+        >{{ t("journal.day.diary-resolved.badge") }}</span>
+        <!--end::챕터 등록 / 일기 완결 배지-->
+        <!--begin::꿈 등록 / 꿈 완결 배지 (같은 슬롯)-->
         <button
-          v-if="showDreams"
+          v-if="showDreams && dreamWritable"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
           @click="openDreamRegist()"
@@ -44,7 +48,11 @@
           <i class="bi bi-moon-stars fs-4 pe-1"></i>
           {{ t('journal.dream.reg') }}
         </button>
-        <!--end::꿈 등록 버튼-->
+        <span
+          v-else-if="isDreamResolved"
+          class="badge badge-light-info"
+        >{{ t("journal.day.dream-resolved.badge") }}</span>
+        <!--end::꿈 등록 / 꿈 완결 배지-->
         <!--begin::컨텍스트 메뉴 (⋯)-->
         <div v-if="day.id" class="me-0 d-flex align-items-center">
           <button
@@ -97,6 +105,22 @@
                     <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
                       <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="hasState('IMPRTC')" />
                       <span class="form-check-label text-muted fs-7">{{ t('state.important') }}</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="menu-item px-3">
+                  <div class="menu-content px-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                      <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="isDiaryResolved" @click.prevent="toggleDiaryResolved" />
+                      <span class="form-check-label text-muted fs-7">{{ t('journal.day.state.diary-resolved') }}</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="menu-item px-3">
+                  <div class="menu-content px-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                      <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="isDreamResolved" @click.prevent="toggleDreamResolved" />
+                      <span class="form-check-label text-muted fs-7">{{ t('journal.day.state.dream-resolved') }}</span>
                     </label>
                   </div>
                 </div>
@@ -252,12 +276,23 @@ import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import {
+  provideJournalDayResolved,
+  isResolvedYn,
+} from "@/features/journal/utils/journalDayResolved";
 
 const props = defineProps<{
   day: JournalDayDto;
   showDiaries?: boolean;
   showDreams?: boolean;
 }>();
+
+provideJournalDayResolved(() => props.day);
+
+const diaryWritable = computed(() => !isResolvedYn(props.day.diaryResolvedYn));
+const dreamWritable = computed(() => !isResolvedYn(props.day.dreamResolvedYn));
+const isDiaryResolved = computed(() => isResolvedYn(props.day.diaryResolvedYn));
+const isDreamResolved = computed(() => isResolvedYn(props.day.dreamResolvedYn));
 
 const route = useRoute();
 const router = useRouter();
@@ -328,9 +363,41 @@ async function toggleCollapsed(): Promise<void> {
   }
 }
 
+/** 일기 축 완결 토글 (POST /api/journal/day/{id}/resolved) */
+async function toggleDiaryResolved(): Promise<void> {
+  if (!props.day.id) return;
+  const nextYn = isDiaryResolved.value ? "N" : "Y";
+  try {
+    await axios.post(`/api/journal/day/${props.day.id}/resolved`, null, {
+      params: { diaryResolvedYn: nextYn },
+    });
+    scrollAfterFetch();
+  } catch (e: unknown) {
+    void swalRequestError(e);
+  }
+}
+
+/** 꿈 축 완결 토글 (POST /api/journal/day/{id}/resolved) */
+async function toggleDreamResolved(): Promise<void> {
+  if (!props.day.id) return;
+  const nextYn = isDreamResolved.value ? "N" : "Y";
+  try {
+    await axios.post(`/api/journal/day/${props.day.id}/resolved`, null, {
+      params: { dreamResolvedYn: nextYn },
+    });
+    scrollAfterFetch();
+  } catch (e: unknown) {
+    void swalRequestError(e);
+  }
+}
+
 /** 일자 삭제 */
 async function deleteDay(): Promise<void> {
   if (!props.day.id) return;
+  if (isDiaryResolved.value || isDreamResolved.value) {
+    void swalAlert(t("journal.day.resolved-delete-locked"));
+    return;
+  }
   if (!await swalConfirm(t("common.confirm.del"))) return;
   try {
     const res = await axios.delete(`/api/journal/day/${props.day.id}`);

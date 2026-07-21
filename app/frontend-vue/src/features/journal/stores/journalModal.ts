@@ -76,6 +76,7 @@ export interface JournalDayRegistModel {
   journalDate?: string;
   journalDatePrecision?: string;
   diaryResolvedYn?: string;
+  dreamResolvedYn?: string;
   weather?: string;
   /** 태그 컴포지션 */
   tag?: { tagListStr?: string; tagListStrWithCtgr?: string };
@@ -196,6 +197,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     let merged: JournalDayRegistModel = {
       journalDatePrecision: "EXACT",
       diaryResolvedYn: "N",
+      dreamResolvedYn: "N",
       weather: "",
       tag: { tagListStr: "" },
       meta: { metaListStr: "" },
@@ -216,7 +218,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
             journalDate: dto.journalDate ?? dto.stdrdDt ?? merged.journalDate,
             journalDatePrecision: dto.journalDatePrecision ?? merged.journalDatePrecision,
             weather: dto.weather ?? merged.weather,
-            diaryResolvedYn: (dto as { diaryResolvedYn?: string }).diaryResolvedYn ?? merged.diaryResolvedYn,
+            diaryResolvedYn: dto.diaryResolvedYn ?? merged.diaryResolvedYn,
+            dreamResolvedYn: dto.dreamResolvedYn ?? merged.dreamResolvedYn,
             tag: { tagListStr: tagCmpstn?.tagListStrWithCtgr ?? tagCmpstn?.tagListStr ?? "" },
             meta: { metaListStr: metaCmpstn?.metaListStr ?? "" },
           };

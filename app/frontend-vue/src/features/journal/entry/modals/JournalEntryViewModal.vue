@@ -83,7 +83,8 @@
           <button type="button" class="btn btn-light" @click="close">
             {{ t('common.close') }}
           </button>
-          <button
+                    <button
+            v-if="canEdit"
             type="button"
             class="btn btn-primary"
             :disabled="!entry?.id || modalStore.entryViewLoading"
@@ -109,6 +110,8 @@ import { Modal } from "bootstrap";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { isResolvedYn } from "@/features/journal/utils/journalDayResolved";
+import { swalAlert } from "@/shared/utils/swal";
 
 const modalStore = useJournalModalStore();
 const { t } = useLocaleStore();
@@ -155,6 +158,14 @@ const contentClass = computed(() => {
 
 const tagList = computed(() => entry.value?.tag?.list ?? []);
 
+/** NOTE 포함 비꿈 유형은 일기 축 완결 플래그로 수정 가능 여부를 판단한다. */
+const canEdit = computed(() => {
+  const e = entry.value;
+  if (!e) return false;
+  if (isDream.value) return !isResolvedYn(e.dreamResolvedYn);
+  return !isResolvedYn(e.diaryResolvedYn);
+});
+
 onMounted(() => {
   if (modalEl.value) {
     bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
@@ -177,6 +188,12 @@ function close() {
 }
 
 function openModify() {
+  if (!canEdit.value) {
+    void swalAlert(
+      t(isDream.value ? "journal.day.dream-resolved-locked" : "journal.day.diary-resolved-locked"),
+    );
+    return;
+  }
   void modalStore.openEntryModifyFromView();
 }
 </script>

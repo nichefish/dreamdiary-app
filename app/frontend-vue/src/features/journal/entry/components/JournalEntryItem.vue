@@ -111,6 +111,7 @@
             type="button"
             class="btn btn-xs btn-icon btn-light-danger ms-auto"
             :title="t('related-content.unlink.tooltip')"
+            v-if="axisWritable"
             @click.stop="unlinkRelated(rel)"
           >
             <i class="bi bi-x-lg fs-9"></i>
@@ -138,6 +139,7 @@
     <div v-if="entry.id" class="journal-entry-actions d-flex flex-row align-items-start pt-1 gap-1">
       <!--begin::댓글 등록 버튼-->
       <button
+        v-if="axisWritable"
         type="button"
         class="btn btn-xs btn-icon journal-entry-action-btn"
         :title="t('comment.register')"
@@ -180,7 +182,7 @@
           <!--end::메뉴 헤더-->
 
           <!--begin::수정-->
-          <div class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openModify">
               {{ t('common.edit') }}
               <i class="bi bi-pencil-square fs-8"></i>
@@ -189,7 +191,7 @@
           <!--end::수정-->
 
           <!--begin::해석 등록-->
-          <div class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openInterpretationRegist">
               {{ t('journal.entry.interpretation.register') }}
               <i class="bi bi-lightbulb fs-8"></i>
@@ -210,7 +212,7 @@
           <!--end::이력-->
 
           <!--begin::관련 글 추가 (다른 사람 꿈 제외)-->
-          <div v-if="!hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="axisWritable && !hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openRelated">
               {{ t('journal.entry.related-content.add') }}
               <i class="bi bi-link-45deg fs-8"></i>
@@ -219,7 +221,7 @@
           <!--end::관련 글 추가-->
 
           <!--begin::흐름 연결 (다른 사람 꿈 제외)-->
-          <div v-if="!hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="axisWritable && !hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openRelatedFlow">
               {{ t('journal.entry.flow.connect') }}
               <i class="bi bi-bezier2 fs-8"></i>
@@ -228,10 +230,10 @@
           <!--end::흐름 연결-->
 
 
-          <div class="separator my-2"></div>
+          <div v-if="axisWritable" class="separator my-2"></div>
 
           <!--begin::라이프사이클 서브메뉴-->
-          <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+          <div v-if="axisWritable" class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
             <a href="#" class="menu-link px-3" @click.prevent>
               <span class="menu-title">{{ t('common.lifecycle') }}</span>
               <span class="menu-arrow"></span>
@@ -264,6 +266,7 @@
             </a>
             <div class="menu-sub menu-sub-dropdown w-175px py-4">
               <!--begin::중요/참조 토글-->
+              <template v-if="axisWritable">
               <div v-for="st in statusOptions" :key="'st-' + st.key" class="menu-item px-3">
                 <div class="menu-content px-3">
                   <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
@@ -296,6 +299,7 @@
                 </div>
               </template>
               <!--end::악몽/환각 토글-->
+              </template>
 
               <!--begin::접기 토글-->
               <div class="menu-item px-3">
@@ -316,10 +320,10 @@
           </div>
           <!--end::상태 서브메뉴-->
 
-          <div class="separator my-2"></div>
+          <div v-if="axisWritable" class="separator my-2"></div>
 
           <!--begin::삭제-->
-          <div class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3 text-danger" @click="deleteEntry">
               {{ t('common.delete') }}
               <i class="bi bi-trash text-danger p-0 fs-8"></i>
@@ -339,13 +343,14 @@
     v-for="interp in interpretationList"
     :key="interp.id"
     :interpretation="interp"
+    :is-dream="isDreamEntry"
   />
   <!--end::해석 목록-->
 </template>
 
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, provide } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
@@ -359,6 +364,11 @@ import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
+import {
+  JOURNAL_DAY_RESOLVED_KEY,
+  mergeDayResolvedAxis,
+  useJournalDayResolved,
+} from "@/features/journal/utils/journalDayResolved";
 
 const props = defineProps<{
   entry: JournalEntryDto;
@@ -386,6 +396,23 @@ interface JournalCacheContext {
 
 /** 현재 엔트리가 꿈 유형인지 여부. 꿈 RESOLVED 전용 보라색 표시 계약에 사용한다. */
 const isDreamEntry = computed(() => props.isDream || props.entry.contentType === "JOURNAL_DREAM");
+
+const parentDayResolvedAxis = useJournalDayResolved();
+const mergedDayResolvedAxis = computed(() =>
+  mergeDayResolvedAxis(parentDayResolvedAxis.value, props.entry),
+);
+provide(JOURNAL_DAY_RESOLVED_KEY, mergedDayResolvedAxis);
+const axisWritable = computed(() =>
+  isDreamEntry.value ? mergedDayResolvedAxis.value.dreamWritable : mergedDayResolvedAxis.value.diaryWritable,
+);
+
+function guardAxisWrite(): boolean {
+  if (axisWritable.value) return true;
+  void swalAlert(
+    t(isDreamEntry.value ? "journal.day.dream-resolved-locked" : "journal.day.diary-resolved-locked"),
+  );
+  return false;
+}
 
 /** 엔트리 타입별 외부 item 클래스 (journal.scss 의 data-* 셀렉터 연동) */
 const itemClass = computed(() => {
@@ -624,12 +651,14 @@ async function copyEntry(): Promise<void> {
 
 /** 엔트리 수정 모달 열기 */
 function openModify() {
+  if (!guardAxisWrite()) return;
   if (!props.entry.id) return;
   void modalStore.openEntryModify(props.entry.id);
 }
 
 /** 댓글 등록 모달 열기 */
 function openCommentRegist() {
+  if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openCommentRegist(props.entry.id, props.entry.contentType);
 }
@@ -637,17 +666,19 @@ function openCommentRegist() {
 /** 이력 모달 열기 */
 function openHistory() {
   if (!props.entry.id || !props.entry.contentType) return;
-  void attachableStore.openHistory(props.entry.contentType, props.entry.id);
+  void attachableStore.openHistory(props.entry.contentType, props.entry.id, { writeLocked: !axisWritable.value });
 }
 
 /** 관련 글 추가 모달 열기 */
 function openRelated() {
+  if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openRelated(props.entry.contentType, props.entry.id);
 }
 
 /** FLOW 연결 모달 열기 */
 function openRelatedFlow() {
+  if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openRelatedFlow(props.entry.contentType, props.entry.id);
 }
@@ -676,6 +707,7 @@ function relationTypeLabel(relationType: string): string {
 /** 변경 전: 관련 글 연결 해제. FLOW는 경로 분리 가능성을 별도 확인한다.
  * 변경 후: 목록에서는 일반 관련글만 해제하고 FLOW 직접 연결 관리는 전체 흐름 모달에서 수행한다. */
 async function unlinkRelated(related: RelatedContentItem): Promise<void> {
+  if (!guardAxisWrite()) return;
   if (!related.id) {
     console.warn("[journal-entry] related content id missing for unlink", {
       entryId: props.entry.id,
@@ -720,6 +752,7 @@ async function unlinkRelated(related: RelatedContentItem): Promise<void> {
 
 /** 해석 등록 모달 열기 */
 function openInterpretationRegist() {
+  if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   modalStore.openInterpretationRegist({
     refId: props.entry.id,
@@ -744,6 +777,7 @@ function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
 
 /** 라이프사이클 설정 (PUT /api/lifecycles) */
 async function setLifecycle(lifecycleKey: string): Promise<void> {
+  if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   try {
     const res = await axios.put("/api/lifecycles", {
@@ -764,6 +798,7 @@ async function setLifecycle(lifecycleKey: string): Promise<void> {
 
 /** 상태 토글 (POST /api/states) */
 async function toggleState(stateKey: string): Promise<void> {
+  if (stateKey !== "COLLAPSED" && !guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   try {
     const res = await axios.post("/api/states", {
@@ -784,6 +819,7 @@ async function toggleState(stateKey: string): Promise<void> {
 
 /** 엔트리 삭제 (DELETE /api/journal/entry/{id}) */
 async function deleteEntry(): Promise<void> {
+  if (!guardAxisWrite()) return;
   if (!props.entry.id) return;
   const stdrdDt = props.entry.stdrdDt;
   const confirmed = await swalConfirm(t("common.confirm.del"));

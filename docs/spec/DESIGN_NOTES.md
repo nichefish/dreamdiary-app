@@ -16,6 +16,7 @@
 ---
 
 ### 저널 일자(journal-day)
+- **축별 완결·쓰기 잠금** (diaryResolvedYn / dreamResolvedYn): 일자 provide 가 있는 목록·상세뿐 아니라 검색 팝업·엔트리 뷰 모달도 잠겠야 한다. 엔트리 DTO에 일자 플래그를 투영하고 mergeDayResolvedAxis 로 provide·DTO 를 병합한다. 서버 JournalDayResolvedGuard 가 우회 POST 를 거절한다.
 - 클라이언트 쪽 마이그레이션·Phase 요약표는 `docs/DEV_NOTES.md`(저널 일자 마이그레이션 롤업)를 본다.
 - 사용자별 일자 데이터.
 - 저널 일자 신규 등록 후에는 `JournalDayBootstrapService`가 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. 이미 DIARY 챕터가 있으면 추가 생성하지 않는다.

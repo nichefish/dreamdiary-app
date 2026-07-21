@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.mapstruct.JournalInterpretationMapstruct;
@@ -68,6 +69,7 @@ public class JournalInterpretationService
     private final JournalEntryService journalEntryService;
     private final JournalChapterRepository journalChapterRepository;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     private final ApplicationContext context;
 
@@ -88,6 +90,7 @@ public class JournalInterpretationService
     @Override
     public void preRegist(final JournalInterpretationDto registDto) throws Exception {
         this.applyJournalDayIdFromRef(registDto);
+        journalDayResolvedGuard.assertWritableForRef(registDto.getRefId(), registDto.getRefContentType());
 
         final Integer lastSortOrder = repository.findLastIndexByRef(registDto.getRefId(), registDto.getRefContentType()).orElse(0);
         registDto.setSortOrder(lastSortOrder + 1);
@@ -115,6 +118,7 @@ public class JournalInterpretationService
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
+        journalDayResolvedGuard.assertWritableForRef(modifyEntity.getRefId(), modifyEntity.getRefContentType());
         this.applyJournalDayIdFromRef(modifyDto);
 
         final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
@@ -159,6 +163,7 @@ public class JournalInterpretationService
             final Integer fromHistoryId
     ) throws Exception {
         final JournalInterpretationEntity restoreEntity = this.getSelf().getDtlEntity(key);
+        journalDayResolvedGuard.assertWritableForRef(restoreEntity.getRefId(), restoreEntity.getRefContentType());
         final JournalInterpretationEntity historySnapshot = BaseAttachableHistoryHelper.isHistoryModule(restoreEntity)
                 ? restoreEntity.toBuilder().build()
                 : null;
@@ -184,6 +189,7 @@ public class JournalInterpretationService
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
+        journalDayResolvedGuard.assertWritableForRef(deletedDto.getRefId(), deletedDto.getRefContentType());
     }
 
     /**

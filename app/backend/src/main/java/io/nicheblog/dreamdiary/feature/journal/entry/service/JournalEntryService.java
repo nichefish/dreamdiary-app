@@ -29,6 +29,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypeResolver;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.feature.journal.entry.spec.JournalEntrySpec;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityQueueService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityRefSyncService;
@@ -73,6 +74,7 @@ public class JournalEntryService
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
     private final JournalEntryEntityQueueService journalEntryEntityQueueService;
     private final JournalEntryEntityRefSyncService journalEntryEntityRefSyncService;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     /**
      * ref(id + contentType) 기반으로 엔트리를 안전 조회한다.
@@ -340,6 +342,7 @@ public class JournalEntryService
     public void preRegist(final JournalEntryPostDto registDto) {
         final JournalEntryTypePolicy policy = policyResolver.resolve(registDto);
         assertChapterForEntry(policy, registDto.getJournalChapterId());
+        journalDayResolvedGuard.assertWritableForEntry(registDto.getJournalChapterId(), policy.contentType);
         JournalDreamerFieldHelper.applyDreamerFieldsFromPost(registDto, policy.contentType);
         registDto.setSortOrder(journalEntryOrderService.getNextSortOrder(registDto.getJournalChapterId(), policy.contentType));
     }
@@ -384,6 +387,7 @@ public class JournalEntryService
 
         final Integer journalChapterId = policy.resolveModifiedChapterId(modifyDto.getJournalChapterId(), modifyEntity.getJournalChapter().getId());
         assertChapterForEntry(policy, journalChapterId);
+        journalDayResolvedGuard.assertWritableForEntry(journalChapterId, policy.contentType);
         modifyDto.setIsSortOrderChanged(isSortOrderChanged(modifyDto, modifyEntity));
         if (policy.supportsChapterChange()) {
             final boolean isChapterChanged = isChapterChanged(modifyDto, modifyEntity);
@@ -404,6 +408,8 @@ public class JournalEntryService
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
+        final JournalEntryTypePolicy policy = policyResolver.resolve(deletedDto);
+        journalDayResolvedGuard.assertWritableForEntry(deletedDto.getJournalChapterId(), policy.contentType);
     }
 
     /**
@@ -517,6 +523,10 @@ public class JournalEntryService
         final JournalEntryTypePolicy policy = policyResolver.resolve(contentType);
         final JournalEntryEntity restoreEntity = this.getDtlEntity(key);
         policyResolver.assertMatches(restoreEntity, policy);
+        journalDayResolvedGuard.assertWritableForEntry(
+                restoreEntity.getJournalChapter().getId(),
+                policy.contentType
+        );
         final JournalEntryEntity historySnapshot = BaseAttachableHistoryHelper.isHistoryModule(restoreEntity)
                 ? restoreEntity.toBuilder().build()
                 : null;

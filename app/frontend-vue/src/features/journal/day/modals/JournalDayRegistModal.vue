@@ -114,6 +114,32 @@
             </div>
             <!--end::일기 완료 여부-->
 
+            <!--begin::꿈 완료 여부-->
+            <div class="row d-flex mb-8">
+              <div class="col-lg-12 col-3 d-flex align-items-center">
+                <label class="text-gray-700 fs-6 fw-bolder">{{ t("journal.day.regist.dream-resolved-label") }}</label>
+              </div>
+              <div class="col-lg-2 col-9 d-flex align-items-center">
+                <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="dreamResolvedYn"
+                    id="dreamResolvedYn"
+                    class="form-check-input cursor-pointer"
+                    value="Y"
+                    :checked="dreamResolvedChecked"
+                    @change="onDreamResolvedChange"
+                  />
+                  <label
+                    class="form-check-label fw-bold fs-6 ms-3"
+                    for="dreamResolvedYn"
+                    :style="{ color: dreamResolvedChecked ? 'blue' : 'gray' }"
+                  >{{ dreamResolvedChecked ? t("status.completed") : t("status.incomplete") }}</label>
+                </div>
+              </div>
+            </div>
+            <!--end::꿈 완료 여부-->
+
             <!--begin::태그-->
             <div class="row mb-3">
               <div>
@@ -247,6 +273,15 @@ function onDiaryResolvedChange(event: Event) {
   model.value.diaryResolvedYn = (event.target as HTMLInputElement).checked ? "Y" : "N";
 }
 
+const dreamResolvedChecked = computed(
+  () => String(model.value?.dreamResolvedYn ?? "").toUpperCase() === "Y"
+);
+
+function onDreamResolvedChange(event: Event) {
+  if (!model.value) return;
+  model.value.dreamResolvedYn = (event.target as HTMLInputElement).checked ? "Y" : "N";
+}
+
 /** 레거시 attachRegFormControls → cF.datepicker.singleDatePicker("#journalDate"). Vue form id: #journalDayRegistForm */
 function attachJournalDatePicker(): void {
   destroyJournalDatePicker();
@@ -363,6 +398,7 @@ async function submit() {
     formData.append("journalDatePrecision", model.value.journalDatePrecision ?? "EXACT");
     formData.append("weather", model.value.weather ?? "");
     formData.append("diaryResolvedYn", diaryResolvedChecked.value ? "Y" : "N");
+    formData.append("dreamResolvedYn", dreamResolvedChecked.value ? "Y" : "N");
     formData.append("tag.tagListStr", tagListStr.value);
     formData.append("meta.metaListStr", metaListStr.value);
 

@@ -56,8 +56,11 @@
 - **탭·툴바**: `JournalDayViewToolbar` 와 동일 상하감 — 탭(`nav-tabs-line ps-5 mt-5`) 상단, 이동일·검색·필터·등록은 탭 오른쪽(`pe-5 mt-3`). 카드 `margin-top: 0`. 달력 VIEW(FullCalendar) · 목록 VIEW(테이블)
 - **aside (년월 내비게이션)**: `ScheduleAside.vue` — 저널 aside 와 동일 폭(280px 고정)·sticky(상단 1rem, 자체 스크롤). 연도 select + 월 prev/next + 월 3열 그리드 + TODAY 버튼만 배치(필터·검색·등록은 툴바 유지). 연/월 선택·TODAY 는 이동일(anchorDate)을 갱신 후 기존 이동일 경로 재사용 — 달력 VIEW `gotoDate`, 목록 VIEW 해당 **월** 재조회(`전체 월` 토글 시 연 전체). 표시/숨김 토글은 `scheduleAside` 스토어(localStorage `schedule_aside_visible`) — 닫기 버튼은 aside 내부, 숨김 시 툴바 끝에 열기 아이콘 버튼(`bi-layout-sidebar-inset-reverse`) 표시. 저널과 달리 Pinpoint·필터 없음
 - **저장 모달 날짜 입력**: 시작일·종료일은 레거시(`ScheduleRegModal` — readonly 텍스트 input + `cF.datepicker.singleDatePicker`)와 동일하게 **readonly 텍스트 input + flatpickr**(`bindSingleDatePicker`, 저널 등록 모달과 동일 유틸). input 아무 곳이나 클릭하면 달력이 뜬다. 모달 열 때마다 재초기화(attach), 닫기 버튼에서 destroy. 종료일 칸은 레거시 `#endDtDiv`(display:none 토글)와 동일하게 `v-show` — 공휴일 선택 시 숨기고 `endDt=bgnDt` 로 덮어쓰며 flatpickr 표시값도 `setDate` 동기화. **툴바 이동일 input 도 동일 패턴** — 상시 존재하므로 mount 시 1회 attach·unmount 시 destroy, 달력 이동(datesSet) 등 외부 갱신은 watch 로 flatpickr 표시값 동기화. (변경 전: 네이티브 `<input type="date">` — 마이그레이션 시 이탈분을 레거시로 수렴)
+- **휴가 일정 데이터 계약**: 일정 대분류는 `schedule_cd=VCATN`, 세부 휴가 종류는 `schedule.vcatn_cd`와 기존 공통코드 `VCATN_CD`(`ANNUAL`, `AM_HALF`, `PM_HALF`, `PBLEN`, `CTSNN`, `MNSTR`, `UNPAID`)를 사용한다. `HOLYDAY`는 전역 공휴일 전용이며 휴가를 공휴일로 저장하지 않는다. `VCATN` 등록·수정 시 활성 휴가 구분이 필수이고, 다른 일정 유형으로 바꾸면 남아 있던 `vcatn_cd`는 제거한다. 기존 `VCATN` 행은 제목으로 종류를 추정하지 않고 NULL로 보존하며, 수정 시 명시적으로 선택해야 한다.
+- **일정 기간 계약**: DB/API의 `bgnDt`·`endDt`는 양 끝을 포함하는 inclusive 날짜다. 종료일 미입력은 시작일과 같은 날로 정규화하고, `HOLYDAY`만 단일 날짜를 강제한다. 종료일이 시작일보다 빠른 요청은 조용히 보정하지 않고 거부한다. FullCalendar all-day 이벤트는 이 값을 `start=bgnDt`, `end=endDt+1일`(exclusive)로 변환하므로 단일·다일 일정 모두 마지막 날까지 표시한다. 변경 전에는 기존 단일 일정을 다일 일정으로 늘릴 수 없었고 FullCalendar `end`에 시작일이 들어가 기간 표시가 잘렸다.
 - **목록 API**: `GET /api/schedule/list` — 달력과 동일 `bgnDt`/`endDt`·고급필터·검색어, `ScheduleDto` 페이징
-- **목록 행 클릭**: 휴가·생일 코드는 상세 모달 생략(달력과 동일), 그 외 `GET /api/schedule/cal-dtl` 상세 모달
+- **목록·상세 일정 구분명**: 엔티티의 transient `scheduleNm`(현재 제목으로 채워지는 값)을 표시명으로 재해석하지 않고 bootstrap `SCHEDULE_CD` 코드 목록을 SSOT로 사용한다. 목록 구분 열과 상세 제목 접두어가 실제 일정 제목을 중복 표시하지 않는다.
+- **목록 행 클릭**: 휴가는 `GET /api/schedule/cal-dtl` 상세 모달을 열고 휴가 구분을 표시하며 수정·삭제할 수 있다. 생일 코드는 기존대로 상세 모달을 생략한다. 달력 이벤트 클릭도 같은 계약이다. 변경 전에는 휴가 클릭을 즉시 return하여 등록 후 상세 확인·수정·삭제 진입이 불가능했다.
 - **공휴일 표시(`isHolyday`) 캐시 계약**: 저널 일자 목록의 날짜 빨간색은 `JournalDayDto.isHolyday`(`JournalDayCard.vue`)로 결정되고, 이 값은 `holydayMap` 캐시를 원천으로 `JournalDayHolydayHelper` 가 채운다. `holydayMap` 은 `@Cacheable` 이 아니라 수동 put 캐시라 자동 로딩되지 않으므로, **캐시 미스 시 `JournalDayQueryService.getHolydayMap()` 이 `ScheduleService.resyncHolydayMap()` 으로 재생성한 뒤 다시 읽는다**. 재생성에 실패하면 휴일 정보 없이 조회를 계속한다(로그만 남김).
   - **변경 전**: 캐시를 읽기만 하고 미스면 `null` 을 반환했고, 헬퍼는 `null` 이면 조용히 return 해 `isHolyday` 를 설정하지 않았다. 채우는 곳이 기동 시 워밍업(`ScheduleCacheWarmupTask`)과 공휴일 API 동기화뿐인데 ehcache `defaultTemplate` TTL 이 1일이라, **기동 후 하루가 지나면 만료된 채 아무도 다시 채우지 않아 공휴일 빨간색이 사라졌다**(증상이 간헐적으로 보인 이유는 만료 시점에 좌우됐기 때문).
   - 공휴일 일정 등록·수정·삭제 시 `ScheduleService.evictCache()` 가 `holydayMap` 도 비운다(변경 전에는 `isHolyday`/`isHolydayOrWeekend` 만 비워, 공휴일을 고쳐도 목록 색상이 갱신되지 않았다). 비운 뒤 재생성은 위 미스 처리에서 수행한다.
@@ -236,7 +239,9 @@
 | 관련 글/FLOW 연결 | `RelatedContentAddModal.vue` | 엔트리 ⋯ 메뉴의 「관련 글 추가」 또는 「흐름 연결」 클릭. 선택한 일기/꿈 유형에서 제목·본문 키워드로 최신 8건을 검색하며 실패와 정상 0건을 구분 |
 | FLOW 종단 보기·연결 관리 | `JournalEntryFlowModal.vue` | FLOW 요약 행 또는 엔트리 ⋯ 메뉴의 「흐름 보기」 클릭. 전체 연결 컴포넌트 조회와 직접 간선 해제 |
 
-`JournalDayRegistModal.vue`의 모달 제목·안전 닫기 안내·날짜·날짜 정확도 선택지·날씨·일기 완료 여부·태그·메타 안내·저장·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 입력값과 저장 payload를 변경하지 않는다.
+`JournalDayRegistModal.vue`의 모달 제목·안전 닫기 안내·날짜·날짜 정확도 선택지·날씨·일기/꿈 완료 여부·태그·메타 안내·저장·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 입력값과 저장 payload를 변경하지 않는다.
+
+**일자 축별 완결**: 목록 카드는 우측 액션 칸(등록 버튼 슬롯)에, 상세 모달은 날짜 헤더에 일기/꿈 완결 배지를 표시한다. `diaryResolvedYn`/`dreamResolvedYn` 이 Y 인 축은 등록·수정·삭제·lifecycle·state·댓글·관련 쓰기 UI를 숨기고 서버가 거절한다. 일자 ⋯ Status와 등록 모달에서 토글한다. 완결된 일자는 삭제할 수 없다.
 
 날짜 필수 검증·등록/수정 확인·성공/실패 fallback도 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 `message`를 반환하면 서버 메시지를 우선 표시한다.
 

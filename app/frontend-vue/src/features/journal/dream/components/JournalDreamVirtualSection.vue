@@ -9,7 +9,7 @@
       </div>
       <div v-if="showActions" class="col-3 d-none d-md-flex align-items-center gap-2">
         <button
-          v-if="isOwnDreamSection"
+          v-if="isOwnDreamSection && dreamWritable"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
           :title="t('journal.dream.reg')"
@@ -69,6 +69,7 @@ import { computed } from "vue";
 import type { JournalDreamSectionDto } from "@/features/journal/utils/journalDream";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { useJournalDayResolved } from "@/features/journal/utils/journalDayResolved";
 
 const { t } = useLocaleStore();
 
@@ -84,6 +85,9 @@ const props = defineProps<{
 
 /** 내 꿈 섹션만 저널 꿈 등록 버튼 표시 */
 const isOwnDreamSection = computed(() => props.section.sectionKey === "own");
+
+const dayResolvedAxis = useJournalDayResolved();
+const dreamWritable = computed(() => dayResolvedAxis.value.dreamWritable);
 
 defineEmits<{
   (e: "open-regist", dreamerName: string): void;

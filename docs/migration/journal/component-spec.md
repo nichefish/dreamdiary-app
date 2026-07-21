@@ -384,7 +384,9 @@ interface TodoRow {
 
 **닫기 정책**: 등록/수정 중 백드롭(모달 바깥)을 클릭하거나 Escape를 눌러도 모달을 닫지 않는다. 사용자가 입력 중인 날짜/태그/메타 값이 의도치 않은 닫힘으로 클리어되지 않도록 `Bootstrap Modal`을 `backdrop: "static", keyboard: false`로 생성한다 (2026-05-21 수정).
 
-**표시 문구 i18n**: 모달 제목·안전 닫기 안내·날짜·날짜 정확도 선택지·날씨·일기 완료 여부·태그·메타 안내·저장·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 입력값과 저장 payload를 변경하지 않는다.
+**표시 문구 i18n**: 모달 제목·안전 닫기 안내·날짜·날짜 정확도 선택지·날씨·일기/꿈 완료 여부·태그·메타 안내·저장·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 입력값과 저장 payload를 변경하지 않는다.
+
+**축별 완결 (`diaryResolvedYn` / `dreamResolvedYn`)**: 모달에 일기·꿈 완료 스위치를 두고 FormData로 저장한다. 변경 전 `diaryResolvedYn` 은 UI만 있고 백엔드에 저장되지 않았다. 변경 후 두 플래그가 `journal_day` 에 저장되며, Y 인 축의 쓰기(챕터/엔트리/해석/댓글/관련/lifecycle/state)를 잠근다. 날씨·태그·메타·완결 해제와 읽기·복사는 허용한다. NOTE는 일기 축에 포함한다.
 
 **저장 메시지 i18n**: 날짜 필수 검증·등록/수정 확인·성공/실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, 성공 알림 확인 후 기존 현재 route 재조회·태그클라우드 갱신·일자 스크롤 순서를 유지한다.
 
@@ -488,7 +490,7 @@ interface TodoRow {
 
 **컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수. 「주간 뷰로 이동」은 route `journal-weekly` 에서 미표시(월간·캘린더·메타 등 전용).
 
-**i18n**: 기준 날짜 요일·날짜 정확도 배지·챕터 필터 안내, 챕터·꿈 등록, 메뉴·저널 일자 헤더, 주간 뷰 이동·일자 뷰 새 창, 수정·상태·중요·접힘·삭제, 메타 tooltip, 숨겨진 카테고리·꿈 숨김 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 route·팝업·상태·필터 데이터와 액션 호출을 변경하지 않는다.
+**i18n**: 기준 날짜 요일·날짜 정확도 배지·일기/꿈 완결 배지·챕터 필터 안내, 챕터·꿈 등록, 메뉴·저널 일자 헤더, 주간 뷰 이동·일자 뷰 새 창, 수정·상태·중요·일기/꿈 완결·접힘·삭제, 메타 tooltip, 숨겨진 카테고리·꿈 숨김 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 route·팝업·상태·필터 데이터와 액션 호출을 변경하지 않는다.
 
 **액션 결과 i18n**: 일자 삭제 확인·성공·실패와 꿈 섹션 클립보드 복사 성공·실패 fallback 및 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용한다. 삭제 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하고, 성공 알림 확인 후 현재 route 기준 목록 재조회와 일자 스크롤을 유지한다.
 
@@ -544,6 +546,8 @@ interface TodoRow {
 **꿈 RESOLVED 팔레트**: 변경 전에는 일기와 꿈이 `$journal-paired-states`의 초록 완료색을 공유했다. 변경 후 일반 꿈은 `$journal-dream-paired-states`의 은은한 보라 배경·테두리·좌측선을 사용하고, 접힌 표시·순번·라이프사이클 메뉴의 선택된 완료 라벨도 보라색으로 맞춘다. 중요·참조가 함께 있으면 완료 보라선을 유지하면서 기존 빨강·노랑 상태선을 조합한다. 일기·노트·해석과 챕터의 완료 집계는 기존 초록 계약을 유지한다.
 
 **엔트리 제목 표시**: `entry.title` 이 있으면 유형(일기/꿈/노트) 무관하게 꿈 상태 배지 행 아래·마크다운 본문 위에 독립 행으로 `fw-bold fs-5 mb-1` 표시한다. 본문 `.journal-content` 는 fs 클래스 없이 base 1rem 을 상속하므로 제목은 본문보다 한 단계 위 크기가 된다. 접힘(`isCollapsed`)과 무관하게 항상 표시하며 본문만 숨긴다. 제목은 `.journal-content` 밖이라 유형별 본문 색상(꿈 보라 등)을 상속하지 않고 기본 텍스트색을 쓴다. 변경 전: 꿈 엔트리에서만 배지 행에 인라인 `fs-7` 로 표시했고 일기·노트는 제목이 렌더되지 않았다. 결산 상세(`JournalAnnualDetail.vue`)의 엔트리 제목도 같은 `fs-5 fw-bold` 계약을 따른다.
+
+**축별 완결 잠금(엔트리 DTO)**: 일자 provide 가 없는 검색·뷰 모달 등에서는 `JournalEntryDto.diaryResolvedYn`/`dreamResolvedYn`(백엔드 day projection)이 SSOT 이다. `JournalEntryItem` 은 `mergeDayResolvedAxis` 로 parent provide 와 병합해 `axisWritable`·관련글 해제·이력 `writeLocked` 를 결정하고 하위 `JournalInterpretationItem` 에 provide 한다. `HistoryModal` 은 `historyWriteLocked` 시 복원·삭제 UI만 숨기고 복사·상세는 허용한다.
 
 **우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/FLOW 연결/FLOW 보기/라이프사이클/상태/삭제)
 

@@ -110,6 +110,10 @@ export interface JournalEntryDto {
   content?: string;
   markdownContent?: string;
   journalDayId?: number;
+  /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
+  diaryResolvedYn?: string;
+  /** 소속 일자 꿀 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
+  dreamResolvedYn?: string;
   journalChapterId?: number;
   stdrdDt?: string;
   sortOrder?: number;
@@ -210,6 +214,10 @@ export interface JournalDayDto {
   tag?: TagCmpstn;
   meta?: MetaCmpstn;
   state?: StateCmpstn;
+  /** 일기 축(챕터·노트) 완결 여부 Y/N */
+  diaryResolvedYn?: string;
+  /** 꿈 축 완결 여부 Y/N */
+  dreamResolvedYn?: string;
 }
 
 /** 목록 조회 파라미터 */

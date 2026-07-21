@@ -24,6 +24,7 @@
       <div v-if="canManageChapter" class="col-3 d-none d-md-flex align-items-center gap-2">
         <!--begin::엔트리 등록 TEXT 버튼-->
         <button
+          v-if="canWriteChapter"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
           :title="entryRegistTitle"
@@ -68,7 +69,7 @@
               <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t("journal.chapter.label") }}</div>
             </div>
             <!--begin::수정-->
-            <div class="menu-item px-3 my-1">
+            <div v-if="canWriteChapter" class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="openChapterModify">
                 {{ t("common.edit") }}
                 <i class="bi bi-pencil-square fs-8"></i>
@@ -76,7 +77,7 @@
             </div>
             <!--end::수정-->
             <!--begin::상태 서브메뉴-->
-            <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+            <div v-if="canWriteChapter" class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
               <a href="#" class="menu-link px-3" @click.prevent>
                 <span class="menu-title">{{ t("common.status") }}</span>
                 <span class="menu-arrow"></span>
@@ -98,9 +99,9 @@
               </div>
             </div>
             <!--end::상태 서브메뉴-->
-            <div class="separator my-2"></div>
+            <div v-if="canWriteChapter" class="separator my-2"></div>
             <!--begin::삭제-->
-            <div class="menu-item px-3 my-1">
+            <div v-if="canWriteChapter" class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3 text-danger" @click="deleteChapter">
                 {{ t("common.delete") }}
                 <i class="bi bi-trash text-danger p-0 fs-8"></i>
@@ -171,6 +172,7 @@ import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
+import { useJournalDayResolved } from "@/features/journal/utils/journalDayResolved";
 
 const props = withDefaults(defineProps<{
   chapter: JournalChapterDto;
@@ -211,14 +213,26 @@ watch(serverCollapsed, () => {
 /** 본인 작성 챕터만 수정·삭제·엔트리 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
 const canManageChapter = computed(() => props.chapter.isCreatedBy === true);
 
+const dayResolvedAxis = useJournalDayResolved();
+/** NOTE 챕터 포함 일기 축 — diaryResolvedYn 잠금 시 쓰기 불가 */
+const canWriteChapter = computed(
+  () => canManageChapter.value && dayResolvedAxis.value.diaryWritable,
+);
+
 const isDreamChapter = computed(() => props.chapter.chapterType === "DREAM");
 const isNoteChapter = computed(() => props.chapter.chapterType === "NOTE");
 
-/** 소유권 없을 때 안내 후 중단 */
-function guardChapterOwner(): boolean {
-  if (canManageChapter.value) return true;
-  void swalAlert(t("journal.chapter.owner-only"));
-  return false;
+/** 소유권·일기 축 잠금 없을 때만 쓰기 허용 */
+function guardChapterOwner(forWrite = false): boolean {
+  if (!canManageChapter.value) {
+    void swalAlert(t("journal.chapter.owner-only"));
+    return false;
+  }
+  if (forWrite && !dayResolvedAxis.value.diaryWritable) {
+    void swalAlert(t("journal.day.diary-resolved-locked"));
+    return false;
+  }
+  return true;
 }
 
 const entryRegistIcon = computed(() => (isDreamChapter.value ? "bi-moon-stars" : "bi-book"));
@@ -279,7 +293,7 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 
 /** 챕터 수정 모달 열기 */
 function openChapterModify() {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   modalStore.openChapterRegist({
     id: props.chapter.id,
     journalDayId: props.chapter.journalDayId,
@@ -293,7 +307,7 @@ function openChapterModify() {
 
 /** 일기/노트/꿈 엔트리 신규 등록 모달 열기 */
 function openEntryNew() {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   if (!props.chapter.journalDayId) return;
   /* NOTE 챕터 엔트리도 백엔드 contentType 은 JOURNAL_DIARY (JournalEntryTypeResolver). */
   const contentType = isDreamChapter.value ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
@@ -344,7 +358,7 @@ function scrollAfterFetch(stdrdDt = props.chapter.stdrdDt): void {
 
 /** 챕터 접힘 상태 토글 (서버 반영 후 목록 갱신 — ⋯ 메뉴 전용) */
 async function toggleCollapsedState(): Promise<void> {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   if (!props.chapter.id) return;
   try {
     await axios.post("/api/states", {
@@ -367,7 +381,7 @@ function exportChapter(): void {
 
 /** 챕터 삭제 */
 async function deleteChapter(): Promise<void> {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   if (!props.chapter.id) return;
   const stdrdDt = props.chapter.stdrdDt;
   if (!await swalConfirm(t("journal.chapter.delete.confirm"))) return;

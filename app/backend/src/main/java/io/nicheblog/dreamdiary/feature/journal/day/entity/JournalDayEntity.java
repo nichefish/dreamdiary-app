@@ -104,6 +104,24 @@ public class JournalDayEntity
     @Comment("날씨")
     private String weather;
 
+    /**
+     * 일기 축 완결 여부 (Y/N).
+     * <p>Y이면 일기·노트 챕터/엔트리/해석/댓글/관련·lifecycle·state 쓰기를 잠근다. 일자 날씨·태그·메타 수정과 완결 해제, 읽기·복사는 허용.</p>
+     */
+    @Builder.Default
+    @Column(name = "diary_resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("일기 축 완결(Y/N)")
+    private String diaryResolvedYn = "N";
+
+    /**
+     * 꿈 축 완결 여부 (Y/N).
+     * <p>Y이면 꿈 등록·엔트리/해석/댓글/관련·lifecycle·state 쓰기를 잠근다.</p>
+     */
+    @Builder.Default
+    @Column(name = "dream_resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("꿈 축 완결(Y/N)")
+    private String dreamResolvedYn = "N";
+
     /** 저널 챕터 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "journal_day_id", referencedColumnName = "id", insertable = false, updatable = false)

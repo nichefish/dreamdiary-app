@@ -50,6 +50,7 @@
     <div class="d-flex flex-row align-items-start pt-1 gap-1" style="min-width:80px;">
       <!--begin::댓글 등록 버튼-->
       <button
+        v-if="axisWritable"
         type="button"
         class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
         :title="t('comment.register')"
@@ -92,7 +93,7 @@
           <!--end::메뉴 헤더-->
 
           <!--begin::수정-->
-          <div class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openModify">
               {{ t('common.edit') }}
               <i class="bi bi-pencil-square fs-8"></i>
@@ -112,10 +113,10 @@
           </div>
           <!--end::이력-->
 
-          <div class="separator my-2"></div>
+          <div v-if="axisWritable" class="separator my-2"></div>
 
           <!--begin::라이프사이클 서브메뉴-->
-          <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+          <div v-if="axisWritable" class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
             <a href="#" class="menu-link px-3" @click.prevent>
               <span class="menu-title">{{ t('common.lifecycle') }}</span>
               <span class="menu-arrow"></span>
@@ -142,14 +143,14 @@
 
           <div class="separator my-2"></div>
 
-          <!--begin::상태 서브메뉴-->
+          <!--begin::상태 서브메뉴 (쓰기 잠금 시 접기만)-->
           <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
             <a href="#" class="menu-link px-3" @click.prevent>
               <span class="menu-title">{{ t('common.status') }}</span>
               <span class="menu-arrow"></span>
             </a>
             <div class="menu-sub menu-sub-dropdown w-175px py-4">
-              <div class="menu-item px-3">
+              <div v-if="axisWritable" class="menu-item px-3">
                 <div class="menu-content px-3">
                   <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
                     <input
@@ -179,10 +180,10 @@
           </div>
           <!--end::상태 서브메뉴-->
 
-          <div class="separator my-2"></div>
+          <div v-if="axisWritable" class="separator my-2"></div>
 
           <!--begin::삭제-->
-          <div class="menu-item px-3 my-1 cursor-pointer">
+          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3 text-danger" @click="deleteInterpretation">
               {{ t('common.delete') }}
               <i class="bi bi-trash text-danger p-0 fs-8"></i>
@@ -211,13 +212,36 @@ import type { InterpretationItem } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { useJournalDayResolved } from "@/features/journal/utils/journalDayResolved";
 
 const props = defineProps<{
   interpretation: InterpretationItem;
+  /** 부모 엔트리가 꿈 축이면 true — refContentType 보조 */
+  isDream?: boolean;
 }>();
 
 const modalStore = useJournalModalStore();
 const attachableStore = useAttachableModalStore();
+
+const isDreamInterpretation = computed(
+  () =>
+    props.isDream === true
+    || props.interpretation.refContentType === "JOURNAL_DREAM",
+);
+const dayResolvedAxis = useJournalDayResolved();
+const axisWritable = computed(() =>
+  isDreamInterpretation.value
+    ? dayResolvedAxis.value.dreamWritable
+    : dayResolvedAxis.value.diaryWritable,
+);
+
+function guardAxisWrite(): boolean {
+  if (axisWritable.value) return true;
+  void swalAlert(
+    t(isDreamInterpretation.value ? "journal.day.dream-resolved-locked" : "journal.day.diary-resolved-locked"),
+  );
+  return false;
+}
 const journalStore = useJournalStore();
 const { t } = useLocaleStore();
 const route = useRoute();
@@ -253,6 +277,7 @@ function toggleInterpretation(): void {
 
 /** 해석 수정 모달 열기 */
 function openModify(): void {
+  if (!guardAxisWrite()) return;
   modalStore.openInterpretationRegist({
     id: props.interpretation.id,
     refId: props.interpretation.refId,
@@ -263,12 +288,15 @@ function openModify(): void {
 
 /** 댓글 등록 모달 열기 */
 function openCommentRegist(): void {
+  if (!guardAxisWrite()) return;
   attachableStore.openCommentRegist(props.interpretation.id, "JOURNAL_INTERPRETATION");
 }
 
 /** 이력 모달 열기 */
 function openHistory(): void {
-  void attachableStore.openHistory("JOURNAL_INTERPRETATION", props.interpretation.id);
+  void attachableStore.openHistory("JOURNAL_INTERPRETATION", props.interpretation.id, {
+    writeLocked: !axisWritable.value,
+  });
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */
@@ -286,6 +314,7 @@ function scrollAfterFetch(): void {
 
 /** 라이프사이클 설정 */
 async function setLifecycle(lifecycleKey: string): Promise<void> {
+  if (!guardAxisWrite()) return;
   try {
     const res = await axios.put("/api/lifecycles", {
       id: props.interpretation.id,
@@ -301,6 +330,7 @@ async function setLifecycle(lifecycleKey: string): Promise<void> {
 
 /** 상태 토글 */
 async function toggleState(stateKey: string): Promise<void> {
+  if (stateKey !== "COLLAPSED" && !guardAxisWrite()) return;
   try {
     const res = await axios.post("/api/states", {
       id: props.interpretation.id,
@@ -333,6 +363,7 @@ async function copyInterpretation(): Promise<void> {
 
 /** 해석 삭제 */
 async function deleteInterpretation(): Promise<void> {
+  if (!guardAxisWrite()) return;
   if (!await swalConfirm(t("journal.interpretation.delete.confirm"))) return;
   try {
     const res = await axios.delete(`/api/journal/interpretation/${props.interpretation.id}`);

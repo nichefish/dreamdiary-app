@@ -114,6 +114,7 @@ export function createJournalDay(dateStr: string) {
   form.append("journalDate", safeDate);
   form.append("journalDatePrecision", "EXACT");
   form.append("diaryResolvedYn", "N");
+  form.append("dreamResolvedYn", "N");
   return request<AjaxResponse<JournalDay>>("/api/journal/days", {
     method: "POST",
     body: form

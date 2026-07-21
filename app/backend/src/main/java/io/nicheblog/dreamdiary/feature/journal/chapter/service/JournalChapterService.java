@@ -20,6 +20,8 @@ import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayService;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayResolvedAxis;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
@@ -82,6 +84,7 @@ public class JournalChapterService
     private final JournalDayService journalDayService;
     private final JournalEntryService journalEntryService;
     private final JournalEntryRepository journalEntryRepository;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     private final ApplicationContext context;
     private JournalChapterService getSelf() {
@@ -123,6 +126,7 @@ public class JournalChapterService
         if (registDto.getChapterType() == ChapterType.DREAM) {
             throw new BusinessException("journal.chapter.dream-auto-only");
         }
+        journalDayResolvedGuard.assertWritable(registDto.getJournalDayId(), JournalDayResolvedAxis.DIARY);
         applyNewChapterSortOrderAndDefaultCategory(registDto);
     }
 
@@ -193,6 +197,8 @@ public class JournalChapterService
             response.setRsltObj(dto);
             return response;
         }
+
+        journalDayResolvedGuard.assertWritable(journalDayId, JournalDayResolvedAxis.DREAM);
 
         final JournalChapterDto registDto = new JournalChapterDto();
         registDto.setJournalDayId(journalDayId);
@@ -279,6 +285,7 @@ public class JournalChapterService
             );
             throw new NotAuthorizedException("common.result.not-owner");
         }
+        journalDayResolvedGuard.assertWritableForChapter(modifyEntity.getId());
         if (modifyEntity.getChapterType() == ChapterType.DREAM) {
             if (modifyDto.getChapterType() != null && modifyDto.getChapterType() != ChapterType.DREAM) {
                 throw new BusinessException("journal.chapter.dream-type-locked");
@@ -319,6 +326,7 @@ public class JournalChapterService
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.not-owner");
         }
+        journalDayResolvedGuard.assertWritableForChapter(deletedDto.getId());
     }
 
     /**
@@ -441,6 +449,7 @@ public class JournalChapterService
         if (!AuthUtils.isCreatedBy(chapterEntity.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.not-owner");
         }
+        journalDayResolvedGuard.assertWritableForChapter(id);
         // DREAM 챕터 이동 불가
         if (chapterEntity.getChapterType() == ChapterType.DREAM) {
             throw new BusinessException("journal.chapter.dream-type-locked");

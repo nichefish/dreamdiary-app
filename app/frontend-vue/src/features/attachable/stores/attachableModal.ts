@@ -240,14 +240,17 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   const historyTriggeredAt = ref<string>("");
   /** 이력 목록 */
   const historyList = ref<HistoryItem[]>([]);
+  /** 이력 모달 쓰기 잠금 — 복원·삭제 UI 숨김 (읽기·복사·상세는 허용) */
+  const historyWriteLocked = ref(false);
 
   /**
    * 이력 모달을 연다. API에서 이력 목록을 조회한다.
    * @param contentType - 콘텐츠 타입
    * @param id - 게시물 번호
    */
-  async function openHistory(contentType: string, id: number | string): Promise<void> {
+  async function openHistory(contentType: string, id: number | string, options?: { writeLocked?: boolean }): Promise<void> {
     if (!await assertAuthenticatedBeforeModal()) return;
+    historyWriteLocked.value = options?.writeLocked ?? false;
     historyOpen.value = true;
     historyLoading.value = true;
     historyList.value = [];
@@ -277,6 +280,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   /** 이력 모달을 닫는다. */
   function closeHistory(): void {
     historyOpen.value = false;
+    historyWriteLocked.value = false;
   }
 
   /**
@@ -836,6 +840,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     historyPostId,
     historyTriggeredAt,
     historyList,
+    historyWriteLocked,
     openHistory,
     closeHistory,
     restoreHistory,

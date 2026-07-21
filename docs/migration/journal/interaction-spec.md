@@ -367,8 +367,20 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 이전/다음 버튼·날짜 선택 tooltip·빈 상태와 목록 조회 실패 fallback은 현재 locale 카탈로그를 사용한다. locale 변경은 `stdrdDt` query와 일간 조회 조건을 변경하지 않는다.
 - 팝업 너비 1600px / 높이 1080px (`window.screen.availWidth/Height` 상한); left/top 제거하여 OS 기본 배치 사용
 - 수정 → `openReg()` (등록 모달 재활용, id 포함)
-- 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 접힘(COLLAPSED, `POST /api/states` 토글)
-  - 삭제 → `DELETE /api/journal/day/{id}` → 성공 알림 OK 이후 `refreshJournalDaysForRoute` (일간 포함 route 분기)
+- 상태 서브메뉴: 중요(IMPRTC, 표시 전용), 일기 완결(`diaryResolvedYn`, `POST /api/journal/day/{id}/resolved`), 꿈 완결(`dreamResolvedYn`, 동일 API), 접힘(COLLAPSED, `POST /api/states` 토글)
+  - 삭제 → `DELETE /api/journal/day/{id}`. `diaryResolvedYn` 또는 `dreamResolvedYn` 이 Y 이면 클라이언트·서버 모두 거절(`journal.day.resolved-delete-locked`). 성공 시 OK 이후 `refreshJournalDaysForRoute` (일간 포함 route 분기)
+
+### 저널 일자 축별 완결·쓰기 잠금 (`diaryResolvedYn` / `dreamResolvedYn`)
+
+**의미**: `journal_day` 의 수동 플래그 두 개. 엔트리 `RESOLVED`·챕터 완료 집계와 무관하다. 일기 축(DIARY/NOTE 챕터·엔트리·해석·댓글·관련·lifecycle·state)과 꿈 축(꿈 등록·엔트리·해석·댓글·관련·lifecycle·state)은 직교한다.
+
+**표시**: 일자 카드에서는 우측 액션 칸(`col-3`, `align-items-center`)에 등록 버튼과 같은 슬롯으로 `일기 완결`/`꿈 완결` 배지를 둔다(쓰기 가능 시 버튼, 완결 시 배지; 일기=`badge-light-success`, 꿈=`badge-light-info`). 상세 모달은 날짜 헤더 인라인. 등록 모달 스위치와 ⋯ Status 토글로 설정·해제.
+
+**쓰기 잠금(축별)**: 해당 축 Y 이면 구조·본문·해석·댓글·관련·lifecycle·state 쓰기 UI 숨김 + `JournalDayResolvedGuard` 서버 거절. 허용: 읽기·복사·TXT·클라이언트 접힘·일자 접힘(COLLAPSED)·일자 수정 모달(날씨·태그·메타·완결 플래그)·태그 프로필·이력 조회(복원·삭제는 잠금). 일자 삭제는 한쪽이라도 Y 이면 불가.
+
+**provide 없는 화면(검색·뷰 모달 등)**: `JournalDayCard` 의 `provideJournalDayResolved` 가 없을 때는 엔트리 DTO 투영 필드 `diaryResolvedYn`/`dreamResolvedYn` 이 SSOT 이다. `JournalEntryItem` 은 `mergeDayResolvedAxis(parent, entry)` 로 병합해 하위 해석에 provide 하고, `JournalEntryViewModal` 은 동일 플래그로 수정 버튼을 숨긴다.
+
+**API**: 저장은 일자 등록/수정 FormData; 빠른 토글은 `POST /api/journal/day/{id}/resolved?diaryResolvedYn=|dreamResolvedYn=`.
 
 **드롭다운**: Metronic `data-kt-menu-trigger="click"`, `data-kt-menu-placement="bottom-end"`
 
@@ -612,6 +624,16 @@ async function copyChapter(): Promise<void> {
 `journalAnnual.ts`의 결산 목록 조회 실패, 전체 결산 갱신·결산/리뷰 등록·수정 결과 fallback과 리뷰 삭제 확인·결과 fallback은 현재 locale의 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. 성공 알림 후 전체 결산 갱신은 목록·총계를, 결산 저장은 목록을, 리뷰 저장·삭제는 해당 연도 상세를 기존 순서대로 재조회한다.
 
 ---
+
+### 일정 휴가 등록·수정과 기간 검증
+
+- 일정 저장 모달에서 대분류 `VCATN`을 선택하면 `VCATN_CD` 기반 「휴가 구분」 select를 표시하고 필수로 검증한다. `VCATN`이 아닌 유형으로 바꾸면 폼과 서버 저장값의 휴가 구분을 모두 비운다.
+- 시작일·종료일은 inclusive 날짜다. 종료일 미입력은 시작일로 정규화하고, 종료일이 시작일보다 빠르면 확인창과 API 호출 전에 경고한다. 서버도 같은 계약을 다시 검증하여 직접 요청 우회를 막는다.
+- `HOLYDAY` 선택 시 종료일 입력을 숨기고 시작일과 같은 날로 저장한다. 휴가는 `HOLYDAY`로 변환하지 않으며 다일 범위를 허용한다.
+- 휴가 목록 행·달력 이벤트 클릭은 상세 모달을 열며, 상세에는 휴가 구분 코드명을 표시한다. 상세에서 기존 수정·삭제 흐름으로 진입할 수 있다.
+- 기존 `VCATN` 데이터의 `vcatn_cd`가 NULL이면 상세에는 `-`를 표시하고, 수정 저장 전 사용자가 휴가 구분을 선택해야 한다. 제목 기반 자동 추정이나 클라이언트 fallback은 두지 않는다.
+- 달력·목록 조회는 공개 일정과 현재 사용자 참가 개인 일정을 단일 쿼리로 처리한다. 개인 일정 필터를 끄거나 생략하면 공개 일정만, 켜면 공개 일정 + 참가 개인 일정을 반환한다. 「내 일정만」은 현재 사용자 참가 조건을 추가하고 「휴가」 해제는 `VCATN`을 제외한다.
+- 공개 일정은 인증 사용자가 상세를 볼 수 있고 개인 일정은 작성자 또는 참가자만 볼 수 있다. 참가자는 조회만 가능하며 수정·삭제는 작성자만 가능하다. 상세 모달의 수정·삭제도 `isCreatedBy`가 거짓이면 비활성화하고, 직접 API 요청은 서버가 같은 권한으로 거절한다.
 
 ## 검색 팝업 전용 동작
 

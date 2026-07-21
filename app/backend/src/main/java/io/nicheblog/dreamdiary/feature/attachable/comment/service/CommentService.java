@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.attachable.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.feature.attachable.comment.repository.jpa.CommentRepository;
 import io.nicheblog.dreamdiary.feature.attachable.comment.spec.CommentSpec;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
@@ -49,6 +50,7 @@ public class CommentService
     }
 
     private final CommentCacheInvalidateWorker commentCacheInvalidateWorker;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     private final ApplicationContext context;
     private CommentService getSelf() {
@@ -83,6 +85,37 @@ public class CommentService
 
         Page<CommentEntity> entityList = this.getSelf().getPageEntity(filteredSearchKey, pageable);
         return mapstruct.toDtoPage(entityList);
+    }
+
+    /**
+     * 등록 전처리. (override)
+     *
+     * @param registDto 등록할 객체
+     */
+    @Override
+    public void preRegist(final CommentDto registDto) throws Exception {
+        journalDayResolvedGuard.assertWritableForRef(registDto.getRefId(), registDto.getRefContentType());
+    }
+
+    /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto 수정할 객체
+     * @param modifyEntity 수정할 엔티티
+     */
+    @Override
+    public void preModify(final CommentDto modifyDto, final CommentEntity modifyEntity) throws Exception {
+        journalDayResolvedGuard.assertWritableForRef(modifyEntity.getRefId(), modifyEntity.getRefContentType());
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto 삭제 대상 객체
+     */
+    @Override
+    public void preDelete(final CommentDto deletedDto) throws Exception {
+        journalDayResolvedGuard.assertWritableForRef(deletedDto.getRefId(), deletedDto.getRefContentType());
     }
 
     /**

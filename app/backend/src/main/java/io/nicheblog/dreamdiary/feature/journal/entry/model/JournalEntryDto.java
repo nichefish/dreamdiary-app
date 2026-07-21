@@ -47,6 +47,14 @@ public class JournalEntryDto extends BaseAttachableDto
     private String markdownContent;
 
     private Integer journalDayId;
+    /**
+     * 소속 일자의 일기 축 완결 (Y/N). journal_day 투영. 검색·상세 등 일자 provide 없는 화면의 UI 잠금 SSOT.
+     */
+    private String diaryResolvedYn;
+    /**
+     * 소속 일자의 꿈 축 완결 (Y/N). journal_day 투영.
+     */
+    private String dreamResolvedYn;
     private Integer journalChapterId;
     private String stdrdDt;
     private JournalDatePrecision journalDatePrecision;

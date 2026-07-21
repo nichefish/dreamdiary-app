@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS journal_day (
     mnth INT COMMENT '월',
     week_start_date DATE COMMENT '주 시작일자 (월요일 기준)',
     weather VARCHAR(500) COMMENT '날씨',
+    diary_resolved_yn CHAR(1) DEFAULT 'N' COMMENT '일기 축 완결(Y/N). 일기·노트 쓰기 잠금',
+    dream_resolved_yn CHAR(1) DEFAULT 'N' COMMENT '꿈 축 완결(Y/N). 꿈 쓰기 잠금',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

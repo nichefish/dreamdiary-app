@@ -81,5 +81,21 @@ public class JournalDaySmpEntity {
     @Column(name = "weather")
     @Comment("날씨")
     private String weather;
+
+    /**
+     * 일기 축 완결 여부 (Y/N). 엔트리 DTO 투영용 — 쓰기 잠금 SSOT는 journal_day 컬럼.
+     */
+    @Builder.Default
+    @Column(name = "diary_resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("일기 축 완결(Y/N)")
+    private String diaryResolvedYn = "N";
+
+    /**
+     * 꿈 축 완결 여부 (Y/N). 엔트리 DTO 투영용.
+     */
+    @Builder.Default
+    @Column(name = "dream_resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("꿈 축 완결(Y/N)")
+    private String dreamResolvedYn = "N";
 }
 

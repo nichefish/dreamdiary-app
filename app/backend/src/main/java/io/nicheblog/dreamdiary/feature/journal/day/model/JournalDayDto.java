@@ -79,6 +79,22 @@ public class JournalDayDto
     @Size(max = 100, message = "{msg.journal.day.weather.max-length}")
     private String weather;
 
+    /**
+     * 일기 축 완결 여부 (Y/N).
+     * <p>Y이면 일기·노트 축 쓰기를 잠근다. 엔트리 RESOLVED 와 무관하며 수동 토글만 반영한다.</p>
+     */
+    @Builder.Default
+    @Size(max = 1)
+    private String diaryResolvedYn = "N";
+
+    /**
+     * 꿈 축 완결 여부 (Y/N).
+     * <p>Y이면 꿈 축 쓰기를 잠근다. 엔트리 RESOLVED 와 무관하며 수동 토글만 반영한다.</p>
+     */
+    @Builder.Default
+    @Size(max = 1)
+    private String dreamResolvedYn = "N";
+
     /** 저널 챕터 목록 */
     private List<JournalChapterDto> journalChapterList;
     /** 저널 챕터 간단 목록 */
