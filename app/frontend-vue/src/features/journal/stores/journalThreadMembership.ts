@@ -1,8 +1,8 @@
 /**
  * journalThreadMembership.ts
- * 저널 엔트리 ↔ 흐름(스레드) 소속 지정 액션 스토어.
+ * 저널 엔트리 ↔ 스레드 소속 지정 액션 스토어.
  *
- * FLOW 를 대체하는 축이다. 엔트리 ⋯ 메뉴의 「흐름에 추가」 서브메뉴와
+ * FLOW 를 대체하는 축이다. 엔트리 ⋯ 메뉴의 「스레드에 추가」 서브메뉴와
  * 본문 소속 칩이 이 스토어의 액션을 호출한다.
  *
  * 스레드 목록 페이지 상태(journalThread.ts)와 분리한다 — 엔트리 메뉴가
@@ -14,7 +14,7 @@ import axios from "axios";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAjaxResult, swalRequestError } from "@/shared/utils/swal";
 
-/** 서브메뉴에 띄우는 흐름 후보 항목 (경량) */
+/** 서브메뉴에 띄우는 스레드 후보 항목 (경량) */
 export interface ThreadOption {
   id: number;
   title?: string;
@@ -24,7 +24,7 @@ export interface ThreadOption {
   member: boolean;
 }
 
-/** 흐름 후보 분류 선택지 */
+/** 스레드 후보 분류 선택지 */
 export interface ThreadOptionCategory {
   code: string;
   codeName: string;
@@ -35,7 +35,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   const { t } = localeStore;
 
   /**
-   * 서브메뉴에 띄울 흐름 후보 목록.
+   * 서브메뉴에 띄울 스레드 후보 목록.
    *
    * 변경 전: 일반 스레드 목록의 첫 7개를 모든 엔트리 메뉴가 공유했다.
    * 변경 후: 후보 API가 현재 엔트리 소속·최근 사용·소속 수를 반영해 정렬한 결과를
@@ -51,7 +51,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   const optionKeyword = ref("");
   /** 후보 분류 필터 */
   const optionCategory = ref("");
-  /** 현재 locale의 흐름 분류 선택지 */
+  /** 현재 locale의 스레드 분류 선택지 */
   const categoryOptions = ref<ThreadOptionCategory[]>([]);
   const categoriesLoading = ref(false);
   const categoryError = ref("");
@@ -59,7 +59,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   const categoriesLoaded = ref(false);
   const categoryLocale = ref("");
 
-  /** 서브메뉴에 노출할 흐름 후보 최대 개수 */
+  /** 서브메뉴에 노출할 스레드 후보 최대 개수 */
   const OPTION_LIMIT = 7;
   /** 늦게 끝난 이전 엔트리 요청이 현재 후보를 덮어쓰지 못하게 하는 순번. */
   let candidateRequestSequence = 0;
@@ -67,7 +67,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   let categoryRequest: Promise<boolean> | null = null;
 
   /**
-   * 현재 엔트리에 맞는 흐름 후보 목록을 조회한다.
+   * 현재 엔트리에 맞는 스레드 후보 목록을 조회한다.
    *
    * 같은 엔트리의 검색 실패 시에는 직전 성공 목록을 보존한다. 다른 엔트리로 전환할
    * 때는 {@link openThreadOptions}가 기존 목록을 먼저 비워 잘못된 소속 표시를 막는다.
@@ -125,7 +125,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   }
 
   /**
-   * 현재 locale의 흐름 분류 선택지를 최초 한 번 조회한다.
+   * 현재 locale의 스레드 분류 선택지를 최초 한 번 조회한다.
    *
    * 실패 상태는 후보 조회 실패와 분리하며 다음 메뉴 진입에서 다시 시도한다.
    */
@@ -166,7 +166,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   }
 
   /**
-   * 엔트리의 「흐름에 추가」 서브메뉴를 준비한다.
+   * 엔트리의 「스레드에 추가」 서브메뉴를 준비한다.
    *
    * 엔트리가 바뀌면 이전 엔트리의 검색 조건과 후보를 버리고 새 엔트리 기준으로
    * 다시 조회한다. 같은 엔트리를 재진입하면 현재 필터를 유지한 채 최신 랭킹을 받는다.
@@ -188,9 +188,9 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   }
 
   /**
-   * 엔트리를 흐름에 추가한다. (멱등 — 서버가 이미 소속이면 변경 없이 성공)
+   * 엔트리를 스레드에 추가한다. (멱등 — 서버가 이미 소속이면 변경 없이 성공)
    *
-   * @param threadId 흐름(스레드) ID
+   * @param threadId 스레드 ID
    * @param entryId 엔트리 ID
    * @returns 처리 성공 여부
    */
@@ -211,9 +211,9 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   }
 
   /**
-   * 엔트리를 흐름에서 제외한다. (멱등 — 이미 제외면 변경 없이 성공)
+   * 엔트리를 스레드에서 제외한다. (멱등 — 이미 제외면 변경 없이 성공)
    *
-   * @param threadId 흐름(스레드) ID
+   * @param threadId 스레드 ID
    * @param entryId 엔트리 ID
    * @returns 처리 성공 여부
    */
@@ -232,12 +232,12 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   }
 
   /**
-   * 제목만으로 새 흐름을 만들고 엔트리를 바로 소속시킨다.
+   * 제목만으로 새 스레드를 만들고 엔트리를 바로 소속시킨다.
    *
    * 스레드 생성 API(멀티파트)를 재사용해 제목만 채워 만들고, 반환된 id 로 소속을 건다.
    * 본문·태그·첨부는 이후 스레드 상세에서 채우는 것을 전제로 비운다.
    *
-   * @param title 흐름 제목 (비어 있지 않아야 함)
+   * @param title 스레드 제목 (비어 있지 않아야 함)
    * @param entryId 엔트리 ID
    * @returns 처리 성공 여부
    */

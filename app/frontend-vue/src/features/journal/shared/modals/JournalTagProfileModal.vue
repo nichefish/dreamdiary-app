@@ -186,6 +186,7 @@ import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useJournalStore, type TagCloudSection } from "@/features/journal/stores/journal";
 import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
@@ -194,6 +195,7 @@ const emit = defineEmits<{ success: [] }>();
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 
@@ -281,11 +283,18 @@ function tagCloudSectionsFor(contentType: string): TagCloudSection[] | undefined
  * - 검색 팝업: success → loadEntries()
  * - 결산 상세: annualStore.fetchTagRows(yy, activeSection) — 결산 태그클라우드는 일자 store.fetchTagCloud 가 아니라
  *   /api/journal/annual/{yy}/tags 행이 SSOT 이므로 이 경로로 재조회한다.
+ * - 스레드 상세: 소속 엔트리와 엔트리 태그 집계가 SSOT인 열린 스레드 상세를 다시 조회한다.
  * - 그 외(월간/주간/일간): 일자 목록 + contentType 대응 fetchTagCloud
  */
 async function refreshAfterTagProfileChange(): Promise<void> {
   /* 검색 팝업은 일자/클라우드 스토어가 아니라 로컬 entries 가 SSOT — success 리스너(loadEntries)만 사용 */
   if (route.name === "journal-entry-search") {
+    emit("success");
+    return;
+  }
+
+  if (route.name === "thread-detail") {
+    await threadStore.refreshOpenDetail();
     emit("success");
     return;
   }

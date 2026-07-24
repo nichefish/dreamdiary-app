@@ -206,8 +206,9 @@ import axios from "axios";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useRoute } from "vue-router";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import type { InterpretationItem } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
@@ -243,6 +244,7 @@ function guardAxisWrite(): boolean {
   return false;
 }
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 
@@ -299,17 +301,20 @@ function openHistory(): void {
   });
 }
 
-/** fetchDays 완료 후 해당 일자로 스크롤 */
+/**
+ * 해석 변경 후 현재 표시 호스트를 재조회한다.
+ * 일자 화면에서는 기존처럼 fetchDays 완료 후 해당 일자로 스크롤하고,
+ * 스레드 상세에서는 원본 엔트리를 포함한 열린 상세를 갱신해 모달 내부 맥락을 유지한다.
+ */
 function scrollAfterFetch(): void {
   const dt = props.interpretation.stdrdDt;
-  if (!dt) return;
-  const afterFetch = () => {
+  void refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
+    if (scope === "thread-detail" || !dt) return;
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  };
-  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
+  });
 }
 
 /** 라이프사이클 설정 */
@@ -373,7 +378,7 @@ async function deleteInterpretation(): Promise<void> {
         message: res.data?.message,
         successFallback: t("common.result.deleted"),
       });
-      void refreshJournalDaysForRoute(journalStore, route, props.interpretation.stdrdDt);
+      scrollAfterFetch();
     }
     else void swalAjaxResult({
       rslt: false,

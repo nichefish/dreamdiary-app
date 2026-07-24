@@ -201,7 +201,8 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import type { JournalChapterOption } from "@/features/journal/stores/journalModal";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -209,6 +210,7 @@ import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 const emit = defineEmits<{
@@ -345,11 +347,16 @@ async function refreshCurrentDayView(contentType?: string): Promise<boolean> {
     return false;
   }
 
+  if (route.name === "thread-detail") {
+    await refreshJournalEntryHostForRoute(journalStore, threadStore, route, model.value?.stdrdDt);
+    return false;
+  }
+
   refreshEntryTagCloud(contentType);
   const detailRefreshed = await prepareOpenDayDetail();
   if (detailRefreshed) return true;
 
-  await refreshJournalDaysForRoute(journalStore, route, model.value?.stdrdDt);
+  await refreshJournalEntryHostForRoute(journalStore, threadStore, route, model.value?.stdrdDt);
   return false;
 }
 

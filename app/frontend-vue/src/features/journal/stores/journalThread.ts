@@ -59,6 +59,21 @@ export interface JournalThreadRegistModel {
   content?: string;
 }
 
+/** 월간·주간 저널 화면에 표시할 기간별 스레드 집계 */
+export interface JournalPeriodThreadSummaryItem {
+  threadId: number;
+  title: string;
+  /** 조회 기간 안에서 이 스레드에 속한 엔트리 수 */
+  entryCount: number;
+  /** 조회 기간 안에서 스레드가 처음 등장한 일자 */
+  firstEntryDate: string;
+}
+
+/** 기간별 스레드 집계 API가 지원하는 조회 계약 */
+export type JournalPeriodThreadSummaryQuery =
+  | { viewType: "WEEKLY"; weekStartDt: string }
+  | { viewType: "LIST"; yy: number; mnth: number };
+
 // ---- 스토어 ----
 
 export const useJournalThreadStore = defineStore("journalThread", () => {
@@ -89,6 +104,17 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const categoryOptions = ref<ThreadCategoryItem[]>([]);
   /** 분류 선택지 조회 오류 */
   const categoryError = ref("");
+
+  // ---- 기간별 요약 ----
+
+  /** 현재 월간·주간 조회 기간에 등장한 스레드 집계 */
+  const periodSummary = ref<JournalPeriodThreadSummaryItem[]>([]);
+  /** 기간별 스레드 집계 로딩 여부 */
+  const periodSummaryLoading = ref(false);
+  /** 기간별 스레드 집계 오류 */
+  const periodSummaryError = ref("");
+  /** 늦게 끝난 이전 기간 응답이 현재 기간을 덮지 못하게 하는 요청 순번 */
+  let periodSummaryRequestToken = 0;
 
   // ---- 등록/수정 모달 ----
 
@@ -170,6 +196,47 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     filterKeyword.value = "";
     filterCategory.value = "";
     await fetchList(0);
+  }
+
+  /**
+   * 현재 월간·주간에 등장한 스레드를 서버 집계 결과로 조회한다.
+   * <p>
+   * 일기/꿈/키워드 필터가 적용된 dayList를 재집계하지 않고 기간 전체를 조회한다.
+   * 기간 전환 중 이전 요청이 늦게 끝나면 응답을 폐기해 다른 기간의 요약이 노출되지 않게 한다.
+   */
+  async function fetchPeriodSummary(query: JournalPeriodThreadSummaryQuery): Promise<void> {
+    const requestToken = ++periodSummaryRequestToken;
+    periodSummaryLoading.value = true;
+    periodSummaryError.value = "";
+    periodSummary.value = [];
+
+    try {
+      const res = await axios.get("/api/journal/threads/period-summary", { params: query });
+      if (requestToken !== periodSummaryRequestToken) {
+        console.info("[journalThread] fetchPeriodSummary discarded stale response", {
+          query,
+          requestToken,
+          currentToken: periodSummaryRequestToken,
+        });
+        return;
+      }
+      periodSummary.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+    } catch (e: unknown) {
+      if (requestToken !== periodSummaryRequestToken) {
+        console.info("[journalThread] fetchPeriodSummary discarded stale failure", {
+          query,
+          requestToken,
+          currentToken: periodSummaryRequestToken,
+        });
+        return;
+      }
+      console.error("[journalThread] fetchPeriodSummary failed", { query }, e);
+      periodSummaryError.value = t("journal.thread.period-summary.load.failure");
+    } finally {
+      if (requestToken === periodSummaryRequestToken) {
+        periodSummaryLoading.value = false;
+      }
+    }
   }
 
   // ---- 등록/수정 액션 ----
@@ -344,6 +411,54 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     }
   }
 
+  /**
+   * 열린 스레드 상세의 본문·집계 태그와 소속 엔트리를 원자적으로 다시 조회한다.
+   * <p>
+   * 엔트리 수정·관계·라이프사이클·상태·소속 변경은 원본 엔트리를 바꾸므로,
+   * 저널 일자 목록이 아니라 현재 스레드 상세를 갱신해야 한다. 기존 내용을 먼저 비우지 않아
+   * 중첩 액션 모달이 닫힌 뒤 스레드의 읽기 위치와 렌더 맥락을 유지한다.
+   *
+   * @return 열린 상세를 최신 응답으로 교체했으면 true, 갱신 대상이 없거나 실패하면 false
+   */
+  async function refreshOpenDetail(): Promise<boolean> {
+    const id = detailModel.value?.id;
+    if (!detailOpen.value || !id) {
+      console.warn("[journalThread] refreshOpenDetail skipped: no open detail", {
+        detailOpen: detailOpen.value,
+        detailId: id,
+      });
+      return false;
+    }
+
+    try {
+      const [detailRes, entriesRes] = await Promise.all([
+        axios.get(`/api/journal/threads/${id}`),
+        axios.get(`/api/journal/threads/${id}/entries`),
+      ]);
+      const refreshedDetail = detailRes.data?.rsltObj as JournalThreadDto | undefined;
+      if (!refreshedDetail) {
+        console.warn("[journalThread] refreshOpenDetail rejected empty detail", { id });
+        return false;
+      }
+      if (!detailOpen.value || detailModel.value?.id !== id) {
+        console.info("[journalThread] refreshOpenDetail discarded stale response", {
+          requestedId: id,
+          currentId: detailModel.value?.id,
+          detailOpen: detailOpen.value,
+        });
+        return false;
+      }
+
+      detailModel.value = refreshedDetail;
+      detailEntries.value = (entriesRes.data?.rsltList ?? []) as JournalEntryDto[];
+      return true;
+    } catch (e: unknown) {
+      console.error("[journalThread] refreshOpenDetail failed", { id }, e);
+      void swalRequestError(e, t("journal.thread.detail.load.failure"));
+      return false;
+    }
+  }
+
   return {
     // 목록
     threadList,
@@ -357,8 +472,12 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     filterCategory,
     categoryOptions,
     categoryError,
+    periodSummary,
+    periodSummaryLoading,
+    periodSummaryError,
     fetchList,
     fetchCategoryOptions,
+    fetchPeriodSummary,
     resetFilters,
     // 등록/수정
     registOpen,
@@ -378,5 +497,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     detailModel,
     openDetail,
     closeDetail,
+    refreshOpenDetail,
   };
 });

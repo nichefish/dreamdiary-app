@@ -10,6 +10,11 @@
     <JournalThreadDetailModal />
     <CommentListModal />
     <CommentRegistModal />
+    <JournalInterpretationRegistModal />
+    <HistoryModal @success="refreshOpenThreadDetail" />
+    <RelatedContentAddModal />
+    <JournalTagProfileModal />
+    <JournalTagContextMenu />
     <!--end::스레드 모달 컨테이너-->
   </div>
   <!--end::스레드 레이아웃-->
@@ -23,6 +28,11 @@ import JournalThreadRegistModal from "./modals/JournalThreadRegistModal.vue";
 import JournalThreadDetailModal from "./modals/JournalThreadDetailModal.vue";
 import CommentListModal from "@/features/attachable/CommentListModal.vue";
 import CommentRegistModal from "@/features/journal/shared/modals/CommentRegistModal.vue";
+import JournalInterpretationRegistModal from "@/features/journal/interpretation/modals/JournalInterpretationRegistModal.vue";
+import HistoryModal from "@/features/attachable/HistoryModal.vue";
+import RelatedContentAddModal from "@/features/journal/shared/modals/RelatedContentAddModal.vue";
+import JournalTagProfileModal from "@/features/journal/shared/modals/JournalTagProfileModal.vue";
+import JournalTagContextMenu from "@/features/journal/shared/components/JournalTagContextMenu.vue";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 
 const route = useRoute();
@@ -30,6 +40,11 @@ const router = useRouter();
 const store = useJournalThreadStore();
 
 let syncToken = 0;
+
+/** 이력 복원·삭제처럼 자식 모달이 원본 엔트리를 바꾸면 열린 스레드 상세를 다시 조회한다. */
+function refreshOpenThreadDetail(): void {
+  void store.refreshOpenDetail();
+}
 
 async function syncThreadRoute(): Promise<void> {
   const token = ++syncToken;

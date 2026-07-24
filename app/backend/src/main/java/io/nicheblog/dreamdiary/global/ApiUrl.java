@@ -83,6 +83,8 @@ public interface ApiUrl {
     String JOURNAL_THREAD_API_LIST = Prefix.API + "/journal/threads";
     /** 엔트리 소속 메뉴용 저널 스레드 후보 */
     String JOURNAL_THREAD_CANDIDATES = Prefix.API + "/journal/threads/candidates";
+    /** 월간·주간 저널 화면용 기간별 스레드 집계 */
+    String JOURNAL_THREAD_PERIOD_SUMMARY = Prefix.API + "/journal/threads/period-summary";
     String JOURNAL_THREAD_CATEGORIES = Prefix.API + "/journal/threads/categories";
     String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
     /** 스레드 소속 엔트리 목록 조회 / 소속 등록 */

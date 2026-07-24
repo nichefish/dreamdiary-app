@@ -133,13 +133,15 @@ import { Modal } from "bootstrap";
 import axios from "axios";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useRoute } from "vue-router";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 
@@ -214,7 +216,7 @@ async function submit() {
         message: res.data?.message,
         successFallback: isModify.value ? t("common.result.modified") : t("common.result.registered"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
     } else {
       void swalAjaxResult({
         rslt: false,

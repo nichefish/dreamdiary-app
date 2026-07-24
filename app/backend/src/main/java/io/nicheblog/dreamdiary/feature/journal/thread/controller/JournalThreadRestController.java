@@ -8,6 +8,9 @@ import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadSearchParam;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryDto;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -99,6 +102,32 @@ public class JournalThreadRestController
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(categoryList));
+    }
+
+    /**
+     * 월간·주간 저널 화면의 기간별 스레드 요약 조회 (Ajax).
+     * <p>
+     * LIST는 {@code yy}/{@code mnth}, WEEKLY는 {@code weekStartDt}를 사용한다.
+     * 일자 화면의 표시·검색 필터와 무관한 기간 전체 활성 소속을 집계한다.
+     *
+     * @param viewType LIST 또는 WEEKLY
+     * @param searchParam 월간 연·월 또는 주 시작일
+     * @return {@link ResponseEntity} -- 기간별 스레드 요약
+     */
+    @GetMapping(Url.JOURNAL_THREAD_PERIOD_SUMMARY)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalThreadPeriodSummaryAjax(
+            final @RequestParam("viewType") JournalDayViewType viewType,
+            final JournalDaySearchParam searchParam
+    ) throws Exception {
+
+        final List<JournalThreadPeriodSummaryDto> resultList =
+                journalThreadEntryService.getPeriodSummary(viewType, searchParam);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(resultList));
     }
 
     /**

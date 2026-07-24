@@ -131,13 +131,13 @@ class JournalThreadRepositoryTest {
         final String username = "candidate_user";
         final int currentEntryId = 7001;
         final JournalThreadEntity current = candidateThread(
-                "현재 소속 흐름", "CASE", username, LocalDateTime.of(2026, 7, 1, 10, 0));
+                "현재 소속 스레드", "CASE", username, LocalDateTime.of(2026, 7, 1, 10, 0));
         final JournalThreadEntity recent = candidateThread(
-                "최근 사용 흐름", "CASE", username, LocalDateTime.of(2026, 7, 2, 10, 0));
+                "최근 사용 스레드", "CASE", username, LocalDateTime.of(2026, 7, 2, 10, 0));
         final JournalThreadEntity frequent = candidateThread(
-                "자주 사용한 흐름", "REVIEW", username, LocalDateTime.of(2026, 7, 3, 10, 0));
+                "자주 사용한 스레드", "REVIEW", username, LocalDateTime.of(2026, 7, 3, 10, 0));
         final JournalThreadEntity unused = candidateThread(
-                "미사용 흐름", "CASE", username, LocalDateTime.of(2026, 7, 4, 10, 0));
+                "미사용 스레드", "CASE", username, LocalDateTime.of(2026, 7, 4, 10, 0));
         journalThreadRepository.saveAll(List.of(current, recent, frequent, unused));
         journalThreadRepository.flush();
 
@@ -152,7 +152,7 @@ class JournalThreadRepositoryTest {
         final List<JournalThreadCandidateProjection> ranked = journalThreadRepository.findCandidates(
                 username, currentEntryId, "", "", PageRequest.of(0, 10));
         assertEquals(
-                List.of("현재 소속 흐름", "최근 사용 흐름", "자주 사용한 흐름", "미사용 흐름"),
+                List.of("현재 소속 스레드", "최근 사용 스레드", "자주 사용한 스레드", "미사용 스레드"),
                 ranked.stream().map(JournalThreadCandidateProjection::getTitle).toList()
         );
         assertEquals(1L, ranked.get(0).getCurrentEntryMembershipCount().longValue());
@@ -161,14 +161,14 @@ class JournalThreadRepositoryTest {
         final List<JournalThreadCandidateProjection> titleFiltered = journalThreadRepository.findCandidates(
                 username, currentEntryId, "사용", "", PageRequest.of(0, 10));
         assertEquals(
-                List.of("최근 사용 흐름", "자주 사용한 흐름", "미사용 흐름"),
+                List.of("최근 사용 스레드", "자주 사용한 스레드", "미사용 스레드"),
                 titleFiltered.stream().map(JournalThreadCandidateProjection::getTitle).toList()
         );
 
         final List<JournalThreadCandidateProjection> categoryFiltered = journalThreadRepository.findCandidates(
                 username, currentEntryId, "", "CASE", PageRequest.of(0, 10));
         assertEquals(
-                List.of("현재 소속 흐름", "최근 사용 흐름", "미사용 흐름"),
+                List.of("현재 소속 스레드", "최근 사용 스레드", "미사용 스레드"),
                 categoryFiltered.stream().map(JournalThreadCandidateProjection::getTitle).toList()
         );
     }

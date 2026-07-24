@@ -72,11 +72,12 @@ import { useAttachableModalStore } from "@/features/attachable/stores/attachable
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 
@@ -142,13 +143,8 @@ async function submit() {
         message: res.data?.message,
         successFallback: isModify ? t("common.result.modified") : t("common.result.registered"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
       if (attachableStore.commentRefContentType === "JOURNAL_THREAD") {
-        const threadStore = useJournalThreadStore();
-        const refId = Number(attachableStore.commentRefId);
-        if (threadStore.detailOpen && threadStore.detailModel?.id === refId) {
-          void threadStore.openDetail(refId);
-        }
         void threadStore.fetchList(threadStore.currentPage);
       }
     } else {

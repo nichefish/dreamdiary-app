@@ -92,7 +92,7 @@ describe("journalThreadMembership store", () => {
       data: {
         rsltList: [{
           id: FIXTURE_OTHER_THREAD_ID,
-          title: "두 번째 흐름",
+          title: "두 번째 스레드",
           membershipCount: 1,
           member: false,
         }],
@@ -103,7 +103,7 @@ describe("journalThreadMembership store", () => {
       data: {
         rsltList: [{
           id: FIXTURE_THREAD_ID,
-          title: "첫 번째 흐름",
+          title: "첫 번째 스레드",
           membershipCount: 2,
           member: true,
         }],
@@ -122,7 +122,7 @@ describe("journalThreadMembership store", () => {
         data: {
           rsltList: [{
             id: FIXTURE_THREAD_ID,
-            title: "보존할 흐름",
+            title: "보존할 스레드",
             membershipCount: 1,
             member: false,
           }],

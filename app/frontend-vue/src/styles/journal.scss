@@ -472,7 +472,8 @@ $journal-dream-paired-states: (
             display: none !important;
         }
     }
-    .journal-chapter-tags {
+    .journal-chapter-tags,
+    .journal-chapter-threads {
         margin: 0 !important;
         padding: 0.15rem 0 0.65rem;
         min-width: 0;
@@ -481,7 +482,8 @@ $journal-dream-paired-states: (
 
     &:has(> .journal-chapter-content.collapsed) {
         .journal-chapter-content.collapsed,
-        .journal-chapter-tags:not(.d-none) {
+        .journal-chapter-tags:not(.d-none),
+        .journal-chapter-threads:not(.d-none) {
             background: transparent;
             box-shadow: none;
             padding-left: 0;
@@ -566,7 +568,8 @@ $journal-dream-paired-states: (
     border-radius: 0 0.5rem 0.5rem 0;
 }
 
-.journal-chapter-item[data-collapsed="N"] .journal-chapter-tags {
+.journal-chapter-item[data-collapsed="N"] .journal-chapter-tags,
+.journal-chapter-item[data-collapsed="N"] .journal-chapter-threads {
     display: none;
 }
 

@@ -156,6 +156,7 @@
   - 상단: `JournalDayViewToolbar.vue` (탭 네비게이션 + 저널 일자 등록 버튼, flex `justify-content-between`) — 레거시 본문 상단 탭 행 + `_journal_day_page_header.ftlh` 의 `header_btn_reg_modal` 동작
   - 카드: `.card.post` (margin-top: 0 !important)
     - 카드 헤더: 태그 헤더 (`_journal_day_tag_header.ftlh`) → Vue: `JournalTagCloudHeader.vue` ✓ 구현 완료
+    - 기간별 스레드 요약: 태그클라우드 아래 월간 스레드 집계(상위 10개 + 펼치기, 라벨 `스레드`) ✓ 구현 완료
     - 카드 바디: `JournalDayCard` (`store.dayList`) — 레거시 `#journal_day_list_div` 텔레포트는 SPA 미사용
     - 로딩 렌더: `store.dayList`가 비어 있는 초기 조회에서만 본문 전체 스피너를 표시한다. 이미 목록 DOM이 렌더된 상태의 재조회(등록/수정 후 갱신, 필터 갱신 등)에서는 기존 `JournalDayCard` DOM을 유지해 문서 높이 축소로 인한 스크롤 초기화를 막는다.
   - 사이드 패널: `_journal_day_aside_base.ftlh` include
@@ -203,10 +204,11 @@
 - 각 일자 카드에 일기(DIARY)/꿈(DREAM)/노트(NOTE) 엔트리 포함
 - 일자 카드의 기준 날짜 요일·날짜 정확도 배지·챕터 필터 안내, 챕터·꿈 등록, 컨텍스트 메뉴, 상태, 메타 tooltip, 숨겨진 카테고리·꿈 숨김 문구와 삭제·꿈 섹션 복사 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. 엔트리의 보류 badge와 접힌 상태 문구도 현재 locale을 사용한다. 삭제 API 응답에 `message`가 있으면 서버 메시지를 우선 표시
 - 챕터 헤더의 유형·소유권 배지·등록 버튼·액션 툴팁·메뉴·빈 상태 문구는 현재 locale의 클라이언트 카탈로그를 사용
+- 챕터 접힘 시 태그 요약과 함께 하위 엔트리의 소속 스레드를 중복 없는 버튼으로 접힘 바깥에 표시한다. 스레드 버튼은 제목을 표시하며 클릭하면 해당 저널 스레드 상세로 이동한다.
 - 챕터 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과는 현재 locale 카탈로그를 사용하며, 삭제 API의 서버 `message`가 있으면 우선 표시
 - 꿈 가상 섹션 제목은 서버가 요청 locale로 조립하고, 내 꿈 섹션의 등록·복사·TXT 액션 문구는 현재 locale의 클라이언트 카탈로그를 사용
 - 해석 아이템의 펼침/접힘·접힌 상태·액션 툴팁·메뉴·라이프사이클·상태 라벨과 상태 변경 실패·복사·삭제 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. API 응답에 `message`가 있으면 서버 메시지를 우선 표시
-- 엔트리 아이템의 펼침/접힘·꿈 상태 배지·액션 툴팁·메뉴·라이프사이클·상태 라벨과 상태 변경 실패·복사·삭제 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. 일반 관련글 행은 관계 유형·대상 유형·대상 제목·사유를 표시하고 제목 클릭으로 원문을 연다. (FLOW 요약 행·「흐름 보기」 종단 모달·FLOW 연결 모달은 스레드 소속으로 수렴하며 모두 제거됐다 — 나-2·다-2.) 「흐름에 추가」 hover 서브메뉴는 280px 폭 안에 새 흐름 생성, 제목 검색, 분류 선택, 현재 엔트리 기준 후보 7개를 순서대로 표시한다. 후보는 제목과 분류명을 표시하고 현재 소속이면 체크한다. 로딩·조회 실패·정상 0건·필터 결과 0건은 서로 다른 상태로 표시한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시
+- 엔트리 아이템의 펼침/접힘·꿈 상태 배지·액션 툴팁·메뉴·라이프사이클·상태 라벨과 상태 변경 실패·복사·삭제 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. 일반 관련글 행은 관계 유형·대상 유형·대상 제목·사유를 표시하고 제목 클릭으로 원문을 연다. (FLOW 요약 행·「흐름 보기」 종단 모달·FLOW 연결 모달은 스레드 소속으로 수렴하며 모두 제거됐다 — 나-2·다-2.) 「스레드에 추가」 hover 서브메뉴는 280px 폭 안에 새 스레드 생성, 제목 검색, 분류 선택, 현재 엔트리 기준 후보 7개를 순서대로 표시한다. 후보는 제목과 분류명을 표시하고 현재 소속이면 체크한다. 로딩·조회 실패·정상 0건·필터 결과 0건은 서로 다른 상태로 표시한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시
 - 꿈 엔트리(`JOURNAL_DREAM`)의 태그에 사용자별 프로필 본문(`tag.list[].profileContent`)이 있으면 해당 꿈 본문 아래에 표시한다. 일기/노트 태그 프로필 본문은 일자 카드 본문 아래에 표시하지 않는다.
 - 정렬, 필터, 검색 파라미터 반영
 
@@ -278,6 +280,7 @@
   - 상단: `JournalDayViewToolbar.vue` (탭 + 저널 일자 등록 버튼) — 월간 목록과 동일 컴포넌트
   - 카드: `.card.post` (margin-top: 0 !important)
     - 카드 헤더: 태그 헤더 (`_journal_day_tag_header.ftlh`) → Vue: `JournalTagCloudHeader.vue` ✓ 구현 완료
+    - 기간별 스레드 요약: 태그클라우드 아래 주간 스레드 집계(최초 등장일순 전체, 라벨 `스레드`) ✓ 구현 완료
     - 카드 바디: `JournalDayCard` (`JournalDayWeekly.vue`, `viewType: WEEKLY`)
     - 로딩 렌더: `store.dayList`가 비어 있는 초기 조회에서만 본문 전체 스피너를 표시한다. 이미 목록 DOM이 렌더된 상태의 재조회(등록/수정 후 갱신, 필터 갱신 등)에서는 기존 `JournalDayCard` DOM을 유지해 문서 높이 축소로 인한 스크롤 초기화를 막는다.
   - 사이드 패널: `_journal_day_aside_base.ftlh`
@@ -521,6 +524,7 @@
 | 댓글 모달 | 댓글 수 클릭 | `CommentList.modal(id, contentType)` | 댓글 목록 모달 |
 | 파일 모달 | 첨부파일 아이콘 클릭 | `FileGroupList.modal(fileGroupId)` | 파일 목록 모달 |
 | 태그 상세 | 태그 클릭 | `dF.Tag.dtlModal(tagId)` | 태그 상세 모달 |
+| 소속 엔트리 액션 | 상세의 `JournalEntryItem` 액션 버튼·⋯ 메뉴 | 저널 일자와 같은 원본 엔트리 액션 | 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제를 실행하고 성공 후 열린 스레드 상세·집계 태그·소속 엔트리를 재조회 |
 
 ### Data Displayed
 
@@ -552,6 +556,12 @@
 | 댓글 등록 | `_comment_reg_modal.ftlh` | 상세 모달 댓글 등록 버튼 |
 | 파일 목록 | `_file_list_modal.ftlh` | 첨부파일 아이콘 클릭 |
 | 스레드 상세 | `_journal_thread_detail_modal.ftlh` | 제목 행 클릭 |
+| 엔트리 등록·수정 | `JournalEntryRegistModal.vue` (`App.vue` 전역 마운트) | 소속 엔트리 수정 |
+| 엔트리 원문 | `JournalEntryViewModal.vue` (`App.vue` 전역 마운트) | 관련글·스레드 칩 대상 열기 |
+| 해석 등록·수정 | `JournalInterpretationRegistModal.vue` | 소속 엔트리 해석 등록·수정 |
+| 이력 | `HistoryModal.vue` | 소속 엔트리 이력 조회·복원·삭제 |
+| 관련글 추가 | `RelatedContentAddModal.vue` | 소속 엔트리 관련글 추가 |
+| 태그 프로필 | `JournalTagProfileModal.vue` | 소속 엔트리 태그 설정 |
 
 `JournalThreadDetailModal.vue`의 제목·댓글 섹션(인라인 목록·등록·목록 모달 진입)·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. 상세 모달의 댓글 등록은 `CommentRegistModal`을 연다(`JournalThreadLayout`에 마운트).
 

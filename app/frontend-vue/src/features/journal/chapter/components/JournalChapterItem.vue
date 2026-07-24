@@ -152,6 +152,24 @@
         >#<span class="border-bottom text-primary fw-lighter opacity-hover"><span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.name }}</span></span>
       </div>
       <!--end::접힘 시 태그 요약-->
+      <!--begin::접힘 시 소속 스레드 요약 (하위 엔트리의 스레드를 중복 없이 표시)-->
+      <div
+        v-if="chapterThreadList.length > 0 && isCollapsed"
+        class="journal-chapter-threads d-flex flex-wrap align-items-center gap-1 ps-5 py-1"
+      >
+        <i class="bi bi-diagram-3 fs-8 text-muted"></i>
+        <button
+          v-for="thread in chapterThreadList"
+          :key="'chapter-thread-' + thread.threadId"
+          type="button"
+          class="badge badge-light-primary border-0 fs-8 cursor-pointer"
+          :title="t('journal.entry.thread.open.tooltip')"
+          @click.stop="openThreadDetail(thread.threadId)"
+        >
+          {{ thread.threadTitle || ('#' + thread.threadId) }}
+        </button>
+      </div>
+      <!--end::접힘 시 소속 스레드 요약-->
     </div>
     <!--end::챕터 내용-->
   </div>
@@ -161,13 +179,13 @@
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import { computed, ref, watch, nextTick } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
-import type { JournalChapterDto } from "@/features/journal/stores/journal";
+import type { JournalChapterDto, JournalThreadEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -186,6 +204,7 @@ const journalStore = useJournalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const { t } = useLocaleStore();
 const route = useRoute();
+const router = useRouter();
 
 /** 서버 COLLAPSED 상태 (⋯ 메뉴 접힘 스위치·목록 재조회 반영) */
 const serverCollapsed = computed(() =>
@@ -258,6 +277,26 @@ const typeLabel = computed(() => {
 const entryList = computed(() => props.chapter.journalEntryList ?? []);
 const tagList = computed(() => props.chapter.tag?.list ?? []);
 
+/**
+ * 접힌 챕터 밖에 표시할 소속 스레드 목록.
+ * <p>
+ * 변경 전에는 스레드 칩이 각 엔트리 본문 안에만 있어 챕터 접기 시 함께 숨겨졌다.
+ * 변경 후에는 하위 엔트리의 소속을 현재 엔트리 순서대로 모으고 threadId로 중복 제거해,
+ * 태그 요약과 같은 접힘 바깥 영역에서 스레드의 존재를 유지한다.
+ */
+const chapterThreadList = computed<JournalThreadEntryDto[]>(() => {
+  const threadMap = new Map<number, JournalThreadEntryDto>();
+  for (const entry of entryList.value) {
+    for (const thread of entry.threadList ?? []) {
+      const previous = threadMap.get(thread.threadId);
+      if (!previous || (!previous.threadTitle?.trim() && thread.threadTitle?.trim())) {
+        threadMap.set(thread.threadId, thread);
+      }
+    }
+  }
+  return Array.from(threadMap.values());
+});
+
 /** 하위 엔트리가 1개 이상이고 전부 RESOLVED인지 여부 */
 const allEntriesResolved = computed(() => {
   const list = entryList.value;
@@ -289,6 +328,11 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
     ctgr: tag.ctgr ?? "",
     contentType,
   });
+}
+
+/** 접힘 요약의 스레드 버튼에서 기존 엔트리 스레드 칩과 같은 상세 route로 이동한다. */
+function openThreadDetail(threadId: number): void {
+  void router.push({ name: "thread-detail", params: { id: String(threadId) } });
 }
 
 /** 챕터 수정 모달 열기 */

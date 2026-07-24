@@ -72,7 +72,7 @@ export interface RelatedContentItem {
 }
 
 /**
- * 엔트리가 속한 흐름(저널 스레드) 소속 항목.
+ * 엔트리가 속한 저널 스레드 소속 항목.
  * 백엔드 JournalThreadEntryDto 와 대응한다. FLOW 를 대체하는 축이다.
  */
 export interface JournalThreadEntryDto {
@@ -126,7 +126,7 @@ export interface JournalEntryDto {
   history?: HistoryCmpstn;
   comment?: CommentCmpstn;
   relatedContentList?: RelatedContentItem[];
-  /** 이 엔트리가 속한 흐름(스레드) 목록. 소속이 없으면 빈 목록. */
+  /** 이 엔트리가 속한 스레드 목록. 소속이 없으면 빈 목록. */
   threadList?: JournalThreadEntryDto[];
   journalInterpretationList?: InterpretationItem[];
   /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */

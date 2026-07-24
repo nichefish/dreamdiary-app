@@ -1,12 +1,14 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa;
 
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryProjection;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +61,7 @@ public interface JournalThreadEntryRepository
     /**
      * 여러 엔트리의 소속을 한 번에 조회한다. (목록 화면 N+1 방지)
      * <p>
-     * 엔트리 목록을 그리는 화면은 각 엔트리가 어느 흐름에 속하는지 함께 표시한다.
+     * 엔트리 목록을 그리는 화면은 각 엔트리가 어느 스레드에 속하는지 함께 표시한다.
      * 엔트리마다 단건 조회하면 화면 한 장에 N+1 요청이 나가므로, 일괄로 받아 메모리에서 묶는다.
      * 스레드 제목을 함께 쓰기 때문에 조인을 미리 걸어 가져온다.
      *
@@ -75,6 +77,63 @@ public interface JournalThreadEntryRepository
     List<JournalThreadEntryEntity> findAllByEntryIds(
             final @Param("entryIds") Collection<Integer> entryIds,
             final @Param("createdBy") String createdBy
+    );
+
+    /**
+     * 주간 화면에 표시할 기간별 스레드 집계를 조회한다.
+     * <p>
+     * 현재 사용자 소유의 활성 소속·스레드·엔트리만 포함한다. 일자 목록의 키워드·챕터·
+     * 일기/꿈 표시 필터는 적용하지 않아 태그클라우드와 같은 기간 전체 요약을 유지한다.
+     *
+     * @param createdBy 현재 사용자 계정명
+     * @param weekStartDt 조회할 주의 시작일
+     * @return 스레드별 기간 내 엔트리 수와 최초 등장일
+     */
+    @Query("SELECT te.threadId AS threadId, " +
+            "       thread.title AS title, " +
+            "       COUNT(DISTINCT te.entryId) AS entryCount, " +
+            "       MIN(day.journalDate) AS firstEntryDate " +
+            "FROM JournalThreadEntryEntity te " +
+            "JOIN te.journalThread thread " +
+            "JOIN te.journalEntry entry " +
+            "JOIN entry.journalChapter chapter " +
+            "JOIN chapter.journalDay day " +
+            "WHERE te.createdBy = :createdBy " +
+            "  AND thread.createdBy = :createdBy " +
+            "  AND day.weekStartDt = :weekStartDt " +
+            "GROUP BY te.threadId, thread.title")
+    List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByWeekStartDt(
+            final @Param("createdBy") String createdBy,
+            final @Param("weekStartDt") LocalDate weekStartDt
+    );
+
+    /**
+     * 월간 화면에 표시할 기간별 스레드 집계를 조회한다.
+     *
+     * @param createdBy 현재 사용자 계정명
+     * @param yy 조회 연도
+     * @param mnth 조회 월(1~12)
+     * @return 스레드별 기간 내 엔트리 수와 최초 등장일
+     * @see #findPeriodSummaryByWeekStartDt(String, LocalDate)
+     */
+    @Query("SELECT te.threadId AS threadId, " +
+            "       thread.title AS title, " +
+            "       COUNT(DISTINCT te.entryId) AS entryCount, " +
+            "       MIN(day.journalDate) AS firstEntryDate " +
+            "FROM JournalThreadEntryEntity te " +
+            "JOIN te.journalThread thread " +
+            "JOIN te.journalEntry entry " +
+            "JOIN entry.journalChapter chapter " +
+            "JOIN chapter.journalDay day " +
+            "WHERE te.createdBy = :createdBy " +
+            "  AND thread.createdBy = :createdBy " +
+            "  AND day.yy = :yy " +
+            "  AND day.mnth = :mnth " +
+            "GROUP BY te.threadId, thread.title")
+    List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByMonth(
+            final @Param("createdBy") String createdBy,
+            final @Param("yy") Integer yy,
+            final @Param("mnth") Integer mnth
     );
 
     /**

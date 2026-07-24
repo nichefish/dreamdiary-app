@@ -5,9 +5,13 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -22,6 +26,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -189,6 +195,63 @@ class JournalThreadEntryServiceTest {
         assertEquals(List.of(2, 1, 3), result.stream().map(JournalEntryDto::getId).toList());
     }
 
+    /** 주간 요약은 기간 내 최초 엔트리 일자순, 동일 일자는 스레드 ID순으로 고정한다. */
+    @Test
+    void getPeriodSummaryOrdersWeeklyThreadsByFirstEntryDate() throws Exception {
+        final LocalDate weekStartDt = LocalDate.of(2026, 7, 6);
+        final List<JournalThreadPeriodSummaryProjection> summaries = List.of(
+                periodSummary(12, "두 번째 스레드", 3, LocalDate.of(2026, 7, 8)),
+                periodSummary(11, "첫 번째 스레드", 1, LocalDate.of(2026, 7, 6))
+        );
+        when(repository.findPeriodSummaryByWeekStartDt(FIXTURE_USERNAME, weekStartDt))
+                .thenReturn(summaries);
+
+        final List<JournalThreadPeriodSummaryDto> result = service.getPeriodSummary(
+                JournalDayViewType.WEEKLY,
+                JournalDaySearchParam.builder().weekStartDt("2026-07-06").build()
+        );
+
+        assertEquals(List.of(11, 12), result.stream()
+                .map(JournalThreadPeriodSummaryDto::getThreadId)
+                .toList());
+        verify(repository).findPeriodSummaryByWeekStartDt(FIXTURE_USERNAME, weekStartDt);
+    }
+
+    /** 월간 요약은 기간 내 엔트리 수 내림차순, 동률이면 최초 등장일순으로 고정한다. */
+    @Test
+    void getPeriodSummaryOrdersMonthlyThreadsByEntryCount() throws Exception {
+        final List<JournalThreadPeriodSummaryProjection> summaries = List.of(
+                periodSummary(13, "세 번째 스레드", 1, LocalDate.of(2026, 7, 2)),
+                periodSummary(12, "두 번째 스레드", 4, LocalDate.of(2026, 7, 8)),
+                periodSummary(11, "첫 번째 스레드", 4, LocalDate.of(2026, 7, 6))
+        );
+        when(repository.findPeriodSummaryByMonth(FIXTURE_USERNAME, 2026, 7))
+                .thenReturn(summaries);
+
+        final List<JournalThreadPeriodSummaryDto> result = service.getPeriodSummary(
+                JournalDayViewType.LIST,
+                JournalDaySearchParam.builder().yy(2026).mnth(7).build()
+        );
+
+        assertEquals(List.of(11, 12, 13), result.stream()
+                .map(JournalThreadPeriodSummaryDto::getThreadId)
+                .toList());
+        assertEquals(List.of(4L, 4L, 1L), result.stream()
+                .map(JournalThreadPeriodSummaryDto::getEntryCount)
+                .toList());
+    }
+
+    /** 월간 범위가 없거나 잘못되면 repository를 호출하기 전에 거부한다. */
+    @Test
+    void getPeriodSummaryRejectsInvalidMonthlyRange() {
+        assertThrows(IllegalArgumentException.class, () -> service.getPeriodSummary(
+                JournalDayViewType.LIST,
+                JournalDaySearchParam.builder().yy(2026).mnth(13).build()
+        ));
+
+        verify(repository, never()).findPeriodSummaryByMonth(any(), any(), any());
+    }
+
     /** 타인 소유 스레드에는 소속을 등록할 수 없다. */
     @Test
     void registRejectsThreadNotOwnedByCurrentUser() {
@@ -233,7 +296,7 @@ class JournalThreadEntryServiceTest {
     private JournalThreadEntity ownedThread() {
         return JournalThreadEntity.builder()
                 .id(FIXTURE_THREAD_ID)
-                .title("가상 흐름")
+                .title("가상 스레드")
                 .createdBy(FIXTURE_OWNER)
                 .build();
     }
@@ -259,5 +322,21 @@ class JournalThreadEntryServiceTest {
                 .id(id)
                 .stdrdDt(stdrdDt)
                 .build();
+    }
+
+    /** 기간 집계 서비스 테스트용 가상 Projection을 만든다. */
+    private JournalThreadPeriodSummaryProjection periodSummary(
+            final int threadId,
+            final String title,
+            final long entryCount,
+            final LocalDate firstEntryDate
+    ) {
+        final JournalThreadPeriodSummaryProjection projection =
+                mock(JournalThreadPeriodSummaryProjection.class);
+        when(projection.getThreadId()).thenReturn(threadId);
+        when(projection.getTitle()).thenReturn(title);
+        when(projection.getEntryCount()).thenReturn(entryCount);
+        when(projection.getFirstEntryDate()).thenReturn(firstEntryDate);
+        return projection;
     }
 }

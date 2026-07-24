@@ -120,7 +120,7 @@
       </div>
       <!--end::관련글-->
 
-      <!--begin::소속 흐름 (스레드 소속)-->
+      <!--begin::소속 스레드-->
       <div v-if="entryThreadList.length > 0" class="d-flex flex-wrap align-items-center gap-1 mt-2 ps-2">
         <i class="bi bi-diagram-3 fs-8 text-muted"></i>
         <button
@@ -134,7 +134,7 @@
           {{ th.threadTitle || ('#' + th.threadId) }}
         </button>
       </div>
-      <!--end::소속 흐름-->
+      <!--end::소속 스레드-->
 
       <!--begin::댓글-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
@@ -235,7 +235,7 @@
           </div>
           <!--end::관련 글 추가-->
 
-          <!--begin::흐름에 추가 서브메뉴 (다른 사람 꿈 제외)-->
+          <!--begin::스레드에 추가 서브메뉴 (다른 사람 꿈 제외)-->
           <div
             v-if="axisWritable && !hasDreamerName(entry)"
             class="menu-item px-3"
@@ -248,18 +248,18 @@
               <span class="menu-arrow"></span>
             </a>
             <div class="menu-sub menu-sub-dropdown py-3" style="width: 280px;">
-              <!--begin::새 흐름으로 시작-->
+              <!--begin::새 스레드로 시작-->
               <div class="menu-item px-3 my-1 cursor-pointer">
                 <div class="menu-link flex-stack px-3 text-primary" @click="startNewThread">
                   {{ t('journal.entry.thread.new') }}
                   <i class="bi bi-plus-lg fs-8"></i>
                 </div>
               </div>
-              <!--end::새 흐름으로 시작-->
+              <!--end::새 스레드로 시작-->
 
               <div class="separator my-2"></div>
 
-              <!--begin::흐름 후보 검색·분류-->
+              <!--begin::스레드 후보 검색·분류-->
               <div
                 class="menu-item px-3"
                 data-kt-menu-dismiss="false"
@@ -296,11 +296,11 @@
                   </div>
                 </div>
               </div>
-              <!--end::흐름 후보 검색·분류-->
+              <!--end::스레드 후보 검색·분류-->
 
               <div class="separator my-2"></div>
 
-              <!--begin::흐름 후보 목록-->
+              <!--begin::스레드 후보 목록-->
               <div v-if="membershipStore.optionsLoading" class="menu-item px-3">
                 <span class="menu-link px-3 text-muted fs-8">{{ t('common.loading') }}</span>
               </div>
@@ -338,10 +338,10 @@
                   </div>
                 </div>
               </template>
-              <!--end::흐름 후보 목록-->
+              <!--end::스레드 후보 목록-->
             </div>
           </div>
-          <!--end::흐름에 추가 서브메뉴-->
+          <!--end::스레드에 추가 서브메뉴-->
 
           <div v-if="axisWritable" class="separator my-2"></div>
 
@@ -472,9 +472,10 @@ import {
   useJournalThreadMembershipStore,
   type ThreadOption,
 } from "@/features/journal/stores/journalThreadMembership";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import { useJournalStore } from "@/features/journal/stores/journal";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import type { JournalEntryDto, RelatedContentItem } from "@/features/journal/stores/journal";
 import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
@@ -502,6 +503,7 @@ const modalStore = useJournalModalStore();
 const attachableStore = useAttachableModalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const route = useRoute();
 const router = useRouter();
 const membershipStore = useJournalThreadMembershipStore();
@@ -793,7 +795,7 @@ function openRelated() {
   attachableStore.openRelated(props.entry.contentType, props.entry.id);
 }
 
-/** 이 엔트리가 속한 흐름(스레드) 목록. */
+/** 이 엔트리가 속한 스레드 목록. */
 const entryThreadList = computed(() => props.entry.threadList ?? []);
 
 /** 검색·분류가 적용 중인지 여부. 정상 빈 목록의 안내 문구를 구분한다. */
@@ -836,7 +838,7 @@ function threadCategoryName(categoryCode: string): string {
     ?? categoryCode;
 }
 
-/** 흐름 소속 토글: 속해 있으면 제외, 아니면 추가. 성공 시 목록 갱신. */
+/** 스레드 소속 토글: 속해 있으면 제외, 아니면 추가. 성공 시 목록 갱신. */
 async function toggleThread(option: ThreadOption): Promise<void> {
   if (!guardAxisWrite()) return;
   if (!props.entry.id) return;
@@ -852,7 +854,7 @@ async function toggleThread(option: ThreadOption): Promise<void> {
   }
 }
 
-/** 제목만 받아 새 흐름을 만들고 이 엔트리를 소속시킨다. */
+/** 제목만 받아 새 스레드를 만들고 이 엔트리를 소속시킨다. */
 async function startNewThread(): Promise<void> {
   if (!guardAxisWrite()) return;
   if (!props.entry.id) return;
@@ -882,7 +884,7 @@ onBeforeUnmount(() => {
   if (threadCandidateSearchTimer) clearTimeout(threadCandidateSearchTimer);
 });
 
-/** 흐름(스레드) 상세로 이동한다. */
+/** 스레드 상세로 이동한다. */
 function openThreadDetail(threadId: number): void {
   void router.push({ name: "thread-detail", params: { id: String(threadId) } });
 }
@@ -965,18 +967,20 @@ function openInterpretationRegist() {
   });
 }
 
-/** fetchDays 완료 후 해당 일자로 스크롤 */
+/**
+ * 액션 성공 후 현재 표시 호스트를 재조회하고, 일자 목록을 갱신한 경우에만 해당 일자로 스크롤한다.
+ * 변경 전에는 모든 라우트에서 fetchDays 완료 후 일자 DOM을 찾았으나, 스레드 상세에서는
+ * 열린 스레드의 원본 엔트리·집계 태그를 다시 조회하고 모달 내부 읽기 위치를 유지한다.
+ */
 function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
   const dt = stdrdDt;
-  if (!dt) return;
-  const afterFetch = () => {
+  void refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
+    if (scope === "thread-detail" || !dt) return;
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  };
-
-  void refreshJournalDaysForRoute(journalStore, route, dt).then(afterFetch);
+  });
 }
 
 /** 라이프사이클 설정 (PUT /api/lifecycles) */

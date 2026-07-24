@@ -201,12 +201,14 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 
@@ -297,7 +299,7 @@ async function save() {
         message: result.message,
         successFallback: t("common.result.saved"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
     } else if (result.message) {
       void swalAjaxResult({ rslt: false, message: result.message });
     }

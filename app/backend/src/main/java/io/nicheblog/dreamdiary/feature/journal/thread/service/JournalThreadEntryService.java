@@ -6,10 +6,14 @@ import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntrySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
@@ -22,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -126,7 +132,7 @@ public class JournalThreadEntryService {
      * <p>
      * 스레드 상세에서 소속 엔트리를 저널 일자와 동일한 카드로 보여주기 위한 계약이다.
      * 소속 메타(JournalThreadEntryDto)가 아니라 실제 엔트리(JournalEntryDto)를 일자 오름차순으로 돌려준다.
-     * 정렬 근거: 흐름의 선후는 엔트리 일자에서 파생한다({@link JournalEntryService#getListDtoByIds}).
+     * 정렬 근거: 스레드의 선후는 엔트리 일자에서 파생한다({@link JournalEntryService#getListDtoByIds}).
      * 같은 일자 안에서는 엔트리 ID 오름차순을 tiebreak 로 써서 매 조회마다 순서가 뒤바뀌지 않게 고정한다.
      *
      * @param threadId 스레드 ID
@@ -187,6 +193,63 @@ public class JournalThreadEntryService {
         return repository.findAllByEntryIds(entryIds, resolvedUsername).stream()
                 .map(this::toDto)
                 .collect(Collectors.groupingBy(JournalThreadEntryDto::getEntryId));
+    }
+
+    /**
+     * 월간·주간 저널 화면의 기간별 스레드 요약을 조회한다.
+     * <p>
+     * 변경 전에는 기간 요약 계약이 없어 화면이 현재 필터가 적용된 일자 목록을 재집계해야 했다.
+     * 변경 후에는 활성 소속을 서버에서 직접 집계해 일기/꿈 표시·키워드·챕터 필터와 무관한
+     * 기간 전체 스레드 목록을 반환한다.
+     * <p>
+     * 주간은 최초 등장일순, 월간은 기간 내 엔트리 수 내림차순으로 정렬한다.
+     * 동률은 최초 등장일과 스레드 ID로 고정해 응답 순서가 매 조회마다 바뀌지 않게 한다.
+     *
+     * @param viewType {@link JournalDayViewType#WEEKLY} 또는 {@link JournalDayViewType#LIST}
+     * @param searchParam 주간 시작일 또는 연·월
+     * @return 기간별 스레드 요약
+     */
+    @Transactional(readOnly = true)
+    public List<JournalThreadPeriodSummaryDto> getPeriodSummary(
+            final JournalDayViewType viewType,
+            final JournalDaySearchParam searchParam
+    ) throws Exception {
+        final String username = AuthUtils.requireLoginUsername();
+        final List<JournalThreadPeriodSummaryProjection> projections;
+        final Comparator<JournalThreadPeriodSummaryDto> comparator;
+
+        if (viewType == JournalDayViewType.WEEKLY) {
+            final LocalDate weekStartDt = parseWeekStartDt(searchParam != null ? searchParam.getWeekStartDt() : null);
+            projections = repository.findPeriodSummaryByWeekStartDt(username, weekStartDt);
+            comparator = Comparator
+                    .comparing(JournalThreadPeriodSummaryDto::getFirstEntryDate,
+                            Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(JournalThreadPeriodSummaryDto::getThreadId,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
+        } else if (viewType == JournalDayViewType.LIST) {
+            final Integer yy = searchParam != null ? searchParam.getYy() : null;
+            final Integer mnth = searchParam != null ? searchParam.getMnth() : null;
+            if (yy == null || yy < 1 || mnth == null || mnth < 1 || mnth > 12) {
+                log.warn("[JournalThreadEntry.periodSummary] 잘못된 월간 기간. yy={}, mnth={}", yy, mnth);
+                throw new IllegalArgumentException("월간 스레드 집계에는 올바른 yy와 mnth가 필요합니다.");
+            }
+            projections = repository.findPeriodSummaryByMonth(username, yy, mnth);
+            comparator = Comparator
+                    .comparingLong(JournalThreadPeriodSummaryDto::getEntryCount)
+                    .reversed()
+                    .thenComparing(JournalThreadPeriodSummaryDto::getFirstEntryDate,
+                            Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(JournalThreadPeriodSummaryDto::getThreadId,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
+        } else {
+            log.warn("[JournalThreadEntry.periodSummary] 지원하지 않는 보기 타입. viewType={}", viewType);
+            throw new IllegalArgumentException("기간별 스레드 집계는 LIST 또는 WEEKLY 보기만 지원합니다.");
+        }
+
+        return projections.stream()
+                .map(this::toPeriodSummaryDto)
+                .sorted(comparator)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -259,6 +322,39 @@ public class JournalThreadEntryService {
                 .sortOrder(entity.getSortOrder())
                 .threadTitle(thread != null ? thread.getTitle() : null)
                 .entryContentType(entry != null ? entry.getContentType() : null)
+                .build();
+    }
+
+    /**
+     * 주 시작일 문자열을 엄격한 ISO 일자로 변환한다.
+     *
+     * @param value YYYY-MM-DD 문자열
+     * @return 주 시작일
+     */
+    private LocalDate parseWeekStartDt(final String value) {
+        try {
+            if (value == null || value.isBlank()) throw new DateTimeParseException("blank", "", 0);
+            return LocalDate.parse(value.trim());
+        } catch (final DateTimeParseException exception) {
+            log.warn("[JournalThreadEntry.periodSummary] 잘못된 주간 기간. weekStartDt={}", value);
+            throw new IllegalArgumentException("주간 스레드 집계에는 올바른 weekStartDt가 필요합니다.", exception);
+        }
+    }
+
+    /**
+     * 기간 집계 Projection을 API DTO로 변환한다.
+     *
+     * @param projection 스레드별 기간 집계
+     * @return 기간 요약 DTO
+     */
+    private JournalThreadPeriodSummaryDto toPeriodSummaryDto(
+            final JournalThreadPeriodSummaryProjection projection
+    ) {
+        return JournalThreadPeriodSummaryDto.builder()
+                .threadId(projection.getThreadId())
+                .title(projection.getTitle())
+                .entryCount(projection.getEntryCount() != null ? projection.getEntryCount().longValue() : 0L)
+                .firstEntryDate(projection.getFirstEntryDate())
                 .build();
     }
 }
