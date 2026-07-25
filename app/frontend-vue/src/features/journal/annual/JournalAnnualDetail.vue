@@ -205,6 +205,14 @@
       </div>
       <!--end::태그 헤더-->
 
+      <!--begin::연간 스레드 요약 (월간/주간 기간 요약과 동일)-->
+      <div v-if="annualThreadQuery" class="card-header">
+        <div class="ms-4 w-100">
+          <JournalPeriodThreadSummary :query="annualThreadQuery" />
+        </div>
+      </div>
+      <!--end::연간 스레드 요약-->
+
       <hr class="my-6 text-muted" />
 
       <!--begin::토글 체크박스-->
@@ -382,6 +390,7 @@ import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu
 import type { AnnualSection, AnnualEntryDto, AnnualTagItem, JournalAnnualReviewDto } from "@/features/journal/stores/journalAnnual";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import JournalPeriodThreadSummary from "@/features/journal/day/components/JournalPeriodThreadSummary.vue";
 
 const route = useRoute();
 const store = useJournalAnnualStore();
@@ -389,6 +398,13 @@ const { t } = useLocaleStore();
 const tagContextMenuStore = useTagContextMenuStore();
 
 const yy = computed(() => Number(route.params.yy));
+
+/** 연간 스레드 기간 요약 조회 조건. yy가 유효할 때만 컴포넌트가 조회·렌더한다. */
+const annualThreadQuery = computed(() =>
+  Number.isFinite(yy.value) && yy.value > 0
+    ? { viewType: "ANNUAL" as const, yy: yy.value }
+    : null,
+);
 
 const hasSummaryTags = computed(() =>
   Array.isArray(store.annualDetail?.tag?.list) && store.annualDetail!.tag!.list!.length > 0

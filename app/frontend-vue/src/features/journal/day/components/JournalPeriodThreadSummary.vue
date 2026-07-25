@@ -26,7 +26,7 @@
             </span>
           </button>
           <button
-            v-if="hasMonthlyOverflow"
+            v-if="hasOverflow"
             type="button"
             class="btn btn-sm btn-link py-1 px-2 text-decoration-none"
             @click="expanded = !expanded"
@@ -53,8 +53,10 @@ const journalStore = useJournalStore();
 const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const expanded = ref(false);
+const props = defineProps<{ query?: JournalPeriodThreadSummaryQuery | null }>();
 
 const periodQuery = computed<JournalPeriodThreadSummaryQuery | null>(() => {
+  if (props.query) return props.query;
   if (journalStore.viewType === "WEEKLY" && journalStore.weekStartDt) {
     return {
       viewType: "WEEKLY",
@@ -74,22 +76,24 @@ const periodQuery = computed<JournalPeriodThreadSummaryQuery | null>(() => {
 const periodRequestKey = computed(() => {
   const query = periodQuery.value;
   if (!query) return "";
-  return query.viewType === "WEEKLY"
-    ? `WEEKLY:${query.weekStartDt}`
-    : `LIST:${query.yy}:${query.mnth}`;
+  if (query.viewType === "WEEKLY") return `WEEKLY:${query.weekStartDt}`;
+  if (query.viewType === "ANNUAL") return `ANNUAL:${query.yy}`;
+  return `LIST:${query.yy}:${query.mnth}`;
 });
 
-const isMonthly = computed(() => periodQuery.value?.viewType === "LIST");
-const periodLabel = computed(() => (
-  isMonthly.value
-    ? t("journal.thread.period-summary.monthly")
-    : t("journal.thread.period-summary.weekly")
-));
-const hasMonthlyOverflow = computed(() => (
-  isMonthly.value && threadStore.periodSummary.length > MONTHLY_VISIBLE_LIMIT
+const summaryViewType = computed(() => periodQuery.value?.viewType ?? null);
+const periodLabel = computed(() => {
+  if (summaryViewType.value === "LIST") return t("journal.thread.period-summary.monthly");
+  if (summaryViewType.value === "ANNUAL") return t("journal.thread.period-summary.annual");
+  return t("journal.thread.period-summary.weekly");
+});
+/** 월간·연간은 스레드가 많아 10개 초과 시 펼치기 오버플로우를 적용한다(주간은 미적용). */
+const hasOverflow = computed(() => (
+  (summaryViewType.value === "LIST" || summaryViewType.value === "ANNUAL")
+    && threadStore.periodSummary.length > MONTHLY_VISIBLE_LIMIT
 ));
 const visibleThreads = computed(() => (
-  hasMonthlyOverflow.value && !expanded.value
+  hasOverflow.value && !expanded.value
     ? threadStore.periodSummary.slice(0, MONTHLY_VISIBLE_LIMIT)
     : threadStore.periodSummary
 ));

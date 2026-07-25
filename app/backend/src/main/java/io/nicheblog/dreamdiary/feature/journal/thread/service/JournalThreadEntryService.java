@@ -245,10 +245,10 @@ public class JournalThreadEntryService {
      * 변경 후에는 활성 소속을 서버에서 직접 집계해 일기/꿈 표시·키워드·챕터 필터와 무관한
      * 기간 전체 스레드 목록을 반환한다.
      * <p>
-     * 주간은 최초 등장일순, 월간은 기간 내 엔트리 수 내림차순으로 정렬한다.
+     * 주간은 최초 등장일순, 월간·연간은 기간 내 엔트리 수 내림차순으로 정렬한다.
      * 동률은 최초 등장일과 스레드 ID로 고정해 응답 순서가 매 조회마다 바뀌지 않게 한다.
      *
-     * @param viewType {@link JournalDayViewType#WEEKLY} 또는 {@link JournalDayViewType#LIST}
+     * @param viewType {@link JournalDayViewType#WEEKLY}, {@link JournalDayViewType#LIST} 또는 {@link JournalDayViewType#ANNUAL}
      * @param searchParam 주간 시작일 또는 연·월
      * @return 기간별 스레드 요약
      */
@@ -284,9 +284,23 @@ public class JournalThreadEntryService {
                             Comparator.nullsLast(Comparator.naturalOrder()))
                     .thenComparing(JournalThreadPeriodSummaryDto::getThreadId,
                             Comparator.nullsLast(Comparator.naturalOrder()));
+        } else if (viewType == JournalDayViewType.ANNUAL) {
+            final Integer yy = searchParam != null ? searchParam.getYy() : null;
+            if (yy == null || yy < 1) {
+                log.warn("[JournalThreadEntry.periodSummary] 잘못된 연간 기간. yy={}", yy);
+                throw new IllegalArgumentException("연간 스레드 집계에는 올바른 yy가 필요합니다.");
+            }
+            projections = repository.findPeriodSummaryByYear(username, yy);
+            comparator = Comparator
+                    .comparingLong(JournalThreadPeriodSummaryDto::getEntryCount)
+                    .reversed()
+                    .thenComparing(JournalThreadPeriodSummaryDto::getFirstEntryDate,
+                            Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(JournalThreadPeriodSummaryDto::getThreadId,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
         } else {
             log.warn("[JournalThreadEntry.periodSummary] 지원하지 않는 보기 타입. viewType={}", viewType);
-            throw new IllegalArgumentException("기간별 스레드 집계는 LIST 또는 WEEKLY 보기만 지원합니다.");
+            throw new IllegalArgumentException("기간별 스레드 집계는 LIST, WEEKLY, ANNUAL 보기만 지원합니다.");
         }
 
         return projections.stream()

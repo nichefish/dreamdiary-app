@@ -158,6 +158,32 @@ public interface JournalThreadEntryRepository
     );
 
     /**
+     * 연간 결산 화면에 표시할 기간별 스레드 집계를 조회한다.
+     *
+     * @param createdBy 현재 사용자 계정명
+     * @param yy 조회 연도
+     * @return 스레드별 기간 내 엔트리 수와 최초 등장일
+     * @see #findPeriodSummaryByMonth(String, Integer, Integer)
+     */
+    @Query("SELECT te.threadId AS threadId, " +
+            "       thread.title AS title, " +
+            "       COUNT(DISTINCT te.entryId) AS entryCount, " +
+            "       MIN(day.journalDate) AS firstEntryDate " +
+            "FROM JournalThreadEntryEntity te " +
+            "JOIN te.journalThread thread " +
+            "JOIN te.journalEntry entry " +
+            "JOIN entry.journalChapter chapter " +
+            "JOIN chapter.journalDay day " +
+            "WHERE te.createdBy = :createdBy " +
+            "  AND thread.createdBy = :createdBy " +
+            "  AND day.yy = :yy " +
+            "GROUP BY te.threadId, thread.title")
+    List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByYear(
+            final @Param("createdBy") String createdBy,
+            final @Param("yy") Integer yy
+    );
+
+    /**
      * 소속 행을 소프트 삭제 여부와 무관하게 조회한다.
      * <p>
      * UNIQUE KEY {@code uk_journal_thread_entry (thread_id, entry_id, created_by)} 는 deleted_at 을

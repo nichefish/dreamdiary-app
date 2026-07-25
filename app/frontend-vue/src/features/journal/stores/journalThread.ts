@@ -78,7 +78,8 @@ export interface JournalPeriodThreadSummaryItem {
 /** 기간별 스레드 집계 API가 지원하는 조회 계약 */
 export type JournalPeriodThreadSummaryQuery =
   | { viewType: "WEEKLY"; weekStartDt: string }
-  | { viewType: "LIST"; yy: number; mnth: number };
+  | { viewType: "LIST"; yy: number; mnth: number }
+  | { viewType: "ANNUAL"; yy: number };
 
 // ---- 스토어 ----
 

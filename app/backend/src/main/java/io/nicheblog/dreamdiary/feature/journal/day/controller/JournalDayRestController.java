@@ -72,6 +72,7 @@ public class JournalDayRestController
             case DAILY -> myJournalDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
             case WEEKLY -> myJournalDayQueryService.getMyWeeklyListDtoEnriched(searchParam);
             case SEARCH -> myJournalDayQueryService.getMyListDtoByMetaIdEnriched(searchParam);
+            default -> throw new IllegalArgumentException("지원하지 않는 일자 보기 타입: " + viewType);
         };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");

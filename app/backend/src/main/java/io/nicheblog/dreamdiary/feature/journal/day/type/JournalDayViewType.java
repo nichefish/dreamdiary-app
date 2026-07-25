@@ -11,6 +11,7 @@ public enum JournalDayViewType {
     CAL,
     DAILY,
     WEEKLY,
+    ANNUAL,
     SEARCH;
 
     /**

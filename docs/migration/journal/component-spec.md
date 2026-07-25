@@ -93,10 +93,11 @@
 - `GET /api/journal/threads/period-summary`
 - 주간 파라미터: `viewType=WEEKLY&weekStartDt=YYYY-MM-DD`
 - 월간 파라미터: `viewType=LIST&yy=YYYY&mnth=M`
+- 연간 파라미터: `viewType=ANNUAL&yy=YYYY`
 - 응답 항목: `threadId`, `title`, `entryCount`, `firstEntryDate`
 - 기간 집계는 현재 사용자 소유의 활성 스레드·활성 소속·활성 엔트리만 포함한다.
 
-**현재 구현 상태**: ✓ 구현 완료 — 기간 집계 DTO·repository·service와 `GET /api/journal/threads/period-summary`, `useJournalThreadStore`의 기간별 조회 상태·이전 요청 폐기, `JournalPeriodThreadSummary` UI·월간 10개 이후 펼치기를 구현한다. 조회 실패는 빈 기간으로 가장하지 않고 오류 문구를 표시한다. 행 라벨은 기간 문맥이 화면에 있으므로 `스레드`다. 엔트리 소속 추가·해제·새 스레드 생성과 엔트리 삭제 성공 시 `JournalEntryItem`이 `JournalThreadStore.refreshPeriodSummary()`를 호출해 마지막 조회 조건으로 이 요약을 재조회한다(store가 조건 보유, 요약 컴포넌트는 언마운트 시 조건을 비워 비활성 재조회 방지).
+**현재 구현 상태**: ✓ 구현 완료 — 기간 집계 DTO·repository·service와 `GET /api/journal/threads/period-summary`, `useJournalThreadStore`의 기간별 조회 상태·이전 요청 폐기, `JournalPeriodThreadSummary` UI·월간 10개 이후 펼치기를 구현한다. 조회 실패는 빈 기간으로 가장하지 않고 오류 문구를 표시한다. 행 라벨은 기간 문맥이 화면에 있으므로 `스레드`다. 엔트리 소속 추가·해제·새 스레드 생성과 엔트리 삭제 성공 시 `JournalEntryItem`이 `JournalThreadStore.refreshPeriodSummary()`를 호출해 마지막 조회 조건으로 이 요약을 재조회한다(store가 조건 보유, 요약 컴포넌트는 언마운트 시 조건을 비워 비활성 재조회 방지). 연간 결산(`JournalAnnualDetail`)도 같은 컴포넌트를 재사용한다 — day store 대신 옵셔널 `query` prop(`{ viewType: "ANNUAL", yy }`)을 받으면 그걸 쓰고 없으면 기존처럼 day store에서 파생한다. ANNUAL은 `GET /journal/threads/period-summary?viewType=ANNUAL&yy=`(백엔드 `findPeriodSummaryByYear`, 월간과 동일 엔트리 수 내림차순 정렬)로 그 해 전체 스레드를 집계하고 월간처럼 10개 초과 펼치기를 적용한다.
 
 ---
 
