@@ -819,4 +819,4 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 - 화면이 `static/vue/global`을 직접 import하지 않는다.
 - 공통 상태는 Pinia store 또는 composable로 들어간다.
 - 공통 Ajax/URL/i18n/helper는 `src/services`, `src/utils`, `src/core` 중 하나의 명확한 경계로 들어간다.
-- legacy global을 임시로 참조해야 하면 migration spec에 남은 의존성을 기록하고 제거 기준을 둔다.크기 최대(orceMax)는 태그클라우드에서 	s-9로 고정하며 엔트리 본문 태그줄에는 적용하지 않는다. 
+- legacy global을 임시로 참조해야 하면 migration spec에 남은 의존성을 기록하고 제거 기준을 둔다.

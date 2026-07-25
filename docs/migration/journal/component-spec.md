@@ -57,7 +57,6 @@
 | `TagCloudItem` | `{ id: number|string, name: string, ctgr?: string, contentSize: number, tagClass?: string, textClass?: string }` |
 
 **태그 크기 클래스**: `.ts-1` ~ `.ts-9` (`src/styles/components/tag.scss`) — `tagClass` 필드로 전달. 빈도 비율로 base를 구한 뒤 프로필 `forceMax`이면 `ts-9`로 고정한다(`TagProfileService.applyVisualSemantic` / `TagCloudSizeSupport`). 색은 `textClass`(시각 의미)로 별도.
-orceMax이면 	s-9로 고정한다(TagProfileService.applyVisualSemantic / TagCloudSizeSupport). 색은 	extClass(시각 의미)로 별도.
 
 **가로 정렬 계약**: 일자/일기/꿈 태그 3행의 태그 목록 시작 x좌표는 동일해야 한다. `꿈 태그` 라벨이 한 글자 짧다는 이유로 태그 목록이 왼쪽으로 들어오면 실패다. Vue 구현은 라벨 컬럼에 `.journal-tag-header__label { width: 6.25rem; justify-content: center; }`를 적용해 3행 모두 같은 라벨 폭을 사용한다.
 
