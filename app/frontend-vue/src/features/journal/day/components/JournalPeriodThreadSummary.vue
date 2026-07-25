@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import type { JournalPeriodThreadSummaryQuery } from "@/features/journal/stores/journalThread";
@@ -109,6 +109,11 @@ watch(periodRequestKey, () => {
     void threadStore.fetchPeriodSummary(query);
   }
 }, { immediate: true });
+
+/** 화면 이탈 시 기간 요약의 마지막 조회 조건을 비워 비활성 상태의 재조회를 막는다. */
+onUnmounted(() => {
+  threadStore.clearPeriodSummaryQuery();
+});
 
 function formatEntryCount(count: number): string {
   return t("journal.thread.period-summary.entry-count").replace("{0}", String(count));

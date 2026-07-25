@@ -9,6 +9,24 @@
         <button
           v-if="store.detailModel?.id"
           type="button"
+          class="btn btn-sm btn-icon btn-light-primary"
+          :title="t('common.copy.tooltip')"
+          @click="onCopy"
+        >
+          <i class="bi bi-copy"></i>
+        </button>
+        <button
+          v-if="store.detailModel?.id"
+          type="button"
+          class="btn btn-sm btn-icon btn-light-primary"
+          :title="t('common.export-text.tooltip')"
+          @click="onDownload"
+        >
+          <i class="bi bi-download"></i>
+        </button>
+        <button
+          v-if="store.detailModel?.id"
+          type="button"
           class="btn btn-sm btn-light-primary"
           :title="t('common.mdf')"
           @click="goToEdit"
@@ -42,6 +60,7 @@
 import { useRouter } from "vue-router";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import JournalThreadDetailContent from "@/features/journal/thread/components/JournalThreadDetailContent.vue";
+import { copyThreadDetail, downloadThreadDetail } from "@/features/journal/utils/journalThreadExport";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const router = useRouter();
@@ -62,4 +81,16 @@ function goToEdit(): void {
   }
   void router.push({ name: "thread-edit", params: { id } });
 }
+/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. */
+function onCopy(): void {
+  void copyThreadDetail(store.detailModel, store.detailEntries, t);
+}
+
+/** 스레드 소속 엔트리를 서버 텍스트 내보내기로 다운로드한다. */
+function onDownload(): void {
+  const id = store.detailModel?.id;
+  if (!id) return;
+  downloadThreadDetail(id);
+}
+
 </script>

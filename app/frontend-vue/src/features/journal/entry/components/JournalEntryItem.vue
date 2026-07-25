@@ -493,6 +493,8 @@ const props = defineProps<{
   isDream?: boolean;
   /** 챕터 토글이 전파하는 강제 접힘 여부. null=챕터 미개입, true/false=챕터 강제 */
   forceCollapsed?: boolean | null;
+  /** 스레드 상세 등에서 RESOLVED 자동 접힘을 억제한다(초록 표시는 유지). 기본 false. */
+  disableResolvedCollapse?: boolean;
   /** Parent-provided DOM id, used by popup/search contexts that render the same entry component. */
   domId?: string;
   /** Search-only keyword highlights. Empty by default so monthly/weekly/chapter renders stay unchanged. */
@@ -571,7 +573,7 @@ const localCollapsedOverride = ref<boolean | null>(null);
 const isCollapsed = computed(() => {
   if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
   if (props.forceCollapsed !== null && props.forceCollapsed !== undefined) return props.forceCollapsed;
-  if (isResolved.value) return true;
+  if (isResolved.value && !props.disableResolvedCollapse) return true;
   return hasState("COLLAPSED");
 });
 
@@ -849,6 +851,7 @@ async function toggleThread(option: ThreadOption): Promise<void> {
     if (membershipStore.candidateEntryId === entryId) {
       await membershipStore.fetchThreadOptions(entryId);
     }
+    void threadStore.refreshPeriodSummary();
     scrollAfterFetch();
   }
 }
@@ -875,6 +878,7 @@ async function startNewThread(): Promise<void> {
     if (membershipStore.candidateEntryId === entryId) {
       await membershipStore.fetchThreadOptions(entryId);
     }
+    void threadStore.refreshPeriodSummary();
     scrollAfterFetch();
   }
 }
@@ -1043,6 +1047,7 @@ async function deleteEntry(): Promise<void> {
         message: res.data?.message,
         successFallback: t("common.result.deleted"),
       });
+      void threadStore.refreshPeriodSummary();
       scrollAfterFetch(stdrdDt);
     } else {
       void swalAjaxResult({

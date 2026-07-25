@@ -62,6 +62,7 @@
           :key="'thread-entry-' + entry.id"
           :entry="entry"
           :is-dream="entry.contentType === 'JOURNAL_DREAM'"
+          :disable-resolved-collapse="true"
         />
       </template>
     </div>

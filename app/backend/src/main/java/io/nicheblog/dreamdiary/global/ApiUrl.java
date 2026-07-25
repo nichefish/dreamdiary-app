@@ -87,6 +87,8 @@ public interface ApiUrl {
     String JOURNAL_THREAD_PERIOD_SUMMARY = Prefix.API + "/journal/threads/period-summary";
     String JOURNAL_THREAD_CATEGORIES = Prefix.API + "/journal/threads/categories";
     String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
+    /** 스레드 텍스트 내보내기 */
+    String JOURNAL_THREAD_EXPORT = Prefix.API + "/journal/threads/{id}/export";
     /** 스레드 소속 엔트리 목록 조회 / 소속 등록 */
     String JOURNAL_THREAD_ENTRIES = Prefix.API + "/journal/threads/{id}/entries";
     /** 스레드 소속 해제 */

@@ -129,6 +129,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const periodSummaryError = ref("");
   /** 늦게 끝난 이전 기간 응답이 현재 기간을 덮지 못하게 하는 요청 순번 */
   let periodSummaryRequestToken = 0;
+  /** 기간 요약이 마지막으로 조회한 조건. 소속 변경 후 재조회와 화면 이탈 시 비활성 판단에 쓴다. */
+  const lastPeriodSummaryQuery = ref<JournalPeriodThreadSummaryQuery | null>(null);
 
   // ---- 등록/수정 (모달/독립 페이지 공용) ----
 
@@ -290,6 +292,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
    * 기간 전환 중 이전 요청이 늦게 끝나면 응답을 폐기해 다른 기간의 요약이 노출되지 않게 한다.
    */
   async function fetchPeriodSummary(query: JournalPeriodThreadSummaryQuery): Promise<void> {
+    lastPeriodSummaryQuery.value = query;
     const requestToken = ++periodSummaryRequestToken;
     periodSummaryLoading.value = true;
     periodSummaryError.value = "";
@@ -322,6 +325,18 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         periodSummaryLoading.value = false;
       }
     }
+  }
+
+  /** 기간 요약이 활성일 때만, 마지막 조회 조건으로 다시 조회한다. 소속 변경 후 호출한다. */
+  async function refreshPeriodSummary(): Promise<void> {
+    const query = lastPeriodSummaryQuery.value;
+    if (!query) return;
+    await fetchPeriodSummary(query);
+  }
+
+  /** 기간 요약 화면 이탈 시 마지막 조회 조건을 비워 비활성 상태의 무의미한 재조회를 막는다. */
+  function clearPeriodSummaryQuery(): void {
+    lastPeriodSummaryQuery.value = null;
   }
 
   // ---- 등록/수정 액션 ----
@@ -725,6 +740,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     fetchCategoryOptions,
     ensureCategoryOptions,
     fetchPeriodSummary,
+    refreshPeriodSummary,
+    clearPeriodSummaryQuery,
     cacheFilterTagLabel,
     addFilterTag,
     removeFilterTag,

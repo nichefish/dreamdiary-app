@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntrySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
@@ -60,6 +61,7 @@ public class JournalThreadEntryService {
     private final JournalThreadEntryRepository repository;
     private final JournalThreadRepository journalThreadRepository;
     private final JournalEntryService journalEntryService;
+    private final JournalEntryStateEnricher journalEntryStateEnricher;
 
     /**
      * 엔트리를 스레드에 소속시킨다.
@@ -157,6 +159,8 @@ public class JournalThreadEntryService {
                 .comparing(JournalEntryDto::getStdrdDt, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(JournalEntryDto::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(JournalEntryDto::getId, Comparator.nullsLast(Comparator.naturalOrder())));
+        // 소속 엔트리에 lifecycle 을 병합해 스레드 상세에서도 완료(RESOLVED) 초록 표시가 나오게 한다. (state 는 병합하지 않음)
+        journalEntryStateEnricher.enrichLifecycleMixed(entries);
         return entries;
     }
 

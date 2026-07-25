@@ -97,7 +97,7 @@ orceMax이면 	s-9로 고정한다(TagProfileService.applyVisualSemantic / TagCl
 - 응답 항목: `threadId`, `title`, `entryCount`, `firstEntryDate`
 - 기간 집계는 현재 사용자 소유의 활성 스레드·활성 소속·활성 엔트리만 포함한다.
 
-**현재 구현 상태**: ✓ 구현 완료 — 기간 집계 DTO·repository·service와 `GET /api/journal/threads/period-summary`, `useJournalThreadStore`의 기간별 조회 상태·이전 요청 폐기, `JournalPeriodThreadSummary` UI·월간 10개 이후 펼치기를 구현한다. 조회 실패는 빈 기간으로 가장하지 않고 오류 문구를 표시한다. 행 라벨은 기간 문맥이 화면에 있으므로 `스레드`다.
+**현재 구현 상태**: ✓ 구현 완료 — 기간 집계 DTO·repository·service와 `GET /api/journal/threads/period-summary`, `useJournalThreadStore`의 기간별 조회 상태·이전 요청 폐기, `JournalPeriodThreadSummary` UI·월간 10개 이후 펼치기를 구현한다. 조회 실패는 빈 기간으로 가장하지 않고 오류 문구를 표시한다. 행 라벨은 기간 문맥이 화면에 있으므로 `스레드`다. 엔트리 소속 추가·해제·새 스레드 생성과 엔트리 삭제 성공 시 `JournalEntryItem`이 `JournalThreadStore.refreshPeriodSummary()`를 호출해 마지막 조회 조건으로 이 요약을 재조회한다(store가 조건 보유, 요약 컴포넌트는 언마운트 시 조건을 비워 비활성 재조회 방지).
 
 ---
 
@@ -747,6 +747,8 @@ interface TodoRow {
 
 **데이터**: `useJournalThreadStore.detailModel`의 카테고리·제목·작성자·작성일·본문·태그·`comment.list`를 읽기 전용으로 표시한다. **태그는 스레드 자체 태그가 아니라 소속 엔트리 태그의 집계다** — 스레드는 자체 태그를 소유하지 않는다(엔티티 `TagEmbed` 제거, 챕터와 동형). 백엔드 `JournalThreadService.viewDetailPage` 의 `applyEntryTagSummary` 가 소속 엔트리 태그를 tagId 로 중복 제거해 `thread.tag.list` 에 채우고(챕터 `applyChapterTagSummary` 와 동형), 상세는 그 결과를 표시한다. 소속 엔트리 목록은 `store.detailEntries`(일자별 그룹 카드, 그룹마다 일자 헤더)로 함께 표시한다. 등록/수정 모달에는 태그 입력이 없다(자체 태그 미소유).
 
+**전체 복사·다운로드 (양 표면 공통)**: 상세 모달 헤더와 독립 페이지 card-toolbar에 `store.detailModel?.id`가 있을 때 「복사」(`bi-copy`)·「다운로드」(`bi-download`) 아이콘 버튼을 둔다(tooltip `common.copy.tooltip`·`common.export-text.tooltip`). 복사는 클라이언트 `journalThreadExport.copyThreadDetail`가 스레드 제목을 머리행으로, 소속 엔트리를 검색 전체 복사(copyAll)와 동일한 `날짜(요일)`·`#순번`·본문 평문 포맷으로 클립보드에 쓰고 `common.copy.success/failure`로 알린다. 다운로드는 `downloadThreadDetail`가 `GET /api/journal/threads/{id}/export`로 이동해 `thread_{id}_@yyyyMMdd.txt` 첨부를 받는다. 서버 텍스트는 `JournalThreadExportService.buildTxt`가 챕터/엔트리 내보내기와 동일한 배너·엔트리 블록 계약(제목 머리행 + 소속 엔트리)으로 생성하며 복사와 배너 유무만 다르다. 소유권은 서버 `getEntriesByThread`가 검증한다. 복사/다운로드 로직은 `features/journal/utils/journalThreadExport.ts` 단일 util을 두 표면이 공유하고, 표시 데이터를 바꾸지 않고 `detailModel`·`detailEntries` SSOT만 읽는다.
+
 **동작**: 댓글 등록 버튼은 `useAttachableModalStore.openCommentRegist(id, contentType)`를 호출한다. 댓글 수 버튼(목록에 댓글이 있을 때)은 `openCommentList`를 호출한다. 댓글 등록 성공 시 `CommentRegistModal`이 열린 상세가 `JOURNAL_THREAD`이면 상세를 재조회하고 목록의 댓글 수를 갱신한다. 문맥형 모달 헤더 「수정」은 원래 저널 화면·스크롤·상세 데이터를 유지한 채 `store.openModifyFromDetail(id)`로 같은 앱의 수정 모달로 전환한다. 독립 상세 헤더 「수정」은 같은 탭의 `thread-edit` route로 이동한다.
 
 **스레드 자체 수정 표면 계약**: 문맥형 상세에서 수정에 진입하면 스토어는 `detailOpen`·상세 데이터를 유지하고 `detailSurface`만 보류한 뒤 `registSurface=modal`을 연다. 수정 취소·저장 종료 시 보류한 상세 ID와 현재 ID가 같을 때만 원래 모달 표면을 복원한다. 저장 성공 시 `refreshJournalEntryHostForRoute`가 상세 본문·제목을 다시 조회하고, 배경이 주간·월간·일간이면 스레드 제목이 실린 배경 목록도 스크롤 없이 함께 갱신한다. 독립 상세는 같은 탭의 `JournalThreadEditPage`로 전환하며 저장·취소 뒤 해당 독립 상세로 복귀한다. 이름 있는 브라우저 팝업과 창 간 메시지 계약은 사용하지 않는다.
@@ -754,6 +756,8 @@ interface TodoRow {
 **닫기 정책**: 읽는 중인 상세가 backdrop 클릭이나 Escape 입력으로 의도치 않게 닫히지 않도록 루트 DOM에 `data-bs-backdrop="static"`, `data-bs-keyboard="false"`를 선언하고 `Bootstrap Modal`도 `{ backdrop: "static", keyboard: false }`로 생성한다. 헤더 ×와 푸터 「닫기」는 `store.closeDetail()`을 호출하는 명시적 종료 경로로 유지한다. URL 이동·상세 조회 실패에 따른 프로그램상 종료도 유지한다.
 
 **상위 서사·엔트리 소속 계약**: 저널 스레드는 특정 일자 엔트리로 쓰기 어려운 내용을 제목·본문으로 직접 서술하는 독립 상위 서사다. 엔트리를 스레드에 소속시키는 기능은 **✓ 구현 완료** — 백엔드(테이블 `journal_thread_entry` + 소속 등록/해제/조회/후보 API)와 엔트리 ⋯ 메뉴의 소속 지정 UI(「스레드에 추가」 서브메뉴 + 제목 검색·분류 필터 + 「새 스레드로 시작」 + 본문 소속 스레드 칩)와 **스레드 상세의 소속 엔트리 목록**도 완료됐다(✓). 스레드 상세는 소속 엔트리를 저널 일자와 동일한 `JournalEntryItem` 카드로 표시하되, 저널 일자·연간 상세와 동형으로 `stdrdDt` 별로 그룹핑해 그룹마다 `journal-day-header`(날짜 + `(요일)`, `getWeekDayStr`)를 얹는다 — 카드별 날짜 라벨은 일자 헤더로 대체됐다. `GET /api/journal/threads/{id}/entries` 가 소속 메타가 아니라 full `JournalEntryDto` 목록을 반환하며, `JournalThreadEntryService.getEntriesByThread` 가 `JournalEntryService.getListDtoByIds` 로 조회한 뒤 **일자 → 원본 엔트리 `sortOrder` → ID 오름차순**으로 결정적 정렬한다. 스레드 소속 자체의 nullable `sort_order`는 사용하지 않으며, 원본 인덱스가 없거나 중복된 경우에만 ID가 tiebreak다. 프론트 그룹핑은 백엔드 정렬 순서를 first-seen 으로 보존한다. 상세 카드가 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제 액션을 제공하는 것은 의도된 계약이다. 스레드에 보이는 항목은 읽기 전용 복제본이 아니라 같은 원본 엔트리이므로 저널 일자와 기능 경계를 달리하지 않는다.
+
+**완료 표시·접힘 정책**: 소속 엔트리는 서버에서 lifecycle을 병합(`enrichLifecycleMixed`, 혼합 타입 그룹별 `getLifecycleMap`)해 내려주므로 완료(RESOLVED) 엔트리의 `#순번`이 초록으로 표시된다(저널 일자와 동일 패턴). 스레드 맥락에서는 `JournalEntryItem`의 `disableResolvedCollapse`로 RESOLVED 자동 접힘만 억제하고, 초록 표시·수동 접기·서버 COLLAPSED는 유지한다. state는 병합하지 않아 서버 접힘 상태가 스레드 표시를 접지 않는다.
 
 **엔트리 액션 호스트·갱신 계약**: 상세 모달을 연 현재 화면의 레이아웃은 엔트리 카드가 호출하는 `CommentRegistModal`, `CommentListModal`, `JournalInterpretationRegistModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalTagContextMenu`를 마운트한다. `JournalEntryRegistModal`·`JournalEntryViewModal`은 `App.vue`의 비팝업 전역 마운트를 재사용하고 검색·일간 팝업은 자체 마운트를 유지한다. 엔트리·해석의 수정/삭제, 댓글, 이력 복원, 관련글 연결/해제, 태그 프로필, 스레드 소속, 라이프사이클·상태 변경이 성공하면 `refreshJournalEntryHostForRoute`가 route가 아니라 `detailOpen`을 전경 판단 기준으로 사용한다. 열린 상세의 본문·집계 태그·소속 엔트리를 먼저 재조회하고, 배경이 주간·월간·일간이면 `refreshJournalDaysForRoute`도 실행하되 상세 축을 반환해 배경 스크롤을 막는다. 검색 배경은 기존 로컬 결과 갱신 이벤트를 함께 수행한다. 상세 재조회 실패 시 읽던 데이터를 비우지 않고 오류를 기록·표시한다.
 

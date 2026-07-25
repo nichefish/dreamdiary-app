@@ -12,9 +12,12 @@ import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodS
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService;
+import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadExportService;
 import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
@@ -26,12 +29,15 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -56,6 +62,7 @@ public class JournalThreadRestController
     private final JournalThreadService journalThreadService;
     private final JournalThreadEntryService journalThreadEntryService;
     private final CodeItemService codeItemService;
+    private final JournalThreadExportService journalThreadExportService;
 
     /**
      * 엔트리 소속 메뉴용 저널 스레드 후보 조회 (Ajax).
@@ -317,5 +324,34 @@ public class JournalThreadRestController
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(resultList));
+    }
+
+    /**
+     * 저널 스레드 텍스트 내보내기 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     * <p>
+     * 스레드 제목과 소속 엔트리를 텍스트 파일로 내보낸다. 상세 모달·독립 상세 화면의 다운로드 액션이 사용한다.
+     * 소유권은 {@link JournalThreadEntryService#getEntriesByThread} 가 검증한다.
+     *
+     * @param id 스레드 식별자
+     * @return {@link ResponseEntity} -- text/plain 첨부 응답
+     */
+    @GetMapping(Url.JOURNAL_THREAD_EXPORT)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<byte[]> journalThreadExportTxtAjax(
+            final @PathVariable("id") Integer id
+    ) throws Exception {
+
+        final JournalThreadDto retrievedDto = journalThreadService.viewDetailPage(id);
+        final List<JournalEntryDto> entries = journalThreadEntryService.getEntriesByThread(id);
+        final String text = journalThreadExportService.buildTxt(retrievedDto, entries);
+        final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+        final String filename = "thread_" + id + "_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(bytes);
     }
 }
