@@ -4,9 +4,11 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagProfileService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryHolydayHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryInterpretationEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryRelatedEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
@@ -26,6 +28,7 @@ public class JournalEntryMyViewService {
     private final JournalEntryRelatedEnricher relatedEnricher;
     private final JournalEntryStateEnricher stateEnricher;
     private final TagProfileService tagProfileService;
+    private final ScheduleService scheduleService;
 
     /**
      * 사용자 목록 조회 후 부가 정보(해석/연관/상태)를 병합한다.
@@ -98,6 +101,8 @@ public class JournalEntryMyViewService {
             stateEnricher.enrichLifecycle(policy, listDto);
         }
         this.mergeDreamTagProfiles(contentType, listDto);
+        /* 검색 팝업·연간 등 provide 없는 화면의 날짜 헤더용. 일자 목록과 동일 holydayMap 계약. */
+        JournalEntryHolydayHelper.setHolydayInfo(listDto, scheduleService.getHolydayMap());
     }
 
     /**

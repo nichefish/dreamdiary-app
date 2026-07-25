@@ -117,6 +117,10 @@ export interface JournalEntryDto {
   journalDayId?: number;
   journalChapterId?: number;
   stdrdDt?: string;
+  /** 공휴일 또는 주말 — 검색 팝업 등 provide 없는 화면 날짜 헤더용 */
+  isHolyday?: boolean;
+  /** 공휴일명(복수면 콤마 연결). 주말 단독이면 비움 */
+  holydayNm?: string;
   sortOrder?: number;
   elseDreamYn?: string;
   elseDreamerNm?: string;

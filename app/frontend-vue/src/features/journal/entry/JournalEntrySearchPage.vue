@@ -213,10 +213,16 @@
         <!--begin::날짜 헤더 (날짜가 바뀔 때만)-->
         <div
           v-if="idx === 0 || entry.stdrdDt !== entries[idx - 1].stdrdDt"
-          class="d-flex align-items-center gap-2 text-gray-700 fw-bold fs-6 ps-2 pt-3 pb-1"
+          class="d-flex align-items-center gap-2 fw-bold fs-6 ps-2 pt-3 pb-1"
+          :class="entry.isHolyday ? 'text-danger' : 'text-gray-700'"
         >
           <span>{{ entry.stdrdDt }}</span>
-          <span v-if="entry.stdrdDt" class="text-muted fs-7">({{ getDisplayWeekDayStr(entry.stdrdDt) }})</span>
+          <span
+            v-if="entry.stdrdDt"
+            class="fs-7"
+            :class="entry.isHolyday ? 'text-danger' : 'text-muted'"
+          >({{ getDisplayWeekDayStr(entry.stdrdDt) }})</span>
+          <span v-if="entry.holydayNm" class="fs-7 fw-normal text-muted text-truncate">{{ entry.holydayNm }}</span>
           <span v-if="entry.stdrdDt" class="badge badge-light-secondary fw-lighter">
             {{ getDateEntryCountLabel(entry.stdrdDt) }}
           </span>

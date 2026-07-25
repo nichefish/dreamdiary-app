@@ -358,9 +358,9 @@ public class ScheduleService
         EhCacheUtils.clearCache("isHolyday");
         EhCacheUtils.clearCache("isHolydayOrWeekend");
         /*
-         * holydayMap 은 저널 일자 목록의 공휴일 표시(isHolyday) 원천이다.
+         * holydayMap 은 저널 일자·엔트리 목록의 공휴일 표시(isHolyday) 원천이다.
          * 이걸 비우지 않으면 공휴일 일정을 등록·수정·삭제해도 목록 색상이 갱신되지 않았다.
-         * 비운 뒤 재생성은 JournalDayQueryService.getHolydayMap() 이 미스 시 수행한다.
+         * 비운 뒤 재생성은 getHolydayMap() 이 미스 시 수행한다.
          */
         EhCacheUtils.clearCache("holydayMap");
     }
@@ -390,5 +390,31 @@ public class ScheduleService
 
         final Cache cache = cacheManager.getCache("holydayMap");
         if (cache != null) cache.put(SimpleKey.EMPTY, holydayMap);
+    }
+
+    /**
+     * 휴일 정보 캐시를 조회한다. 캐시가 비어 있으면 재생성 후 다시 읽는다.
+     * <p>
+     * {@code holydayMap} 은 {@code @Cacheable} 이 아니라 수동으로 put 하는 캐시라 자동 로딩되지 않는다.
+     * 채우는 곳은 기동 시 워밍업({@code ScheduleCacheWarmupTask})과 공휴일 API 동기화·본 메서드 미스 처리다.
+     * ehcache defaultTemplate TTL 이 1일이라, 미스 시 재생성하지 않으면 저널 일자·엔트리 검색의
+     * {@code isHolyday} 가 비어 공휴일 빨간색이 사라진다.
+     * </p>
+     *
+     * @return 휴일 맵 (재생성에 실패하면 null — 호출부는 휴일 정보를 채우지 않고 넘어간다)
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, List<String>> getHolydayMap() {
+        final Map<String, List<String>> cached = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
+        if (cached != null) return cached;
+
+        log.info("[getHolydayMap] holydayMap 캐시 미스 — 재생성 시도");
+        try {
+            this.resyncHolydayMap();
+        } catch (final Exception e) {
+            log.error("[getHolydayMap] holydayMap 재생성 실패 — 휴일 정보 없이 조회를 계속한다", e);
+            return null;
+        }
+        return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
     }
 }

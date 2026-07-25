@@ -28,7 +28,6 @@ import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +53,7 @@ import java.util.function.Consumer;
 public class JournalDayQueryService {
 
     private final JournalDayService journalDayService;
-    /** holydayMap 캐시 미스 시 재생성용 (resyncHolydayMap) */
+    /** holydayMap 조회·미스 시 재생성 ({@link ScheduleService#getHolydayMap()}) */
     private final ScheduleService scheduleService;
     private final ScheduleVacationQueryService scheduleVacationQueryService;
     private final RelatedContentQueryService relatedContentQueryService;
@@ -170,7 +169,7 @@ public class JournalDayQueryService {
     private List<JournalDayDto> enrichList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
-        JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        JournalDayHolydayHelper.setHolydayInfo(listDto, scheduleService.getHolydayMap());
         this.mergeVacationInfo(username, listDto);
         this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
@@ -195,7 +194,7 @@ public class JournalDayQueryService {
     private List<JournalDayDto> enrichWeeklyList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
-        JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        JournalDayHolydayHelper.setHolydayInfo(listDto, scheduleService.getHolydayMap());
         this.mergeVacationInfo(username, listDto);
         this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
@@ -219,7 +218,7 @@ public class JournalDayQueryService {
     private JournalDayDto enrichDetail(final String username, final JournalDayDto retrieved) throws Exception {
         if (retrieved == null) return null;
 
-        JournalDayHolydayHelper.setHolydayInfo(retrieved, getHolydayMap());
+        JournalDayHolydayHelper.setHolydayInfo(retrieved, scheduleService.getHolydayMap());
         this.mergeVacationInfo(username, List.of(retrieved));
         this.mergeInterpretations(username, List.of(retrieved));
         JournalDayViewHelper.mergeStates(username, retrieved);
@@ -416,30 +415,4 @@ public class JournalDayQueryService {
         }
     }
 
-    /**
-     * 휴일 정보 캐시를 조회한다. 캐시가 비어 있으면 재생성 후 다시 읽는다.
-     * <p>
-     * {@code holydayMap} 은 {@code @Cacheable} 이 아니라 수동으로 put 하는 캐시라 자동 로딩되지 않는다.
-     * 채우는 곳은 기동 시 워밍업({@code ScheduleCacheWarmupTask})과 공휴일 API 동기화 두 곳뿐인데,
-     * ehcache defaultTemplate 의 TTL 이 1일이라 기동 후 하루가 지나면 만료된 채로 아무도 다시 채우지 않았다.
-     * 그 결과 {@code JournalDayHolydayHelper} 가 null 을 받아 조용히 return 하면서
-     * {@code isHolyday} 가 설정되지 않았고, 목록의 공휴일 날짜가 빨간색으로 표시되지 않았다.
-     * (증상이 간헐적으로 보인 이유는 캐시 만료 시점에 좌우됐기 때문이다.)
-     *
-     * @return 휴일 맵 (재생성에 실패하면 null — 호출부는 휴일 정보를 채우지 않고 넘어간다)
-     */
-    @SuppressWarnings("unchecked")
-    private Map<String, List<String>> getHolydayMap() {
-        final Map<String, List<String>> cached = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
-        if (cached != null) return cached;
-
-        log.info("[getHolydayMap] holydayMap 캐시 미스 — 재생성 시도");
-        try {
-            scheduleService.resyncHolydayMap();
-        } catch (final Exception e) {
-            log.error("[getHolydayMap] holydayMap 재생성 실패 — 휴일 정보 없이 조회를 계속한다", e);
-            return null;
-        }
-        return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
-    }
 }

@@ -1130,6 +1130,7 @@ type TodoRow = {
 - 파라미터: `type`, `tagIds`, `searchKeywords`
 - 고급 필터: 유형 토글, 키워드 입력, 태그 입력. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다.
 - 응답: `AjaxResponse.rsltList` (`JournalEntryDto[]`)
+- 공휴일·주말 표시: 목록 enrich 시 `JournalEntryDto.isHolyday` / `holydayNm` 을 채운다(`ScheduleService.getHolydayMap` + `JournalEntryHolydayHelper`, 일자 목록과 동일 계약). `isHolyday` 는 공휴일 또는 주말, `holydayNm` 은 공휴일명만(주말 단독이면 비움).
 - `type=DREAM` 응답의 태그 항목은 사용자별 꿈 태그 프로필 본문이 있으면 `tag.list[].profileContent`를 포함한다. 검색 결과 행은 `JournalEntryItem`을 통해 꿈 엔트리 본문 아래에 해당 프로필을 표시한다.
 - 검색 키워드가 있으면 검색 결과 행의 엔트리 본문에서 해당 키워드와 일치하는 텍스트를 하이라이트한다. 하이라이트는 검색 팝업에서만 활성화하며, 결과 HTML 구조와 복사/TXT 내보내기 포맷을 변경하지 않는다.
 
@@ -1143,6 +1144,7 @@ type TodoRow = {
 - 검색 팝업 내부 검색 결과에 저널 해석이 표시되면, 해석 행의 수정 액션은 `JournalInterpretationRegistModal`을 같은 창에서 열어야 한다.
 - 각 검색 결과는 수정/삭제가 가능하다. 수정 저장 성공 시 성공 알림 표시 전에 현재 검색 조건 목록 또는 수정 대상 DOM을 준비하고, 성공 알림 OK 이후 저장한 결과 위치로 스크롤하며, 삭제 성공 시 결과 목록에서 제거한다.
 - 검색 팝업 내부에서 엔트리 본문/태그 프로필 다음에 이어지는 저널 해석 행은 같은 결과 묶음으로 읽히도록 공통 저널 행 간격보다 좁게 붙여 표시한다.
+- 날짜 헤더는 서버가 내려준 `isHolyday` 가 true 이면 날짜·요일을 `text-danger` 로 표시하고, `holydayNm` 이 있으면 옆에 공휴일명을 함께 보여 준다(저널 일자 카드와 동일 축). 프론트에서 주말·공휴일을 재계산하지 않는다.
 - 날짜가 바뀔 때 표시되는 날짜 헤더에는 새 창 버튼이 있어야 한다. 버튼은 해당 날짜의 `/journal/daily?stdrdDt=YYYY-MM-DD` 일자 뷰를 새 창으로 연다.
 - 날짜 헤더에는 해당 날짜에 묶인 현재 검색 결과 건수를 함께 표시해 같은 날짜 결과 밀도를 바로 파악할 수 있어야 한다.
 - 결과 목록 위에는 현재 결과의 총 건수, 날짜 수, 월 수를 요약해 표시한다.
