@@ -706,7 +706,7 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 **저널 스레드 상세 진입 정책**: 인증된 SPA는 문맥형 `JournalThreadDetailModal`과 `JournalThreadRegistModal`을 `App.vue`에 각각 단일 마운트한다. 저널 엔트리 스레드 칩·접힌 챕터 스레드 요약·기간별 스레드 요약은 route 이동 없이 `JournalThreadStore.openDetail(threadId)`를 호출해 현재 주간·월간·일간·검색 화면과 스크롤 문맥을 보존한다. 스레드 목록 행과 외부 딥링크는 `/thread/:id`의 `JournalThreadDetailPage`로 이동해 스레드 자체를 주 문맥으로 표시한다. 두 표면은 `detailModel`·`detailEntries` SSOT를 공유하고 `detailSurface=modal|page`로 렌더 표면만 구분한다. 상세 전환 중 늦게 도착한 이전 상세·엔트리 응답은 요청 토큰과 현재 ID를 검사해 폐기한다.
 
-**저널 스레드 상세 정렬 정책**: 소속 엔트리는 일자 오름차순으로 표시하고 같은 일자에서는 원본 엔트리 `sortOrder` 오름차순을 따른다. `sortOrder`가 없거나 중복된 경우에만 엔트리 ID 오름차순을 tiebreak로 사용한다. 스레드 소속의 nullable `journal_thread_entry.sort_order`는 별도 수동 순서가 아니므로 표시 정렬에 사용하지 않는다.
+**저널 스레드 상세 정렬 정책**: 소속 엔트리는 일자 오름차순으로 표시하고 같은 일자에서는 챕터 `sortOrder` → 원본 엔트리 `sortOrder` 순으로 정렬해 저널 일자 화면과 동일한 챕터별 그룹 순서를 유지한다. 엔트리 `sortOrder`는 챕터별로 1부터 매겨지므로 챕터 순서를 함께 보지 않으면 같은 일자의 여러 챕터 #1들이 앞으로 몰린다. 챕터·엔트리 순서가 없거나 같을 때만 엔트리 ID 오름차순을 tiebreak로 사용한다. 스레드 소속의 nullable `journal_thread_entry.sort_order`는 별도 수동 순서가 아니므로 표시 정렬에 사용하지 않는다.
 
 **저널 스레드 자체 수정 정책**: 문맥형 상세 모달의 헤더 「수정」은 route·저널 배경·스크롤과 상세 데이터를 유지한 채 `detailSurface`만 보류하고 같은 앱의 수정 모달(`registSurface=modal`)로 전환한다. 취소는 보류한 ID와 현재 상세 ID가 같을 때만 원래 상세 모달을 복원한다. 저장 성공도 상세 모달을 복원한 뒤 `refreshJournalEntryHostForRoute`로 상세와 주간·월간·일간 배경을 갱신하며 배경 스크롤은 하지 않는다. 목록·외부 딥링크의 독립 상세에서 「수정」을 누르면 같은 탭의 `/thread/{id}/edit` 독립 편집 페이지(`registSurface=page`)로 이동하고 저장·취소 뒤 `/thread/{id}` 독립 상세로 복귀한다. 두 표면은 같은 `registModel`과 `JournalThreadEditorForm`을 사용한다. 변경 전의 이름 있는 브라우저 팝업·`window.opener.postMessage`·팝업 query 계약은 제거했다.
 
