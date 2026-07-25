@@ -30,7 +30,9 @@ public interface JournalThreadEntryRepository
 
     /**
      * 스레드의 소속 엔트리 목록.
-     * sort_order 가 NULL 인 행은 뒤로 보내고, 그 안에서는 등록 순으로 정렬한다.
+     * <p>
+     * 이 쿼리 순서는 소속 행 조회를 결정적으로 만들기 위한 것이며, 상세 표시 순서는 서비스가
+     * 원본 엔트리의 일자·sortOrder·ID로 다시 정렬한다.
      *
      * @param threadId 스레드 ID
      * @param createdBy 등록자 계정명

@@ -516,6 +516,7 @@
 |--------|---------|---------------|-------------------|
 | 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 상세 모달 오픈 + URL `/thread/:id` 동기화 |
 | 상세 모달 닫기 | 헤더 × 또는 푸터 「닫기」 클릭 | `store.closeDetail()` | 명시적 조작으로만 닫힘. backdrop 클릭과 Escape는 무시하며 URL 이동·조회 실패에 따른 프로그램상 종료는 유지 |
+| 상세 소속 엔트리 정렬 | 상세 모달 오픈·갱신 | `GET /api/journal/threads/{id}/entries` | 일자 → 원본 엔트리 `sortOrder` → ID 오름차순. 소속 `sort_order`는 미사용 |
 | 상세에서 스레드 수정 | 상세 헤더 「수정」 클릭 | 새 창 `/thread/:id/edit?popup=Y` | 원래 저널 화면·스크롤·상세 모달을 유지하고 수정 창을 연다. 저장 성공 시 동일 출처 메시지로 원래 상세와 주간·월간·일간 배경을 갱신한 뒤 수정 창을 닫는다 |
 | 등록 모달 열기 | 뷰 툴바(`JournalThreadViewToolbar`) 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
 | 태그 필터 | 검색 카드에서 태그 추가/배지 제거 | `filterTagIds` + `tagIds` 반복 파라미터로 `fetchList(0)` | 멀티 태그 AND. 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 |

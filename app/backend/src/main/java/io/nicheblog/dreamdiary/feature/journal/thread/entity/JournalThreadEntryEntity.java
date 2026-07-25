@@ -52,7 +52,7 @@ public class JournalThreadEntryEntity
     @Comment("journal entry id")
     private Integer entryId;
 
-    /** 스레드 내 표시 순서. NULL 이면 엔트리 일자순으로 정렬한다. */
+    /** 소속의 예약 정렬값. 현재 스레드 상세 표시 순서에는 사용하지 않는다. */
     @Column(name = "sort_order")
     @Comment("sort order in thread")
     private Integer sortOrder;

@@ -194,7 +194,7 @@ interface ThreadEntryGroup {
 /**
  * 소속 엔트리를 stdrdDt 별로 그룹핑한다.
  * <p>
- * 백엔드가 일자 오름차순(동일 일자는 ID 오름차순)으로 내려주므로 first-seen 순서가 곧 표시 순서다.
+ * 백엔드가 일자 → 원본 엔트리 sortOrder → ID 오름차순으로 내려주므로 first-seen 순서가 곧 표시 순서다.
  * 저널 일자·연간 상세와 동일하게 그룹마다 journal-day-header 를 얹어 시각을 통일한다.
  *
  * @param entries 백엔드가 정렬해 내려준 소속 엔트리 목록

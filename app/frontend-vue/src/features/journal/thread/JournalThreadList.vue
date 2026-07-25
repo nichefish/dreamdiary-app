@@ -146,37 +146,34 @@
               <td class="text-center hidden-table">
                 <i v-if="thread.hasFiles" class="bi bi-paperclip text-muted"></i>
               </td>
-              <td class="text-center">
-                <!--begin::컨텍스트 메뉴-->
-                <div class="d-flex justify-content-center">
+              <td class="text-center" @click.stop>
+                <!--begin::컨텍스트 메뉴
+                  변경 전: Metronic data-kt-menu 를 썼으나 테이블·카드 overflow 안에서
+                  드롭다운이 잘리거나 열리지 않았다. 코드/게시판그룹 관리와 동일하게
+                  Bootstrap dropdown + strategy:fixed 로 전환한다.
+                -->
+                <div class="dropdown d-inline-flex justify-content-center">
                   <button
                     type="button"
                     class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                    data-kt-menu-trigger="click"
-                    data-kt-menu-placement="bottom-end"
+                    data-bs-toggle="dropdown"
+                    data-bs-auto-close="true"
+                    data-bs-popper-config='{"strategy":"fixed"}'
+                    aria-expanded="false"
                     :title="t('common.menu')"
-                    @click.stop
                   >
                     <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                   </button>
-                  <div
-                    class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
-                    data-kt-menu="true"
-                    @click.stop
-                  >
-                    <div class="menu-item px-3 my-1">
-                      <div class="menu-link flex-stack px-3" @click="openModify(thread.id!)">
-                        {{ t("common.edit") }}
-                        <i class="bi bi-pencil-square fs-8"></i>
-                      </div>
-                    </div>
-                    <div class="separator my-2"></div>
-                    <div class="menu-item px-3 my-1">
-                      <div class="menu-link flex-stack px-3 text-danger" @click="store.deleteThread(thread.id!)">
-                        {{ t("common.delete") }}
-                        <i class="bi bi-trash text-danger p-0 fs-8"></i>
-                      </div>
-                    </div>
+                  <div class="dropdown-menu dropdown-menu-end">
+                    <button type="button" class="dropdown-item d-flex flex-stack" @click="openModify(thread.id!)">
+                      <span>{{ t("common.edit") }}</span>
+                      <i class="bi bi-pencil-square fs-8"></i>
+                    </button>
+                    <div class="dropdown-divider"></div>
+                    <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="store.deleteThread(thread.id!)">
+                      <span>{{ t("common.delete") }}</span>
+                      <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                    </button>
                   </div>
                 </div>
                 <!--end::컨텍스트 메뉴-->
@@ -209,14 +206,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import type { JournalThreadDto } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { swalAlert } from "@/shared/utils/swal";
 
 /** 태그 후보 API 응답 항목 */
@@ -254,13 +250,6 @@ onMounted(() => {
     store.fetchCategoryOptions(),
   ]);
 });
-
-watch(
-  () => store.loading,
-  (loading, wasLoading) => {
-    if (wasLoading && !loading) void reinitMetronicAfterDom();
-  },
-);
 
 function search(): void {
   void store.fetchList(0);

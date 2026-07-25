@@ -70,7 +70,7 @@ public class JournalThreadEntryService {
      *
      * @param threadId 스레드 ID
      * @param entryId 엔트리 ID
-     * @param sortOrder 스레드 내 표시 순서 (null 허용 — 엔트리 일자순으로 정렬)
+     * @param sortOrder 소속의 예약 정렬값. 현재 상세 표시는 원본 엔트리의 일자·sortOrder를 사용한다.
      * @return {@link ServiceResponse} -- 처리 결과
      */
     @Transactional
@@ -134,11 +134,13 @@ public class JournalThreadEntryService {
      * <p>
      * 스레드 상세에서 소속 엔트리를 저널 일자와 동일한 카드로 보여주기 위한 계약이다.
      * 소속 메타(JournalThreadEntryDto)가 아니라 실제 엔트리(JournalEntryDto)를 일자 오름차순으로 돌려준다.
-     * 정렬 근거: 스레드의 선후는 엔트리 일자에서 파생한다({@link JournalEntryService#getListDtoByIds}).
-     * 같은 일자 안에서는 엔트리 ID 오름차순을 tiebreak 로 써서 매 조회마다 순서가 뒤바뀌지 않게 고정한다.
+     * 정렬 근거: 스레드의 선후는 엔트리 일자와 원본 엔트리 인덱스에서 파생한다
+     * ({@link JournalEntryService#getListDtoByIds}).
+     * 같은 일자 안에서는 원본 엔트리 {@code sortOrder}를 우선하고, 값이 없거나 중복된 경우에만
+     * 엔트리 ID 오름차순을 tiebreak 로 써서 매 조회마다 순서가 뒤바뀌지 않게 고정한다.
      *
      * @param threadId 스레드 ID
-     * @return 소속 엔트리 DTO 목록 (일자 오름차순, 동일 일자는 ID 오름차순)
+     * @return 소속 엔트리 DTO 목록 (일자, 원본 엔트리 sortOrder, ID 오름차순)
      */
     @Transactional(readOnly = true)
     public List<JournalEntryDto> getEntriesByThread(final Integer threadId) throws Exception {
@@ -148,10 +150,12 @@ public class JournalThreadEntryService {
                 .map(JournalThreadEntryEntity::getEntryId)
                 .collect(Collectors.toList());
         final List<JournalEntryDto> entries = journalEntryService.getListDtoByIds(entryIds);
-        // 같은 일자 내 순서는 sort_order 가 비어 있어(findAllById 의 IN 순서에 의존) 비결정적이다.
-        // 일자 오름차순은 유지하되, 동일 일자는 엔트리 ID 오름차순으로 고정해 매 조회마다 순서가 뒤바뀌지 않게 한다.
+        // 변경 전: 스레드 소속 sortOrder가 비어 있다는 이유로 같은 일자의 원본 엔트리 sortOrder까지 무시하고
+        // ID순으로 정렬해, 저널 일자 화면의 인덱스 순서와 스레드 상세 순서가 달라졌다.
+        // 변경 후: 날짜 → 원본 엔트리 sortOrder → ID순으로 정렬한다. 소속 sortOrder는 계속 사용하지 않는다.
         entries.sort(Comparator
                 .comparing(JournalEntryDto::getStdrdDt, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(JournalEntryDto::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(JournalEntryDto::getId, Comparator.nullsLast(Comparator.naturalOrder())));
         return entries;
     }
