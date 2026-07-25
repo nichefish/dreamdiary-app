@@ -108,10 +108,16 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const filterTagIds = ref<string[]>([]);
   /** filterTagIds 표시용 이름 캐시 (tagId → name) */
   const filterTagLabelMap = ref<Record<string, string>>({});
+  /** tagId → 태그 카테고리(ctgr). 배지에 `[ctgr]` 로 표시한다. */
+  const filterTagCtgrMap = ref<Record<string, string>>({});
   /** 분류 선택지 */
   const categoryOptions = ref<ThreadCategoryItem[]>([]);
   /** 분류 선택지 조회 오류 */
   const categoryError = ref("");
+  /** 분류 선택지 최초 정상 조회 완료 여부. 스레드 기능 안에서 같은 목록을 계속 공유한다. */
+  const categoryOptionsLoaded = ref(false);
+  /** 스레드 하위 route가 빠르게 바뀌어도 동일한 분류 요청을 중복 전송하지 않게 합치는 진행 중 요청 */
+  let categoryOptionsRequest: Promise<void> | null = null;
 
   // ---- 기간별 요약 ----
 
@@ -206,19 +212,26 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     }
   }
 
-  /** 태그 필터에 표시 이름을 캐시한다. */
-  function cacheFilterTagLabel(tagId?: number | string, name?: string): void {
+  /**
+   * 태그 필터에 표시 이름·카테고리를 캐시한다.
+   * 카테고리는 일자 필터/엔트리 태그와 동일하게 배지에서 `[ctgr]` 로 쓴다.
+   */
+  function cacheFilterTagLabel(tagId?: number | string, name?: string, ctgr?: string): void {
     if (tagId === undefined || tagId === null || !name) return;
-    filterTagLabelMap.value[String(tagId)] = name;
+    const key = String(tagId);
+    filterTagLabelMap.value[key] = name;
+    if (ctgr !== undefined) {
+      filterTagCtgrMap.value[key] = ctgr;
+    }
   }
 
   /**
    * 태그 필터에 tagId 를 추가한다 (중복 무시).
    * @returns 새로 추가됐으면 true
    */
-  function addFilterTag(tagId: number | string, name?: string): boolean {
+  function addFilterTag(tagId: number | string, name?: string, ctgr?: string): boolean {
     const next = String(tagId);
-    cacheFilterTagLabel(next, name);
+    cacheFilterTagLabel(next, name, ctgr);
     if (filterTagIds.value.includes(next)) return false;
     filterTagIds.value = [...filterTagIds.value, next];
     return true;
@@ -228,6 +241,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   function removeFilterTag(tagId: string): void {
     filterTagIds.value = filterTagIds.value.filter((id) => id !== tagId);
     delete filterTagLabelMap.value[tagId];
+    delete filterTagCtgrMap.value[tagId];
   }
 
   /** 현재 locale이 적용된 저널 스레드 분류 선택지를 조회한다. */
@@ -236,11 +250,27 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     try {
       const res = await axios.get("/api/journal/threads/categories");
       categoryOptions.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+      categoryOptionsLoaded.value = true;
     } catch (e: unknown) {
       console.error("[journalThread] fetchCategoryOptions failed", e);
       categoryOptions.value = [];
       categoryError.value = t("journal.thread.category.load.failure");
+      categoryOptionsLoaded.value = false;
     }
+  }
+
+  /**
+   * 스레드 기능 진입 시 목록 검색·등록·수정이 공유할 분류 목록을 최초 한 번 조회한다.
+   * 실패한 조회는 완료로 캐시하지 않아 다음 스레드 route 동기화에서 재시도한다.
+   */
+  async function ensureCategoryOptions(): Promise<void> {
+    if (categoryOptionsLoaded.value) return;
+    if (categoryOptionsRequest) return categoryOptionsRequest;
+
+    categoryOptionsRequest = fetchCategoryOptions().finally(() => {
+      categoryOptionsRequest = null;
+    });
+    await categoryOptionsRequest;
   }
 
   /** 검색 조건을 비우고 첫 페이지를 조회한다. */
@@ -249,6 +279,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     filterCategory.value = "";
     filterTagIds.value = [];
     filterTagLabelMap.value = {};
+    filterTagCtgrMap.value = {};
     await fetchList(0);
   }
 
@@ -684,6 +715,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     filterCategory,
     filterTagIds,
     filterTagLabelMap,
+    filterTagCtgrMap,
     categoryOptions,
     categoryError,
     periodSummary,
@@ -691,6 +723,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     periodSummaryError,
     fetchList,
     fetchCategoryOptions,
+    ensureCategoryOptions,
     fetchPeriodSummary,
     cacheFilterTagLabel,
     addFilterTag,

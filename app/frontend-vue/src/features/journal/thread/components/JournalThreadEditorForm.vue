@@ -8,6 +8,31 @@
     <input type="hidden" name="id" :value="model.id ?? ''" />
     <input type="hidden" name="contentType" value="JOURNAL_THREAD" />
 
+    <!--begin::카테고리-->
+    <div class="row d-flex mb-8">
+      <div class="col-12">
+        <label class="d-flex align-items-center mb-2">
+          <span class="text-gray-700 fs-6 fw-bolder">{{ t("journal.thread.category.label") }}</span>
+        </label>
+        <select
+          name="categoryCode"
+          v-model="model.categoryCode"
+          class="form-select form-select-solid"
+        >
+          <option value="">{{ t("common.category.select") }}</option>
+          <option
+            v-for="category in store.categoryOptions"
+            :key="category.code"
+            :value="category.code"
+          >{{ category.codeName }}</option>
+        </select>
+        <div v-if="store.categoryError" class="text-danger fs-8 mt-2">
+          {{ store.categoryError }}
+        </div>
+      </div>
+    </div>
+    <!--end::카테고리-->
+
     <!--begin::제목-->
     <div class="row d-flex mb-8">
       <div class="col-12">

@@ -7,7 +7,11 @@
       <div class="card-body px-4 py-3">
         <!--begin::검색 폼-->
         <form class="d-flex flex-wrap align-items-center gap-2" @submit.prevent="search">
-          <select v-model="store.filterCategory" class="form-select form-select-sm form-select-solid w-auto flex-shrink-0">
+          <select
+            v-model="store.filterCategory"
+            class="form-select form-select-sm form-select-solid w-auto flex-shrink-0"
+            @change="search"
+          >
             <option value="">{{ t("journal.thread.filter.all-categories") }}</option>
             <option v-for="category in store.categoryOptions" :key="category.code" :value="category.code">
               {{ category.codeName }}
@@ -23,7 +27,7 @@
           <button type="submit" class="btn btn-sm btn-light-primary">{{ t("common.search") }}</button>
           <button type="button" class="btn btn-sm btn-light" @click="resetFilters">{{ t("common.reset") }}</button>
         </form>
-        <!--begin::태그 필터 (엔트리 검색 팝업과 동형 — 멀티 AND)-->
+        <!--begin::태그 필터 (엔트리 검색·일자 필터와 동형 — 멀티 AND, 배지에 [ctgr])-->
         <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
           <span class="fw-bold fs-7 text-gray-700">{{ t("common.tag") }}</span>
           <input
@@ -63,7 +67,14 @@
               :title="t('journal.entry.search.tag.remove.tooltip')"
               @click="removeTag(tagId)"
             >
-              #{{ store.filterTagLabelMap[tagId] ?? tagId }}
+              <!-- 카테고리·이름 모두 fs-7. 카테고리만 text-noti.
+                   줄높이 차이로 어긋나지 않게 인라인 flex 세로 가운데 정렬. -->
+              <span class="d-inline-flex align-items-center lh-1">
+                <span class="fs-7">#</span><span
+                  v-if="store.filterTagCtgrMap[tagId]"
+                  class="fs-7 text-noti"
+                >[{{ store.filterTagCtgrMap[tagId] }}]</span><span class="fs-7">{{ store.filterTagLabelMap[tagId] ?? tagId }}</span>
+              </span>
               <i class="bi bi-x"></i>
             </span>
           </div>
@@ -269,10 +280,7 @@ const tagInputTitle = computed(() => (isTagCategoryChoicePending.value
   : t("journal.thread.filter.tag.placeholder")));
 
 onMounted(() => {
-  void Promise.all([
-    store.fetchList(0),
-    store.fetchCategoryOptions(),
-  ]);
+  void store.fetchList(0);
 });
 
 function search(): void {
@@ -429,7 +437,8 @@ async function addTagByNameAndCategory(tagName: string, ctgr: string): Promise<v
   }
   tagInput.value = "";
   cancelTagCategoryChoice();
-  const added = store.addFilterTag(tagId, tagName);
+  // 일자 필터·엔트리 태그와 동일하게 카테고리를 함께 캐시해 배지에 `[ctgr]` 를 표시한다.
+  const added = store.addFilterTag(tagId, tagName, ctgr || undefined);
   if (!added) {
     void swalAlert(t("journal.entry.search.tag.duplicate"));
     return;

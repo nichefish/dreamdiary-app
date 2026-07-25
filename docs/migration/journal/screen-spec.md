@@ -487,7 +487,7 @@
 - 히든 폼: `#procForm` (GET, `id` hidden)
 - 마운트 루트: `<div id="journal_thread_list_app" class="d-none">`
 
-**현재 Vue SPA 구조**: `JournalThreadLayout`이 목록 route에서 `JournalThreadViewToolbar`(등록, `pe-5 mt-3 mb-1`)를 목록 위에 두고, 그 아래 컴팩트한 검색 카드를 표시한다. ASIDE는 없다. 검색 카드는 분류·제목 검색과 검색·초기화 액션만 두며 `margin-top: 0`으로 툴바에 붙인다. **태그 클라우드 행은 2c-A 에서 제거됐다**(스레드 자체 태그 미소유, 2b). 목록 테이블 행에는 소속 엔트리 태그 집계(`tag.list`)와 활성 소속 수(`membershipCount`, 제목 옆 `{n}건`, 0이면 숨김)를 표시한다. 검색 카드에서 멀티 태그 필터(AND, `tagIds`)를 제공한다. 별도 카드 제목 행은 두지 않으며 기존 목록 카드의 테이블 DOM·클래스와 페이지네이션 구조는 유지한다. `/thread/:id`는 목록을 배경으로 모달을 띄우지 않고 `JournalThreadDetailPage`를 렌더하며, 목록 이동·수정 버튼과 공용 `JournalThreadDetailContent`를 가진 독립 상세 카드가 스레드 자체를 주 문맥으로 표시한다. `/thread/:id/edit`는 같은 탭의 `JournalThreadEditPage`를 렌더하고 공용 `JournalThreadEditorForm`으로 수정한 뒤 해당 독립 상세에 복귀한다.
+**현재 Vue SPA 구조**: `JournalThreadLayout`이 목록 route에서 `JournalThreadViewToolbar`(등록, `pe-5 mt-3 mb-1`)를 목록 위에 두고, 그 아래 컴팩트한 검색 카드를 표시한다. ASIDE는 없다. 검색 카드는 분류·제목 검색과 검색·초기화 액션만 두며 `margin-top: 0`으로 툴바에 붙인다. **태그 클라우드 행은 2c-A 에서 제거됐다**(스레드 자체 태그 미소유, 2b). 목록 테이블 행에는 소속 엔트리 태그 집계(`tag.list`)와 활성 소속 수(`membershipCount`, 제목 옆 `{n}건`, 0이면 숨김)를 표시한다. 검색 카드에서 멀티 태그 필터(AND, `tagIds`)를 제공한다. 별도 카드 제목 행은 두지 않으며 기존 목록 카드의 테이블 DOM·클래스와 페이지네이션 구조는 유지한다. `/thread/:id`는 목록을 배경으로 모달을 띄우지 않고 `JournalThreadDetailPage`를 렌더하며, 목록 이동·수정 버튼과 공용 `JournalThreadDetailContent`를 가진 독립 상세 카드가 스레드 자체를 주 문맥으로 표시한다. `/thread/:id/edit`는 같은 탭의 `JournalThreadEditPage`를 렌더하고 공용 `JournalThreadEditorForm`으로 카테고리·제목·본문을 수정한 뒤 해당 독립 상세에 복귀한다.
 
 ### Key UI Elements
 
@@ -506,7 +506,7 @@
 
 `JournalThreadList.vue`의 분류·제목 placeholder·태그 빈 상태와 조회 실패, 등록 버튼·테이블 헤더·빈 상태·댓글 목록·컨텍스트 메뉴·수정·삭제 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
-`JournalThreadRegistModal.vue`와 `JournalThreadEditPage.vue`의 등록·수정 제목, 공용 편집 필드, placeholder, 저장·닫기/취소 버튼과 저장·미저장 이탈 확인창은 현재 locale의 클라이언트 카탈로그를 사용한다. 목록·수정·상세 조회 실패와 등록·수정 결과 fallback도 현재 locale을 사용하며, API가 `message`를 반환하면 서버 메시지를 우선 표시한다.
+`JournalThreadLayout.vue`는 목록 검색과 등록·수정이 공유할 카테고리 선택지를 스레드 영역 진입 시 조회해 store에 유지한다. `JournalThreadRegistModal.vue`와 `JournalThreadEditPage.vue`의 등록·수정 제목, 공용 카테고리·제목·본문 필드, placeholder, 저장·닫기/취소 버튼과 저장·미저장 이탈 확인창은 현재 locale의 클라이언트 카탈로그를 사용한다. 카테고리 조회 실패는 목록 검색 카드와 편집 폼 안에 현재 locale 오류를 표시한다. 목록·수정·상세 조회 실패와 등록·수정 결과 fallback도 현재 locale을 사용하며, API가 `message`를 반환하면 서버 메시지를 우선 표시한다.
 
 스레드 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 삭제 API의 서버 `message`가 있으면 우선 표시하고, 성공 알림 확인 후 첫 페이지 목록을 다시 조회한다.
 
@@ -521,8 +521,9 @@
 | 상세 소속 엔트리 정렬 | 독립 상세 페이지 또는 문맥형 모달 조회·갱신 | `GET /api/journal/threads/{id}/entries` | 일자 → 원본 엔트리 `sortOrder` → ID 오름차순. 소속 `sort_order`는 미사용 |
 | 문맥형 상세에서 수정 | 상세 모달 헤더 「수정」 클릭 | `store.openModifyFromDetail(id)` | route·배경 스크롤과 상세 데이터를 유지하고 같은 앱의 수정 모달로 전환. 저장·취소 뒤 원래 상세 모달로 복귀하며 저장 성공 시 상세와 주간·월간·일간 배경을 갱신 |
 | 등록 모달 열기 | 뷰 툴바(`JournalThreadViewToolbar`) 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
-| 태그 필터 | 검색 카드에서 태그 추가/배지 제거 | `filterTagIds` + `tagIds` 반복 파라미터로 `fetchList(0)` | 멀티 태그 AND. 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 |
-| 분류·제목 검색 | 검색 버튼 또는 Enter | `filterCategory`, `filterKeyword` 설정 후 `fetchList(0)` | `categoryCode`, `searchType=title`, `searchKeyword`로 첫 페이지 조회 |
+| 카테고리 검색·선택 | 스레드 영역 진입 또는 검색·편집 select 변경 | `ensureCategoryOptions()`, `filterCategory`, `registModel.categoryCode` | 영역 진입 때 `/api/journal/threads/categories`를 최초 조회해 store에 유지하고 목록 검색과 등록·수정이 공유 |
+| 태그 필터 | 검색 카드에서 태그 추가/배지 제거 | `filterTagIds` + `tagIds` 반복 파라미터로 `fetchList(0)` | 멀티 태그 AND. 배지에 `[ctgr]`(`text-noti`) + 이름 모두 `fs-7`, 세로 가운데. 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 |
+| 분류·제목 검색 | 분류 select 변경 또는 검색 버튼·Enter | `filterCategory`, `filterKeyword` 설정 후 `fetchList(0)` | 분류는 변경 즉시, 제목은 검색 실행 시 `categoryCode`, `searchType=title`, `searchKeyword`로 첫 페이지 조회 |
 | 검색 초기화 | 초기화 버튼 클릭 | `resetFilters()` | 태그·분류·제목 조건을 모두 비우고 첫 페이지 조회 |
 | 목록에서 수정 페이지 열기 | ⋯ 메뉴의 수정 클릭 | `router.push({ name: "thread-edit", params: { id } })` | 같은 탭의 독립 수정 페이지 `/thread/:id/edit`로 이동 |
 | 댓글 모달 | 댓글 수 클릭 | `CommentList.modal(id, contentType)` | 댓글 목록 모달 |

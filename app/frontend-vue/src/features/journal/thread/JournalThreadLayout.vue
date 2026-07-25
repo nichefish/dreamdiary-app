@@ -47,6 +47,12 @@ async function syncThreadRoute(): Promise<void> {
   const routeName = String(route.name ?? "");
   const routeId = Number(route.params.id);
 
+  /*
+   * 카테고리는 목록 검색·등록·수정이 함께 쓰는 스레드 기능 데이터다.
+   * 레이아웃 진입과 하위 route 동기화에서 보장하고, 정상 결과는 store가 계속 공유한다.
+   */
+  void store.ensureCategoryOptions();
+
   if (routeName === "thread-create") {
     if (store.detailOpen) store.closeDetail();
     store.openRegist();

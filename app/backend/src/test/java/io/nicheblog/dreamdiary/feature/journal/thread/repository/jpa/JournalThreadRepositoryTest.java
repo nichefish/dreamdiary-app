@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateProjection;
+import io.nicheblog.dreamdiary.feature.journal.thread.spec.JournalThreadSpec;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -22,6 +24,7 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ImportAutoConfiguration(DataSourceConfig.class)
-@Import(TestAuditConfig.class)
+@Import({TestAuditConfig.class, JournalThreadSpec.class})
 @Log4j2
 class JournalThreadRepositoryTest {
 
@@ -46,6 +49,8 @@ class JournalThreadRepositoryTest {
     private JournalThreadRepository journalThreadRepository;
     @Resource
     private JournalThreadEntryRepository journalThreadEntryRepository;
+    @Resource
+    private JournalThreadSpec journalThreadSpec;
 
     private JournalThreadEntity journalThreadEntity;
 
@@ -171,6 +176,26 @@ class JournalThreadRepositoryTest {
                 List.of("현재 소속 스레드", "최근 사용 스레드", "미사용 스레드"),
                 categoryFiltered.stream().map(JournalThreadCandidateProjection::getTitle).toList()
         );
+    }
+
+    /**
+     * 메인 스레드 목록 Specification의 분류 equal 필터 계약 검증.
+     */
+    @Test
+    void findAllWithSpecAppliesCategoryFilter() {
+        final JournalThreadEntity caseThread = candidateThread(
+                "이슈 추적 스레드", "CASE", TestConstant.TEST_AUDITOR, LocalDateTime.of(2026, 7, 1, 10, 0));
+        final JournalThreadEntity reviewThread = candidateThread(
+                "회고 스레드", "REVIEW", TestConstant.TEST_AUDITOR, LocalDateTime.of(2026, 7, 2, 10, 0));
+        journalThreadRepository.saveAll(List.of(caseThread, reviewThread));
+        journalThreadRepository.flush();
+
+        final Page<JournalThreadEntity> result = journalThreadRepository.findAll(
+                journalThreadSpec.searchWith(Map.of("categoryCode", "CASE")),
+                PageRequest.of(0, 10)
+        );
+
+        assertEquals(List.of("이슈 추적 스레드"), result.stream().map(JournalThreadEntity::getTitle).toList());
     }
 
     /** 후보 쿼리용 가상 스레드 픽스처를 만든다. */

@@ -121,6 +121,32 @@ describe("journalThread store 열린 상세 갱신", () => {
     expect(store.registDirty).toBe(true);
   });
 
+  it("스레드 기능 공용 분류 선택지는 동시 요청을 합치고 정상 조회 뒤 계속 공유한다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltList: [
+          { code: "ISSUE", codeName: "이슈" },
+          { code: "REVIEW", codeName: "회고" },
+        ],
+      },
+    });
+
+    await Promise.all([
+      store.ensureCategoryOptions(),
+      store.ensureCategoryOptions(),
+    ]);
+    await store.ensureCategoryOptions();
+
+    expect(mockedGet).toHaveBeenCalledTimes(1);
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/threads/categories");
+    expect(store.categoryOptions).toEqual([
+      { code: "ISSUE", codeName: "이슈" },
+      { code: "REVIEW", codeName: "회고" },
+    ]);
+    expect(store.categoryError).toBe("");
+  });
+
   it("수정 상세 응답이 비었거나 다른 ID면 불완전한 편집 표면을 닫는다", async () => {
     const store = useJournalThreadStore();
     mockedGet.mockResolvedValue({
@@ -246,12 +272,33 @@ describe("journalThread store 목록 태그 필터", () => {
     expect(params.getAll("tagIds")).toEqual(["11", "22"]);
   });
 
+  it("filterCategory 를 메인 목록 categoryCode 파라미터로 전송한다", async () => {
+    const store = useJournalThreadStore();
+    store.filterCategory = "CASE";
+
+    await store.fetchList(0);
+
+    expect(mockedGet).toHaveBeenCalledTimes(1);
+    const [, config] = mockedGet.mock.calls[0];
+    const params = config?.params as URLSearchParams;
+    expect(params).toBeInstanceOf(URLSearchParams);
+    expect(params.get("categoryCode")).toBe("CASE");
+  });
+
+  it("addFilterTag 는 카테고리(ctgr)를 배지용으로 캐시한다", () => {
+    const store = useJournalThreadStore();
+    store.addFilterTag(11, "조직역동", "회고");
+    expect(store.filterTagLabelMap["11"]).toBe("조직역동");
+    expect(store.filterTagCtgrMap["11"]).toBe("회고");
+  });
+
   it("resetFilters 는 태그 필터도 비운다", async () => {
     const store = useJournalThreadStore();
     store.addFilterTag(11, "조직역동");
     await store.resetFilters();
     expect(store.filterTagIds).toEqual([]);
     expect(store.filterTagLabelMap).toEqual({});
+    expect(store.filterTagCtgrMap).toEqual({});
   });
 });
 
