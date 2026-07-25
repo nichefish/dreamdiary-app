@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
@@ -64,6 +65,8 @@ class JournalThreadEntryServiceTest {
     private JournalThreadRepository journalThreadRepository;
     @Mock
     private JournalEntryService journalEntryService;
+    @Mock
+    private JournalEntryStateEnricher journalEntryStateEnricher;
 
     @InjectMocks
     private JournalThreadEntryService service;
@@ -177,26 +180,25 @@ class JournalThreadEntryServiceTest {
     }
 
     /** 상세 엔트리는 일자·원본 인덱스순이며, 인덱스가 같거나 없을 때 ID순으로 고정한다. */
+    /** 소속 엔트리 조회는 정렬을 공용 헬퍼에, lifecycle 병합을 enricher에 위임하고 결과를 반환한다. */
     @Test
-    void getEntriesByThreadUsesDateEntryOrderAndIdTiebreak() throws Exception {
+    void getEntriesByThreadDelegatesSortAndLifecycleEnrichment() throws Exception {
         when(repository.findAllByThread(FIXTURE_THREAD_ID, FIXTURE_USERNAME)).thenReturn(List.of(
-                activeMembership(FIXTURE_THREAD_ID, 5),
-                activeMembership(FIXTURE_THREAD_ID, 4),
-                activeMembership(FIXTURE_THREAD_ID, 3),
                 activeMembership(FIXTURE_THREAD_ID, 2),
                 activeMembership(FIXTURE_THREAD_ID, 1)
         ));
-        when(journalEntryService.getListDtoByIds(List.of(5, 4, 3, 2, 1))).thenReturn(new ArrayList<>(List.of(
-                entry(5, "2026-07-03", null),
-                entry(4, "2026-07-03", 1),
-                entry(3, "2026-07-03", 1),
-                entry(2, "2026-07-01", 9),
-                entry(1, "2026-07-03", 2)
-        )));
+        final List<JournalEntryDto> fetched = new ArrayList<>(List.of(
+                entry(2, "2026-07-01", 1),
+                entry(1, "2026-07-03", 1)
+        ));
+        when(journalEntryService.getListDtoByIds(List.of(2, 1))).thenReturn(fetched);
 
         final List<JournalEntryDto> result = service.getEntriesByThread(FIXTURE_THREAD_ID);
 
-        assertEquals(List.of(2, 3, 4, 1, 5), result.stream().map(JournalEntryDto::getId).toList());
+        // 실제 챕터 우선 정렬 검증은 JournalEntryServiceTest.sortByChapterAndEntryOrder* 로 이동했다.
+        assertEquals(fetched, result);
+        verify(journalEntryService).sortByChapterAndEntryOrder(fetched);
+        verify(journalEntryStateEnricher).enrichLifecycleMixed(fetched);
     }
 
     /** 주간 요약은 기간 내 최초 엔트리 일자순, 동일 일자는 스레드 ID순으로 고정한다. */

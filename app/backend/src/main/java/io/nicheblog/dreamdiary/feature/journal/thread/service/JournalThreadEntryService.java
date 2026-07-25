@@ -7,8 +7,6 @@ import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntrySmpEntit
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
-import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
-import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
@@ -37,8 +35,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -66,7 +62,6 @@ public class JournalThreadEntryService {
     private final JournalThreadRepository journalThreadRepository;
     private final JournalEntryService journalEntryService;
     private final JournalEntryStateEnricher journalEntryStateEnricher;
-    private final JournalChapterRepository journalChapterRepository;
 
     /**
      * 엔트리를 스레드에 소속시킨다.
@@ -157,22 +152,9 @@ public class JournalThreadEntryService {
                 .map(JournalThreadEntryEntity::getEntryId)
                 .collect(Collectors.toList());
         final List<JournalEntryDto> entries = journalEntryService.getListDtoByIds(entryIds);
-        // 변경 전: 날짜 → 원본 엔트리 sortOrder → ID순으로만 정렬해, 같은 일자에 여러 챕터가 있으면
-        // 챕터별로 1부터 매겨지는 엔트리 sortOrder가 충돌해 챕터를 가로질러 #1들이 앞으로 몰렸다.
-        // 변경 후: 날짜 → 챕터 sortOrder → 원본 엔트리 sortOrder → ID순으로 정렬해 저널 일자 화면과
-        // 동일한 챕터별 그룹 순서를 유지한다. 소속 sortOrder는 계속 사용하지 않는다.
-        final Set<Integer> chapterIds = entries.stream()
-                .map(JournalEntryDto::getJournalChapterId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-        final Map<Integer, Integer> chapterOrderMap = journalChapterRepository.findAllById(chapterIds).stream()
-                .filter(chapter -> chapter.getSortOrder() != null)
-                .collect(Collectors.toMap(JournalChapterEntity::getId, JournalChapterEntity::getSortOrder, (a, b) -> a));
-        entries.sort(Comparator
-                .comparing(JournalEntryDto::getStdrdDt, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing((JournalEntryDto entry) -> chapterOrderMap.get(entry.getJournalChapterId()), Comparator.<Integer>nullsLast(Comparator.naturalOrder()))
-                .thenComparing(JournalEntryDto::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(JournalEntryDto::getId, Comparator.nullsLast(Comparator.naturalOrder())));
+        // 저널 일자 화면과 동일한 순서(날짜 → 챕터 sortOrder → 원본 엔트리 sortOrder → ID)로 정렬한다.
+        // 챕터별로 1부터인 엔트리 sortOrder만 보면 같은 일자의 여러 챕터 #1들이 몰리므로, 챕터 순서를 함께 보는 공용 헬퍼를 쓴다.
+        journalEntryService.sortByChapterAndEntryOrder(entries);
         // 소속 엔트리에 lifecycle 을 병합해 스레드 상세에서도 완료(RESOLVED) 초록 표시가 나오게 한다. (state 는 병합하지 않음)
         journalEntryStateEnricher.enrichLifecycleMixed(entries);
         return entries;

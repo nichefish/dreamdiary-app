@@ -48,6 +48,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -302,8 +303,33 @@ public class JournalEntryService
     @Cacheable(value = ANNUAL_STATED_LIST_CACHE_NAME, key = "new org.springframework.cache.interceptor.SimpleKey(#username, #contentType.key + '_' + #searchParam.toSummaryCacheKey())")
     public List<JournalEntryDto> getAnnualListDtoByUser(final String username, final JournalEntrySearchParam searchParam, final ContentType contentType) throws Exception {
         final List<JournalEntryDto> list = getListDtoByUser(username, searchParam, contentType);
-        Collections.sort(list);
+        sortByChapterAndEntryOrder(list);
         return list;
+    }
+
+    /**
+     * 플랫 엔트리 목록을 저널 일자 화면과 동일한 순서로 정렬한다.
+     * <p>
+     * 일자 → 챕터 sortOrder → 원본 엔트리 sortOrder → ID 오름차순. 엔트리 sortOrder는 챕터별로 1부터
+     * 매겨지므로 챕터 순서를 함께 보지 않으면 같은 일자의 여러 챕터 #1들이 앞으로 몰린다. 챕터 sortOrder는
+     * 엔트리의 journalChapterId 로 배치 조회한다. 연간 결산·스레드 상세 등 플랫 엔트리 목록에서 공용으로 쓴다.
+     *
+     * @param entries 정렬할 엔트리 목록 (in-place 정렬)
+     */
+    public void sortByChapterAndEntryOrder(final List<JournalEntryDto> entries) {
+        if (entries == null || entries.isEmpty()) return;
+        final Set<Integer> chapterIds = entries.stream()
+                .map(JournalEntryDto::getJournalChapterId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        final Map<Integer, Integer> chapterOrderMap = journalChapterRepository.findAllById(chapterIds).stream()
+                .filter(chapter -> chapter.getSortOrder() != null)
+                .collect(Collectors.toMap(JournalChapterEntity::getId, JournalChapterEntity::getSortOrder, (a, b) -> a));
+        entries.sort(Comparator
+                .comparing(JournalEntryDto::getStdrdDt, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing((JournalEntryDto entry) -> chapterOrderMap.get(entry.getJournalChapterId()), Comparator.<Integer>nullsLast(Comparator.naturalOrder()))
+                .thenComparing(JournalEntryDto::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(JournalEntryDto::getId, Comparator.nullsLast(Comparator.naturalOrder())));
     }
 
     /**

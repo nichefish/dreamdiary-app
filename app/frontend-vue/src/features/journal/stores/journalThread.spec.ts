@@ -343,6 +343,39 @@ describe("journalThread store 기간별 스레드 요약", () => {
     expect(store.periodSummaryError).toBe("");
   });
 
+  it("연간 조회 계약과 서버 정렬 결과를 그대로 보존한다", async () => {
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltList: [
+          {
+            threadId: FIXTURE_THREAD_ID,
+            title: "첫 번째 흐름",
+            entryCount: 5,
+            firstEntryDate: "2026-03-01",
+          },
+          {
+            threadId: FIXTURE_SECOND_THREAD_ID,
+            title: "두 번째 흐름",
+            entryCount: 2,
+            firstEntryDate: "2026-07-03",
+          },
+        ],
+      },
+    });
+    const store = useJournalThreadStore();
+
+    await store.fetchPeriodSummary({ viewType: "ANNUAL", yy: 2026 });
+
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/threads/period-summary", {
+      params: { viewType: "ANNUAL", yy: 2026 },
+    });
+    expect(store.periodSummary.map((item) => item.threadId)).toEqual([
+      FIXTURE_THREAD_ID,
+      FIXTURE_SECOND_THREAD_ID,
+    ]);
+    expect(store.periodSummaryError).toBe("");
+  });
+
   it("기간 전환 중 늦게 끝난 이전 응답은 폐기한다", async () => {
     let resolveFirst!: (value: {
       data: { rsltList: Array<{ threadId: number; title: string; entryCount: number; firstEntryDate: string }> };
