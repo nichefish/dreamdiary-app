@@ -138,6 +138,10 @@
                   v-if="membershipCountOf(thread) > 0"
                   class="text-muted fs-9 ms-2"
                 >{{ formatMembershipCount(membershipCountOf(thread)) }}</span>
+                <span
+                  v-if="membershipPeriodOf(thread)"
+                  class="text-muted fs-9 ms-2"
+                >{{ membershipPeriodOf(thread) }}</span>
                 <button
                   v-if="thread.comment && thread.comment.cnt"
                   type="button"
@@ -316,6 +320,27 @@ function membershipCountOf(thread: JournalThreadDto): number {
 /** 기간 요약과 동일한 `{n}건` 포맷. */
 function formatMembershipCount(count: number): string {
   return t("journal.thread.period-summary.entry-count").replace("{0}", String(count));
+}
+
+/**
+ * 소속 엔트리 기준일 기간 라벨.
+ * 같은 날이면 단일 일자, 범위면 `{0} ~ {1}`. 유효 일자가 없으면 빈 문자열(숨김).
+ */
+function membershipPeriodOf(thread: JournalThreadDto): string {
+  const first = normalizeThreadEntryDate(thread.firstEntryDate);
+  const last = normalizeThreadEntryDate(thread.lastEntryDate);
+  if (!first || !last) return "";
+  if (first === last) return first;
+  return t("journal.thread.list.membership-period")
+    .replace("{0}", first)
+    .replace("{1}", last);
+}
+
+/** 목록 API 기준일을 YYYY-MM-DD 로 정규화한다. */
+function normalizeThreadEntryDate(value?: string | null): string {
+  if (!value) return "";
+  const trimmed = value.trim();
+  return trimmed.length >= 10 ? trimmed.slice(0, 10) : trimmed;
 }
 
 function openCommentList(thread: JournalThreadDto): void {

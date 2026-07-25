@@ -133,7 +133,7 @@ public class JournalThreadService
      * 변경 전: 목록 DTO 의 {@code tag} 가 비어 목록 UI 의 태그 영역이 렌더되지 않았다.
      * 상세({@link #viewDetailPage}) 만 {@link #applyEntryTagSummary} 를 호출했기 때문이다.
      * 변경 후: 목록도 동일 계약(소속 엔트리 태그 합집합, tagId 중복 제거)을 일괄 적용하고,
-     * 활성 소속 수({@code membershipCount})도 함께 채운다.
+     * 활성 소속 수({@code membershipCount})와 소속 기간({@code firstEntryDate}/{@code lastEntryDate})도 함께 채운다.
      * </p>
      *
      * @param searchParamMap 검색 조건
@@ -191,7 +191,11 @@ public class JournalThreadService
     }
 
     /**
-     * 여러 스레드에 소속 엔트리 태그 집계와 활성 소속 수({@code membershipCount})를 일괄 적용한다. (목록 N+1 방지)
+     * 여러 스레드에 소속 엔트리 태그 집계·활성 소속 수·소속 기간을 일괄 적용한다. (목록 N+1 방지)
+     * <p>
+     * 변경 후: 활성 소속 엔트리 {@code stdrdDt} 의 min/max 를 {@code firstEntryDate}/{@code lastEntryDate} 로 채운다.
+     * 추가 쿼리 없이 이미 일괄 조회한 엔트리 DTO 에서 계산한다.
+     * </p>
      *
      * @param dtoList 대상 스레드 DTO 목록
      */
@@ -226,9 +230,11 @@ public class JournalThreadService
             // 소속 개수는 이미 일괄 조회한 entryId 목록 크기로 채운다 (추가 쿼리 없음).
             dto.setMembershipCount((long) entryIds.size());
             final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
+            final List<JournalEntryDto> membershipEntries = new ArrayList<>();
             for (final Integer entryId : entryIds) {
                 final JournalEntryDto entry = entryById.get(entryId);
                 if (entry == null) continue;
+                membershipEntries.add(entry);
                 final TagCmpstn entryTag = entry.getTag();
                 final List<TagContentDto> tagList = (entryTag == null) ? null : entryTag.getList();
                 if (CollectionUtils.isEmpty(tagList)) continue;
@@ -239,7 +245,49 @@ public class JournalThreadService
             }
             if (dto.getTag() == null) dto.setTag(new TagCmpstn());
             dto.getTag().setList(new ArrayList<>(tagMap.values()));
+            applyMembershipPeriod(dto, membershipEntries);
         }
+    }
+
+    /**
+     * 소속 엔트리 기준일의 min/max 를 목록 표시용으로 채운다.
+     * <p>
+     * {@code YYYY-MM-DD} 접두만 비교한다. 유효 일자가 없으면 둘 다 {@code null}.
+     * </p>
+     *
+     * @param dto 대상 스레드
+     * @param membershipEntries 활성 소속 엔트리
+     */
+    static void applyMembershipPeriod(
+            final JournalThreadDto dto,
+            final List<JournalEntryDto> membershipEntries
+    ) {
+        if (dto == null) return;
+        String first = null;
+        String last = null;
+        if (membershipEntries != null) {
+            for (final JournalEntryDto entry : membershipEntries) {
+                if (entry == null) continue;
+                final String day = normalizeEntryDate(entry.getStdrdDt());
+                if (day == null) continue;
+                if (first == null || day.compareTo(first) < 0) first = day;
+                if (last == null || day.compareTo(last) > 0) last = day;
+            }
+        }
+        dto.setFirstEntryDate(first);
+        dto.setLastEntryDate(last);
+    }
+
+    /**
+     * 엔트리 기준일을 {@code YYYY-MM-DD} 로 정규화한다.
+     *
+     * @param stdrdDt 원본 기준일
+     * @return 정규화된 일자. 비어 있으면 {@code null}
+     */
+    static String normalizeEntryDate(final String stdrdDt) {
+        if (StringUtils.isBlank(stdrdDt)) return null;
+        final String trimmed = stdrdDt.trim();
+        return trimmed.length() >= 10 ? trimmed.substring(0, 10) : trimmed;
     }
 
     /**

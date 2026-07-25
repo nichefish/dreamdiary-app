@@ -487,7 +487,7 @@
 - 히든 폼: `#procForm` (GET, `id` hidden)
 - 마운트 루트: `<div id="journal_thread_list_app" class="d-none">`
 
-**현재 Vue SPA 구조**: `JournalThreadLayout`이 목록 route에서 `JournalThreadViewToolbar`(등록, `pe-5 mt-3 mb-1`)를 목록 위에 두고, 그 아래 컴팩트한 검색 카드를 표시한다. ASIDE는 없다. 검색 카드는 분류·제목 검색과 검색·초기화 액션만 두며 `margin-top: 0`으로 툴바에 붙인다. **태그 클라우드 행은 2c-A 에서 제거됐다**(스레드 자체 태그 미소유, 2b). 목록 테이블 행에는 소속 엔트리 태그 집계(`tag.list`)와 활성 소속 수(`membershipCount`, 제목 옆 `{n}건`, 0이면 숨김)를 표시한다. 검색 카드에서 멀티 태그 필터(AND, `tagIds`)를 제공한다. 별도 카드 제목 행은 두지 않으며 기존 목록 카드의 테이블 DOM·클래스와 페이지네이션 구조는 유지한다. `/thread/:id`는 목록을 배경으로 모달을 띄우지 않고 `JournalThreadDetailPage`를 렌더하며, 목록 이동·수정 버튼과 공용 `JournalThreadDetailContent`를 가진 독립 상세 카드가 스레드 자체를 주 문맥으로 표시한다. `/thread/:id/edit`는 같은 탭의 `JournalThreadEditPage`를 렌더하고 공용 `JournalThreadEditorForm`으로 카테고리·제목·본문을 수정한 뒤 해당 독립 상세에 복귀한다.
+**현재 Vue SPA 구조**: `JournalThreadLayout`이 목록 route에서 `JournalThreadViewToolbar`(등록, `pe-5 mt-3 mb-1`)를 목록 위에 두고, 그 아래 컴팩트한 검색 카드를 표시한다. ASIDE는 없다. 검색 카드는 분류·제목 검색과 검색·초기화 액션만 두며 `margin-top: 0`으로 툴바에 붙인다. **태그 클라우드 행은 2c-A 에서 제거됐다**(스레드 자체 태그 미소유, 2b). 목록 테이블 행에는 소속 엔트리 태그 집계(`tag.list`), 활성 소속 수(`membershipCount`, 제목 옆 `{n}건`, 0이면 숨김), 소속 기간(`firstEntryDate`/`lastEntryDate`, 같은 날이면 단일 일자·범위면 `{0} ~ {1}`, 유효 일자 없으면 숨김)을 표시한다. 검색 카드에서 멀티 태그 필터(AND, `tagIds`)를 제공한다. 별도 카드 제목 행은 두지 않으며 기존 목록 카드의 테이블 DOM·클래스와 페이지네이션 구조는 유지한다. `/thread/:id`는 목록을 배경으로 모달을 띄우지 않고 `JournalThreadDetailPage`를 렌더하며, 목록 이동·수정 버튼과 공용 `JournalThreadDetailContent`를 가진 독립 상세 카드가 스레드 자체를 주 문맥으로 표시한다. `/thread/:id/edit`는 같은 탭의 `JournalThreadEditPage`를 렌더하고 공용 `JournalThreadEditorForm`으로 카테고리·제목·본문을 수정한 뒤 해당 독립 상세에 복귀한다.
 
 ### Key UI Elements
 

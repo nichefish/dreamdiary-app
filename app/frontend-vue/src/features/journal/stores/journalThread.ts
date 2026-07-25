@@ -38,6 +38,10 @@ export interface JournalThreadDto {
   categoryName?: string;
   /** 활성 소속 엔트리 수 (목록 enrich). 없으면 0으로 취급해 숨긴다. */
   membershipCount?: number;
+  /** 활성 소속 엔트리 기준일 min (YYYY-MM-DD). 목록 enrich. */
+  firstEntryDate?: string;
+  /** 활성 소속 엔트리 기준일 max (YYYY-MM-DD). 목록 enrich. */
+  lastEntryDate?: string;
   title?: string;
   content?: string;
   markdownContent?: string;

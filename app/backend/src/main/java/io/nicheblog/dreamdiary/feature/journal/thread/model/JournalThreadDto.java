@@ -56,6 +56,23 @@ public class JournalThreadDto
      */
     private Long membershipCount;
 
+    /**
+     * 활성 소속 엔트리 기준일({@code stdrdDt})의 최소값 ({@code YYYY-MM-DD}).
+     * <p>
+     * 목록 enrich 가 채운다. 소속이 없거나 유효 일자가 없으면 {@code null}.
+     * </p>
+     */
+    private String firstEntryDate;
+
+    /**
+     * 활성 소속 엔트리 기준일({@code stdrdDt})의 최대값 ({@code YYYY-MM-DD}).
+     * <p>
+     * 목록 enrich 가 채운다. 소속이 없거나 유효 일자가 없으면 {@code null}.
+     * 하루짜리면 {@link #firstEntryDate} 와 같다.
+     * </p>
+     */
+    private String lastEntryDate;
+
     @Getter
     @Setter
     @SuperBuilder(toBuilder = true)
