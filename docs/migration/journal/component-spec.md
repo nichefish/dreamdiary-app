@@ -741,15 +741,15 @@ interface TodoRow {
 - 독립 상세 페이지: `app/frontend-vue/src/features/journal/thread/JournalThreadDetailPage.vue`
 - 공용 상세 콘텐츠: `app/frontend-vue/src/features/journal/thread/components/JournalThreadDetailContent.vue`
 
-**컴포넌트 책임**: `JournalThreadDetailModal`은 Bootstrap 표시·명시적 닫기·수정 팝업 완료 메시지처럼 모달 표면에만 속한 계약을 담당한다. `JournalThreadDetailPage`는 독립 route의 카드 셸·목록 복귀를 담당한다. `JournalThreadDetailContent`는 제목·작성 정보·본문·소속 엔트리 집계 태그·일자 그룹 엔트리·댓글 렌더링과 해당 댓글 액션을 담당한다. 상세 콘텐츠의 DOM 클래스·표시 순서·스토어 SSOT는 두 표면에서 동일하다.
+**컴포넌트 책임**: `JournalThreadDetailModal`은 Bootstrap 표시·명시적 닫기·같은 앱의 문맥형 수정 전환처럼 모달 표면에만 속한 계약을 담당한다. `JournalThreadDetailPage`는 독립 route의 카드 셸·수정·목록 복귀를 담당한다. `JournalThreadDetailContent`는 제목·작성 정보·본문·소속 엔트리 집계 태그·일자 그룹 엔트리·댓글 렌더링과 해당 댓글 액션을 담당한다. 상세 콘텐츠의 DOM 클래스·표시 순서·스토어 SSOT는 두 표면에서 동일하다.
 
-**마운트·진입 계약**: 인증된 SPA의 `App.vue`가 문맥형 상세 모달을 전역 단일 인스턴스로 마운트한다. 저널 엔트리 스레드 칩·접힌 챕터 스레드 요약·기간별 스레드 요약은 `JournalThreadStore.openDetail(threadId)`를 직접 호출해 현재 주간·월간·일간·검색 화면과 스크롤 문맥을 보존한다. 스레드 목록 행과 외부 딥링크는 `thread-detail` route의 `JournalThreadDetailPage`를 렌더한다. 스토어는 두 표면에 같은 `detailModel`·`detailEntries`를 제공하고 `detailSurface=modal|page`로 전역 모달 표시 여부만 구분한다.
+**마운트·진입 계약**: 인증된 SPA의 `App.vue`가 문맥형 상세 모달과 등록/수정 모달을 각각 전역 단일 인스턴스로 마운트한다. 저널 엔트리 스레드 칩·접힌 챕터 스레드 요약·기간별 스레드 요약은 `JournalThreadStore.openDetail(threadId)`를 직접 호출해 현재 주간·월간·일간·검색 화면과 스크롤 문맥을 보존한다. 스레드 목록 행과 외부 딥링크는 `thread-detail` route의 `JournalThreadDetailPage`를 렌더한다. 스토어는 두 표면에 같은 `detailModel`·`detailEntries`를 제공하고 `detailSurface=modal|page`로 전역 모달 표시 여부만 구분한다.
 
 **데이터**: `useJournalThreadStore.detailModel`의 카테고리·제목·작성자·작성일·본문·태그·`comment.list`를 읽기 전용으로 표시한다. **태그는 스레드 자체 태그가 아니라 소속 엔트리 태그의 집계다** — 스레드는 자체 태그를 소유하지 않는다(엔티티 `TagEmbed` 제거, 챕터와 동형). 백엔드 `JournalThreadService.viewDetailPage` 의 `applyEntryTagSummary` 가 소속 엔트리 태그를 tagId 로 중복 제거해 `thread.tag.list` 에 채우고(챕터 `applyChapterTagSummary` 와 동형), 상세는 그 결과를 표시한다. 소속 엔트리 목록은 `store.detailEntries`(일자별 그룹 카드, 그룹마다 일자 헤더)로 함께 표시한다. 등록/수정 모달에는 태그 입력이 없다(자체 태그 미소유).
 
-**동작**: 댓글 등록 버튼은 `useAttachableModalStore.openCommentRegist(id, contentType)`를 호출한다. 댓글 수 버튼(목록에 댓글이 있을 때)은 `openCommentList`를 호출한다. 댓글 등록 성공 시 `CommentRegistModal`이 열린 상세가 `JOURNAL_THREAD`이면 상세를 재조회하고 목록의 댓글 수를 갱신한다. 헤더 「수정」은 원래 저널 화면·스크롤·상세 모달을 유지한 채 이름 있는 새 창으로 `/thread/{id}/edit?popup=Y`를 연다. 팝업 차단은 경고 로그와 `common.error.popup` 안내로 드러낸다.
+**동작**: 댓글 등록 버튼은 `useAttachableModalStore.openCommentRegist(id, contentType)`를 호출한다. 댓글 수 버튼(목록에 댓글이 있을 때)은 `openCommentList`를 호출한다. 댓글 등록 성공 시 `CommentRegistModal`이 열린 상세가 `JOURNAL_THREAD`이면 상세를 재조회하고 목록의 댓글 수를 갱신한다. 문맥형 모달 헤더 「수정」은 원래 저널 화면·스크롤·상세 데이터를 유지한 채 `store.openModifyFromDetail(id)`로 같은 앱의 수정 모달로 전환한다. 독립 상세 헤더 「수정」은 같은 탭의 `thread-edit` route로 이동한다.
 
-**스레드 자체 수정 창 계약**: 수정 창의 `JournalThreadRegistModal`은 저장 성공 시 수정된 양의 정수 스레드 ID를 `journal-thread-updated` 동일 출처 메시지로 `window.opener`에 보낸 뒤 창을 닫는다. 수정하지 않고 안전 닫기 확인을 완료한 경우에도 목록 화면을 남기지 않고 수정 창 자체를 닫는다. 원래 상세 모달은 메시지 유형·origin·현재 열린 상세 ID를 모두 검증하고 일치할 때만 `refreshJournalEntryHostForRoute`를 호출한다. 따라서 상세 본문·제목을 다시 조회하고, 배경이 주간·월간·일간이면 스레드 제목이 실린 배경 목록도 스크롤 없이 함께 갱신한다. 다른 origin·다른 ID·이미 닫힌 상세의 메시지는 로그를 남기고 무시한다.
+**스레드 자체 수정 표면 계약**: 문맥형 상세에서 수정에 진입하면 스토어는 `detailOpen`·상세 데이터를 유지하고 `detailSurface`만 보류한 뒤 `registSurface=modal`을 연다. 수정 취소·저장 종료 시 보류한 상세 ID와 현재 ID가 같을 때만 원래 모달 표면을 복원한다. 저장 성공 시 `refreshJournalEntryHostForRoute`가 상세 본문·제목을 다시 조회하고, 배경이 주간·월간·일간이면 스레드 제목이 실린 배경 목록도 스크롤 없이 함께 갱신한다. 독립 상세는 같은 탭의 `JournalThreadEditPage`로 전환하며 저장·취소 뒤 해당 독립 상세로 복귀한다. 이름 있는 브라우저 팝업과 창 간 메시지 계약은 사용하지 않는다.
 
 **닫기 정책**: 읽는 중인 상세가 backdrop 클릭이나 Escape 입력으로 의도치 않게 닫히지 않도록 루트 DOM에 `data-bs-backdrop="static"`, `data-bs-keyboard="false"`를 선언하고 `Bootstrap Modal`도 `{ backdrop: "static", keyboard: false }`로 생성한다. 헤더 ×와 푸터 「닫기」는 `store.closeDetail()`을 호출하는 명시적 종료 경로로 유지한다. URL 이동·상세 조회 실패에 따른 프로그램상 종료도 유지한다.
 
@@ -767,7 +767,7 @@ interface TodoRow {
 - **엔트리 응답에 소속이 실린다**: `JournalEntryDto.threadList` (소속 없으면 빈 목록). 엔트리마다 단건 조회하면 목록 화면에서 N+1 이 나므로 `JournalEntryRelatedEnricher`·`JournalDayQueryService.mergeRelatedContents` 가 엔트리 목록 단위로 **일괄 주입**한다. 조회 대상 사용자는 `username` 파라미터로 받는다 (`getRelatedContentMapByRefs` 와 동일한 계약).
 - **변경 전**: 이 계약은 RELATED/FLOW 그래프와 «별도» 축으로 유지할 계획이었다. **변경 후**: FLOW 를 이 소속 구조로 **수렴 완료**했다 (근거·단계는 `docs/spec/DESIGN_NOTES.md` 참조). FLOW 간선은 스레드 소속으로 이관되고 FLOW 경로는 제거됐다(다-2) — 공존 구간은 종료됐다.
 
-**i18n**: 모달 제목·수정 버튼·새 창 툴팁·팝업 차단 안내·댓글 섹션 제목·빈 상태·등록 툴팁·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
+**i18n**: 모달·독립 페이지 제목, 수정·목록·댓글 섹션·빈 상태·등록·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -777,7 +777,7 @@ interface TodoRow {
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/thread/JournalThreadList.vue`, `JournalThreadLayout.vue`, `components/JournalThreadViewToolbar.vue`
 
-**데이터·동작**: 등록은 `JournalThreadViewToolbar`(결산·일자 액션 행과 동형, `mt-3 mb-1`; ASIDE 없음; 탭용 `mt-5` 빈 여백 없음)에 두고 `thread-create`로 라우팅한다. 목록 카드 위 컴팩트한 검색 카드에서 분류·제목 검색, 전체 초기화를 제공하고 모든 조건 실행은 첫 페이지부터 조회한다. **태그 클라우드는 제거됐다**(2c-A, 스레드 자체 태그 미소유). **목록 행의 소속 엔트리 태그 집계 표시는 ✓** — `applyEntryTagSummaries` 가 `thread.tag.list` 를 채우고 행에 `#태그명` 으로 렌더한다. **멀티 태그 필터(AND)는 ✓** — 검색 카드에서 엔트리 검색 팝업과 동형으로 태그를 추가·제거하며, `tagIds` 를 목록 API에 보낸다. 의미는 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 남기는 것이다(카탈로그는 diary+dream 합집합). 검색 카드는 `margin-top: 0`으로 툴바에 붙인다. 검색 컨트롤은 분류·제목·태그·초기화다. `useJournalThreadStore.threadList`를 기존 테이블 DOM·클래스로 표시하고, 행 클릭은 Vue Router를 호출한다. 관리 열의 ⋯ 컨텍스트 메뉴는 수정 route 이동과 삭제 store 액션을 제공하고, 메뉴 클릭은 행 상세 이동으로 전파하지 않는다(`td` `@click.stop`). **변경 후**: Metronic `data-kt-menu` 대신 Bootstrap dropdown + `strategy:fixed` 를 쓴다(테이블·카드 overflow 클리핑 회피). 등록·수정·삭제 성공 후 목록과 태그 클라우드를 함께 갱신한다. 댓글 수 버튼은 `useAttachableModalStore.openCommentList`를 호출한다. 분류 선택지는 사용자 권한 전용 `GET /api/journal/threads/categories`를 사용한다. (태그 클라우드 제거)
+**데이터·동작**: 등록은 `JournalThreadViewToolbar`(결산·일자 액션 행과 동형, `mt-3 mb-1`; ASIDE 없음; 탭용 `mt-5` 빈 여백 없음)에 두고 `thread-create`로 라우팅한다. 목록 카드 위 컴팩트한 검색 카드에서 분류·제목 검색, 전체 초기화를 제공하고 모든 조건 실행은 첫 페이지부터 조회한다. **태그 클라우드는 제거됐다**(2c-A, 스레드 자체 태그 미소유). **목록 행의 소속 엔트리 태그 집계 표시는 ✓** — `applyEntryTagSummaries` 가 `thread.tag.list` 를 채우고 행에 `#태그명` 으로 렌더한다. **소속 엔트리 수 표시는 ✓** — 같은 enrich 가 `membershipCount`(활성 소속 수)를 채우고, 제목 옆에 기간 요약과 동일 포맷(`{n}건`)으로 표시한다(0건은 숨김). **멀티 태그 필터(AND)는 ✓** — 검색 카드에서 엔트리 검색 팝업과 동형으로 태그를 추가·제거하며, `tagIds` 를 목록 API에 보낸다. 의미는 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 남기는 것이다(카탈로그는 diary+dream 합집합). 검색 카드는 `margin-top: 0`으로 툴바에 붙인다. 검색 컨트롤은 분류·제목·태그·초기화다. `useJournalThreadStore.threadList`를 기존 테이블 DOM·클래스로 표시하고, 행 클릭은 Vue Router를 호출한다. 관리 열의 ⋯ 컨텍스트 메뉴는 수정 route 이동과 삭제 store 액션을 제공하고, 행 상세 이동은 `isMetronicMenuEventTarget` 가드로 막는다(트리거 `@click.stop` 금지 — KTMenu body 위임). **변경 후**: 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu`를 쓰고, 비동기 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다(Bootstrap `strategy:fixed` 제거). 등록·수정·삭제 성공 후 목록과 태그 클라우드를 함께 갱신한다. 댓글 수 버튼은 `useAttachableModalStore.openCommentList`를 호출한다. 분류 선택지는 사용자 권한 전용 `GET /api/journal/threads/categories`를 사용한다. (태그 클라우드 제거)
 
 **i18n**: 분류·제목 placeholder·태그 빈 상태와 조회 실패, 툴바 등록 버튼·테이블 헤더·빈 상태·댓글 목록·컨텍스트 메뉴·수정·삭제 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 분류 API도 현재 요청 locale의 코드명을 반환한다.
 
@@ -787,13 +787,16 @@ interface TodoRow {
 
 ---
 
-### 23-7. `JournalThreadRegistModal` (저널 스레드 등록/수정 모달)
+### 23-7. `JournalThreadRegistModal` / `JournalThreadEditPage` / `JournalThreadEditorForm` (저널 스레드 등록/수정)
 
-**Vue 구현**: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadRegistModal.vue`
+**Vue 구현**:
+- 문맥형 등록/수정 모달: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadRegistModal.vue`
+- 독립 수정 페이지: `app/frontend-vue/src/features/journal/thread/JournalThreadEditPage.vue`
+- 공용 편집 폼: `app/frontend-vue/src/features/journal/thread/components/JournalThreadEditorForm.vue`
 
-**데이터·동작**: `useJournalThreadStore.registModel`의 제목·본문·태그를 편집하고, 등록/수정 확인 후 `submitRegist()`를 호출한다. 안전 닫기는 1회 클릭 시 확인 상태로 전환하고 2초 안에 다시 클릭하면 닫는다.
+**데이터·동작**: 두 표면은 `JournalThreadEditorForm`과 `useJournalThreadStore.registModel`을 공유해 제목·본문을 편집하고, 등록/수정 확인 후 `submitRegist()`를 호출한다. 신규 등록은 목록 툴바에서 모달로 열고, 문맥형 상세의 수정도 상세를 보류한 채 같은 모달을 사용한다. 목록·독립 상세의 수정 route는 `JournalThreadEditPage`를 사용한다. 안전 닫기·취소는 1회 클릭 시 확인 상태로 전환하고 2초 안에 다시 클릭하면 실행한다. 독립 페이지 저장·취소는 같은 스레드 상세로 복귀한다. 스토어의 `registDirty`는 편집 시작 snapshot과 현재 제목·본문·분류를 비교하며, 독립 페이지의 브라우저·메뉴 route 이탈만 미저장 변경 폐기 확인으로 보호한다. 수정 조회 응답이 비었거나 요청 ID와 다르면 편집 표면을 닫고 조회 실패를 표시한다.
 
-**i18n**: 모달 제목·필드 레이블·제목 placeholder·저장·닫기·확인 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 결과는 서버 `message`를 우선 표시하고, 서버 메시지가 없을 때 현재 locale의 등록·수정·실패 fallback을 사용한다. 수정·상세 조회 실패 안내도 현재 locale을 사용한다.
+**i18n**: 모달·페이지 제목, 필드 레이블·제목 placeholder·저장·닫기/취소·확인 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 결과는 서버 `message`를 우선 표시하고, 서버 메시지가 없을 때 현재 locale의 등록·수정·실패 fallback을 사용한다. 수정·상세 조회 실패 안내도 현재 locale을 사용한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 

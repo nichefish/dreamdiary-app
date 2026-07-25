@@ -2,11 +2,10 @@
   <!--begin::스레드 레이아웃 (모달 컨테이너 포함)-->
   <div class="journal-thread-layout-vue">
     <!--begin::뷰 툴바 — 등록은 결산·일자와 동일하게 툴바 우측. ASIDE 없음.-->
-    <JournalThreadViewToolbar v-if="route.name !== 'thread-detail'" />
+    <JournalThreadViewToolbar v-if="!['thread-detail', 'thread-edit'].includes(String(route.name))" />
     <!--end::뷰 툴바-->
     <router-view />
     <!--begin::스레드 모달 컨테이너-->
-    <JournalThreadRegistModal />
     <CommentListModal />
     <CommentRegistModal />
     <JournalInterpretationRegistModal />
@@ -20,10 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
+import { onBeforeUnmount, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import JournalThreadViewToolbar from "./components/JournalThreadViewToolbar.vue";
-import JournalThreadRegistModal from "./modals/JournalThreadRegistModal.vue";
 import CommentListModal from "@/features/attachable/CommentListModal.vue";
 import CommentRegistModal from "@/features/journal/shared/modals/CommentRegistModal.vue";
 import JournalInterpretationRegistModal from "@/features/journal/interpretation/modals/JournalInterpretationRegistModal.vue";
@@ -57,8 +55,14 @@ async function syncThreadRoute(): Promise<void> {
 
   if (routeName === "thread-edit" && Number.isFinite(routeId) && routeId > 0) {
     if (store.detailOpen) store.closeDetail();
-    await store.openModify(routeId);
+    const loaded = await store.openModifyPage(routeId);
     if (token !== syncToken) return;
+    if (!loaded) {
+      console.warn("[journal-thread] edit route returned to list: modify model load failed", {
+        routeId,
+      });
+      await router.replace({ name: "thread-list" });
+    }
     return;
   }
 
@@ -84,8 +88,18 @@ watch(
 watch(
   () => [store.registOpen, store.detailOpen] as const,
   ([registOpen, detailOpen]) => {
-    if ((registOpen || detailOpen) || route.name === "thread-list") return;
+    /*
+     * 독립 편집 페이지는 저장·취소가 목적 route를 직접 결정한다.
+     * submitRegist가 편집 상태를 먼저 닫아도 목록으로 선행 이동하지 않는다.
+     */
+    if ((registOpen || detailOpen) || route.name === "thread-list" || route.name === "thread-edit") return;
     void router.replace({ name: "thread-list" });
   }
 );
+
+/** 스레드 영역 자체를 벗어나면 전역 편집 모달이 다음 route 위에 남지 않도록 정리한다. */
+onBeforeUnmount(() => {
+  if (store.registOpen) store.closeRegist();
+  if (store.detailOpen && store.detailSurface === "page") store.closeDetail();
+});
 </script>

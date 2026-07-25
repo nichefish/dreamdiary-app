@@ -8,10 +8,11 @@
   <JournalEntryRegistModal v-if="authStore.isAuthenticated && !isPopup" />
   <JournalEntryViewModal v-if="authStore.isAuthenticated && !isPopup" />
   <!--
-    스레드 상세는 주간·월간·일간·검색의 현재 화면 문맥을 보존한 채 직접 연다.
-    thread-detail route는 독립 상세 페이지를 사용하고, 이 전역 인스턴스는 문맥형 모달만 담당한다.
+    스레드 상세·편집 모달은 주간·월간·일간·검색의 현재 화면 문맥을 보존한 채 전환한다.
+    thread-detail/thread-edit route는 독립 페이지를 사용하고, 전역 인스턴스는 문맥형 모달만 담당한다.
   -->
   <JournalThreadDetailModal v-if="authStore.isAuthenticated" />
+  <JournalThreadRegistModal v-if="authStore.isAuthenticated" />
   <AppRuntimeStatus />
 </template>
 
@@ -23,6 +24,7 @@ import AppChat from "@/features/chat/AppChat.vue";
 import JournalEntryRegistModal from "@/features/journal/entry/modals/JournalEntryRegistModal.vue";
 import JournalEntryViewModal from "@/features/journal/entry/modals/JournalEntryViewModal.vue";
 import JournalThreadDetailModal from "@/features/journal/thread/modals/JournalThreadDetailModal.vue";
+import JournalThreadRegistModal from "@/features/journal/thread/modals/JournalThreadRegistModal.vue";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";

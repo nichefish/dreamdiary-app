@@ -5,7 +5,17 @@
       <div class="card-title">
         <h3 class="fw-bold text-gray-900">{{ t("journal.thread.detail.modal.title") }}</h3>
       </div>
-      <div class="card-toolbar">
+      <div class="card-toolbar gap-2">
+        <button
+          v-if="store.detailModel?.id"
+          type="button"
+          class="btn btn-sm btn-light-primary"
+          :title="t('common.mdf')"
+          @click="goToEdit"
+        >
+          <i class="bi bi-pencil-square me-1"></i>
+          {{ t("common.mdf") }}
+        </button>
         <button
           type="button"
           class="btn btn-sm btn-light-primary"
@@ -41,5 +51,15 @@ const { t } = useLocaleStore();
 /** 독립 상세를 닫고 스레드 목록의 정식 route로 이동한다. */
 function goToList(): void {
   void router.push({ name: "thread-list" });
+}
+
+/** 독립 상세의 현재 스레드를 같은 탭의 독립 수정 route로 전환한다. */
+function goToEdit(): void {
+  const id = Number(store.detailModel?.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    console.warn("[journal-thread] detail edit skipped: detail id is missing");
+    return;
+  }
+  void router.push({ name: "thread-edit", params: { id } });
 }
 </script>

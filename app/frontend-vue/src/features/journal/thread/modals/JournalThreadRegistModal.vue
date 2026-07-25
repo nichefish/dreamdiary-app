@@ -18,46 +18,7 @@
 
         <!--begin::Modal Body-->
         <div class="modal-body modal-mbl-body my-5">
-          <!--begin::로딩-->
-          <div v-if="store.registLoading" class="d-flex justify-content-center py-10">
-            <span class="spinner-border text-primary" role="status"></span>
-          </div>
-          <!--end::로딩-->
-
-          <form v-else-if="model" id="journalThreadRegistForm" class="form" @submit.prevent>
-            <input type="hidden" name="id" :value="model.id ?? ''" />
-            <input type="hidden" name="contentType" value="JOURNAL_THREAD" />
-
-            <!--begin::제목-->
-            <div class="row d-flex mb-8">
-              <div class="col-12">
-                <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.title') }}</span>
-                </label>
-                <input
-                  name="title"
-                  v-model="model.title"
-                  class="form-control form-control-solid"
-                  :placeholder="t('journal.thread.title.placeholder')"
-                  maxlength="100"
-                  autocomplete="off"
-                />
-              </div>
-            </div>
-            <!--end::제목-->
-
-            <!--begin::본문-->
-            <div class="row d-flex mb-8">
-              <div class="col-12">
-                <label class="d-flex align-items-center mb-2">
-                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.content') }}</span>
-                </label>
-                <RichEditor v-model="model.content" />
-              </div>
-            </div>
-            <!--end::본문-->
-
-          </form>
+          <JournalThreadEditorForm />
         </div>
         <!--end::Modal Body-->
 
@@ -90,17 +51,19 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { swalConfirm } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import RichEditor from "@/shared/ui/editor/RichEditor.vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
-import { createJournalThreadUpdatedMessage } from "@/features/journal/thread/utils/journalThreadPopupMessage";
+import { useJournalStore } from "@/features/journal/stores/journal";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
+import JournalThreadEditorForm from "@/features/journal/thread/components/JournalThreadEditorForm.vue";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalThreadStore();
+const journalStore = useJournalStore();
 const route = useRoute();
 const { t } = useLocaleStore();
 
@@ -108,7 +71,6 @@ const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
   store.closeRegist();
-  if (route.query.popup === "Y" && window.opener) window.close();
 });
 
 const model = computed(() => store.registModel);
@@ -120,13 +82,17 @@ onMounted(() => {
     bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       resetSafeClose();
-      store.closeRegist();
+      /*
+       * 상세 → 수정 전환으로 모달 표면만 숨은 경우에는 수정 모델을 닫지 않는다.
+       * 실제 등록/수정 모달이 숨은 경우에만 편집 상태를 정리하고 보류한 상세를 복원한다.
+       */
+      if (store.registSurface === "modal") store.closeRegist();
     });
   }
 });
 
 watch(
-  () => store.registOpen,
+  () => store.registOpen && store.registSurface === "modal",
   (isOpen) => {
     if (isOpen) {
       resetSafeClose();
@@ -135,29 +101,12 @@ watch(
   }
 );
 
-function close() {
-  resetSafeClose();
-  store.closeRegist();
-}
-
 async function submit() {
   const confirmed = await swalConfirm(isModify.value ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
-  const modifiedThreadId = Number(model.value?.id);
-  const isModifyPopup = isModify.value && route.query.popup === "Y";
+  const shouldRefreshDetailHost = store.hasSuspendedDetailEdit;
   const succeeded = await store.submitRegist();
-  if (!succeeded || !isModifyPopup || !Number.isInteger(modifiedThreadId) || modifiedThreadId <= 0) return;
-
-  if (window.opener && !window.opener.closed) {
-    window.opener.postMessage(
-      createJournalThreadUpdatedMessage(modifiedThreadId),
-      window.location.origin,
-    );
-  } else {
-    console.warn("[journal-thread] modify popup completed without opener", {
-      threadId: modifiedThreadId,
-    });
-  }
-  window.close();
+  if (!succeeded || !shouldRefreshDetailHost) return;
+  await refreshJournalEntryHostForRoute(journalStore, store, route);
 }
 </script>

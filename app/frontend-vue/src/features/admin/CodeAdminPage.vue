@@ -56,7 +56,7 @@
               <tr v-if="!store.rows.length">
                 <td colspan="6" class="text-center text-muted py-8">{{ t('code.group.empty') }}</td>
               </tr>
-              <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" @click="openDetail(row.id)">
+              <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" @click="onGroupRowClick($event, row.id)">
                 <td class="text-center hidden-table text-gray-600">{{ row.rnum }}</td>
                 <td>
                   <div class="code-admin-name">
@@ -79,34 +79,42 @@
                     {{ isUse(row.useYn) ? t('status.use') : t('status.unuse') }}
                   </button>
                 </td>
-                <td class="text-center" @click.stop>
+                <td class="text-center">
                   <!--begin::컨텍스트 메뉴
-                    변경 전: Metronic data-kt-menu 를 썼으나 .table-responsive(overflow) 안에서
-                    드롭다운이 잘려 보이지 않았다. 메뉴 관리(MenuAdminTreeNode)와 동일하게
-                    Bootstrap dropdown + strategy:fixed 로 전환한다.
+                    SSOT: 저널 일자·게시판 목록과 동일 Metronic data-kt-menu.
+                    .table-responsive(overflow) 클리핑은 data-kt-menu-overflow="true"(body portal)로 해결한다.
+                    변경 전(Bootstrap strategy:fixed): 메뉴가 여러 행에서 열린 채 겹쳤다.
+                    트리거 stop 금지(body 위임). 행 클릭은 메뉴 가드. 목록 렌더 후 reinit.
                   -->
-                  <div class="dropdown d-inline-flex justify-content-center">
+                  <div class="d-flex justify-content-center">
                     <button
                       type="button"
                       class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="true"
-                      data-bs-popper-config='{"strategy":"fixed"}'
-                      aria-expanded="false"
+                      data-kt-menu-trigger="click"
+                      data-kt-menu-placement="bottom-end"
+                      data-kt-menu-overflow="true"
                       :title="t('common.menu')"
                     >
                       <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                      <button type="button" class="dropdown-item d-flex flex-stack" @click="openGroupEdit(row.id)">
-                        <span>{{ t('common.edit') }}</span>
-                        <i class="bi bi-pencil-square fs-8"></i>
-                      </button>
-                      <div class="dropdown-divider"></div>
-                      <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="deleteGroup(row)">
-                        <span>{{ t('common.delete') }}</span>
-                        <i class="bi bi-trash text-danger p-0 fs-8"></i>
-                      </button>
+                    <div
+                      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                      data-kt-menu="true"
+                      @click.stop
+                    >
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3" @click="openGroupEdit(row.id)">
+                          {{ t('common.edit') }}
+                          <i class="bi bi-pencil-square fs-8"></i>
+                        </div>
+                      </div>
+                      <div class="separator my-2"></div>
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3 text-danger" @click="deleteGroup(row)">
+                          {{ t('common.delete') }}
+                          <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <!--end::컨텍스트 메뉴-->
@@ -201,7 +209,7 @@
                       <tr v-if="!store.items.length">
                         <td colspan="6" class="text-center text-muted py-8">{{ t('code.group.item.empty') }}</td>
                       </tr>
-                      <tr v-for="(item, index) in store.items" :key="item.id" class="cursor-pointer" @click="openItemEdit(item.id)">
+                      <tr v-for="(item, index) in store.items" :key="item.id" class="cursor-pointer" @click="onItemRowClick($event, item.id)">
                         <td class="text-center" @click.stop>
                           <div class="code-admin-order">
                             <button type="button" class="btn btn-sm btn-icon btn-light" :disabled="index === 0" :title="t('common.move-up')" @click="store.moveItem(index, -1)">
@@ -222,30 +230,37 @@
                             {{ isUse(item.useYn) ? t('status.use') : t('status.unuse') }}
                           </span>
                         </td>
-                        <td class="text-center" @click.stop>
-                          <!--begin::컨텍스트 메뉴 — 분류 목록과 동일(Bootstrap dropdown + strategy:fixed).-->
-                          <div class="dropdown d-inline-flex justify-content-center">
+                        <td class="text-center">
+                          <!--begin::컨텍스트 메뉴 — 분류 목록과 동일(KTMenu + overflow portal).-->
+                          <div class="d-flex justify-content-center">
                             <button
                               type="button"
                               class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                              data-bs-toggle="dropdown"
-                              data-bs-auto-close="true"
-                              data-bs-popper-config='{"strategy":"fixed"}'
-                              aria-expanded="false"
+                              data-kt-menu-trigger="click"
+                              data-kt-menu-placement="bottom-end"
+                              data-kt-menu-overflow="true"
                               :title="t('common.menu')"
                             >
                               <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                              <button type="button" class="dropdown-item d-flex flex-stack" @click="openItemEdit(item.id)">
-                                <span>{{ t('common.edit') }}</span>
-                                <i class="bi bi-pencil-square fs-8"></i>
-                              </button>
-                              <div class="dropdown-divider"></div>
-                              <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="deleteItem(item)">
-                                <span>{{ t('common.delete') }}</span>
-                                <i class="bi bi-trash text-danger p-0 fs-8"></i>
-                              </button>
+                            <div
+                              class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                              data-kt-menu="true"
+                              @click.stop
+                            >
+                              <div class="menu-item px-3 my-1">
+                                <div class="menu-link flex-stack px-3" @click="openItemEdit(item.id)">
+                                  {{ t('common.edit') }}
+                                  <i class="bi bi-pencil-square fs-8"></i>
+                                </div>
+                              </div>
+                              <div class="separator my-2"></div>
+                              <div class="menu-item px-3 my-1">
+                                <div class="menu-link flex-stack px-3 text-danger" @click="deleteItem(item)">
+                                  {{ t('common.delete') }}
+                                  <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <!--end::컨텍스트 메뉴-->
@@ -411,7 +426,8 @@
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
+import { isMetronicMenuEventTarget, reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { I18N_LOCALE_OPTIONS, useCodeAdminStore, type CodeGroupRow, type CodeItemRow } from "@/features/admin/stores/codeAdmin";
 
 const store = useCodeAdminStore();
@@ -555,6 +571,32 @@ async function saveItemSortOrders() {
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : t("board.group.order.failure"));
   }
+}
+
+/**
+ * 분류 목록·상세 아이템 목록 렌더가 끝나면 Metronic 컨텍스트 메뉴를 재바인딩한다.
+ */
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
+watch(
+  () => store.detailLoading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
+
+function onGroupRowClick(event: MouseEvent, id: number): void {
+  if (isMetronicMenuEventTarget(event.target)) return;
+  openDetail(id);
+}
+
+function onItemRowClick(event: MouseEvent, id: number): void {
+  if (isMetronicMenuEventTarget(event.target)) return;
+  openItemEdit(id);
 }
 
 onMounted(async () => {

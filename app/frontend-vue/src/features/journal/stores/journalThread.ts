@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
@@ -36,6 +36,8 @@ export interface JournalThreadDto {
   contentType?: string;
   categoryCode?: string;
   categoryName?: string;
+  /** 활성 소속 엔트리 수 (목록 enrich). 없으면 0으로 취급해 숨긴다. */
+  membershipCount?: number;
   title?: string;
   content?: string;
   markdownContent?: string;
@@ -122,16 +124,33 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   /** 늦게 끝난 이전 기간 응답이 현재 기간을 덮지 못하게 하는 요청 순번 */
   let periodSummaryRequestToken = 0;
 
-  // ---- 등록/수정 모달 ----
+  // ---- 등록/수정 (모달/독립 페이지 공용) ----
 
-  /** 등록/수정 모달 오픈 여부 */
+  /** 등록/수정 표면 활성 여부 */
   const registOpen = ref(false);
-  /** 등록/수정 모달 로딩 여부 */
+  /** 등록/수정 표면 종류. null이면 편집기가 닫힌 상태다. */
+  const registSurface = ref<"modal" | "page" | null>(null);
+  /** 등록/수정 로딩 여부 */
   const registLoading = ref(false);
   /** 등록/수정 폼 모델 */
   const registModel = ref<JournalThreadRegistModel | null>(null);
+  /** 편집 시작 시점의 정규화된 폼 값. 독립 페이지 이탈 시 변경 여부를 판정한다. */
+  const registInitialSnapshot = ref("");
+  /** 편집 시작 뒤 제목·본문·분류 값이 달라졌는지 여부 */
+  const registDirty = computed(() => {
+    if (!registOpen.value || !registModel.value) return false;
+    return snapshotRegistModel(registModel.value) !== registInitialSnapshot.value;
+  });
   /** 등록/수정 처리 중 여부 */
   const submitting = ref(false);
+  /** 수정 전환 중 늦게 도착한 이전 응답을 폐기하기 위한 요청 토큰 */
+  let registRequestToken = 0;
+  /** 문맥형 상세에서 수정에 진입한 동안 보류한 상세 표면 */
+  const suspendedDetailSurface = ref<"modal" | "page" | null>(null);
+  /** 보류한 상세와 수정 대상이 같은지 검증하기 위한 스레드 ID */
+  const suspendedDetailId = ref<number | null>(null);
+  /** 수정 종료 뒤 복원할 문맥형 상세가 있는지 여부 */
+  const hasSuspendedDetailEdit = computed(() => suspendedDetailSurface.value != null);
 
   // ---- 상세 (모달/독립 페이지 공용) ----
 
@@ -276,30 +295,79 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
 
   // ---- 등록/수정 액션 ----
 
+  /** 등록/수정 이탈 판정에 필요한 필드만 같은 순서로 직렬화한다. */
+  function snapshotRegistModel(model: JournalThreadRegistModel): string {
+    return JSON.stringify({
+      id: model.id ?? null,
+      contentType: model.contentType ?? "JOURNAL_THREAD",
+      categoryCode: model.categoryCode ?? "",
+      title: model.title ?? "",
+      content: model.content ?? "",
+    });
+  }
+
   /** 스레드 등록 모달을 연다 (신규). */
   async function openRegist() {
     if (!await assertAuthenticatedBeforeModal()) return;
+    registRequestToken += 1;
+    suspendedDetailSurface.value = null;
+    suspendedDetailId.value = null;
     registModel.value = {
       contentType: "JOURNAL_THREAD",
       categoryCode: "",
       title: "",
       content: "",
     };
+    registInitialSnapshot.value = snapshotRegistModel(registModel.value);
+    registSurface.value = "modal";
     registOpen.value = true;
   }
 
   /**
-   * 스레드 수정 모달을 연다. API 에서 기존 데이터를 조회한다.
+   * 스레드 수정 폼을 지정한 표면으로 열고 API 에서 기존 데이터를 조회한다.
+   * 문맥형 상세에서 진입한 경우 상세 표면만 보류하고 상세 데이터는 유지한다.
+   *
    * @param id - 스레드 ID
+   * @param surface - 수정 렌더 표면
+   * @param returnDetailSurface - 수정 종료 뒤 복원할 상세 표면
+   * @return 현재 요청이 유효한 수정 모델을 적용했으면 true
    */
-  async function openModify(id: number) {
-    if (!await assertAuthenticatedBeforeModal()) return;
+  async function loadModify(
+    id: number,
+    surface: "modal" | "page",
+    returnDetailSurface: "modal" | "page" | null = null,
+  ): Promise<boolean> {
+    if (!await assertAuthenticatedBeforeModal()) return false;
+    const requestToken = ++registRequestToken;
+    suspendedDetailSurface.value = returnDetailSurface;
+    suspendedDetailId.value = returnDetailSurface ? id : null;
+    if (returnDetailSurface) detailSurface.value = null;
     registLoading.value = true;
     registModel.value = null;
     try {
+      registSurface.value = surface;
       registOpen.value = true;
       const res = await axios.get(`/api/journal/threads/${id}`);
-      const dto: JournalThreadDto = res.data?.rsltObj ?? {};
+      if (requestToken !== registRequestToken) {
+        console.info("[journalThread] loadModify discarded stale response", {
+          id,
+          surface,
+          requestToken,
+          currentToken: registRequestToken,
+        });
+        return false;
+      }
+      const dto = res.data?.rsltObj as JournalThreadDto | null | undefined;
+      if (!dto?.id || dto.id !== id) {
+        console.warn("[journalThread] loadModify rejected invalid detail", {
+          requestedId: id,
+          responseId: dto?.id,
+          surface,
+        });
+        closeRegist();
+        void swalAlert(t("journal.thread.modify.load.failure"));
+        return false;
+      }
       registModel.value = {
         id: dto.id,
         contentType: dto.contentType ?? "JOURNAL_THREAD",
@@ -307,20 +375,76 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         title: dto.title ?? "",
         content: dto.content ?? "",
       };
+      registInitialSnapshot.value = snapshotRegistModel(registModel.value);
+      return true;
     } catch (e: unknown) {
-      console.error("[journalThread] openRegist failed", { id }, e);
-      registModel.value = null;
-      registOpen.value = false;
+      if (requestToken !== registRequestToken) {
+        console.info("[journalThread] loadModify discarded stale failure", {
+          id,
+          surface,
+          requestToken,
+          currentToken: registRequestToken,
+        });
+        return false;
+      }
+      console.error("[journalThread] loadModify failed", { id, surface }, e);
+      closeRegist();
       void swalRequestError(e, t("journal.thread.modify.load.failure"));
+      return false;
     } finally {
-      registLoading.value = false;
+      if (requestToken === registRequestToken) registLoading.value = false;
     }
   }
 
-  /** 등록/수정 모달을 닫는다. */
+  /** 스레드 자체가 주 문맥인 독립 수정 페이지를 연다. */
+  async function openModifyPage(id: number): Promise<boolean> {
+    return loadModify(id, "page");
+  }
+
+  /**
+   * 문맥형 상세를 닫지 않고 같은 앱의 수정 모달로 전환한다.
+   * 수정 취소·저장 뒤에는 보류한 상세 표면을 같은 ID에만 복원한다.
+   */
+  async function openModifyFromDetail(id: number): Promise<boolean> {
+    if (!detailOpen.value || detailSurface.value !== "modal" || detailModel.value?.id !== id) {
+      console.warn("[journalThread] openModifyFromDetail skipped: detail context mismatch", {
+        id,
+        detailOpen: detailOpen.value,
+        detailSurface: detailSurface.value,
+        detailId: detailModel.value?.id,
+      });
+      return false;
+    }
+    return loadModify(id, "modal", "modal");
+  }
+
+  /** 등록/수정 표면을 닫고, 같은 문맥에서 보류한 상세가 있으면 복원한다. */
   function closeRegist() {
+    const returnSurface = suspendedDetailSurface.value;
+    const returnDetailId = suspendedDetailId.value;
+    registRequestToken += 1;
     registOpen.value = false;
+    registSurface.value = null;
+    registLoading.value = false;
     registModel.value = null;
+    registInitialSnapshot.value = "";
+    suspendedDetailSurface.value = null;
+    suspendedDetailId.value = null;
+
+    if (!returnSurface) return;
+    if (detailOpen.value && detailModel.value?.id === returnDetailId) {
+      detailSurface.value = returnSurface;
+      console.info("[journalThread] restored suspended detail after edit", {
+        id: returnDetailId,
+        surface: returnSurface,
+      });
+      return;
+    }
+    console.warn("[journalThread] suspended detail restore skipped: detail context changed", {
+      returnDetailId,
+      detailOpen: detailOpen.value,
+      currentDetailId: detailModel.value?.id,
+    });
   }
 
   /**
@@ -574,11 +698,15 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     resetFilters,
     // 등록/수정
     registOpen,
+    registSurface,
     registLoading,
     registModel,
+    registDirty,
     submitting,
+    hasSuspendedDetailEdit,
     openRegist,
-    openModify,
+    openModifyPage,
+    openModifyFromDetail,
     closeRegist,
     submitRegist,
     deleteThread,

@@ -90,7 +90,7 @@
               v-for="post in store.postList"
               :key="post.id"
               class="cursor-pointer"
-              @click="store.openDetail(post.id!)"
+              @click="onPostRowClick($event, post.id!)"
             >
               <td class="text-center text-gray-500 fs-7 hidden-table">{{ post.rnum }}</td>
               <td class="ps-3">
@@ -121,9 +121,9 @@
                 <i v-if="post.hasFiles" class="bi bi-paperclip text-muted"></i>
               </td>
               <td class="text-center">
-                <!--begin::컨텍스트 메뉴 (저널 스레드 목록과 동일 골격)
-                  변경 전: 수정·삭제 아이콘 버튼 2개를 나란히 노출했다.
-                  Metronic 드롭다운은 비동기 목록 렌더 후 재바인딩이 필요하므로
+                <!--begin::컨텍스트 메뉴 (저널 스레드·일자와 동일 KTMenu SSOT)
+                  트리거에 @click.stop 을 두면 body 위임 클릭이 막혀 메뉴가 열리지 않는다.
+                  행 상세 이동은 isMetronicMenuEventTarget 가드로 막는다.
                   store.loading 종료 시 reinitMetronicAfterDom() 을 호출한다. -->
                 <div class="d-flex justify-content-center">
                   <button
@@ -132,7 +132,6 @@
                     data-kt-menu-trigger="click"
                     data-kt-menu-placement="bottom-end"
                     :title="t('common.menu')"
-                    @click.stop
                   >
                     <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                   </button>
@@ -192,7 +191,7 @@ import { useRoute } from "vue-router";
 import { useBoardPostStore } from "@/features/board/stores/boardPost";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import type { BoardPostDto } from "@/features/board/stores/boardPost";
-import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
+import { isMetronicMenuEventTarget, reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 
 const { t } = useLocaleStore();
 const route = useRoute();
@@ -226,6 +225,11 @@ onMounted(async () => {
 
 /** 게시물 태그 보유 여부 */
 /** 검색 실행 — 조건이 바뀌었으므로 항상 첫 페이지부터 조회한다. */
+function onPostRowClick(event: MouseEvent, id: number): void {
+  if (isMetronicMenuEventTarget(event.target)) return;
+  store.openDetail(id);
+}
+
 function search(): void {
   void store.fetchList(0);
 }

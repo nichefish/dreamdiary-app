@@ -120,33 +120,42 @@
                     {{ isUse(row) ? t('status.use') : t('status.unuse') }}
                   </button>
                 </td>
-                <td class="text-center" @click.stop>
+                <td class="text-center">
                   <!--begin::컨텍스트 메뉴
-                    변경 전: Metronic data-kt-menu 를 썼으나 .table-responsive(overflow) 안에서
-                    드롭다운이 잘려 보이지 않았다. 메뉴 관리와 동일하게 Bootstrap dropdown + strategy:fixed.
+                    SSOT: 저널 일자·게시판 목록과 동일 Metronic data-kt-menu.
+                    .table-responsive(overflow) 클리핑은 data-kt-menu-overflow="true"(body portal)로 해결한다.
+                    변경 전(Bootstrap strategy:fixed): 메뉴가 여러 행에서 열린 채 겹쳤다.
+                    트리거 stop 금지(body 위임). 목록 렌더 후 reinit.
                   -->
-                  <div class="dropdown d-inline-flex justify-content-center">
+                  <div class="d-flex justify-content-center">
                     <button
                       type="button"
                       class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="true"
-                      data-bs-popper-config='{"strategy":"fixed"}'
-                      aria-expanded="false"
+                      data-kt-menu-trigger="click"
+                      data-kt-menu-placement="bottom-end"
+                      data-kt-menu-overflow="true"
                       :title="t('common.menu')"
                     >
                       <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                      <button type="button" class="dropdown-item d-flex flex-stack" @click="store.openEdit(row.id)">
-                        <span>{{ t('common.edit') }}</span>
-                        <i class="bi bi-pencil-square fs-8"></i>
-                      </button>
-                      <div class="dropdown-divider"></div>
-                      <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="deleteBoard(row)">
-                        <span>{{ t('common.delete') }}</span>
-                        <i class="bi bi-trash text-danger p-0 fs-8"></i>
-                      </button>
+                    <div
+                      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                      data-kt-menu="true"
+                      @click.stop
+                    >
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3" @click="store.openEdit(row.id)">
+                          {{ t('common.edit') }}
+                          <i class="bi bi-pencil-square fs-8"></i>
+                        </div>
+                      </div>
+                      <div class="separator my-2"></div>
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3 text-danger" @click="deleteBoard(row)">
+                          {{ t('common.delete') }}
+                          <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <!--end::컨텍스트 메뉴-->
@@ -286,7 +295,8 @@
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
+import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useBoardGroupStore, type BoardGroupRow } from "@/features/admin/stores/boardGroup";
 
 const store = useBoardGroupStore();
@@ -370,6 +380,16 @@ async function saveSortOrders() {
     void swalAlert(e instanceof Error ? e.message : t("board.group.order.failure"));
   }
 }
+
+/**
+ * 목록 렌더가 끝나면 Metronic 컨텍스트 메뉴를 재바인딩한다.
+ */
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
 
 onMounted(async () => {
   await store.fetchList(0);

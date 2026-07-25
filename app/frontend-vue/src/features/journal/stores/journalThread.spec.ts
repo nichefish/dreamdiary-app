@@ -59,6 +59,83 @@ describe("journalThread store 열린 상세 갱신", () => {
     expect(store.detailModel?.id).toBe(FIXTURE_THREAD_ID);
   });
 
+  it("문맥형 상세의 수정은 상세 데이터를 보류하고 취소 뒤 같은 모달 표면을 복원한다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet
+      .mockResolvedValueOnce({
+        data: { rsltObj: { id: FIXTURE_THREAD_ID, title: "문맥형 상세 스레드" } },
+      })
+      .mockResolvedValueOnce({ data: { rsltList: [] } })
+      .mockResolvedValueOnce({
+        data: {
+          rsltObj: {
+            id: FIXTURE_THREAD_ID,
+            contentType: "JOURNAL_THREAD",
+            title: "수정 폼 스레드",
+            content: "수정할 본문",
+          },
+        },
+      });
+
+    await store.openDetail(FIXTURE_THREAD_ID);
+    await store.openModifyFromDetail(FIXTURE_THREAD_ID);
+
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBeNull();
+    expect(store.detailModel?.title).toBe("문맥형 상세 스레드");
+    expect(store.registOpen).toBe(true);
+    expect(store.registSurface).toBe("modal");
+    expect(store.hasSuspendedDetailEdit).toBe(true);
+    expect(store.registModel?.title).toBe("수정 폼 스레드");
+
+    store.closeRegist();
+
+    expect(store.registOpen).toBe(false);
+    expect(store.registSurface).toBeNull();
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBe("modal");
+    expect(store.detailModel?.id).toBe(FIXTURE_THREAD_ID);
+  });
+
+  it("독립 수정 route는 상세 복귀 상태 없이 page 편집 표면만 연다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltObj: {
+          id: FIXTURE_THREAD_ID,
+          contentType: "JOURNAL_THREAD",
+          title: "독립 수정 스레드",
+        },
+      },
+    });
+
+    await store.openModifyPage(FIXTURE_THREAD_ID);
+
+    expect(store.registOpen).toBe(true);
+    expect(store.registSurface).toBe("page");
+    expect(store.hasSuspendedDetailEdit).toBe(false);
+    expect(store.detailOpen).toBe(false);
+    expect(store.registDirty).toBe(false);
+
+    store.registModel!.title = "변경된 독립 수정 스레드";
+    expect(store.registDirty).toBe(true);
+  });
+
+  it("수정 상세 응답이 비었거나 다른 ID면 불완전한 편집 표면을 닫는다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: { rsltObj: { id: FIXTURE_SECOND_THREAD_ID, title: "다른 스레드" } },
+    });
+
+    const loaded = await store.openModifyPage(FIXTURE_THREAD_ID);
+
+    expect(loaded).toBe(false);
+    expect(store.registOpen).toBe(false);
+    expect(store.registSurface).toBeNull();
+    expect(store.registModel).toBeNull();
+    expect(store.registDirty).toBe(false);
+  });
+
   it("늦게 끝난 모달 상세 응답이 현재 독립 페이지를 덮어쓰지 못한다", async () => {
     let resolveModalDetail!: (value: {
       data: { rsltObj: { id: number; title: string } };

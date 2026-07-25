@@ -117,12 +117,16 @@
               v-for="thread in store.threadList"
               :key="thread.id"
               class="cursor-pointer"
-              @click="openDetail(thread.id!)"
+              @click="onThreadRowClick($event, thread.id!)"
             >
               <td class="text-center text-gray-500 fs-7 hidden-table">{{ thread.rnum }}</td>
               <td class="ps-3">
                 <span v-if="thread.categoryName" class="badge badge-light-primary me-2 fs-9">{{ thread.categoryName }}</span>
                 <span class="fs-6">{{ thread.title }}</span>
+                <span
+                  v-if="membershipCountOf(thread) > 0"
+                  class="text-muted fs-9 ms-2"
+                >{{ formatMembershipCount(membershipCountOf(thread)) }}</span>
                 <button
                   v-if="thread.comment && thread.comment.cnt"
                   type="button"
@@ -146,34 +150,41 @@
               <td class="text-center hidden-table">
                 <i v-if="thread.hasFiles" class="bi bi-paperclip text-muted"></i>
               </td>
-              <td class="text-center" @click.stop>
+              <td class="text-center">
                 <!--begin::컨텍스트 메뉴
-                  변경 전: Metronic data-kt-menu 를 썼으나 테이블·카드 overflow 안에서
-                  드롭다운이 잘리거나 열리지 않았다. 코드/게시판그룹 관리와 동일하게
-                  Bootstrap dropdown + strategy:fixed 로 전환한다.
+                  SSOT: 저널 일자·게시판 목록과 동일 Metronic data-kt-menu.
+                  트리거에 @click.stop 을 두면 body 위임 클릭이 막혀 메뉴가 열리지 않는다.
+                  행 상세 이동은 isMetronicMenuEventTarget 가드로 막는다.
+                  비동기 목록 렌더 후 reinitMetronicAfterDom() 으로 재바인딩한다.
                 -->
-                <div class="dropdown d-inline-flex justify-content-center">
+                <div class="d-flex justify-content-center">
                   <button
                     type="button"
                     class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                    data-bs-toggle="dropdown"
-                    data-bs-auto-close="true"
-                    data-bs-popper-config='{"strategy":"fixed"}'
-                    aria-expanded="false"
+                    data-kt-menu-trigger="click"
+                    data-kt-menu-placement="bottom-end"
                     :title="t('common.menu')"
                   >
                     <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                   </button>
-                  <div class="dropdown-menu dropdown-menu-end">
-                    <button type="button" class="dropdown-item d-flex flex-stack" @click="openModify(thread.id!)">
-                      <span>{{ t("common.edit") }}</span>
-                      <i class="bi bi-pencil-square fs-8"></i>
-                    </button>
-                    <div class="dropdown-divider"></div>
-                    <button type="button" class="dropdown-item d-flex flex-stack text-danger" @click="store.deleteThread(thread.id!)">
-                      <span>{{ t("common.delete") }}</span>
-                      <i class="bi bi-trash text-danger p-0 fs-8"></i>
-                    </button>
+                  <div
+                    class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                    data-kt-menu="true"
+                    @click.stop
+                  >
+                    <div class="menu-item px-3 my-1">
+                      <div class="menu-link flex-stack px-3" @click="openModify(thread.id!)">
+                        {{ t("common.edit") }}
+                        <i class="bi bi-pencil-square fs-8"></i>
+                      </div>
+                    </div>
+                    <div class="separator my-2"></div>
+                    <div class="menu-item px-3 my-1">
+                      <div class="menu-link flex-stack px-3 text-danger" @click="store.deleteThread(thread.id!)">
+                        {{ t("common.delete") }}
+                        <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <!--end::컨텍스트 메뉴-->
@@ -206,7 +217,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
@@ -214,6 +225,7 @@ import { useAttachableModalStore } from "@/features/attachable/stores/attachable
 import type { JournalThreadDto } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
+import { isMetronicMenuEventTarget, reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 
 /** 태그 후보 API 응답 항목 */
 interface SearchTagDto {
@@ -227,6 +239,18 @@ const store = useJournalThreadStore();
 const attachableStore = useAttachableModalStore();
 const { t } = useLocaleStore();
 const router = useRouter();
+
+/**
+ * 목록 렌더가 끝나면 Metronic 컨텍스트 메뉴를 재바인딩한다.
+ * 행 액션이 `data-kt-menu` 드롭다운이라, 비동기로 교체된 DOM 에는 핸들러가 붙어 있지 않다.
+ */
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
+
 
 const tagInput = ref("");
 const tagCategoryMap = ref<Record<string, string[]>>({});
@@ -261,7 +285,8 @@ function resetFilters(): void {
   void store.resetFilters();
 }
 
-function openDetail(id: number): void {
+function onThreadRowClick(event: MouseEvent, id: number): void {
+  if (isMetronicMenuEventTarget(event.target)) return;
   void router.push({ name: "thread-detail", params: { id } });
 }
 
@@ -272,6 +297,17 @@ function openModify(id: number): void {
 /** 스레드 태그 보유 여부 */
 function hasThreadTags(thread: JournalThreadDto): boolean {
   return Array.isArray(thread.tag?.list) && thread.tag!.list!.length > 0;
+}
+
+/** 활성 소속 엔트리 수. 없거나 비정상이면 0. */
+function membershipCountOf(thread: JournalThreadDto): number {
+  const count = thread.membershipCount;
+  return typeof count === "number" && Number.isFinite(count) && count > 0 ? count : 0;
+}
+
+/** 기간 요약과 동일한 `{n}건` 포맷. */
+function formatMembershipCount(count: number): string {
+  return t("journal.thread.period-summary.entry-count").replace("{0}", String(count));
 }
 
 function openCommentList(thread: JournalThreadDto): void {

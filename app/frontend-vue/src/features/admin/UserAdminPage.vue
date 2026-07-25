@@ -96,7 +96,7 @@
               <tr v-if="!store.rows.length">
                 <td colspan="8" class="text-center text-muted py-8">{{ t('user.admin.list.empty') }}</td>
               </tr>
-              <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" :class="{ 'bg-light': row.isMe }" @click="openDetail(row.id)">
+              <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" :class="{ 'bg-light': row.isMe }" @click="onUserRowClick($event, row.id)">
                 <td class="text-center hidden-table text-gray-600">{{ row.rnum }}</td>
                 <td>
                   <div class="user-admin-account">
@@ -123,39 +123,46 @@
                     {{ isLocked(row) ? t('user.list.locked') : t('status.use') }}
                   </span>
                 </td>
-                <td class="text-center" @click.stop>
+                <td class="text-center">
                   <!--begin::컨텍스트 메뉴
-                    변경 전: 수정·삭제 아이콘 버튼 2개.
-                    .table-responsive 안에서는 Metronic KTMenu 가 잘리므로 메뉴 관리와 동일하게
-                    Bootstrap dropdown + strategy:fixed 를 쓴다. 본인 계정(row.isMe) 삭제는 disabled.
+                    SSOT: 저널 일자·게시판 목록과 동일 Metronic data-kt-menu.
+                    .table-responsive(overflow) 클리핑은 data-kt-menu-overflow="true"(body portal)로 해결한다.
+                    변경 전(Bootstrap strategy:fixed): 메뉴가 여러 행에서 열린 채 겹쳤다.
+                    본인 계정(row.isMe) 삭제는 disabled. 트리거 stop 금지(body 위임). 행 클릭은 메뉴 가드. 목록 렌더 후 reinit.
                   -->
-                  <div class="dropdown d-inline-flex justify-content-center">
+                  <div class="d-flex justify-content-center">
                     <button
                       type="button"
                       class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="true"
-                      data-bs-popper-config='{"strategy":"fixed"}'
-                      aria-expanded="false"
+                      data-kt-menu-trigger="click"
+                      data-kt-menu-placement="bottom-end"
+                      data-kt-menu-overflow="true"
                       :title="t('common.menu')"
                     >
                       <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                      <button type="button" class="dropdown-item d-flex flex-stack" @click="openEdit(row.id)">
-                        <span>{{ t('common.mdf') }}</span>
-                        <i class="bi bi-pencil-square fs-8"></i>
-                      </button>
-                      <div class="dropdown-divider"></div>
-                      <button
-                        type="button"
-                        class="dropdown-item d-flex flex-stack text-danger"
-                        :disabled="row.isMe"
-                        @click="deleteUser(row)"
-                      >
-                        <span>{{ t('common.del') }}</span>
-                        <i class="bi bi-trash text-danger p-0 fs-8"></i>
-                      </button>
+                    <div
+                      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                      data-kt-menu="true"
+                      @click.stop
+                    >
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3" @click="openEdit(row.id)">
+                          {{ t('common.mdf') }}
+                          <i class="bi bi-pencil-square fs-8"></i>
+                        </div>
+                      </div>
+                      <div class="separator my-2"></div>
+                      <div class="menu-item px-3 my-1">
+                        <div
+                          class="menu-link flex-stack px-3"
+                          :class="row.isMe ? 'disabled text-muted' : 'text-danger'"
+                          @click="!row.isMe && deleteUser(row)"
+                        >
+                          {{ t('common.del') }}
+                          <i class="bi bi-trash p-0 fs-8" :class="row.isMe ? 'text-muted' : 'text-danger'"></i>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <!--end::컨텍스트 메뉴-->
@@ -465,6 +472,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useUserAdminStore, type UserRow } from "@/features/admin/stores/userAdmin";
 import { useUserSignupStore } from "@/features/user/stores/userSignup";
 import UserSignupApprovalList from "@/features/user/signup/UserSignupApprovalList.vue";
+import { isMetronicMenuEventTarget, reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 
 const route = useRoute();
 const router = useRouter();
@@ -625,6 +633,11 @@ async function checkEmail() {
   });
 }
 
+function onUserRowClick(event: MouseEvent, id: number): void {
+  if (isMetronicMenuEventTarget(event.target)) return;
+  void openDetail(id);
+}
+
 onMounted(async () => {
   await Promise.all([store.fetchBootstrap(), store.fetchUsers(0)]);
   /*
@@ -642,6 +655,17 @@ onMounted(async () => {
 watch(activeTab, (tab) => {
   if (tab === "accounts") void signupStore.fetchApprovalList();
 });
+
+/**
+ * 목록 렌더가 끝나면 Metronic 컨텍스트 메뉴를 재바인딩한다.
+ * 행 액션이 `data-kt-menu` 드롭다운이라, 비동기로 교체된 DOM 에는 핸들러가 붙어 있지 않다.
+ */
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
 </script>
 
 <style scoped>

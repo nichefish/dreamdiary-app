@@ -106,7 +106,7 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: ":id/edit",
             name: "thread-edit",
-            component: () => import("@/features/journal/thread/JournalThreadList.vue"),
+            component: () => import("@/features/journal/thread/JournalThreadEditPage.vue"),
             meta: { pageTitleKey: "route.title.journal-thread" },
           },
         ],

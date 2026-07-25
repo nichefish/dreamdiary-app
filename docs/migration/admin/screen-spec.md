@@ -82,7 +82,7 @@
 
 **기능**:
 - 등록은 저널 스레드·게시판·코드/계정 관리와 동형인 뷰 툴바(`board-group-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `BOARD_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
-- 목록 관리 열은 메뉴 관리와 동일하게 Bootstrap `⋯` 드롭다운(`data-bs-toggle="dropdown"`, `strategy:fixed`)으로 수정·삭제를 제공한다(변경 전: 아이콘 버튼 → Metronic `data-kt-menu`는 `.table-responsive` overflow에 잘려 미표시). Metronic 재바인딩은 필요 없다.
+- 목록 관리 열의 ⋯ 컨텍스트 메뉴는 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu`를 쓴다. `.table-responsive` overflow 클리핑은 `data-kt-menu-overflow="true"`(body portal)로 해결하며, 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다. 트리거 `@click.stop` 금지(KTMenu body 위임); 행 클릭이 있으면 `isMetronicMenuEventTarget` 가드. **변경 전**: Bootstrap `strategy:fixed` 땜빵으로 메뉴가 여러 행에서 열린 채 겹쳤다. 메뉴 관리 트리(Bootstrap·비테이블)와는 다른 계약이다.
 - 게시판 그룹 목록/등록/수정/삭제
 - 사용/미사용 토글
 - 드래그로 정렬 순서 변경
@@ -97,7 +97,7 @@
 
 **기능**:
 - 분류 코드 등록은 저널 스레드·게시판과 동형인 뷰 툴바(`code-admin-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `CODE_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
-- 분류 목록·상세 아이템 관리 열은 메뉴 관리와 동일하게 Bootstrap `⋯` 드롭다운(`data-bs-toggle="dropdown"`, `strategy:fixed`)으로 수정·삭제를 제공한다(변경 전: 아이콘 버튼 → Metronic `data-kt-menu`는 `.table-responsive` overflow에 잘려 미표시). 메뉴 클릭은 행의 상세/아이템 수정 이동으로 전파하지 않으며 Metronic 재바인딩은 필요 없다.
+- 분류 목록·상세 아이템 관리 열의 ⋯ 컨텍스트 메뉴는 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu` + `data-kt-menu-overflow="true"`를 쓴다. 메뉴 클릭은 행의 상세/아이템 수정 이동으로 전파하지 않으며, 분류·상세 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다. 트리거 `@click.stop` 금지(KTMenu body 위임); 행 클릭이 있으면 `isMetronicMenuEventTarget` 가드. **변경 전**: Bootstrap `strategy:fixed` 땜빵.
 - 분류 코드(code_group) 목록/등록/수정/삭제
 - 분류 코드별 상세 코드(code_item) 목록/등록/삭제
 - 상세 코드 정렬 순서 변경
@@ -158,7 +158,7 @@
 
 **기능**:
 - 계정 등록은 저널 스레드·게시판·코드 관리와 동형인 뷰 툴바(`user-admin-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `USER_ACCOUNT` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
-- 목록 관리 열은 메뉴 관리·코드/게시판 그룹 관리와 동일하게 Bootstrap ⋯ 드롭다운(strategy:fixed)으로 수정·삭제를 제공한다(변경 전: 수정·삭제 아이콘 버튼 2개). 본인 계정(isMe) 삭제는 disabled다.
+- 목록 관리 열의 ⋯ 컨텍스트 메뉴는 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu` + `data-kt-menu-overflow="true"`를 쓴다. 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다. 트리거 `@click.stop` 금지(KTMenu body 위임); 행 클릭이 있으면 `isMetronicMenuEventTarget` 가드. 본인 계정(isMe) 삭제는 disabled다. **변경 전**: Bootstrap `strategy:fixed` 땜빵(메뉴 관리와 동일하다는 주석은 사실이 아니었다).
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
 - 계정 삭제 (본인 계정 삭제 불가)

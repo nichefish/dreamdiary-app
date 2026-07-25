@@ -29,7 +29,7 @@
   - 검색 카드는 `margin-top: 0`으로 툴바에 붙인다.
 - **검색 필터**: `store.filterKeyword`/`filterCategory` 는 이전부터 `fetchList` 가 API(`searchKeyword`/`categoryCode`)로 전송하고 있었으나 입력 UI 가 없어 값을 넣을 수단이 없었다. 검색 실행은 항상 첫 페이지부터 조회하고, 초기화는 두 조건을 비운 뒤 재조회한다.
 - **태그 클라우드**: `GET /api/tags?contentType=<boardKey>` 로 조회한다(스레드와 같은 범용 태그 API). 게시판 태그는 `tag_content.ref_content_type` 에 **boardKey**(예: `TEST`)로 저장되며 `ContentType` enum 의 `BOARD` 가 아니다 — 게시물 목록 API 의 `contentType` 규약과 같다. 태그 버튼 클릭 시 해당 태그로 목록을 거르고, 같은 태그를 다시 누르면 해제한다. 태그 조건은 공통 `BaseAttachableSearchParam.tags`(List&lt;Integer&gt;)로 전달하므로 `BoardPostSearchParam` 에 별도 필드가 필요 없다. 태그 클라우드는 게시판 전환(`setBoard`) 시마다 다시 조회하고, 초기화는 태그 선택도 함께 해제한다.
-- **행 액션**: 목록 행의 수정·삭제는 저널 스레드 목록과 동일하게 `...` 컨텍스트 메뉴(`data-kt-menu`)로 제공한다(변경 전: 수정·삭제 아이콘 버튼 2개 노출). Metronic 드롭다운은 비동기로 교체된 DOM 에 핸들러가 붙지 않으므로, `store.loading` 이 끝나는 시점에 `reinitMetronicAfterDom()` 으로 재바인딩한다.
+- **행 액션**: 목록 행의 수정·삭제는 저널 스레드 목록·저널 일자와 동일하게 `...` 컨텍스트 메뉴(`data-kt-menu`)로 제공한다(테이블 행 액션 SSOT). `.table-responsive`가 없으므로 overflow portal은 쓰지 않는다. 트리거 `@click.stop` 금지(KTMenu body 위임); 행 상세는 `isMetronicMenuEventTarget` 가드. `store.loading` 종료 시 `reinitMetronicAfterDom()` 재바인딩.
 - **분류 선택지**: 분류 코드 그룹은 게시판마다 다르므로(`board.category_group_code`) `GET /api/board/{boardKey}/categories` 로 조회한다(`BoardPostRestController.boardCategoryListAjax`). 관리 화면(코드 관리) API를 우회하지 않는 사용자 화면 전용 읽기 계약이며, 저널 스레드의 `/api/journal/threads/categories` 와 같은 패턴이다. 게시판에 분류 그룹이 지정돼 있지 않으면 서버가 **빈 목록**을 반환하고, 화면은 **분류 select 를 렌더링하지 않는다**. 선택지는 게시판 전환(`setBoard`) 시마다 다시 조회한다.
 - 메인 영역:
   - 태그 필터바: `_tag_list_header.ftlh`

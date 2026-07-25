@@ -132,7 +132,8 @@ public class JournalThreadService
      * <p>
      * 변경 전: 목록 DTO 의 {@code tag} 가 비어 목록 UI 의 태그 영역이 렌더되지 않았다.
      * 상세({@link #viewDetailPage}) 만 {@link #applyEntryTagSummary} 를 호출했기 때문이다.
-     * 변경 후: 목록도 동일 계약(소속 엔트리 태그 합집합, tagId 중복 제거)을 일괄 적용한다.
+     * 변경 후: 목록도 동일 계약(소속 엔트리 태그 합집합, tagId 중복 제거)을 일괄 적용하고,
+     * 활성 소속 수({@code membershipCount})도 함께 채운다.
      * </p>
      *
      * @param searchParamMap 검색 조건
@@ -190,7 +191,7 @@ public class JournalThreadService
     }
 
     /**
-     * 여러 스레드에 소속 엔트리 태그 집계를 일괄 적용한다. (목록 N+1 방지)
+     * 여러 스레드에 소속 엔트리 태그 집계와 활성 소속 수({@code membershipCount})를 일괄 적용한다. (목록 N+1 방지)
      *
      * @param dtoList 대상 스레드 DTO 목록
      */
@@ -222,6 +223,8 @@ public class JournalThreadService
         for (final JournalThreadDto dto : dtoList) {
             if (dto == null || dto.getId() == null) continue;
             final List<Integer> entryIds = entryIdsByThread.getOrDefault(dto.getId(), List.of());
+            // 소속 개수는 이미 일괄 조회한 entryId 목록 크기로 채운다 (추가 쿼리 없음).
+            dto.setMembershipCount((long) entryIds.size());
             final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
             for (final Integer entryId : entryIds) {
                 final JournalEntryDto entry = entryById.get(entryId);
