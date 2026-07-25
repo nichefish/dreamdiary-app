@@ -133,11 +133,13 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   /** 등록/수정 처리 중 여부 */
   const submitting = ref(false);
 
-  // ---- 상세 모달 ----
+  // ---- 상세 (모달/독립 페이지 공용) ----
 
-  /** 상세 모달 오픈 여부 */
+  /** 상세 표면 활성 여부. 모달과 독립 페이지가 같은 상세 SSOT를 공유한다. */
   const detailOpen = ref(false);
-  /** 상세 모달 로딩 여부 */
+  /** 상세 표면 종류. null이면 상세가 닫힌 상태다. */
+  const detailSurface = ref<"modal" | "page" | null>(null);
+  /** 상세 로딩 여부 */
   const detailLoading = ref(false);
   /** 상세 DTO */
   const detailModel = ref<JournalThreadDto | null>(null);
@@ -145,6 +147,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const detailEntries = ref<JournalEntryDto[]>([]);
   /** 소속 엔트리 로딩 여부 */
   const detailEntriesLoading = ref(false);
+  /** 상세 전환 중 늦게 도착한 이전 응답을 폐기하기 위한 요청 토큰 */
+  let detailRequestToken = 0;
 
   // ---- 목록 액션 ----
 
@@ -395,50 +399,103 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   }
 
   /**
-   * 스레드 상세 모달을 연다. API 에서 상세 데이터를 조회한다.
-   * @param id - 스레드 ID
+   * 스레드 상세의 단일 데이터를 지정한 표면으로 조회한다.
+   * 모달과 독립 페이지는 같은 detailModel·detailEntries를 사용하며 렌더 표면만 구분한다.
+   *
+   * @param id 스레드 ID
+   * @param surface 상세 렌더 표면
+   * @return 현재 요청이 유효한 상세를 적용했으면 true
    */
-  async function openDetail(id: number) {
-    if (!await assertAuthenticatedBeforeModal()) return;
+  async function loadDetail(id: number, surface: "modal" | "page"): Promise<boolean> {
+    if (!await assertAuthenticatedBeforeModal()) return false;
+    const requestToken = ++detailRequestToken;
     detailOpen.value = true;
+    detailSurface.value = surface;
     detailLoading.value = true;
     detailModel.value = null;
     try {
       const res = await axios.get(`/api/journal/threads/${id}`);
-      detailModel.value = res.data?.rsltObj ?? null;
-      void fetchDetailEntries(id);
+      if (requestToken !== detailRequestToken) {
+        console.info("[journalThread] loadDetail discarded stale response", {
+          id,
+          surface,
+          requestToken,
+          currentToken: detailRequestToken,
+        });
+        return false;
+      }
+      const loadedDetail = res.data?.rsltObj as JournalThreadDto | null | undefined;
+      if (!loadedDetail) {
+        console.warn("[journalThread] loadDetail rejected empty detail", { id, surface });
+        detailModel.value = null;
+        detailOpen.value = false;
+        detailSurface.value = null;
+        void swalAlert(t("journal.thread.detail.load.failure"));
+        return false;
+      }
+      detailModel.value = loadedDetail;
+      void fetchDetailEntries(id, requestToken);
+      return true;
     } catch (e: unknown) {
-      console.error("[journalThread] openDetail failed", { id }, e);
-      detailModel.value = null;
-      detailOpen.value = false;
+      console.error("[journalThread] loadDetail failed", { id, surface }, e);
+      if (requestToken === detailRequestToken) {
+        detailModel.value = null;
+        detailOpen.value = false;
+        detailSurface.value = null;
+      }
       void swalRequestError(e, t("journal.thread.detail.load.failure"));
+      return false;
     } finally {
-      detailLoading.value = false;
+      if (requestToken === detailRequestToken) detailLoading.value = false;
     }
   }
 
-  /** 상세 모달을 닫는다. */
+  /** 현재 저널 문맥 위에 스레드 상세 모달을 연다. */
+  async function openDetail(id: number): Promise<boolean> {
+    return loadDetail(id, "modal");
+  }
+
+  /** 스레드 자체를 주 문맥으로 삼는 독립 상세 페이지를 연다. */
+  async function openDetailPage(id: number): Promise<boolean> {
+    return loadDetail(id, "page");
+  }
+
+  /** 활성 상세 표면을 닫고 진행 중인 이전 요청을 무효화한다. */
   function closeDetail() {
+    detailRequestToken += 1;
     detailOpen.value = false;
+    detailSurface.value = null;
+    detailLoading.value = false;
     detailModel.value = null;
     detailEntries.value = [];
+    detailEntriesLoading.value = false;
   }
 
   /**
    * 스레드 상세의 소속 엔트리를 조회한다. (GET /api/journal/threads/{id}/entries)
-   * 실패해도 상세 모달 자체는 유지한다 — 엔트리 섹션만 비운다.
+   * 실패해도 상세 표면 자체는 유지한다 — 엔트리 섹션만 비운다.
+   * 상세 전환 뒤 늦게 도착한 이전 응답은 현재 페이지나 모달을 덮지 않도록 폐기한다.
    */
-  async function fetchDetailEntries(id: number) {
+  async function fetchDetailEntries(id: number, requestToken: number) {
     detailEntriesLoading.value = true;
     detailEntries.value = [];
     try {
       const res = await axios.get(`/api/journal/threads/${id}/entries`);
+      if (requestToken !== detailRequestToken || detailModel.value?.id !== id) {
+        console.info("[journalThread] fetchDetailEntries discarded stale response", {
+          id,
+          requestToken,
+          currentToken: detailRequestToken,
+          currentDetailId: detailModel.value?.id,
+        });
+        return;
+      }
       detailEntries.value = (res.data?.rsltList ?? []) as JournalEntryDto[];
     } catch (e: unknown) {
       console.error("[journalThread] fetchDetailEntries failed", { id }, e);
-      detailEntries.value = [];
+      if (requestToken === detailRequestToken) detailEntries.value = [];
     } finally {
-      detailEntriesLoading.value = false;
+      if (requestToken === detailRequestToken) detailEntriesLoading.value = false;
     }
   }
 
@@ -525,13 +582,15 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     closeRegist,
     submitRegist,
     deleteThread,
-    // 상세 모달
+    // 상세 (모달/독립 페이지 공용)
     detailOpen,
+    detailSurface,
     detailEntries,
     detailEntriesLoading,
     detailLoading,
     detailModel,
     openDetail,
+    openDetailPage,
     closeDetail,
     refreshOpenDetail,
   };

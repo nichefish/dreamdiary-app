@@ -734,11 +734,16 @@ interface TodoRow {
 
 ---
 
-### 23-5. `JournalThreadDetailModal` (저널 스레드 상세 모달)
+### 23-5. `JournalThreadDetailModal` / `JournalThreadDetailContent` (저널 스레드 상세)
 
-**Vue 구현**: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadDetailModal.vue`
+**Vue 구현**:
+- 모달 셸: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadDetailModal.vue`
+- 독립 상세 페이지: `app/frontend-vue/src/features/journal/thread/JournalThreadDetailPage.vue`
+- 공용 상세 콘텐츠: `app/frontend-vue/src/features/journal/thread/components/JournalThreadDetailContent.vue`
 
-**마운트·진입 계약**: 인증된 SPA의 `App.vue`가 상세 모달을 전역 단일 인스턴스로 마운트한다. 저널 엔트리 스레드 칩·접힌 챕터 스레드 요약·기간별 스레드 요약은 `JournalThreadStore.openDetail(threadId)`를 직접 호출해 현재 주간·월간·일간·검색 화면과 스크롤 문맥을 보존한다. 스레드 목록 행과 외부 딥링크는 기존 `thread-detail` route를 유지하며 같은 전역 모달을 연다.
+**컴포넌트 책임**: `JournalThreadDetailModal`은 Bootstrap 표시·명시적 닫기·수정 팝업 완료 메시지처럼 모달 표면에만 속한 계약을 담당한다. `JournalThreadDetailPage`는 독립 route의 카드 셸·목록 복귀를 담당한다. `JournalThreadDetailContent`는 제목·작성 정보·본문·소속 엔트리 집계 태그·일자 그룹 엔트리·댓글 렌더링과 해당 댓글 액션을 담당한다. 상세 콘텐츠의 DOM 클래스·표시 순서·스토어 SSOT는 두 표면에서 동일하다.
+
+**마운트·진입 계약**: 인증된 SPA의 `App.vue`가 문맥형 상세 모달을 전역 단일 인스턴스로 마운트한다. 저널 엔트리 스레드 칩·접힌 챕터 스레드 요약·기간별 스레드 요약은 `JournalThreadStore.openDetail(threadId)`를 직접 호출해 현재 주간·월간·일간·검색 화면과 스크롤 문맥을 보존한다. 스레드 목록 행과 외부 딥링크는 `thread-detail` route의 `JournalThreadDetailPage`를 렌더한다. 스토어는 두 표면에 같은 `detailModel`·`detailEntries`를 제공하고 `detailSurface=modal|page`로 전역 모달 표시 여부만 구분한다.
 
 **데이터**: `useJournalThreadStore.detailModel`의 카테고리·제목·작성자·작성일·본문·태그·`comment.list`를 읽기 전용으로 표시한다. **태그는 스레드 자체 태그가 아니라 소속 엔트리 태그의 집계다** — 스레드는 자체 태그를 소유하지 않는다(엔티티 `TagEmbed` 제거, 챕터와 동형). 백엔드 `JournalThreadService.viewDetailPage` 의 `applyEntryTagSummary` 가 소속 엔트리 태그를 tagId 로 중복 제거해 `thread.tag.list` 에 채우고(챕터 `applyChapterTagSummary` 와 동형), 상세는 그 결과를 표시한다. 소속 엔트리 목록은 `store.detailEntries`(일자별 그룹 카드, 그룹마다 일자 헤더)로 함께 표시한다. 등록/수정 모달에는 태그 입력이 없다(자체 태그 미소유).
 

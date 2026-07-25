@@ -38,6 +38,59 @@ describe("journalThread store 열린 상세 갱신", () => {
     vi.clearAllMocks();
   });
 
+  it("문맥형 모달과 독립 페이지가 같은 상세 SSOT에서 표면만 구분한다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltObj: { id: FIXTURE_THREAD_ID, title: "공용 상세 스레드" },
+        rsltList: [],
+      },
+    });
+
+    await store.openDetail(FIXTURE_THREAD_ID);
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBe("modal");
+    expect(store.detailModel?.id).toBe(FIXTURE_THREAD_ID);
+
+    store.closeDetail();
+    await store.openDetailPage(FIXTURE_THREAD_ID);
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBe("page");
+    expect(store.detailModel?.id).toBe(FIXTURE_THREAD_ID);
+  });
+
+  it("늦게 끝난 모달 상세 응답이 현재 독립 페이지를 덮어쓰지 못한다", async () => {
+    let resolveModalDetail!: (value: {
+      data: { rsltObj: { id: number; title: string } };
+    }) => void;
+    const modalDetailRequest = new Promise<{
+      data: { rsltObj: { id: number; title: string } };
+    }>((resolve) => {
+      resolveModalDetail = resolve;
+    });
+    mockedGet
+      .mockReturnValueOnce(modalDetailRequest)
+      .mockResolvedValueOnce({
+        data: { rsltObj: { id: FIXTURE_SECOND_THREAD_ID, title: "현재 페이지 스레드" } },
+      })
+      .mockResolvedValueOnce({ data: { rsltList: [] } });
+    const store = useJournalThreadStore();
+
+    const modalLoad = store.openDetail(FIXTURE_THREAD_ID);
+    await vi.waitFor(() => {
+      expect(mockedGet).toHaveBeenCalledTimes(1);
+    });
+    await store.openDetailPage(FIXTURE_SECOND_THREAD_ID);
+    resolveModalDetail({
+      data: { rsltObj: { id: FIXTURE_THREAD_ID, title: "이전 모달 스레드" } },
+    });
+    await modalLoad;
+
+    expect(store.detailSurface).toBe("page");
+    expect(store.detailModel?.id).toBe(FIXTURE_SECOND_THREAD_ID);
+    expect(store.detailModel?.title).toBe("현재 페이지 스레드");
+  });
+
   it("본문·집계 태그와 소속 엔트리를 같은 갱신에서 교체한다", async () => {
     const store = useJournalThreadStore();
     store.detailOpen = true;

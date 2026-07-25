@@ -2,7 +2,7 @@
   <!--begin::스레드 레이아웃 (모달 컨테이너 포함)-->
   <div class="journal-thread-layout-vue">
     <!--begin::뷰 툴바 — 등록은 결산·일자와 동일하게 툴바 우측. ASIDE 없음.-->
-    <JournalThreadViewToolbar />
+    <JournalThreadViewToolbar v-if="route.name !== 'thread-detail'" />
     <!--end::뷰 툴바-->
     <router-view />
     <!--begin::스레드 모달 컨테이너-->
@@ -64,7 +64,7 @@ async function syncThreadRoute(): Promise<void> {
 
   if (routeName === "thread-detail" && Number.isFinite(routeId) && routeId > 0) {
     if (store.registOpen) store.closeRegist();
-    await store.openDetail(routeId);
+    await store.openDetailPage(routeId);
     if (token !== syncToken) return;
     return;
   }

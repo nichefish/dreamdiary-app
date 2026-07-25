@@ -36,7 +36,7 @@
 | 연간 결산 상세 | `/journal/annual/detail?...` | `/annual/:yy` | `JournalAnnualDetail.vue` | ✓ |
 | 스레드 목록 | `/journal/thread/list` | `/thread` | `JournalThreadList.vue` | ✓ |
 | 스레드 등록 | `/app/journal/thread/regist-form.do` | `/thread/new` | `JournalThreadList.vue` | ✓ |
-| 스레드 상세 | `/app/journal/thread/detail.do?id={id}` | `/thread/:id` | `JournalThreadList.vue` | ✓ |
+| 스레드 상세 | `/app/journal/thread/detail.do?id={id}` | `/thread/:id` | `JournalThreadDetailPage.vue` | ✓ |
 | 스레드 수정 | `/app/journal/thread/modify-form.do?id={id}` | `/thread/:id/edit` | `JournalThreadList.vue` | ✓ |
 | 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
 | 일정 | `/app/schedule/calendar.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
@@ -514,9 +514,10 @@
 
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
-| 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 상세 모달 오픈 + URL `/thread/:id` 동기화 |
-| 상세 모달 닫기 | 헤더 × 또는 푸터 「닫기」 클릭 | `store.closeDetail()` | 명시적 조작으로만 닫힘. backdrop 클릭과 Escape는 무시하며 URL 이동·조회 실패에 따른 프로그램상 종료는 유지 |
-| 상세 소속 엔트리 정렬 | 상세 모달 오픈·갱신 | `GET /api/journal/threads/{id}/entries` | 일자 → 원본 엔트리 `sortOrder` → ID 오름차순. 소속 `sort_order`는 미사용 |
+| 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 독립 상세 페이지 `/thread/:id`로 이동 |
+| 독립 상세에서 목록 복귀 | 상세 카드 우측 목록 버튼 | `router.push({ name: "thread-list" })` | `/thread` 목록으로 이동하고 상세 SSOT 정리 |
+| 문맥형 상세 모달 닫기 | 헤더 × 또는 푸터 「닫기」 클릭 | `store.closeDetail()` | 저널 화면 위 모달에서만 사용. 명시적 조작으로만 닫히며 backdrop 클릭과 Escape는 무시 |
+| 상세 소속 엔트리 정렬 | 독립 상세 페이지 또는 문맥형 모달 조회·갱신 | `GET /api/journal/threads/{id}/entries` | 일자 → 원본 엔트리 `sortOrder` → ID 오름차순. 소속 `sort_order`는 미사용 |
 | 상세에서 스레드 수정 | 상세 헤더 「수정」 클릭 | 새 창 `/thread/:id/edit?popup=Y` | 원래 저널 화면·스크롤·상세 모달을 유지하고 수정 창을 연다. 저장 성공 시 동일 출처 메시지로 원래 상세와 주간·월간·일간 배경을 갱신한 뒤 수정 창을 닫는다 |
 | 등록 모달 열기 | 뷰 툴바(`JournalThreadViewToolbar`) 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
 | 태그 필터 | 검색 카드에서 태그 추가/배지 제거 | `filterTagIds` + `tagIds` 반복 파라미터로 `fetchList(0)` | 멀티 태그 AND. 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 |
@@ -557,7 +558,7 @@
 | 댓글 목록 | `_comment_list_modal.ftlh` | 목록 댓글 수 클릭·상세 모달 댓글 수 버튼 |
 | 댓글 등록 | `_comment_reg_modal.ftlh` | 상세 모달 댓글 등록 버튼 |
 | 파일 목록 | `_file_list_modal.ftlh` | 첨부파일 아이콘 클릭 |
-| 스레드 상세 | `_journal_thread_detail_modal.ftlh` | 제목 행 클릭 |
+| 스레드 상세 | `_journal_thread_detail_modal.ftlh` | 목록에서는 독립 상세 페이지를 사용하며, 모달은 저널 주간·월간·일간·검색의 문맥형 진입 전용 |
 | 엔트리 등록·수정 | `JournalEntryRegistModal.vue` (`App.vue` 전역 마운트) | 소속 엔트리 수정 |
 | 엔트리 원문 | `JournalEntryViewModal.vue` (`App.vue` 전역 마운트) | 관련글·스레드 칩 대상 열기 |
 | 해석 등록·수정 | `JournalInterpretationRegistModal.vue` | 소속 엔트리 해석 등록·수정 |
@@ -565,7 +566,7 @@
 | 관련글 추가 | `RelatedContentAddModal.vue` | 소속 엔트리 관련글 추가 |
 | 태그 프로필 | `JournalTagProfileModal.vue` | 소속 엔트리 태그 설정 |
 
-`JournalThreadDetailModal.vue`의 제목·수정·댓글 섹션(인라인 목록·등록·목록 모달 진입)·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. 상세 모달은 인증된 SPA의 `App.vue`에 단일 마운트되어 주간·월간·일간·검색의 현재 화면을 유지한 채 열리고, 스레드 목록의 `/thread/:id` 딥링크도 같은 인스턴스를 사용한다. 상세의 수정 버튼은 이름 있는 새 창으로 기존 수정 route를 열며 팝업 차단 시 현재 locale의 공통 팝업 오류를 표시한다. 상세 모달의 댓글 등록은 현재 화면 레이아웃에 마운트된 `CommentRegistModal`을 연다.
+`JournalThreadDetailModal.vue`의 제목·수정·댓글 섹션(인라인 목록·등록·목록 모달 진입)·닫기 버튼과 `JournalThreadDetailPage.vue`의 상세 제목·목록 복귀 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. 상세 모달은 인증된 SPA의 `App.vue`에 단일 마운트되어 주간·월간·일간·검색의 현재 화면을 유지한 채 열리고, 스레드 목록과 `/thread/:id` 딥링크는 독립 상세 페이지를 사용한다. 두 표면은 같은 `JournalThreadDetailContent`와 스토어 상세 SSOT를 사용한다. 문맥형 상세 모달의 수정 버튼은 이름 있는 새 창으로 기존 수정 route를 열며 팝업 차단 시 현재 locale의 공통 팝업 오류를 표시한다. 상세의 댓글 등록은 현재 화면 레이아웃에 마운트된 `CommentRegistModal`을 연다.
 
 ### Special behaviors
 

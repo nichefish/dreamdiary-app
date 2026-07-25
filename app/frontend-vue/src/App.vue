@@ -9,7 +9,7 @@
   <JournalEntryViewModal v-if="authStore.isAuthenticated && !isPopup" />
   <!--
     스레드 상세는 주간·월간·일간·검색의 현재 화면 문맥을 보존한 채 직접 연다.
-    thread-detail route의 딥링크도 같은 단일 모달 인스턴스를 사용한다.
+    thread-detail route는 독립 상세 페이지를 사용하고, 이 전역 인스턴스는 문맥형 모달만 담당한다.
   -->
   <JournalThreadDetailModal v-if="authStore.isAuthenticated" />
   <AppRuntimeStatus />
