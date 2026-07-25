@@ -7,6 +7,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import type { SweetAlertOptions, SweetAlertResult } from "sweetalert2";
 import { isAuthExpiredError } from "@/shared/utils/authError";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { SWAL_Z } from "@/shared/utils/overlayZIndex";
 
 /** Ajax 오류 응답 본문의 message 필드 추출 */
 export function getAjaxResponseMessage(error: unknown): string | undefined {
@@ -26,12 +27,28 @@ function isSuppressedText(text: string | undefined): boolean {
 
 /**
  * SweetAlert2 단일 진입점. 레거시 Swal.fire({ ... }) 와 동일하게 옵션·콜백을 주입한다.
+ * <p>
+ * 모달이 열린 상태에서도 확인창이 최상단이 되도록 컨테이너 z-index 를
+ * {@link SWAL_Z} 로 강제한다(CSS 경합·중첩 모달 스택 대비).
+ * </p>
  */
 export async function swalFire(options: SweetAlertOptions): Promise<SweetAlertResult> {
   if (isSuppressedText(options.text)) {
     return { isConfirmed: false, isDenied: false, isDismissed: true };
   }
-  return Swal.fire(options);
+  const userDidOpen = options.didOpen;
+  return Swal.fire({
+    ...options,
+    didOpen: (popup) => {
+      const container = Swal.getContainer();
+      if (container) {
+        container.style.setProperty("z-index", String(SWAL_Z), "important");
+      }
+      if (typeof userDidOpen === "function") {
+        userDidOpen(popup);
+      }
+    },
+  });
 }
 
 /** Ajax {@code rslt} 응답 후속 알림. message 가 있으면 우선하고, 없으면 fallback 을 쓴다. */

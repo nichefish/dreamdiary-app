@@ -100,8 +100,9 @@ onErrorCaptured((error) => {
  * Bootstrap modals and SweetAlert confirmations default to ~1055/1060, so
  * entry/detail modals opened from chat RAG sources and modal-scoped confirms
  * would render under the drawer or the active modal without this raise.
- * Nested modals get incremental z-index from modalStack.ts (installModalStacking) so a child
- * modal sits above its parent, kept below SweetAlert (6110).
+ * Nested modals get incremental z-index from modalStack.ts (installModalStacking).
+ * SweetAlert SSOT: shared/utils/overlayZIndex.ts SWAL_Z (6200). Keep this CSS in sync.
+ * !important beats library .swal2-container { 1060 } and nested-modal inline races.
  */
 body.modal-open .modal {
   z-index: 6100;
@@ -109,7 +110,8 @@ body.modal-open .modal {
 body.modal-open .modal-backdrop {
   z-index: 6090;
 }
-body.modal-open .swal2-container {
-  z-index: 6110;
+body.modal-open .swal2-container,
+.swal2-container {
+  z-index: 6200 !important;
 }
 </style>
