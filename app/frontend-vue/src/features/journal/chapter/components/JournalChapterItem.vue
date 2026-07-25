@@ -179,11 +179,12 @@
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import { computed, ref, watch, nextTick } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import axios from "axios";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import type { JournalChapterDto, JournalThreadEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
@@ -201,10 +202,10 @@ const props = withDefaults(defineProps<{
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const { t } = useLocaleStore();
 const route = useRoute();
-const router = useRouter();
 
 /** 서버 COLLAPSED 상태 (⋯ 메뉴 접힘 스위치·목록 재조회 반영) */
 const serverCollapsed = computed(() =>
@@ -330,9 +331,9 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
   });
 }
 
-/** 접힘 요약의 스레드 버튼에서 기존 엔트리 스레드 칩과 같은 상세 route로 이동한다. */
+/** 접힘 요약의 스레드 버튼에서 현재 저널 화면을 유지한 채 전역 상세 모달을 연다. */
 function openThreadDetail(threadId: number): void {
-  void router.push({ name: "thread-detail", params: { id: String(threadId) } });
+  void threadStore.openDetail(threadId);
 }
 
 /** 챕터 수정 모달 열기 */

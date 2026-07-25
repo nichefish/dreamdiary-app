@@ -50,8 +50,11 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from "vue-router";
 import { useJournalAsideStore } from "@/features/journal/stores/journalAside";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalAside from "./components/JournalAside.vue";
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
@@ -71,10 +74,12 @@ import JournalMetaContextMenu from "../shared/components/JournalMetaContextMenu.
 
 const asideStore = useJournalAsideStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
+const route = useRoute();
 const { t } = useLocaleStore();
 
-/** 이력 복원/삭제 성공 시 일지 목록을 다시 조회한다. */
+/** 이력 복원/삭제 성공 시 열린 스레드 상세와 배경 일지 목록을 현재 호스트 계약으로 다시 조회한다. */
 function onHistorySuccess(): void {
-  void journalStore.fetchDays();
+  void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
 }
 </script>

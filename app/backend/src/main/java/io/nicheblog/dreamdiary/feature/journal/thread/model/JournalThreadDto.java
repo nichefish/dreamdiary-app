@@ -73,7 +73,7 @@ public class JournalThreadDto
     public FileCmpstn file;
     public CommentCmpstn comment;
     /** 태그 컴포지션. 스레드는 자체 태그를 소유하지 않는다(엔티티 TagEmbed 제거).
-     * 화면 표시용 집계 컨테이너로, viewDetailPage 의 applyEntryTagSummary 가
+     * 화면 표시용 집계 컨테이너로, 목록·상세의 applyEntryTagSummar(y/ies) 가
      * 소속 엔트리 태그를 여기에 집계해 넣는다. 매핑 skip 대비 non-null 초기화. */
     @Builder.Default
     public TagCmpstn tag = new TagCmpstn();

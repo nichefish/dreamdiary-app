@@ -204,7 +204,7 @@
 - 각 일자 카드에 일기(DIARY)/꿈(DREAM)/노트(NOTE) 엔트리 포함
 - 일자 카드의 기준 날짜 요일·날짜 정확도 배지·챕터 필터 안내, 챕터·꿈 등록, 컨텍스트 메뉴, 상태, 메타 tooltip, 숨겨진 카테고리·꿈 숨김 문구와 삭제·꿈 섹션 복사 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. 엔트리의 보류 badge와 접힌 상태 문구도 현재 locale을 사용한다. 삭제 API 응답에 `message`가 있으면 서버 메시지를 우선 표시
 - 챕터 헤더의 유형·소유권 배지·등록 버튼·액션 툴팁·메뉴·빈 상태 문구는 현재 locale의 클라이언트 카탈로그를 사용
-- 챕터 접힘 시 태그 요약과 함께 하위 엔트리의 소속 스레드를 중복 없는 버튼으로 접힘 바깥에 표시한다. 스레드 버튼은 제목을 표시하며 클릭하면 해당 저널 스레드 상세로 이동한다.
+- 챕터 접힘 시 태그 요약과 함께 하위 엔트리의 소속 스레드를 중복 없는 버튼으로 접힘 바깥에 표시한다. 스레드 버튼은 제목을 표시하며 클릭하면 현재 저널 화면 위에 해당 저널 스레드 상세 모달을 연다.
 - 챕터 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과는 현재 locale 카탈로그를 사용하며, 삭제 API의 서버 `message`가 있으면 우선 표시
 - 꿈 가상 섹션 제목은 서버가 요청 locale로 조립하고, 내 꿈 섹션의 등록·복사·TXT 액션 문구는 현재 locale의 클라이언트 카탈로그를 사용
 - 해석 아이템의 펼침/접힘·접힌 상태·액션 툴팁·메뉴·라이프사이클·상태 라벨과 상태 변경 실패·복사·삭제 결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용. API 응답에 `message`가 있으면 서버 메시지를 우선 표시
@@ -487,7 +487,7 @@
 - 히든 폼: `#procForm` (GET, `id` hidden)
 - 마운트 루트: `<div id="journal_thread_list_app" class="d-none">`
 
-**현재 Vue SPA 구조**: `JournalThreadLayout`이 `JournalThreadViewToolbar`(등록, `pe-5 mt-3 mb-1`)를 목록 위에 두고, 그 아래 컴팩트한 검색 카드가 있다. ASIDE는 없다. 검색 카드는 분류·제목 검색과 검색·초기화 액션만 두며 `margin-top: 0`으로 툴바에 붙인다. **태그 클라우드 행은 2c-A 에서 제거됐다**(스레드 자체 태그 미소유, 2b). 별도 카드 제목 행은 두지 않으며 기존 목록 카드의 테이블 DOM·클래스와 페이지네이션 구조는 유지한다.
+**현재 Vue SPA 구조**: `JournalThreadLayout`이 `JournalThreadViewToolbar`(등록, `pe-5 mt-3 mb-1`)를 목록 위에 두고, 그 아래 컴팩트한 검색 카드가 있다. ASIDE는 없다. 검색 카드는 분류·제목 검색과 검색·초기화 액션만 두며 `margin-top: 0`으로 툴바에 붙인다. **태그 클라우드 행은 2c-A 에서 제거됐다**(스레드 자체 태그 미소유, 2b). 목록 테이블 행에는 소속 엔트리 태그 집계(`tag.list`)를 표시한다. 검색 카드에서 멀티 태그 필터(AND, `tagIds`)를 제공한다. 별도 카드 제목 행은 두지 않으며 기존 목록 카드의 테이블 DOM·클래스와 페이지네이션 구조는 유지한다.
 
 ### Key UI Elements
 
@@ -495,7 +495,7 @@
 |---------|------|----------------|-------------|-------|
 | 태그 필터바 | include | `_tag_list_header.ftlh` | 태그 목록 | 태그 클릭 필터 |
 | 뷰 툴바 | `JournalThreadViewToolbar` | Vue 신규 툴바 | Vue Router `thread-create` | 등록 버튼만. 결산·일자 액션 행과 동형(`pe-5 mt-3 mb-1`). ASIDE 없음. 탭용 `mt-5` 빈 여백 없음 |
-| Vue 검색 카드 | `.card.mb-4` + `margin-top: 0` | Vue 신규 검색 카드 | `/api/journal/threads/categories` | 분류·제목 검색(태그 클라우드는 2c-A 제거). 등록은 뷰 툴바로 이동. 툴바에 붙는 상단 여백 |
+| Vue 검색 카드 | `.card.mb-4` + `margin-top: 0` | Vue 신규 검색 카드 | `/api/journal/threads/categories`, `tagIds` | 분류·제목·멀티 태그 AND 검색(태그 클라우드는 2c-A 제거). 등록은 뷰 툴바로 이동. 툴바에 붙는 상단 여백 |
 | 테이블 | `<table>` | `.table.align-middle.table-row-dashed.fs-small.gy-5.table-fixed.hoverTable.mb-3` | 서버 모델 | 고정 레이아웃, 행 hover |
 | 번호 열 | `<th>` | `.text-center.wb-keepall.w-10.hidden-table` | `post.rnum` | 모바일 숨김 |
 | 제목 열 | `<th>` | `.col-lg-9.col-9.text-center.wb-keepall` | `post.title` | `txt.title` i18n |
@@ -516,8 +516,9 @@
 |--------|---------|---------------|-------------------|
 | 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 상세 모달 오픈 + URL `/thread/:id` 동기화 |
 | 상세 모달 닫기 | 헤더 × 또는 푸터 「닫기」 클릭 | `store.closeDetail()` | 명시적 조작으로만 닫힘. backdrop 클릭과 Escape는 무시하며 URL 이동·조회 실패에 따른 프로그램상 종료는 유지 |
+| 상세에서 스레드 수정 | 상세 헤더 「수정」 클릭 | 새 창 `/thread/:id/edit?popup=Y` | 원래 저널 화면·스크롤·상세 모달을 유지하고 수정 창을 연다. 저장 성공 시 동일 출처 메시지로 원래 상세와 주간·월간·일간 배경을 갱신한 뒤 수정 창을 닫는다 |
 | 등록 모달 열기 | 뷰 툴바(`JournalThreadViewToolbar`) 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
-| 태그 필터 | 검색 카드의 태그 클릭 | `filterTagId` 설정 후 `fetchList(0)` | 단일 태그 선택·재클릭 해제 후 첫 페이지 조회 |
+| 태그 필터 | 검색 카드에서 태그 추가/배지 제거 | `filterTagIds` + `tagIds` 반복 파라미터로 `fetchList(0)` | 멀티 태그 AND. 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 |
 | 분류·제목 검색 | 검색 버튼 또는 Enter | `filterCategory`, `filterKeyword` 설정 후 `fetchList(0)` | `categoryCode`, `searchType=title`, `searchKeyword`로 첫 페이지 조회 |
 | 검색 초기화 | 초기화 버튼 클릭 | `resetFilters()` | 태그·분류·제목 조건을 모두 비우고 첫 페이지 조회 |
 | 수정 모달 열기 | 수정 버튼 클릭 | `router.push({ name: "thread-edit", params: { id } })` | 수정 모달 오픈 + URL `/thread/:id/edit` 동기화 |
@@ -563,7 +564,7 @@
 | 관련글 추가 | `RelatedContentAddModal.vue` | 소속 엔트리 관련글 추가 |
 | 태그 프로필 | `JournalTagProfileModal.vue` | 소속 엔트리 태그 설정 |
 
-`JournalThreadDetailModal.vue`의 제목·댓글 섹션(인라인 목록·등록·목록 모달 진입)·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. 상세 모달의 댓글 등록은 `CommentRegistModal`을 연다(`JournalThreadLayout`에 마운트).
+`JournalThreadDetailModal.vue`의 제목·수정·댓글 섹션(인라인 목록·등록·목록 모달 진입)·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. 상세 모달은 인증된 SPA의 `App.vue`에 단일 마운트되어 주간·월간·일간·검색의 현재 화면을 유지한 채 열리고, 스레드 목록의 `/thread/:id` 딥링크도 같은 인스턴스를 사용한다. 상세의 수정 버튼은 이름 있는 새 창으로 기존 수정 route를 열며 팝업 차단 시 현재 locale의 공통 팝업 오류를 표시한다. 상세 모달의 댓글 등록은 현재 화면 레이아웃에 마운트된 `CommentRegistModal`을 연다.
 
 ### Special behaviors
 

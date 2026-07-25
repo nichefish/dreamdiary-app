@@ -17,7 +17,7 @@
 | FLOW 연결 (수렴 완료) | FLOW 를 스레드 소속으로 수렴 완료했다(`docs/spec/DESIGN_NOTES.md`). 「흐름 보기」·본문 요약 행·「흐름 연결」 UI 는 모두 제거됐다(나-2a·나-2b). 백엔드 `flowSummary` 와 `related_content` FLOW 행도 다-2 에서 제거됐다. | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 버튼 | `JournalChapterItem.vue` — `copyChapter()`, 날짜(요일)·카테고리·엔트리 전체 텍스트 클립보드 복사 | ✓ |
-| 챕터 접힘 스레드 요약 | `JournalChapterItem.vue` — 접힌 상태에서 하위 엔트리 `threadList`를 `threadId`로 중복 제거해 태그와 함께 접힘 바깥에 스레드 버튼 표시; 클릭 시 `thread-detail` 이동 | ✓ |
+| 챕터 접힘 스레드 요약 | `JournalChapterItem.vue` — 접힌 상태에서 하위 엔트리 `threadList`를 `threadId`로 중복 제거해 태그와 함께 접힘 바깥에 스레드 버튼 표시; 클릭 시 현재 화면 위에 전역 스레드 상세 모달 열기 | ✓ |
 | 기간별 스레드 요약 | 월간·주간 태그클라우드 아래에 필터와 무관한 기간 스레드를 표시하고 현재 화면 위에 스레드 상세 모달 열기; 월간 10개 이후 펼치기. 라벨은 `스레드` | ✓ |
 | 꿈 복사 버튼 | `JournalDayCard.vue` — `copyDreams()`, 날짜(요일) 헤더 + 꿈 엔트리 전체 클립보드 복사 | ✓ |
 | 엔트리 복사 버튼 | `JournalEntryItem.vue` — `copyEntry()`, 날짜(요일)·본문 텍스트 클립보드 복사 (레거시 동일 포맷) | ✓ |
@@ -33,7 +33,7 @@
 | 툴바 floating·aside 열기 | `JournalDayViewToolbar` 전체와 열린 저널 일자 aside의 상단선이 고정 앱 헤더 아래에서 sticky로 일치하고, 툴바는 별도 그림자 없이 하단 경계만 사용. aside 숨김 시 우측 끝 버튼이 `asideStore.show()` 호출. 모바일은 본문 우상단 전용 버튼 유지 | ✓ |
 | 어사이드 목록 키워드 필터 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` → `fetchDays()` (목록 축소) | ✓ — 툴바 `openSearchTab` 전체검색과 분리 (`vue-screen-overview.md` 필터·검색 정책) |
 | 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView. 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback | ✓ |
-| 상태/라이프사이클 변경 후 갱신 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalEntryHostForRoute`가 현재 표시 호스트를 판별한다. `thread-detail`은 열린 스레드 상세·집계 태그·소속 엔트리를 다시 조회하고 스크롤하지 않는다. 그 밖의 주간/월간/일간 route는 기존 `refreshJournalDaysForRoute` → `#journal-day-{stdrdDt}` scrollIntoView를 유지한다. **일간(`journal-daily`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
+| 상태/라이프사이클 변경 후 갱신 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalEntryHostForRoute`가 `detailOpen`을 전경 판단 기준으로 사용한다. 스레드 상세가 열려 있으면 상세·집계 태그·소속 엔트리를 다시 조회하고, 배경이 주간/월간/일간이면 `refreshJournalDaysForRoute`도 실행하되 배경 스크롤은 하지 않는다. 상세가 닫힌 주간/월간/일간 route는 기존 목록 갱신 → `#journal-day-{stdrdDt}` scrollIntoView를 유지한다. **일간(`journal-daily`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, 현재 locale 확인창 사용, `POST /api/journal/chapter/{id}/move` 호출. 응답 `message`를 우선 표시하고 없으면 현재 locale fallback을 사용한 뒤 `fetchDays` + 신 일자 scrollIntoView | ✓ |
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 클라이언트 차단 경고는 현재 locale 카탈로그 사용, 수정/삭제/이동 API 거부 시 서버 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. CSS `:has` + `:not(:has([data-resolved=\"N\"]))` 로 하위 엔트리 전체 resolved 여부를 집계해 접힘 외곽 inset 표시. 접힘 바: 완료 1px 초록·중요 2px 빨강·참조 4px 노랑(엔트리 `$journal-paired-states` 와 동일). 단독 우선 중요>참조>완료; 중요+완료·중요+참조·삼중 조합 다중선. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
@@ -304,7 +304,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 1. 저장 성공 응답에서 엔트리 ID를 확인한다. 수정이면 기존 `model.id`를 fallback으로 사용한다.
 2. 모달을 닫은 뒤 성공 알림을 표시한다.
 3. 성공 알림 OK 이후 월간/주간 화면에서는 현재 route 기준으로 `fetchDays()`를 호출해 목록 DOM을 갱신한다.
-4. 스레드 상세에서는 일자 목록 대신 열린 스레드의 상세 본문·집계 태그·소속 엔트리를 다시 조회하고 모달 내부 읽기 맥락을 유지한다.
+4. 스레드 상세가 열려 있으면 route와 무관하게 열린 스레드의 상세 본문·집계 태그·소속 엔트리를 다시 조회하고 모달 내부 읽기 맥락을 유지한다. 배경이 주간·월간·일간이면 목록도 재조회하되 배경 스크롤은 하지 않는다.
 5. 검색 팝업(`JournalEntrySearchPage`)에서는 `prepare-success` 이벤트에서 현재 검색 조건 목록 또는 수정 대상 항목 DOM을 먼저 준비한다.
 6. 월간/주간 기본 목록은 재조회 후 강제 스크롤하지 않고 현재 스크롤 위치를 유지한다. 검색 팝업은 성공 알림 OK 이후 추가 재조회 없이 저장 위치 스크롤만 수행한다.
 7. 월간/주간 기본 목록은 기존 DOM을 유지해 브라우저 스크롤 위치 보존에 맡긴다.
@@ -348,7 +348,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - `attachableStore.openTagProfile(...)` 로 태그 프로필 모달 오픈
 - 모달의 orceMax는 저장 후 sized 태그클라우드 크기를 	s-9로 고정한다. 엔트리 본문 태그줄에는 적용하지 않는다.
 - 저장된 `JOURNAL_DREAM` 태그 프로필 본문은 목록/검색/상세의 꿈 엔트리 본문 아래에 표시된다. 일기(`JOURNAL_DIARY`) 태그 프로필은 설정 모달과 태그 색상 의미에만 사용하고, 엔트리 본문 아래에는 표시하지 않는다.
-- 저장·삭제 성공 알림 확인 후 화면 갱신: 월간/주간/일간 등에서는 `refreshJournalDaysForRoute` + contentType 대응 `fetchTagCloud`(`JOURNAL_DAY`→day, `JOURNAL_DIARY`→diary, `JOURNAL_DREAM`→dream). 결산 상세(`annual-detail`)에서는 `fetchTagRows(yy, activeSection)`로 결산 태그클라우드를 재조회한다. 검색 팝업(`journal-entry-search`)에서는 일자/클라우드 재조회 없이 `success` → `loadEntries()`만 수행한다. 스레드 상세에서는 소속 엔트리 태그 집계가 SSOT이므로 열린 상세와 소속 엔트리를 함께 재조회한다.
+- 저장·삭제 성공 알림 확인 후 화면 갱신: 월간/주간/일간 등에서는 `refreshJournalDaysForRoute` + contentType 대응 `fetchTagCloud`(`JOURNAL_DAY`→day, `JOURNAL_DIARY`→diary, `JOURNAL_DREAM`→dream). 결산 상세(`annual-detail`)에서는 `fetchTagRows(yy, activeSection)`로 결산 태그클라우드를 재조회한다. 검색 팝업(`journal-entry-search`)에서는 일자/클라우드 재조회 없이 `success` → `loadEntries()`를 수행한다. 스레드 상세가 열려 있으면 route와 무관하게 열린 상세와 소속 엔트리를 먼저 재조회하고, 검색·결산·일자 배경도 각 기존 경로로 갱신한다.
 
 **중요 보존 규칙**:
 - 일기/꿈 태그 검색은 현재 목록의 `diaryKeyword` / `dreamKeyword` 필터로 대체하지 않는다.
@@ -473,7 +473,7 @@ function toggleEntry(): void {
 - 챕터 펼침(`false`) → 엔트리 전체 펼침 (RESOLVED 자동 접힘도 override)
 - 챕터 접힘(`true`) → 엔트리 전체 접힘
 - 챕터 override 없음(`null`) → 엔트리 각자의 접힘 로직으로 복귀
-- 접힌 상태에서는 숨겨진 엔트리 내부의 스레드 소속이 사라지지 않도록 `chapter.journalEntryList[].threadList`를 최초 등장 순서로 집계하고, 같은 `threadId`는 하나의 스레드 버튼으로 표시한다. 버튼은 접힘 태그와 같은 `.journal-chapter-content` 바깥 요약 영역에 있으며 기존 엔트리 스레드 칩과 같은 상세 route를 연다.
+- 접힌 상태에서는 숨겨진 엔트리 내부의 스레드 소속이 사라지지 않도록 `chapter.journalEntryList[].threadList`를 최초 등장 순서로 집계하고, 같은 `threadId`는 하나의 스레드 버튼으로 표시한다. 버튼은 접힘 태그와 같은 `.journal-chapter-content` 바깥 요약 영역에 있으며 기존 엔트리 스레드 칩과 같이 현재 저널 화면 위에 전역 상세 모달을 직접 연다.
 
 **주요 동기**: RESOLVED 챕터는 모든 엔트리가 RESOLVED → 챕터·엔트리 모두 자동 접힘. 챕터를 펼치면 엔트리도 함께 펼쳐져야 하나, 엔트리는 각자 `isResolved → true`를 유지하므로 챕터 펼침만으로는 엔트리가 열리지 않던 문제를 해결.
 
@@ -702,9 +702,13 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 **저널 스레드 상세 닫기 정책**: `JournalThreadDetailModal`은 `backdrop: "static"`, `keyboard: false`로 생성해 모달 바깥 클릭과 Escape 입력으로 닫히지 않는다. 헤더 ×와 푸터 「닫기」는 `store.closeDetail()`을 호출하는 명시적 종료 경로이며, URL 이동·상세 조회 실패에 따른 프로그램상 종료는 유지한다.
 
-**저널 스레드 상세 엔트리 액션 계약**: 소속 엔트리는 스레드용 읽기 전용 복제본이 아니라 원본 `JournalEntryDto`이므로 저널 일자와 같은 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제 액션을 유지한다. `JournalThreadLayout`은 해당 액션의 자식 모달을 마운트하고, 전역 마운트된 엔트리 수정·원문 모달은 중복 마운트하지 않는다. 액션 성공 후에는 `thread-detail` route에서 일자 목록을 재조회하지 않고 열린 스레드 상세의 본문·집계 태그·소속 엔트리를 함께 재조회한다. 현재 스레드 소속 해제·엔트리 삭제는 재조회 결과에서 카드를 제거하고, 수정·관계·라이프사이클·상태·태그 변경은 같은 카드의 최신 DTO로 교체한다. 재조회 실패는 기존 상세를 보존한 채 오류 로그와 안내로 드러낸다.
+**저널 스레드 상세 진입 정책**: 인증된 SPA는 `JournalThreadDetailModal`을 `App.vue`에 단일 마운트한다. 저널 엔트리 스레드 칩·접힌 챕터 스레드 요약·기간별 스레드 요약은 route 이동 없이 `JournalThreadStore.openDetail(threadId)`를 호출해 현재 주간·월간·일간·검색 화면과 스크롤 문맥을 보존한다. 스레드 목록 행과 외부 딥링크는 `/thread/:id`를 유지하며 같은 전역 모달을 연다.
 
-**저널 스레드 목록 검색 카드**: 화면 진입 시 목록과 함께 `GET /api/journal/threads/categories` 분류 선택지를 조회한다. 분류·제목 검색, 초기화는 모두 `fetchList(0)`으로 첫 페이지부터 조회한다. 제목 키워드는 서버의 `searchType`·`searchKeyword` 쌍 계약에 맞춰 `searchType=title`을 함께 전송하고, 분류는 `categoryCode`로 전송한다. 등록·수정·삭제 성공 후 목록을 갱신한다. 분류 보조 데이터 조회 실패는 빈 상태로 가장하지 않고 오류 로그와 현재 locale 안내를 표시한다. 등록은 `JournalThreadViewToolbar`에 두고 `thread-create` 라우팅을 유지한다(검색 카드에는 두지 않음). ASIDE는 없다. **태그 클라우드·태그 필터는 2c-A 에서 제거됐다** — 스레드가 자체 태그를 소유하지 않게 되면서(2b) 자체 태그 기반 클라우드/필터가 무의미해졌다(소속 엔트리 태그 집계 기반 복원은 백로그).
+**저널 스레드 자체 수정 정책**: 상세 헤더 「수정」은 현재 저널 화면·스크롤·상세 모달을 유지한 채 이름 있는 새 창으로 `/thread/{id}/edit?popup=Y`를 연다. 팝업 차단은 경고 로그와 현재 locale의 `common.error.popup`으로 표시한다. 수정 저장 성공 시 자식 창은 `{ type: "journal-thread-updated", threadId }`를 현재 origin으로 `window.opener.postMessage`하고 닫힌다. 수정 없이 안전 닫기 확인을 완료한 경우에도 자식 창을 닫아 별도 목록 화면을 남기지 않는다. 원래 창은 메시지 유형·동일 origin·현재 열린 상세 ID를 검증한 뒤 `refreshJournalEntryHostForRoute`로 상세와 주간·월간·일간 배경을 갱신하며 배경 스크롤은 하지 않는다. 다른 origin·다른 ID·닫힌 상세의 메시지는 무시한다.
+
+**저널 스레드 상세 엔트리 액션 계약**: 소속 엔트리는 스레드용 읽기 전용 복제본이 아니라 원본 `JournalEntryDto`이므로 저널 일자와 같은 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제 액션을 유지한다. 현재 화면 레이아웃이 해당 액션의 자식 모달을 마운트하고, 전역 마운트된 엔트리 수정·원문 모달은 중복 마운트하지 않는다. 액션 성공 후에는 `detailOpen`을 전경 판단 기준으로 열린 스레드 상세의 본문·집계 태그·소속 엔트리를 함께 재조회한다. 배경이 주간·월간·일간이면 배경 목록도 재조회하지만 상세 축을 반환해 배경 스크롤은 하지 않고, 검색은 기존 로컬 결과 갱신을 함께 수행한다. 현재 스레드 소속 해제·엔트리 삭제는 재조회 결과에서 카드를 제거하고, 수정·관계·라이프사이클·상태·태그 변경은 같은 카드의 최신 DTO로 교체한다. 재조회 실패는 기존 상세를 보존한 채 오류 로그와 안내로 드러낸다.
+
+**저널 스레드 목록 검색 카드**: 화면 진입 시 목록과 함께 `GET /api/journal/threads/categories` 분류 선택지를 조회한다. 분류·제목 검색, 초기화는 모두 `fetchList(0)`으로 첫 페이지부터 조회한다. 제목 키워드는 서버의 `searchType`·`searchKeyword` 쌍 계약에 맞춰 `searchType=title`을 함께 전송하고, 분류는 `categoryCode`로 전송한다. 등록·수정·삭제 성공 후 목록을 갱신한다. 분류 보조 데이터 조회 실패는 빈 상태로 가장하지 않고 오류 로그와 현재 locale 안내를 표시한다. 등록은 `JournalThreadViewToolbar`에 두고 `thread-create` 라우팅을 유지한다(검색 카드에는 두지 않음). ASIDE는 없다. **태그 클라우드는 2c-A 에서 제거됐다**. 목록 행에는 소속 엔트리 태그 합집합(`thread.tag.list`)을 표시한다. **검색 카드 멀티 태그 필터(AND)는 ✓** — 배지 추가/제거 시 `tagIds` 로 목록을 다시 조회하며, 합집합이 선택 태그를 모두 포함하는 스레드만 남긴다.
 
 **저널 스레드 목록 행 액션**: 관리 열은 수정·삭제 개별 버튼 대신 ⋯ 컨텍스트 메뉴를 제공한다. 메뉴 트리거와 항목 클릭은 행의 상세 이동 이벤트로 전파하지 않으며, 수정은 기존 수정 route로 이동하고 삭제는 기존 확인·삭제 store 액션을 유지한다. 비동기 목록 조회가 끝날 때 Metronic 메뉴를 재초기화한다.
 

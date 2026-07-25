@@ -276,6 +276,7 @@ import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { swalAlert, swalRequestError } from "@/shared/utils/swal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
@@ -317,6 +318,7 @@ interface SearchTagDto {
 const route = useRoute();
 const router = useRouter();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 
 const entries = ref<JournalEntryDto[]>([]);
@@ -765,9 +767,14 @@ async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void
   await scrollToSearchEntry(entryId);
 }
 
-/** 이력 복원/삭제 성공 시 목록 갱신 */
+/**
+ * 이력 복원/삭제 성공 시 검색 결과를 갱신한다.
+ * 검색 결과 위에 스레드 상세가 열려 있으면 전경 상세도 함께 갱신한다.
+ */
 function onHistorySuccess(): void {
-  void loadEntries();
+  const tasks: Promise<unknown>[] = [loadEntries()];
+  if (threadStore.detailOpen) tasks.push(threadStore.refreshOpenDetail());
+  void Promise.all(tasks);
 }
 
 /** 태그 프로필 저장·삭제 후 검색 결과(프로필 본문 등)를 다시 조회한다. */

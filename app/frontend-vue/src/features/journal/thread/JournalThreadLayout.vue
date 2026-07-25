@@ -7,7 +7,6 @@
     <router-view />
     <!--begin::스레드 모달 컨테이너-->
     <JournalThreadRegistModal />
-    <JournalThreadDetailModal />
     <CommentListModal />
     <CommentRegistModal />
     <JournalInterpretationRegistModal />
@@ -25,7 +24,6 @@ import { watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import JournalThreadViewToolbar from "./components/JournalThreadViewToolbar.vue";
 import JournalThreadRegistModal from "./modals/JournalThreadRegistModal.vue";
-import JournalThreadDetailModal from "./modals/JournalThreadDetailModal.vue";
 import CommentListModal from "@/features/attachable/CommentListModal.vue";
 import CommentRegistModal from "@/features/journal/shared/modals/CommentRegistModal.vue";
 import JournalInterpretationRegistModal from "@/features/journal/interpretation/modals/JournalInterpretationRegistModal.vue";

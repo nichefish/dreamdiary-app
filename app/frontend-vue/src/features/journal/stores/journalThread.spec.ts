@@ -90,6 +90,41 @@ describe("journalThread store 열린 상세 갱신", () => {
   });
 });
 
+
+describe("journalThread store 목록 태그 필터", () => {
+  const mockedGet = vi.mocked(axios.get);
+
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.clearAllMocks();
+    mockedGet.mockResolvedValue({
+      data: { rsltObj: { content: [], totalElements: 0, totalPages: 0, number: 0 } },
+    });
+  });
+
+  it("filterTagIds 를 tagIds 반복 파라미터로 전송한다", async () => {
+    const store = useJournalThreadStore();
+    store.addFilterTag(11, "조직역동");
+    store.addFilterTag(22, "회고");
+
+    await store.fetchList(0);
+
+    expect(mockedGet).toHaveBeenCalledTimes(1);
+    const [, config] = mockedGet.mock.calls[0];
+    const params = config?.params as URLSearchParams;
+    expect(params).toBeInstanceOf(URLSearchParams);
+    expect(params.getAll("tagIds")).toEqual(["11", "22"]);
+  });
+
+  it("resetFilters 는 태그 필터도 비운다", async () => {
+    const store = useJournalThreadStore();
+    store.addFilterTag(11, "조직역동");
+    await store.resetFilters();
+    expect(store.filterTagIds).toEqual([]);
+    expect(store.filterTagLabelMap).toEqual({});
+  });
+});
+
 describe("journalThread store 기간별 스레드 요약", () => {
   const mockedGet = vi.mocked(axios.get);
 

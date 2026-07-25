@@ -135,7 +135,7 @@ public class JournalThreadRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      * 추가(thread-1): Vue SPA 목록 조회용 REST 엔드포인트.
      *
-     * @param searchParam 검색 조건 (categoryCode, searchKeyword 등)
+     * @param searchParam 검색 조건 (categoryCode, searchKeyword, tagIds 등)
      * @param page 페이지 번호 (0-based, 기본값: 0)
      * @param size 페이지 크기 (기본값: 10)
      * @return {@link ResponseEntity} -- Spring Page 직렬화 (content, totalElements, totalPages, number)

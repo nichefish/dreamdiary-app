@@ -464,7 +464,7 @@
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import { ref, computed, nextTick, onBeforeUnmount, provide } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import axios from "axios";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
@@ -505,7 +505,6 @@ const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();
 const threadStore = useJournalThreadStore();
 const route = useRoute();
-const router = useRouter();
 const membershipStore = useJournalThreadMembershipStore();
 const { t } = useLocaleStore();
 
@@ -884,9 +883,12 @@ onBeforeUnmount(() => {
   if (threadCandidateSearchTimer) clearTimeout(threadCandidateSearchTimer);
 });
 
-/** 스레드 상세로 이동한다. */
+/**
+ * 현재 저널 화면을 유지한 채 전역 스레드 상세 모달을 연다.
+ * 스레드 목록의 route 기반 상세 진입은 딥링크 계약으로 별도 유지한다.
+ */
 function openThreadDetail(threadId: number): void {
-  void router.push({ name: "thread-detail", params: { id: String(threadId) } });
+  void threadStore.openDetail(threadId);
 }
 
 

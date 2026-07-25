@@ -343,12 +343,13 @@ function refreshEntryTagCloud(contentType?: string): void {
 }
 
 async function refreshCurrentDayView(contentType?: string): Promise<boolean> {
-  if (route.name === "journal-entry-search") {
+  if (threadStore.detailOpen || route.name === "thread-detail") {
+    if (route.name !== "journal-entry-search") refreshEntryTagCloud(contentType);
+    await refreshJournalEntryHostForRoute(journalStore, threadStore, route, model.value?.stdrdDt);
     return false;
   }
 
-  if (route.name === "thread-detail") {
-    await refreshJournalEntryHostForRoute(journalStore, threadStore, route, model.value?.stdrdDt);
+  if (route.name === "journal-entry-search") {
     return false;
   }
 
@@ -457,6 +458,9 @@ async function submit() {
         successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
       });
       if (route.name === "journal-entry-search") {
+        if (threadStore.detailOpen) {
+          await refreshJournalEntryHostForRoute(journalStore, threadStore, route, savedDate);
+        }
         emit("success", successPayload);
       } else {
         const detailRefreshed = await refreshCurrentDayView(savedContentType);

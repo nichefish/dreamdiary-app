@@ -93,18 +93,22 @@
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import RichEditor from "@/shared/ui/editor/RichEditor.vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { createJournalThreadUpdatedMessage } from "@/features/journal/thread/utils/journalThreadPopupMessage";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalThreadStore();
+const route = useRoute();
 const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
   store.closeRegist();
+  if (route.query.popup === "Y" && window.opener) window.close();
 });
 
 const model = computed(() => store.registModel);
@@ -139,6 +143,21 @@ function close() {
 async function submit() {
   const confirmed = await swalConfirm(isModify.value ? t("common.confirm.mdf") : t("common.confirm.reg"));
   if (!confirmed) return;
-  await store.submitRegist();
+  const modifiedThreadId = Number(model.value?.id);
+  const isModifyPopup = isModify.value && route.query.popup === "Y";
+  const succeeded = await store.submitRegist();
+  if (!succeeded || !isModifyPopup || !Number.isInteger(modifiedThreadId) || modifiedThreadId <= 0) return;
+
+  if (window.opener && !window.opener.closed) {
+    window.opener.postMessage(
+      createJournalThreadUpdatedMessage(modifiedThreadId),
+      window.location.origin,
+    );
+  } else {
+    console.warn("[journal-thread] modify popup completed without opener", {
+      threadId: modifiedThreadId,
+    });
+  }
+  window.close();
 }
 </script>

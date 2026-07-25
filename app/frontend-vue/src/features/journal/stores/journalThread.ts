@@ -99,7 +99,13 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const filterKeyword = ref("");
   /** 카테고리 필터 */
   const filterCategory = ref("");
-  /** 태그 필터 (레거시 목록과 동일하게 단일 태그 선택) */
+  /**
+   * 소속 엔트리 태그 필터 (멀티, AND).
+   * Spring 배열 바인딩을 위해 문자열 ID 를 유지하고 fetchList 에서 tagIds 반복 파라미터로 보낸다.
+   */
+  const filterTagIds = ref<string[]>([]);
+  /** filterTagIds 표시용 이름 캐시 (tagId → name) */
+  const filterTagLabelMap = ref<Record<string, string>>({});
   /** 분류 선택지 */
   const categoryOptions = ref<ThreadCategoryItem[]>([]);
   /** 분류 선택지 조회 오류 */
@@ -152,15 +158,16 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     error.value = null;
     const targetPage = page ?? currentPage.value;
     try {
-      const params: Record<string, unknown> = {
-        page: targetPage,
-        size: pageSize.value,
-      };
+      const params = new URLSearchParams();
+      params.set("page", String(targetPage));
+      params.set("size", String(pageSize.value));
       if (filterKeyword.value) {
-        params.searchType = "title";
-        params.searchKeyword = filterKeyword.value;
+        params.set("searchType", "title");
+        params.set("searchKeyword", filterKeyword.value);
       }
-      if (filterCategory.value) params.categoryCode = filterCategory.value;
+      if (filterCategory.value) params.set("categoryCode", filterCategory.value);
+      // tagIds=1&tagIds=2 — Spring List<Integer> 바인딩 계약 (엔트리 검색과 동일)
+      filterTagIds.value.forEach((tagId) => params.append("tagIds", tagId));
       const res = await axios.get("/api/journal/threads", { params });
       /* Spring Page<T> → { content, totalElements, totalPages, number, size } */
       const pageResult = res.data?.rsltObj;
@@ -176,7 +183,29 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     }
   }
 
-  /** 저널 스레드 태그 클라우드를 조회한다. */
+  /** 태그 필터에 표시 이름을 캐시한다. */
+  function cacheFilterTagLabel(tagId?: number | string, name?: string): void {
+    if (tagId === undefined || tagId === null || !name) return;
+    filterTagLabelMap.value[String(tagId)] = name;
+  }
+
+  /**
+   * 태그 필터에 tagId 를 추가한다 (중복 무시).
+   * @returns 새로 추가됐으면 true
+   */
+  function addFilterTag(tagId: number | string, name?: string): boolean {
+    const next = String(tagId);
+    cacheFilterTagLabel(next, name);
+    if (filterTagIds.value.includes(next)) return false;
+    filterTagIds.value = [...filterTagIds.value, next];
+    return true;
+  }
+
+  /** 태그 필터에서 tagId 를 제거한다. */
+  function removeFilterTag(tagId: string): void {
+    filterTagIds.value = filterTagIds.value.filter((id) => id !== tagId);
+    delete filterTagLabelMap.value[tagId];
+  }
 
   /** 현재 locale이 적용된 저널 스레드 분류 선택지를 조회한다. */
   async function fetchCategoryOptions(): Promise<void> {
@@ -195,6 +224,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   async function resetFilters(): Promise<void> {
     filterKeyword.value = "";
     filterCategory.value = "";
+    filterTagIds.value = [];
+    filterTagLabelMap.value = {};
     await fetchList(0);
   }
 
@@ -470,6 +501,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     error,
     filterKeyword,
     filterCategory,
+    filterTagIds,
+    filterTagLabelMap,
     categoryOptions,
     categoryError,
     periodSummary,
@@ -478,6 +511,9 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     fetchList,
     fetchCategoryOptions,
     fetchPeriodSummary,
+    cacheFilterTagLabel,
+    addFilterTag,
+    removeFilterTag,
     resetFilters,
     // 등록/수정
     registOpen,

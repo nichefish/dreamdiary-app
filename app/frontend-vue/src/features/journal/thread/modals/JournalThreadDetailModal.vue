@@ -15,7 +15,19 @@
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title">{{ t("journal.thread.detail.modal.title") }}</h5>
-          <button type="button" class="btn-close" @click="close"></button>
+          <div class="d-flex align-items-center gap-2">
+            <button
+              v-if="store.detailModel?.id"
+              type="button"
+              class="btn btn-sm btn-light-primary"
+              :title="t('common.open-in-new-window')"
+              @click="openModifyPopup"
+            >
+              <i class="bi bi-pencil-square me-1"></i>
+              {{ t("common.mdf") }}
+            </button>
+            <button type="button" class="btn-close" @click="close"></button>
+          </div>
         </div>
         <!--end::Modal Header-->
 
@@ -149,17 +161,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onBeforeUnmount, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { useJournalStore } from "@/features/journal/stores/journal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { swalAlert } from "@/shared/utils/swal";
+import { joinAppBasePath } from "@/shared/utils/appPath";
 import JournalEntryItem from "@/features/journal/entry/components/JournalEntryItem.vue";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
+import { parseJournalThreadUpdatedMessage } from "@/features/journal/thread/utils/journalThreadPopupMessage";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 
 const store = useJournalThreadStore();
+const journalStore = useJournalStore();
 const attachableStore = useAttachableModalStore();
+const route = useRoute();
 const { t } = useLocaleStore();
 
 /**
@@ -219,12 +239,22 @@ const threadContentType = computed(
 );
 
 onMounted(() => {
+  window.addEventListener("message", onThreadPopupMessage);
   if (modalEl.value) {
     bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     modalEl.value.addEventListener("hidden.bs.modal", () => {
       store.closeDetail();
     });
+    /*
+     * thread-detail 딥링크의 route 동기화가 전역 모달 마운트보다 먼저 detailOpen을 켠 경우에도
+     * 초기 상태를 놓치지 않고 같은 모달 인스턴스를 표시한다.
+     */
+    if (store.detailOpen) bsModal.show();
   }
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("message", onThreadPopupMessage);
 });
 
 watch(
@@ -237,6 +267,54 @@ watch(
 
 function close() {
   store.closeDetail();
+}
+
+/** 현재 상세를 유지하고 스레드 자체 수정 route를 이름 있는 새 창으로 연다. */
+function openModifyPopup(): void {
+  const id = Number(store.detailModel?.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    console.warn("[journal-thread] modify popup skipped: detail id is missing");
+    return;
+  }
+  const width = Math.min(1600, window.screen.availWidth);
+  const height = Math.min(1080, window.screen.availHeight);
+  const url = joinAppBasePath(`/thread/${id}/edit?popup=Y`);
+  const popup = window.open(
+    url,
+    `journal-thread-edit-${id}`,
+    `width=${width},height=${height},top=0,left=270`,
+  );
+  if (!popup) {
+    console.warn("[journal-thread] modify popup blocked", { id, url });
+    void swalAlert(t("common.error.popup"));
+    return;
+  }
+  popup.focus();
+}
+
+/**
+ * 수정 팝업의 동일 출처 완료 메시지를 받아 현재 열린 스레드만 갱신한다.
+ * 주간·월간·일간 배경은 기존 호스트 갱신 계약으로 함께 갱신하되 스크롤하지 않는다.
+ */
+function onThreadPopupMessage(event: MessageEvent): void {
+  const threadId = parseJournalThreadUpdatedMessage(event.data);
+  if (!threadId) return;
+  if (event.origin !== window.location.origin) {
+    console.warn("[journal-thread] ignored cross-origin modify message", {
+      origin: event.origin,
+      expectedOrigin: window.location.origin,
+    });
+    return;
+  }
+  if (!store.detailOpen || Number(store.detailModel?.id) !== threadId) {
+    console.info("[journal-thread] ignored stale modify message", {
+      threadId,
+      detailOpen: store.detailOpen,
+      detailId: store.detailModel?.id,
+    });
+    return;
+  }
+  void refreshJournalEntryHostForRoute(journalStore, store, route);
 }
 
 function openCommentRegist(): void {

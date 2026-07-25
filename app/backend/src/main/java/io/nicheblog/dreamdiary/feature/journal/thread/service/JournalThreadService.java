@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.mapstruct.JournalThreadMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateDto;
@@ -20,12 +21,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.Objects;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +54,7 @@ public class JournalThreadService
     @Getter
     private final JournalThreadRepository repository;
     private final JournalThreadEntryService journalThreadEntryService;
+    private final JournalEntryService journalEntryService;
     @Getter
     private final JournalThreadSpec spec;
     @Getter
@@ -118,6 +126,27 @@ public class JournalThreadService
                 .toList();
     }
 
+
+    /**
+     * 페이징 목록 조회 후 소속 엔트리 태그 집계를 붙인다.
+     * <p>
+     * 변경 전: 목록 DTO 의 {@code tag} 가 비어 목록 UI 의 태그 영역이 렌더되지 않았다.
+     * 상세({@link #viewDetailPage}) 만 {@link #applyEntryTagSummary} 를 호출했기 때문이다.
+     * 변경 후: 목록도 동일 계약(소속 엔트리 태그 합집합, tagId 중복 제거)을 일괄 적용한다.
+     * </p>
+     *
+     * @param searchParamMap 검색 조건
+     * @param pageable 페이징
+     * @return 태그 집계가 채워진 페이징 DTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<JournalThreadDto> getPageDto(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
+        final Page<JournalThreadDto> page = BaseAttachableService.super.getPageDto(searchParamMap, pageable);
+        this.applyEntryTagSummaries(page.getContent());
+        return page;
+    }
+
     /**
      * 등록 후처리. (override)
      *
@@ -147,7 +176,7 @@ public class JournalThreadService
     }
 
     /**
-     * 소속 엔트리 태그를 스레드 표시 태그로 집계한다.
+     * 소속 엔트리 태그를 스레드 표시 태그로 집계한다. (단건 — 상세)
      * <p>
      * 저널 챕터의 {@code applyChapterTagSummary} 와 동형이다. 스레드는 자체 태그를 소유하지 않으므로
      * (엔티티 TagEmbed 제거) 화면 태그는 소속 엔트리 태그의 합집합이다. tagId 로 중복 제거한다.
@@ -157,18 +186,57 @@ public class JournalThreadService
      */
     private void applyEntryTagSummary(final JournalThreadDto dto) throws Exception {
         if (dto == null || dto.getId() == null) return;
-        final List<JournalEntryDto> entries = journalThreadEntryService.getEntriesByThread(dto.getId());
-        final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
-        for (final JournalEntryDto entry : entries) {
-            final TagCmpstn entryTag = entry.getTag();
-            final List<TagContentDto> tagList = (entryTag == null) ? null : entryTag.getList();
-            if (CollectionUtils.isEmpty(tagList)) continue;
-            for (final TagContentDto tag : tagList) {
-                tagMap.putIfAbsent(tag.getTagId(), tag);
+        this.applyEntryTagSummaries(List.of(dto));
+    }
+
+    /**
+     * 여러 스레드에 소속 엔트리 태그 집계를 일괄 적용한다. (목록 N+1 방지)
+     *
+     * @param dtoList 대상 스레드 DTO 목록
+     */
+    private void applyEntryTagSummaries(final List<JournalThreadDto> dtoList) throws Exception {
+        if (CollectionUtils.isEmpty(dtoList)) return;
+
+        final List<Integer> threadIds = dtoList.stream()
+                .map(JournalThreadDto::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        if (threadIds.isEmpty()) return;
+
+        final Map<Integer, List<Integer>> entryIdsByThread = journalThreadEntryService.getEntryIdsGroupedByThread(threadIds);
+        final Set<Integer> allEntryIds = new HashSet<>();
+        for (final List<Integer> entryIds : entryIdsByThread.values()) {
+            if (CollectionUtils.isEmpty(entryIds)) continue;
+            allEntryIds.addAll(entryIds);
+        }
+
+        final Map<Integer, JournalEntryDto> entryById = new LinkedHashMap<>();
+        if (!allEntryIds.isEmpty()) {
+            for (final JournalEntryDto entry : journalEntryService.getListDtoByIds(allEntryIds)) {
+                if (entry == null || entry.getId() == null) continue;
+                entryById.put(entry.getId(), entry);
             }
         }
-        if (dto.getTag() == null) dto.setTag(new TagCmpstn());
-        dto.getTag().setList(new ArrayList<>(tagMap.values()));
+
+        for (final JournalThreadDto dto : dtoList) {
+            if (dto == null || dto.getId() == null) continue;
+            final List<Integer> entryIds = entryIdsByThread.getOrDefault(dto.getId(), List.of());
+            final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
+            for (final Integer entryId : entryIds) {
+                final JournalEntryDto entry = entryById.get(entryId);
+                if (entry == null) continue;
+                final TagCmpstn entryTag = entry.getTag();
+                final List<TagContentDto> tagList = (entryTag == null) ? null : entryTag.getList();
+                if (CollectionUtils.isEmpty(tagList)) continue;
+                for (final TagContentDto tag : tagList) {
+                    if (tag == null || tag.getTagId() == null) continue;
+                    tagMap.putIfAbsent(tag.getTagId(), tag);
+                }
+            }
+            if (dto.getTag() == null) dto.setTag(new TagCmpstn());
+            dto.getTag().setList(new ArrayList<>(tagMap.values()));
+        }
     }
 
     /**

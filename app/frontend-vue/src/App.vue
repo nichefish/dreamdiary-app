@@ -7,6 +7,11 @@
   -->
   <JournalEntryRegistModal v-if="authStore.isAuthenticated && !isPopup" />
   <JournalEntryViewModal v-if="authStore.isAuthenticated && !isPopup" />
+  <!--
+    스레드 상세는 주간·월간·일간·검색의 현재 화면 문맥을 보존한 채 직접 연다.
+    thread-detail route의 딥링크도 같은 단일 모달 인스턴스를 사용한다.
+  -->
+  <JournalThreadDetailModal v-if="authStore.isAuthenticated" />
   <AppRuntimeStatus />
 </template>
 
@@ -17,6 +22,7 @@ import AppRuntimeStatus from "@/shared/components/system/AppRuntimeStatus.vue";
 import AppChat from "@/features/chat/AppChat.vue";
 import JournalEntryRegistModal from "@/features/journal/entry/modals/JournalEntryRegistModal.vue";
 import JournalEntryViewModal from "@/features/journal/entry/modals/JournalEntryViewModal.vue";
+import JournalThreadDetailModal from "@/features/journal/thread/modals/JournalThreadDetailModal.vue";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";

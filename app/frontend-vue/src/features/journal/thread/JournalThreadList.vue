@@ -23,6 +23,68 @@
           <button type="submit" class="btn btn-sm btn-light-primary">{{ t("common.search") }}</button>
           <button type="button" class="btn btn-sm btn-light" @click="resetFilters">{{ t("common.reset") }}</button>
         </form>
+        <!--begin::태그 필터 (엔트리 검색 팝업과 동형 — 멀티 AND)-->
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+          <span class="fw-bold fs-7 text-gray-700">{{ t("common.tag") }}</span>
+          <input
+            v-model="tagInput"
+            type="text"
+            class="form-control form-control-sm form-control-solid"
+            style="min-width:160px; max-width:240px;"
+            :placeholder="t('journal.thread.filter.tag.placeholder')"
+            :title="tagInputTitle"
+            maxlength="100"
+            list="journal-thread-list-tag-options"
+            autocomplete="off"
+            :disabled="isTagCategoryChoicePending"
+            @focus="ensureTagSelectorData()"
+            @keydown.enter.prevent="addTagFromInput"
+          />
+          <datalist id="journal-thread-list-tag-options">
+            <option
+              v-for="tagName in tagNameOptions"
+              :key="tagName"
+              :value="tagName"
+            />
+          </datalist>
+          <button
+            type="button"
+            class="btn btn-sm btn-light-primary"
+            :disabled="isTagCategoryChoicePending"
+            @click="addTagFromInput"
+          >
+            + {{ t("common.add") }}
+          </button>
+          <div v-if="store.filterTagIds.length > 0" class="d-flex flex-wrap gap-2">
+            <span
+              v-for="tagId in store.filterTagIds"
+              :key="tagId"
+              class="badge badge-light-primary fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary cursor-pointer"
+              :title="t('journal.entry.search.tag.remove.tooltip')"
+              @click="removeTag(tagId)"
+            >
+              #{{ store.filterTagLabelMap[tagId] ?? tagId }}
+              <i class="bi bi-x"></i>
+            </span>
+          </div>
+        </div>
+        <div class="text-muted fs-8 mt-1">{{ tagInputHint }}</div>
+        <div v-if="tagCategoryChoices.length > 0" class="d-flex align-items-center gap-2 mt-2">
+          <span class="text-muted fs-8">{{ t("journal.entry.search.category.select") }}</span>
+          <button
+            v-for="ctgr in tagCategoryChoices"
+            :key="ctgr"
+            type="button"
+            class="btn btn-xs btn-light-primary"
+            @click="selectTagCategory(ctgr)"
+          >
+            {{ ctgr || t("journal.entry.search.category.none") }}
+          </button>
+          <button type="button" class="btn btn-xs btn-light-secondary" @click="cancelTagCategoryChoice">
+            {{ t("common.cancel") }}
+          </button>
+        </div>
+        <!--end::태그 필터-->
         <div v-if="store.categoryError" class="text-danger fs-8 mt-2">{{ store.categoryError }}</div>
         <!--end::검색 폼-->
       </div>
@@ -147,48 +209,76 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, watch } from "vue";
-  import { useRouter } from "vue-router";
-  import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
-  import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
-  import type { JournalThreadDto } from "@/features/journal/stores/journalThread";
-  import { useLocaleStore } from "@/shared/i18n/stores/locale";
-  import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
-  
-  const store = useJournalThreadStore();
-  const attachableStore = useAttachableModalStore();
-  const { t } = useLocaleStore();
-  const router = useRouter();
-  
-  onMounted(() => {
-    void Promise.all([
-      store.fetchList(0),
-      store.fetchCategoryOptions(),
-    ]);
-  });
+import { computed, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
+import type { JournalThreadDto } from "@/features/journal/stores/journalThread";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
+import { swalAlert } from "@/shared/utils/swal";
 
-  watch(
-    () => store.loading,
-    (loading, wasLoading) => {
-      if (wasLoading && !loading) void reinitMetronicAfterDom();
-    }
-  );
+/** 태그 후보 API 응답 항목 */
+interface SearchTagDto {
+  id?: number | string;
+  tagId?: number | string;
+  name?: string;
+  ctgr?: string;
+}
 
-  function search(): void {
-    void store.fetchList(0);
-  }
+const store = useJournalThreadStore();
+const attachableStore = useAttachableModalStore();
+const { t } = useLocaleStore();
+const router = useRouter();
 
-  function resetFilters(): void {
-    void store.resetFilters();
-  }
+const tagInput = ref("");
+const tagCategoryMap = ref<Record<string, string[]>>({});
+const tagCatalog = ref<SearchTagDto[]>([]);
+const tagSelectorLoaded = ref(false);
+const tagCategoryChoices = ref<string[]>([]);
+const pendingTagName = ref("");
 
-  function openDetail(id: number): void {
-    void router.push({ name: "thread-detail", params: { id } });
-  }
+const isTagCategoryChoicePending = computed(() => tagCategoryChoices.value.length > 0);
+const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
+const tagInputHint = computed(() => (isTagCategoryChoicePending.value
+  ? t("journal.entry.search.tag.category.pending")
+  : t("journal.thread.filter.tag.hint")));
+const tagInputTitle = computed(() => (isTagCategoryChoicePending.value
+  ? t("journal.entry.search.tag.category.pending")
+  : t("journal.thread.filter.tag.placeholder")));
 
-  function openModify(id: number): void {
-    void router.push({ name: "thread-edit", params: { id } });
-  }
+onMounted(() => {
+  void Promise.all([
+    store.fetchList(0),
+    store.fetchCategoryOptions(),
+  ]);
+});
+
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  },
+);
+
+function search(): void {
+  void store.fetchList(0);
+}
+
+function resetFilters(): void {
+  tagInput.value = "";
+  cancelTagCategoryChoice();
+  void store.resetFilters();
+}
+
+function openDetail(id: number): void {
+  void router.push({ name: "thread-detail", params: { id } });
+}
+
+function openModify(id: number): void {
+  void router.push({ name: "thread-edit", params: { id } });
+}
 
 /** 스레드 태그 보유 여부 */
 function hasThreadTags(thread: JournalThreadDto): boolean {
@@ -199,5 +289,131 @@ function openCommentList(thread: JournalThreadDto): void {
   const contentType = thread.contentType ?? "JOURNAL_THREAD";
   if (!thread.id || !contentType) return;
   void attachableStore.openCommentList(thread.id, contentType);
+}
+
+/**
+ * 일기·꿈 태그 카탈로그를 합쳐 후보로 쓴다.
+ * 스레드 소속 엔트리는 유형이 섞이므로 검색 팝업의 단일 type 과 달리 합집합이 필요하다.
+ */
+async function ensureTagSelectorData(): Promise<void> {
+  if (tagSelectorLoaded.value) return;
+  try {
+    const types = ["DIARY", "DREAM"] as const;
+    const responses = await Promise.all(types.flatMap((type) => [
+      axios.get("/api/journal/entry/tag/categories", { params: { type } }),
+      axios.get("/api/journal/entry/tags", { params: { type } }),
+    ]));
+    const nextMap: Record<string, string[]> = {};
+    const nextCatalog: SearchTagDto[] = [];
+    for (let i = 0; i < types.length; i++) {
+      const categoryRes = responses[i * 2];
+      const tagRes = responses[i * 2 + 1];
+      const catalog = (tagRes.data?.rsltList ?? []) as SearchTagDto[];
+      nextCatalog.push(...catalog);
+      const merged = mergeCatalogIntoCategoryMap(
+        normalizeCategoryMap(categoryRes.data?.rsltMap ?? categoryRes.data?.rsltObj),
+        catalog,
+      );
+      for (const [name, categories] of Object.entries(merged)) {
+        const existing = nextMap[name] ? [...nextMap[name]] : [];
+        for (const ctgr of categories) {
+          if (!existing.includes(ctgr)) existing.push(ctgr);
+        }
+        nextMap[name] = existing;
+      }
+    }
+    tagCatalog.value = nextCatalog;
+    tagCategoryMap.value = nextMap;
+    nextCatalog.forEach((tag) => store.cacheFilterTagLabel(tag.id ?? tag.tagId, tag.name));
+    tagSelectorLoaded.value = true;
+  } catch (e: unknown) {
+    console.warn("[JournalThreadList] tag selector data load failed.", e);
+  }
+}
+
+function mergeCatalogIntoCategoryMap(baseMap: Record<string, string[]>, catalog: SearchTagDto[]): Record<string, string[]> {
+  const next: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(baseMap)) {
+    next[tagName] = [...categories];
+  }
+  catalog.forEach((tag) => {
+    const name = String(tag.name ?? "").trim();
+    if (!name) return;
+    const ctgr = String(tag.ctgr ?? "");
+    const categories = next[name] ? [...next[name]] : [];
+    if (!categories.includes(ctgr)) categories.push(ctgr);
+    next[name] = categories;
+  });
+  return next;
+}
+
+function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const out: Record<string, string[]> = {};
+  for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
+    if (!Array.isArray(categories)) continue;
+    out[tagName] = categories.map((c) => String(c ?? "")).filter((c) => c.length > 0);
+  }
+  return out;
+}
+
+function normalizeTagName(raw: string): string {
+  return raw.trim().replace(/\s+/g, "_");
+}
+
+function findKnownTagName(input: string): string {
+  const normalized = normalizeTagName(input);
+  if (tagCategoryMap.value[normalized]) return normalized;
+  return tagNameOptions.value.find((name) => name.toLowerCase() === normalized.toLowerCase()) ?? normalized;
+}
+
+async function addTagFromInput(): Promise<void> {
+  await ensureTagSelectorData();
+  const tagName = findKnownTagName(tagInput.value);
+  const categories = tagCategoryMap.value[tagName] ?? [];
+  if (!tagName || categories.length === 0) {
+    void swalAlert(t("journal.entry.search.tag.select-existing"));
+    return;
+  }
+  if (categories.length === 1) {
+    await addTagByNameAndCategory(tagName, categories[0]);
+    return;
+  }
+  pendingTagName.value = tagName;
+  tagCategoryChoices.value = categories;
+}
+
+function selectTagCategory(ctgr: string): void {
+  void addTagByNameAndCategory(pendingTagName.value, ctgr);
+}
+
+function cancelTagCategoryChoice(): void {
+  pendingTagName.value = "";
+  tagCategoryChoices.value = [];
+}
+
+async function addTagByNameAndCategory(tagName: string, ctgr: string): Promise<void> {
+  const matchedTag = tagCatalog.value.find((tag) =>
+    String(tag.name ?? "") === tagName && String(tag.ctgr ?? "") === ctgr,
+  );
+  const tagId = matchedTag?.id ?? matchedTag?.tagId;
+  if (tagId === undefined || tagId === null) {
+    console.warn("[JournalThreadList] selected tag id not found.", { tagName, ctgr });
+    void swalAlert(t("journal.entry.search.tag.not-found"));
+    return;
+  }
+  tagInput.value = "";
+  cancelTagCategoryChoice();
+  const added = store.addFilterTag(tagId, tagName);
+  if (!added) {
+    void swalAlert(t("journal.entry.search.tag.duplicate"));
+    return;
+  }
+  await store.fetchList(0);
+}
+
+function removeTag(tagId: string): void {
+  store.removeFilterTag(tagId);
+  void store.fetchList(0);
 }
 </script>

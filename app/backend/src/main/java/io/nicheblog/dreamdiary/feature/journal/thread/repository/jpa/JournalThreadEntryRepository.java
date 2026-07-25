@@ -80,6 +80,25 @@ public interface JournalThreadEntryRepository
     );
 
     /**
+     * 여러 스레드의 소속을 한 번에 조회한다. (스레드 목록 N+1 방지)
+     * <p>
+     * 목록 화면은 페이지의 각 스레드에 소속 엔트리 태그 집계를 붙인다.
+     * 스레드마다 단건 조회하면 N+1 이 되므로, 일괄로 받아 메모리에서 묶는다.
+     *
+     * @param threadIds 대상 스레드 ID 집합 (비어 있으면 호출하지 말 것)
+     * @param createdBy 등록자 계정명
+     * @return 해당 스레드들의 살아있는 소속 목록
+     */
+    @Query("SELECT te FROM JournalThreadEntryEntity te " +
+            "WHERE te.threadId IN :threadIds " +
+            "  AND te.createdBy = :createdBy " +
+            "ORDER BY te.threadId ASC, te.createdAt ASC")
+    List<JournalThreadEntryEntity> findAllByThreadIds(
+            final @Param("threadIds") Collection<Integer> threadIds,
+            final @Param("createdBy") String createdBy
+    );
+
+    /**
      * 주간 화면에 표시할 기간별 스레드 집계를 조회한다.
      * <p>
      * 현재 사용자 소유의 활성 소속·스레드·엔트리만 포함한다. 일자 목록의 키워드·챕터·

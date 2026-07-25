@@ -28,8 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -152,6 +154,25 @@ public class JournalThreadEntryService {
                 .comparing(JournalEntryDto::getStdrdDt, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(JournalEntryDto::getId, Comparator.nullsLast(Comparator.naturalOrder())));
         return entries;
+    }
+
+
+    /**
+     * 여러 스레드의 소속 엔트리 ID 를 스레드별로 묶는다. (목록 태그 집계용)
+     *
+     * @param threadIds 스레드 ID 집합
+     * @return threadId → entryId 목록 (등록 순). 소속이 없는 스레드는 키 자체가 없을 수 있다.
+     */
+    @Transactional(readOnly = true)
+    public Map<Integer, List<Integer>> getEntryIdsGroupedByThread(final Collection<Integer> threadIds) throws Exception {
+        if (CollectionUtils.isEmpty(threadIds)) return Map.of();
+        final String username = AuthUtils.requireLoginUsername();
+        final Map<Integer, List<Integer>> grouped = new LinkedHashMap<>();
+        for (final JournalThreadEntryEntity membership : repository.findAllByThreadIds(threadIds, username)) {
+            if (membership == null || membership.getThreadId() == null || membership.getEntryId() == null) continue;
+            grouped.computeIfAbsent(membership.getThreadId(), ignored -> new ArrayList<>()).add(membership.getEntryId());
+        }
+        return grouped;
     }
 
     /**

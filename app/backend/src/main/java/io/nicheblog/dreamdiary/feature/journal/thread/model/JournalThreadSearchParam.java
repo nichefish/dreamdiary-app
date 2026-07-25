@@ -6,6 +6,8 @@ import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Size;
 
+import java.util.List;
+
 /**
  * JournalThreadSearchParam
  * <pre>
@@ -26,4 +28,13 @@ public class JournalThreadSearchParam
     /** 글 분류 코드 (목록 필터) */
     @Size(max = 50)
     private String categoryCode;
+
+    /**
+     * 소속 엔트리 태그 필터 (멀티, AND).
+     * <p>
+     * 스레드는 자체 태그를 소유하지 않으므로, 소속 엔트리 태그 합집합이
+     * 선택한 tagId 를 모두 포함하는 스레드만 남긴다.
+     * </p>
+     */
+    private List<Integer> tagIds;
 }
