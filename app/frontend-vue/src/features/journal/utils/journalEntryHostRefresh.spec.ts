@@ -1,5 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
-import { refreshJournalEntryHostForRoute } from "./journalEntryHostRefresh";
+import { describe, expect, it, vi, afterEach } from "vitest";
+import {
+  refreshJournalEntryHostForRoute,
+  registerJournalEntrySearchHost,
+} from "./journalEntryHostRefresh";
 
 function makeJournalStore() {
   return {
@@ -9,6 +12,12 @@ function makeJournalStore() {
 }
 
 describe("엔트리 액션 이후 현재 호스트 갱신 계약", () => {
+  afterEach(() => {
+    // 테스트 간 검색 호스트 등록이 남지 않도록 해제한다.
+    const unregister = registerJournalEntrySearchHost(async () => undefined);
+    unregister();
+  });
+
   it("스레드 상세에서는 일자 목록 대신 열린 스레드 상세를 갱신한다", async () => {
     const journalStore = makeJournalStore();
     const threadStore = {
@@ -70,23 +79,56 @@ describe("엔트리 액션 이후 현재 호스트 갱신 계약", () => {
     expect(journalStore.fetchDays).toHaveBeenCalled();
   });
 
-  it("검색 화면 위에 스레드 상세가 열렸으면 검색 로컬 상태는 호스트에 맡기고 전경 상세만 갱신한다", async () => {
+  it("검색 화면에서는 일자 fetchDays 대신 등록된 loadEntries로 로컬 결과를 갱신한다", async () => {
+    const journalStore = makeJournalStore();
+    const threadStore = {
+      detailOpen: false,
+      refreshOpenDetail: vi.fn().mockResolvedValue(false),
+    };
+    const loadEntries = vi.fn().mockResolvedValue(undefined);
+    const unregister = registerJournalEntrySearchHost(loadEntries);
+
+    try {
+      const scope = await refreshJournalEntryHostForRoute(
+        journalStore,
+        threadStore,
+        { name: "journal-entry-search", query: {} },
+        "2026-07-24",
+      );
+
+      expect(scope).toBe("journal-entry-search");
+      expect(loadEntries).toHaveBeenCalledTimes(1);
+      expect(threadStore.refreshOpenDetail).not.toHaveBeenCalled();
+      expect(journalStore.fetchDays).not.toHaveBeenCalled();
+    } finally {
+      unregister();
+    }
+  });
+
+  it("검색 화면 위에 스레드 상세가 열렸으면 전경 상세와 검색 로컬 결과를 함께 갱신한다", async () => {
     const journalStore = makeJournalStore();
     const threadStore = {
       detailOpen: true,
       refreshOpenDetail: vi.fn().mockResolvedValue(true),
     };
+    const loadEntries = vi.fn().mockResolvedValue(undefined);
+    const unregister = registerJournalEntrySearchHost(loadEntries);
 
-    const scope = await refreshJournalEntryHostForRoute(
-      journalStore,
-      threadStore,
-      { name: "journal-entry-search", query: {} },
-      "2026-07-24",
-    );
+    try {
+      const scope = await refreshJournalEntryHostForRoute(
+        journalStore,
+        threadStore,
+        { name: "journal-entry-search", query: {} },
+        "2026-07-24",
+      );
 
-    expect(scope).toBe("thread-detail");
-    expect(threadStore.refreshOpenDetail).toHaveBeenCalledTimes(1);
-    expect(journalStore.fetchDays).not.toHaveBeenCalled();
+      expect(scope).toBe("thread-detail");
+      expect(threadStore.refreshOpenDetail).toHaveBeenCalledTimes(1);
+      expect(loadEntries).toHaveBeenCalledTimes(1);
+      expect(journalStore.fetchDays).not.toHaveBeenCalled();
+    } finally {
+      unregister();
+    }
   });
 
   it("스레드 route에서 상세가 닫혔으면 무관한 일자 목록으로 우회하지 않는다", async () => {

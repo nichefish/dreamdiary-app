@@ -977,7 +977,8 @@ function openInterpretationRegist() {
 function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
   const dt = stdrdDt;
   void refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
-    if (scope === "thread-detail" || !dt) return;
+    /* 검색·스레드 상세는 배경 일자 스크롤 대상이 아니다. */
+    if (scope === "thread-detail" || scope === "journal-entry-search" || !dt) return;
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });

@@ -1135,6 +1135,7 @@ type TodoRow = {
 - 파라미터: `type`, `tagIds`, `searchKeywords`
 - 고급 필터: 유형 토글, 키워드 입력, 태그 입력. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다.
 - 응답: `AjaxResponse.rsltList` (`JournalEntryDto[]`)
+- 소속 스레드: 목록 enrich 시 `JournalEntryDto.threadList` 를 채운다(`JournalEntryRelatedEnricher` → `getMapByEntryIds`, 일자 목록과 동일 계약). 검색 결과 행은 `JournalEntryItem`으로 소속 스레드 칩을 표시하며, 칩 클릭은 현재 검색 화면 위에 전역 스레드 상세 모달을 연다.
 - 공휴일·주말 표시: 목록 enrich 시 `JournalEntryDto.isHolyday` / `holydayNm` 을 채운다(`ScheduleService.getHolydayMap` + `JournalEntryHolydayHelper`, 일자 목록과 동일 계약). `isHolyday` 는 공휴일 또는 주말, `holydayNm` 은 공휴일명만(주말 단독이면 비움).
 - `type=DREAM` 응답의 태그 항목은 사용자별 꿈 태그 프로필 본문이 있으면 `tag.list[].profileContent`를 포함한다. 검색 결과 행은 `JournalEntryItem`을 통해 꿈 엔트리 본문 아래에 해당 프로필을 표시한다.
 - 검색 키워드가 있으면 검색 결과 행의 엔트리 본문에서 해당 키워드와 일치하는 텍스트를 하이라이트한다. 하이라이트는 검색 팝업에서만 활성화하며, 결과 HTML 구조와 복사/TXT 내보내기 포맷을 변경하지 않는다.
@@ -1146,6 +1147,7 @@ type TodoRow = {
 - 일기/꿈 태그의 `검색` 액션은 현재 월간/주간 목록 필터를 변경하지 않고 새 창 검색 화면으로 이동한다.
 - 검색 팝업 내부에서 일기/꿈 태그의 `검색` 액션을 누르면 새 팝업을 열지 않고 같은 창의 URL query를 바꿔 결과를 재조회한다.
 - 검색 팝업 내부의 `태그 설정` 액션은 `JournalTagProfileModal`을 같은 창에서 연다. 저장·삭제 성공 후 `success` 이벤트로 검색 결과(`loadEntries`)를 재조회한다.
+- 스레드 소속 추가·해제·상태/라이프사이클 등 엔트리 액션 성공 후 `refreshJournalEntryHostForRoute`가 등록된 검색 호스트(`loadEntries`)로 로컬 결과를 갱신한다. 스레드 상세가 열려 있으면 전경 상세와 검색 결과를 함께 재조회한다.
 - 검색 팝업 내부 검색 결과에 저널 해석이 표시되면, 해석 행의 수정 액션은 `JournalInterpretationRegistModal`을 같은 창에서 열어야 한다.
 - 각 검색 결과는 수정/삭제가 가능하다. 수정 저장 성공 시 성공 알림 표시 전에 현재 검색 조건 목록 또는 수정 대상 DOM을 준비하고, 성공 알림 OK 이후 저장한 결과 위치로 스크롤하며, 삭제 성공 시 결과 목록에서 제거한다.
 - 검색 팝업 내부에서 엔트리 본문/태그 프로필 다음에 이어지는 저널 해석 행은 같은 결과 묶음으로 읽히도록 공통 저널 행 간격보다 좁게 붙여 표시한다.

@@ -309,7 +309,7 @@ function openHistory(): void {
 function scrollAfterFetch(): void {
   const dt = props.interpretation.stdrdDt;
   void refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
-    if (scope === "thread-detail" || !dt) return;
+    if (scope === "thread-detail" || scope === "journal-entry-search" || !dt) return;
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });

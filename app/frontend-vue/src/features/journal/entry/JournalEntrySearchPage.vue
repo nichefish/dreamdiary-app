@@ -270,14 +270,14 @@
  * JournalEntryItem 을 그대로 사용해 저널 일자 목록과 동일한 UI·컨텍스트 메뉴 제공.
  * 레거시 journal_entry_search_module.ts 의 멀티키워드·멀티태그 AND 검색을 Vue SPA 로 재현.
  */
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onScopeDispose, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { swalAlert, swalRequestError } from "@/shared/utils/swal";
-import { useJournalStore } from "@/features/journal/stores/journal";
+import { swalAlert } from "@/shared/utils/swal";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
+import { registerJournalEntrySearchHost } from "@/features/journal/utils/journalEntryHostRefresh";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { joinAppBasePath } from "@/shared/utils/appPath";
@@ -317,7 +317,6 @@ interface SearchTagDto {
 
 const route = useRoute();
 const router = useRouter();
-const journalStore = useJournalStore();
 const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 
@@ -570,33 +569,6 @@ async function addTagByNameAndCategory(tagName: string, ctgr: string): Promise<b
   return true;
 }
 
-async function fetchEntryDetail(entryId: number | string): Promise<JournalEntryDto | null> {
-  try {
-    const res = await axios.get(`/api/journal/entry/${entryId}`);
-    return res.data?.rsltObj ?? null;
-  } catch (e: unknown) {
-    console.error("[JournalEntrySearchPage] entry detail load failed", { entryId }, e);
-    void swalRequestError(e, t("journal.entry.search.detail.load.failure"));
-    return null;
-  }
-}
-
-function findEntryIndex(entryId: number | string): number {
-  return entries.value.findIndex((entry) => String(entry.id) === String(entryId));
-}
-
-function hasStateList(entry: JournalEntryDto): boolean {
-  return Array.isArray(entry.state?.list);
-}
-
-function mergeSearchEntryReplacement(updatedEntry: JournalEntryDto, currentEntry: JournalEntryDto): JournalEntryDto {
-  return {
-    ...updatedEntry,
-    state: hasStateList(updatedEntry) ? updatedEntry.state : currentEntry.state,
-    comment: updatedEntry.comment ?? currentEntry.comment,
-  };
-}
-
 async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
   await nextTick();
   window.requestAnimationFrame(() => {
@@ -734,31 +706,22 @@ function openDailyView(stdrdDt: string | undefined): void {
   window.open(joinAppBasePath(`/journal/daily?stdrdDt=${stdrdDt}`), "_blank", `width=${w},height=${h}`);
 }
 
-async function prepareEntrySaveDom(payload?: JournalEntrySaveEvent): Promise<void> {
-  const entryId = payload?.entryId;
-  if (!entryId) {
-    await loadEntries();
-    return;
-  }
-
-  const entryIndex = findEntryIndex(entryId);
-  if (entryIndex < 0) {
-    await loadEntries();
-    return;
-  }
-
-  const updatedEntry = await fetchEntryDetail(entryId);
-  if (!updatedEntry) {
-    await loadEntries();
-    return;
-  }
-
-  entries.value.splice(entryIndex, 1, mergeSearchEntryReplacement(updatedEntry, entries.value[entryIndex]));
-  await reinitMetronicAfterDom();
+/**
+ * 검색 팝업에서 엔트리 저장(등록·수정) 성공 시 검색 결과를 재조회한다.
+ * <p>
+ * 변경 전에는 수정 대상 엔트리를 상세 조회해 자리에서 부분 교체(splice)했다. 그 방식은
+ * 목록에 남아 있는 엔트리의 내용만 갱신할 뿐, 검색 조건(`tagIds` AND) 기준 소속 변화를
+ * 반영하지 못했다. 예: 검색 필터로 걸린 태그를 수정으로 제거해도 결과 목록에서 빠지지 않았다.
+ * 변경 후에는 서버 검색 쿼리를 소속(결과 포함 여부)의 단일 진실 원천으로 보고 `loadEntries()`로
+ * 재조회해 빠짐/들어옴을 항상 서버 기준으로 반영한다. 저장 위치 스크롤은 `onEntrySaveSuccess`가
+ * 담당하며, 재조회로 엔트리가 빠지면 스크롤 타깃 미발견으로 자연히 넘어간다.
+ */
+async function prepareEntrySaveDom(): Promise<void> {
+  await loadEntries();
 }
 
 function onEntrySavePrepare(payload: JournalEntrySavePrepareEvent): void {
-  payload.waitUntil(prepareEntrySaveDom(payload));
+  payload.waitUntil(prepareEntrySaveDom());
 }
 
 async function onEntrySaveSuccess(payload?: JournalEntrySaveEvent): Promise<void> {
@@ -857,10 +820,13 @@ function getDateEntryCountLabel(stdrdDt?: string | null): string {
   return t("journal.entry.search.date-entry-count").replace("{0}", String(count));
 }
 
-/* 인라인 상태/lifecycle 변경(JournalEntryItem → fetchDays) 완료 후 검색 목록 갱신 */
-watch(() => journalStore.loading, (newVal, oldVal) => {
-  if (!newVal && oldVal) void loadEntries();
-});
+/**
+ * 엔트리 액션 후 `refreshJournalEntryHostForRoute`가 호출할 검색 로컬 갱신 경로.
+ * 변경 전: journalStore.loading watch로 fetchDays 부수효과에 의존해 스레드 소속 칩이 빠질 수 있었다.
+ * 변경 후: 호스트 갱신이 이 콜백으로 loadEntries를 직접 호출한다.
+ */
+const unregisterSearchHost = registerJournalEntrySearchHost(() => loadEntries());
+onScopeDispose(unregisterSearchHost);
 </script>
 
 <style scoped>
