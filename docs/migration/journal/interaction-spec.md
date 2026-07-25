@@ -685,7 +685,7 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 - 모달 마운트: 비팝업 인증 라우트에서는 `App.vue`가 `JournalEntryViewModal`과 `JournalEntryRegistModal`을 전역 마운트한다 (`JournalDayLayout`에서는 등록/수정 모달 중복 마운트하지 않음).
 - 팝업 라우트(`journal-entry-search`, `journal-daily`)는 각자 레이아웃/페이지에 등록/수정 모달을 유지하고, `AppChat` 자체가 숨겨지므로 채팅 출처 딥링크 경로가 없다.
-- 채팅 드로어 z-index(6002)보다 모달이 위에 오도록 `App.vue`가 `body.modal-open`일 때 `.modal` / `.modal-backdrop` z-index를 6100 / 6090으로 올린다. 모달 내부 저장·삭제 확인 SweetAlert2 컨테이너는 활성 모달보다 위에 보여야 하므로 같은 조건에서 `.swal2-container` z-index를 6110으로 올린다.
+- 채팅 드로어 z-index(6002)보다 모달이 위에 오도록 `App.vue`가 `body.modal-open`일 때 `.modal` / `.modal-backdrop` z-index를 6100 / 6090으로 올린다. 모달 내부 저장·삭제 확인 SweetAlert2 컨테이너는 활성 모달보다 위에 보여야 하므로 같은 조건에서 `.swal2-container` z-index를 6110으로 올린다. 다만 모든 모달을 6100으로 평탄화하면 중첩 모달(예: 스레드 상세에서 연 수정·댓글·이력 모달)이 DOM 순서에 따라 부모 뒤로 깔린다. 이를 막기 위해 `shared/utils/modalStack.ts`의 `installModalStacking()`이 `show.bs.modal`에서 이미 열린 모달 수에 따라 z-index를 `6100 + n*2`로 올리고(해당 backdrop은 `z-1`) 자식 모달을 부모 위로 스태킹한다. step을 작게(2) 두어 스택 모달을 SweetAlert(6110)보다 낮게 유지하므로 모달 내부 확인창은 계속 최상단이다.
 - 출처 목록은 기본 5건 미리보기이며, 숨은 건수가 있으면 `chat.rag.source.more`로 전체 펼친다.
 
 ### 팝업 직접 진입 세션 만료 처리 (`router/index.ts`, `sessionExpired.ts`)

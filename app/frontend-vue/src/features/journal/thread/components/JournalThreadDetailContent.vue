@@ -107,12 +107,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import JournalEntryItem from "@/features/journal/entry/components/JournalEntryItem.vue";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const store = useJournalThreadStore();
@@ -154,6 +155,15 @@ function groupEntriesByDate(entries: JournalEntryDto[]): ThreadEntryGroup[] {
 }
 
 const entryGroups = computed(() => groupEntriesByDate(store.detailEntries));
+
+/**
+ * 소속 엔트리가 렌더된 뒤 Metronic KTMenu(⋯ 컨텍스트 메뉴)를 재바인딩한다.
+ * 검색·일자 화면과 달리 스레드 상세는 재초기화 경로가 없어 ⋯ 메뉴가 열리지 않았다(모달·독립 페이지 공용).
+ * 최초 로드와 refreshOpenDetail 재조회 모두 detailEntries 재할당이라 함께 잡는다.
+ */
+watch(() => store.detailEntries, () => {
+  void reinitMetronicAfterDom();
+}, { immediate: true });
 
 const hasDetailTags = computed(() =>
   Array.isArray(store.detailModel?.tag?.list) && store.detailModel!.tag!.list!.length > 0

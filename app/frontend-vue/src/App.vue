@@ -29,6 +29,7 @@ import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";
 import { reportRuntimeError } from "@/shared/utils/appRuntimeStatus";
+import { installModalStacking } from "@/shared/utils/modalStack";
 
 const authStore = useAuthStore();
 const localeStore = useLocaleStore();
@@ -52,6 +53,7 @@ watchEffect(() => {
 });
 
 onMounted(() => {
+  installModalStacking();
   document.body.classList.remove("page-loading");
   if (authStore.isAuthenticated) void preloadCategoryMaps();
 });
@@ -98,6 +100,8 @@ onErrorCaptured((error) => {
  * Bootstrap modals and SweetAlert confirmations default to ~1055/1060, so
  * entry/detail modals opened from chat RAG sources and modal-scoped confirms
  * would render under the drawer or the active modal without this raise.
+ * Nested modals get incremental z-index from modalStack.ts (installModalStacking) so a child
+ * modal sits above its parent, kept below SweetAlert (6110).
  */
 body.modal-open .modal {
   z-index: 6100;
