@@ -143,12 +143,7 @@
               <td class="text-center text-gray-500 fs-7 hidden-table">{{ thread.rnum }}</td>
               <td class="ps-3">
                 <span v-if="thread.categoryName" class="badge badge-light-primary me-2 fs-9">{{ thread.categoryName }}</span>
-                <span
-                  v-if="lifecycleKeyOf(thread)"
-                  class="badge me-2 fs-9"
-                  :class="lifecycleBadgeClass(lifecycleKeyOf(thread))"
-                >{{ lifecycleLabel(lifecycleKeyOf(thread)) }}</span>
-                <span class="fs-6">{{ thread.title }}</span>
+                <span class="fs-6 fw-semibold">{{ thread.title }}</span>
                 <span
                   v-if="membershipCountOf(thread) > 0"
                   class="text-muted fs-9 ms-2"
@@ -164,15 +159,20 @@
                   :title="t('journal.thread.comments.tooltip')"
                   @click.stop="openCommentList(thread)"
                 >[{{ thread.comment.cnt }}]</button>
-                <!--begin::태그-->
+                <span
+                  v-if="lifecycleKeyOf(thread)"
+                  class="badge ms-2 fs-9"
+                  :class="lifecycleBadgeClass(lifecycleKeyOf(thread))"
+                >{{ lifecycleLabel(lifecycleKeyOf(thread)) }}</span>
+                <!--begin::태그 (스레드 상세·일자 뷰와 동일 렌더: [분류] #이름 밑줄 primary, bi-tag 아이콘 제거)-->
                 <div v-if="hasThreadTags(thread)" class="mt-1">
-                  <i class="bi bi-tag fs-8 me-1"></i>
                   <span
                     v-for="tag in thread.tag?.list"
                     :key="String(tag.tagId)"
-                    class="text-muted fs-9 pe-1"
+                    class="text-muted pe-1"
                   >
-                    #{{ tag.name }}
+                    <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
+                    #<span class="border-bottom text-primary fw-lighter opacity-hover">{{ tag.name }}</span>
                   </span>
                 </div>
                 <!--end::태그-->

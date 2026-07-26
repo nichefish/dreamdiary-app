@@ -504,7 +504,7 @@
 | 목록 tbody | `<tbody>` | `#journal_thread_list_div` | `JournalThreadListApp` Vue 텔레포트 | 행 직접 주입 |
 | 페이지네이션 | include | `_pagination.ftlh` | `paginationInfo` | 기존 서버사이드 페이지네이션 유지 |
 
-`JournalThreadList.vue`의 분류·라이프사이클 필터·제목 placeholder·태그 빈 상태와 조회 실패, 등록 버튼·테이블 헤더·빈 상태·댓글 목록·컨텍스트 메뉴(수정·라이프사이클·삭제) 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 목록 행은 라이프사이클 배지를 제목 앞에 표시한다.
+`JournalThreadList.vue`의 분류·라이프사이클 필터·제목 placeholder·태그 빈 상태와 조회 실패, 등록 버튼·테이블 헤더·빈 상태·댓글 목록·컨텍스트 메뉴(수정·라이프사이클·삭제) 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 목록 행 선두는 카테고리 배지 몫이라, 라이프사이클(진행중 등) 배지는 제목·메타(개수·기간·댓글) 뒤=댓글 버튼 뒤·태그 줄 앞(`ms-2`)에 표시한다.
 
 `JournalThreadLayout.vue`는 목록 검색과 등록·수정이 공유할 카테고리 선택지를 스레드 영역 진입 시 조회해 store에 유지한다. `JournalThreadRegistModal.vue`와 `JournalThreadEditPage.vue`의 등록·수정 제목, 공용 카테고리·제목·본문 필드, placeholder, 저장·닫기/취소 버튼과 저장·미저장 이탈 확인창은 현재 locale의 클라이언트 카탈로그를 사용한다. 카테고리 조회 실패는 목록 검색 카드와 편집 폼 안에 현재 locale 오류를 표시한다. 목록·수정·상세 조회 실패와 등록·수정 결과 fallback도 현재 locale을 사용하며, API가 `message`를 반환하면 서버 메시지를 우선 표시한다.
 
