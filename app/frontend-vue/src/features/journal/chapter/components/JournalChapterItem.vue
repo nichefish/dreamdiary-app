@@ -14,6 +14,9 @@
             <span v-if="chapter.categoryName" style="color:#287D94;">{{ chapter.categoryName }}</span>
             <span class="text-muted fs-8 me-1">{{ chapter.categoryCode }}</span>
           </template>
+          <!--begin::챕터 제목 (분류 뒤 인라인 강조, 접힘·펼침 무관 항상) — 같은 분류 챕터 구분용 -->
+          <span v-if="chapter.title" class="ms-1 text-gray-700">· {{ chapter.title }}</span>
+          <!--end::챕터 제목-->
           <span v-if="!canManageChapter" class="badge badge-light-danger fs-8 ms-1">{{ t("journal.chapter.other-author") }}</span>
         </span>
         <i class="bi fs-4" :class="iconClass"></i>

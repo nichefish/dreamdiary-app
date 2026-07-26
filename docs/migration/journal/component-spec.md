@@ -537,6 +537,8 @@ interface TodoRow {
 - `v-if="tagList.length > 0 && isCollapsed"` — 접힌 상태에서만 DOM에 마운트
 - CSS `d-flex` 와 충돌하므로 CSS 규칙 단독 의존 불가; `v-if` 조건으로 직접 제어
 
+**챕터 헤더 식별**: 헤더는 유형 라벨 + 분류명·분류코드에 이어 `chapter.title`이 있으면 `· {제목}`을 헤더 톤(`text-gray-700`, 헤더 `fw-bolder` 상속)으로 인라인 표시한다(접힘·펼침 무관 항상). 같은 분류의 챕터가 한 일자에 여러 개일 때 접힘 상태에서도 제목으로 구분하기 위함이며, 제목이 없으면 유형:분류로 fallback한다. 기존 헤더 행에 붙여 세로 높이를 늘리지 않는다.
+
 **챕터 등록 모달 (`JournalChapterRegistModal.vue`)**: 제목(`title`)은 필수 항목이 아님.
 - 레거시에서 제목 없이 등록 가능 — `title` 빈 값 허용.
 - `submit()` 에서 title 공백 검증 제거.
