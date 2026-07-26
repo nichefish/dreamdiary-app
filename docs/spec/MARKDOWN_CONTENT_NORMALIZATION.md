@@ -44,7 +44,7 @@
 해야 하는 일:
 
 - 저장된 TinyMCE HTML 구조는 보존한다.
-- ((...)), !!...!!, __...__, ||...||, <@>... 같은 커스텀 인라인 표현은 정해진 wrapper 태그로 변환한다.
+- ((...)), !!...!!, __...__, ||...||, <@>... 같은 커스텀 인라인 표현은 정해진 wrapper 태그로 변환한다. 중첩 시 바깥/안쪽 마커 순서와 무관하게 안쪽도 wrapper로 변환한다(아래 «인라인 중첩»).
 - `(잘 기억이 안 난다.)` — 꿈 본문 기억 불확실 표시용 **고정 문구**만 `md-text-muted`로 감싼다. 일반 `(…)` 패턴이 아니다.
 - wrapper 내부의 사용자 본문 조각은 반드시 HTML escape 후 삽입한다.
 - 변환 후 남아 있는 unsafe `<`는 텍스트로 escape 한다.
@@ -53,6 +53,31 @@
 
 - 정규식 매치 그룹을 raw HTML 문자열로 다시 삽입하지 않는다.
 - `v-html`이 받을 문자열에 사용자 본문 조각을 unescaped 상태로 섞지 않는다.
+
+## 인라인 중첩 (순서 무관)
+
+`!!...!!`, `__...__`, 대화체(`"..."`, `“...”`, `『...』`), `--...--`, `||...||`, `((...))`, `<@>...` 는
+바깥 패턴이 먼저 잡혀도 **매치 그룹 안에서 동일 규칙 집합을 재귀 적용**한 뒤 wrapper를 만든다.
+
+예시:
+
+- `!!__밑줄__!!` → 빨간 span 안에 `<u>밑줄</u>`
+- `__!!강조!!__` → `<u>` 안에 빨간 span
+- `"__말__"` → 대화체 span 안에 `<u>말</u>`
+
+계약:
+
+- wrapper 내부 사용자 텍스트는 여전히 HTML escape 후 삽입한다 (placeholder로 보호된 중첩 HTML만 복원).
+- 동일 구분자 자기중첩(`!!a !!b!! c!!`)의 non-greedy 매칭 한계는 유지한다.
+- 줄 단위 `---` 수평선은 중첩 재귀 대상이 아니다.
+
+관련 테스트:
+
+- `MarkdownUtilsTest.markdownNestsUnderlineInsideDanger`
+- `MarkdownUtilsTest.markdownNestsDangerInsideUnderline`
+- `MarkdownUtilsTest.markdownNestsUnderlineInsideDialog`
+- `MarkdownUtilsTest.markdownNestsDangerInsideNoti`
+- `MarkdownUtilsTest.markdownKeepsLiteralHtmlEscapedInsideNestedWrappers`
 
 ## 대표 회귀 케이스
 

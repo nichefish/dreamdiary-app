@@ -34,51 +34,109 @@ public class MarkdownUtils {
      * 꿈 본문 기억 불확실 표시용 고정 문구. 일반 괄호 패턴이 아니다.
      */
     private static final String DREAM_MEMORY_UNCERTAINTY_PHRASE = "(잘 기억이 안 난다.)";
+    /**
+     * 커스텀 인라인 마크다운을 placeholder로 치환한 뒤, 남은 텍스트를 escape하고 HTML을 복원한다.
+     *
+     * <p>BEFORE: {@code !!}, {@code __}, 대화체 등을 고정 순서로만 적용해
+     * 바깥 패턴이 먼저 잡히면 안쪽 마커가 escape된 채 남았다
+     * (예: {@code !!__밑줄__!!} → 빨간 span 안에 리터럴 {@code __밑줄__}).</p>
+     * <p>AFTER: 중첩 가능 패턴은 매치 그룹에 동일 규칙 집합을 재귀 적용한 뒤 wrap한다.
+     * 바깥/안쪽 마커 순서와 무관하게 중첩 HTML이 만들어진다.
+     * 동일 구분자 자기중첩(예: {@code !!a !!b!! c!!})의 non-greedy 한계는 그대로다.</p>
+     */
     private static String procTextWithGeneratedPlaceholders(final String text, final int maxGroupLength) {
         final List<String> generatedHtmlList = new ArrayList<>();
 
         String part = text;
+        // 수평선은 줄 단위 구조이므로 중첩 재귀 대상이 아니다.
         part = replaceGeneratedPattern(part, Pattern.compile("(?m)^[ \\t]*-{3,}[ \\t]*$"), maxGroupLength, generatedHtmlList, matcher -> "<hr>");
-        part = replaceDialogPatternWithPlaceholders(part, Pattern.compile("\"(.*?)\""), "\u201c", "\u201d", maxGroupLength, generatedHtmlList);
-        part = replaceDialogPatternWithPlaceholders(part, Pattern.compile("\u201c(.*?)\u201d"), "\u201c", "\u201d", maxGroupLength, generatedHtmlList);
-        part = replaceDialogPatternWithPlaceholders(part, Pattern.compile("\u300e(.*?)\u300f"), "\u300e", "\u300f", maxGroupLength, generatedHtmlList);
+        part = processNestableInline(part, maxGroupLength, generatedHtmlList, 0);
+
+        return escapeTextAndRestoreGeneratedHtml(part, generatedHtmlList);
+    }
+
+    /** 중첩 재귀 깊이 상한. maxGroupLength 안에서도 폭주 매칭을 막는다. */
+    private static final int MAX_NEST_DEPTH = 32;
+
+    /**
+     * 중첩 가능한 인라인 패턴을 한 레벨씩 적용한다.
+     * 각 매치의 그룹에는 동일 규칙 집합을 재귀 적용한 뒤 wrapper HTML을 만든다.
+     */
+    private static String processNestableInline(
+            final String source,
+            final int maxGroupLength,
+            final List<String> generatedHtmlList,
+            final int depth
+    ) {
+        if (source == null || source.isEmpty() || depth > MAX_NEST_DEPTH) {
+            return source;
+        }
+
+        String part = source;
+        part = replaceDialogPatternNested(part, Pattern.compile("\"(.*?)\""), "\u201c", "\u201d", maxGroupLength, generatedHtmlList, depth);
+        part = replaceDialogPatternNested(part, Pattern.compile("\u201c(.*?)\u201d"), "\u201c", "\u201d", maxGroupLength, generatedHtmlList, depth);
+        part = replaceDialogPatternNested(part, Pattern.compile("\u300e(.*?)\u300f"), "\u300e", "\u300f", maxGroupLength, generatedHtmlList, depth);
         part = replaceGeneratedPattern(part, Pattern.compile("--(.*?)(--)"), maxGroupLength, generatedHtmlList, matcher -> {
-            final String group = matcher.group(1);
-            return "<span class='md-text-muted'>-" + StringEscapeUtils.escapeHtml4(group) + "-</span>";
+            final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
+            return "<span class='md-text-muted'>-" + StringEscapeUtils.escapeHtml4(nested) + "-</span>";
         });
         part = replaceGeneratedPattern(part, Pattern.compile("!!(.*?)!!"), maxGroupLength, generatedHtmlList, matcher -> {
-            final String group = matcher.group(1);
-            return "<span class='md-text-danger'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+            final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
+            return "<span class='md-text-danger'>" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
         });
         part = replaceGeneratedPattern(part, Pattern.compile("__(.*?)__"), maxGroupLength, generatedHtmlList, matcher -> {
-            final String group = matcher.group(1);
-            return "<u>" + StringEscapeUtils.escapeHtml4(group) + "</u>";
+            final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
+            return "<u>" + StringEscapeUtils.escapeHtml4(nested) + "</u>";
         });
         part = replaceGeneratedPattern(part, Pattern.compile("\\|\\|(.*?)\\|\\|"), maxGroupLength, generatedHtmlList, matcher -> {
-            final String group = matcher.group(1);
-            return "<span class='md-text-muted fw-bold border-end border-2 border-gray-400 pe-5 me-3'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+            final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
+            return "<span class='md-text-muted fw-bold border-end border-2 border-gray-400 pe-5 me-3'>" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
         });
         part = replaceGeneratedPattern(part, Pattern.compile("\\(\\((.*?)\\)\\)"), maxGroupLength, generatedHtmlList, matcher -> {
-            final String group = matcher.group(1);
-            return "<span class='md-text-noti'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+            final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
+            return "<span class='md-text-noti'>" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
         });
         part = replaceGeneratedPattern(part, Pattern.compile("<@>(.*?\\.)"), maxGroupLength, generatedHtmlList, matcher -> {
-            final String group = matcher.group(1);
-            return "<span class='md-text-muted'>@" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+            final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
+            return "<span class='md-text-muted'>@" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
         });
-
-
         part = replaceGeneratedPattern(
                 part,
                 Pattern.compile("(" + Pattern.quote(DREAM_MEMORY_UNCERTAINTY_PHRASE) + ")"),
                 maxGroupLength,
                 generatedHtmlList,
                 matcher -> {
-                    final String group = matcher.group(1);
-                    return "<span class='md-text-muted'>" + StringEscapeUtils.escapeHtml4(group) + "</span>";
+                    final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
+                    return "<span class='md-text-muted'>" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
                 });
+        return part;
+    }
 
-        return escapeTextAndRestoreGeneratedHtml(part, generatedHtmlList);
+    private static String replaceDialogPatternNested(
+            final String source,
+            final Pattern pattern,
+            final String openPrefix,
+            final String closeSuffix,
+            final int maxGroupLength,
+            final List<String> generatedHtmlList,
+            final int depth
+    ) {
+        final Matcher matcher = pattern.matcher(source);
+        final StringBuilder buffer = new StringBuilder();
+        while (matcher.find()) {
+            final String group = matcher.group(1);
+            if (group == null || group.length() > maxGroupLength) {
+                matcher.appendReplacement(buffer, Matcher.quoteReplacement(matcher.group(0)));
+                continue;
+            }
+
+            final String nested = processNestableInline(group, maxGroupLength, generatedHtmlList, depth + 1);
+            final String escaped = StringEscapeUtils.escapeHtml4(nested);
+            final String replacement = "<span class='md-text-dialog'>" + openPrefix + escaped + closeSuffix + "</span>";
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(putGeneratedHtml(generatedHtmlList, replacement)));
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
     }
 
     private static String escapeTextAndRestoreGeneratedHtml(final String text, final List<String> generatedHtmlList) {
@@ -123,30 +181,6 @@ public class MarkdownUtils {
         return buffer.toString();
     }
 
-    private static String replaceDialogPatternWithPlaceholders(
-            final String source,
-            final Pattern pattern,
-            final String openPrefix,
-            final String closeSuffix,
-            final int maxGroupLength,
-            final List<String> generatedHtmlList
-    ) {
-        final Matcher matcher = pattern.matcher(source);
-        final StringBuilder buffer = new StringBuilder();
-        while (matcher.find()) {
-            final String group = matcher.group(1);
-            if (group == null || group.length() > maxGroupLength) {
-                matcher.appendReplacement(buffer, Matcher.quoteReplacement(matcher.group(0)));
-                continue;
-            }
-
-            final String escaped = StringEscapeUtils.escapeHtml4(group);
-            final String replacement = "<span class='md-text-dialog'>" + openPrefix + escaped + closeSuffix + "</span>";
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(putGeneratedHtml(generatedHtmlList, replacement)));
-        }
-        matcher.appendTail(buffer);
-        return buffer.toString();
-    }
 
     /**
      * 공통 > 마크다운 처리

@@ -101,7 +101,9 @@ onErrorCaptured((error) => {
  * entry/detail modals opened from chat RAG sources and modal-scoped confirms
  * would render under the drawer or the active modal without this raise.
  * Nested modals get incremental z-index from modalStack.ts (installModalStacking).
- * SweetAlert SSOT: shared/utils/overlayZIndex.ts SWAL_Z (6200). Keep this CSS in sync.
+ * TinyMCE aux (code/link 등) defaults ~1300 and would sit under raised modals —
+ * SSOT: overlayZIndex.ts TINYMCE_AUX_Z (6190). SweetAlert stays above (SWAL_Z 6200).
+ * Keep these CSS numbers in sync with overlayZIndex.ts.
  * !important beats library .swal2-container { 1060 } and nested-modal inline races.
  */
 body.modal-open .modal {
@@ -109,6 +111,9 @@ body.modal-open .modal {
 }
 body.modal-open .modal-backdrop {
   z-index: 6090;
+}
+body.modal-open .tox-tinymce-aux {
+  z-index: 6190 !important;
 }
 body.modal-open .swal2-container,
 .swal2-container {

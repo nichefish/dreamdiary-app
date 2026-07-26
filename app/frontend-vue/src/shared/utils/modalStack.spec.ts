@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MODAL_BASE_Z, MODAL_MAX_Z, SWAL_Z } from "./overlayZIndex";
+import { MODAL_BASE_Z, MODAL_MAX_Z, SWAL_Z, TINYMCE_AUX_Z } from "./overlayZIndex";
 import { resolveStackedModalZ } from "./modalStack";
 
 describe("중첩 모달 z-index 스택", () => {
@@ -12,5 +12,10 @@ describe("중첩 모달 z-index 스택", () => {
   it("스택이 깊어도 SweetAlert z-index 아래로 캡한다", () => {
     expect(resolveStackedModalZ(100)).toBe(MODAL_MAX_Z);
     expect(resolveStackedModalZ(100)).toBeLessThan(SWAL_Z);
+  });
+
+  it("TinyMCE aux 는 모달 스택 위·SweetAlert 아래에 둔다", () => {
+    expect(TINYMCE_AUX_Z).toBeGreaterThan(MODAL_MAX_Z);
+    expect(TINYMCE_AUX_Z).toBeLessThan(SWAL_Z);
   });
 });

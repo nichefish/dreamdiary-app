@@ -126,7 +126,7 @@
 #### Modals (layout 마운트)
 
 - `JournalDayMetaModal`, `JournalMetaProfileModal`, `JournalMetaContextMenu`
-- `JournalDayMetaModal`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다. 태그 입력 검색(자동완성·카테고리 선택·AND 필터 추가)은 interaction-spec 「일자 필터 모달」 항목을 따른다.
+- `JournalDayMetaModal`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 각 일자는 카드형으로 표시하고 SUMMARY 첫 엔트리 본문을 최대 3줄 미리보기한 뒤 클릭·더보기로 전체를 펼친다(접힘 중 빈 줄 제거). locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다. 태그 입력 검색(자동완성·카테고리 선택·AND 필터 추가)은 interaction-spec 「일자 필터 모달」 항목을 따른다.
 
 ### 저널 API (`useJournalStore`)
 

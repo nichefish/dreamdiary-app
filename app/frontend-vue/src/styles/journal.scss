@@ -770,6 +770,29 @@ $journal-dream-paired-states: (
     }
 }
 
+/* 일자 필터 모달 SUMMARY 미리보기
+ * 접힘(collapse-3, .expanded 아님) 중에만 빈 줄 여백을 줄인다.
+ * 빈 문단 DOM 제거는 summaryEntryCollapsedHtmlOf 가 담당하고,
+ * 여기서는 남은 문단 간 margin 만 접힘 전용으로 압축한다.
+ * 펼침(.expanded)에서는 이 규칙을 적용하지 않아 원문 간격이 유지된다.
+ */
+#journal_day_meta_modal {
+    .journal-day-filter-summary {
+        .collapse-3:not(.expanded) {
+            /* 전역 .journal-diary-content p { margin 0.1rem } 보다 강하게 눌러
+               접힘 미리보기에서 문단 사이가 빈 줄처럼 보이지 않게 한다. */
+            p {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+                line-height: 1.45;
+            }
+            p + p {
+                margin-top: 0 !important;
+            }
+        }
+    }
+}
+
 /* 더보기 버튼 스타일 */
 .expand-btn {
     display: none;

@@ -69,6 +69,60 @@ class MarkdownUtilsTest {
         assertTrue(result.contains("<td>value</td>"));
     }
 
+
+    @Test
+    @DisplayName("markdown nests underline inside danger regardless of pattern order")
+    void markdownNestsUnderlineInsideDanger() {
+        final String result = MarkdownUtils.markdown("<p>!!__밑줄__!!</p>");
+
+        assertTrue(result.contains("md-text-danger"));
+        assertTrue(result.contains("<u>밑줄</u>"));
+        assertFalse(result.contains("__밑줄__"));
+    }
+
+    @Test
+    @DisplayName("markdown nests danger inside underline regardless of pattern order")
+    void markdownNestsDangerInsideUnderline() {
+        final String result = MarkdownUtils.markdown("<p>__!!강조!!__</p>");
+
+        assertTrue(result.contains("<u>"));
+        assertTrue(result.contains("md-text-danger"));
+        assertTrue(result.contains("강조"));
+        assertFalse(result.contains("!!강조!!"));
+    }
+
+    @Test
+    @DisplayName("markdown nests underline inside dialog quotes")
+    void markdownNestsUnderlineInsideDialog() {
+        final String result = MarkdownUtils.markdown("<p>\"__말__\"</p>");
+
+        assertTrue(result.contains("md-text-dialog"));
+        assertTrue(result.contains("<u>말</u>"));
+        assertFalse(result.contains("__말__"));
+    }
+
+    @Test
+    @DisplayName("markdown nests danger inside noti double-paren")
+    void markdownNestsDangerInsideNoti() {
+        final String result = MarkdownUtils.markdown("<p>((!!알림!!))</p>");
+
+        assertTrue(result.contains("md-text-noti"));
+        assertTrue(result.contains("md-text-danger"));
+        assertTrue(result.contains("알림"));
+        assertFalse(result.contains("!!알림!!"));
+    }
+
+    @Test
+    @DisplayName("nested wrappers still escape literal html text")
+    void markdownKeepsLiteralHtmlEscapedInsideNestedWrappers() {
+        final String result = MarkdownUtils.markdown("<p>!!((literal &lt;table&gt; text))!!</p>");
+
+        assertTrue(result.contains("md-text-danger"));
+        assertTrue(result.contains("md-text-noti"));
+        assertTrue(result.contains("&lt;table&gt;"));
+        assertFalse(result.contains("<table>"));
+    }
+
     @Test
     @DisplayName("markdown processes nested inline text nodes")
     void markdownProcessesNestedInlineTextNodes() {
