@@ -179,14 +179,14 @@ INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, '
 
 -- -----------------------
 
--- 필수 :: 저널 주제 분류 코드 추가 (기존 DB 에만 있던 그룹 — 시드 커버리지 정합)
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('JOURNAL_THREAD_CTGR_CD', '저널 주제 분류 코드', '저널 주제 글분류 코드');
--- 필수 :: 저널 주제 분류 상세 코드 추가
+-- 필수 :: 저널 스레드 분류 코드 추가 (기존 DB 에만 있던 그룹 — 시드 커버리지 정합)
+INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('JOURNAL_THREAD_CTGR_CD', '저널 스레드 분류 코드', '저널 스레드 글분류 코드');
+-- 필수 :: 저널 스레드 분류 상세 코드 추가
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'FNNC', '금융', '금융 관련', '1');
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'JOB', '직업', '직업 관련', '2');
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'LIFE', '생활', '생활 관련 코드', '3');
 INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'RFLX', '성찰', '자기성찰 관련', '4');
--- 저널 주제 분류 영문(en) 명칭 추가
+-- 저널 스레드 분류 영문(en) 명칭 추가
 INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Finance' FROM code_item WHERE group_code = 'JOURNAL_THREAD_CTGR_CD' AND code = 'FNNC';
 INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Career' FROM code_item WHERE group_code = 'JOURNAL_THREAD_CTGR_CD' AND code = 'JOB';
 INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Life' FROM code_item WHERE group_code = 'JOURNAL_THREAD_CTGR_CD' AND code = 'LIFE';

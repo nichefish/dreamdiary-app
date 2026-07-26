@@ -47,6 +47,7 @@ public class UserSignupApprovalPageController
     @GetMapping(Url.USER_SIGNUP_LIST)
     @Secured(Constant.ROLE_MNGR)
     public String userSignupApprovalList() {
-        return "redirect:/vue-app/user/signup/approval";
+        // 변경: 계정 신청 승인이 계정 관리(/admin/users)의 `계정 신청 승인` 탭으로 흡수됐다.
+        return "redirect:/vue-app/admin/users?tab=signup";
     }
 }

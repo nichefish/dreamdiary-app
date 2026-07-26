@@ -1,33 +1,35 @@
 <template>
   <div class="admin-page">
-    <div class="admin-toolbar">
-      <button type="button" class="btn btn-sm btn-light-primary" :disabled="reloadDisabled" @click="reload">
-        <i class="bi bi-arrow-clockwise"></i>
-      </button>
+    <!--begin::뷰 탭 — 저널 일자 JournalDayViewToolbar 와 동일 골격(nav-tabs-line + ps-5 mt-5)-->
+    <div class="admin-view-toolbar d-flex flex-column-fluid w-100">
+      <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1" role="tablist" :aria-label="t('admin.page.aria-label')">
+        <li class="nav-item" role="presentation">
+          <button
+            type="button"
+            class="nav-link px-6"
+            :class="{ active: activeTab === 'general' }"
+            role="tab"
+            :aria-selected="activeTab === 'general'"
+            @click="selectTab('general')"
+          >
+            {{ t('admin.page.tab.general') }}
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            type="button"
+            class="nav-link px-6"
+            :class="{ active: activeTab === 'ai' }"
+            role="tab"
+            :aria-selected="activeTab === 'ai'"
+            @click="selectTab('ai')"
+          >
+            {{ t('admin.page.tab.ai') }}
+          </button>
+        </li>
+      </ul>
     </div>
-
-    <div class="admin-tabs nav nav-tabs nav-line-tabs" role="tablist" :aria-label="t('admin.page.aria-label')">
-      <button
-        type="button"
-        class="nav-link"
-        :class="{ active: activeTab === 'general' }"
-        role="tab"
-        :aria-selected="activeTab === 'general'"
-        @click="selectTab('general')"
-      >
-        {{ t('admin.page.tab.general') }}
-      </button>
-      <button
-        type="button"
-        class="nav-link"
-        :class="{ active: activeTab === 'ai' }"
-        role="tab"
-        :aria-selected="activeTab === 'ai'"
-        @click="selectTab('ai')"
-      >
-        {{ t('admin.page.tab.ai') }}
-      </button>
-    </div>
+    <!--end::뷰 탭-->
 
     <div v-if="store.backfillWorkActive" class="admin-backfill-banner" role="status">
       <i class="bi bi-cloud-check fs-4 text-primary"></i>
@@ -146,6 +148,109 @@
             <div v-if="store.ollamaHealth.errorMessage" class="fs-8 text-warning mt-1">
               {{ store.ollamaHealth.errorMessage }}
             </div>
+          </div>
+
+          <div class="admin-rag-settings mb-4">
+            <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-2">
+              <div>
+                <h4 class="fs-6 fw-bold mb-1">{{ t('admin.page.rag.title') }}</h4>
+                <div class="text-muted fs-8">{{ t('admin.page.rag.desc') }}</div>
+              </div>
+              <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving"
+                @click="saveRagSettings"
+              >
+                <span v-if="store.chatRagSettingsSaving" class="spinner-border spinner-border-sm me-1"></span>
+                {{ t('admin.page.rag.save') }}
+              </button>
+            </div>
+            <div v-if="store.chatRagSettingsError" class="alert alert-warning py-2">
+              {{ store.chatRagSettingsError }}
+            </div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-check form-switch">
+                  <input
+                    v-model="store.chatRagSettings.ragEnabled"
+                    class="form-check-input"
+                    type="checkbox"
+                    :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving"
+                  />
+                  <span class="form-check-label">{{ t('admin.page.rag.enabled') }}</span>
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="50"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.min-score') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragMinScore"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="0.05"
+                  max="0.95"
+                  step="0.01"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.summary-top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragSummaryTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="100"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.synthesis-top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragSynthesisTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="100"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.stance-top-k') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragStanceTopK"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="1"
+                  max="100"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-8 mb-1">{{ t('admin.page.rag.synthesis-min-score') }}</label>
+                <input
+                  v-model.number="store.chatRagSettings.ragSynthesisMinScore"
+                  class="form-control form-control-sm"
+                  type="number"
+                  min="0.05"
+                  max="0.95"
+                  step="0.01"
+                  :disabled="store.chatRagSettingsLoading || store.chatRagSettingsSaving || !store.chatRagSettings.ragEnabled"
+                />
+              </div>
+            </div>
+            <div class="text-muted fs-8 mt-2">{{ t('admin.page.rag.note') }}</div>
           </div>
 
           <div v-if="store.embeddingQualityEvalError" class="alert alert-warning py-2">
@@ -421,11 +526,6 @@ let statsTimer: number | undefined;
 const BACKGROUND_SYNC_NOTE = t("admin.page.background.queue-note");
 
 const activeTab = computed<AdminTab>(() => (route.query.tab === "ai" ? "ai" : "general"));
-const reloadDisabled = computed(() =>
-  activeTab.value === "ai"
-    ? store.embeddingStatsLoading || store.entityQueueStatsLoading
-    : store.bootstrapLoading
-);
 const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
 const ollamaHealthBadgeClass = computed(() => {
   const status = store.ollamaHealth?.status ?? "DOWN";
@@ -577,7 +677,12 @@ function displayCacheKey(cacheKey: string): string {
 
 async function reload() {
   if (activeTab.value === "ai") {
-    await Promise.all([store.fetchEmbeddingStats(), store.fetchEntityQueueStats()]);
+    await Promise.all([
+      store.fetchEmbeddingStats(),
+      store.fetchEntityQueueStats(),
+      store.fetchOllamaHealth(),
+      store.fetchChatRagSettings(),
+    ]);
     return;
   }
   await store.fetchBootstrap();
@@ -658,6 +763,15 @@ async function clearAllCaches() {
   }
 }
 
+async function saveRagSettings() {
+  try {
+    const msg = await store.saveChatRagSettings();
+    await swalAlert(msg);
+  } catch (error) {
+    await swalAlert(error instanceof Error ? error.message : t("admin.page.rag.save.failure"));
+  }
+}
+
 onMounted(async () => {
   if (cacheListModalEl.value) cacheListModal = new Modal(cacheListModalEl.value);
   if (cacheDetailModalEl.value) cacheDetailModal = new Modal(cacheDetailModalEl.value);
@@ -680,13 +794,6 @@ onUnmounted(() => {
 .admin-page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.admin-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
   gap: 1rem;
 }
 

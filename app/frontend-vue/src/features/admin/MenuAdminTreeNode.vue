@@ -34,7 +34,11 @@
         <i class="bi bi-box-arrow-up-right"></i>
         <span>{{ t('menu.tree.go-to-board') }}</span>
       </RouterLink>
-      <div v-if="!boardManaged" class="menu-admin-node-actions">
+      <!-- 변경 전: managementType=BOARD 메뉴는 ⋯ 컨텍스트 메뉴를 숨기고 '게시판 관리로 이동' 링크만 노출했다.
+           변경 후: BOARD 메뉴도 링크와 함께 ⋯ 를 항상 노출해 수정·사용여부·삭제가 가능하다.
+           단 '하위 메뉴 추가'는 canAddChild 가 계속 막는다 — 백엔드(MenuService)가 BOARD 부모 아래
+           하위 메뉴 등록을 거부하므로 UI에서도 노출하지 않는다. -->
+      <div class="menu-admin-node-actions">
         <button
           type="button"
           class="btn btn-sm btn-icon btn-light"

@@ -13,7 +13,7 @@
 | 계정 인증 결과 | `/auth/verify-result` | `VerifyResultPage.vue` | — | AuthLayout | ✓ | ❌ |
 | 내 정보 | `/my` | `UserMyPage.vue` | — | DefaultLayout | ✓ | ❌ |
 
-> 계정 신청 승인 관리(`/user/signup/approval`)는 관리자 기능으로 `admin/screen-spec.md` 참조.
+> 계정 신청 승인 관리는 계정 관리 화면의 탭(`/admin/users?tab=signup`)으로 흡수됐다. 관리자 기능이므로 `admin/screen-spec.md` 참조.
 
 ---
 

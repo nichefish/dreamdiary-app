@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.chat.service;
 
+import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.chat.model.RagIntent;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.RagSearchResult;
@@ -7,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEnti
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.type.JournalEntityRoleType;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.junit.jupiter.api.BeforeAll;
+import org.mockito.Mockito;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -22,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
  * ChatAIService 프롬프트 계약 테스트.
@@ -1833,6 +1837,144 @@ class ChatAIServiceTest {
         );
 
         assertEquals("person_stance_generic_bucket", code);
+    }
+
+    /**
+     * 한국어 locale에서 language-retry 프롬프트는 한글 중심 재작성 지시를 포함해야 한다.
+     */
+    @Test
+    void languageRetryPrompt_shouldLoadKoreanCatalog() throws Exception {
+        LocaleContextHolder.setLocale(Locale.KOREAN);
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("languageRetryPrompt");
+        method.setAccessible(true);
+
+        final String prompt = (String) method.invoke(service);
+
+        assertNotNull(prompt);
+        assertTrue(prompt.contains("한글"));
+        assertTrue(prompt.contains("중국어") || prompt.contains("한자"));
+        assertFalse(prompt.contains("Rewrite the answer in English only"));
+    }
+
+    /**
+     * 영어 locale에서 language-retry 프롬프트는 영어 전용 재작성 지시를 포함해야 한다.
+     */
+    @Test
+    void languageRetryPrompt_shouldLoadEnglishCatalog() throws Exception {
+        LocaleContextHolder.setLocale(Locale.ENGLISH);
+        try {
+            final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+            final Method method = ChatAIService.class.getDeclaredMethod("languageRetryPrompt");
+            method.setAccessible(true);
+
+            final String prompt = (String) method.invoke(service);
+
+            assertNotNull(prompt);
+            assertTrue(prompt.contains("English only"));
+            assertTrue(prompt.contains("Han") || prompt.contains("Chinese"));
+        } finally {
+            LocaleContextHolder.setLocale(Locale.KOREAN);
+        }
+    }
+
+    /**
+     * 한자 1자는 허용하고 2자 이상부터 Korean-only 가드 위반으로 본다.
+     */
+    @Test
+    void containsDisallowedHanScript_shouldRejectTwoOrMoreHanCharacters() throws Exception {
+        LocaleContextHolder.setLocale(Locale.KOREAN);
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("containsDisallowedHanScript", String.class);
+        method.setAccessible(true);
+
+        assertFalse((Boolean) method.invoke(service, "기록에 나온 내용이에요."));
+        assertFalse((Boolean) method.invoke(service, "기록에 人 한 글자만."));
+        assertTrue((Boolean) method.invoke(service, "中国어가 섮였어요."));
+        assertFalse((Boolean) method.invoke(service, "  "));
+        assertFalse((Boolean) method.invoke(service, (Object) null));
+    }
+
+    /**
+     * language fallback은 RAG 의도·컨텍스트 유무에 따라 카탈로그 키를 고른다.
+     */
+    @Test
+    void buildLanguageFallback_shouldPickCatalogByIntent() throws Exception {
+        LocaleContextHolder.setLocale(Locale.KOREAN);
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod(
+                "buildLanguageFallback",
+                String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+        );
+        method.setAccessible(true);
+
+        final Class<?> ragContextClass = Class.forName(
+                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+        final var emptyCtor = ragContextClass.getDeclaredConstructor(
+                RagIntent.class, List.class, String.class,
+                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+        );
+        emptyCtor.setAccessible(true);
+
+        final Object noContext = emptyCtor.newInstance(RagIntent.LOOKUP, List.of(), null, null);
+        final Object synthesisCtx = emptyCtor.newInstance(RagIntent.SYNTHESIS, List.of(), "ctx", null);
+        final Object lookupCtx = emptyCtor.newInstance(RagIntent.LOOKUP, List.of(), "ctx", null);
+
+        final String noCtxMsg = (String) method.invoke(service, "질문", noContext);
+        final String synthesisMsg = (String) method.invoke(service, "질문", synthesisCtx);
+        final String lookupMsg = (String) method.invoke(service, "질문", lookupCtx);
+
+        assertTrue(noCtxMsg.contains("답하기 어려워"));
+        assertTrue(synthesisMsg.contains("통섭"));
+        assertTrue(lookupMsg.contains("한국어"));
+    }
+
+    /**
+     * SUMMARY+SYNTHESIS 모호 질문은 LLM 2차 레이블을 우선한다.
+     */
+    @Test
+    void detectRagIntent_shouldPreferLlmWhenAmbiguous() throws Exception {
+        final OllamaClient ollama = Mockito.mock(OllamaClient.class);
+        when(ollama.chat(anyString(), anyString())).thenReturn("SUMMARY");
+        final ChatAIService service = new ChatAIService(null, null, null, ollama, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        method.setAccessible(true);
+
+        final RagIntent intent = (RagIntent) method.invoke(service, "의미를 정리해줘");
+
+        assertEquals(RagIntent.SUMMARY, intent);
+    }
+
+    /**
+     * LLM 실패 시 휴리스틱(SYNTHESIS 우선)으로 돌아간다.
+     */
+    @Test
+    void detectRagIntent_shouldFallbackToHeuristicWhenLlmFails() throws Exception {
+        final OllamaClient ollama = Mockito.mock(OllamaClient.class);
+        when(ollama.chat(anyString(), anyString())).thenThrow(new IllegalStateException("ollama down"));
+        final ChatAIService service = new ChatAIService(null, null, null, ollama, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        method.setAccessible(true);
+
+        final RagIntent intent = (RagIntent) method.invoke(service, "의미를 정리해줘");
+
+        assertEquals(RagIntent.SYNTHESIS, intent);
+    }
+
+    /**
+     * LLM 응답에서 의도 레이블을 추출한다.
+     */
+    @Test
+    void parseRagIntentLabel_shouldExtractFirstKnownLabel() throws Exception {
+        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final Method method = ChatAIService.class.getDeclaredMethod("parseRagIntentLabel", String.class);
+        method.setAccessible(true);
+
+        assertEquals(RagIntent.LOOKUP, method.invoke(service, "LOOKUP"));
+        assertEquals(RagIntent.SUMMARY, method.invoke(service, "의도: SUMMARY\n설명 생략"));
+        assertEquals(RagIntent.SYNTHESIS, method.invoke(service, "I choose SYNTHESIS for this."));
+        assertEquals(null, method.invoke(service, "unknown"));
     }
 
 }

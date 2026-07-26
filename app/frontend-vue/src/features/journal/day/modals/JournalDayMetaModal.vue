@@ -163,16 +163,25 @@
                 </div>
                 <!--end::월 구분 헤더-->
 
-                <!--begin::일자 행 (날짜 | 오른쪽 컨텐츠)-->
-                <div class="d-flex align-items-start gap-2 mb-2">
-                  <!--begin::날짜 영역 (고정, 세로 상단 정렬)-->
+                <!--begin::일자 카드 (A안: 날짜 → 메타·태그 → SUMMARY 3줄 미리보기)
+                  레거시 modal-body .collapse-3 / .expand-btn 계약을 재사용한다.
+                  본문은 기본 3줄 clamp, 클릭·더보기로 전체 펼침.
+                  접힘 중에는 빈 문단을 제거하고 문단 여백을 줄인다(펼침은 원문).
+                -->
+                <div class="pb-3 mb-3 border-bottom border-gray-300">
+                  <!--begin::날짜 행-->
                   <div
-                    class="d-flex align-items-center gap-1 flex-shrink-0 pt-1"
-                    :class="{ 'text-danger': day.isHolyday }"
+                    class="d-flex align-items-center gap-1 flex-wrap mb-1"
+                    :class="{ 'text-danger': isJournalDayOff(day) }"
                   >
-                    <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': day.isHolyday }"></i>
-                    {{ day.stdrdDt }}
-                    <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
+                    <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': isJournalDayOff(day) }"></i>
+                    <span class="fw-semibold">{{ day.stdrdDt }}</span>
+                    <span class="fs-8" :class="isJournalDayOff(day) ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
+                    <JournalDayVacationIndicator
+                      :status="day.vacationDayStatus"
+                      :reason-list="day.vacationReasonList"
+                      compact
+                    />
                     <button
                       type="button"
                       class="btn btn-icon btn-sm btn-light-primary"
@@ -181,78 +190,87 @@
                     ><i class="bi bi-box-arrow-up-right fs-8 p-0"></i></button>
                     <span class="fs-7 ms-1 text-muted" v-html="day.weather"></span>
                   </div>
-                  <!--end::날짜 영역-->
+                  <!--end::날짜 행-->
 
-                  <!--begin::오른쪽 컨텐츠 (메타 행 + 태그 행)-->
-                  <div class="d-flex flex-column gap-1">
-
-                    <!--begin::메타 행 (선택 메타 값 + 비선택 메타 칩)-->
-                    <div class="d-flex align-items-center gap-3 flex-wrap">
-                      <!--begin::선택된 메타 값-->
-                      <div
-                        v-for="(metaRow, mIdx) in selectedMetaRows(day)"
-                        :key="'sm-' + index + '-' + mIdx"
-                      >
-                        <span v-if="metaRow.ctgr" class="text-noti pe-1">[{{ metaRow.ctgr }}]</span>
-                        {{ metaRow.name }}
-                        <span class="text-dialog">: {{ metaRow.value }}{{ metaRow.unit }}</span>
-                      </div>
-                      <!--end::선택된 메타 값-->
-
-                      <!--begin::비선택 메타 (클릭 시 필터 추가)-->
-                      <span
-                        v-for="(other, oIdx) in otherMetaRows(day)"
-                        :key="'om-' + index + '-' + oIdx"
-                        class="badge badge-light rounded-pill cursor-pointer d-inline-flex align-items-center gap-1 px-2 py-1 fs-8"
-                        :title="t('journal.day.filter.add.tooltip').replace('{0}', (other.ctgr ? '[' + other.ctgr + '] ' : '') + (other.name ?? ''))"
-                        @click="addMeta(String(other.metaId ?? ''), other.name ?? '', other.ctgr)"
-                      >
-                        <span v-if="other.ctgr" class="text-noti">[{{ other.ctgr }}]</span>
-                        {{ other.name }}
-                        <span class="text-muted">{{ other.value }}{{ other.unit }}</span>
-                        <i class="bi bi-plus-circle text-primary"></i>
-                      </span>
-                      <!--end::비선택 메타-->
+                  <!--begin::메타 행 (선택 메타 값 + 비선택 메타 칩)-->
+                  <div class="d-flex align-items-center gap-3 flex-wrap mb-1">
+                    <div
+                      v-for="(metaRow, mIdx) in selectedMetaRows(day)"
+                      :key="'sm-' + index + '-' + mIdx"
+                    >
+                      <span v-if="metaRow.ctgr" class="text-noti pe-1">[{{ metaRow.ctgr }}]</span>
+                      {{ metaRow.name }}
+                      <span class="text-dialog">: {{ metaRow.value }}{{ metaRow.unit }}</span>
                     </div>
-                    <!--end::메타 행-->
-
-                    <!--begin::태그 행-->
-                    <div v-if="(day.tag?.list?.length ?? 0) > 0" class="d-flex flex-wrap gap-1">
-                      <!--begin::선택된 태그 (굵게, 클릭 시 필터 제거)-->
-                      <span
-                        v-for="tag in selectedTagItems(day)"
-                        :key="'st-tag-' + tag.tagId"
-                        class="text-muted cursor-pointer"
-                        :title="t('journal.day.filter.remove-filter.tooltip').replace('{0}', '#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name)"
-                        @click.stop="removeTag(String(tag.tagId))"
-                      >
-                        #<span class="border-bottom text-success fw-bold opacity-hover">
-                          <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                          {{ tag.name }}
-                        </span>
-                      </span>
-                      <!--end::선택된 태그-->
-                      <!--begin::비선택 태그 (클릭 시 필터 추가)-->
-                      <span
-                        v-for="tag in otherTagItems(day)"
-                        :key="'ot-tag-' + tag.tagId"
-                        class="text-muted cursor-pointer"
-                        :title="t('journal.day.filter.add.tooltip').replace('{0}', '#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name)"
-                        @click.stop="addTag(String(tag.tagId), tag.name, tag.ctgr)"
-                      >
-                        #<span class="border-bottom text-primary fw-lighter opacity-hover">
-                          <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                          {{ tag.name }}
-                        </span>
-                      </span>
-                      <!--end::비선택 태그-->
-                    </div>
-                    <!--end::태그 행-->
-
+                    <span
+                      v-for="(other, oIdx) in otherMetaRows(day)"
+                      :key="'om-' + index + '-' + oIdx"
+                      class="badge badge-light rounded-pill cursor-pointer d-inline-flex align-items-center gap-1 px-2 py-1 fs-8"
+                      :title="t('journal.day.filter.add.tooltip').replace('{0}', (other.ctgr ? '[' + other.ctgr + '] ' : '') + (other.name ?? ''))"
+                      @click="addMeta(String(other.metaId ?? ''), other.name ?? '', other.ctgr)"
+                    >
+                      <span v-if="other.ctgr" class="text-noti">[{{ other.ctgr }}]</span>
+                      {{ other.name }}
+                      <span class="text-muted">{{ other.value }}{{ other.unit }}</span>
+                      <i class="bi bi-plus-circle text-primary"></i>
+                    </span>
                   </div>
-                  <!--end::오른쪽 컨텐츠-->
+                  <!--end::메타 행-->
+
+                  <!--begin::태그 행-->
+                  <div v-if="(day.tag?.list?.length ?? 0) > 0" class="d-flex flex-wrap gap-1 mb-2">
+                    <span
+                      v-for="tag in selectedTagItems(day)"
+                      :key="'st-tag-' + tag.tagId"
+                      class="text-muted cursor-pointer"
+                      :title="t('journal.day.filter.remove-filter.tooltip').replace('{0}', '#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name)"
+                      @click.stop="removeTag(String(tag.tagId))"
+                    >
+                      #<span class="border-bottom text-success fw-bold opacity-hover">
+                        <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
+                        {{ tag.name }}
+                      </span>
+                    </span>
+                    <span
+                      v-for="tag in otherTagItems(day)"
+                      :key="'ot-tag-' + tag.tagId"
+                      class="text-muted cursor-pointer"
+                      :title="t('journal.day.filter.add.tooltip').replace('{0}', '#' + (tag.ctgr ? '[' + tag.ctgr + '] ' : '') + tag.name)"
+                      @click.stop="addTag(String(tag.tagId), tag.name, tag.ctgr)"
+                    >
+                      #<span class="border-bottom text-primary fw-lighter opacity-hover">
+                        <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
+                        {{ tag.name }}
+                      </span>
+                    </span>
+                  </div>
+                  <!--end::태그 행-->
+
+                  <!--begin::SUMMARY 미리보기 (collapse-3 · 클릭/더보기로 전체)-->
+                  <div v-if="summaryEntryHtmlOf(day)" class="journal-diary-content journal-day-filter-summary">
+                    <div
+                      class="journal-content collapse-3 cursor-pointer"
+                      :class="{ expanded: isSummaryExpanded(day, index) }"
+                      :title="isSummaryExpanded(day, index) ? t('common.collapse') : t('common.expand')"
+                      v-html="isSummaryExpanded(day, index)
+                        ? summaryEntryHtmlOf(day)
+                        : summaryEntryCollapsedHtmlOf(day)"
+
+                      @click="toggleSummaryExpand(day, index)"
+                    ></div>
+                    <span
+                      class="expand-btn cursor-pointer"
+                      role="button"
+                      tabindex="0"
+                      :title="isSummaryExpanded(day, index) ? t('common.collapse') : t('common.expand')"
+                      @click.stop="toggleSummaryExpand(day, index)"
+                      @keydown.enter.prevent="toggleSummaryExpand(day, index)"
+                    ></span>
+                  </div>
+                  <!--end::SUMMARY 미리보기-->
                 </div>
-                <!--end::일자 행-->
+                <!--end::일자 카드-->
+
 
               </template>
               <!--end::일자 목록-->
@@ -288,9 +306,33 @@ import type { JournalDayDto, MetaContentItem, TagItem } from "@/features/journal
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { joinAppBasePath } from "@/shared/utils/appPath";
+import { isJournalDayOff } from "@/features/journal/utils/journalVacation";
+import { summaryEntryCollapsedHtmlOf, summaryEntryHtmlOf } from "@/features/journal/utils/summaryEntryPreview";
+import JournalDayVacationIndicator from "../components/JournalDayVacationIndicator.vue";
 
 const modalStore = useJournalModalStore();
 const { t } = useLocaleStore();
+
+/** SUMMARY 미리보기 펼침 키(stdrdDt|index). 모달 닫힘·목록 갱신 시 비운다. */
+const expandedSummaryKeys = ref<Set<string>>(new Set());
+
+function summaryExpandKey(day: JournalDayDto, index: number): string {
+  return `${day.stdrdDt ?? ""}#${index}`;
+}
+
+function isSummaryExpanded(day: JournalDayDto, index: number): boolean {
+  return expandedSummaryKeys.value.has(summaryExpandKey(day, index));
+}
+
+/** 일자 카드 SUMMARY 미리보기 접기/펼치기 토글. */
+function toggleSummaryExpand(day: JournalDayDto, index: number): void {
+  const key = summaryExpandKey(day, index);
+  const next = new Set(expandedSummaryKeys.value);
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
+  expandedSummaryKeys.value = next;
+}
+
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
@@ -370,6 +412,14 @@ const filteredList = computed(() => {
 /** 현재 필터링된 일자 수 */
 const dayCount = computed(() => filteredList.value.length);
 
+watch(
+  () => filteredList.value.map((d) => d.stdrdDt).join("|"),
+  () => {
+    expandedSummaryKeys.value = new Set();
+  },
+);
+
+
 onMounted(() => {
   if (modalEl.value) {
     bsModal = new Modal(modalEl.value);
@@ -385,6 +435,7 @@ onMounted(() => {
       tagInputHint.value = "";
       hideTagSuggestions();
       cancelTagCategoryChoice();
+      expandedSummaryKeys.value = new Set();
     });
   }
 });

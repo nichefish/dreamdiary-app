@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableE
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
@@ -39,7 +37,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE journal_chapter SET deleted_at = NOW() WHERE id = ?")
 public class JournalChapterEntity
         extends BaseAttachableEntity
-        implements TagEmbedModule, StateEmbedModule {
+        implements StateEmbedModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_CHAPTER;
@@ -93,9 +91,6 @@ public class JournalChapterEntity
     @Builder.Default
     @Transient
     private Boolean isSortOrderChanged = false;
-
-    @Embedded
-    public TagEmbed tag;
 
     @Embedded
     public StateEmbed state;

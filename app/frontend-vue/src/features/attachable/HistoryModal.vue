@@ -26,7 +26,7 @@
                 <span class="text-gray-700">{{ attachableStore.historyTriggeredAt || '-' }}</span>
               </div>
               <button
-                v-if="attachableStore.historyList.length > 0"
+                v-if="attachableStore.historyList.length > 0 && !attachableStore.historyWriteLocked"
                 type="button"
                 class="btn btn-sm btn-light-danger"
                 :title="t('history.delete-all.tooltip')"
@@ -83,6 +83,7 @@
                         </button>
                         <!--end::복사 버튼-->
                         <button
+                          v-if="!attachableStore.historyWriteLocked"
                           type="button"
                           class="btn btn-sm btn-light-primary"
                           :title="t('history.restore.tooltip')"
@@ -92,6 +93,7 @@
                           {{ t('history.restore.btn') }}
                         </button>
                         <button
+                          v-if="!attachableStore.historyWriteLocked"
                           type="button"
                           class="btn btn-sm btn-light-danger"
                           :title="t('history.delete.tooltip')"

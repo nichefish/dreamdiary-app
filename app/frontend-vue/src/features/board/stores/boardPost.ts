@@ -7,6 +7,23 @@ import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } fr
 
 // ---- 타입 정의 ----
 
+/** 게시판 분류 선택지 (코드 관리의 상세 코드) */
+export interface BoardCategoryItem {
+  code: string;
+  codeName: string;
+}
+
+/** 태그 클라우드 항목 (`/api/tags` 응답) */
+export interface BoardTagCloudItem {
+  id: number;
+  name: string;
+  ctgr?: string;
+  /** 해당 태그가 달린 글 수 */
+  contentSize?: number;
+  tagClass?: string;
+  textClass?: string;
+}
+
 /** 태그 항목 */
 export interface BoardTagItem {
   tagId: number | string;
@@ -73,6 +90,20 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   /** 목록 에러 */
   const error = ref<string | null>(null);
   /** 검색 키워드 필터 */
+  /** 분류 선택지 (게시판의 category_group_code 기준). 비어 있으면 화면이 분류 select 를 숨긴다 */
+  const categoryOptions = ref<BoardCategoryItem[]>([]);
+  /** 분류 선택지 조회 오류 */
+  const categoryError = ref("");
+
+  /** 선택된 태그 필터 (단일). null 이면 태그 조건 없음 */
+  const filterTagId = ref<number | null>(null);
+  /** 태그 클라우드 */
+  const tagCloud = ref<BoardTagCloudItem[]>([]);
+  /** 태그 클라우드 로딩 상태 */
+  const tagCloudLoading = ref(false);
+  /** 태그 클라우드 조회 오류 */
+  const tagCloudError = ref("");
+
   const filterKeyword = ref("");
   /** 카테고리 필터 */
   const filterCategory = ref("");
@@ -117,6 +148,8 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       };
       if (filterKeyword.value) params.searchKeyword = filterKeyword.value;
       if (filterCategory.value) params.categoryCode = filterCategory.value;
+      /* 태그 필터는 공통 BaseAttachableSearchParam.tags(List<Integer>) 로 전달한다 (스레드와 동일) */
+      if (filterTagId.value != null) params.tags = [filterTagId.value];
       const res = await axios.get("/api/board/posts", { params });
       /* Spring Page<T> → { content, totalElements, totalPages, number, size } */
       const pageResult = res.data?.rsltObj;
@@ -142,7 +175,70 @@ export const useBoardPostStore = defineStore("boardPost", () => {
     boardKey.value = key;
     filterKeyword.value = "";
     filterCategory.value = "";
+    filterTagId.value = null;
     postList.value = [];
+    categoryOptions.value = [];
+    tagCloud.value = [];
+    /* 분류 그룹·태그는 게시판마다 다르므로 게시판이 바뀔 때마다 다시 조회한다. */
+    await Promise.all([fetchList(0), fetchCategoryOptions(), fetchTagCloud()]);
+  }
+
+  /**
+   * 현재 게시판의 태그 클라우드를 조회한다.
+   * 게시판 태그는 `tag_content.ref_content_type` 에 boardKey 로 저장되므로
+   * (ContentType enum 의 `BOARD` 가 아니다) 게시물 목록과 같은 규약으로 boardKey 를 넘긴다.
+   */
+  async function fetchTagCloud(): Promise<void> {
+    if (!boardKey.value) {
+      tagCloud.value = [];
+      return;
+    }
+    tagCloudLoading.value = true;
+    tagCloudError.value = "";
+    try {
+      const res = await axios.get("/api/tags", { params: { contentType: boardKey.value } });
+      tagCloud.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+    } catch (e: unknown) {
+      console.error("[boardPost] fetchTagCloud failed", e);
+      tagCloud.value = [];
+      tagCloudError.value = t("board.post.tag-cloud.load.failure");
+    } finally {
+      tagCloudLoading.value = false;
+    }
+  }
+
+  /** 태그 클라우드 클릭 — 같은 태그를 다시 누르면 해제한다. 조건이 바뀌므로 첫 페이지부터 조회. */
+  async function toggleTagFilter(tagId: number): Promise<void> {
+    filterTagId.value = filterTagId.value === tagId ? null : tagId;
+    await fetchList(0);
+  }
+
+  /**
+   * 현재 게시판의 분류 선택지를 조회한다.
+   * 게시판에 분류 그룹(`board.category_group_code`)이 없으면 서버가 빈 목록을 주고,
+   * 화면은 분류 select 를 렌더링하지 않는다.
+   */
+  async function fetchCategoryOptions(): Promise<void> {
+    categoryError.value = "";
+    if (!boardKey.value) {
+      categoryOptions.value = [];
+      return;
+    }
+    try {
+      const res = await axios.get(`/api/board/${encodeURIComponent(boardKey.value)}/categories`);
+      categoryOptions.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+    } catch (e: unknown) {
+      console.error("[boardPost] fetchCategoryOptions failed", e);
+      categoryOptions.value = [];
+      categoryError.value = t("board.post.category.load.failure");
+    }
+  }
+
+  /** 검색 조건을 비우고 첫 페이지를 조회한다. */
+  async function resetFilters(): Promise<void> {
+    filterKeyword.value = "";
+    filterCategory.value = "";
+    filterTagId.value = null;
     await fetchList(0);
   }
 
@@ -314,7 +410,17 @@ export const useBoardPostStore = defineStore("boardPost", () => {
     error,
     filterKeyword,
     filterCategory,
+    categoryOptions,
+    categoryError,
+    filterTagId,
+    tagCloud,
+    tagCloudLoading,
+    tagCloudError,
     fetchList,
+    fetchCategoryOptions,
+    fetchTagCloud,
+    toggleTagFilter,
+    resetFilters,
     setBoard,
     // 등록/수정
     registOpen,

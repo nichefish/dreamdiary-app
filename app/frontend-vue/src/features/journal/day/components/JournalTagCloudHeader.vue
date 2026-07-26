@@ -28,11 +28,13 @@
       </div>
       <div v-if="row.hasSeparator" class="separator"></div>
     </template>
+    <JournalPeriodThreadSummary />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, watch } from "vue";
+import JournalPeriodThreadSummary from "./JournalPeriodThreadSummary.vue";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import type { TagCloudItem } from "@/features/journal/stores/journal";

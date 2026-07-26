@@ -104,6 +104,25 @@
                 <!--end::개별 태그 색상-->
               </div>
 
+              <!--begin::크기 최대 (태그클라우드 전용)-->
+              <div class="mb-4 form-check form-check-custom form-check-solid">
+                <input
+                  id="tagForceMax"
+                  v-model="model.forceMax"
+                  type="checkbox"
+                  name="forceMax"
+                  class="form-check-input"
+                >
+                <label for="tagForceMax" class="form-check-label fw-bold">
+                  {{ t("attachable.tag.profile.force-max") }}
+                </label>
+                <div class="fs-8 text-muted mt-1">
+                  {{ t("attachable.tag.profile.force-max.guide") }}
+                </div>
+              </div>
+              <!--end::크기 최대-->
+
+
               <!--begin::프로필-->
               <label for="tagProfileCn" class="form-label fw-bold">{{ t("attachable.tag.profile.profile") }}</label>
               <textarea
@@ -161,17 +180,22 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
+import { swalConfirm, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
-import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalStore, type TagCloudSection } from "@/features/journal/stores/journal";
+import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 
+const emit = defineEmits<{ success: [] }>();
+
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 
@@ -180,6 +204,7 @@ const submitting = ref(false);
 let bsModal: InstanceType<typeof Modal> | null = null;
 
 const model = computed(() => attachableStore.tagProfileModel);
+
 
 const hasTagCategory = computed(() => {
   const id = String(model.value.tagCategoryId ?? "");
@@ -240,6 +265,64 @@ function close() {
   attachableStore.closeTagProfile();
 }
 
+/**
+ * contentType 에 대응하는 태그 클라우드 섹션.
+ * 색(textClass)은 클라우드 API 응답에만 실리므로 저장/삭제 후 해당 섹션을 재조회한다.
+ */
+function tagCloudSectionsFor(contentType: string): TagCloudSection[] | undefined {
+  if (contentType === "JOURNAL_DAY") return ["day"];
+  if (contentType === "JOURNAL_DIARY") return ["diary"];
+  if (contentType === "JOURNAL_DREAM") return ["dream"];
+  return undefined;
+}
+
+/**
+ * 태그 프로필 저장·삭제 후 현재 화면을 갱신한다.
+ * 변경 전: refreshJournalDaysForRoute 만 호출해 태그 클라우드 색·검색 결과 프로필 본문이 남을 수 있었다.
+ * 변경 후:
+ * - 검색 팝업: success → loadEntries()
+ * - 결산 상세: annualStore.fetchTagRows(yy, activeSection) — 결산 태그클라우드는 일자 store.fetchTagCloud 가 아니라
+ *   /api/journal/annual/{yy}/tags 행이 SSOT 이므로 이 경로로 재조회한다.
+ * - 스레드 상세: 소속 엔트리와 엔트리 태그 집계가 SSOT인 열린 스레드 상세를 다시 조회하고,
+ *   검색·결산·일자 배경도 각 화면의 기존 갱신 경로로 이어서 갱신한다.
+ * - 그 외(월간/주간/일간): 일자 목록 + contentType 대응 fetchTagCloud
+ */
+async function refreshAfterTagProfileChange(): Promise<void> {
+  if (threadStore.detailOpen || route.name === "thread-detail") {
+    await threadStore.refreshOpenDetail();
+    if (route.name === "thread-detail") {
+      emit("success");
+      return;
+    }
+  }
+
+  /* 검색 팝업은 일자/클라우드 스토어가 아니라 로컬 entries 가 SSOT — success 리스너(loadEntries)만 사용 */
+  if (route.name === "journal-entry-search") {
+    emit("success");
+    return;
+  }
+
+  /* 결산 상세 태그클라우드는 journalAnnual.tagRows (fetchTagRows) 가 SSOT */
+  if (route.name === "annual-detail") {
+    const annualStore = useJournalAnnualStore();
+    const yy = Number(route.params.yy) || Number(annualStore.filterYy) || 0;
+    if (Number.isFinite(yy) && yy > 0) {
+      await annualStore.fetchTagRows(yy, annualStore.activeSection);
+    }
+    emit("success");
+    return;
+  }
+
+  const contentType = model.value.contentType;
+  const sections = tagCloudSectionsFor(contentType);
+  const tasks: Promise<unknown>[] = [refreshJournalDaysForRoute(journalStore, route)];
+  if (sections) {
+    tasks.push(journalStore.fetchTagCloud({ sections }));
+  }
+  await Promise.all(tasks);
+  emit("success");
+}
+
 /** 태그 프로필 저장 */
 async function onSave() {
   const confirmed = await swalConfirm(t("common.confirm.save"));
@@ -254,7 +337,7 @@ async function onSave() {
         message: result.message,
         successFallback: t("common.result.saved"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      await refreshAfterTagProfileChange();
     } else {
       void swalAjaxResult({
         rslt: false,
@@ -283,7 +366,7 @@ async function onDelete() {
         message: result.message,
         successFallback: t("common.result.deleted"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      await refreshAfterTagProfileChange();
     } else {
       void swalAjaxResult({
         rslt: false,

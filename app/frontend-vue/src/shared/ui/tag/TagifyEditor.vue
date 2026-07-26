@@ -178,6 +178,9 @@ function initTagify(): void {
     /* ctgr 모드: 어떤 태그명이든 add 이벤트까지 도달해야 ctgr 프롬프트가 열린다.
        skipInvalid: true 이면 whitelist 에 없는 태그가 add 전에 차단되어 프롬프트가 열리지 않는다. */
     ...(useCategoryMap ? { duplicates: true, skipInvalid: false } : {}),
+    dropdown: {
+      appendTarget: document.body,
+    },
   }) as TagifyInstance;
 
   tagifyInst.draft = { value: null, ctgr: null, meta: null };

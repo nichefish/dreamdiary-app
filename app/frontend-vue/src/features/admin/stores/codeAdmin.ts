@@ -2,8 +2,15 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
-import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { BASE_LOCALE, SUPPORTED_LOCALES, useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
+
+/**
+ * 코드 다국어 입력에서 고를 수 있는 로케일.
+ * 기준 로케일(ko)의 코드명은 code_item.code_name 이 단일 원천이라 제외한다.
+ * SUPPORTED_LOCALES 에 로케일을 추가하면 코드 수정 없이 여기에 자동 반영된다.
+ */
+export const I18N_LOCALE_OPTIONS: readonly string[] = SUPPORTED_LOCALES.filter((locale) => locale !== BASE_LOCALE);
 
 export interface CodeGroupRow {
   rnum?: number;
@@ -23,11 +30,18 @@ export interface CodeItemRow {
   groupCode: string;
   code: string;
   codeName: string;
-  codeNameEn?: string;
+  /** 다국어 번역명 (locale → 번역명). ko 는 codeName 이 기준이라 포함하지 않는다. */
+  i18nNames?: Record<string, string>;
   description?: string;
   protectedYn?: string;
   useYn: string;
   sortOrder?: number;
+}
+
+/** 폼에서 편집하는 다국어 한 행. locale 은 ko 를 제외한 지원 로케일 중 하나. */
+export interface CodeItemI18nRow {
+  locale: string;
+  codeName: string;
 }
 
 export interface CodeGroupForm {
@@ -43,7 +57,12 @@ export interface CodeItemForm {
   groupCode: string;
   code: string;
   codeName: string;
-  codeNameEn: string;
+  /**
+   * 다국어 번역명 행 목록.
+   * 변경 전: 영문 전용 `codeNameEn` 단일 문자열이었다.
+   * 변경 후: locale 무관 행 목록으로 일반화해 지원 로케일이 늘면 코드 수정 없이 등록 가능하다.
+   */
+  i18nRows: CodeItemI18nRow[];
   description: string;
   useYn: string;
 }
@@ -56,15 +75,22 @@ const EMPTY_GROUP_FORM: CodeGroupForm = {
   useYn: "Y",
 };
 
-const EMPTY_ITEM_FORM: CodeItemForm = {
-  id: null,
-  groupCode: "",
-  code: "",
-  codeName: "",
-  codeNameEn: "",
-  description: "",
-  useYn: "Y",
-};
+/**
+ * 빈 상세 코드 폼을 새로 만든다.
+ * i18nRows 가 배열이라 상수를 얕은 복사(`{ ...EMPTY }`)하면 배열 참조가 공유되어
+ * 행 추가가 원본을 오염시킨다. 그래서 상수 대신 매번 새 객체를 만드는 팩토리로 둔다.
+ */
+function emptyItemForm(): CodeItemForm {
+  return {
+    id: null,
+    groupCode: "",
+    code: "",
+    codeName: "",
+    i18nRows: [],
+    description: "",
+    useYn: "Y",
+  };
+}
 
 function yn(value: string | undefined): string {
   return String(value ?? "Y").toUpperCase() === "Y" ? "Y" : "N";
@@ -86,10 +112,18 @@ function normalizeItemForm(row?: Partial<CodeItemRow>, groupCode = ""): CodeItem
     groupCode: row?.groupCode ?? groupCode,
     code: row?.code ?? "",
     codeName: row?.codeName ?? "",
-    codeNameEn: row?.codeNameEn ?? "",
+    i18nRows: toI18nRows(row?.i18nNames),
     description: row?.description ?? "",
     useYn: yn(row?.useYn),
   };
+}
+
+/** 서버 응답의 locale → 번역명 맵을 폼 행 목록으로 변환한다. ko 는 codeName 이 기준이라 제외한다. */
+function toI18nRows(i18nNames?: Record<string, string>): CodeItemI18nRow[] {
+  if (!i18nNames) return [];
+  return Object.entries(i18nNames)
+    .filter(([locale, codeName]) => locale && locale !== BASE_LOCALE && codeName)
+    .map(([locale, codeName]) => ({ locale, codeName }));
 }
 
 function toGroupFormData(form: CodeGroupForm): FormData {
@@ -108,7 +142,13 @@ function toItemFormData(form: CodeItemForm): FormData {
   fd.append("groupCode", form.groupCode.trim().toUpperCase());
   fd.append("code", form.code.trim().toUpperCase());
   fd.append("codeName", form.codeName.trim());
-  if (form.codeNameEn.trim()) fd.append("codeNameEn", form.codeNameEn.trim());
+  /* Spring @ModelAttribute Map 바인딩 형식: i18nNames[<locale>]=<번역명> */
+  for (const row of form.i18nRows) {
+    const locale = row.locale.trim();
+    const codeName = row.codeName.trim();
+    if (!locale || locale === BASE_LOCALE || !codeName) continue;
+    fd.append(`i18nNames[${locale}]`, codeName);
+  }
   fd.append("description", form.description.trim());
   fd.append("useYn", yn(form.useYn));
   return fd;
@@ -137,7 +177,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
 
   const itemModalOpen = ref(false);
   const itemSaving = ref(false);
-  const itemForm = ref<CodeItemForm>({ ...EMPTY_ITEM_FORM });
+  const itemForm = ref<CodeItemForm>(emptyItemForm());
 
   const isGroupEdit = computed(() => groupForm.value.id != null);
   const isItemEdit = computed(() => itemForm.value.id != null);
@@ -301,7 +341,23 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
 
   function closeItemModal() {
     itemModalOpen.value = false;
-    itemForm.value = { ...EMPTY_ITEM_FORM };
+    itemForm.value = emptyItemForm();
+  }
+
+  /**
+   * 다국어 행 추가. 아직 쓰지 않은 로케일을 기본 선택한다.
+   * 남은 로케일이 없으면 아무 것도 하지 않는다 (locale 은 code_item_i18n 복합 PK 라 중복 불가).
+   */
+  function addI18nRow() {
+    const used = new Set(itemForm.value.i18nRows.map((row) => row.locale));
+    const next = I18N_LOCALE_OPTIONS.find((locale) => !used.has(locale));
+    if (!next) return;
+    itemForm.value.i18nRows.push({ locale: next, codeName: "" });
+  }
+
+  /** 다국어 행 제거. 저장 시 해당 locale 번역은 삭제된다. */
+  function removeI18nRow(index: number) {
+    itemForm.value.i18nRows.splice(index, 1);
   }
 
   /**
@@ -407,6 +463,8 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
     openDetail,
     closeDetail,
     fetchItems,
+    addI18nRow,
+    removeI18nRow,
     openItemCreate,
     openItemEdit,
     closeItemModal,

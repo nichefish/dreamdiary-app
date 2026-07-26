@@ -29,6 +29,8 @@ const URL_MAP: Record<string, string> = {
   "/app/user/regist-form.do": "/admin/users",
   "/app/user/detail.do": "/admin/users",
   "/app/user/modify-form.do": "/admin/users",
+  /* 계정 신청 승인은 계정 관리의 탭으로 흡수됐다 */
+  "/app/user/signup/list.do": "/admin/users?tab=signup",
   "/app/log/list.do": "/admin/log",
   "/app/log/stats/list.do": "/admin/log/stats-user",
   "/app/user/my/page.do": "/my",

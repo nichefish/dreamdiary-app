@@ -9,6 +9,11 @@
 @use "abstracts/_mixins" as mixin;
 
 $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
+/** 꿈 RESOLVED 표시 — 일기·챕터 완료의 초록과 구분하는 은은한 보라 팔레트 */
+$color-dream-resolved-bg: rgba(95, 0, 130, 0.04);
+$color-dream-resolved-border: rgba(95, 0, 130, 0.13);
+$color-dream-resolved-line: rgba(95, 0, 130, 0.66);
+$color-dream-resolved-muted: #9a78aa;
 /** 가상 섹션·챕터 헤더 「꿈」「{이름} 꿈」 — 본문 보라보다 옅게, 일기 헤더 gray 와 큰 차이 없이 */
 $color-dream-section-title: color.mix($color-dream, #5e6278, 22%);
 /** 타인 꿈(지정 꿈꾼) 엔트리 좌측 이중선 — RESOLVED·중요·참조와 별도, 눈에 덜 띄는 회색 */
@@ -57,11 +62,55 @@ $color-else-dream-line-2: rgba(148, 163, 184, 0.4);
 .journal-layout-vue__aside,
 .journal-annual-layout-vue__aside {
     position: sticky;
-    top: 1rem;
     align-self: flex-start;
-    max-height: calc(100vh - 2rem);
     overflow-y: auto;
     scrollbar-gutter: stable;
+}
+
+.journal-layout-vue__aside {
+    top: 0;
+    max-height: 100vh;
+}
+
+.journal-annual-layout-vue__aside {
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+}
+
+/**
+ * 저널 일자·결산·스레드·게시판·코드/계정/게시판그룹 관리 공통 뷰 툴바는 원래 문서 위치를 차지한 채 viewport 상단에 머문다.
+ * 데스크톱의 고정 앱 헤더보다 낮은 z-index와 헤더 높이 offset을 사용해 겹침을 방지한다.
+ */
+.journal-day-view-toolbar,
+.journal-annual-view-toolbar,
+.journal-thread-view-toolbar,
+.board-post-view-toolbar,
+.code-admin-view-toolbar,
+.user-admin-view-toolbar,
+.board-group-view-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+@media (min-width: 992px) {
+    .journal-day-view-toolbar,
+    .journal-annual-view-toolbar,
+    .journal-thread-view-toolbar,
+    .board-post-view-toolbar,
+    .code-admin-view-toolbar,
+    .user-admin-view-toolbar,
+    .board-group-view-toolbar {
+        top: var(--bs-app-header-height, 74px);
+    }
+
+    .journal-layout-vue__aside,
+    .journal-annual-layout-vue__aside {
+        top: var(--bs-app-header-height, 74px);
+        max-height: calc(100vh - var(--bs-app-header-height, 74px));
+    }
 }
 
 .journal-aside-week-days {
@@ -257,7 +306,7 @@ $journal-else-dream-paired-states: (
         bg: rgba(100, 116, 139, 0.035),
         border: rgba(148, 163, 184, 0.11),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line)
     ),
     '[data-refrnc="Y"]': (
         bg: rgba(100, 116, 139, 0.04),
@@ -275,13 +324,13 @@ $journal-else-dream-paired-states: (
         bg: rgba(100, 116, 139, 0.04),
         border: rgba(148, 163, 184, 0.11),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82), 6px 0 0 rgba(245, 158, 11, 0.82))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line, 6px 0 0 rgba(245, 158, 11, 0.82))
     ),
     '[data-resolved="Y"][data-imprtc="Y"]': (
         bg: rgba(100, 116, 139, 0.04),
         border: rgba(148, 163, 184, 0.11),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82), 6px 0 0 rgba(239, 68, 68, 0.8))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line, 6px 0 0 rgba(239, 68, 68, 0.8))
     ),
     '[data-imprtc="Y"][data-refrnc="Y"]': (
         bg: rgba(100, 116, 139, 0.045),
@@ -293,7 +342,7 @@ $journal-else-dream-paired-states: (
         bg: rgba(100, 116, 139, 0.045),
         border: rgba(148, 163, 184, 0.12),
         before-bg: $color-else-dream-line-1,
-        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 rgba(34, 197, 94, 0.82), 6px 0 0 rgba(239, 68, 68, 0.8), 8px 0 0 rgba(245, 158, 11, 0.82))
+        before-shadow: (2px 0 0 $color-else-dream-line-2, 4px 0 0 $color-dream-resolved-line, 6px 0 0 rgba(239, 68, 68, 0.8), 8px 0 0 rgba(245, 158, 11, 0.82))
     )
 );
 $journal-paired-states: (
@@ -341,6 +390,52 @@ $journal-paired-states: (
     )
 );
 
+/** 꿈 엔트리는 RESOLVED 축만 보라색으로 분리하고 중요·참조의 빨강·노랑 의미는 유지한다. */
+$journal-dream-paired-states: (
+    '[data-resolved="Y"]': (
+        bg: $color-dream-resolved-bg,
+        border: $color-dream-resolved-border,
+        before-bg: $color-dream-resolved-line,
+        before-shadow: none
+    ),
+    '[data-refrnc="Y"]': (
+        bg: rgba(245, 158, 11, 0.07),
+        border: rgba(245, 158, 11, 0.16),
+        before-bg: rgba(245, 158, 11, 0.82),
+        before-shadow: none
+    ),
+    '[data-imprtc="Y"]': (
+        bg: rgba(239, 68, 68, 0.06),
+        border: rgba(239, 68, 68, 0.15),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: none
+    ),
+    '[data-resolved="Y"][data-refrnc="Y"]': (
+        bg: rgba(234, 179, 8, 0.08),
+        border: rgba(234, 179, 8, 0.17),
+        before-bg: $color-dream-resolved-line,
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"]': (
+        bg: rgba(248, 113, 113, 0.08),
+        border: rgba(239, 68, 68, 0.16),
+        before-bg: $color-dream-resolved-line,
+        before-shadow: 2px 0 0 rgba(239, 68, 68, 0.8)
+    ),
+    '[data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(251, 191, 36, 0.09),
+        border: rgba(245, 158, 11, 0.18),
+        before-bg: rgba(239, 68, 68, 0.8),
+        before-shadow: 2px 0 0 rgba(245, 158, 11, 0.82)
+    ),
+    '[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"]': (
+        bg: rgba(245, 208, 120, 0.1),
+        border: rgba(234, 179, 8, 0.2),
+        before-bg: $color-dream-resolved-line,
+        before-shadow: (2px 0 0 rgba(239, 68, 68, 0.8), 4px 0 0 rgba(245, 158, 11, 0.82))
+    )
+);
+
 .journal-chapter-item {
     &:has(> .journal-chapter-content.collapsed) {
         --chapter-collapsed-bg: transparent;
@@ -377,7 +472,8 @@ $journal-paired-states: (
             display: none !important;
         }
     }
-    .journal-chapter-tags {
+    .journal-chapter-tags,
+    .journal-chapter-threads {
         margin: 0 !important;
         padding: 0.15rem 0 0.65rem;
         min-width: 0;
@@ -386,7 +482,8 @@ $journal-paired-states: (
 
     &:has(> .journal-chapter-content.collapsed) {
         .journal-chapter-content.collapsed,
-        .journal-chapter-tags:not(.d-none) {
+        .journal-chapter-tags:not(.d-none),
+        .journal-chapter-threads:not(.d-none) {
             background: transparent;
             box-shadow: none;
             padding-left: 0;
@@ -471,7 +568,8 @@ $journal-paired-states: (
     border-radius: 0 0.5rem 0.5rem 0;
 }
 
-.journal-chapter-item[data-collapsed="N"] .journal-chapter-tags {
+.journal-chapter-item[data-collapsed="N"] .journal-chapter-tags,
+.journal-chapter-item[data-collapsed="N"] .journal-chapter-threads {
     display: none;
 }
 
@@ -535,10 +633,13 @@ $journal-paired-states: (
 }
 
 .journal-diary-item[data-resolved="Y"] .journal-diary-content .journal-content.collapsed::before,
-.journal-dream-item[data-resolved="Y"] .journal-dream-content .journal-content.collapsed::before,
 .journal-interpretation-item[data-resolved="Y"] .journal-interpretation-content .journal-content.collapsed::before,
 .journal-note-item[data-resolved="Y"] .journal-note-content .journal-content.collapsed::before {
     color: #8ab89a;
+}
+
+.journal-dream-item[data-resolved="Y"] .journal-dream-content .journal-content.collapsed::before {
+    color: $color-dream-resolved-muted;
 }
 
 .journal-diary-content, .journal-interpretation-content {
@@ -664,6 +765,29 @@ $journal-paired-states: (
                 &:not(:has(p:nth-of-type(5))) + .expand-btn {
                     display: none; /* 4개 이하라면 버튼 숨김 */
                 }
+            }
+        }
+    }
+}
+
+/* 일자 필터 모달 SUMMARY 미리보기
+ * 접힘(collapse-3, .expanded 아님) 중에만 빈 줄 여백을 줄인다.
+ * 빈 문단 DOM 제거는 summaryEntryCollapsedHtmlOf 가 담당하고,
+ * 여기서는 남은 문단 간 margin 만 접힘 전용으로 압축한다.
+ * 펼침(.expanded)에서는 이 규칙을 적용하지 않아 원문 간격이 유지된다.
+ */
+#journal_day_meta_modal {
+    .journal-day-filter-summary {
+        .collapse-3:not(.expanded) {
+            /* 전역 .journal-diary-content p { margin 0.1rem } 보다 강하게 눌러
+               접힘 미리보기에서 문단 사이가 빈 줄처럼 보이지 않게 한다. */
+            p {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+                line-height: 1.45;
+            }
+            p + p {
+                margin-top: 0 !important;
             }
         }
     }
@@ -842,7 +966,17 @@ $journal-paired-states: (
 }
 
 @each $selector, $state in $journal-paired-states {
-    .journal-diary-item#{$selector},
+    .journal-diary-item#{$selector} {
+        @include journal-paired-state(
+            map-get($state, bg),
+            map-get($state, border),
+            map-get($state, before-bg),
+            map-get($state, before-shadow)
+        );
+    }
+}
+
+@each $selector, $state in $journal-dream-paired-states {
     .journal-dream-item#{$selector}:not([data-else-dream="Y"]) {
         @include journal-paired-state(
             map-get($state, bg),

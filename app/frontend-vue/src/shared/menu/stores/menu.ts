@@ -88,7 +88,7 @@ const FALLBACK_MNGR_MENU_LIST: MenuDto[] = [
     menuItem(-201, "\uad00\ub9ac \ud648", "/admin", "bi-grid"),
     menuItem(-202, "\uba54\ub274 \uad00\ub9ac", "/admin/menu", "bi-list-ul"),
     menuItem(-203, "\uacc4\uc815 \uad00\ub9ac", "/admin/users", "bi-people"),
-    menuItem(-204, "\uacc4\uc815 \uc2e0\uccad \uc2b9\uc778", "/user/signup/approval", "bi-person-check"),
+    menuItem(-204, "\uacc4\uc815 \uc2e0\uccad \uc2b9\uc778", "/admin/users?tab=signup", "bi-person-check"),
     menuItem(-205, "\uc778\uc99d \uc815\ucc45", "/admin/auth-policy", "bi-shield-lock"),
     menuItem(-206, "\uac8c\uc2dc\ud310 \uadf8\ub8f9", "/admin/board-group", "bi-layout-text-window"),
     menuItem(-207, "\ucf54\ub4dc \uad00\ub9ac", "/admin/code", "bi-braces"),

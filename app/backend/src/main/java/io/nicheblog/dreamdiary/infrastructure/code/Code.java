@@ -74,6 +74,7 @@ public interface Code {
 
     /** 일정 분류 코드 */
     String SCHEDULE_CD = "SCHEDULE_CD";       // 일정 구분 코드
+    String VCATN_CD = "VCATN_CD";             // 휴가 구분 코드
     String SCHEDULE_HOLYDAY = ScheduleType.HOLYDAY.name();
     String SCHEDULE_CEREMONY = ScheduleType.CEREMONY.name();
     String SCHEDULE_TLCMMT = ScheduleType.TLCMMT.name();

@@ -102,6 +102,11 @@ public class ScheduleEntity
     @Comment("일정분류 코드")
     private String scheduleCd;
 
+    /** 휴가 구분 코드 :: scheduleCd=VCATN일 때만 사용 */
+    @Column(name = "vcatn_cd")
+    @Comment("휴가 구분 코드")
+    private String vcatnCd;
+
     /** 일정 코드명 :: join을 제거하고 메모리 캐시 처리 */
     @Transient
     private String scheduleNm;
@@ -143,4 +148,3 @@ public class ScheduleEntity
     @Embedded
     public TagEmbed tag;
 }
-

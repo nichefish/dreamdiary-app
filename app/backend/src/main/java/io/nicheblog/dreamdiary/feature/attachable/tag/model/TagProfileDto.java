@@ -43,6 +43,14 @@ public class TagProfileDto
     /** 개별 렌더링용 text class 코드 ({@code null} 또는 빈 문자열 = 상속) */
     private String textClassCd;
 
+    /**
+     * 태그클라우드 크기 최대 고정. {@code true}이면 {@code ts-9}.
+     * 엔트리 본문 태그줄에는 적용하지 않는다.
+     */
+    @Builder.Default
+    private Boolean forceMax = false;
+
+
     /** 카테고리 프로필 ID */
     private Integer categoryProfileId;
 

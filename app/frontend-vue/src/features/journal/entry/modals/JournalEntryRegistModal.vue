@@ -201,7 +201,8 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import type { JournalChapterOption } from "@/features/journal/stores/journalModal";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -209,6 +210,7 @@ import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 const emit = defineEmits<{
@@ -341,6 +343,12 @@ function refreshEntryTagCloud(contentType?: string): void {
 }
 
 async function refreshCurrentDayView(contentType?: string): Promise<boolean> {
+  if (threadStore.detailOpen || route.name === "thread-detail") {
+    if (route.name !== "journal-entry-search") refreshEntryTagCloud(contentType);
+    await refreshJournalEntryHostForRoute(journalStore, threadStore, route, model.value?.stdrdDt);
+    return false;
+  }
+
   if (route.name === "journal-entry-search") {
     return false;
   }
@@ -349,7 +357,7 @@ async function refreshCurrentDayView(contentType?: string): Promise<boolean> {
   const detailRefreshed = await prepareOpenDayDetail();
   if (detailRefreshed) return true;
 
-  await refreshJournalDaysForRoute(journalStore, route, model.value?.stdrdDt);
+  await refreshJournalEntryHostForRoute(journalStore, threadStore, route, model.value?.stdrdDt);
   return false;
 }
 
@@ -450,6 +458,9 @@ async function submit() {
         successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
       });
       if (route.name === "journal-entry-search") {
+        if (threadStore.detailOpen) {
+          await refreshJournalEntryHostForRoute(journalStore, threadStore, route, savedDate);
+        }
         emit("success", successPayload);
       } else {
         const detailRefreshed = await refreshCurrentDayView(savedContentType);

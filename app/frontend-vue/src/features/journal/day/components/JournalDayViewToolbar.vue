@@ -1,6 +1,6 @@
 <template>
   <!--begin::저널 일자 뷰 툴바 (탭 + 일자 등록)-->
-  <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4 w-100">
+  <div class="journal-day-view-toolbar d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4 w-100">
     <!--begin::보기 타입 탭-->
     <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1">
       <li class="nav-item">
@@ -100,26 +100,10 @@
         <i class="bi bi-funnel fs-7"></i>
       </button>
       <!--end::고급 필터-->
-      <!--begin::일정 등록-->
-      <button
-        type="button"
-        class="btn btn-sm btn-light-primary btn-outlined ps-3 pe-2 py-2 text-nowrap"
-        :title="t('schedule.register')"
-        @click="openScheduleRegist(false)"
-      >
-        <i class="bi bi-plus-lg fs-4 pe-1"></i>
-        {{ t('schedule.register') }}
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm btn-light-primary btn-outlined ps-3 pe-2 py-2 text-nowrap"
-        :title="t('schedule.private')"
-        @click="openScheduleRegist(true)"
-      >
-        <i class="bi bi-lock fs-4 pe-1"></i>
-        {{ t('schedule.private') }}
-      </button>
-      <!--end::일정 등록-->
+      <!--begin::일정 등록
+          변경 전: 저널 날짜·엔트리 맥락을 넘기지 않고 일정 화면의 등록 모달로만 이동하는 일정 등록·개인 일정 버튼을 제공했다.
+          변경 후: 저널 도메인 액션에 집중하도록 두 버튼을 제거하고 일정 등록은 일정 화면에서만 제공한다.
+          end::일정 등록-->
       <!--begin::태그 카테고리 동기화-->
       <button
         type="button"
@@ -144,6 +128,19 @@
         {{ t('journal.day.toolbar.register') }}
       </button>
       <!--end::저널 일자 등록 버튼-->
+      <!--begin::aside 열기 버튼 — 일정 툴바와 동일하게 액션 행 맨 오른쪽에 배치-->
+      <template v-if="!asideStore.visible">
+        <div class="vr mx-1 opacity-25"></div>
+        <button
+          type="button"
+          class="btn btn-sm btn-icon btn-light"
+          :title="t('journal.aside.open.tooltip')"
+          @click="asideStore.show()"
+        >
+          <i class="bi bi-layout-sidebar-inset-reverse"></i>
+        </button>
+      </template>
+      <!--end::aside 열기 버튼-->
     </div>
     <!--end::키워드 검색 + 등록 버튼-->
   </div>
@@ -200,14 +197,10 @@ function toggleAdvancedFilter(): void {
   asideStore.toggle();
 }
 
-/** 일정 등록 화면으로 이동하고 등록 모달을 연다 — 레거시 §4.2 */
-async function openScheduleRegist(isPrivate: boolean): Promise<void> {
-  if (!await assertAuthenticatedBeforeModal()) return;
-  void router.push({
-    name: "schedule-calendar",
-    query: { regist: isPrivate ? "private" : "1" },
-  });
-}
+/**
+ * 일정 등록 화면으로 이동하고 등록 모달을 연다 — 레거시 §4.2 (변경 전 계약).
+ * 현재는 저널 날짜·엔트리 맥락을 전달하지 않는 교차 도메인 액션을 제거해 저널 툴바에서 해당 라우팅을 제공하지 않는다.
+ */
 
 /** 태그·메타 categoryMap 서버 재조회 — 레거시 §4.3 */
 async function syncTagCategories(): Promise<void> {

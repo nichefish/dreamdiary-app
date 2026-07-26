@@ -6,7 +6,7 @@
 
         <!--begin::Modal Header-->
         <div class="modal-header">
-          <h5 class="modal-title fw-bold">{{ t("related-content.modal.title") }}</h5>
+          <h5 class="modal-title fw-bold">{{ modalTitle }}</h5>
           <button
             type="button"
             class="btn-close"
@@ -24,11 +24,15 @@
           </div>
           <!--end::출처-->
 
+
           <!--begin::관련 유형 + 대상 유형 + 검색-->
           <div class="row g-3 mb-4">
             <div class="col-md-4">
               <label class="form-label fw-semibold text-gray-700">{{ t("related-content.relation-type") }}</label>
-              <select v-model="attachableStore.relatedRelationType" class="form-select form-select-solid">
+              <select
+                v-model="attachableStore.relatedRelationType"
+                class="form-select form-select-solid"
+              >
                 <option value="REFERENCE">{{ t("enum.relation-type.reference") }}</option>
                 <option value="EXTENSION">{{ t("enum.relation-type.extension") }}</option>
                 <option value="PARALLEL">{{ t("enum.relation-type.parallel") }}</option>
@@ -97,6 +101,15 @@
           </div>
           <!--end::유효성 메시지-->
 
+          <!--begin::검색 실패 메시지-->
+          <div
+            v-if="attachableStore.relatedSearchErrorMsg"
+            class="rounded border border-danger bg-light-danger px-4 py-3 text-danger fs-7 mb-4"
+          >
+            {{ attachableStore.relatedSearchErrorMsg }}
+          </div>
+          <!--end::검색 실패 메시지-->
+
           <!--begin::검색 중-->
           <div
             v-if="attachableStore.relatedSearching"
@@ -109,7 +122,7 @@
           <!--begin::검색 결과-->
           <template v-else-if="attachableStore.relatedSearchAttempted">
             <div
-              v-if="attachableStore.relatedSearchResults.length === 0"
+              v-if="!attachableStore.relatedSearchErrorMsg && attachableStore.relatedSearchResults.length === 0"
               class="rounded border border-dashed border-gray-300 px-4 py-3 text-muted fs-7 mb-4"
             >
               {{ t("common.search.rslt.empty") }}
@@ -188,12 +201,14 @@ import { ref, computed, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useRoute } from "vue-router";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 
 const attachableStore = useAttachableModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 
@@ -203,6 +218,9 @@ let bsModal: InstanceType<typeof Modal> | null = null;
 const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() => {
   attachableStore.closeRelated();
 });
+
+/** 모달 제목 */
+const modalTitle = computed(() => t("related-content.modal.title"));
 
 /** 콘텐츠 타입 → 한글 레이블 */
 /** 변경: 위 기존 한글 전용 계약을 현재 locale catalog 레이블로 확장한다. */
@@ -281,7 +299,7 @@ async function save() {
         message: result.message,
         successFallback: t("common.result.saved"),
       });
-      void refreshJournalDaysForRoute(journalStore, route);
+      void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
     } else if (result.message) {
       void swalAjaxResult({ rslt: false, message: result.message });
     }

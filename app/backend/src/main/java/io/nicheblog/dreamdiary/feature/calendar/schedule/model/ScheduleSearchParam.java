@@ -11,6 +11,8 @@ import javax.validation.constraints.Size;
  * ScheduleSearchParam
  * <pre>
  *  일정 목록 검색 파라미터.
+ *  변경 전에는 내부 전용 prevOnly를 getPrvtOnly 조건으로 변환하지 못해 개인 일정 조회가
+ *  사실상 무제한 조회로 새었다. 변경 후에는 prvtChked 하나가 공개/참가 개인 일정 가시성을 결정한다.
  * </pre>
  *
  * @author nichefish
@@ -63,8 +65,4 @@ public class ScheduleSearchParam
     @Pattern(regexp = "^[YN]$")
     private String prvtChked;
 
-    /** 개인 일정만 조회할지 여부 */
-    @Builder.Default
-    private Boolean prevOnly = false;
 }
-

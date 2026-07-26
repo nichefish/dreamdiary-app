@@ -21,6 +21,8 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayStat
 import io.nicheblog.dreamdiary.feature.journal.day.spec.JournalDaySpec;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
+import io.nicheblog.dreamdiary.global.exception.BusinessException;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -261,6 +263,8 @@ public class JournalDayService
         }
         // 기간 필드 세팅:: 메소드 분리
         this.setPeriodFields(registDto);
+        registDto.setDiaryResolvedYn(normalizeYn(registDto.getDiaryResolvedYn()));
+        registDto.setDreamResolvedYn(normalizeYn(registDto.getDreamResolvedYn()));
     }
 
     /**
@@ -289,6 +293,8 @@ public class JournalDayService
         modifyDto.setPrevWeekStartDt(DateUtils.asStr(modifyEntity.getWeekStartDt(), DatePtn.DATE));
         // 기간 필드 세팅:: 메소드 분리
         this.setPeriodFields(modifyDto);
+        modifyDto.setDiaryResolvedYn(normalizeYn(modifyDto.getDiaryResolvedYn()));
+        modifyDto.setDreamResolvedYn(normalizeYn(modifyDto.getDreamResolvedYn()));
     }
 
     /**
@@ -325,6 +331,57 @@ public class JournalDayService
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
+        if ("Y".equals(normalizeYn(deletedDto.getDiaryResolvedYn()))
+                || "Y".equals(normalizeYn(deletedDto.getDreamResolvedYn()))) {
+            throw new BusinessException("journal.day.resolved-delete-locked");
+        }
+    }
+
+    /**
+     * 일자 축별 완결 플래그만 갱신한다. 비어 있지 않은 파라미터만 반영한다.
+     *
+     * @param id 저널 일자 ID
+     * @param diaryResolvedYn 일기 축 완결 (선택)
+     * @param dreamResolvedYn 꿈 축 완결 (선택)
+     * @return 갱신 결과
+     */
+    @Transactional
+    public ServiceResponse updateResolvedFlags(
+            final Integer id,
+            final String diaryResolvedYn,
+            final String dreamResolvedYn
+    ) throws Exception {
+        final JournalDayEntity entity = this.getDtlEntity(id);
+        if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
+            throw new NotAuthorizedException("common.result.access-not-authorized");
+        }
+
+        final JournalDayDto postDto = mapstruct.toDto(entity);
+        if (StringUtils.isNotBlank(diaryResolvedYn)) {
+            entity.setDiaryResolvedYn(normalizeYn(diaryResolvedYn));
+        }
+        if (StringUtils.isNotBlank(dreamResolvedYn)) {
+            entity.setDreamResolvedYn(normalizeYn(dreamResolvedYn));
+        }
+
+        final JournalDayEntity updatedEntity = repository.saveAndFlush(entity);
+        final JournalDayDto updatedDto = mapstruct.toDto(updatedEntity);
+        this.postModify(postDto, updatedDto);
+
+        final ServiceResponse response = new ServiceResponse();
+        response.setRslt(updatedDto.getId() != null);
+        response.setRsltObj(updatedDto);
+        return response;
+    }
+
+    /**
+     * Y/N 플래그를 Y 또는 N으로 정규화한다. blank/null 은 N.
+     *
+     * @param yn 원본 값
+     * @return Y 또는 N
+     */
+    private static String normalizeYn(final String yn) {
+        return "Y".equalsIgnoreCase(StringUtils.trimToEmpty(yn)) ? "Y" : "N";
     }
 
     /**

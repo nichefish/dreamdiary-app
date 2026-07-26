@@ -36,19 +36,38 @@
       </div>
       <!--end::월 이동 컨트롤-->
 
-      <!--begin::월 그리드-->
+      <!--begin::월 그리드
+        `전체 월` 이 켜져 있으면 특정 월로 좁혀 보고 있지 않으므로 활성 월 강조를 끈다.
+        (강조가 남으면 그 달만 조회 중인 것처럼 보여 표시와 동작이 어긋난다) -->
       <div class="d-grid gap-1" style="grid-template-columns: repeat(3, 1fr);">
         <button
           v-for="m in 12"
           :key="m"
           type="button"
-          :class="['btn btn-sm', m === mnth ? 'btn-primary' : 'btn-light']"
+          :class="['btn btn-sm', (m === mnth && !allMonths) ? 'btn-primary' : 'btn-light']"
           @click="emit('goto', yy, m)"
         >
           {{ monthLabel(m) }}
         </button>
       </div>
       <!--end::월 그리드-->
+
+      <!--begin::전체 월 토글 (목록 VIEW 전용)
+        월 선택 바로 아래에 두어 '월로 좁혀보기 / 전체 월 보기'를 한자리에서 고르게 한다.
+        달력 VIEW 는 항상 한 달을 그리므로 노출하지 않는다. -->
+      <label
+        v-if="showAllMonths"
+        class="form-check form-switch form-check-custom form-check-solid cursor-pointer d-flex align-items-center gap-2"
+      >
+        <input
+          class="form-check-input w-30px h-20px"
+          type="checkbox"
+          :checked="allMonths"
+          @change="onAllMonthsChange"
+        />
+        <span class="form-check-label fs-7 fw-semibold">{{ t('schedule.list.all-months') }}</span>
+      </label>
+      <!--end::전체 월 토글-->
 
       <!--begin::TODAY 버튼-->
       <button type="button" class="btn btn-sm btn-light-primary w-100" @click="emit('today')">
@@ -67,17 +86,30 @@ import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useScheduleAsideStore } from "@/features/calendar/stores/scheduleAside";
 
 /** 현재 표시 중인 연/월 (1-based) — 부모(ScheduleCalendar)가 이동일 기준으로 내려준다. */
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   yy: number;
   mnth: number;
-}>();
+  /** `전체 월` 토글 노출 여부. 목록 VIEW 에서만 true (달력 VIEW 는 항상 한 달을 그린다) */
+  showAllMonths?: boolean;
+  /** `전체 월` 현재 상태. true 면 월 강조를 끄고 연 전체를 조회 중임을 나타낸다 */
+  allMonths?: boolean;
+}>(), {
+  showAllMonths: false,
+  allMonths: false,
+});
 
 const emit = defineEmits<{
   /** 연/월 선택 → 부모가 달력 gotoDate 또는 목록 재조회로 반영 */
   (e: "goto", yy: number, mnth: number): void;
   /** 오늘로 이동 */
   (e: "today"): void;
+  /** `전체 월` 토글 변경 → 부모가 목록 조회 범위를 월/연으로 전환 */
+  (e: "update:allMonths", value: boolean): void;
 }>();
+
+function onAllMonthsChange(event: Event) {
+  emit("update:allMonths", (event.target as HTMLInputElement).checked);
+}
 
 const asideStore = useScheduleAsideStore();
 const { t } = useLocaleStore();

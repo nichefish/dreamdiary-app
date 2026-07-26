@@ -1,0 +1,87 @@
+package io.nicheblog.dreamdiary.feature.journal.thread.service;
+
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
+import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.tika.utils.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * JournalThreadExportService
+ * <pre>
+ *  저널 스레드 내보내기 서비스 모듈.
+ *  스레드 제목을 머리행으로, 소속 엔트리를 일자별로 이어붙여 텍스트로 변환한다.
+ *  포맷은 챕터/엔트리 내보내기(JournalEntryExportService)와 동일한 배너·엔트리 블록 계약을 따른다.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Service
+@RequiredArgsConstructor
+@Log4j2
+public class JournalThreadExportService {
+
+    /**
+     * 스레드 DTO와 소속 엔트리 목록을 텍스트 내보내기 포맷으로 변환한다.
+     * <p>
+     * 소속 엔트리는 {@link io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService#getEntriesByThread}
+     * 가 일자 오름차순으로 내려준 순서를 그대로 사용한다. 태그·요일이 채워지지 않은 경량 엔트리도 안전하게 처리한다.
+     *
+     * @param thread 스레드 DTO (제목·분류)
+     * @param entries 소속 엔트리 목록 (일자 오름차순)
+     * @return 텍스트 포맷 문자열
+     */
+    public String buildTxt(final JournalThreadDto thread, final List<JournalEntryDto> entries) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("=== dreamdiary export ===\r\n");
+
+        final String title = (thread == null || StringUtils.isEmpty(thread.getTitle())) ? "" : thread.getTitle();
+        sb.append("thread: ").append(title).append("\r\n");
+        if (thread != null && !StringUtils.isEmpty(thread.getCategoryName())) {
+            sb.append("category: ").append(thread.getCategoryName()).append("\r\n");
+        }
+        sb.append("total: ")
+          .append(CollectionUtils.isEmpty(entries) ? 0 : entries.size())
+          .append("\r\n");
+        sb.append("================================\r\n\n");
+        if (CollectionUtils.isEmpty(entries)) return sb.toString();
+
+        String prevDate = null;
+        for (final JournalEntryDto entry : entries) {
+            final String stdrdDt = entry.getStdrdDt();
+            final String journalWeekDay = StringUtils.isEmpty(entry.getJournalDateWeekDay()) ? "" : "(" + entry.getJournalDateWeekDay() + ")";
+            final String date = stdrdDt + journalWeekDay;
+
+            if (!Objects.equals(prevDate, date)) {
+                sb.append("\r\n").append(date).append("\r\n");
+                prevDate = date;
+            }
+
+            sb.append("#")
+              .append(entry.getSortOrder())
+              .append("\r\n")
+              .append(CmmUtils.htmlToText(entry.getContent()))
+              .append("\r\n");
+
+            if (entry.getTag() == null || CollectionUtils.isEmpty(entry.getTag().getList())) {
+                sb.append("\r\n\n");
+                continue;
+            }
+            final List<TagContentDto> tagDtoList = entry.getTag().getList();
+            for (final TagContentDto tagDto : tagDtoList) {
+                final String ctgr = StringUtils.isEmpty(tagDto.getCtgr()) ? "" : "[" + tagDto.getCtgr() + "] ";
+                final String tagStr = ctgr + tagDto.getName();
+                sb.append("#").append(tagStr).append(" ");
+            }
+            sb.append("\r\n\n");
+        }
+        return sb.toString();
+    }
+}

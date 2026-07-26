@@ -24,17 +24,24 @@
           <template v-else-if="day">
             <!--begin::날짜 헤더-->
             <div class="journal-day-header mb-4">
-              <span class="fs-5 fw-bold" :class="{ 'text-danger': day.isHolyday }">
+              <span class="fs-5 fw-bold" :class="{ 'text-danger': isDayOff }">
                 <i class="bi bi-calendar3 fs-6 me-1"></i>
                 {{ day.stdrdDt }}
-                <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">
+                <span class="fs-8" :class="isDayOff ? 'text-danger' : 'text-gray-600'">
                   ({{ getWeekDayStr(day.stdrdDt, t) }})
                 </span>
                 <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.approximate") }}</span>
                 <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.unknown") }}</span>
+                <span v-if="isDiaryResolved" class="badge badge-light-success ms-2">{{ t("journal.day.diary-resolved.badge") }}</span>
+                <span v-if="isDreamResolved" class="badge badge-light-info ms-2">{{ t("journal.day.dream-resolved.badge") }}</span>
                 <span class="fs-7 ms-4 text-muted" v-html="day.weather"></span>
               </span>
               <span v-if="day.holydayNm" class="ms-3 fs-6 fw-normal text-muted">{{ day.holydayNm }}</span>
+              <JournalDayVacationIndicator
+                :status="day.vacationDayStatus"
+                :reason-list="day.vacationReasonList"
+                class="ms-3"
+              />
             </div>
             <!--end::날짜 헤더-->
 
@@ -109,6 +116,12 @@ import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import JournalChapterItem from "../../chapter/components/JournalChapterItem.vue";
 import JournalDreamVirtualSection from "../../dream/components/JournalDreamVirtualSection.vue";
+import JournalDayVacationIndicator from "../components/JournalDayVacationIndicator.vue";
+import { isJournalDayOff } from "@/features/journal/utils/journalVacation";
+import {
+  provideJournalDayResolved,
+  isResolvedYn,
+} from "@/features/journal/utils/journalDayResolved";
 
 const modalStore = useJournalModalStore();
 const { t } = useLocaleStore();
@@ -117,6 +130,10 @@ const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
 
 const day = computed(() => modalStore.dayDetailData);
+provideJournalDayResolved(day);
+const isDiaryResolved = computed(() => isResolvedYn(day.value?.diaryResolvedYn));
+const isDreamResolved = computed(() => isResolvedYn(day.value?.dreamResolvedYn));
+const isDayOff = computed(() => day.value ? isJournalDayOff(day.value) : false);
 const tagList = computed(() => day.value?.tag?.list ?? []);
 const journalChapterList = computed(() => day.value?.journalChapterList ?? []);
 const journalDreamSectionList = computed(() => day.value?.journalDreamSectionList ?? []);

@@ -93,6 +93,15 @@ public class TagProfileService
         this.applyVisualSemantic(tagList, contentType.key);
     }
 
+    /**
+     * 태그 목록에 사용자별 시각 의미(색)·클라우드 최대 크기(forceMax)를 병합한다.
+     * <p>변경 전: textClass(색)만 병합했다. sizeBoost·emphasized 는 폐기했다.</p>
+     * <p>변경 후: 프로필 {@code forceMax}이면 {@code tagClass}를 {@code ts-9}로 고정한다.
+     * 엔트리 본문 태그줄에는 적용하지 않으며, sized 태그클라우드 경로에서만 호출된다.</p>
+     *
+     * @param tagList 태그 목록
+     * @param contentType 컨텐츠 타입
+     */
     @Transactional(readOnly = true)
     public void applyVisualSemantic(final List<TagDto> tagList, final String contentType) {
         if (CollectionUtils.isEmpty(tagList) || StringUtils.isBlank(contentType)) return;
@@ -137,14 +146,23 @@ public class TagProfileService
                                 (left, right) -> left
                         ));
 
-        final Map<Integer, TextClass> semanticMap = repository.findAllByTagIdInAndContentTypeAndCreatedBy(tagIdList, contentType, createdBy)
-                .stream()
+        final List<TagProfileEntity> profiles = repository.findAllByTagIdInAndContentTypeAndCreatedBy(tagIdList, contentType, createdBy);
+
+        final Map<Integer, TextClass> semanticMap = profiles.stream()
                 .filter(profile -> profile.getTextClass() != null)
                 .collect(Collectors.toMap(
                         TagProfileEntity::getTagId,
                         profile -> TextClass.getOrDefault(profile.getTextClass()),
                         (left, right) -> left
                 ));
+
+        final Map<Integer, Boolean> forceMaxMap = profiles.stream()
+                .collect(Collectors.toMap(
+                        TagProfileEntity::getTagId,
+                        profile -> Boolean.TRUE.equals(profile.getForceMax()),
+                        (left, right) -> left
+                ));
+
 
         tagList.forEach(tag -> {
             final Integer effectiveTagCategoryId = tag.getTagCategoryId() != null
@@ -155,6 +173,11 @@ public class TagProfileService
             tag.setTextSemantic(semantic);
             tag.setTextClassCd(semantic.getKey());
             tag.setTextClass(toCssTextClass(tag.getTextClassCd()));
+            /* forceMax 이면 빈도 산출을 덮어 ts-9. 클라우드 전용. */
+            tag.setTagClass(TagCloudSizeSupport.applyForceMax(
+                    tag.getTagClass(),
+                    forceMaxMap.getOrDefault(tag.getId(), false)
+            ));
         });
     }
 
@@ -200,6 +223,7 @@ public class TagProfileService
         this.populateTagCategoryInfo(tagProfile);
         this.normalizeTagTextForUpsert(tagProfile);
         this.normalizeCategoryTextSemantic(tagProfile);
+        this.normalizeForceMaxForUpsert(tagProfile);
 
         if (tagProfile.getId() == null) {
             this.getDtoByTagIdAndContentType(tagProfile.getTagId(), tagProfile.getContentType())
@@ -248,10 +272,20 @@ public class TagProfileService
     }
 
     /**
+     * 저장용: forceMax 를 boolean 으로 정규화. null 은 false.
+     */
+    private void normalizeForceMaxForUpsert(final TagProfileDto tagProfile) {
+        if (tagProfile == null) return;
+        tagProfile.setForceMax(Boolean.TRUE.equals(tagProfile.getForceMax()));
+    }
+
+
+    /**
      * 조회용: DB에 저장된 개별 색만 반영. {@code text_class}가 NULL이면 상속(폼에는 코드 미전달).
      */
     private TagProfileDto normalizeTagTextForRead(final TagProfileDto tagProfile) {
         if (tagProfile == null) return null;
+        tagProfile.setForceMax(Boolean.TRUE.equals(tagProfile.getForceMax()));
         if (tagProfile.getTextClass() == null) {
             tagProfile.setTextClass(null);
             tagProfile.setTextClassCd(null);

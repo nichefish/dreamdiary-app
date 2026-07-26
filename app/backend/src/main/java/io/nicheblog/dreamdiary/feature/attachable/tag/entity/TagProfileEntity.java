@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.attachable.tag.entity;
 import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditRegEntity;
 import io.nicheblog.dreamdiary.global.type.TextClass;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -63,4 +64,14 @@ public class TagProfileEntity
     @Column(name = "text_class", length = 30, nullable = true)
     @Comment("시각 의미 (NULL=카테고리/기본 상속)")
     private TextClass textClass;
+
+    /**
+     * 태그클라우드 크기 최대 고정. {@code true}이면 빈도 산출과 무관하게 {@code ts-9}.
+     * 엔트리 본문 태그줄에는 적용하지 않는다.
+     */
+    @Builder.Default
+    @Column(name = "force_max", nullable = false)
+    @Comment("클라우드 크기 최대 고정 (ts-9)")
+    private Boolean forceMax = false;
+
 }

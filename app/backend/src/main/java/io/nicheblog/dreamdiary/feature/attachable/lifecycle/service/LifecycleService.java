@@ -14,6 +14,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.model.CacheContext;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.service.StateService;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
@@ -42,6 +43,7 @@ public class LifecycleService {
     private final StateRepository stateRepository;
     private final StateService stateService;
     private final List<LifecycleCacheUpdater> cacheUpdaters;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     /**
      * 컨텐츠 하나의 현재 라이프사이클 값을 설정한다.
@@ -71,6 +73,10 @@ public class LifecycleService {
                                     lifecycleSet.getLifecycleKey().key
                             }))
                     .build();
+        }
+
+        if (lifecycleSet.getContentType() != ContentType.JOURNAL_DAY) {
+            journalDayResolvedGuard.assertWritableForRef(lifecycleSet.getId(), lifecycleSet.getContentType());
         }
 
         final LifecycleEntity lifecycle = repository.findByRefIdAndRefContentType(

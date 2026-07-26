@@ -36,6 +36,35 @@ public class ChatSettingDto
     @Builder.Default
     private Integer recentMessageLimit = 50;
 
+    /** RAG 검색 사용 여부 */
+    @Builder.Default
+    private Boolean ragEnabled = true;
+
+    /** LOOKUP RAG 최대 검색 건수 */
+    @Builder.Default
+    private Integer ragTopK = 5;
+
+    /** LOOKUP/SUMMARY 벡터 최소 점수 */
+    @Builder.Default
+    private Double ragMinScore = 0.35D;
+
+    /** SUMMARY RAG 최대 검색 건수 */
+    @Builder.Default
+    private Integer ragSummaryTopK = 12;
+
+    /** SYNTHESIS(비태도) RAG 최대 검색 건수 */
+    @Builder.Default
+    private Integer ragSynthesisTopK = 25;
+
+    /** 태도(person-stance) RAG 최대 검색 건수 */
+    @Builder.Default
+    private Integer ragStanceTopK = 50;
+
+    /** SYNTHESIS 벡터 최소 점수 */
+    @Builder.Default
+    private Double ragSynthesisMinScore = 0.25D;
+
+
     /* ----- */
 
     /**

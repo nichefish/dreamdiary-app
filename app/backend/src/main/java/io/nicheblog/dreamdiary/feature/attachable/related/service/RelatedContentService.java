@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDt
 import io.nicheblog.dreamdiary.feature.attachable.related.repository.jpa.RelatedContentRepository;
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationOriginType;
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationType;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -44,15 +45,18 @@ public class RelatedContentService {
     private final RelatedContentMapstruct mapstruct;
 
     private final JournalEntryService journalEntryService;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     public RelatedContentService(
             final RelatedContentRepository repository,
             final RelatedContentMapstruct mapstruct,
-            final @Lazy JournalEntryService journalEntryService
+            final @Lazy JournalEntryService journalEntryService,
+            final JournalDayResolvedGuard journalDayResolvedGuard
     ) {
         this.repository = repository;
         this.mapstruct = mapstruct;
         this.journalEntryService = journalEntryService;
+        this.journalDayResolvedGuard = journalDayResolvedGuard;
     }
 
     @Transactional
@@ -145,6 +149,7 @@ public class RelatedContentService {
     public void deleteAllByRef(final BaseAttachableKey refKey) throws Exception {
         this.validateReadableKey(refKey);
         this.requireOwnedContent(refKey);
+        journalDayResolvedGuard.assertWritableForRef(refKey.getId(), refKey.getContentType());
 
         final String createdBy = AuthUtils.requireLoginUsername();
         repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), createdBy);
@@ -153,6 +158,7 @@ public class RelatedContentService {
     @Transactional
     public void deleteAllByRef(final BaseAttachableKey refKey, final String createdBy) {
         this.validateReadableKey(refKey);
+        journalDayResolvedGuard.assertWritableForRef(refKey.getId(), refKey.getContentType());
 
         final String requiredCreatedBy = AuthUtils.requireUsername(createdBy);
         if (!AuthUtils.isCreatedBy(requiredCreatedBy)) {
@@ -170,6 +176,9 @@ public class RelatedContentService {
         if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
+
+        journalDayResolvedGuard.assertWritableForRef(entity.getLeftId(), entity.getLeftContentType());
+        journalDayResolvedGuard.assertWritableForRef(entity.getRightId(), entity.getRightContentType());
 
         repository.delete(entity);
         return true;
@@ -206,6 +215,9 @@ public class RelatedContentService {
         if (!Objects.equals(firstCreatedBy, secondCreatedBy)) {
             throw new IllegalArgumentException("related contents must have same owner.");
         }
+
+        journalDayResolvedGuard.assertWritableForRef(firstKey.getId(), firstKey.getContentType());
+        journalDayResolvedGuard.assertWritableForRef(secondKey.getId(), secondKey.getContentType());
     }
 
     private void validateReadableKey(final BaseAttachableKey refKey) {
@@ -219,7 +231,14 @@ public class RelatedContentService {
         }
     }
 
-    private String requireOwnedContent(final BaseAttachableKey refKey) {
+    /**
+     * 지원 콘텐츠 타입과 로그인 사용자 소유권을 검증한다.
+     *
+     * @param refKey 검증할 콘텐츠 키
+     * @return 콘텐츠 등록자 아이디
+     */
+    String requireOwnedContent(final BaseAttachableKey refKey) {
+        this.validateReadableKey(refKey);
         final String createdBy = this.resolveCreatedBy(refKey);
         if (StringUtils.isBlank(createdBy)) {
             throw new EntityNotFoundException("this.to-read");

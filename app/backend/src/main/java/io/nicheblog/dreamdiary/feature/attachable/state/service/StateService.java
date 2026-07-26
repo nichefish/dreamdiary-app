@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.policy.AttachableContentStatePolicy;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.spec.StateSpec;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -49,6 +50,7 @@ public class StateService
     private final StateMapstruct mapstruct = StateMapstruct.INSTANCE;
 
     private final List<StateCacheUpdater> cacheUpdaters;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     /**
      * 캐시 갱신 전략이 필요한 컨텐츠 타입마다 하나씩 등록되어 있는지 검증한다.
@@ -112,6 +114,10 @@ public class StateService
                     .rslt(false)
                     .message(MessageUtils.getMessage("state.error.not-allowed", new Object[]{stateToggle.getContentType().key, stateToggle.getStateKey().key}))
                     .build();
+        }
+
+        if (stateToggle.getContentType() != ContentType.JOURNAL_DAY) {
+            journalDayResolvedGuard.assertWritableForRef(stateToggle.getId(), stateToggle.getContentType());
         }
 
         final StateEntity existingEntity = this.getSelf().getDtlEntity(stateToggle);

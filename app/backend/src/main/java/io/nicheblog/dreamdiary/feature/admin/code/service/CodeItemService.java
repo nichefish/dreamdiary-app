@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemDto;
 import io.nicheblog.dreamdiary.feature.admin.code.spec.CodeItemSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemI18nEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.model.CodeLookupItem;
@@ -20,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -38,6 +41,9 @@ import java.util.Objects;
 public class CodeItemService
         implements BaseDtoWritableService<CodeItemDto, CodeItemDto, Integer, CodeItemEntity>,
                    BaseSortableService<CodeItemDto, Integer, CodeItemEntity> {
+
+    /** 기준 로케일. 이 로케일의 코드명은 code_item.code_name 이 단일 원천이라 code_item_i18n 에 저장하지 않는다. */
+    private static final String BASE_LOCALE = "ko";
 
     @Getter
     private final CodeItemRepository repository;
@@ -122,48 +128,94 @@ public class CodeItemService
         registDto.setSortOrder(maxIdx + 1);
     }
 
+    /**
+     * 등록 (dto level) override.
+     * <p>
+     * i18n(번역명)은 폼 전용 필드라 엔티티에 매핑되지 않는다. 그런데 상위 {@code regist} 는
+     * 후처리에 <b>엔티티에서 만든</b> {@code updatedDto} 를 넘기므로 {@code postRegist} 에서는
+     * 폼의 {@code i18nNames} 를 볼 수 없다(항상 비어 있음). 반대로 폼 DTO({@code registDto}) 에는
+     * 등록 전 id 가 없다. 두 값(폼 i18n + 새 id)을 모두 확보하려면 이 레벨에서 처리해야 한다.
+     * <p>
+     * 그래서 상위 등록을 먼저 수행해 새 id 를 받은 뒤, 폼 DTO 에 그 id 를 채워 {@link #saveI18n} 한다.
+     *
+     * @param registDto 등록할 폼 DTO (i18nNames 보유)
+     * @return {@link ServiceResponse} 등록 결과
+     */
+    @Override
+    @Transactional
+    public ServiceResponse regist(final CodeItemDto registDto) throws Exception {
+        final ServiceResponse response = BaseDtoWritableService.super.regist(registDto);
+        if (response.getRsltObj() instanceof CodeItemDto saved && saved.getId() != null) {
+            registDto.setId(saved.getId());
+            this.saveI18n(registDto);
+        }
+        return response;
+    }
+
     @Override
     public void postRegist(final CodeItemDto updatedDto) throws Exception {
-        this.saveI18n(updatedDto);
         this.normalizeSortOrderByGroupCode(updatedDto.getGroupCode());
         this.evictCacheByGroupCode(updatedDto.getGroupCode());
     }
 
     @Override
-    public void postModify(final CodeItemDto postDto, final CodeItemDto updatedDto) {
-        this.saveI18n(updatedDto);
+    public void postModify(final CodeItemDto postDto, final CodeItemDto updatedDto) throws Exception {
+        // 폼 값(i18nNames)을 가진 postDto 로 저장한다. updatedDto 는 엔티티 기반이라 i18n 이 비어 있다.
+        this.saveI18n(postDto);
         this.evictCache(updatedDto);
     }
 
     /**
      * 상세 코드 다국어 저장.
-     * 기존 번역을 전부 삭제하고 새 값으로 교체한다.
+     * 기존 번역을 전부 삭제하고 전달된 locale → 번역명 전체로 교체한다.
+     * <p>
+     * 변경 전: {@code dto.codeNameEn} 만 읽어 {@code locale='en'} 한 건만 저장했다. 따라서 en 이외의
+     * 로케일은 저장할 수단이 없었고, {@code deleteByCodeItemId} 로 지운 뒤 다시 쓰지 않아
+     * 저장할 때마다 조용히 사라졌다.
+     * 변경 후: {@code i18nNames} 맵 전체를 저장해 어떤 locale 도 보존된다.
+     * ko 는 {@code code_item.code_name} 이 단일 기준이므로 저장 대상에서 제외한다.
+     *
+     * @param dto 저장된 상세 코드 DTO
      */
     private void saveI18n(final CodeItemDto dto) {
         if (dto.getId() == null) return;
         codeItemI18nRepository.deleteByCodeItemId(dto.getId());
-        if (StringUtils.isNotEmpty(dto.getCodeNameEn())) {
+
+        final Map<String, String> i18nNames = dto.getI18nNames();
+        if (i18nNames == null || i18nNames.isEmpty()) return;
+
+        for (final Map.Entry<String, String> entry : i18nNames.entrySet()) {
+            final String locale = StringUtils.trimToNull(entry.getKey());
+            final String codeName = StringUtils.trimToNull(entry.getValue());
+            if (locale == null || codeName == null) continue;
+            if (BASE_LOCALE.equals(locale)) {
+                log.warn("[saveI18n] ko 는 code_item.code_name 이 기준이라 i18n 저장에서 제외. codeItemId={}", dto.getId());
+                continue;
+            }
             codeItemI18nRepository.save(
                     CodeItemI18nEntity.builder()
                             .codeItemId(dto.getId())
-                            .locale("en")
-                            .codeName(dto.getCodeNameEn().trim())
+                            .locale(locale)
+                            .codeName(codeName)
                             .build()
             );
         }
     }
 
     /**
-     * 상세 코드 id 기준 영문 번역명 조회.
+     * 상세 코드 id 기준 다국어 번역명 전체 조회.
+     * ko 는 {@code code_item.code_name} 이 기준이므로 결과에 포함되지 않는다.
      *
      * @param id 상세 코드 ID
-     * @return 영문 번역명 (없으면 null)
+     * @return locale → 번역명 (없으면 빈 맵)
      */
-    public String getCodeNameEn(final Integer id) {
-        if (id == null) return null;
-        return codeItemI18nRepository.findByCodeItemIdAndLocale(id, "en")
-                .map(CodeItemI18nEntity::getCodeName)
-                .orElse(null);
+    public Map<String, String> getI18nNames(final Integer id) {
+        final Map<String, String> i18nNames = new LinkedHashMap<>();
+        if (id == null) return i18nNames;
+        for (final CodeItemI18nEntity entity : codeItemI18nRepository.findByCodeItemId(id)) {
+            i18nNames.put(entity.getLocale(), entity.getCodeName());
+        }
+        return i18nNames;
     }
 
     @Override

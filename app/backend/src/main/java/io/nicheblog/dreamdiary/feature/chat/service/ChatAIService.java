@@ -57,9 +57,9 @@ public class ChatAIService {
     private static final int RAG_SUMMARY_TOP_K = 12;
     /** 통섭형 RAG 검색에서 가져올 최대 저널 엔트리 수 */
     private static final int RAG_SYNTHESIS_TOP_K = 25;
-    /** 관련 없는 기록을 억지로 주입하지 않기 위한 최소 검색 점수 */
+    /** LOOKUP/SUMMARY 벡터 기본 최소 점수 (관리자 {@code chat_setting.rag_min_score} 기본값). */
     private static final double RAG_MIN_SCORE = 0.35D;
-    /** 통섭형 질문에서 더 넓은 맥락을 가져오기 위한 최소 검색 점수 */
+    /** SYNTHESIS 벡터 기본 최소 점수 (관리자 {@code chat_setting.rag_synthesis_min_score} 기본값). */
     private static final double RAG_SYNTHESIS_MIN_SCORE = 0.25D;
     /** RAG 컨텍스트에 포함할 엔트리당 최대 텍스트 길이 */
     private static final int RAG_TEXT_MAX_LENGTH = 300;
@@ -200,6 +200,7 @@ public class ChatAIService {
 
         // 3. AI 응답 생성 (RAG 컨텍스트 주입)
         final int recentMessageLimit = chatSettingService.getMyRecentMessageLimit();
+        broadcastProgress(sessionId, "SEARCHING");
         final RagContext ragContext = buildRagContext(message);
 
         if (isCancelled(sessionId)) {
@@ -208,6 +209,7 @@ public class ChatAIService {
             return;
         }
 
+        broadcastProgress(sessionId, "GENERATING");
         final String strippedResponse;
         final String responseMode;
         String guardDetail = null;
@@ -239,10 +241,20 @@ public class ChatAIService {
             final List<ChatMessageDto> contextMessages = sanitizeContextMessages(
                     chatMessageService.getRecentContextMessages(sessionId, recentMessageLimit)
             );
-            String rawResponse = ollamaClient.chat(
-                            systemPrompt,
-                            contextMessages
-                    );
+            // 본경로만 스트리밍: 토큰 DELTA를 버블에 미리 보이고, 완성 후 글로벌 가드·저장·완성 broadcast는 기존과 동일.
+            // hybrid/retry·language-guard 재시도는 비스트리밍 chat()을 유지한다.
+            final AtomicBoolean cancelFlag = cancelFlags.get(sessionId);
+            String rawResponse = ollamaClient.chatStream(
+                    systemPrompt,
+                    contextMessages,
+                    delta -> broadcastDelta(sessionId, delta),
+                    cancelFlag
+            );
+            if (isCancelled(sessionId)) {
+                log.info("AI response cancelled during stream. sessionId={}", sessionId);
+                cancelFlags.remove(sessionId);
+                return;
+            }
             if (containsDisallowedHanScript(rawResponse)) {
                 log.warn("AI response language guard retry. sessionId={}", sessionId);
                 rawResponse = ollamaClient.chat(systemPrompt + languageRetryPrompt(), contextMessages);
@@ -260,7 +272,7 @@ public class ChatAIService {
                     ragContext,
                     systemPrompt,
                     contextMessages,
-                    stripInternalRecordCitations(stripMarkdown(rawResponse))
+                    stripInternalRecordCitations(rawResponse)
             );
             strippedResponse = resolved.content();
             responseMode = resolved.responseMode();
@@ -296,8 +308,9 @@ public class ChatAIService {
     /**
      * 세션의 AI 응답 생성을 취소 요청한다.
      *
-     * <p>Ollama 호출이 완료되기 전에 플래그를 세팅하면,
-     * 응답이 도착해도 저장과 broadcast를 건너뛴다.</p>
+     * <p>본경로 스트림 중이면 NDJSON 읽기를 중단하고,
+     * 완성 전이면 저장·완성 broadcast를 건너뛰다.
+     * language-guard 재시도·hybrid 비스트림 호출은 HTTP가 끝날 때까지 대기한 뒤 플래그로 미저장한다.</p>
      *
      * @param sessionId 취소할 채팅 세션 ID
      */
@@ -307,6 +320,47 @@ public class ChatAIService {
         cancelFlags.computeIfAbsent(sessionId, k -> new AtomicBoolean(false)).set(true);
         log.info("AI response cancel requested after ownership validation. sessionId={}", sessionId);
     }
+
+    /**
+     * 채팅 세션 구독자에게 AI 응답 진행 단계(SEARCHING/GENERATING)를 브로드캐스트한다.
+     * 메시지 본문이 아니라 진행 UI용 메타 이벤트이며, 클라이언트는 messages에 넣지 않는다.
+     *
+     * @param sessionId 채팅 세션 ID
+     * @param phase {@code SEARCHING} 또는 {@code GENERATING}
+     */
+    private void broadcastProgress(final Integer sessionId, final String phase) {
+        if (sessionId == null || StringUtils.isBlank(phase)) return;
+        final Map<String, Object> progress = new LinkedHashMap<>();
+        progress.put("type", "PROGRESS");
+        progress.put("sessionId", sessionId);
+        progress.put("phase", phase);
+        messagingTemplate.convertAndSend(
+                "/topic/chat/session/" + sessionId,
+                AjaxResponse.withAjaxResult(true, null).withObj(progress)
+        );
+        log.info("AI response progress. sessionId={}, phase={}", sessionId, phase);
+    }
+
+    /**
+     * 채팅 세션 구독자에게 assistant 응답의 부분 텍스트(DELTA)를 브로드캐스트한다.
+     * 메시지 목록에 넣지 않고, 클라이언트가 임시 버블에 누적한다.
+     * 완성 ASSISTANT 메시지가 도착하면 임시 버블을 교체한다.
+     *
+     * @param sessionId 채팅 세션 ID
+     * @param delta Ollama 스트림 청크 텍스트
+     */
+    private void broadcastDelta(final Integer sessionId, final String delta) {
+        if (sessionId == null || StringUtils.isEmpty(delta)) return;
+        final Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("type", "DELTA");
+        payload.put("sessionId", sessionId);
+        payload.put("delta", delta);
+        messagingTemplate.convertAndSend(
+                "/topic/chat/session/" + sessionId,
+                AjaxResponse.withAjaxResult(true, null).withObj(payload)
+        );
+    }
+
 
     /**
      * 취소 플래그가 세팅되어 있는지 확인한다.
@@ -326,6 +380,11 @@ public class ChatAIService {
      */
     private RagContext buildRagContext(final String queryText) {
         final RagIntent intent = detectRagIntent(queryText);
+        final ChatSettingService.RagAdminSettings ragSettings = resolveAdminRagSettings();
+        if (!ragSettings.enabled()) {
+            log.info("AI RAG disabled by admin setting. intent={}", intent);
+            return RagContext.empty(intent);
+        }
         try {
             if (intent == RagIntent.SYNTHESIS && isPersonMeaningQuery(queryText)) {
                 return buildPersonMeaningRagContext(queryText, intent);
@@ -591,25 +650,68 @@ public class ChatAIService {
     }
 
     /**
-     * 질문 문장을 보고 RAG 응답 의도를 가볍게 분류합니다.
+     * 질문 문장을 보고 RAG 응답 의도를 분류한다.
+     *
+     * <p>1차는 {@link RagIntentClassifier} 휴리스틱.
+     * SUMMARY·SYNTHESIS 단서가 동시에 잡히면 Ollama 2차 분류를 시도하고,
+     * 실패·파싱 불가시는 휴리스틱으로 돌아간다.</p>
      */
     private RagIntent detectRagIntent(final String queryText) {
-        final String text = StringUtils.defaultString(queryText);
-        if (isPersonAboutLookupQuery(text)) {
-            return RagIntent.SYNTHESIS;
+        final boolean personAbout = isPersonAboutLookupQuery(queryText);
+        final RagIntent heuristic = RagIntentClassifier.classify(queryText, personAbout);
+        if (personAbout || !RagIntentClassifier.needsLlmSecondPass(queryText)) {
+            return heuristic;
         }
-        if (StringUtils.containsAny(text,
-                "의미", "통섭", "엮", "상징", "패턴", "흐름", "반복", "변화", "감정선",
-                "어떤 존재", "어떤 역할", "어떻게 이어", "전체 맥락", "관통", "해석",
-                "어떻게 생각", "생각하고", "어떤 감정", "어떤 마음", "어떤 느낌",
-                "어떻게 느끼", "느끼고")) {
-            return RagIntent.SYNTHESIS;
+        final RagIntent llmIntent = classifyRagIntentWithLlm(queryText);
+        if (llmIntent == null) {
+            log.info("AI RAG intent LLM second-pass skipped/failed, using heuristic. heuristic={}, queryLength={}",
+                    heuristic, StringUtils.length(queryText));
+            return heuristic;
         }
-        if (StringUtils.containsAny(text,
-                "요약", "정리", "모아", "묶어", "최근", "전체적으로", "한번에", "돌아봐")) {
-            return RagIntent.SUMMARY;
+        log.info("AI RAG intent LLM second-pass. heuristic={}, llm={}, queryLength={}",
+                heuristic, llmIntent, StringUtils.length(queryText));
+        return llmIntent;
+    }
+
+    /**
+     * 모호한 질문에 대해 Ollama로 LOOKUP/SUMMARY/SYNTHESIS 레이블만 받는다.
+     *
+     * @param queryText 사용자 질문
+     * @return 파싱된 의도, 실패·미지원 시 {@code null}
+     */
+    private RagIntent classifyRagIntentWithLlm(final String queryText) {
+        if (ollamaClient == null || StringUtils.isBlank(queryText)) {
+            return null;
         }
-        return RagIntent.LOOKUP;
+        try {
+            final String raw = ollamaClient.chat(chatMsg("chat.ai.prompt.intent-classify"), queryText.trim());
+            return parseRagIntentLabel(raw);
+        } catch (final Exception e) {
+            log.warn("AI RAG intent LLM second-pass error. queryLength={}, error={}",
+                    StringUtils.length(queryText), e.toString());
+            return null;
+        }
+    }
+
+    /**
+     * LLM 응답에서 LOOKUP/SUMMARY/SYNTHESIS 토큰을 추출한다. 없으면 null.
+     */
+    private RagIntent parseRagIntentLabel(final String raw) {
+        if (StringUtils.isBlank(raw)) {
+            return null;
+        }
+        final String upper = raw.toUpperCase(Locale.ROOT);
+        // 연장 답변에서도 먼저 나오는 레이블을 선택 (단어 경계).
+        int bestIdx = Integer.MAX_VALUE;
+        RagIntent best = null;
+        for (final RagIntent intent : RagIntent.values()) {
+            final int idx = upper.indexOf(intent.name());
+            if (idx >= 0 && idx < bestIdx) {
+                bestIdx = idx;
+                best = intent;
+            }
+        }
+        return best;
     }
 
     /**
@@ -619,20 +721,40 @@ public class ChatAIService {
      * (queryText 없이 intent만 받던 오버로드는 merged 경로가 queryText를 넘기게 되며 제거됨.)</p>
      */
     private int resolveRagTopK(final RagIntent intent, final String queryText) {
+        final ChatSettingService.RagAdminSettings settings = resolveAdminRagSettings();
         if (intent == RagIntent.SYNTHESIS && isPersonAttitudeQuery(queryText)) {
-            return PERSON_STANCE_RAG_TOP_K;
+            return settings.stanceTopK();
         }
-        if (intent == RagIntent.SYNTHESIS) return RAG_SYNTHESIS_TOP_K;
-        if (intent == RagIntent.SUMMARY) return RAG_SUMMARY_TOP_K;
-        return RAG_TOP_K;
+        if (intent == RagIntent.SYNTHESIS) return settings.synthesisTopK();
+        if (intent == RagIntent.SUMMARY) return settings.summaryTopK();
+        return settings.topK();
     }
 
     /**
      * RAG 의도별 벡터 검색 최소 점수를 반환합니다.
      */
     private double resolveRagMinScore(final RagIntent intent) {
-        if (intent == RagIntent.SYNTHESIS) return RAG_SYNTHESIS_MIN_SCORE;
-        return RAG_MIN_SCORE;
+        final ChatSettingService.RagAdminSettings settings = resolveAdminRagSettings();
+        if (intent == RagIntent.SYNTHESIS) return settings.synthesisMinScore();
+        return settings.minScore();
+    }
+
+    /**
+     * 관리자 RAG 설정을 조회한다. 단위 테스트에서 {@code chatSettingService} null일 때 코드 기본값을 쓰다.
+     */
+    private ChatSettingService.RagAdminSettings resolveAdminRagSettings() {
+        if (chatSettingService == null) {
+            return new ChatSettingService.RagAdminSettings(
+                    true,
+                    RAG_TOP_K,
+                    RAG_MIN_SCORE,
+                    RAG_SUMMARY_TOP_K,
+                    RAG_SYNTHESIS_TOP_K,
+                    PERSON_STANCE_RAG_TOP_K,
+                    RAG_SYNTHESIS_MIN_SCORE
+            );
+        }
+        return chatSettingService.getAdminRagSettings();
     }
 
     /**
@@ -1249,7 +1371,7 @@ public class ChatAIService {
             rawResponse = ollamaClient.chat(systemPrompt + languageRetryPrompt(), hybridContext);
         }
 
-        String strippedResponse = stripInternalRecordCitations(stripMarkdown(rawResponse));
+        String strippedResponse = stripInternalRecordCitations(rawResponse);
         if (containsDisallowedHanScript(strippedResponse)) {
             log.warn("AI person synthesis hybrid language fallback to rule-primary. sessionId={}", sessionId);
             return new ResolvedChatResponse(rulePrimaryFallback, "RULE_PRIMARY", "language_guard");
@@ -1261,10 +1383,10 @@ public class ChatAIService {
         final String firstGuardDetail = describePersonGuardFailure(strippedResponse, ragContext, message);
         log.warn("AI person synthesis hybrid degraded, retrying once. sessionId={}, guardDetail={}",
                 sessionId, firstGuardDetail);
-        final String retryResponse = stripInternalRecordCitations(stripMarkdown(ollamaClient.chat(
+        final String retryResponse = stripInternalRecordCitations(ollamaClient.chat(
                 systemPrompt + buildPersonMeaningRetryPrompt(ragContext, message, firstGuardDetail),
                 hybridContext
-        )));
+        ));
         if (!containsDisallowedHanScript(retryResponse)
                 && !isDegradedPersonResponse(retryResponse, ragContext, message)) {
             return new ResolvedChatResponse(retryResponse, "PERSON_SYNTHESIS_HYBRID", null);
@@ -1462,10 +1584,10 @@ public class ChatAIService {
         final String firstGuardDetail = describePersonGuardFailure(initialStrippedResponse, ragContext, message);
         log.warn("AI person response degraded, retrying once. sessionId={}, guardDetail={}",
                 sessionId, firstGuardDetail);
-        final String retryResponse = stripInternalRecordCitations(stripMarkdown(ollamaClient.chat(
+        final String retryResponse = stripInternalRecordCitations(ollamaClient.chat(
                 systemPrompt + buildPersonMeaningRetryPrompt(ragContext, message, firstGuardDetail),
                 contextMessages
-        )));
+        ));
         if (!containsDisallowedHanScript(retryResponse)
                 && !isDegradedPersonResponse(retryResponse, ragContext, message)) {
             return new ResolvedChatResponse(retryResponse, "LLM");
@@ -3245,7 +3367,7 @@ public class ChatAIService {
     }
 
     /**
-     * AI 응답에서 RAG 내부 기록 인덱스([1], [2] 등) 인용을 제거합니다.
+     * AI 응답에서 RAG 내부 기록 인덱스([1], [2] 등) 인용을 제거합니다. 마크다운 기호는 보존하며 클라이언트에서 HTML로 렌더합니다.
      */
     private String stripInternalRecordCitations(final String text) {
         if (text == null) return null;
@@ -3256,46 +3378,6 @@ public class ChatAIService {
                 .replaceAll(" (?=[.,!?])", "")
                 .trim();
     }
-
-    /**
-     * AI 응답에서 마크다운 기호를 제거하고 일반 텍스트로 변환합니다.
-     *
-     * <p>채팅 버블이 플레인텍스트 렌더이므로 마크다운 기호가 그대로 노출되는 것을 방지합니다.
-     * 처리 순서: 코드블록 → 인라인코드 → 제목 → 굵은글씨/기울임 → 목록 기호</p>
-     *
-     * @param text 원본 AI 응답 텍스트
-     * @return 마크다운 기호가 제거된 일반 텍스트
-     */
-    private String stripMarkdown(final String text) {
-        if (text == null) return null;
-        return text
-                // 코드블록 (```lang\n...\n```) → 내용만 추출
-                .replaceAll("(?s)```[^\\n]*\\n?(.*?)```", "$1")
-                // 인라인 코드 (`code`) → 내용만 추출
-                .replaceAll("`([^`]+)`", "$1")
-                // ATX 제목 (## 제목) → 제목 텍스트만
-                .replaceAll("(?m)^#{1,6}\\s+", "")
-                // 굵은글씨+기울임 (***text***) → 텍스트만
-                .replaceAll("\\*{3}(.+?)\\*{3}", "$1")
-                // 굵은글씨 (**text**, __text__) → 텍스트만
-                .replaceAll("\\*\\*(.+?)\\*\\*", "$1")
-                .replaceAll("__(.+?)__", "$1")
-                // 기울임 (*text*, _text_) → 텍스트만
-                .replaceAll("(?<![\\*_])\\*([^\\*\\n]+)\\*(?![\\*])", "$1")
-                .replaceAll("(?<![_])_([^_\\n]+)_(?![_])", "$1")
-                // 순서 없는 목록 기호 (- / * / + 행 시작) → 기호 제거
-                .replaceAll("(?m)^[\\-\\*\\+]\\s+", "")
-                // 순서 있는 목록 기호 (1. 행 시작) → 기호 제거
-                .replaceAll("(?m)^\\d+\\.\\s+", "")
-                // 인용문 (> 행 시작) → 기호 제거
-                .replaceAll("(?m)^>\\s?", "")
-                // 수평선 (---, ***, ___) → 빈 줄
-                .replaceAll("(?m)^([-\\*_]){3,}\\s*$", "")
-                // 3개 이상 연속 빈 줄 → 2줄로 정리
-                .replaceAll("\\n{3,}", "\n\n")
-                .trim();
-    }
-
 
     /**
      * person-meaning SNAPSHOT 집계·근거 예산.

@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrH
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.type.VacationDayStatus;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -75,9 +76,33 @@ public class JournalDayDto
     /** 공휴일 이름 */
     private String holydayNm;
 
+    /** 현재 사용자 참가 휴가의 일자 시간 범위 상태. 전역 공휴일·주말과 별도 축이다. */
+    @Builder.Default
+    private VacationDayStatus vacationDayStatus = VacationDayStatus.NONE;
+
+    /** 해당 일자와 겹치는 현재 사용자 휴가 일정 제목 목록. */
+    @Builder.Default
+    private List<String> vacationReasonList = List.of();
+
     /** 날씨 */
     @Size(max = 100, message = "{msg.journal.day.weather.max-length}")
     private String weather;
+
+    /**
+     * 일기 축 완결 여부 (Y/N).
+     * <p>Y이면 일기·노트 축 쓰기를 잠근다. 엔트리 RESOLVED 와 무관하며 수동 토글만 반영한다.</p>
+     */
+    @Builder.Default
+    @Size(max = 1)
+    private String diaryResolvedYn = "N";
+
+    /**
+     * 꿈 축 완결 여부 (Y/N).
+     * <p>Y이면 꿈 축 쓰기를 잠근다. 엔트리 RESOLVED 와 무관하며 수동 토글만 반영한다.</p>
+     */
+    @Builder.Default
+    @Size(max = 1)
+    private String dreamResolvedYn = "N";
 
     /** 저널 챕터 목록 */
     private List<JournalChapterDto> journalChapterList;

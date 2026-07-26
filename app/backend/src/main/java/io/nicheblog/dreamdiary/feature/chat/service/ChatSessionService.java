@@ -109,6 +109,33 @@ public class ChatSessionService {
     }
 
     /**
+     * 로그인 사용자가 소유한 채팅 세션 제목을 수정한다.
+     *
+     * <p>수동 제목은 {@link #DEFAULT_TITLE}가 아니므로,
+     * 이후 {@link #touchAfterMessage}의 자동 제목 대체 대상이 되지 않는다.</p>
+     *
+     * @param sessionId 수정할 채팅 세션 ID
+     * @param title 새 제목 (공백만 있는 값 불가, 최대 200자)
+     * @return 갱신된 채팅 세션 DTO
+     * @throws IllegalArgumentException 제목이 비어 있거나 길이 제한을 넘은 경우
+     */
+    @Transactional
+    public ChatSessionDto updateTitle(final Integer sessionId, final String title) {
+        final String trimmed = StringUtils.trimToEmpty(title);
+        if (StringUtils.isBlank(trimmed)) {
+            throw new IllegalArgumentException("chat session title must not be blank");
+        }
+        if (trimmed.length() > 200) {
+            throw new IllegalArgumentException("chat session title must be at most 200 characters");
+        }
+
+        final ChatSessionEntity entity = this.getMySessionEntity(sessionId);
+        entity.setTitle(trimmed);
+        log.info("Chat session title updated. sessionId={}, titleLength={}", sessionId, trimmed.length());
+        return toDto(repository.saveAndFlush(entity));
+    }
+
+    /**
      * 로그인 사용자의 채팅 세션과 하위 메시지를 삭제한다.
      *
      * @param sessionId 삭제할 채팅 세션 ID

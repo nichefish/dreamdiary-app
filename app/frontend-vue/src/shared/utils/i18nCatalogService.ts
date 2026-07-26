@@ -32,7 +32,14 @@ export default {
     const localeCatalog = await fetchCatalog(normalizedLocale);
     return { ...defaultCatalog, ...localeCatalog };
   },
+  /**
+   * catalog 메시지를 반환한다.
+   * 변경 전: `value || key`라서 의도적 빈 문자열(예: en `date.suffix.after-month-number`)도 키로 떨어져
+   * FILTER 월 버튼이 `7date.suffix.after-month-number`처럼 보였다.
+   * 변경 후: 키가 있을 때(빈 문자열 포함)는 그 값을 쓰고, 키가 없을 때만 key를 반환한다.
+   */
   t(catalog: Catalog, key: string): string {
-    return findMessage(catalog, key) || key;
+    const value = findMessage(catalog, key);
+    return value !== null ? value : key;
   },
 };

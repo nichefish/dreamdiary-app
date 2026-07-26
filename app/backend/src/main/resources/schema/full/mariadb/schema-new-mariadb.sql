@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS schedule (
     content_type VARCHAR(50) DEFAULT 'SCHEDULE' COMMENT '컨텐츠 타입',
     --
     schedule_cd VARCHAR(30) COMMENT '일정 코드',
+    vcatn_cd VARCHAR(30) COMMENT '휴가 구분 코드 (schedule_cd=VCATN)',
     bgn_dt DATETIME DEFAULT NULL COMMENT '시작일자',
     end_dt DATETIME DEFAULT NULL COMMENT '종료일자',
     private_yn CHAR(1) DEFAULT 'N' COMMENT '개인일정 여부 (Y/N)',
@@ -115,7 +116,14 @@ CREATE TABLE IF NOT EXISTS chat_setting (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '채팅 설정 ID',
     scope VARCHAR(20) DEFAULT 'USER' COMMENT '설정 범위. USER, ADMIN_DEFAULT 등',
     scope_key VARCHAR(100) COMMENT '설정 범위 키. USER 범위에서는 사용자 ID',
-    recent_message_limit INT DEFAULT 20 COMMENT 'AI 응답 생성 시 함께 전달할 최근 대화 메시지 수',
+    recent_message_limit INT DEFAULT 50 COMMENT 'AI 응답 생성 시 함께 전달할 최근 대화 메시지 수',
+    rag_enabled TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'RAG search on/off. 0 skips journal RAG context',
+    rag_top_k INT NOT NULL DEFAULT 5 COMMENT 'LOOKUP RAG max results (admin base)',
+    rag_min_score DOUBLE NOT NULL DEFAULT 0.35 COMMENT 'LOOKUP/SUMMARY vector min score (admin base)',
+    rag_summary_top_k INT NOT NULL DEFAULT 12 COMMENT 'SUMMARY RAG max results (admin)',
+    rag_synthesis_top_k INT NOT NULL DEFAULT 25 COMMENT 'SYNTHESIS RAG max results (admin, non-stance)',
+    rag_stance_top_k INT NOT NULL DEFAULT 50 COMMENT 'Person-stance (attitude) RAG max results (admin)',
+    rag_synthesis_min_score DOUBLE NOT NULL DEFAULT 0.25 COMMENT 'SYNTHESIS vector min score (admin)',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',

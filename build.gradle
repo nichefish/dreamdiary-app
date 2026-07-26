@@ -24,14 +24,22 @@ plugins {
  * 프로젝트 정보
  */
 group = 'dreamdiary.io'
-version = '0.23.0'
+version = '0.24.0'
 
 /**
  * Java, Spring Boot 및 추가 설정
  */
 java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+tasks.named('updateDaemonJvm') {
+    languageVersion = JavaLanguageVersion.of(17)
+    // JDK는 개발·CI 환경에 설치된 17을 사용하고 외부 provisioning URL은 생성하지 않는다.
+    toolchainPlatforms = []
 }
 springBoot {
     buildInfo()

@@ -74,6 +74,18 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   const embeddingQualityEvalReport = ref<EmbeddingQualityEvalReport | null>(null);
   const ollamaHealth = ref<OllamaHealth | null>(null);
   const ollamaHealthError = ref("");
+  const chatRagSettings = ref({
+    ragEnabled: true,
+    ragTopK: 5,
+    ragMinScore: 0.35,
+    ragSummaryTopK: 12,
+    ragSynthesisTopK: 25,
+    ragStanceTopK: 50,
+    ragSynthesisMinScore: 0.25,
+  });
+  const chatRagSettingsLoading = ref(false);
+  const chatRagSettingsSaving = ref(false);
+  const chatRagSettingsError = ref("");
   const entityQueueStats = ref<EntityQueueStats>(emptyEntityQueueStats());
   const entityQueueStatsLoading = ref(false);
   const entityQueueError = ref("");
@@ -330,6 +342,65 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     return res.data?.message ?? t("common.result.processed");
   }
 
+
+  async function fetchChatRagSettings() {
+    chatRagSettingsLoading.value = true;
+    chatRagSettingsError.value = "";
+    try {
+      const res = await axios.get("/admin/chat/settings");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to load chat settings");
+      const obj = res.data.rsltObj ?? {};
+      chatRagSettings.value = {
+        ragEnabled: obj.ragEnabled !== false,
+        ragTopK: Number(obj.ragTopK ?? 5),
+        ragMinScore: Number(obj.ragMinScore ?? 0.35),
+        ragSummaryTopK: Number(obj.ragSummaryTopK ?? 12),
+        ragSynthesisTopK: Number(obj.ragSynthesisTopK ?? 25),
+        ragStanceTopK: Number(obj.ragStanceTopK ?? 50),
+        ragSynthesisMinScore: Number(obj.ragSynthesisMinScore ?? 0.25),
+      };
+    } catch (error) {
+      chatRagSettingsError.value =
+        error instanceof Error ? error.message : "Failed to load chat settings";
+    } finally {
+      chatRagSettingsLoading.value = false;
+    }
+  }
+
+  async function saveChatRagSettings() {
+    chatRagSettingsSaving.value = true;
+    chatRagSettingsError.value = "";
+    try {
+      const res = await axios.patch("/admin/chat/settings", {
+        ragEnabled: chatRagSettings.value.ragEnabled,
+        ragTopK: chatRagSettings.value.ragTopK,
+        ragMinScore: chatRagSettings.value.ragMinScore,
+        ragSummaryTopK: chatRagSettings.value.ragSummaryTopK,
+        ragSynthesisTopK: chatRagSettings.value.ragSynthesisTopK,
+        ragStanceTopK: chatRagSettings.value.ragStanceTopK,
+        ragSynthesisMinScore: chatRagSettings.value.ragSynthesisMinScore,
+      });
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to save chat settings");
+      const obj = res.data.rsltObj ?? {};
+      chatRagSettings.value = {
+        ragEnabled: obj.ragEnabled !== false,
+        ragTopK: Number(obj.ragTopK ?? chatRagSettings.value.ragTopK),
+        ragMinScore: Number(obj.ragMinScore ?? chatRagSettings.value.ragMinScore),
+        ragSummaryTopK: Number(obj.ragSummaryTopK ?? chatRagSettings.value.ragSummaryTopK),
+        ragSynthesisTopK: Number(obj.ragSynthesisTopK ?? chatRagSettings.value.ragSynthesisTopK),
+        ragStanceTopK: Number(obj.ragStanceTopK ?? chatRagSettings.value.ragStanceTopK),
+        ragSynthesisMinScore: Number(obj.ragSynthesisMinScore ?? chatRagSettings.value.ragSynthesisMinScore),
+      };
+      return res.data?.message ?? "Saved";
+    } catch (error) {
+      chatRagSettingsError.value =
+        error instanceof Error ? error.message : "Failed to save chat settings";
+      throw error;
+    } finally {
+      chatRagSettingsSaving.value = false;
+    }
+  }
+
   return {
     meta,
     roles,
@@ -345,6 +416,10 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingQualityEvalReport,
     ollamaHealth,
     ollamaHealthError,
+    chatRagSettings,
+    chatRagSettingsLoading,
+    chatRagSettingsSaving,
+    chatRagSettingsError,
     entityQueueStats,
     entityQueueStatsLoading,
     entityQueueError,
@@ -359,6 +434,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     fetchBootstrap,
     fetchEmbeddingStats,
     fetchOllamaHealth,
+    fetchChatRagSettings,
+    saveChatRagSettings,
     syncEmbeddingQueue,
     requeueFailedEmbeddingQueue,
     runEmbeddingQualityEval,

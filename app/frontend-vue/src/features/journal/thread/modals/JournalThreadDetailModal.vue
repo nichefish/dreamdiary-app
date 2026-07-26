@@ -1,13 +1,51 @@
 <template>
   <!--begin::저널 스레드 상세 모달-->
-  <div ref="modalEl" class="modal fade" id="journal_thread_detail_modal" tabindex="-1" aria-hidden="true">
+  <div
+    ref="modalEl"
+    class="modal fade"
+    id="journal_thread_detail_modal"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
     <div class="modal-dialog modal-xxl">
       <div class="modal-content">
 
         <!--begin::Modal Header-->
         <div class="modal-header">
           <h5 class="modal-title">{{ t("journal.thread.detail.modal.title") }}</h5>
-          <button type="button" class="btn-close" @click="close"></button>
+          <div class="d-flex align-items-center gap-2">
+            <button
+              v-if="store.detailModel?.id"
+              type="button"
+              class="btn btn-sm btn-icon btn-light-primary"
+              :title="t('common.copy.tooltip')"
+              @click="onCopy"
+            >
+              <i class="bi bi-copy"></i>
+            </button>
+            <button
+              v-if="store.detailModel?.id"
+              type="button"
+              class="btn btn-sm btn-icon btn-light-primary"
+              :title="t('common.export-text.tooltip')"
+              @click="onDownload"
+            >
+              <i class="bi bi-download"></i>
+            </button>
+            <button
+              v-if="store.detailModel?.id"
+              type="button"
+              class="btn btn-sm btn-light-primary"
+              :title="t('common.mdf')"
+              @click="openModify"
+            >
+              <i class="bi bi-pencil-square me-1"></i>
+              {{ t("common.mdf") }}
+            </button>
+            <button type="button" class="btn-close" @click="close"></button>
+          </div>
         </div>
         <!--end::Modal Header-->
 
@@ -19,79 +57,7 @@
           </div>
           <!--end::로딩-->
 
-          <div v-else-if="store.detailModel" class="journal-thread-dtl-vue-root">
-            <!--begin::헤더 (제목 + 작성자/일시)-->
-            <div class="mb-0">
-              <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
-                <span v-if="store.detailModel.categoryName" class="ctgr-span ctgr-gray">{{ store.detailModel.categoryName }}</span>
-                <span class="fs-3 fw-bolder text-gray-900">{{ store.detailModel.title }}</span>
-              </div>
-              <div class="d-flex align-items-center flex-wrap gap-3 text-muted fs-7">
-                <span v-if="store.detailModel.createdByNm"><i class="bi bi-person pe-1"></i>{{ store.detailModel.createdByNm }}</span>
-                <span v-if="store.detailModel.createdDt"><i class="bi bi-clock pe-1"></i>{{ store.detailModel.createdDt }}</span>
-              </div>
-            </div>
-            <!--end::헤더-->
-
-            <div class="separator separator-dashed border-gray-300 my-8"></div>
-
-            <!--begin::본문-->
-            <div
-              class="fs-4 fw-normal text-gray-800 px-5 py-1 pb-6 min-h-150px"
-              v-html="store.detailModel.markdownContent || store.detailModel.content || ''"
-            ></div>
-            <!--end::본문-->
-
-            <!--begin::태그-->
-            <div v-if="hasDetailTags" class="mt-4">
-              <i class="bi bi-tag me-1"></i>
-              <span
-                v-for="tag in store.detailModel.tag?.list"
-                :key="'thread-dtl-tag-' + String(tag.tagId)"
-                class="text-muted pe-1"
-              >
-                <span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>
-                #<span class="border-bottom text-primary fw-lighter opacity-hover">{{ tag.name }}</span>
-              </span>
-            </div>
-            <!--end::태그-->
-
-            <!--begin::댓글 영역-->
-            <div class="separator separator-dashed border-gray-200 my-6"></div>
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <span class="fs-6 fw-bold text-gray-800">{{ t("comment.modal.title") }}</span>
-              <div v-if="store.detailModel.id" class="d-flex gap-1">
-                <button
-                  type="button"
-                  class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
-                  :title="t('comment.register')"
-                  @click="openCommentRegist"
-                >
-                  <i class="bi bi-chat-dots fs-8"></i>
-                </button>
-                <button
-                  v-if="commentCount > 0"
-                  type="button"
-                  class="btn btn-xs btn-light-primary"
-                  :title="t('journal.thread.comments.tooltip')"
-                  @click="openCommentList"
-                >
-                  <i class="bi bi-chat-left-text fs-8 me-1"></i>
-                  {{ commentCount }}
-                </button>
-              </div>
-            </div>
-            <div v-if="commentList.length === 0" class="text-muted fs-7 py-2">{{ t("comment.modal.empty") }}</div>
-            <div v-else class="d-flex flex-column gap-2">
-              <div
-                v-for="cmt in commentList"
-                :key="cmt.id"
-                class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
-                v-html="cmt.markdownContent || cmt.content || ''"
-              ></div>
-            </div>
-            <!--end::댓글 영역-->
-          </div>
+          <JournalThreadDetailContent v-else-if="store.detailModel" />
         </div>
         <!--end::Modal Body-->
 
@@ -110,46 +76,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
-import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import JournalThreadDetailContent from "@/features/journal/thread/components/JournalThreadDetailContent.vue";
+import { copyThreadDetail, downloadThreadDetail } from "@/features/journal/utils/journalThreadExport";
 
 const store = useJournalThreadStore();
-const attachableStore = useAttachableModalStore();
 const { t } = useLocaleStore();
 
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
 
-const hasDetailTags = computed(() =>
-  Array.isArray(store.detailModel?.tag?.list) && store.detailModel!.tag!.list!.length > 0
-);
-
-const commentList = computed(() => store.detailModel?.comment?.list ?? []);
-
-const commentCount = computed(() => {
-  const cnt = store.detailModel?.comment?.cnt;
-  if (typeof cnt === "number") return cnt;
-  return commentList.value.length;
-});
-
-const threadContentType = computed(
-  () => store.detailModel?.contentType ?? "JOURNAL_THREAD"
-);
-
 onMounted(() => {
   if (modalEl.value) {
-    bsModal = new Modal(modalEl.value);
+    bsModal = new Modal(modalEl.value, { backdrop: "static", keyboard: false });
     modalEl.value.addEventListener("hidden.bs.modal", () => {
-      store.closeDetail();
+      /*
+       * 독립 상세 페이지로 표면이 전환되며 모달이 숨은 경우에는 페이지 데이터를 닫지 않는다.
+       * 사용자가 모달 자체를 숨긴 경우에만 상세 SSOT를 정리한다.
+       */
+      if (store.detailSurface === "modal") store.closeDetail();
     });
+    /*
+     * 저널 문맥형 호출이 전역 모달 마운트보다 먼저 modal 상세 상태를 켠 경우에도
+     * 초기 상태를 놓치지 않고 같은 모달 인스턴스를 표시한다. 독립 상세 route는 page 표면이라 제외한다.
+     */
+    if (store.detailOpen && store.detailSurface === "modal") bsModal.show();
   }
 });
 
 watch(
-  () => store.detailOpen,
+  () => store.detailOpen && store.detailSurface === "modal",
   (isOpen) => {
     if (isOpen) bsModal?.show();
     else bsModal?.hide();
@@ -160,15 +119,26 @@ function close() {
   store.closeDetail();
 }
 
-function openCommentRegist(): void {
-  const id = store.detailModel?.id;
-  if (!id) return;
-  void attachableStore.openCommentRegist(id, threadContentType.value);
+/** 현재 저널 문맥을 유지한 채 상세 모달을 같은 앱의 수정 모달로 전환한다. */
+function openModify(): void {
+  const id = Number(store.detailModel?.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    console.warn("[journal-thread] modify skipped: detail id is missing");
+    return;
+  }
+  void store.openModifyFromDetail(id);
 }
 
-function openCommentList(): void {
+/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. */
+function onCopy(): void {
+  void copyThreadDetail(store.detailModel, store.detailEntries, t);
+}
+
+/** 스레드 소속 엔트리를 서버 텍스트 내보내기로 다운로드한다. */
+function onDownload(): void {
   const id = store.detailModel?.id;
   if (!id) return;
-  void attachableStore.openCommentList(id, threadContentType.value);
+  downloadThreadDetail(id);
 }
+
 </script>

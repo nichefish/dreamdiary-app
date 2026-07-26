@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS tag_profile (
     --
     content LONGTEXT COMMENT '내용',
     text_class VARCHAR(30) NULL COMMENT '시각 의미 (NULL=카테고리/기본 상속)',
+    force_max TINYINT(1) NOT NULL DEFAULT 0 COMMENT '클라우드 크기 최대 고정 (1이면 ts-9). 빈도 산출을 덮어씀',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',

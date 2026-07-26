@@ -72,6 +72,7 @@ public class JournalDayRestController
             case DAILY -> myJournalDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
             case WEEKLY -> myJournalDayQueryService.getMyWeeklyListDtoEnriched(searchParam);
             case SEARCH -> myJournalDayQueryService.getMyListDtoByMetaIdEnriched(searchParam);
+            default -> throw new IllegalArgumentException("지원하지 않는 일자 보기 타입: " + viewType);
         };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
@@ -158,6 +159,30 @@ public class JournalDayRestController
     ) throws Exception {
 
         final ServiceResponse result = journalDayService.delete(id);
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 저널 일자 축별 완결 플래그 갱신 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param id 식별자
+     * @param diaryResolvedYn 일기 축 완결 (선택)
+     * @param dreamResolvedYn 꿈 축 완결 (선택)
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @PostMapping(value = {Url.JOURNAL_DAY_RESOLVED})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> journalDayResolvedAjax(
+            final @PathVariable Integer id,
+            final @RequestParam(required = false) String diaryResolvedYn,
+            final @RequestParam(required = false) String dreamResolvedYn
+    ) throws Exception {
+
+        final ServiceResponse result = journalDayService.updateResolvedFlags(id, diaryResolvedYn, dreamResolvedYn);
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));

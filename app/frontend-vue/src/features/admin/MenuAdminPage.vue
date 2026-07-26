@@ -1,14 +1,7 @@
 <template>
   <div class="menu-admin-page">
-    <div class="menu-admin-toolbar">
-      <div class="menu-admin-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchTree">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="menu-admin-board">
+    <!--begin::본문 — 저널 일자 툴바·사이트 관리 탭과 동일 상단 여백(mt-5)-->
+    <div class="menu-admin-board mt-5">
       <section class="menu-admin-column">
         <div class="menu-admin-column-header">
           <div>
@@ -181,6 +174,55 @@
                     ></textarea>
                   </div>
 
+                  <!--begin::다국어 번역 (로케일 + 메뉴명 + 설명 행, + 로 추가)
+                    한국어는 위 메뉴명/설명 필드가 단일 원천이라 이 목록에 포함하지 않는다.
+                    선택지는 지원 로케일에서 기준 로케일(ko)을 뺀 것이며 SUPPORTED_LOCALES 가 늘면 자동 반영된다. -->
+                  <div class="menu-admin-form-row">
+                    <label class="form-label">{{ t('menu.form.i18n') }}</label>
+                    <div>
+                      <div v-for="(row, idx) in store.form.i18nRows" :key="idx" class="menu-admin-i18n-row">
+                        <select v-model="row.locale" class="form-select form-select-solid menu-admin-i18n-locale">
+                          <option v-for="opt in localeOptions(idx)" :key="opt" :value="opt">{{ opt }}</option>
+                        </select>
+                        <div class="menu-admin-i18n-fields">
+                          <input
+                            v-model.trim="row.menuName"
+                            type="text"
+                            class="form-control form-control-solid"
+                            maxlength="200"
+                            :placeholder="t('menu.form.i18n.name.placeholder')"
+                          />
+                          <input
+                            v-model.trim="row.menuDescription"
+                            type="text"
+                            class="form-control form-control-solid"
+                            maxlength="1000"
+                            :placeholder="t('menu.form.i18n.description.placeholder')"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-icon btn-light-danger"
+                          :title="t('common.delete')"
+                          @click="store.removeI18nRow(idx)"
+                        >
+                          <i class="bi bi-dash-lg"></i>
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-light-primary mt-1"
+                        :disabled="!canAddI18nRow"
+                        @click="store.addI18nRow()"
+                      >
+                        <i class="bi bi-plus-lg"></i>
+                        {{ t('menu.form.i18n.add') }}
+                      </button>
+                      <div class="text-muted fs-8 mt-1">{{ t('menu.form.i18n.guide') }}</div>
+                    </div>
+                  </div>
+                  <!--end::다국어 번역-->
+
                   <div class="menu-admin-form-row">
                     <label for="submenuExpandType" class="form-label required">{{ t('menu.form.submenu-expand') }}</label>
                     <select id="submenuExpandType" v-model="store.form.submenuExpandType" class="form-select form-select-solid" required>
@@ -241,12 +283,26 @@
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import MenuAdminTreeNode from "@/features/admin/MenuAdminTreeNode.vue";
-import { useMenuAdminStore, type MenuNode, type MenuTargetMode } from "@/features/admin/stores/menuAdmin";
+import { MENU_I18N_LOCALE_OPTIONS, useMenuAdminStore, type MenuNode, type MenuTargetMode } from "@/features/admin/stores/menuAdmin";
 
 const store = useMenuAdminStore();
-const { t } = useLocaleStore();
+
+/**
+ * idx 번째 행의 로케일 select 선택지.
+ * 다른 행이 이미 쓰는 로케일은 제외한다 (locale 은 menu_i18n 복합 PK 라 중복 불가).
+ * 자기 자신의 현재 값은 남겨야 select 가 값을 잃지 않는다.
+ */
+function localeOptions(idx: number): readonly string[] {
+  const used = new Set(store.form.i18nRows.filter((_, i) => i !== idx).map((row) => row.locale));
+  return MENU_I18N_LOCALE_OPTIONS.filter((locale) => !used.has(locale));
+}
+
+/** 아직 쓰지 않은 로케일이 남아 있을 때만 행 추가 가능 */
+const canAddI18nRow = computed(() => store.form.i18nRows.length < MENU_I18N_LOCALE_OPTIONS.length);
+const localeStore = useLocaleStore();
+const { t } = localeStore;
 const userMenuRows = computed(() => store.rows
   .filter((row) => sidebarVisible(row) && store.getMenuTargetMode(row) === "USER")
   .map((row) => withVisibleChildren(row)));
@@ -391,6 +447,15 @@ function onChildDragStart(parent: MenuNode, index: number) {
 onMounted(async () => {
   await store.fetchTree();
 });
+
+/* 트리의 메뉴명·설명은 서버가 요청 locale 로 지역화해 내려주므로, 언어를 바꾸면 재조회해야
+   새 언어가 트리에 반영된다. (편집 폼은 상세 조회를 원천으로 쓰며 ko 원본을 유지한다) */
+watch(
+  () => localeStore.locale,
+  async () => {
+    await store.fetchTree();
+  }
+);
 </script>
 
 <style scoped>
@@ -400,21 +465,26 @@ onMounted(async () => {
   gap: 1rem;
 }
 
-.menu-admin-toolbar,
-.menu-admin-actions {
+/* 다국어 번역 행: [로케일 select][메뉴명+설명][삭제 버튼] */
+.menu-admin-i18n-row {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.menu-admin-toolbar {
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.menu-admin-actions {
+  align-items: flex-start;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.menu-admin-i18n-locale {
+  width: 7rem;
+  min-width: 7rem;
+  flex: 0 0 auto;
+}
+
+.menu-admin-i18n-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .menu-admin-loading {
@@ -547,11 +617,6 @@ onMounted(async () => {
 @media (max-width: 768px) {
   .menu-admin-board {
     grid-template-columns: 1fr;
-  }
-
-  .menu-admin-toolbar {
-    align-items: stretch;
-    width: 100%;
   }
 
   .menu-admin-form-row,

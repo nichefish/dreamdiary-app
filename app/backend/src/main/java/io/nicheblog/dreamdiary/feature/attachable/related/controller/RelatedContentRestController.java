@@ -50,6 +50,7 @@ public class RelatedContentRestController
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(relatedList));
     }
 
+
     @PostMapping(value = {Url.RELATEDS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody

@@ -1,0 +1,431 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
+import axios from "axios";
+import { useJournalThreadStore } from "./journalThread";
+
+vi.mock("axios", () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
+
+vi.mock("@/shared/i18n/stores/locale", () => ({
+  useLocaleStore: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
+vi.mock("@/shared/auth/sessionPing", () => ({
+  assertAuthenticatedBeforeModal: vi.fn().mockResolvedValue(true),
+}));
+
+vi.mock("@/shared/utils/swal", () => ({
+  swalConfirm: vi.fn(),
+  swalAlert: vi.fn(),
+  swalRequestError: vi.fn(),
+  swalAjaxResult: vi.fn(),
+}));
+
+const FIXTURE_THREAD_ID = 301;
+const FIXTURE_SECOND_THREAD_ID = 302;
+const FIXTURE_ENTRY_ID = 101;
+
+describe("journalThread store 열린 상세 갱신", () => {
+  const mockedGet = vi.mocked(axios.get);
+
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.clearAllMocks();
+  });
+
+  it("문맥형 모달과 독립 페이지가 같은 상세 SSOT에서 표면만 구분한다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltObj: { id: FIXTURE_THREAD_ID, title: "공용 상세 스레드" },
+        rsltList: [],
+      },
+    });
+
+    await store.openDetail(FIXTURE_THREAD_ID);
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBe("modal");
+    expect(store.detailModel?.id).toBe(FIXTURE_THREAD_ID);
+
+    store.closeDetail();
+    await store.openDetailPage(FIXTURE_THREAD_ID);
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBe("page");
+    expect(store.detailModel?.id).toBe(FIXTURE_THREAD_ID);
+  });
+
+  it("문맥형 상세의 수정은 상세 데이터를 보류하고 취소 뒤 같은 모달 표면을 복원한다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet
+      .mockResolvedValueOnce({
+        data: { rsltObj: { id: FIXTURE_THREAD_ID, title: "문맥형 상세 스레드" } },
+      })
+      .mockResolvedValueOnce({ data: { rsltList: [] } })
+      .mockResolvedValueOnce({
+        data: {
+          rsltObj: {
+            id: FIXTURE_THREAD_ID,
+            contentType: "JOURNAL_THREAD",
+            title: "수정 폼 스레드",
+            content: "수정할 본문",
+          },
+        },
+      });
+
+    await store.openDetail(FIXTURE_THREAD_ID);
+    await store.openModifyFromDetail(FIXTURE_THREAD_ID);
+
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBeNull();
+    expect(store.detailModel?.title).toBe("문맥형 상세 스레드");
+    expect(store.registOpen).toBe(true);
+    expect(store.registSurface).toBe("modal");
+    expect(store.hasSuspendedDetailEdit).toBe(true);
+    expect(store.registModel?.title).toBe("수정 폼 스레드");
+
+    store.closeRegist();
+
+    expect(store.registOpen).toBe(false);
+    expect(store.registSurface).toBeNull();
+    expect(store.detailOpen).toBe(true);
+    expect(store.detailSurface).toBe("modal");
+    expect(store.detailModel?.id).toBe(FIXTURE_THREAD_ID);
+  });
+
+  it("독립 수정 route는 상세 복귀 상태 없이 page 편집 표면만 연다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltObj: {
+          id: FIXTURE_THREAD_ID,
+          contentType: "JOURNAL_THREAD",
+          title: "독립 수정 스레드",
+        },
+      },
+    });
+
+    await store.openModifyPage(FIXTURE_THREAD_ID);
+
+    expect(store.registOpen).toBe(true);
+    expect(store.registSurface).toBe("page");
+    expect(store.hasSuspendedDetailEdit).toBe(false);
+    expect(store.detailOpen).toBe(false);
+    expect(store.registDirty).toBe(false);
+
+    store.registModel!.title = "변경된 독립 수정 스레드";
+    expect(store.registDirty).toBe(true);
+  });
+
+  it("스레드 기능 공용 분류 선택지는 동시 요청을 합치고 정상 조회 뒤 계속 공유한다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltList: [
+          { code: "ISSUE", codeName: "이슈" },
+          { code: "REVIEW", codeName: "회고" },
+        ],
+      },
+    });
+
+    await Promise.all([
+      store.ensureCategoryOptions(),
+      store.ensureCategoryOptions(),
+    ]);
+    await store.ensureCategoryOptions();
+
+    expect(mockedGet).toHaveBeenCalledTimes(1);
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/threads/categories");
+    expect(store.categoryOptions).toEqual([
+      { code: "ISSUE", codeName: "이슈" },
+      { code: "REVIEW", codeName: "회고" },
+    ]);
+    expect(store.categoryError).toBe("");
+  });
+
+  it("수정 상세 응답이 비었거나 다른 ID면 불완전한 편집 표면을 닫는다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet.mockResolvedValue({
+      data: { rsltObj: { id: FIXTURE_SECOND_THREAD_ID, title: "다른 스레드" } },
+    });
+
+    const loaded = await store.openModifyPage(FIXTURE_THREAD_ID);
+
+    expect(loaded).toBe(false);
+    expect(store.registOpen).toBe(false);
+    expect(store.registSurface).toBeNull();
+    expect(store.registModel).toBeNull();
+    expect(store.registDirty).toBe(false);
+  });
+
+  it("늦게 끝난 모달 상세 응답이 현재 독립 페이지를 덮어쓰지 못한다", async () => {
+    let resolveModalDetail!: (value: {
+      data: { rsltObj: { id: number; title: string } };
+    }) => void;
+    const modalDetailRequest = new Promise<{
+      data: { rsltObj: { id: number; title: string } };
+    }>((resolve) => {
+      resolveModalDetail = resolve;
+    });
+    mockedGet
+      .mockReturnValueOnce(modalDetailRequest)
+      .mockResolvedValueOnce({
+        data: { rsltObj: { id: FIXTURE_SECOND_THREAD_ID, title: "현재 페이지 스레드" } },
+      })
+      .mockResolvedValueOnce({ data: { rsltList: [] } });
+    const store = useJournalThreadStore();
+
+    const modalLoad = store.openDetail(FIXTURE_THREAD_ID);
+    await vi.waitFor(() => {
+      expect(mockedGet).toHaveBeenCalledTimes(1);
+    });
+    await store.openDetailPage(FIXTURE_SECOND_THREAD_ID);
+    resolveModalDetail({
+      data: { rsltObj: { id: FIXTURE_THREAD_ID, title: "이전 모달 스레드" } },
+    });
+    await modalLoad;
+
+    expect(store.detailSurface).toBe("page");
+    expect(store.detailModel?.id).toBe(FIXTURE_SECOND_THREAD_ID);
+    expect(store.detailModel?.title).toBe("현재 페이지 스레드");
+  });
+
+  it("본문·집계 태그와 소속 엔트리를 같은 갱신에서 교체한다", async () => {
+    const store = useJournalThreadStore();
+    store.detailOpen = true;
+    store.detailModel = { id: FIXTURE_THREAD_ID, title: "기존 스레드" };
+    store.detailEntries = [{ id: FIXTURE_ENTRY_ID, title: "기존 엔트리" }];
+    mockedGet
+      .mockResolvedValueOnce({
+        data: {
+          rsltObj: {
+            id: FIXTURE_THREAD_ID,
+            title: "갱신된 스레드",
+            tag: { list: [{ tagId: 1, name: "회고" }] },
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          rsltList: [{ id: FIXTURE_ENTRY_ID, title: "갱신된 엔트리" }],
+        },
+      });
+
+    const refreshed = await store.refreshOpenDetail();
+
+    expect(refreshed).toBe(true);
+    expect(mockedGet).toHaveBeenNthCalledWith(1, `/api/journal/threads/${FIXTURE_THREAD_ID}`);
+    expect(mockedGet).toHaveBeenNthCalledWith(2, `/api/journal/threads/${FIXTURE_THREAD_ID}/entries`);
+    expect(store.detailModel?.title).toBe("갱신된 스레드");
+    expect(store.detailModel?.tag?.list?.[0]?.name).toBe("회고");
+    expect(store.detailEntries[0]?.title).toBe("갱신된 엔트리");
+  });
+
+  it("재조회가 실패하면 읽고 있던 상세 데이터를 비우지 않는다", async () => {
+    const store = useJournalThreadStore();
+    store.detailOpen = true;
+    store.detailModel = { id: FIXTURE_THREAD_ID, title: "보존할 스레드" };
+    store.detailEntries = [{ id: FIXTURE_ENTRY_ID, title: "보존할 엔트리" }];
+    mockedGet
+      .mockResolvedValueOnce({
+        data: {
+          rsltObj: { id: FIXTURE_THREAD_ID, title: "적용되면 안 되는 스레드" },
+        },
+      })
+      .mockRejectedValueOnce(new Error("network failure"));
+
+    const refreshed = await store.refreshOpenDetail();
+
+    expect(refreshed).toBe(false);
+    expect(store.detailModel?.title).toBe("보존할 스레드");
+    expect(store.detailEntries[0]?.title).toBe("보존할 엔트리");
+  });
+});
+
+
+describe("journalThread store 목록 태그 필터", () => {
+  const mockedGet = vi.mocked(axios.get);
+
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.clearAllMocks();
+    mockedGet.mockResolvedValue({
+      data: { rsltObj: { content: [], totalElements: 0, totalPages: 0, number: 0 } },
+    });
+  });
+
+  it("filterTagIds 를 tagIds 반복 파라미터로 전송한다", async () => {
+    const store = useJournalThreadStore();
+    store.addFilterTag(11, "조직역동");
+    store.addFilterTag(22, "회고");
+
+    await store.fetchList(0);
+
+    expect(mockedGet).toHaveBeenCalledTimes(1);
+    const [, config] = mockedGet.mock.calls[0];
+    const params = config?.params as URLSearchParams;
+    expect(params).toBeInstanceOf(URLSearchParams);
+    expect(params.getAll("tagIds")).toEqual(["11", "22"]);
+  });
+
+  it("filterCategory 를 메인 목록 categoryCode 파라미터로 전송한다", async () => {
+    const store = useJournalThreadStore();
+    store.filterCategory = "CASE";
+
+    await store.fetchList(0);
+
+    expect(mockedGet).toHaveBeenCalledTimes(1);
+    const [, config] = mockedGet.mock.calls[0];
+    const params = config?.params as URLSearchParams;
+    expect(params).toBeInstanceOf(URLSearchParams);
+    expect(params.get("categoryCode")).toBe("CASE");
+  });
+
+  it("addFilterTag 는 카테고리(ctgr)를 배지용으로 캐시한다", () => {
+    const store = useJournalThreadStore();
+    store.addFilterTag(11, "조직역동", "회고");
+    expect(store.filterTagLabelMap["11"]).toBe("조직역동");
+    expect(store.filterTagCtgrMap["11"]).toBe("회고");
+  });
+
+  it("resetFilters 는 태그 필터도 비운다", async () => {
+    const store = useJournalThreadStore();
+    store.addFilterTag(11, "조직역동");
+    await store.resetFilters();
+    expect(store.filterTagIds).toEqual([]);
+    expect(store.filterTagLabelMap).toEqual({});
+    expect(store.filterTagCtgrMap).toEqual({});
+  });
+});
+
+describe("journalThread store 기간별 스레드 요약", () => {
+  const mockedGet = vi.mocked(axios.get);
+
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.clearAllMocks();
+  });
+
+  it("주간 조회 계약과 서버 정렬 결과를 그대로 보존한다", async () => {
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltList: [
+          {
+            threadId: FIXTURE_THREAD_ID,
+            title: "첫 번째 흐름",
+            entryCount: 2,
+            firstEntryDate: "2026-07-01",
+          },
+          {
+            threadId: FIXTURE_SECOND_THREAD_ID,
+            title: "두 번째 흐름",
+            entryCount: 1,
+            firstEntryDate: "2026-07-03",
+          },
+        ],
+      },
+    });
+    const store = useJournalThreadStore();
+
+    await store.fetchPeriodSummary({ viewType: "WEEKLY", weekStartDt: "2026-06-29" });
+
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/threads/period-summary", {
+      params: { viewType: "WEEKLY", weekStartDt: "2026-06-29" },
+    });
+    expect(store.periodSummary.map((item) => item.threadId)).toEqual([
+      FIXTURE_THREAD_ID,
+      FIXTURE_SECOND_THREAD_ID,
+    ]);
+    expect(store.periodSummaryError).toBe("");
+  });
+
+  it("연간 조회 계약과 서버 정렬 결과를 그대로 보존한다", async () => {
+    mockedGet.mockResolvedValue({
+      data: {
+        rsltList: [
+          {
+            threadId: FIXTURE_THREAD_ID,
+            title: "첫 번째 흐름",
+            entryCount: 5,
+            firstEntryDate: "2026-03-01",
+          },
+          {
+            threadId: FIXTURE_SECOND_THREAD_ID,
+            title: "두 번째 흐름",
+            entryCount: 2,
+            firstEntryDate: "2026-07-03",
+          },
+        ],
+      },
+    });
+    const store = useJournalThreadStore();
+
+    await store.fetchPeriodSummary({ viewType: "ANNUAL", yy: 2026 });
+
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/threads/period-summary", {
+      params: { viewType: "ANNUAL", yy: 2026 },
+    });
+    expect(store.periodSummary.map((item) => item.threadId)).toEqual([
+      FIXTURE_THREAD_ID,
+      FIXTURE_SECOND_THREAD_ID,
+    ]);
+    expect(store.periodSummaryError).toBe("");
+  });
+
+  it("기간 전환 중 늦게 끝난 이전 응답은 폐기한다", async () => {
+    let resolveFirst!: (value: {
+      data: { rsltList: Array<{ threadId: number; title: string; entryCount: number; firstEntryDate: string }> };
+    }) => void;
+    const firstRequest = new Promise<{
+      data: { rsltList: Array<{ threadId: number; title: string; entryCount: number; firstEntryDate: string }> };
+    }>((resolve) => {
+      resolveFirst = resolve;
+    });
+    mockedGet
+      .mockReturnValueOnce(firstRequest)
+      .mockResolvedValueOnce({
+        data: {
+          rsltList: [{
+            threadId: FIXTURE_SECOND_THREAD_ID,
+            title: "최신 기간 흐름",
+            entryCount: 3,
+            firstEntryDate: "2026-08-02",
+          }],
+        },
+      });
+    const store = useJournalThreadStore();
+
+    const first = store.fetchPeriodSummary({ viewType: "LIST", yy: 2026, mnth: 7 });
+    await store.fetchPeriodSummary({ viewType: "LIST", yy: 2026, mnth: 8 });
+    resolveFirst({
+      data: {
+        rsltList: [{
+          threadId: FIXTURE_THREAD_ID,
+          title: "이전 기간 흐름",
+          entryCount: 1,
+          firstEntryDate: "2026-07-01",
+        }],
+      },
+    });
+    await first;
+
+    expect(store.periodSummary).toHaveLength(1);
+    expect(store.periodSummary[0]?.threadId).toBe(FIXTURE_SECOND_THREAD_ID);
+    expect(store.periodSummaryLoading).toBe(false);
+  });
+
+  it("조회 실패를 빈 결과와 구분해 노출한다", async () => {
+    mockedGet.mockRejectedValue(new Error("network failure"));
+    const store = useJournalThreadStore();
+
+    await store.fetchPeriodSummary({ viewType: "LIST", yy: 2026, mnth: 7 });
+
+    expect(store.periodSummary).toEqual([]);
+    expect(store.periodSummaryError).toBe("journal.thread.period-summary.load.failure");
+    expect(store.periodSummaryLoading).toBe(false);
+  });
+});

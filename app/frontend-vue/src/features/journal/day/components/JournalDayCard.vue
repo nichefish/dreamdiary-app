@@ -5,8 +5,8 @@
     <!--begin::헤더-->
     <div class="journal-day-header" :data-date="day.stdrdDt">
       <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
-        <div :class="{ 'text-danger': day.isHolyday }" style="column-gap: .25rem">
-          <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': day.isHolyday }"></i>
+        <div :class="{ 'text-danger': isDayOff }" style="column-gap: .25rem">
+          <i class="bi bi-calendar3 fs-6 me-1" :class="{ 'text-danger': isDayOff }"></i>
           <!--begin::날짜 (클릭 → 상세 모달)-->
           <span
             v-if="day.id"
@@ -15,17 +15,22 @@
           >{{ day.stdrdDt }}</span>
           <span v-else>{{ day.stdrdDt }}</span>
           <!--end::날짜-->
-          <span class="fs-8" :class="day.isHolyday ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
+          <span class="fs-8" :class="isDayOff ? 'text-danger' : 'text-gray-600'">({{ getWeekDayStr(day.stdrdDt, t) }})</span>
           <span v-if="day.journalDatePrecision === 'APPROXIMATE'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.approximate") }}</span>
           <span v-if="day.journalDatePrecision === 'UNKNOWN'" class="badge badge-light-primary ms-2">{{ t("journal.date-precision.unknown") }}</span>
           <span class="fs-7 ms-4 text-muted" v-html="day.weather"></span>
           <div v-if="day.holydayNm" class="w-100 ps-5 fs-6 fw-normal text-truncate">{{ day.holydayNm }}</div>
+          <JournalDayVacationIndicator
+            :status="day.vacationDayStatus"
+            :reason-list="day.vacationReasonList"
+            class="w-100 ps-5 mt-1"
+          />
         </div>
       </div>
       <div class="col-3 d-none d-md-flex align-items-center gap-2">
-        <!--begin::챕터 등록 버튼-->
+        <!--begin::챕터 등록 / 일기 완결 배지 (같은 슬롯, 세로 가운데는 부모 align-items-center)-->
         <button
-          v-if="showDiaries"
+          v-if="showDiaries && diaryWritable"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
           @click="openChapterRegist"
@@ -33,10 +38,14 @@
           <i class="bi bi-list-columns-reverse fs-4 pe-1"></i>
           {{ t('journal.chapter.reg') }}
         </button>
-        <!--end::챕터 등록 버튼-->
-        <!--begin::꿈 등록 버튼-->
+        <span
+          v-else-if="isDiaryResolved"
+          class="badge badge-light-success"
+        >{{ t("journal.day.diary-resolved.badge") }}</span>
+        <!--end::챕터 등록 / 일기 완결 배지-->
+        <!--begin::꿈 등록 / 꿈 완결 배지 (같은 슬롯)-->
         <button
-          v-if="showDreams"
+          v-if="showDreams && dreamWritable"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
           @click="openDreamRegist()"
@@ -44,7 +53,11 @@
           <i class="bi bi-moon-stars fs-4 pe-1"></i>
           {{ t('journal.dream.reg') }}
         </button>
-        <!--end::꿈 등록 버튼-->
+        <span
+          v-else-if="isDreamResolved"
+          class="badge badge-light-info"
+        >{{ t("journal.day.dream-resolved.badge") }}</span>
+        <!--end::꿈 등록 / 꿈 완결 배지-->
         <!--begin::컨텍스트 메뉴 (⋯)-->
         <div v-if="day.id" class="me-0 d-flex align-items-center">
           <button
@@ -97,6 +110,22 @@
                     <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
                       <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="hasState('IMPRTC')" />
                       <span class="form-check-label text-muted fs-7">{{ t('state.important') }}</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="menu-item px-3">
+                  <div class="menu-content px-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                      <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="isDiaryResolved" @click.prevent="toggleDiaryResolved" />
+                      <span class="form-check-label text-muted fs-7">{{ t('journal.day.state.diary-resolved') }}</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="menu-item px-3">
+                  <div class="menu-content px-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                      <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" :checked="isDreamResolved" @click.prevent="toggleDreamResolved" />
+                      <span class="form-check-label text-muted fs-7">{{ t('journal.day.state.dream-resolved') }}</span>
                     </label>
                   </div>
                 </div>
@@ -251,12 +280,27 @@ import { hasDreamSections } from "@/features/journal/utils/journalDream";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import { isJournalDayOff } from "@/features/journal/utils/journalVacation";
+import JournalDayVacationIndicator from "./JournalDayVacationIndicator.vue";
+import {
+  provideJournalDayResolved,
+  isResolvedYn,
+} from "@/features/journal/utils/journalDayResolved";
 
 const props = defineProps<{
   day: JournalDayDto;
   showDiaries?: boolean;
   showDreams?: boolean;
 }>();
+
+provideJournalDayResolved(() => props.day);
+
+const diaryWritable = computed(() => !isResolvedYn(props.day.diaryResolvedYn));
+const dreamWritable = computed(() => !isResolvedYn(props.day.dreamResolvedYn));
+const isDiaryResolved = computed(() => isResolvedYn(props.day.diaryResolvedYn));
+const isDreamResolved = computed(() => isResolvedYn(props.day.dreamResolvedYn));
+const isDayOff = computed(() => isJournalDayOff(props.day));
 
 const route = useRoute();
 const router = useRouter();
@@ -327,9 +371,41 @@ async function toggleCollapsed(): Promise<void> {
   }
 }
 
+/** 일기 축 완결 토글 (POST /api/journal/day/{id}/resolved) */
+async function toggleDiaryResolved(): Promise<void> {
+  if (!props.day.id) return;
+  const nextYn = isDiaryResolved.value ? "N" : "Y";
+  try {
+    await axios.post(`/api/journal/day/${props.day.id}/resolved`, null, {
+      params: { diaryResolvedYn: nextYn },
+    });
+    scrollAfterFetch();
+  } catch (e: unknown) {
+    void swalRequestError(e);
+  }
+}
+
+/** 꿈 축 완결 토글 (POST /api/journal/day/{id}/resolved) */
+async function toggleDreamResolved(): Promise<void> {
+  if (!props.day.id) return;
+  const nextYn = isDreamResolved.value ? "N" : "Y";
+  try {
+    await axios.post(`/api/journal/day/${props.day.id}/resolved`, null, {
+      params: { dreamResolvedYn: nextYn },
+    });
+    scrollAfterFetch();
+  } catch (e: unknown) {
+    void swalRequestError(e);
+  }
+}
+
 /** 일자 삭제 */
 async function deleteDay(): Promise<void> {
   if (!props.day.id) return;
+  if (isDiaryResolved.value || isDreamResolved.value) {
+    void swalAlert(t("journal.day.resolved-delete-locked"));
+    return;
+  }
   if (!await swalConfirm(t("common.confirm.del"))) return;
   try {
     const res = await axios.delete(`/api/journal/day/${props.day.id}`);
@@ -392,22 +468,6 @@ function toggleDreamSection(sectionKey: string): void {
 }
 
 /** HTML을 일반 텍스트로 변환한다 (클립보드 복사용). */
-function htmlToPlainText(html: string): string {
-  return html
-    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
-    .replace(/<\s*br\s*\/?>/gi, "\n")
-    .replace(/<\s*\/?p[^>]*>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .split("\n").map((l) => l.trim()).join("\n")
-    .replace(/\n+/g, "\n")
-    .trim();
-}
-
 /** 꿈 엔트리 목록을 클립보드에 복사한다. 레거시 형식: 날짜(요일)\n#순번\n본문 */
 async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   const lines: string[] = [];
@@ -428,7 +488,8 @@ async function copyDreamSection(entries: JournalEntryDto[]): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
     void swalFire({ icon: "success", text: t("common.copy.success") });
-  } catch {
+  } catch (error: unknown) {
+    console.error("[journal-dream-section] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }

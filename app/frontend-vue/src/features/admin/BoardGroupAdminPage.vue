@@ -1,18 +1,17 @@
 <template>
   <div class="board-group-page">
-    <div class="board-group-toolbar">
-      <div class="board-group-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="reload">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-primary" @click="store.openCreate">
+    <!--begin::뷰 툴바 — 저널 스레드·게시판·코드/계정 관리 액션 행과 동일(mt-3 mb-1). ASIDE 없음. 탭용 mt-5 빈 여백은 두지 않는다.-->
+    <div class="board-group-view-toolbar d-flex flex-column-fluid justify-content-end align-items-start align-items-xl-center gap-4 w-100">
+      <div class="d-flex align-items-center flex-shrink-0 pe-5 mt-3 mb-1 gap-2">
+        <button type="button" class="btn btn-sm btn-primary text-nowrap" @click="store.openCreate">
           <i class="bi bi-plus-lg"></i>
           {{ t('common.register') }}
         </button>
       </div>
     </div>
+    <!--end::뷰 툴바-->
 
-    <div class="card post">
+    <div class="card post" style="margin-top: 0 !important;">
       <div class="card-body">
         <div class="board-group-listbar">
           <div class="board-group-search">
@@ -122,14 +121,44 @@
                   </button>
                 </td>
                 <td class="text-center">
-                  <div class="board-group-row-actions">
-                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.edit')" @click="store.openEdit(row.id)">
-                      <i class="bi bi-pencil-square"></i>
+                  <!--begin::컨텍스트 메뉴
+                    SSOT: 저널 일자·게시판 목록과 동일 Metronic data-kt-menu.
+                    .table-responsive(overflow) 클리핑은 data-kt-menu-overflow="true"(body portal)로 해결한다.
+                    변경 전(Bootstrap strategy:fixed): 메뉴가 여러 행에서 열린 채 겹쳤다.
+                    트리거 stop 금지(body 위임). 목록 렌더 후 reinit.
+                  -->
+                  <div class="d-flex justify-content-center">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                      data-kt-menu-trigger="click"
+                      data-kt-menu-placement="bottom-end"
+                      data-kt-menu-overflow="true"
+                      :title="t('common.menu')"
+                    >
+                      <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.delete')" @click="deleteBoard(row)">
-                      <i class="bi bi-trash"></i>
-                    </button>
+                    <div
+                      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                      data-kt-menu="true"
+                      @click.stop
+                    >
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3" @click="store.openEdit(row.id)">
+                          {{ t('common.edit') }}
+                          <i class="bi bi-pencil-square fs-8"></i>
+                        </div>
+                      </div>
+                      <div class="separator my-2"></div>
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3 text-danger" @click="deleteBoard(row)">
+                          {{ t('common.delete') }}
+                          <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                  <!--end::컨텍스트 메뉴-->
                 </td>
               </tr>
             </tbody>
@@ -266,7 +295,8 @@
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
+import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useBoardGroupStore, type BoardGroupRow } from "@/features/admin/stores/boardGroup";
 
 const store = useBoardGroupStore();
@@ -303,10 +333,6 @@ function validateForm(): boolean {
     return false;
   }
   return true;
-}
-
-async function reload() {
-  await store.fetchList(store.currentPage);
 }
 
 async function onPageSizeChange(event: Event) {
@@ -355,6 +381,16 @@ async function saveSortOrders() {
   }
 }
 
+/**
+ * 목록 렌더가 끝나면 Metronic 컨텍스트 메뉴를 재바인딩한다.
+ */
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
+
 onMounted(async () => {
   await store.fetchList(0);
 });
@@ -367,7 +403,6 @@ onMounted(async () => {
   gap: 1rem;
 }
 
-.board-group-toolbar,
 .board-group-listbar,
 .board-group-footer {
   display: flex;
@@ -377,18 +412,12 @@ onMounted(async () => {
   flex-wrap: wrap;
 }
 
-.board-group-actions,
 .board-group-search,
 .board-group-list-actions,
-.board-group-row-actions,
 .board-group-order {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.board-group-toolbar {
-  justify-content: flex-end;
 }
 
 .board-group-search {
@@ -466,7 +495,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .board-group-toolbar,
   .board-group-listbar,
   .board-group-footer,
   .board-group-search,

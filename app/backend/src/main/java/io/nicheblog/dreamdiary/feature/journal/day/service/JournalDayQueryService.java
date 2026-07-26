@@ -4,6 +4,9 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.model.VacationDayInfo;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleVacationQueryService;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
@@ -14,15 +17,17 @@ import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilterHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayVacationHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalDreamSectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +36,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.function.Consumer;
 
 /**
@@ -47,7 +53,11 @@ import java.util.function.Consumer;
 public class JournalDayQueryService {
 
     private final JournalDayService journalDayService;
+    /** holydayMap 조회·미스 시 재생성 ({@link ScheduleService#getHolydayMap()}) */
+    private final ScheduleService scheduleService;
+    private final ScheduleVacationQueryService scheduleVacationQueryService;
     private final RelatedContentQueryService relatedContentQueryService;
+    private final JournalThreadEntryService journalThreadEntryService;
     private final JournalInterpretationQueryService journalInterpretationQueryService;
     private final LifecycleService lifecycleService;
     private final TagProfileService tagProfileService;
@@ -149,7 +159,7 @@ public class JournalDayQueryService {
 
     /**
      * 목록 공통 enrich 처리.
-     * 1) 휴일 정보 매핑 2) 해석 정보 병합 3) 상태 병합 4) 태그 요약 적용 5) 관련글 병합
+     * 1) 전역 휴일 정보 매핑 2) 사용자 휴가 투영 3) 해석 정보 병합 4) 상태 병합 5) 태그 요약 적용 6) 관련글 병합
      *
      * @param username 사용자 계정명
      * @param listDto 조회 결과 리스트
@@ -159,7 +169,8 @@ public class JournalDayQueryService {
     private List<JournalDayDto> enrichList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
-        JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        JournalDayHolydayHelper.setHolydayInfo(listDto, scheduleService.getHolydayMap());
+        this.mergeVacationInfo(username, listDto);
         this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeStates(username, listDto, searchParam);
@@ -183,7 +194,8 @@ public class JournalDayQueryService {
     private List<JournalDayDto> enrichWeeklyList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
-        JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
+        JournalDayHolydayHelper.setHolydayInfo(listDto, scheduleService.getHolydayMap());
+        this.mergeVacationInfo(username, listDto);
         this.mergeInterpretations(username, listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
@@ -206,7 +218,8 @@ public class JournalDayQueryService {
     private JournalDayDto enrichDetail(final String username, final JournalDayDto retrieved) throws Exception {
         if (retrieved == null) return null;
 
-        JournalDayHolydayHelper.setHolydayInfo(retrieved, getHolydayMap());
+        JournalDayHolydayHelper.setHolydayInfo(retrieved, scheduleService.getHolydayMap());
+        this.mergeVacationInfo(username, List.of(retrieved));
         this.mergeInterpretations(username, List.of(retrieved));
         JournalDayViewHelper.mergeStates(username, retrieved);
         this.mergeLifecycles(List.of(retrieved));
@@ -214,6 +227,26 @@ public class JournalDayQueryService {
         this.mergeDreamTagProfiles(List.of(retrieved));
 
         return retrieved;
+    }
+
+    /**
+     * 반환할 저널 일자 범위에 겹치는 현재 사용자 참가 휴가를 한 번 조회해 DTO에 적용한다.
+     * 캐시된 일자 DTO도 매 요청마다 NONE 또는 최신 값으로 덮어써 일정 변경을 즉시 반영한다.
+     *
+     * @param username 사용자 계정명
+     * @param listDto 저널 일자 목록
+     */
+    private void mergeVacationInfo(final String username, final List<JournalDayDto> listDto) {
+        if (listDto == null || listDto.isEmpty()) return;
+        final List<String> dateList = listDto.stream()
+                .filter(java.util.Objects::nonNull)
+                .map(JournalDayDto::getStdrdDt)
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toList();
+        final Map<String, VacationDayInfo> vacationDayMap =
+                scheduleVacationQueryService.getVacationDayMapByUser(username, dateList);
+        JournalDayVacationHelper.setVacationInfo(listDto, vacationDayMap);
     }
 
     private void mergeInterpretations(final String username, final List<JournalDayDto> listDto) throws Exception {
@@ -250,11 +283,18 @@ public class JournalDayQueryService {
 
         final Map<String, List<RelatedContentDto>> relatedMap =
                 relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
+        // 흐름(스레드) 소속. 엔트리마다 단건 조회하면 N+1 이라 일자 트리 전체를 한 번에 받는다.
+        final List<Integer> entryIdList = refKeyList.stream()
+                .map(BaseAttachableKey::getId)
+                .collect(Collectors.toList());
+        final Map<Integer, List<JournalThreadEntryDto>> threadMap =
+                journalThreadEntryService.getMapByEntryIds(entryIdList, username);
 
         for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.values()) {
-            this.forEachEntryByType(listDto, policy.contentType, entry ->
-                    entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()))
-            );
+            this.forEachEntryByType(listDto, policy.contentType, entry -> {
+                entry.setRelatedContentList(this.getRelatedList(relatedMap, policy.contentType.key, entry.getId()));
+                entry.setThreadList(threadMap.getOrDefault(entry.getId(), List.of()));
+            });
         }
     }
 
@@ -375,13 +415,4 @@ public class JournalDayQueryService {
         }
     }
 
-    /**
-     * 휴일 정보 캐시를 조회한다.
-     *
-     * @return 휴일 맵
-     */
-    @SuppressWarnings("unchecked")
-    private Map<String, List<String>> getHolydayMap() {
-        return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
-    }
 }

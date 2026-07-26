@@ -37,12 +37,15 @@ public interface JournalEntryReadMapstructSupport {
             return;
         }
 
-        dto.setStdrdDt(DateUtils.asStr(entity.getJournalChapter().getJournalDay().getJournalDate(), DatePtn.DATE));
-        dto.setJournalDatePrecision(entity.getJournalChapter().getJournalDay().getJournalDatePrecision());
-        dto.setYy(entity.getJournalChapter().getJournalDay().getYy());
-        dto.setMnth(entity.getJournalChapter().getJournalDay().getMnth());
-        if (entity.getJournalChapter().getJournalDay().getJournalDate() != null) {
-            dto.setJournalDateWeekDay(DateUtils.getDayOfWeekChinese(entity.getJournalChapter().getJournalDay().getJournalDate()));
+        final var journalDay = entity.getJournalChapter().getJournalDay();
+        dto.setDiaryResolvedYn(journalDay.getDiaryResolvedYn());
+        dto.setDreamResolvedYn(journalDay.getDreamResolvedYn());
+        dto.setStdrdDt(DateUtils.asStr(journalDay.getJournalDate(), DatePtn.DATE));
+        dto.setJournalDatePrecision(journalDay.getJournalDatePrecision());
+        dto.setYy(journalDay.getYy());
+        dto.setMnth(journalDay.getMnth());
+        if (journalDay.getJournalDate() != null) {
+            dto.setJournalDateWeekDay(DateUtils.getDayOfWeekChinese(journalDay.getJournalDate()));
         }
     }
 }

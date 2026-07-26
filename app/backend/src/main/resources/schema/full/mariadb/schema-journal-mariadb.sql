@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS journal_day (
     mnth INT COMMENT '월',
     week_start_date DATE COMMENT '주 시작일자 (월요일 기준)',
     weather VARCHAR(500) COMMENT '날씨',
+    diary_resolved_yn CHAR(1) DEFAULT 'N' COMMENT '일기 축 완결(Y/N). 일기·노트 쓰기 잠금',
+    dream_resolved_yn CHAR(1) DEFAULT 'N' COMMENT '꿈 축 완결(Y/N). 꿈 쓰기 잠금',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -223,6 +225,28 @@ CREATE TABLE IF NOT EXISTS journal_thread(
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 스레드';
+
+-- 저널 스레드-엔트리 소속 (journal_thread_entry)
+-- @extends: BaseAuditRegEntity
+-- 스레드를 컨테이너로, 엔트리를 그 멤버로 잇는 N:M 조인 테이블.
+-- 한 엔트리가 여러 스레드에 속할 수 있다 (related_content 의 FLOW 간선 모델이 표현하지 못하던 지점).
+-- created_by 를 UNIQUE 키에 포함해 본인 소유 범위 안에서만 묶인다 (tag_content·related_content 와 동일한 관례).
+-- UNIQUE 키가 deleted_at 을 포함하지 않으므로, 해제(소프트 삭제)한 소속의 재등록은
+-- INSERT 가 아니라 기존 행 복원으로 처리한다. (JournalThreadEntryRepository.findAnyByPair / reviveById)
+CREATE TABLE IF NOT EXISTS journal_thread_entry (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '스레드-엔트리 소속 ID',
+    thread_id INT NOT NULL COMMENT '저널 스레드 ID (journal_thread.id)',
+    entry_id INT NOT NULL COMMENT '저널 엔트리 ID (journal_entry.id)',
+    sort_order INT COMMENT '스레드 내 표시 순서. NULL 이면 엔트리 일자순으로 정렬한다',
+    -- AUDIT
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    -- CONSTRAINT
+    UNIQUE KEY uk_journal_thread_entry (thread_id, entry_id, created_by),
+    INDEX idx_journal_thread_entry_thread (thread_id, created_by),
+    INDEX idx_journal_thread_entry_entry (entry_id, created_by)
+) COMMENT = '저널 스레드-엔트리 소속';
 
 -- 저널 연간 (journal_annual)
 -- @extends: BaseAttachableEntity

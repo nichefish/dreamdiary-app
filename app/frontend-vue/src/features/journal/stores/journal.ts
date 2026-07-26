@@ -59,10 +59,29 @@ export interface CommentCmpstn {
 /** 관련글 항목 */
 export interface RelatedContentItem {
   id?: number;
-  contentType?: string;
-  refContentNo?: number;
-  refTitle?: string;
-  relReason?: string;
+  leftId?: number;
+  leftContentType?: string;
+  rightId?: number;
+  rightContentType?: string;
+  relationType?: string;
+  reason?: string;
+  originType?: string;
+  targetId?: number;
+  targetContentType?: string;
+  targetTitle?: string;
+}
+
+/**
+ * 엔트리가 속한 저널 스레드 소속 항목.
+ * 백엔드 JournalThreadEntryDto 와 대응한다. FLOW 를 대체하는 축이다.
+ */
+export interface JournalThreadEntryDto {
+  id: number;
+  threadId: number;
+  entryId: number;
+  sortOrder?: number;
+  threadTitle?: string;
+  entryContentType?: string;
 }
 
 /** 이력 컴포지션 — 백엔드 HistoryCmpstn 직렬화 구조 */
@@ -98,6 +117,10 @@ export interface JournalEntryDto {
   journalDayId?: number;
   journalChapterId?: number;
   stdrdDt?: string;
+  /** 공휴일 또는 주말 — 검색 팝업 등 provide 없는 화면 날짜 헤더용 */
+  isHolyday?: boolean;
+  /** 공휴일명(복수면 콤마 연결). 주말 단독이면 비움 */
+  holydayNm?: string;
   sortOrder?: number;
   elseDreamYn?: string;
   elseDreamerNm?: string;
@@ -107,7 +130,13 @@ export interface JournalEntryDto {
   history?: HistoryCmpstn;
   comment?: CommentCmpstn;
   relatedContentList?: RelatedContentItem[];
+  /** 이 엔트리가 속한 스레드 목록. 소속이 없으면 빈 목록. */
+  threadList?: JournalThreadEntryDto[];
   journalInterpretationList?: InterpretationItem[];
+  /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
+  diaryResolvedYn?: string;
+  /** 소속 일자 꿈 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
+  dreamResolvedYn?: string;
 }
 
 /** 저널 챕터 */
@@ -173,6 +202,9 @@ export interface JournalChapterCtgrHintDto {
   categoryName?: string;
 }
 
+/** 저널 일자에 투영된 현재 사용자 휴가의 시간 범위 상태 */
+export type VacationDayStatus = "NONE" | "FULL_DAY" | "AM_HALF" | "PM_HALF" | "UNKNOWN";
+
 /** 저널 일자 */
 export interface JournalDayDto {
   id: number;
@@ -185,6 +217,10 @@ export interface JournalDayDto {
   weekStartDt?: string;
   isHolyday?: boolean;
   holydayNm?: string;
+  /** 현재 사용자 참가 휴가 상태 — 전역 공휴일·주말 축과 별도 */
+  vacationDayStatus?: VacationDayStatus;
+  /** 휴가 일정 제목 목록 — 일자 헤더 표시용 */
+  vacationReasonList?: string[];
   weather?: string;
   journalChapterList?: JournalChapterDto[];
   journalDreamSectionList?: JournalDreamSectionDto[];
@@ -195,6 +231,10 @@ export interface JournalDayDto {
   tag?: TagCmpstn;
   meta?: MetaCmpstn;
   state?: StateCmpstn;
+  /** 일기 축(챕터·노트) 완결 여부 Y/N */
+  diaryResolvedYn?: string;
+  /** 꿈 축 완결 여부 Y/N */
+  dreamResolvedYn?: string;
 }
 
 /** 목록 조회 파라미터 */
@@ -227,7 +267,7 @@ export interface TagCloudItem {
   /** 연결된 컨텐츠 수 */
   contentSize: number;
   tagClass?: string;
-  /** 글자 크기 CSS 클래스 (ts-1~ts-9) */
+  /** 글자 크기 CSS 클래스 (ts-1~ts-9) — 실제로는 tagClass 가 ts-N */
   textClass?: string;
 }
 

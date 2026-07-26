@@ -2,23 +2,21 @@
   <!--begin::결산 목록-->
   <div class="journal-annual-list-vue">
 
-    <!--begin::총 집계 카드-->
-    <div class="card post mb-4">
+    <!--begin::총 집계 카드 — 액션(전체 갱신·등록)은 JournalAnnualViewToolbar 로 이동(저널 일자 툴바와 동형)-->
+    <div class="card post mb-4" style="margin-top: 0 !important;">
       <div class="card-body">
-        <div class="d-flex-between fs-5">
-          <div class="d-flex fs-5">
-            <div class="text-gray-700 d-flex-center me-5">
-              <span class="fw-bold me-2">{{ t('journal.annual.total.dream-record') }}</span>
-              <i class="bi bi-moon-stars fs-4 me-2"></i>
-              <template v-if="store.totalLoading">
-                <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
-              </template>
-              <template v-else-if="store.totalAnnual">
-                (<span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamDayCnt ?? 0 }}</span>{{ t('common.unit.day') }}
-                /
-                <span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamCnt ?? 0 }}</span>{{ t('common.unit.count') }})
-              </template>
-            </div>
+        <div class="d-flex fs-5">
+          <div class="text-gray-700 d-flex-center me-5">
+            <span class="fw-bold me-2">{{ t('journal.annual.total.dream-record') }}</span>
+            <i class="bi bi-moon-stars fs-4 me-2"></i>
+            <template v-if="store.totalLoading">
+              <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+            </template>
+            <template v-else-if="store.totalAnnual">
+              (<span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamDayCnt ?? 0 }}</span>{{ t('common.unit.day') }}
+              /
+              <span class="text-info fw-bold mx-1">{{ store.totalAnnual.dreamCnt ?? 0 }}</span>{{ t('common.unit.count') }})
+            </template>
           </div>
         </div>
       </div>
@@ -161,20 +159,37 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useJournalAnnualStore } from "@/features/journal/stores/journalAnnual";
 import type { JournalAnnualDto } from "@/features/journal/stores/journalAnnual";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 
 const router = useRouter();
 const store = useJournalAnnualStore();
 const { t } = useLocaleStore();
 
-onMounted(() => {
-  void store.fetchList();
+onMounted(async () => {
+  const listPromise = store.fetchList();
   void store.fetchTotal();
+  await listPromise;
+  void reinitMetronicAfterDom();
 });
+
+watch(
+  () => store.annualList.map((annual) => annual.yy ?? annual.id).join(","),
+  () => {
+    void reinitMetronicAfterDom();
+  }
+);
+
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
 
 /** 결산 상세 페이지로 이동한다. */
 function gotoDetail(yy: number) {

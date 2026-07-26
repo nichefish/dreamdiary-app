@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.feature.journal.thread.model;
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
@@ -27,7 +29,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 public class JournalThreadDto
         extends BaseAttachableDto
-        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule {
+        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, LifecycleCmpstnModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_THREAD;
@@ -46,6 +48,32 @@ public class JournalThreadDto
 
     @Size(max = 50)
     private String categoryName;
+
+    /**
+     * 활성 소속 엔트리 수.
+     * <p>
+     * 목록 enrich({@code applyEntryTagSummaries}) 가 소속 entryId 목록 크기로 채운다.
+     * 스레드 자체 필드가 아니라 표시용 파생 값이다.
+     * </p>
+     */
+    private Long membershipCount;
+
+    /**
+     * 활성 소속 엔트리 기준일({@code stdrdDt})의 최소값 ({@code YYYY-MM-DD}).
+     * <p>
+     * 목록 enrich 가 채운다. 소속이 없거나 유효 일자가 없으면 {@code null}.
+     * </p>
+     */
+    private String firstEntryDate;
+
+    /**
+     * 활성 소속 엔트리 기준일({@code stdrdDt})의 최대값 ({@code YYYY-MM-DD}).
+     * <p>
+     * 목록 enrich 가 채운다. 소속이 없거나 유효 일자가 없으면 {@code null}.
+     * 하루짜리면 {@link #firstEntryDate} 와 같다.
+     * </p>
+     */
+    private String lastEntryDate;
 
     @Getter
     @Setter
@@ -72,5 +100,11 @@ public class JournalThreadDto
 
     public FileCmpstn file;
     public CommentCmpstn comment;
-    public TagCmpstn tag;
+    /** 스레드 라이프사이클. 목록·상세 enrich 가 부착 테이블에서 채운다. 없으면 OPEN. */
+    public LifecycleCmpstn lifecycle;
+    /** 태그 컴포지션. 스레드는 자체 태그를 소유하지 않는다(엔티티 TagEmbed 제거).
+     * 화면 표시용 집계 컨테이너로, 목록·상세의 applyEntryTagSummar(y/ies) 가
+     * 소속 엔트리 태그를 여기에 집계해 넣는다. 매핑 skip 대비 non-null 초기화. */
+    @Builder.Default
+    public TagCmpstn tag = new TagCmpstn();
 }

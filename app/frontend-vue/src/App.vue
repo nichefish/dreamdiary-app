@@ -1,6 +1,18 @@
 <template>
   <RouterView />
   <AppChat v-if="authStore.isAuthenticated && !isPopup" />
+  <!--
+    Chat RAG source deep-link opens read-only entry view (and optional edit) on non-popup routes.
+    Popup routes keep their own JournalEntryRegistModal mount (AppChat is hidden there).
+  -->
+  <JournalEntryRegistModal v-if="authStore.isAuthenticated && !isPopup" />
+  <JournalEntryViewModal v-if="authStore.isAuthenticated && !isPopup" />
+  <!--
+    스레드 상세·편집 모달은 주간·월간·일간·검색의 현재 화면 문맥을 보존한 채 전환한다.
+    thread-detail/thread-edit route는 독립 페이지를 사용하고, 전역 인스턴스는 문맥형 모달만 담당한다.
+  -->
+  <JournalThreadDetailModal v-if="authStore.isAuthenticated" />
+  <JournalThreadRegistModal v-if="authStore.isAuthenticated" />
   <AppRuntimeStatus />
 </template>
 
@@ -9,10 +21,15 @@ import { computed, onErrorCaptured, onMounted, watchEffect } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import AppRuntimeStatus from "@/shared/components/system/AppRuntimeStatus.vue";
 import AppChat from "@/features/chat/AppChat.vue";
+import JournalEntryRegistModal from "@/features/journal/entry/modals/JournalEntryRegistModal.vue";
+import JournalEntryViewModal from "@/features/journal/entry/modals/JournalEntryViewModal.vue";
+import JournalThreadDetailModal from "@/features/journal/thread/modals/JournalThreadDetailModal.vue";
+import JournalThreadRegistModal from "@/features/journal/thread/modals/JournalThreadRegistModal.vue";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";
 import { reportRuntimeError } from "@/shared/utils/appRuntimeStatus";
+import { installModalStacking } from "@/shared/utils/modalStack";
 
 const authStore = useAuthStore();
 const localeStore = useLocaleStore();
@@ -36,6 +53,7 @@ watchEffect(() => {
 });
 
 onMounted(() => {
+  installModalStacking();
   document.body.classList.remove("page-loading");
   if (authStore.isAuthenticated) void preloadCategoryMaps();
 });
@@ -75,5 +93,30 @@ onErrorCaptured((error) => {
 
 #app {
   display: contents;
+}
+
+/*
+ * AppChat drawer uses z-index 6002 (above Metronic chrome).
+ * Bootstrap modals and SweetAlert confirmations default to ~1055/1060, so
+ * entry/detail modals opened from chat RAG sources and modal-scoped confirms
+ * would render under the drawer or the active modal without this raise.
+ * Nested modals get incremental z-index from modalStack.ts (installModalStacking).
+ * TinyMCE aux (code/link 등) defaults ~1300 and would sit under raised modals —
+ * SSOT: overlayZIndex.ts TINYMCE_AUX_Z (6190). SweetAlert stays above (SWAL_Z 6200).
+ * Keep these CSS numbers in sync with overlayZIndex.ts.
+ * !important beats library .swal2-container { 1060 } and nested-modal inline races.
+ */
+body.modal-open .modal {
+  z-index: 6100;
+}
+body.modal-open .modal-backdrop {
+  z-index: 6090;
+}
+body.modal-open .tox-tinymce-aux {
+  z-index: 6190 !important;
+}
+body.modal-open .swal2-container,
+.swal2-container {
+  z-index: 6200 !important;
 }
 </style>

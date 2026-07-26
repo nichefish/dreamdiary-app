@@ -70,8 +70,8 @@ public class CodeItemRestController extends BaseControllerImpl {
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeItemDtlAjax(final @RequestParam("id") Integer id) throws Exception {
         final CodeItemDto codeItemDto = codeItemService.getDtlDto(id);
-        // 다국어 번역명 주입
-        codeItemDto.setCodeNameEn(codeItemService.getCodeNameEn(id));
+        // 다국어 번역명 주입 (locale → 번역명, ko 는 codeName 이 기준이라 제외)
+        codeItemDto.setI18nNames(codeItemService.getI18nNames(id));
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(codeItemDto));

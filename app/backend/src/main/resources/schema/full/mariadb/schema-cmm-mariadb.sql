@@ -114,6 +114,22 @@ CREATE TABLE IF NOT EXISTS menu (
     CONSTRAINT chk_menu_submenu_expand_type CHECK (submenu_expand_type IN ('NO_SUB', 'LIST', 'EXTEND', 'COLLAPSE', 'BOARD'))
 ) COMMENT = '메뉴';
 
+-- -----------------------
+
+-- 메뉴 다국어 (menu_i18n)
+-- menu 한 건당 언어별 번역명/설명을 저장한다.
+-- 한국어(ko)는 menu.menu_name / menu.menu_description 이 단일 원천이라 저장하지 않는다.
+-- 조회 시 locale 에 맞는 번역이 없으면 menu 의 기본값을 fallback 으로 사용한다.
+CREATE TABLE IF NOT EXISTS menu_i18n (
+    menu_id          INT NOT NULL COMMENT '메뉴 ID (FK → menu.id)',
+    locale           VARCHAR(10) NOT NULL COMMENT '언어 코드 (en, ja 등)',
+    menu_name        VARCHAR(200) NOT NULL COMMENT '번역된 메뉴명',
+    menu_description VARCHAR(1000) COMMENT '번역된 메뉴 설명 (선택)',
+    -- CONSTRAINT
+    PRIMARY KEY (menu_id, locale),
+    CONSTRAINT fk_menu_i18n FOREIGN KEY (menu_id) REFERENCES menu (id) ON DELETE CASCADE
+) COMMENT = '메뉴 다국어';
+
 -- 인증 정책 (auth_policy)
 -- @extends: BaseAuditEntity
 CREATE TABLE IF NOT EXISTS auth_policy (

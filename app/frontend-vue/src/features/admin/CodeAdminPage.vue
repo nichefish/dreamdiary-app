@@ -1,18 +1,17 @@
 <template>
   <div class="code-admin-page">
-    <div class="code-admin-toolbar">
-      <div class="code-admin-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" :disabled="store.loading" @click="store.fetchGroups(store.currentPage)">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-primary" @click="store.openGroupCreate">
+    <!--begin::뷰 툴바 — 저널 스레드·게시판 액션 행과 동일(mt-3 mb-1). ASIDE 없음. 탭용 mt-5 빈 여백은 두지 않는다.-->
+    <div class="code-admin-view-toolbar d-flex flex-column-fluid justify-content-end align-items-start align-items-xl-center gap-4 w-100">
+      <div class="d-flex align-items-center flex-shrink-0 pe-5 mt-3 mb-1 gap-2">
+        <button type="button" class="btn btn-sm btn-primary text-nowrap" @click="store.openGroupCreate">
           <i class="bi bi-plus-lg"></i>
           {{ t('code.group.register') }}
         </button>
       </div>
     </div>
+    <!--end::뷰 툴바-->
 
-    <div class="card post">
+    <div class="card post" style="margin-top: 0 !important;">
       <div class="card-body">
         <div class="code-admin-listbar">
           <div class="code-admin-search">
@@ -57,7 +56,7 @@
               <tr v-if="!store.rows.length">
                 <td colspan="6" class="text-center text-muted py-8">{{ t('code.group.empty') }}</td>
               </tr>
-              <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" @click="openDetail(row.id)">
+              <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" @click="onGroupRowClick($event, row.id)">
                 <td class="text-center hidden-table text-gray-600">{{ row.rnum }}</td>
                 <td>
                   <div class="code-admin-name">
@@ -80,15 +79,45 @@
                     {{ isUse(row.useYn) ? t('status.use') : t('status.unuse') }}
                   </button>
                 </td>
-                <td class="text-center" @click.stop>
-                  <div class="code-admin-actions justify-content-center">
-                    <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.edit')" @click="openGroupEdit(row.id)">
-                      <i class="bi bi-pencil-square"></i>
+                <td class="text-center">
+                  <!--begin::컨텍스트 메뉴
+                    SSOT: 저널 일자·게시판 목록과 동일 Metronic data-kt-menu.
+                    .table-responsive(overflow) 클리핑은 data-kt-menu-overflow="true"(body portal)로 해결한다.
+                    변경 전(Bootstrap strategy:fixed): 메뉴가 여러 행에서 열린 채 겹쳤다.
+                    트리거 stop 금지(body 위임). 행 클릭은 메뉴 가드. 목록 렌더 후 reinit.
+                  -->
+                  <div class="d-flex justify-content-center">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                      data-kt-menu-trigger="click"
+                      data-kt-menu-placement="bottom-end"
+                      data-kt-menu-overflow="true"
+                      :title="t('common.menu')"
+                    >
+                      <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.delete')" @click="deleteGroup(row)">
-                      <i class="bi bi-trash"></i>
-                    </button>
+                    <div
+                      class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                      data-kt-menu="true"
+                      @click.stop
+                    >
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3" @click="openGroupEdit(row.id)">
+                          {{ t('common.edit') }}
+                          <i class="bi bi-pencil-square fs-8"></i>
+                        </div>
+                      </div>
+                      <div class="separator my-2"></div>
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3 text-danger" @click="deleteGroup(row)">
+                          {{ t('common.delete') }}
+                          <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                  <!--end::컨텍스트 메뉴-->
                 </td>
               </tr>
             </tbody>
@@ -180,7 +209,7 @@
                       <tr v-if="!store.items.length">
                         <td colspan="6" class="text-center text-muted py-8">{{ t('code.group.item.empty') }}</td>
                       </tr>
-                      <tr v-for="(item, index) in store.items" :key="item.id" class="cursor-pointer" @click="openItemEdit(item.id)">
+                      <tr v-for="(item, index) in store.items" :key="item.id" class="cursor-pointer" @click="onItemRowClick($event, item.id)">
                         <td class="text-center" @click.stop>
                           <div class="code-admin-order">
                             <button type="button" class="btn btn-sm btn-icon btn-light" :disabled="index === 0" :title="t('common.move-up')" @click="store.moveItem(index, -1)">
@@ -201,15 +230,40 @@
                             {{ isUse(item.useYn) ? t('status.use') : t('status.unuse') }}
                           </span>
                         </td>
-                        <td class="text-center" @click.stop>
-                          <div class="code-admin-actions justify-content-center">
-                            <button type="button" class="btn btn-sm btn-icon btn-light-primary" :title="t('common.edit')" @click="openItemEdit(item.id)">
-                              <i class="bi bi-pencil-square"></i>
+                        <td class="text-center">
+                          <!--begin::컨텍스트 메뉴 — 분류 목록과 동일(KTMenu + overflow portal).-->
+                          <div class="d-flex justify-content-center">
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                              data-kt-menu-trigger="click"
+                              data-kt-menu-placement="bottom-end"
+                              data-kt-menu-overflow="true"
+                              :title="t('common.menu')"
+                            >
+                              <i class="ki-solid ki-dots-horizontal fs-2x"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-icon btn-light-danger" :title="t('common.delete')" @click="deleteItem(item)">
-                              <i class="bi bi-trash"></i>
-                            </button>
+                            <div
+                              class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+                              data-kt-menu="true"
+                              @click.stop
+                            >
+                              <div class="menu-item px-3 my-1">
+                                <div class="menu-link flex-stack px-3" @click="openItemEdit(item.id)">
+                                  {{ t('common.edit') }}
+                                  <i class="bi bi-pencil-square fs-8"></i>
+                                </div>
+                              </div>
+                              <div class="separator my-2"></div>
+                              <div class="menu-item px-3 my-1">
+                                <div class="menu-link flex-stack px-3 text-danger" @click="deleteItem(item)">
+                                  {{ t('common.delete') }}
+                                  <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                                </div>
+                              </div>
+                            </div>
                           </div>
+                          <!--end::컨텍스트 메뉴-->
                         </td>
                       </tr>
                     </tbody>
@@ -298,10 +352,47 @@
                     <label for="itemCodeName" class="form-label required">{{ t('code.item.form.code-name') }}</label>
                     <input id="itemCodeName" v-model.trim="store.itemForm.codeName" type="text" class="form-control form-control-solid" maxlength="50" required />
                   </div>
+                  <!--begin::다국어 번역명 (locale + 번역명 행, + 로 추가)
+                    변경 전: 영문 전용 codeNameEn 단일 입력이었다.
+                    변경 후: 로케일 select + 번역명 입력 행을 + 로 추가한다. 선택지는 지원 로케일에서
+                             기준 로케일(ko)을 뺀 것이며, SUPPORTED_LOCALES 가 늘면 자동 반영된다.
+                    한국어는 위 '코드명' 필드가 단일 원천이라 이 목록에 포함하지 않는다. -->
                   <div class="code-admin-form-row">
-                    <label for="itemCodeNameEn" class="form-label">{{ t('code.item.form.code-name-en') }}</label>
-                    <input id="itemCodeNameEn" v-model.trim="store.itemForm.codeNameEn" type="text" class="form-control form-control-solid" maxlength="50" :placeholder="t('code.item.form.code-name-en.placeholder')" />
+                    <label class="form-label">{{ t('code.item.form.i18n-names') }}</label>
+                    <div>
+                      <div v-for="(row, idx) in store.itemForm.i18nRows" :key="idx" class="code-admin-i18n-row">
+                        <select v-model="row.locale" class="form-select form-select-solid code-admin-i18n-locale">
+                          <option v-for="opt in localeOptions(idx)" :key="opt" :value="opt">{{ opt }}</option>
+                        </select>
+                        <input
+                          v-model.trim="row.codeName"
+                          type="text"
+                          class="form-control form-control-solid"
+                          maxlength="50"
+                          :placeholder="t('code.item.form.i18n-names.placeholder')"
+                        />
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-icon btn-light-danger"
+                          :title="t('common.delete')"
+                          @click="store.removeI18nRow(idx)"
+                        >
+                          <i class="bi bi-dash-lg"></i>
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-light-primary mt-1"
+                        :disabled="!canAddI18nRow"
+                        @click="store.addI18nRow()"
+                      >
+                        <i class="bi bi-plus-lg"></i>
+                        {{ t('code.item.form.i18n-names.add') }}
+                      </button>
+                      <div class="text-muted fs-8 mt-1">{{ t('code.item.form.i18n-names.guide') }}</div>
+                    </div>
                   </div>
+                  <!--end::다국어 번역명-->
                   <div class="code-admin-form-row">
                     <label for="itemDescription" class="form-label">{{ t('board.group.list.col.description') }}</label>
                     <textarea id="itemDescription" v-model.trim="store.itemForm.description" class="form-control form-control-solid" rows="4" maxlength="1000"></textarea>
@@ -335,11 +426,27 @@
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
-import { computed, onMounted } from "vue";
-import { useCodeAdminStore, type CodeGroupRow, type CodeItemRow } from "@/features/admin/stores/codeAdmin";
+import { computed, onMounted, watch } from "vue";
+import { isMetronicMenuEventTarget, reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
+import { I18N_LOCALE_OPTIONS, useCodeAdminStore, type CodeGroupRow, type CodeItemRow } from "@/features/admin/stores/codeAdmin";
 
 const store = useCodeAdminStore();
 const { t } = useLocaleStore();
+
+/**
+ * idx 번째 행의 로케일 select 선택지.
+ * 다른 행이 이미 쓰는 로케일은 제외한다 (locale 은 code_item_i18n 복합 PK 라 중복 불가).
+ * 자기 자신의 현재 값은 남겨야 select 가 값을 잃지 않는다.
+ */
+function localeOptions(idx: number): readonly string[] {
+  const used = new Set(store.itemForm.i18nRows.filter((_, i) => i !== idx).map((row) => row.locale));
+  return I18N_LOCALE_OPTIONS.filter((locale) => !used.has(locale));
+}
+
+/** 아직 쓰지 않은 로케일이 남아 있을 때만 행 추가 가능 */
+const canAddI18nRow = computed(
+  () => store.itemForm.i18nRows.length < I18N_LOCALE_OPTIONS.length
+);
 
 const pageNumbers = computed(() => {
   if (store.totalPages <= 1) return [];
@@ -466,6 +573,32 @@ async function saveItemSortOrders() {
   }
 }
 
+/**
+ * 분류 목록·상세 아이템 목록 렌더가 끝나면 Metronic 컨텍스트 메뉴를 재바인딩한다.
+ */
+watch(
+  () => store.loading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
+watch(
+  () => store.detailLoading,
+  (loading, wasLoading) => {
+    if (wasLoading && !loading) void reinitMetronicAfterDom();
+  }
+);
+
+function onGroupRowClick(event: MouseEvent, id: number): void {
+  if (isMetronicMenuEventTarget(event.target)) return;
+  openDetail(id);
+}
+
+function onItemRowClick(event: MouseEvent, id: number): void {
+  if (isMetronicMenuEventTarget(event.target)) return;
+  openItemEdit(id);
+}
+
 onMounted(async () => {
   await store.fetchGroups(0);
 });
@@ -478,7 +611,20 @@ onMounted(async () => {
   gap: 1rem;
 }
 
-.code-admin-toolbar,
+/* 다국어 번역명 행: [로케일 select][번역명 input][삭제 버튼] */
+.code-admin-i18n-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.code-admin-i18n-locale {
+  width: 7rem;
+  min-width: 7rem;
+  flex: 0 0 auto;
+}
+
 .code-admin-listbar,
 .code-admin-footer {
   display: flex;
@@ -494,10 +640,6 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.code-admin-toolbar {
-  justify-content: flex-end;
 }
 
 .code-admin-search {
@@ -607,7 +749,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .code-admin-toolbar,
   .code-admin-listbar,
   .code-admin-footer,
   .code-admin-search {

@@ -27,7 +27,8 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useJournalStore } from "@/features/journal/stores/journal";
-import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
 import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
 import JournalChapterRegistModal from "../chapter/modals/JournalChapterRegistModal.vue";
@@ -43,10 +44,11 @@ import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue"
 import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
 
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const route = useRoute();
 
-/** 이력 복원/삭제 성공 시 일지 목록을 다시 조회한다. */
+/** 이력 복원/삭제 성공 시 열린 스레드 상세와 배경 일지 목록을 현재 호스트 계약으로 다시 조회한다. */
 function onHistorySuccess(): void {
-  void refreshJournalDaysForRoute(journalStore, route);
+  void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
 }
 </script>

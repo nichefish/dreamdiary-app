@@ -134,6 +134,11 @@ public class JournalEntryViewProjectionHelper {
             }
         }
 
+        stampDayResolvedFlags(day, dreamEntries);
+        stampDayResolvedFlags(day, elseDreamEntries);
+        for (final JournalChapterDto chapter : visibleChapters) {
+            stampDayResolvedFlags(day, getChapterEntries(chapter));
+        }
         day.setJournalDreamSectionList(JournalDreamSectionHelper.buildSections(dreamEntries, elseDreamEntries));
         day.setJournalChapterList(emptyToNull(visibleChapters));
 
@@ -211,5 +216,17 @@ public class JournalEntryViewProjectionHelper {
      */
     private static <T> List<T> emptyToNull(final List<T> entryList) {
         return CollectionUtils.isEmpty(entryList) ? null : entryList;
+    }
+
+    /**
+     * 일자 완결 플래그를 엔트리 DTO에 투영한다. 검색 외 일자 목록 경로에서도 UI 잠금 SSOT를 맞춘다.
+     */
+    private static void stampDayResolvedFlags(final JournalDayDto day, final List<JournalEntryDto> entries) {
+        if (day == null || entries == null) return;
+        for (final JournalEntryDto entry : entries) {
+            if (entry == null) continue;
+            entry.setDiaryResolvedYn(day.getDiaryResolvedYn());
+            entry.setDreamResolvedYn(day.getDreamResolvedYn());
+        }
     }
 }

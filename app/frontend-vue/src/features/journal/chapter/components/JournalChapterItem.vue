@@ -14,6 +14,9 @@
             <span v-if="chapter.categoryName" style="color:#287D94;">{{ chapter.categoryName }}</span>
             <span class="text-muted fs-8 me-1">{{ chapter.categoryCode }}</span>
           </template>
+          <!--begin::챕터 제목 (분류 뒤 인라인 강조, 접힘·펼침 무관 항상) — 같은 분류 챕터 구분용 -->
+          <span v-if="chapter.title" class="ms-1 text-gray-700">· {{ chapter.title }}</span>
+          <!--end::챕터 제목-->
           <span v-if="!canManageChapter" class="badge badge-light-danger fs-8 ms-1">{{ t("journal.chapter.other-author") }}</span>
         </span>
         <i class="bi fs-4" :class="iconClass"></i>
@@ -24,6 +27,7 @@
       <div v-if="canManageChapter" class="col-3 d-none d-md-flex align-items-center gap-2">
         <!--begin::엔트리 등록 TEXT 버튼-->
         <button
+          v-if="canWriteChapter"
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
           :title="entryRegistTitle"
@@ -68,7 +72,7 @@
               <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t("journal.chapter.label") }}</div>
             </div>
             <!--begin::수정-->
-            <div class="menu-item px-3 my-1">
+            <div v-if="canWriteChapter" class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3" @click="openChapterModify">
                 {{ t("common.edit") }}
                 <i class="bi bi-pencil-square fs-8"></i>
@@ -76,7 +80,7 @@
             </div>
             <!--end::수정-->
             <!--begin::상태 서브메뉴-->
-            <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+            <div v-if="canWriteChapter" class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
               <a href="#" class="menu-link px-3" @click.prevent>
                 <span class="menu-title">{{ t("common.status") }}</span>
                 <span class="menu-arrow"></span>
@@ -98,9 +102,9 @@
               </div>
             </div>
             <!--end::상태 서브메뉴-->
-            <div class="separator my-2"></div>
+            <div v-if="canWriteChapter" class="separator my-2"></div>
             <!--begin::삭제-->
-            <div class="menu-item px-3 my-1">
+            <div v-if="canWriteChapter" class="menu-item px-3 my-1">
               <div class="menu-link flex-stack px-3 text-danger" @click="deleteChapter">
                 {{ t("common.delete") }}
                 <i class="bi bi-trash text-danger p-0 fs-8"></i>
@@ -151,6 +155,24 @@
         >#<span class="border-bottom text-primary fw-lighter opacity-hover"><span v-if="tag.ctgr" class="fs-7 text-noti">[{{ tag.ctgr }}]</span>{{ tag.name }}</span></span>
       </div>
       <!--end::접힘 시 태그 요약-->
+      <!--begin::접힘 시 소속 스레드 요약 (하위 엔트리의 스레드를 중복 없이 표시)-->
+      <div
+        v-if="chapterThreadList.length > 0 && isCollapsed"
+        class="journal-chapter-threads d-flex flex-wrap align-items-center gap-1 ps-5 py-1"
+      >
+        <i class="bi bi-diagram-3 fs-8 text-muted"></i>
+        <button
+          v-for="thread in chapterThreadList"
+          :key="'chapter-thread-' + thread.threadId"
+          type="button"
+          class="badge badge-light-primary border-0 fs-8 cursor-pointer"
+          :title="t('journal.entry.thread.open.tooltip')"
+          @click.stop="openThreadDetail(thread.threadId)"
+        >
+          {{ thread.threadTitle || ('#' + thread.threadId) }}
+        </button>
+      </div>
+      <!--end::접힘 시 소속 스레드 요약-->
     </div>
     <!--end::챕터 내용-->
   </div>
@@ -165,11 +187,14 @@ import axios from "axios";
 import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
-import type { JournalChapterDto } from "@/features/journal/stores/journal";
+import type { JournalChapterDto, JournalThreadEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
+import { useJournalDayResolved } from "@/features/journal/utils/journalDayResolved";
 
 const props = withDefaults(defineProps<{
   chapter: JournalChapterDto;
@@ -180,6 +205,7 @@ const props = withDefaults(defineProps<{
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
+const threadStore = useJournalThreadStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const { t } = useLocaleStore();
 const route = useRoute();
@@ -210,14 +236,26 @@ watch(serverCollapsed, () => {
 /** 본인 작성 챕터만 수정·삭제·엔트리 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
 const canManageChapter = computed(() => props.chapter.isCreatedBy === true);
 
+const dayResolvedAxis = useJournalDayResolved();
+/** NOTE 챕터 포함 일기 축 — diaryResolvedYn 잠금 시 쓰기 불가 */
+const canWriteChapter = computed(
+  () => canManageChapter.value && dayResolvedAxis.value.diaryWritable,
+);
+
 const isDreamChapter = computed(() => props.chapter.chapterType === "DREAM");
 const isNoteChapter = computed(() => props.chapter.chapterType === "NOTE");
 
-/** 소유권 없을 때 안내 후 중단 */
-function guardChapterOwner(): boolean {
-  if (canManageChapter.value) return true;
-  void swalAlert(t("journal.chapter.owner-only"));
-  return false;
+/** 소유권·일기 축 잠금 없을 때만 쓰기 허용 */
+function guardChapterOwner(forWrite = false): boolean {
+  if (!canManageChapter.value) {
+    void swalAlert(t("journal.chapter.owner-only"));
+    return false;
+  }
+  if (forWrite && !dayResolvedAxis.value.diaryWritable) {
+    void swalAlert(t("journal.day.diary-resolved-locked"));
+    return false;
+  }
+  return true;
 }
 
 const entryRegistIcon = computed(() => (isDreamChapter.value ? "bi-moon-stars" : "bi-book"));
@@ -243,11 +281,43 @@ const typeLabel = computed(() => {
 const entryList = computed(() => props.chapter.journalEntryList ?? []);
 const tagList = computed(() => props.chapter.tag?.list ?? []);
 
+/**
+ * 접힌 챕터 밖에 표시할 소속 스레드 목록.
+ * <p>
+ * 변경 전에는 스레드 칩이 각 엔트리 본문 안에만 있어 챕터 접기 시 함께 숨겨졌다.
+ * 변경 후에는 하위 엔트리의 소속을 현재 엔트리 순서대로 모으고 threadId로 중복 제거해,
+ * 태그 요약과 같은 접힘 바깥 영역에서 스레드의 존재를 유지한다.
+ */
+const chapterThreadList = computed<JournalThreadEntryDto[]>(() => {
+  const threadMap = new Map<number, JournalThreadEntryDto>();
+  for (const entry of entryList.value) {
+    for (const thread of entry.threadList ?? []) {
+      const previous = threadMap.get(thread.threadId);
+      if (!previous || (!previous.threadTitle?.trim() && thread.threadTitle?.trim())) {
+        threadMap.set(thread.threadId, thread);
+      }
+    }
+  }
+  return Array.from(threadMap.values());
+});
+
 /** 하위 엔트리가 1개 이상이고 전부 RESOLVED인지 여부 */
 const allEntriesResolved = computed(() => {
   const list = entryList.value;
   return list.length > 0 && list.every((e) => e.lifecycle?.lifecycleKey === 'RESOLVED');
 });
+
+/**
+ * 하위 엔트리 중 데이터 규칙(RESOLVED 자동 접힘 · 서버 COLLAPSED)으로 접히는 것이 있는지 여부.
+ * 엔트리 개별 로컬 토글(localCollapsedOverride)은 각 엔트리가 소유해 챕터에서 볼 수 없으므로
+ * 데이터 기준으로만 판정한다 — 사용자가 손으로 접은 엔트리는 감지하지 못하는 근사치다.
+ */
+const hasDataCollapsedEntry = computed(() =>
+  entryList.value.some((e) =>
+    e.lifecycle?.lifecycleKey === 'RESOLVED'
+    || (e.state?.list ?? []).some((s) => s.stateKey === 'COLLAPSED')
+  )
+);
 
 /** 챕터 접힘 상태 태그 클릭 컨텍스트 메뉴 열기 */
 function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; name: string; ctgr?: string }): void {
@@ -264,9 +334,14 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
   });
 }
 
+/** 접힘 요약의 스레드 버튼에서 현재 저널 화면을 유지한 채 전역 상세 모달을 연다. */
+function openThreadDetail(threadId: number): void {
+  void threadStore.openDetail(threadId);
+}
+
 /** 챕터 수정 모달 열기 */
 function openChapterModify() {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   modalStore.openChapterRegist({
     id: props.chapter.id,
     journalDayId: props.chapter.journalDayId,
@@ -280,7 +355,7 @@ function openChapterModify() {
 
 /** 일기/노트/꿈 엔트리 신규 등록 모달 열기 */
 function openEntryNew() {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   if (!props.chapter.journalDayId) return;
   /* NOTE 챕터 엔트리도 백엔드 contentType 은 JOURNAL_DIARY (JournalEntryTypeResolver). */
   const contentType = isDreamChapter.value ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
@@ -293,8 +368,25 @@ function openEntryNew() {
   });
 }
 
-/** 클라이언트 접힘/펼침 (서버 상태 저장 없음) */
+/**
+ * 클라이언트 접힘/펼침 (서버 상태 저장 없음).
+ *
+ * 변경 전: 항상 `!isCollapsed` 로 토글했다. 챕터가 펼쳐진 상태에서 하위 엔트리만 접혀 있으면
+ * (일부 엔트리만 RESOLVED 등) 첫 클릭이 챕터를 접어버려, 엔트리를 펼치려면 접기→펼치기 2클릭이 필요했다.
+ * 원인은 엔트리에 넘기는 forceCollapsed(=localCollapsedOverride)가 토글 전까지 null 이라
+ * "챕터가 펼쳐져 있다"는 신호가 엔트리에 전달되지 않았기 때문이다.
+ *
+ * 변경 후: 아직 사용자가 토글하지 않았고(override=null) 챕터가 펼쳐져 있는데 데이터 규칙으로
+ * 접힌 엔트리가 있으면, 접기 대신 override=false 로 하위 엔트리를 전체 펼친다(1클릭).
+ * 이후 클릭부터는 override 가 non-null 이므로 기존대로 접기/펼치기 토글이 동작한다.
+ *
+ * 트레이드오프: 이 상태에서 "챕터를 접으려면" 전체 펼침 후 한 번 더 눌러야 한다(접기 2클릭).
+ */
 function toggleChapter(): void {
+  if (localCollapsedOverride.value === null && !isCollapsed.value && hasDataCollapsedEntry.value) {
+    localCollapsedOverride.value = false;
+    return;
+  }
   localCollapsedOverride.value = !isCollapsed.value;
 }
 
@@ -314,7 +406,7 @@ function scrollAfterFetch(stdrdDt = props.chapter.stdrdDt): void {
 
 /** 챕터 접힘 상태 토글 (서버 반영 후 목록 갱신 — ⋯ 메뉴 전용) */
 async function toggleCollapsedState(): Promise<void> {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   if (!props.chapter.id) return;
   try {
     await axios.post("/api/states", {
@@ -337,7 +429,7 @@ function exportChapter(): void {
 
 /** 챕터 삭제 */
 async function deleteChapter(): Promise<void> {
-  if (!guardChapterOwner()) return;
+  if (!guardChapterOwner(true)) return;
   if (!props.chapter.id) return;
   const stdrdDt = props.chapter.stdrdDt;
   if (!await swalConfirm(t("journal.chapter.delete.confirm"))) return;
@@ -363,22 +455,6 @@ async function deleteChapter(): Promise<void> {
 }
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
-function htmlToPlainText(html: string): string {
-  return html
-    .replace(/<\s*hr\b[^>]*\/?>/gi, "\n------\n")
-    .replace(/<\s*br\s*\/?>/gi, "\n")
-    .replace(/<\s*\/?p[^>]*>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .split("\n").map((l) => l.trim()).join("\n")
-    .replace(/\n+/g, "\n")
-    .trim();
-}
-
 /** 챕터 전체 내용을 클립보드에 복사. 레거시 형식: 날짜(요일) / 카테고리 / 제목\n#순번\n본문 */
 async function copyChapter(): Promise<void> {
   const lines: string[] = [];
@@ -402,7 +478,8 @@ async function copyChapter(): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
     void swalFire({ icon: "success", text: t("common.copy.success") });
-  } catch {
+  } catch (error: unknown) {
+    console.error("[journal-chapter] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }

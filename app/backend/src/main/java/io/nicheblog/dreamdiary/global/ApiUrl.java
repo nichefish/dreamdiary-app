@@ -39,6 +39,8 @@ public interface ApiUrl {
     /** 저널 일자 */
     String JOURNAL_DAYS = Prefix.API + "/journal/days";
     String JOURNAL_DAY = Prefix.API + "/journal/day/{id}";
+    /** 저널 일자 축별 완결 플래그 토글 */
+    String JOURNAL_DAY_RESOLVED = Prefix.API + "/journal/day/{id}/resolved";
     /** 저널 일자 태그 */
     String JOURNAL_DAY_TAGS = Prefix.API + "/journal/day/tags";
     String JOURNAL_DAY_TAG_GROUP_LIST = Prefix.API + "/journal/day/tag/group-list";
@@ -79,7 +81,20 @@ public interface ApiUrl {
 
     /** 저널 스레드 */
     String JOURNAL_THREAD_API_LIST = Prefix.API + "/journal/threads";
+    /** 엔트리 소속 메뉴용 저널 스레드 후보 */
+    String JOURNAL_THREAD_CANDIDATES = Prefix.API + "/journal/threads/candidates";
+    /** 월간·주간 저널 화면용 기간별 스레드 집계 */
+    String JOURNAL_THREAD_PERIOD_SUMMARY = Prefix.API + "/journal/threads/period-summary";
+    String JOURNAL_THREAD_CATEGORIES = Prefix.API + "/journal/threads/categories";
     String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
+    /** 스레드 텍스트 내보내기 */
+    String JOURNAL_THREAD_EXPORT = Prefix.API + "/journal/threads/{id}/export";
+    /** 스레드 소속 엔트리 목록 조회 / 소속 등록 */
+    String JOURNAL_THREAD_ENTRIES = Prefix.API + "/journal/threads/{id}/entries";
+    /** 스레드 소속 해제 */
+    String JOURNAL_THREAD_ENTRY = Prefix.API + "/journal/threads/{id}/entries/{entryId}";
+    /** 엔트리가 속한 스레드 목록 조회 (한 엔트리가 여러 스레드에 속할 수 있다) */
+    String JOURNAL_ENTRY_THREADS = Prefix.API + "/journal/entries/{entryId}/threads";
 
     /** 저널 연간 */
     String JOURNAL_ANNUALS = Prefix.API + "/journal/annuals";
@@ -100,6 +115,8 @@ public interface ApiUrl {
     /** 게시판 */
     String BOARD_POSTS = Prefix.API + "/board/posts";
     String BOARD_POST = Prefix.API + "/board/posts/{id}";
+    /** 게시판별 분류 코드 목록 (사용자 화면 검색 필터용) */
+    String BOARD_CATEGORIES = Prefix.API + "/board/{boardKey}/categories";
 
     /** 사용자 관리 */
     String USERS = Prefix.API + "/users";

@@ -102,12 +102,19 @@ public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> 
                     if (!(value instanceof List<?> rawKeywordList) || CollectionUtils.isEmpty(rawKeywordList)) continue;
 
                     final List<Predicate> likeList = new ArrayList<>();
+                    /* 변경 전: 본문(content)만 검색하여 제목 일치 엔트리가 누락됐다.
+                       변경 후: 키워드별 제목 OR 본문, 복수 키워드 사이는 기존 AND 계약을 유지한다. */
+                    final Expression<String> titleLowerExp = builder.lower(root.get("title"));
                     final Expression<String> cnLowerExp = builder.lower(root.get("content"));
                     for (final Object obj : rawKeywordList) {
                         if (obj == null) continue;
                         final String keyword = obj.toString().trim().toLowerCase();
                         if (StringUtils.isEmpty(keyword)) continue;
-                        likeList.add(builder.like(cnLowerExp, "%" + keyword + "%"));
+                        final String keywordPattern = "%" + keyword + "%";
+                        likeList.add(builder.or(
+                                builder.like(titleLowerExp, keywordPattern),
+                                builder.like(cnLowerExp, keywordPattern)
+                        ));
                     }
                     if (CollectionUtils.isEmpty(likeList)) continue;
 

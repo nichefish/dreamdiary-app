@@ -18,6 +18,7 @@ export interface ScheduleBootstrap {
   brthdyCd?: string;
   holyDayCode?: string;
   codeOptions?: ScheduleCodeOption[];
+  vcatnCodeOptions?: ScheduleCodeOption[];
   jandiTopicOptions?: ScheduleCodeOption[];
   userOptions?: ScheduleUserOption[];
 }
@@ -50,6 +51,7 @@ export interface ScheduleParticipant {
 export interface ScheduleForm {
   id?: string | number;
   scheduleCd: string;
+  vcatnCd?: string;
   title: string;
   content?: string;
   bgnDt: string;
@@ -61,6 +63,7 @@ export interface ScheduleForm {
 export interface ScheduleDetail extends ScheduleForm {
   scheduleNm?: string;
   prtcpnt?: string;
+  isCreatedBy?: boolean;
 }
 
 /** 달력·목록 API 공통 조회 구간 (bgnDt/endDt → 서버 searchStartDt/searchEndDt) */
@@ -160,6 +163,7 @@ export const useScheduleStore = defineStore("schedule", () => {
   const listLoading = ref(false);
 
   const codeOptions = computed(() => bootstrap.value.codeOptions ?? []);
+  const vcatnCodeOptions = computed(() => bootstrap.value.vcatnCodeOptions ?? []);
   const userOptions = computed(() => bootstrap.value.userOptions ?? []);
   const holyDayCode = computed(() => bootstrap.value.holyDayCode ?? "HOLYDAY");
 
@@ -251,6 +255,7 @@ export const useScheduleStore = defineStore("schedule", () => {
     const fd = new FormData();
     if (form.id) fd.append("id", String(form.id));
     fd.append("scheduleCd", form.scheduleCd);
+    if (form.vcatnCd) fd.append("vcatnCd", form.vcatnCd);
     fd.append("title", form.title);
     fd.append("content", form.content ?? "");
     fd.append("bgnDt", form.bgnDt);
@@ -292,6 +297,7 @@ export const useScheduleStore = defineStore("schedule", () => {
     loading,
     listLoading,
     codeOptions,
+    vcatnCodeOptions,
     userOptions,
     holyDayCode,
     fetchBootstrap,

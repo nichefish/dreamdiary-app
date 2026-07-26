@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
@@ -29,6 +30,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypeResolver;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.feature.journal.entry.spec.JournalEntrySpec;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityQueueService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityRefSyncService;
@@ -46,6 +48,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +76,7 @@ public class JournalEntryService
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
     private final JournalEntryEntityQueueService journalEntryEntityQueueService;
     private final JournalEntryEntityRefSyncService journalEntryEntityRefSyncService;
+    private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     /**
      * ref(id + contentType) 기반으로 엔트리를 안전 조회한다.
@@ -266,6 +270,28 @@ public class JournalEntryService
     }
 
     /**
+     * 엔트리 ID 집합으로 본인 소유 엔트리를 조회해 일자순으로 정렬한다.
+     * <p>
+     * 스레드 상세의 소속 엔트리 목록처럼 «ID 로 지정된 엔트리들»을 화면 카드로 보여줄 때 쓴다.
+     * 타 유형(일기·꿈·노트)이 섞여 있어도 한 번에 조회하며, 소유권은 {@code createdBy} 로 거른다.
+     * 정렬은 {@link JournalEntryDto#compareTo} 계약(기준일자순)을 따른다.
+     *
+     * @param ids 엔트리 ID 집합 (비어 있으면 빈 목록)
+     * @return 소유·정렬된 엔트리 DTO 목록
+     */
+    public List<JournalEntryDto> getListDtoByIds(final Collection<Integer> ids) throws Exception {
+        if (CollectionUtils.isEmpty(ids)) return List.of();
+        final String username = AuthUtils.requireLoginUsername();
+        final List<JournalEntryDto> list = new ArrayList<>();
+        for (final JournalEntryEntity entity : repository.findAllById(ids)) {
+            final JournalEntryDto dto = mapstruct.toDto(entity);
+            if (dto.getIsCreatedBy(username)) list.add(dto);
+        }
+        Collections.sort(list);
+        return list;
+    }
+
+    /**
      * 사용자 기준 연간 목록을 조회하고 정렬해 반환한다.
      *
      * @param username 사용자 아이디
@@ -277,8 +303,33 @@ public class JournalEntryService
     @Cacheable(value = ANNUAL_STATED_LIST_CACHE_NAME, key = "new org.springframework.cache.interceptor.SimpleKey(#username, #contentType.key + '_' + #searchParam.toSummaryCacheKey())")
     public List<JournalEntryDto> getAnnualListDtoByUser(final String username, final JournalEntrySearchParam searchParam, final ContentType contentType) throws Exception {
         final List<JournalEntryDto> list = getListDtoByUser(username, searchParam, contentType);
-        Collections.sort(list);
+        sortByChapterAndEntryOrder(list);
         return list;
+    }
+
+    /**
+     * 플랫 엔트리 목록을 저널 일자 화면과 동일한 순서로 정렬한다.
+     * <p>
+     * 일자 → 챕터 sortOrder → 원본 엔트리 sortOrder → ID 오름차순. 엔트리 sortOrder는 챕터별로 1부터
+     * 매겨지므로 챕터 순서를 함께 보지 않으면 같은 일자의 여러 챕터 #1들이 앞으로 몰린다. 챕터 sortOrder는
+     * 엔트리의 journalChapterId 로 배치 조회한다. 연간 결산·스레드 상세 등 플랫 엔트리 목록에서 공용으로 쓴다.
+     *
+     * @param entries 정렬할 엔트리 목록 (in-place 정렬)
+     */
+    public void sortByChapterAndEntryOrder(final List<JournalEntryDto> entries) {
+        if (entries == null || entries.isEmpty()) return;
+        final Set<Integer> chapterIds = entries.stream()
+                .map(JournalEntryDto::getJournalChapterId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        final Map<Integer, Integer> chapterOrderMap = journalChapterRepository.findAllById(chapterIds).stream()
+                .filter(chapter -> chapter.getSortOrder() != null)
+                .collect(Collectors.toMap(JournalChapterEntity::getId, JournalChapterEntity::getSortOrder, (a, b) -> a));
+        entries.sort(Comparator
+                .comparing(JournalEntryDto::getStdrdDt, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing((JournalEntryDto entry) -> chapterOrderMap.get(entry.getJournalChapterId()), Comparator.<Integer>nullsLast(Comparator.naturalOrder()))
+                .thenComparing(JournalEntryDto::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(JournalEntryDto::getId, Comparator.nullsLast(Comparator.naturalOrder())));
     }
 
     /**
@@ -340,6 +391,7 @@ public class JournalEntryService
     public void preRegist(final JournalEntryPostDto registDto) {
         final JournalEntryTypePolicy policy = policyResolver.resolve(registDto);
         assertChapterForEntry(policy, registDto.getJournalChapterId());
+        journalDayResolvedGuard.assertWritableForEntry(registDto.getJournalChapterId(), policy.contentType);
         JournalDreamerFieldHelper.applyDreamerFieldsFromPost(registDto, policy.contentType);
         registDto.setSortOrder(journalEntryOrderService.getNextSortOrder(registDto.getJournalChapterId(), policy.contentType));
     }
@@ -384,6 +436,7 @@ public class JournalEntryService
 
         final Integer journalChapterId = policy.resolveModifiedChapterId(modifyDto.getJournalChapterId(), modifyEntity.getJournalChapter().getId());
         assertChapterForEntry(policy, journalChapterId);
+        journalDayResolvedGuard.assertWritableForEntry(journalChapterId, policy.contentType);
         modifyDto.setIsSortOrderChanged(isSortOrderChanged(modifyDto, modifyEntity));
         if (policy.supportsChapterChange()) {
             final boolean isChapterChanged = isChapterChanged(modifyDto, modifyEntity);
@@ -404,6 +457,8 @@ public class JournalEntryService
         if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
+        final JournalEntryTypePolicy policy = policyResolver.resolve(deletedDto);
+        journalDayResolvedGuard.assertWritableForEntry(deletedDto.getJournalChapterId(), policy.contentType);
     }
 
     /**
@@ -517,6 +572,10 @@ public class JournalEntryService
         final JournalEntryTypePolicy policy = policyResolver.resolve(contentType);
         final JournalEntryEntity restoreEntity = this.getDtlEntity(key);
         policyResolver.assertMatches(restoreEntity, policy);
+        journalDayResolvedGuard.assertWritableForEntry(
+                restoreEntity.getJournalChapter().getId(),
+                policy.contentType
+        );
         final JournalEntryEntity historySnapshot = BaseAttachableHistoryHelper.isHistoryModule(restoreEntity)
                 ? restoreEntity.toBuilder().build()
                 : null;
