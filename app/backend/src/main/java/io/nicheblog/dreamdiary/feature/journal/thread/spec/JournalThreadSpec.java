@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.thread.spec;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.entity.LifecycleEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
@@ -91,6 +92,10 @@ public class JournalThreadSpec
                     // 소속 엔트리 태그 합집합 AND 필터
                     resolveMemberEntryTagIdsPredicate(predicate, root, query, builder, value);
                     continue;
+                case "lifecycleKey":
+                    // 스레드 부착 라이프사이클. OPEN 은 행 없음 포함.
+                    resolveLifecycleKeyPredicate(predicate, root, query, builder, value);
+                    continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
@@ -165,5 +170,48 @@ public class JournalThreadSpec
         tagSubquery.groupBy(membershipRoot.get("threadId"));
         tagSubquery.having(builder.equal(builder.countDistinct(tagRoot.get("tagId")), (long) distinctTagIds.size()));
         predicate.add(builder.exists(tagSubquery));
+    }
+
+    /**
+     * 스레드 라이프사이클 필터.
+     * <p>
+     * {@code OPEN} 은 lifecycle 행이 없거나 키가 OPEN 인 경우를 포함한다.
+     * {@code PENDING}/{@code RESOLVED} 는 해당 키 행이 있는 스레드만 남긴다.
+     * </p>
+     */
+    private void resolveLifecycleKeyPredicate(
+            final List<Predicate> predicate,
+            final Root<JournalThreadEntity> root,
+            final CriteriaQuery<?> query,
+            final CriteriaBuilder builder,
+            final Object value
+    ) {
+        if (value == null || StringUtils.isBlank(value.toString())) return;
+        final String lifecycleKey = value.toString().trim();
+
+        final Subquery<Integer> exactSubquery = query.subquery(Integer.class);
+        final Root<LifecycleEntity> exactRoot = exactSubquery.from(LifecycleEntity.class);
+        exactSubquery.select(exactRoot.get("refId"));
+        exactSubquery.where(
+                builder.equal(exactRoot.get("refId"), root.get("id")),
+                builder.equal(exactRoot.get("refContentType"), ContentType.JOURNAL_THREAD.key),
+                builder.equal(exactRoot.get("lifecycleKey"), lifecycleKey)
+        );
+
+        if ("OPEN".equals(lifecycleKey)) {
+            final Subquery<Integer> anySubquery = query.subquery(Integer.class);
+            final Root<LifecycleEntity> anyRoot = anySubquery.from(LifecycleEntity.class);
+            anySubquery.select(anyRoot.get("refId"));
+            anySubquery.where(
+                    builder.equal(anyRoot.get("refId"), root.get("id")),
+                    builder.equal(anyRoot.get("refContentType"), ContentType.JOURNAL_THREAD.key)
+            );
+            predicate.add(builder.or(
+                    builder.not(builder.exists(anySubquery)),
+                    builder.exists(exactSubquery)
+            ));
+            return;
+        }
+        predicate.add(builder.exists(exactSubquery));
     }
 }

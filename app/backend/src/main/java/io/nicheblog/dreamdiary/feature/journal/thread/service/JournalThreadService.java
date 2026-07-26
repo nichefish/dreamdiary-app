@@ -3,6 +3,9 @@ package io.nicheblog.dreamdiary.feature.journal.thread.service;
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleViewHelper;
 import io.nicheblog.dreamdiary.feature.attachable.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
@@ -55,6 +58,7 @@ public class JournalThreadService
     private final JournalThreadRepository repository;
     private final JournalThreadEntryService journalThreadEntryService;
     private final JournalEntryService journalEntryService;
+    private final LifecycleService lifecycleService;
     @Getter
     private final JournalThreadSpec spec;
     @Getter
@@ -78,10 +82,13 @@ public class JournalThreadService
      * <p>
      * 현재 소속, 최근 소속 추가 시각, 활성 소속 수, 스레드 수정·생성 시각 순의
      * 서버 우선순위를 사용한다. 검색어와 분류는 후보 집합을 먼저 좁힌 뒤 같은 순위를 적용한다.
+     * 기본은 완료({@code RESOLVED}) 스레드를 숨기고, {@code includeResolved=true} 일 때만 포함한다.
+     * </p>
      *
      * @param entryId 후보를 요청한 엔트리 ID
      * @param keyword 제목 검색어
      * @param categoryCode 분류 코드
+     * @param includeResolved 완료 스레드 포함 여부
      * @param limit 최대 후보 수
      * @return 경량 스레드 후보 목록
      */
@@ -90,11 +97,13 @@ public class JournalThreadService
             final Integer entryId,
             final String keyword,
             final String categoryCode,
+            final Boolean includeResolved,
             final Integer limit
     ) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
         final String resolvedKeyword = StringUtils.trimToEmpty(keyword);
         final String resolvedCategoryCode = StringUtils.trimToEmpty(categoryCode);
+        final String resolvedIncludeResolved = Boolean.TRUE.equals(includeResolved) ? "Y" : "N";
         final int requestedLimit = (limit == null) ? DEFAULT_CANDIDATE_LIMIT : limit;
         final int resolvedLimit = Math.max(1, Math.min(requestedLimit, MAX_CANDIDATE_LIMIT));
         if (requestedLimit != resolvedLimit) {
@@ -107,15 +116,17 @@ public class JournalThreadService
                 entryId,
                 resolvedKeyword,
                 resolvedCategoryCode,
+                resolvedIncludeResolved,
                 PageRequest.of(0, resolvedLimit)
         );
-        log.debug("[JournalThread.candidates] 후보 조회. entryId={}, keyword={}, categoryCode={}, limit={}, size={}, username={}",
-                entryId, resolvedKeyword, resolvedCategoryCode, resolvedLimit, candidates.size(), username);
+        log.debug("[JournalThread.candidates] 후보 조회. entryId={}, keyword={}, categoryCode={}, includeResolved={}, limit={}, size={}, username={}",
+                entryId, resolvedKeyword, resolvedCategoryCode, resolvedIncludeResolved, resolvedLimit, candidates.size(), username);
         return candidates.stream()
                 .map(candidate -> JournalThreadCandidateDto.builder()
                         .id(candidate.getId())
                         .title(candidate.getTitle())
                         .categoryCode(candidate.getCategoryCode())
+                        .lifecycleKey(StringUtils.defaultIfBlank(candidate.getLifecycleKey(), "OPEN"))
                         .membershipCount(candidate.getMembershipCount() == null
                                 ? 0L
                                 : candidate.getMembershipCount().longValue())
@@ -133,7 +144,8 @@ public class JournalThreadService
      * 변경 전: 목록 DTO 의 {@code tag} 가 비어 목록 UI 의 태그 영역이 렌더되지 않았다.
      * 상세({@link #viewDetailPage}) 만 {@link #applyEntryTagSummary} 를 호출했기 때문이다.
      * 변경 후: 목록도 동일 계약(소속 엔트리 태그 합집합, tagId 중복 제거)을 일괄 적용하고,
-     * 활성 소속 수({@code membershipCount})와 소속 기간({@code firstEntryDate}/{@code lastEntryDate})도 함께 채운다.
+     * 활성 소속 수({@code membershipCount})와 소속 기간({@code firstEntryDate}/{@code lastEntryDate}),
+     * 라이프사이클({@code lifecycle})도 함께 채운다.
      * </p>
      *
      * @param searchParamMap 검색 조건
@@ -145,6 +157,7 @@ public class JournalThreadService
     public Page<JournalThreadDto> getPageDto(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
         final Page<JournalThreadDto> page = BaseAttachableService.super.getPageDto(searchParamMap, pageable);
         this.applyEntryTagSummaries(page.getContent());
+        this.applyThreadLifecycles(page.getContent());
         return page;
     }
 
@@ -173,7 +186,31 @@ public class JournalThreadService
     public JournalThreadDto viewDetailPage(final Integer key) throws Exception {
         final JournalThreadDto dto = this.getDtlDto(key);
         this.applyEntryTagSummary(dto);
+        this.applyThreadLifecycles(List.of(dto));
         return dto;
+    }
+
+
+    /**
+     * 스레드 목록·상세에 부착 라이프사이클을 일괄 병합한다.
+     * <p>
+     * 행이 없으면 {@code OPEN}. 엔트리 enrich 와 동일 계약이다.
+     * </p>
+     *
+     * @param dtoList 대상 스레드 DTO 목록
+     */
+    private void applyThreadLifecycles(final List<JournalThreadDto> dtoList) {
+        if (CollectionUtils.isEmpty(dtoList)) return;
+        final List<Integer> threadIds = dtoList.stream()
+                .map(JournalThreadDto::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        if (threadIds.isEmpty()) return;
+        JournalLifecycleViewHelper.applyThreadLifecycle(
+                dtoList,
+                lifecycleService.getLifecycleMap(ContentType.JOURNAL_THREAD, threadIds)
+        );
     }
 
     /**

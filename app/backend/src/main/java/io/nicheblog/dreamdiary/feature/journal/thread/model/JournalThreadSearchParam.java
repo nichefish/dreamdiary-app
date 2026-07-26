@@ -37,4 +37,14 @@ public class JournalThreadSearchParam
      * </p>
      */
     private List<Integer> tagIds;
+
+    /**
+     * 스레드 라이프사이클 필터 ({@code OPEN}/{@code PENDING}/{@code RESOLVED}).
+     * <p>
+     * 비우면 전체. {@code OPEN} 은 행 없음도 포함한다.
+     * </p>
+     */
+    @Size(max = 50)
+    private String lifecycleKey;
 }
+

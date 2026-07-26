@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.feature.journal.thread.model;
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
@@ -27,7 +29,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 public class JournalThreadDto
         extends BaseAttachableDto
-        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule {
+        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, LifecycleCmpstnModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_THREAD;
@@ -98,6 +100,8 @@ public class JournalThreadDto
 
     public FileCmpstn file;
     public CommentCmpstn comment;
+    /** 스레드 라이프사이클. 목록·상세 enrich 가 부착 테이블에서 채운다. 없으면 OPEN. */
+    public LifecycleCmpstn lifecycle;
     /** 태그 컴포지션. 스레드는 자체 태그를 소유하지 않는다(엔티티 TagEmbed 제거).
      * 화면 표시용 집계 컨테이너로, 목록·상세의 applyEntryTagSummar(y/ies) 가
      * 소속 엔트리 태그를 여기에 집계해 넣는다. 매핑 skip 대비 non-null 초기화. */

@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
@@ -45,6 +47,10 @@ class JournalThreadCandidateServiceTest {
     @Mock
     private JournalThreadEntryService journalThreadEntryService;
     @Mock
+    private JournalEntryService journalEntryService;
+    @Mock
+    private LifecycleService lifecycleService;
+    @Mock
     private JournalThreadSpec spec;
     @Mock
     private ApplicationEventPublisherWrapper publisher;
@@ -74,6 +80,7 @@ class JournalThreadCandidateServiceTest {
         when(projection.getId()).thenReturn(10);
         when(projection.getTitle()).thenReturn("가상 흐름");
         when(projection.getCategoryCode()).thenReturn("CASE");
+        when(projection.getLifecycleKey()).thenReturn("OPEN");
         when(projection.getMembershipCount()).thenReturn(3L);
         when(projection.getLastMembershipAt()).thenReturn(LocalDateTime.of(2026, 7, 20, 12, 0));
         when(projection.getCurrentEntryMembershipCount()).thenReturn(1L);
@@ -82,15 +89,17 @@ class JournalThreadCandidateServiceTest {
                 eq(FIXTURE_ENTRY_ID),
                 eq("검색어"),
                 eq("CASE"),
+                eq("N"),
                 any(Pageable.class)
         )).thenReturn(List.of(projection));
 
         final List<JournalThreadCandidateDto> result =
-                service.getCandidates(FIXTURE_ENTRY_ID, "  검색어  ", " CASE ", 7);
+                service.getCandidates(FIXTURE_ENTRY_ID, "  검색어  ", " CASE ", false, 7);
 
         assertEquals(1, result.size());
         assertEquals(10, result.get(0).getId());
         assertEquals(3L, result.get(0).getMembershipCount());
+        assertEquals("OPEN", result.get(0).getLifecycleKey());
         assertTrue(result.get(0).isMember());
     }
 
@@ -102,10 +111,11 @@ class JournalThreadCandidateServiceTest {
                 eq(FIXTURE_ENTRY_ID),
                 eq(""),
                 eq(""),
+                eq("Y"),
                 any(Pageable.class)
         )).thenReturn(List.of());
 
-        service.getCandidates(FIXTURE_ENTRY_ID, null, null, 100);
+        service.getCandidates(FIXTURE_ENTRY_ID, null, null, true, 100);
 
         final ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(repository).findCandidates(
@@ -113,6 +123,7 @@ class JournalThreadCandidateServiceTest {
                 eq(FIXTURE_ENTRY_ID),
                 eq(""),
                 eq(""),
+                eq("Y"),
                 pageableCaptor.capture()
         );
         assertEquals(20, pageableCaptor.getValue().getPageSize());

@@ -72,6 +72,22 @@ describe("journalThreadMembership store", () => {
     expect(store.optionsError).toBe("");
   });
 
+  it("완료 포함이 켜지면 includeResolved=true 로 후보 API를 조회한다", async () => {
+    mockedGet.mockResolvedValueOnce({ data: { rsltList: [] } });
+    const store = useJournalThreadMembershipStore();
+    store.optionIncludeResolved = true;
+
+    await store.fetchThreadOptions(FIXTURE_ENTRY_ID);
+
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/threads/candidates", {
+      params: {
+        entryId: FIXTURE_ENTRY_ID,
+        limit: 7,
+        includeResolved: true,
+      },
+    });
+  });
+
   it("늦게 끝난 이전 엔트리 응답이 현재 후보를 덮어쓰지 못한다", async () => {
     let resolveFirst!: (value: unknown) => void;
     let resolveSecond!: (value: unknown) => void;

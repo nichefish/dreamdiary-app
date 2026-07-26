@@ -4,7 +4,8 @@ import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import type { JournalEntryDto } from "@/features/journal/stores/journal";
+import type { JournalEntryDto, LifecycleCmpstn } from "@/features/journal/stores/journal";
+import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 
 // ---- 타입 정의 ----
 
@@ -42,6 +43,7 @@ export interface JournalThreadDto {
   firstEntryDate?: string;
   /** 활성 소속 엔트리 기준일 max (YYYY-MM-DD). 목록 enrich. */
   lastEntryDate?: string;
+  lifecycle?: LifecycleCmpstn;
   title?: string;
   content?: string;
   markdownContent?: string;
@@ -106,6 +108,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const filterKeyword = ref("");
   /** 카테고리 필터 */
   const filterCategory = ref("");
+  /** 라이프사이클 필터 (OPEN/PENDING/RESOLVED, 빈 값=전체) */
+  const filterLifecycleKey = ref("");
   /**
    * 소속 엔트리 태그 필터 (멀티, AND).
    * Spring 배열 바인딩을 위해 문자열 ID 를 유지하고 fetchList 에서 tagIds 반복 파라미터로 보낸다.
@@ -202,6 +206,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         params.set("searchKeyword", filterKeyword.value);
       }
       if (filterCategory.value) params.set("categoryCode", filterCategory.value);
+      if (filterLifecycleKey.value) params.set("lifecycleKey", filterLifecycleKey.value);
       // tagIds=1&tagIds=2 — Spring List<Integer> 바인딩 계약 (엔트리 검색과 동일)
       filterTagIds.value.forEach((tagId) => params.append("tagIds", tagId));
       const res = await axios.get("/api/journal/threads", { params });
@@ -284,6 +289,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   async function resetFilters(): Promise<void> {
     filterKeyword.value = "";
     filterCategory.value = "";
+    filterLifecycleKey.value = "";
     filterTagIds.value = [];
     filterTagLabelMap.value = {};
     filterTagCtgrMap.value = {};
@@ -545,6 +551,47 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   }
 
   /**
+   * 스레드 라이프사이클을 설정한다.
+   * 목록·상세 로컬 모델을 즉시 맞추고, 상세가 열려 있으면 상세를 재조회한다.
+   */
+  async function setLifecycle(id: number, lifecycleKey: string): Promise<boolean> {
+    const attachableStore = useAttachableModalStore();
+    try {
+      const result = await attachableStore.setLifecycle({
+        id,
+        contentType: "JOURNAL_THREAD",
+        lifecycleKey,
+      });
+      if (!result.rslt) {
+        void swalAjaxResult({
+          rslt: false,
+          message: result.message,
+          failureFallback: t("common.result.failure"),
+        });
+        return false;
+      }
+      const patchLifecycle = (thread: JournalThreadDto | null | undefined) => {
+        if (!thread || thread.id !== id) return;
+        thread.lifecycle = {
+          ...(thread.lifecycle ?? {}),
+          lifecycleKey,
+        };
+      };
+      threadList.value.forEach((thread) => patchLifecycle(thread));
+      patchLifecycle(detailModel.value);
+      if (detailOpen.value && detailModel.value?.id === id) {
+        const surface = detailSurface.value ?? "modal";
+        await loadDetail(id, surface);
+      }
+      return true;
+    } catch (e: unknown) {
+      console.error("[journalThread] setLifecycle failed", { id, lifecycleKey }, e);
+      void swalRequestError(e);
+      return false;
+    }
+  }
+
+  /**
    * 스레드 삭제.
    * DELETE /api/journal/threads/{id}
    * @param id - 스레드 ID
@@ -733,6 +780,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     error,
     filterKeyword,
     filterCategory,
+    filterLifecycleKey,
     filterTagIds,
     filterTagLabelMap,
     filterTagCtgrMap,
@@ -764,6 +812,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     openModifyFromDetail,
     closeRegist,
     submitRegist,
+    setLifecycle,
     deleteThread,
     // 상세 (모달/독립 페이지 공용)
     detailOpen,

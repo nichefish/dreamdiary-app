@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.entity.LifecycleEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.annotation.Resource;
@@ -51,6 +53,8 @@ class JournalThreadRepositoryTest {
     private JournalThreadEntryRepository journalThreadEntryRepository;
     @Resource
     private JournalThreadSpec journalThreadSpec;
+    @Resource
+    private TestEntityManager entityManager;
 
     private JournalThreadEntity journalThreadEntity;
 
@@ -155,7 +159,8 @@ class JournalThreadRepositoryTest {
         journalThreadEntryRepository.flush();
 
         final List<JournalThreadCandidateProjection> ranked = journalThreadRepository.findCandidates(
-                username, currentEntryId, "", "", PageRequest.of(0, 10));
+                username, currentEntryId, "", "", "N",
+                PageRequest.of(0, 10));
         assertEquals(
                 List.of("현재 소속 스레드", "최근 사용 스레드", "자주 사용한 스레드", "미사용 스레드"),
                 ranked.stream().map(JournalThreadCandidateProjection::getTitle).toList()
@@ -164,14 +169,16 @@ class JournalThreadRepositoryTest {
         assertEquals(2L, ranked.get(2).getMembershipCount().longValue());
 
         final List<JournalThreadCandidateProjection> titleFiltered = journalThreadRepository.findCandidates(
-                username, currentEntryId, "사용", "", PageRequest.of(0, 10));
+                username, currentEntryId, "사용", "", "N",
+                PageRequest.of(0, 10));
         assertEquals(
                 List.of("최근 사용 스레드", "자주 사용한 스레드", "미사용 스레드"),
                 titleFiltered.stream().map(JournalThreadCandidateProjection::getTitle).toList()
         );
 
         final List<JournalThreadCandidateProjection> categoryFiltered = journalThreadRepository.findCandidates(
-                username, currentEntryId, "", "CASE", PageRequest.of(0, 10));
+                username, currentEntryId, "", "CASE", "N",
+                PageRequest.of(0, 10));
         assertEquals(
                 List.of("현재 소속 스레드", "최근 사용 스레드", "미사용 스레드"),
                 categoryFiltered.stream().map(JournalThreadCandidateProjection::getTitle).toList()
@@ -196,6 +203,84 @@ class JournalThreadRepositoryTest {
         );
 
         assertEquals(List.of("이슈 추적 스레드"), result.stream().map(JournalThreadEntity::getTitle).toList());
+    }
+
+
+    /**
+     * 후보 API는 기본으로 RESOLVED 를 숨기고, includeResolved=Y 일 때만 포함한다.
+     * 라이프사이클 행이 없으면 OPEN 으로 취급한다.
+     */
+    @Test
+    void findCandidatesExcludesResolvedUnlessRequested() {
+        final String username = "lifecycle_candidate_user";
+        final int currentEntryId = 7101;
+        final JournalThreadEntity openThread = candidateThread(
+                "열린 스레드", "CASE", username, LocalDateTime.of(2026, 7, 1, 10, 0));
+        final JournalThreadEntity resolvedThread = candidateThread(
+                "완료 스레드", "CASE", username, LocalDateTime.of(2026, 7, 2, 10, 0));
+        journalThreadRepository.saveAll(List.of(openThread, resolvedThread));
+        journalThreadRepository.flush();
+
+        entityManager.persist(LifecycleEntity.builder()
+                .refId(resolvedThread.getId())
+                .refContentType("JOURNAL_THREAD")
+                .lifecycleKey("RESOLVED")
+                .build());
+        entityManager.flush();
+
+        final List<JournalThreadCandidateProjection> defaultCandidates = journalThreadRepository.findCandidates(
+                username, currentEntryId, "", "", "N",
+                PageRequest.of(0, 10));
+        assertEquals(List.of("열린 스레드"), defaultCandidates.stream().map(JournalThreadCandidateProjection::getTitle).toList());
+        assertEquals("OPEN", defaultCandidates.get(0).getLifecycleKey());
+
+        final List<JournalThreadCandidateProjection> withResolved = journalThreadRepository.findCandidates(
+                username, currentEntryId, "", "", "Y",
+                PageRequest.of(0, 10));
+        assertEquals(
+                List.of("완료 스레드", "열린 스레드"),
+                withResolved.stream().map(JournalThreadCandidateProjection::getTitle).toList()
+        );
+        assertEquals("RESOLVED", withResolved.get(0).getLifecycleKey());
+    }
+
+    /**
+     * 목록 Spec 의 lifecycleKey 필터. OPEN 은 행 없음을 포함한다.
+     */
+    @Test
+    void findAllWithSpecAppliesLifecycleKeyFilter() {
+        final JournalThreadEntity openThread = candidateThread(
+                "필터 열린 스레드", "CASE", TestConstant.TEST_AUDITOR, LocalDateTime.of(2026, 7, 1, 10, 0));
+        final JournalThreadEntity pendingThread = candidateThread(
+                "필터 보류 스레드", "CASE", TestConstant.TEST_AUDITOR, LocalDateTime.of(2026, 7, 2, 10, 0));
+        final JournalThreadEntity resolvedThread = candidateThread(
+                "필터 완료 스레드", "CASE", TestConstant.TEST_AUDITOR, LocalDateTime.of(2026, 7, 3, 10, 0));
+        journalThreadRepository.saveAll(List.of(openThread, pendingThread, resolvedThread));
+        journalThreadRepository.flush();
+
+        entityManager.persist(LifecycleEntity.builder()
+                .refId(pendingThread.getId())
+                .refContentType("JOURNAL_THREAD")
+                .lifecycleKey("PENDING")
+                .build());
+        entityManager.persist(LifecycleEntity.builder()
+                .refId(resolvedThread.getId())
+                .refContentType("JOURNAL_THREAD")
+                .lifecycleKey("RESOLVED")
+                .build());
+        entityManager.flush();
+
+        final Page<JournalThreadEntity> openOnly = journalThreadRepository.findAll(
+                journalThreadSpec.searchWith(Map.of("lifecycleKey", "OPEN")),
+                PageRequest.of(0, 10)
+        );
+        assertEquals(List.of("필터 열린 스레드"), openOnly.stream().map(JournalThreadEntity::getTitle).toList());
+
+        final Page<JournalThreadEntity> pendingOnly = journalThreadRepository.findAll(
+                journalThreadSpec.searchWith(Map.of("lifecycleKey", "PENDING")),
+                PageRequest.of(0, 10)
+        );
+        assertEquals(List.of("필터 보류 스레드"), pendingOnly.stream().map(JournalThreadEntity::getTitle).toList());
     }
 
     /** 후보 쿼리용 가상 스레드 픽스처를 만든다. */

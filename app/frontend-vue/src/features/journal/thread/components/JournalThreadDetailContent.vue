@@ -4,7 +4,52 @@
     <div class="mb-0">
       <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
         <span v-if="store.detailModel.categoryName" class="ctgr-span ctgr-gray">{{ store.detailModel.categoryName }}</span>
+        <span
+          v-if="detailLifecycleKey"
+          class="badge fs-8"
+          :class="detailLifecycleBadgeClass"
+        >{{ detailLifecycleLabel }}</span>
         <span class="fs-3 fw-bolder text-gray-900">{{ store.detailModel.title }}</span>
+        <span
+          v-if="membershipPeriodLabel"
+          class="text-muted fs-7"
+        >{{ membershipPeriodLabel }}</span>
+        <!--begin::상세 라이프사이클 설정-->
+        <div class="ms-auto">
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            data-kt-menu-trigger="click"
+            data-kt-menu-placement="bottom-end"
+          >
+            {{ t("common.lifecycle") }}
+            <i class="bi bi-chevron-down fs-9 ms-1"></i>
+          </button>
+          <div
+            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-175px py-3"
+            data-kt-menu="true"
+          >
+            <div v-for="lc in lifecycleOptions" :key="'thread-dtl-lc-' + lc.key" class="menu-item px-3">
+              <div class="menu-content px-3">
+                <label class="form-check form-check-custom form-check-solid cursor-pointer">
+                  <input
+                    class="form-check-input w-18px h-18px cursor-pointer"
+                    type="radio"
+                    name="thread-detail-lifecycle"
+                    :value="lc.key"
+                    :checked="detailLifecycleKey === lc.key"
+                    @click="onSetLifecycle(lc.key)"
+                  />
+                  <span
+                    class="form-check-label fs-7"
+                    :class="detailLifecycleKey === lc.key ? lc.activeClass : 'text-muted'"
+                  >{{ lc.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::상세 라이프사이클 설정-->
       </div>
       <div class="d-flex align-items-center flex-wrap gap-3 text-muted fs-7">
         <span v-if="store.detailModel.createdByNm"><i class="bi bi-person pe-1"></i>{{ store.detailModel.createdByNm }}</span>
@@ -113,6 +158,7 @@ import JournalEntryItem from "@/features/journal/entry/components/JournalEntryIt
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { formatThreadMembershipPeriod } from "@/features/journal/utils/threadMembershipPeriod";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
@@ -165,9 +211,51 @@ watch(() => store.detailEntries, () => {
   void reinitMetronicAfterDom();
 }, { immediate: true });
 
+watch(() => store.detailModel?.id, () => {
+  void reinitMetronicAfterDom();
+});
+
 const hasDetailTags = computed(() =>
   Array.isArray(store.detailModel?.tag?.list) && store.detailModel!.tag!.list!.length > 0
 );
+
+const lifecycleOptions = computed(() => [
+  { key: "OPEN", label: t("journal.entry.lifecycle.open"), activeClass: "text-gray-800" },
+  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-primary" },
+  { key: "RESOLVED", label: t("status.completed"), activeClass: "text-success" },
+]);
+
+const detailLifecycleKey = computed(() => store.detailModel?.lifecycle?.lifecycleKey || "OPEN");
+const detailLifecycleLabel = computed(() => {
+  const key = detailLifecycleKey.value;
+  if (key === "PENDING") return t("lifecycle.pending");
+  if (key === "RESOLVED") return t("status.completed");
+  return t("journal.entry.lifecycle.open");
+});
+const detailLifecycleBadgeClass = computed(() => {
+  const key = detailLifecycleKey.value;
+  if (key === "PENDING") return "badge-light-primary";
+  if (key === "RESOLVED") return "badge-light-success";
+  return "badge-light";
+});
+
+async function onSetLifecycle(lifecycleKey: string): Promise<void> {
+  const id = store.detailModel?.id;
+  if (!id) return;
+  await store.setLifecycle(id, lifecycleKey);
+}
+
+/**
+ * 소속 엔트리 기준일 기간. 목록과 동일 포맷.
+ * 모달·독립 상세가 이 컴포넌트를 공유하므로 한 곳에서 표시한다.
+ */
+const membershipPeriodLabel = computed(() => {
+  const model = store.detailModel;
+  if (!model) return "";
+  return formatThreadMembershipPeriod(model, (first, last) =>
+    t("journal.thread.list.membership-period").replace("{0}", first).replace("{1}", last),
+  );
+});
 
 const commentList = computed(() => store.detailModel?.comment?.list ?? []);
 

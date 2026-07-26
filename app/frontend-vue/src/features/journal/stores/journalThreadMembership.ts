@@ -19,6 +19,8 @@ export interface ThreadOption {
   id: number;
   title?: string;
   categoryCode?: string;
+  /** OPEN/PENDING/RESOLVED. 미설정은 서버가 OPEN 으로 내린다. */
+  lifecycleKey?: string;
   membershipCount: number;
   lastMembershipAt?: string;
   member: boolean;
@@ -51,6 +53,8 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   const optionKeyword = ref("");
   /** 후보 분류 필터 */
   const optionCategory = ref("");
+  /** 완료(RESOLVED) 스레드 후보 포함 여부. 기본 false. */
+  const optionIncludeResolved = ref(false);
   /** 현재 locale의 스레드 분류 선택지 */
   const categoryOptions = ref<ThreadOptionCategory[]>([]);
   const categoriesLoading = ref(false);
@@ -89,6 +93,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
           limit: OPTION_LIMIT,
           ...(keyword ? { keyword } : {}),
           ...(categoryCode ? { categoryCode } : {}),
+          ...(optionIncludeResolved.value ? { includeResolved: true } : {}),
         },
       });
       if (requestSequence !== candidateRequestSequence) {
@@ -114,6 +119,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
         entryId,
         keyword: optionKeyword.value.trim(),
         categoryCode: optionCategory.value,
+        includeResolved: optionIncludeResolved.value,
       }, e);
       optionsError.value = t("journal.entry.thread.candidates.load.failure");
       return false;
@@ -178,6 +184,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
       candidateEntryId.value = entryId;
       optionKeyword.value = "";
       optionCategory.value = "";
+      optionIncludeResolved.value = false;
       optionsError.value = "";
       threadOptions.value = [];
     }
@@ -276,6 +283,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
     candidateEntryId,
     optionKeyword,
     optionCategory,
+    optionIncludeResolved,
     categoryOptions,
     categoriesLoading,
     categoryError,

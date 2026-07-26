@@ -294,6 +294,18 @@
                   <div v-if="membershipStore.categoryError" class="text-danger fs-9 mt-1">
                     {{ membershipStore.categoryError }}
                   </div>
+                  <label class="form-check form-check-custom form-check-sm form-check-solid mt-2 cursor-pointer">
+                    <input
+                      v-model="membershipStore.optionIncludeResolved"
+                      class="form-check-input"
+                      type="checkbox"
+                      data-kt-menu-dismiss="false"
+                      @change="refreshThreadCandidates"
+                    />
+                    <span class="form-check-label fs-8 text-gray-700">
+                      {{ t("journal.entry.thread.candidates.include-resolved") }}
+                    </span>
+                  </label>
                 </div>
               </div>
               <!--end::스레드 후보 검색·분류-->
@@ -330,8 +342,15 @@
                       <span class="d-block text-truncate">
                         {{ opt.title || t('journal.entry.thread.untitled') }}
                       </span>
-                      <span v-if="opt.categoryCode" class="d-block text-muted fs-9">
-                        {{ threadCategoryName(opt.categoryCode) }}
+                      <span class="d-block text-muted fs-9">
+                        <span v-if="opt.categoryCode">{{ threadCategoryName(opt.categoryCode) }}</span>
+                        <span
+                          v-if="opt.lifecycleKey && opt.lifecycleKey !== 'OPEN'"
+                          :class="[
+                            opt.categoryCode ? 'ms-1' : '',
+                            opt.lifecycleKey === 'PENDING' ? 'text-primary' : 'text-success',
+                          ]"
+                        >{{ threadLifecycleLabel(opt.lifecycleKey) }}</span>
                       </span>
                     </span>
                     <i v-if="opt.member" class="bi bi-check-lg fs-8 text-success"></i>
@@ -831,6 +850,14 @@ function refreshThreadCandidates(): void {
   const entryId = props.entry.id;
   if (!entryId || membershipStore.candidateEntryId !== entryId) return;
   void membershipStore.fetchThreadOptions(entryId);
+}
+
+
+/** 후보 스레드 라이프사이클 표시 라벨. */
+function threadLifecycleLabel(lifecycleKey: string): string {
+  if (lifecycleKey === "PENDING") return t("lifecycle.pending");
+  if (lifecycleKey === "RESOLVED") return t("status.completed");
+  return t("journal.entry.lifecycle.open");
 }
 
 /** 후보 분류 코드를 현재 locale의 표시명으로 변환한다. */

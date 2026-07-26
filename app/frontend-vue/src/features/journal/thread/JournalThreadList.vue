@@ -17,6 +17,16 @@
               {{ category.codeName }}
             </option>
           </select>
+          <select
+            v-model="store.filterLifecycleKey"
+            class="form-select form-select-sm form-select-solid w-auto flex-shrink-0"
+            @change="search"
+          >
+            <option value="">{{ t("journal.thread.filter.all-lifecycles") }}</option>
+            <option value="OPEN">{{ t("journal.entry.lifecycle.open") }}</option>
+            <option value="PENDING">{{ t("lifecycle.pending") }}</option>
+            <option value="RESOLVED">{{ t("status.completed") }}</option>
+          </select>
           <input
             v-model.trim="store.filterKeyword"
             type="search"
@@ -133,6 +143,11 @@
               <td class="text-center text-gray-500 fs-7 hidden-table">{{ thread.rnum }}</td>
               <td class="ps-3">
                 <span v-if="thread.categoryName" class="badge badge-light-primary me-2 fs-9">{{ thread.categoryName }}</span>
+                <span
+                  v-if="lifecycleKeyOf(thread)"
+                  class="badge me-2 fs-9"
+                  :class="lifecycleBadgeClass(lifecycleKeyOf(thread))"
+                >{{ lifecycleLabel(lifecycleKeyOf(thread)) }}</span>
                 <span class="fs-6">{{ thread.title }}</span>
                 <span
                   v-if="membershipCountOf(thread) > 0"
@@ -194,6 +209,35 @@
                       </div>
                     </div>
                     <div class="separator my-2"></div>
+                    <!--begin::라이프사이클 서브메뉴-->
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start">
+                      <a href="#" class="menu-link px-3" @click.prevent>
+                        <span class="menu-title">{{ t("common.lifecycle") }}</span>
+                        <span class="menu-arrow"></span>
+                      </a>
+                      <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                        <div v-for="lc in lifecycleOptions" :key="'thread-lc-' + thread.id + '-' + lc.key" class="menu-item px-3">
+                          <div class="menu-content px-3">
+                            <label class="form-check form-check-custom form-check-solid cursor-pointer">
+                              <input
+                                class="form-check-input w-18px h-18px cursor-pointer"
+                                type="radio"
+                                :name="'thread-lc-' + thread.id"
+                                :value="lc.key"
+                                :checked="lifecycleKeyOf(thread) === lc.key"
+                                @click="onSetLifecycle(thread.id!, lc.key)"
+                              />
+                              <span
+                                class="form-check-label fs-7"
+                                :class="lifecycleKeyOf(thread) === lc.key ? lc.activeClass : 'text-muted'"
+                              >{{ lc.label }}</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--end::라이프사이클 서브메뉴-->
+                    <div class="separator my-2"></div>
                     <div class="menu-item px-3 my-1">
                       <div class="menu-link flex-stack px-3 text-danger" @click="store.deleteThread(thread.id!)">
                         {{ t("common.delete") }}
@@ -239,6 +283,7 @@ import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import type { JournalThreadDto } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { formatThreadMembershipPeriod } from "@/features/journal/utils/threadMembershipPeriod";
 import { swalAlert } from "@/shared/utils/swal";
 import { isMetronicMenuEventTarget, reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 
@@ -302,6 +347,34 @@ function onThreadRowClick(event: MouseEvent, id: number): void {
   void router.push({ name: "thread-detail", params: { id } });
 }
 
+
+const lifecycleOptions = computed(() => [
+  { key: "OPEN", label: t("journal.entry.lifecycle.open"), activeClass: "text-gray-800" },
+  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-primary" },
+  { key: "RESOLVED", label: t("status.completed"), activeClass: "text-success" },
+]);
+
+/** 스레드 라이프사이클 키. 없으면 OPEN. */
+function lifecycleKeyOf(thread: JournalThreadDto): string {
+  return thread.lifecycle?.lifecycleKey || "OPEN";
+}
+
+function lifecycleLabel(key: string): string {
+  if (key === "PENDING") return t("lifecycle.pending");
+  if (key === "RESOLVED") return t("status.completed");
+  return t("journal.entry.lifecycle.open");
+}
+
+function lifecycleBadgeClass(key: string): string {
+  if (key === "PENDING") return "badge-light-primary";
+  if (key === "RESOLVED") return "badge-light-success";
+  return "badge-light";
+}
+
+async function onSetLifecycle(id: number, lifecycleKey: string): Promise<void> {
+  await store.setLifecycle(id, lifecycleKey);
+}
+
 function openModify(id: number): void {
   void router.push({ name: "thread-edit", params: { id } });
 }
@@ -322,25 +395,11 @@ function formatMembershipCount(count: number): string {
   return t("journal.thread.period-summary.entry-count").replace("{0}", String(count));
 }
 
-/**
- * 소속 엔트리 기준일 기간 라벨.
- * 같은 날이면 단일 일자, 범위면 `{0} ~ {1}`. 유효 일자가 없으면 빈 문자열(숨김).
- */
+/** 소속 엔트리 기준일 기간 라벨 (목록·상세 공통 유틸). */
 function membershipPeriodOf(thread: JournalThreadDto): string {
-  const first = normalizeThreadEntryDate(thread.firstEntryDate);
-  const last = normalizeThreadEntryDate(thread.lastEntryDate);
-  if (!first || !last) return "";
-  if (first === last) return first;
-  return t("journal.thread.list.membership-period")
-    .replace("{0}", first)
-    .replace("{1}", last);
-}
-
-/** 목록 API 기준일을 YYYY-MM-DD 로 정규화한다. */
-function normalizeThreadEntryDate(value?: string | null): string {
-  if (!value) return "";
-  const trimmed = value.trim();
-  return trimmed.length >= 10 ? trimmed.slice(0, 10) : trimmed;
+  return formatThreadMembershipPeriod(thread, (first, last) =>
+    t("journal.thread.list.membership-period").replace("{0}", first).replace("{1}", last),
+  );
 }
 
 function openCommentList(thread: JournalThreadDto): void {

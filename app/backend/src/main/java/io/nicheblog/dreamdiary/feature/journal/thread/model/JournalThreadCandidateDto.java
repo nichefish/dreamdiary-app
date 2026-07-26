@@ -23,6 +23,14 @@ public class JournalThreadCandidateDto {
 
     private String categoryCode;
 
+    /**
+     * 스레드 라이프사이클 키 ({@code OPEN}/{@code PENDING}/{@code RESOLVED}).
+     * <p>
+     * 미설정 행은 서버가 {@code OPEN} 으로 내려준다.
+     * </p>
+     */
+    private String lifecycleKey;
+
     /** 현재 살아있는 소속 수. 후보 우선순위의 사용 빈도 근거다. */
     private Long membershipCount;
 

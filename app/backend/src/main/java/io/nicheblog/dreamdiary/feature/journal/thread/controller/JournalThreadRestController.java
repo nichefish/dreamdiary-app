@@ -69,10 +69,14 @@ public class JournalThreadRestController
      * <p>
      * 현재 소속 여부, 최근 소속 추가 시각, 활성 소속 수와 스레드 수정 시각을
      * 서버에서 집계해 결정적인 우선순위로 반환한다.
+     * 기본은 완료 스레드를 숨기고, {@code includeResolved=true} 일 때만 포함한다.
+     * 각 후보에 {@code lifecycleKey} 를 실어 보낸다.
+     * </p>
      *
      * @param entryId 후보를 요청한 엔트리 식별자
      * @param keyword 제목 검색어
      * @param categoryCode 분류 코드
+     * @param includeResolved 완료({@code RESOLVED}) 스레드 포함 여부
      * @param limit 최대 후보 수 (서버에서 1~20으로 제한)
      * @return {@link ResponseEntity} -- 경량 스레드 후보 목록
      */
@@ -83,11 +87,12 @@ public class JournalThreadRestController
             final @RequestParam("entryId") Integer entryId,
             final @RequestParam(value = "keyword", required = false) String keyword,
             final @RequestParam(value = "categoryCode", required = false) String categoryCode,
+            final @RequestParam(value = "includeResolved", defaultValue = "false") Boolean includeResolved,
             final @RequestParam(value = "limit", defaultValue = "7") Integer limit
     ) throws Exception {
 
         final List<JournalThreadCandidateDto> resultList =
-                journalThreadService.getCandidates(entryId, keyword, categoryCode, limit);
+                journalThreadService.getCandidates(entryId, keyword, categoryCode, includeResolved, limit);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 

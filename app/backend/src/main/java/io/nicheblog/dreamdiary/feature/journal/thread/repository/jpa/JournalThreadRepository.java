@@ -28,17 +28,29 @@ public interface JournalThreadRepository
      * 현재 엔트리가 속한 스레드를 먼저 두고, 최근 소속 추가 시각, 활성 소속 수,
      * 스레드 수정·생성 시각 순으로 정렬한다. 스레드와 소속 모두 현재 사용자 범위로 제한한다.
      * 소프트 삭제된 소속은 사용 빈도와 최근 사용 집계에서 제외한다.
+     * 기본({@code includeResolved=N})은 완료({@code RESOLVED}) 스레드를 제외하고,
+     * 라이프사이클 행이 없으면 {@code OPEN} 으로 본다.
+     * </p>
      *
      * @param createdBy 현재 사용자 계정명
      * @param entryId 후보를 요청한 엔트리 ID
      * @param keyword 제목 검색어 (빈 문자열이면 전체)
      * @param categoryCode 분류 코드 (빈 문자열이면 전체)
+     * @param includeResolved {@code Y}이면 완료 스레드 포함, 그 외는 제외
      * @param pageable 최대 후보 수
      * @return 우선순위가 적용된 후보 집계 목록
      */
     @Query(value = "SELECT jt.id AS id, " +
             "       jt.title AS title, " +
             "       jt.category_code AS categoryCode, " +
+            "       COALESCE(( " +
+            "           SELECT lc.lifecycle_key " +
+            "           FROM lifecycle lc " +
+            "           WHERE lc.ref_id = jt.id " +
+            "             AND lc.ref_content_type = 'JOURNAL_THREAD' " +
+            "             AND lc.deleted_at IS NULL " +
+            "           LIMIT 1 " +
+            "       ), 'OPEN') AS lifecycleKey, " +
             "       COUNT(jte.id) AS membershipCount, " +
             "       MAX(jte.created_at) AS lastMembershipAt, " +
             "       MAX(CASE WHEN jte.entry_id = :entryId THEN 1 ELSE 0 END) AS currentEntryMembershipCount " +
@@ -51,6 +63,14 @@ public interface JournalThreadRepository
             "  AND jt.deleted_at IS NULL " +
             "  AND (:keyword = '' OR LOWER(COALESCE(jt.title, '')) LIKE CONCAT('%', LOWER(:keyword), '%')) " +
             "  AND (:categoryCode = '' OR jt.category_code = :categoryCode) " +
+            "  AND (:includeResolved = 'Y' OR COALESCE(( " +
+            "           SELECT lc.lifecycle_key " +
+            "           FROM lifecycle lc " +
+            "           WHERE lc.ref_id = jt.id " +
+            "             AND lc.ref_content_type = 'JOURNAL_THREAD' " +
+            "             AND lc.deleted_at IS NULL " +
+            "           LIMIT 1 " +
+            "       ), 'OPEN') <> 'RESOLVED') " +
             "GROUP BY jt.id, jt.title, jt.category_code, jt.created_at, jt.updated_at " +
             "ORDER BY MAX(CASE WHEN jte.entry_id = :entryId THEN 1 ELSE 0 END) DESC, " +
             "         CASE WHEN MAX(jte.created_at) IS NULL THEN 1 ELSE 0 END ASC, " +
@@ -64,6 +84,7 @@ public interface JournalThreadRepository
             final @Param("entryId") Integer entryId,
             final @Param("keyword") String keyword,
             final @Param("categoryCode") String categoryCode,
+            final @Param("includeResolved") String includeResolved,
             final Pageable pageable
     );
 }
