@@ -1,0 +1,11 @@
+/* nprogress — Metronic primary 톤에 맞춤. 레이아웃/컴포넌트 DOM 은 변경하지 않는다. */
+#nprogress .bar {
+  background: var(--bs-primary, #009ef7);
+  height: 2px;
+}
+
+#nprogress .peg {
+  box-shadow:
+    0 0 10px var(--bs-primary, #009ef7),
+    0 0 5px var(--bs-primary, #009ef7);
+}

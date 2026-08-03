@@ -7,7 +7,7 @@ import { isAuthExpiredError } from "@/shared/utils/authError";
  */
 export async function assertAuthenticatedBeforeModal(): Promise<boolean> {
   try {
-    await axios.get("/api/session/ping", { params: { _: Date.now() } });
+    await axios.get("/api/session/ping", { params: { _: Date.now() }, skipLoadingBar: true });
     return true;
   } catch (e: unknown) {
     if (isAuthExpiredError(e)) return false;

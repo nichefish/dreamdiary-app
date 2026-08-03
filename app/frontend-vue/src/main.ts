@@ -14,6 +14,7 @@ import {
   clearRuntimePending,
   reportRuntimeError,
 } from "@/shared/utils/appRuntimeStatus";
+import { installAjaxLoadingBar } from "@/shared/http/ajaxLoadingBar";
 
 /**
  * 전역 Axios 인터셉터: 401(세션 만료/비로그인) 응답 시 로그인 만료를 명확히 안내한다.
@@ -24,6 +25,9 @@ import {
 function isAuthApiUrl(url: string): boolean {
   return url.includes("/api/auth/");
 }
+
+/** 레거시 blockUI 대체: axios in-flight 동안 상단 nprogress 로딩바. */
+installAjaxLoadingBar(axios);
 
 axios.interceptors.response.use(
   (response) => response,
