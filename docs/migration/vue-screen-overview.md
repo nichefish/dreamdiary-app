@@ -23,12 +23,14 @@
 | `/thread/new` · `/thread/:id` · `/thread/:id/edit` | `thread-*` | `JournalThreadList.vue` | ThreadLayout | ✓ |
 | `/schedule` | `schedule-calendar` | `ScheduleCalendar.vue` | Default | ✓ |
 | `/board/:boardKey` | `board-post-list` | `BoardPostList.vue` | BoardPostLayout | ✓ |
-| `/my` | `user-my` | `UserMyPage.vue` | Default | ✓ |
+| `/my` | — | redirect → `/my/profile` | Default | — |
+| `/my/profile` · `/my/security` · `/my/prefixes` | `user-my-profile` · `user-my-security` · `user-my-prefixes` | `UserMyPage.vue` + `UserMy{Profile,Security,Prefixes}Tab.vue` | Default | ✓ |
 | `/admin` | `admin-page` | `AdminPage.vue` | Default | ✓ |
 | `/admin/auth-policy` | `auth-policy` | `AuthPolicyPage.vue` | Default | ✓ |
 | `/admin/board-group` | `board-group-admin` | `BoardGroupAdminPage.vue` | Default | ✓ |
 | `/admin/code` | `code-admin` | `CodeAdminPage.vue` | Default | ✓ |
 | `/admin/menu` | `menu-admin` | `MenuAdminPage.vue` | Default | ✓ |
+| `/admin/user-groups` | `user-group-admin` | `UserGroupAdminPage.vue` | Default | ✓ |
 | `/admin/users` | `user-admin` | `UserAdminPage.vue` | Default | ✓ |
 | `/admin/log` | `log-list` | `LogAdminPage.vue` | Default | ✓ |
 | `/admin/log/stats-user` | `log-stats-user` | `LogAdminPage.vue` | Default | ✓ 사용자별/비로그인 통계 |
@@ -129,7 +131,9 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | `journalModal.ts` | 저널 모달 열기/닫기 (일자/챕터/엔트리/투두 등) |
 | `journalAside.ts` | 어사이드 표시 제어 (`visible`, `show/hide`) |
 | `journalAnnual.ts` | 연간 결산 목록/상세 |
+| `journalAnnualAside.ts` | 결산 목록/상세 공통 FILTER 어사이드 표시 제어 (`visible`, `show/hide`) |
 | `journalThread.ts` | 스레드 목록/상세 |
+| `journalThreadMembership.ts` | 저널 엔트리↔스레드 소속 지정 액션 (FLOW 대체 축) |
 | `tagContextMenu.ts` | 태그 클릭 컨텍스트 메뉴 위치·상태 |
 | `metaContextMenu.ts` | 메타 클릭 컨텍스트 메뉴 위치·상태 |
 | `attachableModal.ts` | 댓글/이력/파일/태그 공통 모달 |
@@ -137,13 +141,17 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | `schedule.ts` | 일정 캘린더 |
 | `scheduleAside.ts` | 일정 aside 표시 제어 (`visible`, `show/hide`) |
 | `userMy.ts` | 내 정보 |
+| `userPrefixes.ts` | 내 설정 사용자 소유 말머리 관리 |
+| `personalPrefixOptions.ts` | 활성 개인 Prefix 선택지 콘텐츠 타입별 세션 캐시 |
 | `userSignup.ts` | 계정 신청 승인 |
 | `adminPage.ts` | 사이트 관리 |
 | `authPolicy.ts` | 인증 정책 |
 | `boardGroup.ts` | 게시판 그룹 관리 |
+| `boardPrefixes.ts` | 게시판 그룹 관리 — boardKey별 GLOBAL Scope 말머리 목록 |
 | `codeAdmin.ts` | 코드 관리 |
 | `menuAdmin.ts` | 메뉴 관리 |
 | `userAdmin.ts` | 계정 관리 |
+| `userGroup.ts` | 사용자 그룹·permission 관리 |
 | `logAdmin.ts` | 로그 관리 |
 | `chat.ts` | AI 채팅 (라우트 없음, `AppChat.vue`) |
 | `locale.ts` | i18n locale·메시지 카탈로그 (`t()`) |
