@@ -89,7 +89,7 @@ class JournalAnnualRepositoryTest {
         // When::
         JournalAnnualEntity toModify = journalAnnualRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setContent("modified");
-        JournalAnnualEntity modified = journalAnnualRepository.save(toModify);
+        JournalAnnualEntity modified = journalAnnualRepository.saveAndFlush(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
@@ -121,4 +121,3 @@ class JournalAnnualRepositoryTest {
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");
     }
 }
-

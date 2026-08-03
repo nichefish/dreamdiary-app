@@ -83,7 +83,7 @@ class AuthPolicyRepositoryTest {
         // When::
         AuthPolicyEntity toModify = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setLoginAttemptLimit(25);
-        AuthPolicyEntity modified = authPolicyRepository.save(toModify);
+        AuthPolicyEntity modified = authPolicyRepository.saveAndFlush(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");

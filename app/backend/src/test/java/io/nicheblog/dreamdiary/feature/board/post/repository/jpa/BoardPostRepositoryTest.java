@@ -94,7 +94,7 @@ class BoardPostRepositoryTest {
         final BoardPostEntity toModify = boardPostRepository.findById(key)
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setContent("modified");
-        final BoardPostEntity modified = boardPostRepository.save(toModify);
+        final BoardPostEntity modified = boardPostRepository.saveAndFlush(toModify);
 
         // Then::
         assertNotNull(modified);

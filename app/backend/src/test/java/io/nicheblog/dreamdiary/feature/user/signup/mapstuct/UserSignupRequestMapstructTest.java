@@ -102,7 +102,7 @@ class UserSignupRequestMapstructTest {
         UserProfileEntity userProfileEntity = entity.getProfile();
         assertNotNull(userProfileEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
         // 날짜 변환 체크
-        assertEquals(DateUtils.asDate("2000-01-01"), userProfileEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asLocalDate("2000-01-01"), userProfileEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**
@@ -122,8 +122,8 @@ class UserSignupRequestMapstructTest {
         UserEmplymEntity userEmplymEntity = entity.getEmplym();
         assertNotNull(userEmplymEntity, "변환된 사용자 직원정보 Entity는 null일 수 없습니다.");
         // 날짜 변환 체크
-        assertEquals(DateUtils.asDate("2000-01-01"), userEmplymEntity.getEcnyDt(), "사용자 직원정보 입사일 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals(DateUtils.asDate("2000-01-01"), userEmplymEntity.getRetireDt(), "사용자 직원정보 퇴사일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asLocalDate("2000-01-01"), userEmplymEntity.getEcnyDt(), "사용자 직원정보 입사일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asLocalDateTime("2000-01-01"), userEmplymEntity.getRetireDt(), "사용자 직원정보 퇴사일 정보가 제대로 매핑되지 않았습니다.");
         // 이메일 변환 로직
         assertEquals(userEmplymDto.getEmplymEmailId() + "@" + userEmplymDto.getEmplymEmailDomain(), userEmplymEntity.getEmplymEmail(), "이메일이 올바르게 매핑되지 않았습니다.");
     }

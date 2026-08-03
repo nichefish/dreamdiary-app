@@ -1,21 +1,15 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +17,6 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mockStatic;
 
 /**
  * JournalDayServiceTest
@@ -38,14 +31,11 @@ import static org.mockito.Mockito.mockStatic;
 @ActiveProfiles("test")
 @Import(TestAuditConfig.class)
 @Transactional
+@WithMockUser(username = TestConstant.TEST_AUDITOR)
 class JournalDayServiceTest {
 
     @Resource
     private JournalDayService journalDayService;
-
-    @MockBean
-    @SuppressWarnings("unused")
-    private AuthUtils authUtils;
 
     private JournalDayDto journalDay;
 
@@ -57,11 +47,7 @@ class JournalDayServiceTest {
         // 공통적으로 사용할 JournalDayDto 초기화
         journalDay = JournalDayDtoTestFactory.createWithJournalDt("2000-01-01");
 
-        // AuthUtils Mock
-        try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
-            mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
-            mockedStatic.when(AuthUtils::getLoginUsername).thenReturn(TestConstant.TEST_AUDITOR);
-        }
+        // 인증 사용자는 @WithMockUser가 테스트마다 설정한다.
     }
 
     /**
@@ -138,24 +124,14 @@ class JournalDayServiceTest {
     @Test
     void regist_duplicateJournalDate_rejected() throws Exception {
         // Given::
-        final UserDetails user = User.withUsername(TestConstant.TEST_AUDITOR)
-                .password("password")
-                .roles("USER")
-                .build();
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
+        journalDayService.regist(journalDay);
+        final JournalDayDto duplicate = JournalDayDtoTestFactory.createWithJournalDt("2000-01-01");
 
-        try {
-            journalDayService.regist(journalDay);
-            final JournalDayDto duplicate = JournalDayDtoTestFactory.createWithJournalDt("2000-01-01");
-
-            // When & Then::
-            final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                    () -> journalDayService.regist(duplicate),
-                    "같은 사용자와 같은 일자의 저널 일자 중복 등록이 차단되지 않았습니다."
-            );
-            assertEquals("msg.journal.day.duplicate", exception.getMessage());
-        } finally {
-            SecurityContextHolder.clearContext();
-        }
+        // When & Then::
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> journalDayService.regist(duplicate),
+                "같은 사용자와 같은 일자의 저널 일자 중복 등록이 차단되지 않았습니다."
+        );
+        assertEquals("journal.day.duplicate", exception.getMessage());
     }
 }

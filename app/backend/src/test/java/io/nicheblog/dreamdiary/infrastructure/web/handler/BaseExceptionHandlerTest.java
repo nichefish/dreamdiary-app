@@ -86,7 +86,7 @@ class BaseExceptionHandlerTest {
 
         try (MockedStatic<MessageUtils> messages = mockStatic(MessageUtils.class)) {
             messages.when(() -> MessageUtils.getExceptionMsg(exception)).thenReturn("database detail");
-            messages.when(() -> MessageUtils.getMessage("msg.rslt.exception")).thenReturn("safe server error");
+            messages.when(() -> MessageUtils.getMessage("common.result.exception")).thenReturn("safe server error");
 
             assertAjaxResponse(
                     handler.generalException(exception, request),

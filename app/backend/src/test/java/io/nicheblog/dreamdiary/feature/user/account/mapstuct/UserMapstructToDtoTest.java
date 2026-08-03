@@ -133,6 +133,7 @@ class UserMapstructToDtoTest {
         final UserAllowedIpEntity aa = UserAllowedIpEntityTestFactory.create("1.1.1.1");
         final UserAllowedIpEntity bb = UserAllowedIpEntityTestFactory.create("2.2.2.2");
         userEntity.setAllowedIpList(List.of(aa, bb));
+        userEntity.setAllowedIpStrList(List.of("1.1.1.1", "2.2.2.2"));
 
         // When::
         final UserDto userDto = userMapstruct.toDto(userEntity);
@@ -145,7 +146,7 @@ class UserMapstructToDtoTest {
         assertEquals(2, userDto.getAllowedIpList().size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
         assertEquals("1.1.1.1", userDto.getAllowedIpList().get(0).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
         assertEquals("2.2.2.2", userDto.getAllowedIpList().get(1).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals("1.1.1.1, 2.2.2.2", userDto.getAllowedIpListStr(), "접속 가능 IP 목록 문자열이 제대로 매핑되지 않았습니다.");
+        assertEquals("1.1.1.1,2.2.2.2", userDto.getAllowedIpListStr(), "접속 가능 IP 목록 문자열이 제대로 매핑되지 않았습니다.");
     }
 
     /**

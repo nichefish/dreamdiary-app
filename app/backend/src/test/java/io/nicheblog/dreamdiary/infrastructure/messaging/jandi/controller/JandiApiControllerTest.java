@@ -5,13 +5,19 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.type.JandiTopic;
-import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImplTest;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -27,16 +33,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author nichefish
  */
-@WebMvcTest(JandiApiController.class)
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 @Log4j2
-public class JandiApiControllerTest
-        extends BaseControllerImplTest {
+public class JandiApiControllerTest {
 
-    // Mock Bean은 기존 Bean의 껍데기만 가져오고 내부 구현은 사용자에게 위임한 형태이다.
-    // Mock을 사용한다면 내부 구현도 알아야 하고, 테스트 코드를 작성하며 테스트의 성공을 의도할 수 있기 때문에 완벽한 테스트라 보기 힘들다.
-    @MockBean
+    private MockMvc mockMvc;
+
+    @Mock
     private JandiApiService jandiApiService;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @InjectMocks
+    private JandiApiController jandiApiController;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(jandiApiController, "request", request);
+        mockMvc = MockMvcBuilders.standaloneSetup(jandiApiController).build();
+    }
 
     /**
      * JANDI:: 메세지 송신 검증

@@ -1,13 +1,20 @@
 package io.nicheblog.dreamdiary.feature.main.controller;
 
+import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
+import io.nicheblog.dreamdiary.auth.security.handler.SecurityErrorResponseWriter;
+import io.nicheblog.dreamdiary.auth.security.matcher.PublicApiRequestMatcher;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfoTestFactory;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.feature.admin.web.controller.MainPageController;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.infrastructure.web.config.WebMvcTestSliceSupportConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author nichefish
  */
 @WebMvcTest(MainPageController.class)
+@Import(WebMvcTestSliceSupportConfig.class)
 @ActiveProfiles("test")
 @AutoConfigureRestDocs(outputDir = "build/snippets")
 public class MainPageControllerTest {
@@ -33,11 +41,21 @@ public class MainPageControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    private AuthSessionPolicyService authSessionPolicyService;
+
+    @MockBean
+    private SecurityErrorResponseWriter securityErrorResponseWriter;
+
+    @MockBean
+    private PublicApiRequestMatcher publicApiRequestMatcher;
+
     /**
      * 메인 화면 조회 Test
-     *
-     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재를 검증했다 (FreeMarker 렌더 시절).
-     * 변경 후: 컨트롤러가 저널 주간 화면(Vue SPA)으로 리다이렉트만 반환하므로 리다이렉트 경로를 검증한다.
+     * 저널 주간 화면으로 이동하는 리다이렉트 경로를 검증한다.
      */
     @Test
     @WithMockUser
@@ -54,9 +72,7 @@ public class MainPageControllerTest {
 
     /**
      * 관리자 메인 화면 조회 Test
-     *
-     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재를 검증했다 (FreeMarker 렌더 시절).
-     * 변경 후: 컨트롤러가 사이트 관리 화면으로 리다이렉트만 반환하므로 리다이렉트 경로를 검증한다.
+     * 사이트 관리 화면으로 이동하는 리다이렉트 경로를 검증한다.
      */
     @Test
     @WithMockUser

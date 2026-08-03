@@ -187,6 +187,7 @@ app:
 
     journal:
         embedding:
+            cache-on-startup: true
             sync-on-startup: true
             worker:
                 batch-size: 20

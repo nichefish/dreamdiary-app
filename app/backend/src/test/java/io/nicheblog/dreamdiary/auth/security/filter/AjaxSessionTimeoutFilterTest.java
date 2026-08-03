@@ -43,7 +43,7 @@ class AjaxSessionTimeoutFilterTest {
         doThrow(exception).when(chain).doFilter(request, response);
 
         try (MockedStatic<MessageUtils> messages = mockStatic(MessageUtils.class)) {
-            messages.when(() -> MessageUtils.getMessage("msg.auth.login-required")).thenReturn("login required");
+            messages.when(() -> MessageUtils.getMessage("auth.login-required")).thenReturn("login required");
             messages.when(() -> MessageUtils.getExceptionMsg(exception)).thenReturn("auth detail");
             filter.doFilter(request, response, chain);
         }

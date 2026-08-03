@@ -30,6 +30,8 @@ public class JournalProperties {
     @Getter
     @Setter
     public static class Embedding {
+        /** Whether to load persisted embedding vectors into the search cache on startup. */
+        private Boolean cacheOnStartup = true;
         /** Whether to enqueue embedding sync on startup. */
         private Boolean syncOnStartup;
         /** Embedding worker settings. */

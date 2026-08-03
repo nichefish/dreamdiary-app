@@ -64,7 +64,7 @@ AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](CHAT_AI_SPE
 ```
 
 **캐시 갱신 시점**
-- 앱 기동: `@PostConstruct`에서 EMBEDDED 상태 전체 로드.
+- 앱 기동: `app.journal.embedding.cache-on-startup=true`이면 `@PostConstruct`에서 EMBEDDED 상태 전체 로드. 테스트 프로필은 이 설정을 `false`로 두어 영속 DB의 벡터를 적재하지 않는다.
 - 임베딩 완료: `JournalEntryEmbeddingWorker.processOne()` 성공 후 단건 갱신.
 - 저널 삭제: `JournalEntryEmbeddingQueueService.removeByJournalEntryId()` 호출 시 제거.
 

@@ -1,8 +1,12 @@
 package io.nicheblog.dreamdiary.feature.user.signup.controller;
 
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
+import io.nicheblog.dreamdiary.auth.security.handler.SecurityErrorResponseWriter;
+import io.nicheblog.dreamdiary.auth.security.matcher.PublicApiRequestMatcher;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.feature.user.signup.model.UserSignupRequestDto;
 import io.nicheblog.dreamdiary.feature.user.signup.model.UserSignupRequestDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.user.signup.repository.jpa.UserSignupRequestRepository;
 import io.nicheblog.dreamdiary.feature.user.signup.service.UserSignupService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -33,14 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *  사용자 계정 신청 컨트롤러 테스트 모듈
  * </pre>
  *
- * 변경 전: JSON 파트 이름 `userReqst` 및 USER_REQST URL 상수, PageController 클래스명 UserReqst* 혼선.
- * 변경 후: {@link AutoConfigureMockMvc#addFilters()} 로 필터를 끄고, Ajax 등록은 {@code POST} + 폼 필드 {@code param} 으로 보낸다.
- * 변경 전 근본 원인: {@link UserSignupRequestDto} 가 {@link io.nicheblog.dreamdiary.feature.user.account.model.UserDto} 와 동일 필드를 재선언해 WebMvc 바인딩이 어긋났고(해당 중복 필드 선언 제거로 정리됨 — 본 테스트는 회귀 방지용).
- * 테스트 슬라이스에서 보안 자동설정이 {@link JwtTokenProvider} 빈을 요구하므로 {@code @MockBean} 으로 주입한다.
- * 변경 후: 필터 비활성화로 CSRF 필터가 없으므로 슬라이스 POST 에 {@code csrf()} 를 붙이지 않는다(운영 {@code WebSecurityAdapter} 와의 차이는 테스트 범위 밖).
- * 변경 전: {@code WebMvcContextConfig} 경로의 Freemarker 인터셉터 조립 빈 때문에 {@code TestFreemarkerConfig} 를 함께 {@literal @}Import 했다.
- * 변경 후: FreeMarker MVC 렌더 경로 제거(화면 뷰 Vue 이관 완료)로 {@link WebMvcTestSliceSupportConfig} 만 {@literal @}Import 한다
- * ({@link io.nicheblog.dreamdiary.global.ActiveProfile}·{@link io.nicheblog.dreamdiary.global.ReleaseInfo} 등 웹 레이어 빈 보충은 계속 필요).
+ * Vue 화면 리다이렉트와 폼 기반 가입 API 바인딩을 검증한다.
+ * 보안 필터는 비활성화하고, WebMvc 슬라이스가 참조하는 보안·웹 레이어 협력 객체는 MockBean으로 제공한다.
+ * {@link WebMvcTestSliceSupportConfig} 는 공통 웹 레이어 빈을 보충한다.
  *
  * @author nichefish
  */
@@ -58,12 +57,18 @@ class UserSignupPageControllerTest {
     private CodeLookupService codeLookupService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private AuthSessionPolicyService authSessionPolicyService;
+    @MockBean
+    private SecurityErrorResponseWriter securityErrorResponseWriter;
+    @MockBean
+    private PublicApiRequestMatcher publicApiRequestMatcher;
+    @MockBean
+    private UserSignupRequestRepository userSignupRequestRepository;
 
     /**
      * 신규계정 등록 화면 조회 Test
-     *
-     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재, 코드 목록 모델 주입(times(5))을 검증했다.
-     * 변경 후: 컨트롤러가 Vue SPA 리다이렉트만 반환하므로(signup-3) 리다이렉트 경로를 검증한다.
+     * Vue SPA 가입 화면으로 이동하는 리다이렉트 경로를 검증한다.
      */
     @Test
     public void testUserSignupRegForm() throws Exception {
@@ -88,8 +93,7 @@ class UserSignupPageControllerTest {
         final ServiceResponse result = ServiceResponse.builder().rsltObj(rsltDto).rslt(true).message("신규계정이 성공적으로 신청되었습니다.").build();
         when(userSignupService.regist(any(UserSignupRequestDto.class))).thenReturn(result);
 
-        // 변경 전: {@link io.nicheblog.dreamdiary.feature.user.signup.model.UserSignupRequestDto} 에 UserDto 필드 재선언이 있을 때 폼 바인딩이 실패했다.
-        // 변경 후: Dto 정리 후 {@code POST} + urlencoded 명목 + 폼 이름은 Vue(multipart)·레거시와 동일 키로 맞춘다.
+        // Vue 가입 요청과 동일한 필드 이름으로 폼 바인딩을 검증한다.
         // when::
         mockMvc.perform(post(Url.USER_SIGNUP_REQUESTS)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)

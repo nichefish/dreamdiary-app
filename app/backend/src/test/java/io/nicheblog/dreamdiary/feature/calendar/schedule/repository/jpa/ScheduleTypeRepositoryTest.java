@@ -86,7 +86,7 @@ class ScheduleTypeRepositoryTest {
         // When::
         ScheduleEntity toModify = scheduleRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setContent("modified");
-        ScheduleEntity modified = scheduleRepository.save(toModify);
+        ScheduleEntity modified = scheduleRepository.saveAndFlush(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");

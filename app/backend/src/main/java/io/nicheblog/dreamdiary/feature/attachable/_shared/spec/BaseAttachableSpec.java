@@ -31,8 +31,9 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
      */
     @Override
     default Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
-        searchParamMap.remove("backToList");
-        searchParamMap.remove("actvtyCtgr");
+        final Map<String, Object> effectiveSearchParamMap = new HashMap<>(searchParamMap);
+        effectiveSearchParamMap.remove("backToList");
+        effectiveSearchParamMap.remove("actvtyCtgr");
 
         return (root, query, builder) -> {
             List<Predicate> basePredicate = new ArrayList<>();
@@ -40,9 +41,9 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
             List<Predicate> predicate = new ArrayList<>();
             try {
                 // basePredicte 먼저 처리 후 나머지에 대해 처리
-                final Map<String, Object> baseSearchParamMap = new HashMap<>(searchParamMap);
-                final Map<String, Object> attachableSearchParamMap = new HashMap<>(searchParamMap);
-                final Map<String, Object> customSearchParamMap = new HashMap<>(searchParamMap);
+                final Map<String, Object> baseSearchParamMap = new HashMap<>(effectiveSearchParamMap);
+                final Map<String, Object> attachableSearchParamMap = new HashMap<>(effectiveSearchParamMap);
+                final Map<String, Object> customSearchParamMap = new HashMap<>(effectiveSearchParamMap);
                 basePredicate = getBasePredicate(baseSearchParamMap, root, query, builder);
                 attachablePredicate = getAttachablePredicate(attachableSearchParamMap, root, query, builder);
                 predicate = getPredicateWithParams(customSearchParamMap, root, query, builder);
@@ -51,7 +52,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
             }
             predicate.addAll(basePredicate);
             predicate.addAll(attachablePredicate);
-            this.postQuery(root, query, builder, searchParamMap);
+            this.postQuery(root, query, builder, effectiveSearchParamMap);
             return builder.and(predicate.toArray(new Predicate[0]));
         };
     }
