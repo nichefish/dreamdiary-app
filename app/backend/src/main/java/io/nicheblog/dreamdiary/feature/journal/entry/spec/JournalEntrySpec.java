@@ -5,6 +5,8 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTagAxis;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -71,10 +73,11 @@ public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> 
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
         final Expression<LocalDate> effectiveDtExp = journalDayJoin.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
-        predicate.add(builder.equal(root.get("contentType"), contentType.key));
+        predicate.add(buildListContentTypePredicate(builder, root, contentType));
 
         for (final String key : searchParamMap.keySet()) {
-            if ("sort".equals(key)) continue;
+            /* contentType 은 buildListContentTypePredicate 로 이미 스코프했다. default equal 에 들어가면 일기 축 OR 가 깨진다. */
+            if ("sort".equals(key) || "contentType".equals(key)) continue;
 
             final Object value = searchParamMap.get(key);
             switch (key) {
@@ -98,36 +101,49 @@ public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> 
                 case "journalChapterId":
                     predicate.add(builder.equal(chapterJoin.get("id"), value));
                     continue;
+                case "refContentType":
+                    // Reflection 한정 서브 facet. REFLECTION 검색에서만 target 유형으로 필터한다.
+                    // Reflection 은 대상 필수(About-A)라 대상 없는(INDEPENDENT) 선택지는 없다.
+                    if (value == null || contentType != ContentType.JOURNAL_REFLECTION) continue;
+                    final String refCtValue = value.toString().trim();
+                    if (refCtValue.isEmpty()) continue;
+                    predicate.add(builder.equal(root.get("refContentType"), ContentType.get(refCtValue)));
+                    continue;
                 case "searchKeywords":
                     if (!(value instanceof List<?> rawKeywordList) || CollectionUtils.isEmpty(rawKeywordList)) continue;
 
                     final List<Predicate> likeList = new ArrayList<>();
-                    /* 변경 전: 본문(content)만 검색하여 제목 일치 엔트리가 누락됐다.
-                       변경 후: 키워드별 제목 OR 본문, 복수 키워드 사이는 기존 AND 계약을 유지한다. */
+                    /* 키워드별 제목 OR 본문, 복수 키워드 사이는 AND 계약을 유지한다.
+                       원문·해석 한 몸: 이 엔트리를 target 으로 삼은 REFLECTION 본문에 키워드가 있으면 이 엔트리도 매칭한다
+                       (canBeReflectionTarget 인 타입 검색에만 적용; REFLECTION 자체 검색은 자기 본문만 본다). */
                     final Expression<String> titleLowerExp = builder.lower(root.get("title"));
                     final Expression<String> cnLowerExp = builder.lower(root.get("content"));
+                    final boolean matchTargetReflections = JournalEntryTypePolicy.from(contentType).canBeReflectionTarget();
                     for (final Object obj : rawKeywordList) {
                         if (obj == null) continue;
                         final String keyword = obj.toString().trim().toLowerCase();
                         if (StringUtils.isEmpty(keyword)) continue;
                         final String keywordPattern = "%" + keyword + "%";
-                        likeList.add(builder.or(
-                                builder.like(titleLowerExp, keywordPattern),
-                                builder.like(cnLowerExp, keywordPattern)
-                        ));
+                        final List<Predicate> orParts = new ArrayList<>();
+                        orParts.add(builder.like(titleLowerExp, keywordPattern));
+                        orParts.add(builder.like(cnLowerExp, keywordPattern));
+                        if (matchTargetReflections) {
+                            orParts.add(builder.exists(targetReflectionKeywordSubquery(query, builder, root, contentType, keywordPattern)));
+                        }
+                        likeList.add(builder.or(orParts.toArray(new Predicate[0])));
                     }
                     if (CollectionUtils.isEmpty(likeList)) continue;
 
                     predicate.add(builder.and(likeList.toArray(new Predicate[0])));
                     continue;
                 case "tagId":
-                    resolveTagIdPredicate(predicate, root, builder, value, createdBy, contentType);
+                    resolveTagIdPredicate(predicate, root, builder, value, createdBy, JournalEntryTagAxis.searchScopeKeys(contentType));
                     continue;
                 case "tagIds":
-                    resolveTagIdsPredicate(predicate, root, query, builder, value, createdBy, contentType);
+                    resolveTagIdsPredicate(predicate, root, query, builder, value, createdBy, JournalEntryTagAxis.searchScopeKeys(contentType));
                     continue;
                 case "states":
-                    resolveStatesPredicate(predicate, root, query, builder, value, createdBy, contentType);
+                    resolveStatesPredicate(predicate, root, query, builder, value, createdBy, JournalEntryTagAxis.searchScopeKeys(contentType));
                     break;
                 default:
                     try {
@@ -139,6 +155,55 @@ public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> 
         }
 
         return predicate;
+    }
+
+    /**
+     * 목록 검색의 contentType 스코프.
+     * 검색 결과 행은 요청 타입의 Primary 엔트리(일기·꿈·노트)만이다. Reflection 은 별도 Aggregate
+     * (journal_reflection)이고 대상 필수(About-A)라 검색 결과 행이 되지 않으며, 키워드 검색 시
+     * {@link #targetReflectionKeywordSubquery} 로 대상 원문에만 기여한다.
+     *
+     * @param builder Criteria 빌더
+     * @param root 엔트리 루트
+     * @param contentType 요청 검색 타입
+     * @return contentType 스코프 Predicate
+     */
+    private Predicate buildListContentTypePredicate(
+            final CriteriaBuilder builder,
+            final Root<JournalEntryEntity> root,
+            final ContentType contentType
+    ) {
+        return builder.equal(root.get("contentType"), contentType.key);
+    }
+
+    /**
+     * 이 엔트리를 target(refId)으로 삼은 Reflection 중 본문에 키워드가 있는 것이 존재하는지 확인하는 EXISTS 서브쿼리.
+     * 원문·해석을 한 본문으로 취급하는 검색 계약에 쓴다. Reflection 은 별도 Aggregate(journal_reflection)이며 refId·
+     * refContentType 으로 target 엔트리에 묶인다. soft-delete 행은 엔티티 {@code @Where(deleted_at IS NULL)} 로 자동 제외된다.
+     *
+     * @param query 상위 Criteria 쿼리
+     * @param builder Criteria 빌더
+     * @param root 상위 엔트리 루트(= Reflection 의 target)
+     * @param contentType 상위(=target) 콘텐츠 타입
+     * @param keywordPattern 소문자 LIKE 패턴("%kw%")
+     * @return Reflection 본문 일치 EXISTS 서브쿼리
+     */
+    private Subquery<Integer> targetReflectionKeywordSubquery(
+            final CriteriaQuery<?> query,
+            final CriteriaBuilder builder,
+            final Root<JournalEntryEntity> root,
+            final ContentType contentType,
+            final String keywordPattern
+    ) {
+        final Subquery<Integer> sub = query.subquery(Integer.class);
+        final Root<JournalReflectionEntity> refl = sub.from(JournalReflectionEntity.class);
+        sub.select(builder.literal(1));
+        sub.where(
+                builder.equal(refl.get("refId"), root.get("id")),
+                builder.equal(refl.get("refContentType"), contentType),
+                builder.like(builder.lower(refl.get("content")), keywordPattern)
+        );
+        return sub;
     }
 
     /**

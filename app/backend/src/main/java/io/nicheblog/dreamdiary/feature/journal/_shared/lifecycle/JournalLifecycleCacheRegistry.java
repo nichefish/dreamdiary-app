@@ -17,7 +17,7 @@ public class JournalLifecycleCacheRegistry {
     private static final List<ContentType> LIFECYCLE_CONTENT_TYPES = List.of(
             ContentType.JOURNAL_DIARY,
             ContentType.JOURNAL_DREAM,
-            ContentType.JOURNAL_INTERPRETATION
+            ContentType.JOURNAL_REFLECTION
     );
 
     /**
@@ -49,7 +49,7 @@ public class JournalLifecycleCacheRegistry {
         return switch (contentType) {
             case JOURNAL_DIARY -> "journalDiaryLifecycleMapByUser";
             case JOURNAL_DREAM -> "journalDreamLifecycleMapByUser";
-            case JOURNAL_INTERPRETATION -> "journalInterpretationLifecycleMapByUser";
+            case JOURNAL_REFLECTION -> "journalReflectionLifecycleMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);
         };
     }
@@ -64,7 +64,7 @@ public class JournalLifecycleCacheRegistry {
         return switch (contentType) {
             case JOURNAL_DIARY -> "journalDiaryWeeklyLifecycleMapByUser";
             case JOURNAL_DREAM -> "journalDreamWeeklyLifecycleMapByUser";
-            case JOURNAL_INTERPRETATION -> "journalInterpretationWeeklyLifecycleMapByUser";
+            case JOURNAL_REFLECTION -> "journalReflectionWeeklyLifecycleMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);
         };
     }

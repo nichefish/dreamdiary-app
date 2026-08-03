@@ -1,5 +1,16 @@
 # CHANGELOG
 
+### 2026-08-04 | v0.26.0
+- 신규 기능
+  - 저널 "해석(interpretation)"을 독립 Entry 종류 **Reflection**(`JOURNAL_REFLECTION`)으로 승격했다.
+    - Reflection 은 본질로 타입이 정해지는 Entry 로, 어느 챕터(일기/꿈/노트)에든 자유 배치한다. 소속 챕터는 hard-owned 이고, target(가리키는 대상 엔트리)은 표시위치만 결정하는 nullable 참조다.
+    - 표시·검색·등록·수정·삭제를 모두 Entry 경로로 통합하고, 대상 엔트리 밑에 교차뷰(백링크)로 Reflection 을 함께 보여준다.
+    - 통합검색에 Reflection facet 과 target 유형(일기해석/꿈해석) 서브 facet 을 추가했다.
+- 구조 정리
+  - `journal_interpretation` 테이블·모듈을 `journal_entry` 로 수렴하고 `JOURNAL_INTERPRETATION` enum·백엔드 모듈·프론트 컴포넌트·CSS 를 제거해 단일 경로로 통일했다.
+  - target 삭제 시 Reflection 을 cascade 삭제하지 않고 target 만 비워 챕터 직속으로 독립화한다. Reflection 은 일자 완결 축 밖에 둔다.
+  - DB 마이그레이션(수동 적용, 순서·백업 후): `V0.26.0`(target 컬럼) → `V0.26.1`(데이터 이관) → `V0.26.2`(journal_interpretation DROP).
+
 ### 2026-08-03 | v0.25.0
 - 신규 기능
   - 콘텐츠당 하나를 선택하는 범용 말머리(Prefix) 기능을 구축.

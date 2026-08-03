@@ -41,26 +41,13 @@ export type HistoryComposition = {
   historyTriggeredAt?: string;
 };
 
-export type JournalInterpretation = {
-  id: Identifier;
-  contentType?: ContentType;
-  refId?: Identifier;
-  refContentType?: ContentType;
-  journalDayId?: Identifier;
-  title?: string;
-  content?: string;
-  markdownContent?: string;
-  sortOrder?: number;
-  stdrdDt?: string;
-  state?: StateComposition;
-  lifecycle?: LifecycleComposition;
-  history?: HistoryComposition;
-  comment?: CommentComposition;
-};
-
 export type JournalEntry = {
   id: Identifier;
   contentType?: ContentType;
+  /** Reflection target: 가리키는 대상 엔트리 ID */
+  refId?: Identifier;
+  /** Reflection target 콘텐츠 타입 */
+  refContentType?: ContentType;
   title?: string;
   content?: string;
   markdownContent?: string;
@@ -76,7 +63,7 @@ export type JournalEntry = {
   history?: HistoryComposition;
   comment?: CommentComposition;
   relatedContentList?: RelatedContentItem[];
-  journalInterpretationList?: JournalInterpretation[];
+  reflectionList?: JournalEntry[];
 };
 
 export type JournalChapter = {

@@ -129,8 +129,6 @@ function getContentTypeLabel(contentType: string): string {
       return t("common.diary");
     case "JOURNAL_DREAM":
       return t("common.dream");
-    case "JOURNAL_INTERPRETATION":
-      return t("common.interpretation");
     default:
       return contentType;
   }

@@ -30,7 +30,7 @@
     <JournalDayRegistModal />
     <JournalDayDetailModal />
     <JournalChapterRegistModal />
-    <JournalInterpretationRegistModal />
+    <JournalReflectionRegistModal />
     <!-- JournalEntryRegistModal: App.vue global mount (chat RAG source deep-link) -->
     <JournalTodoRegistModal />
     <JournalDayMetaModal />
@@ -60,7 +60,7 @@ import JournalAside from "./components/JournalAside.vue";
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
 import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
 import JournalChapterRegistModal from "../chapter/modals/JournalChapterRegistModal.vue";
-import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
+import JournalReflectionRegistModal from "../reflection/modals/JournalReflectionRegistModal.vue";
 import JournalTodoRegistModal from "../todo/modals/JournalTodoRegistModal.vue";
 import JournalDayMetaModal from "./modals/JournalDayMetaModal.vue";
 import CommentRegistModal from "../shared/modals/CommentRegistModal.vue";

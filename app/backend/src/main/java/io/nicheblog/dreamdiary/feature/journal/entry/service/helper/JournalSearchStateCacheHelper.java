@@ -22,14 +22,16 @@ public class JournalSearchStateCacheHelper {
          *
          * @param listDto 대상 목록
          * @param stateMap 상태 맵
-         * @param interpretationMap 해석 상태 맵
+         * @param lifecycleMap 라이프사이클 맵
+         * @param reflectionStateMap 하위 Reflection 상태 맵
+         * @param reflectionLifecycleMap 하위 Reflection 라이프사이클 맵
          */
         void apply(
                 List<Dto> listDto,
                 Map<Integer, JournalState> stateMap,
                 Map<Integer, String> lifecycleMap,
-                Map<Integer, JournalState> interpretationMap,
-                Map<Integer, String> interpretationLifecycleMap
+                Map<Integer, JournalState> reflectionStateMap,
+                Map<Integer, String> reflectionLifecycleMap
         );
     }
 
@@ -40,6 +42,7 @@ public class JournalSearchStateCacheHelper {
      * @param username 사용자 아이디
      * @param listDto 대상 목록
      * @param stateCacheName 상태 캐시명
+     * @param lifecycleCacheName 라이프사이클 캐시명
      * @param applier 병합 함수
      * @param <Dto> 저널 기간 DTO 타입
      */
@@ -64,22 +67,22 @@ public class JournalSearchStateCacheHelper {
             final Map<Integer, JournalState> stateMap = Optional.ofNullable(
                     (Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache(stateCacheName, cacheKey)
             ).orElse(Collections.emptyMap());
-            final Map<Integer, JournalState> interpretationMap = Optional.ofNullable(
+            final Map<Integer, JournalState> reflectionStateMap = Optional.ofNullable(
                     (Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache(
-                            JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_INTERPRETATION),
+                            JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_REFLECTION),
                             cacheKey
                     )
             ).orElse(Collections.emptyMap());
             final Map<Integer, String> lifecycleMap = Optional.ofNullable(
                     (Map<Integer, String>) EhCacheUtils.getObjectFromCache(lifecycleCacheName, cacheKey)
             ).orElse(Collections.emptyMap());
-            final Map<Integer, String> interpretationLifecycleMap = Optional.ofNullable(
+            final Map<Integer, String> reflectionLifecycleMap = Optional.ofNullable(
                     (Map<Integer, String>) EhCacheUtils.getObjectFromCache(
-                            JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_INTERPRETATION),
+                            JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_REFLECTION),
                             cacheKey
                     )
             ).orElse(Collections.emptyMap());
-            applier.apply(entry.getValue(), stateMap, lifecycleMap, interpretationMap, interpretationLifecycleMap);
+            applier.apply(entry.getValue(), stateMap, lifecycleMap, reflectionStateMap, reflectionLifecycleMap);
         }
     }
 }

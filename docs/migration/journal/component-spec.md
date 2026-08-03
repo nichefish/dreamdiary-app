@@ -447,7 +447,7 @@ interface TodoRow {
 
 **Vue**: `JournalEntryViewModal.vue` → `journal_entry_view_modal`
 
-채팅 RAG 출처 딥링크용 읽기 전용 모달이다. `GET /api/journal/entry/{id}`로 조회한 `markdownContent`를 목록과 동일한 `journal-content` HTML로 표시하고, 날짜·제목·태그·꿈꾼(해당 시)만 보여 준다. 저장 폼은 없다. footer 편집은 `openEntryModifyFromView`로 `JournalEntryRegistModal`을 연다. 비팝업 라우트에서는 `App.vue`가 전역 마운트한다.
+채팅 RAG 출처 딥링크용 읽기 전용 모달이다. `GET /api/journal/entry/{id}`로 조회한 `markdownContent`를 목록과 동일한 `journal-content` HTML로 표시하고, 날짜·제목·태그·꿈꾼(해당 시)만 보여 준다. 저장 폼은 없다. footer 편집은 `openEntryModifyFromView`로 전환하며 `JOURNAL_REFLECTION`이면 `JournalReflectionRegistModal`, 그 외는 `JournalEntryRegistModal`을 연다. 비팝업 라우트에서는 `App.vue`가 전역 마운트한다.
 
 ### 22-4. `JournalEntryRegistModal` 등록/수정 폼 여백
 
@@ -485,13 +485,13 @@ interface TodoRow {
 
 ---
 
-### 22-6. `JournalInterpretationRegistModal` 등록/수정 폼
+### 22-6. `JournalReflectionRegistModal` 등록/수정 폼
 
-**Vue 구현**: `app/frontend-vue/src/features/journal/interpretation/modals/JournalInterpretationRegistModal.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/reflection/modals/JournalReflectionRegistModal.vue`
 
-**데이터·동작**: `useJournalModalStore.interpretationRegistModel`의 참조 대상·날짜·카테고리·제목·순서·본문을 편집한다. 제목은 선택값이다. 신규는 `POST /api/journal/interpretations`, 수정은 `POST /api/journal/interpretation/{id}`로 multipart form data를 전송한다. 성공 시 모달을 닫고 성공 알림 확인 후 `refreshJournalEntryHostForRoute()`로 현재 표시 호스트를 갱신한다. 스레드 상세이면 원본 엔트리를 포함한 열린 상세를 재조회하고, 다른 저널 화면이면 기존 route 기준 저널 목록을 갱신한다.
+**데이터·동작**: `useJournalModalStore` reflection 등록 모델의 제목·본문을 편집한다. 제목은 선택값이다. Reflection 은 대상 필수(About-A)라 모달은 제목·본문만 두고 태그·챕터 선택 UI 는 없다(Standalone 폐기). 대상(`refId`/`refContentType`)은 「해석 등록」 진입 시 payload 로 정해진다. 영속 `content_type`/`ref_content_type`은 `JOURNAL_REFLECTION`이다. 일기 태그 클라우드·결산 DIARY 집계·챕터 접힘 태그 요약은 `JOURNAL_DIARY`∪`JOURNAL_REFLECTION`을 같은 축으로 집계한다(`JournalEntryTagAxis.expandKeys`). 반면 일기 검색(`type=DIARY`)의 결과 행은 Primary(일기)만이고 태그·state 스코프는 요청 타입 단독이다(`JournalEntryTagAxis.searchScopeKeys`). 딸린 Reflection은 본문 키워드만 대상 일기를 매칭시킨다(원문·해석 한 몸 EXISTS, `REFLECTION_ONE_TYPE.md` §5.4). Reflection 은 별도 Aggregate(`journal_reflection`)라 전용 엔드포인트로 쓴다. 신규는 `POST /api/journal/reflections`, 수정은 `POST /api/journal/reflection/{id}`, 삭제는 `DELETE /api/journal/reflection/{id}`, 수정 로드는 `GET /api/journal/reflection/{id}` 로 처리한다(multipart form data). 서버 쓰기는 `JournalReflectionService`가 담당하며 대상 필수(About-A: `refId`/`refContentType`)를 검증한다. 신규 저장 성공 시 `requestEntryCreatedChapterExpand(journalChapterId)`로 소속 챕터를 현재 화면에서 일회성 펼치고, 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalEntryHostForRoute()`와 diary `fetchTagCloud`로 갱신한다.
 
-**i18n**: 모달 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
+**i18n**: 모달 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그(`journal.reflection.*`)를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -529,6 +529,8 @@ interface TodoRow {
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/chapter/components/JournalChapterItem.vue`
 
+**Reflection 표시 = embed 전용**: `journalEntryList`(journal_entry 행: 일기·꿈·노트)를 그대로 1급 `JournalEntryItem` 행으로 렌더한다. Reflection 은 별도 Aggregate(journal_reflection)이라 이 목록에 들어오지 않고, 대상 엔트리 아래 embed(`JournalReflectionItem`, `entry.reflectionList`)로만 표시된다. 챕터 차원의 1급 Reflection 행·중복 제거(dedup)는 없다.
+
 **scss 클래스 바인딩**:
 - root div: `class="journal-chapter-block"` + `:id="'journal-chapter-' + chapter.id"` — 챕터 등록/수정 후 저장 위치 스크롤 앵커
 - 외부 div: `class="journal-chapter-item"` + `:data-collapsed` — journal.scss `:has(.collapsed)` 선택자 연동
@@ -536,7 +538,7 @@ interface TodoRow {
 - 접힘 외곽 상태선: `journal.scss` — 하위 `data-imprtc`/`data-refrnc`/전체 `data-resolved` 집계. 펼침 엔트리 `::before` 이중·삼중선과 동일 inset(완료·중요·참조 조합)
 - 접힘 요약: 챕터가 접히면 태그와 함께 하위 엔트리의 `threadList`를 `threadId`로 중복 제거한 스레드 버튼을 `.journal-chapter-content` 바깥에 표시한다. 스레드 순서는 엔트리·소속 목록의 최초 등장 순서를 보존하고, 버튼 클릭은 기존 엔트리 스레드 칩과 동일하게 현재 저널 화면 위에 전역 상세 모달을 직접 연다.
 
-**챕터 태그 표시 규칙**: 챕터 태그는 하위 엔트리 태그를 집계한 요약이므로 **챕터가 접힌 상태일 때만 표시**. 챕터는 **자체 태그를 소유하지 않는다** — 엔티티 `TagEmbed` 를 제거했고(tag_content 0행, vestigial), 화면 태그는 100% `JournalDayViewHelper.applyChapterTagSummary` 가 소속 diary 엔트리 태그를 집계해 `JournalChapterDto.tag` 에 채운 것이다. 저장 경로는 태그를 영구화하지 않는다.
+**챕터 태그 표시 규칙**: 챕터 태그는 하위 엔트리 태그를 집계한 요약이므로 **챕터가 접힌 상태일 때만 표시**. 챕터는 **자체 태그를 소유하지 않는다** — 엔티티 `TagEmbed` 를 제거했고(tag_content 0행, vestigial), 화면 태그는 100% `JournalDayViewHelper.applyChapterTagSummary` 가 소속 일기 축(DIARY + Reflection) 엔트리 태그를 집계해 `JournalChapterDto.tag` 에 채운 것이다. 저장 경로는 태그를 영구화하지 않는다.
 - `v-if="tagList.length > 0 && isCollapsed"` — 접힌 상태에서만 DOM에 마운트
 - CSS `d-flex` 와 충돌하므로 CSS 규칙 단독 의존 불가; `v-if` 조건으로 직접 제어
 
@@ -550,12 +552,12 @@ interface TodoRow {
 - 기준 날짜 요일과 제목·필드·선택지·버튼·확인·결과 fallback 문구는 현재 locale의 클라이언트 카탈로그를 사용하고, 등록·수정·일자 이동 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
 **소유권 표시·쓰기 제한** (`isCreatedBy` — 백엔드 `BaseAuditRegDto` 직렬화):
-- `isCreatedBy === false`: 헤더에 `타인 작성` 배지, 수정·삭제·엔트리 등록·⋯ 메뉴·서버 접힘 변경 버튼 숨김 (읽기·클라이언트 접힘·복사·TXT는 유지)
+- `isCreatedBy === false`: 헤더에 `타인 작성` 배지, 수정·삭제·엔트리/리플렉션 등록·⋯ 메뉴·서버 접힘 변경 버튼 숨김 (읽기·클라이언트 접힘·복사·TXT는 유지)
 - 수정 API 거부 시 메시지 `msg.rslt.not-owner` → 「본인이 작성한 글이 아닙니다.」(HTTP 403)
 
 **헤더 액션 버튼** (우측 `col-3` 영역, `canManageChapter` 일 때만, 레거시 `JournalChapterItem.ts` 동형):
 - 엔트리 등록 TEXT 버튼: 타입별 `저널 일기 등록` / `저널 꿈 등록` / `저널 노트 등록` + `bi-book` / `bi-moon-stars` — `openEntryNew()`
-- 복사 버튼 (`bi-copy`): `copyChapter()` — 날짜·카테고리·제목 + 하위 엔트리 전체를 줄바꿈 연결 텍스트로 클립보드 복사
+- 복사 버튼 (`bi-copy`): `copyChapter()` — 날짜·카테고리·제목 + 하위 엔트리 전체를 줄바꿈 연결 텍스트로 클립보드 복사. 각 엔트리 본문 밑에 그 엔트리를 문(target) 리플렉션 본문을 빈 줄로 이어 붙인다(원문·해석은 한 몸, 마커 없음)
 - TXT보내기 버튼 (`fas fa-download`, `btn-outline btn-light-primary`): `exportChapter()` — `GET /api/journal/chapter/{id}/export`
 - ⋯ 컨텍스트 메뉴: 수정(`openChapterModify`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제
 - 접힘 화살표 버튼 (`toggle-chapter-btn`): `toggleChapter()` — 클라이언트만 접힘(`localCollapsedOverride`), 서버 POST 없음
@@ -579,13 +581,15 @@ interface TodoRow {
 
 **lifecycle 상태 표현**: 일반 꿈의 `RESOLVED`는 `$journal-dream-paired-states`의 은은한 보라 배경·테두리·좌측선을 사용하고, 접힌 표시·순번·라이프사이클 메뉴의 선택된 완료 라벨도 보라색으로 맞춘다. 중요·참조가 함께 있으면 완료 보라선과 빨강·노랑 상태선을 조합한다. 일기·노트·해석과 챕터의 완료 집계는 초록색을 사용한다. 일기·꿈·노트의 `PENDING`은 약한 회색 배경·테두리·좌측선과 회색 배지를 사용하고 자동으로 접는다. 해석 라이프사이클 메뉴와 스레드 자체의 목록·상세 배지 및 메뉴, 스레드 후보 목록도 `PENDING`을 같은 회색으로 표시한다. 하위 엔트리가 1개 이상이고 모두 `PENDING`인 챕터도 같은 회색 상태를 표시하고 자동으로 접는다.
 
+**거터(#순번)**: 왼쪽 56px 거터는 이벤트 엔트리(일기·꿈·노트)에 `#{{ entry.sortOrder }}`(콘텐츠 타입별 시퀀스)를 찍는다. `JournalEntryItem`은 Primary 엔트리만 렌더하므로 거터는 항상 #순번이다(Reflection 은 embed 전용이라 이 거터를 쓰지 않는다). #순번 색은 `text-success`(RESOLVED)/`text-muted`. 요약 엔트리(`isSummary`)는 거터 자체를 숨긴다.
+
 **엔트리 제목 표시**: `entry.title` 이 있으면 유형(일기/꿈/노트) 무관하게 꿈 상태 배지 행 아래·마크다운 본문 위에 독립 행으로 `fw-bold fs-5 mb-1` 표시한다. 본문 `.journal-content` 는 fs 클래스 없이 base 1rem 을 상속하므로 제목은 본문보다 한 단계 위 크기가 된다. 접힘(`isCollapsed`)과 무관하게 항상 표시하며 본문만 숨긴다. 제목은 `.journal-content` 밖이라 유형별 본문 색상(꿈 보라 등)을 상속하지 않고 기본 텍스트색을 쓴다. 변경 전: 꿈 엔트리에서만 배지 행에 인라인 `fs-7` 로 표시했고 일기·노트는 제목이 렌더되지 않았다. 결산 상세(`JournalAnnualDetail.vue`)의 엔트리 제목도 같은 `fs-5 fw-bold` 계약을 따른다.
 
 **엔트리 Prefix 표시**: 선택된 `entry.prefix`는 색상 배지로 제목 앞에 표시한다. 제목이 없어도 Prefix 배지는 독립적으로 남고, 접힘 상태에서도 숨기지 않는다. 같은 계약을 엔트리 카드(`JournalEntryItem`), 읽기 전용 원문(`JournalEntryViewModal`), 결산 상세의 DIARY/DREAM 엔트리(`JournalAnnualDetail`)에 적용하며 비활성 과거 Prefix도 서버 DTO의 이름·색을 그대로 표시한다.
 
-**축별 완결 잠금(엔트리 DTO)**: 일자 provide 가 없는 검색·뷰 모달 등에서는 `JournalEntryDto.diaryResolvedYn`/`dreamResolvedYn`(백엔드 day projection)이 SSOT 이다. `JournalEntryItem` 은 `mergeDayResolvedAxis` 로 parent provide 와 병합해 `axisWritable`·관련글 해제·이력 `writeLocked` 를 결정하고 하위 `JournalInterpretationItem` 에 provide 한다. `HistoryModal` 은 `historyWriteLocked` 시 복원·삭제 UI만 숨기고 복사·상세는 허용한다.
+**축별 완결 잠금(엔트리 DTO)**: 일자 provide 가 없는 검색·뷰 모달 등에서는 `JournalEntryDto.diaryResolvedYn`/`dreamResolvedYn`(백엔드 day projection)이 SSOT 이다. `JournalEntryItem` 은 `mergeDayResolvedAxis` 로 parent provide 와 병합해 `axisWritable`·관련글 해제·이력 `writeLocked` 를 결정한다. 교차뷰 `JournalReflectionItem` 은 Reflection이 완결축 밖이므로 소유권(`isCreatedBy`)으로 쓰기 가드를 둔다. `HistoryModal` 은 `historyWriteLocked` 시 복원·삭제 UI만 숨기고 복사·상세는 허용한다.
 
-**우측 액션 영역**: 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/스레드에 추가/라이프사이클/상태/삭제) — 「FLOW 연결」·「FLOW 보기」는 제거되고 스레드 소속 「스레드에 추가」로 수렴했다(나-2b·나-2c)
+**우측 액션 영역**: `JournalEntryItem`은 Primary 엔트리(일기·꿈·노트)만 렌더한다. 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/스레드에 추가/라이프사이클/상태/삭제) — 「FLOW 연결」·「FLOW 보기」는 제거되고 스레드 소속 「스레드에 추가」로 수렴했다(나-2b·나-2c). 수정은 `openEntryModify(id)`를 쓴다. 「해석 등록」은 이 Primary 를 target 으로 한 Reflection 을 다는 진입점이다(`openReflectionRegist`, target=이 엔트리). Reflection 자체의 수정·라이프사이클·상태·삭제 액션은 embed(`JournalReflectionItem`)가 담당한다(§23-3). primary `RESOLVED`→딸린 Reflection `RESOLVED`, `RESOLVED` primary에 Reflection 신규→primary `OPEN`(+접기 해제) 연쇄는 §5.1. 이 액션 묶음은 본문과 같은 flex head-row 오른쪽(min-width 80px; item `align-items:flex-start`로 본문 상단 고정)에 두어, 아래 임베드된 Reflection 의 복사·수정 액션과 같은 오른쪽 열에 정렬한다
 
 **스레드·FLOW 액션 경계 (수렴 완료)**: FLOW 를 저널 스레드 소속으로 수렴 완료했다(근거·단계는 `docs/spec/DESIGN_NOTES.md`). **변경 후 현황** — 「흐름 보기」 종단 보기(타임라인 모달 `JournalEntryFlowModal`)와 본문 FLOW 요약 행은 **제거(❌)**됐다. 「흐름 연결」(`openRelatedFlow`, `RelatedContentAddModal` FLOW 고정 모드)도 **제거(❌)**됐다(나-2b). `RelatedContentAddModal` 은 이제 일반 관련 글(RELATED) 전용이다 — 모드 분기·FLOW 안내·FLOW 관계 유형 옵션이 사라졌다. 백엔드 `flowSummary` 계산·`RelationType.FLOW` enum·`related_content` FLOW 행도 모두 **제거(❌)**됐다(다-2). 새 축인 스레드 소속은 `JournalEntryDto.threadList` 로 엔트리에 실리고, 소속 지정 UI 도 **구현 완료(✓)**다(나-2c) — ⋯ 메뉴의 「스레드에 추가」 hover 서브메뉴(소속 토글 + 「새 스레드로 시작」)와 본문 소속 스레드 칩(클릭 시 현재 저널 화면 위에 상세 모달 열기). 서브메뉴도 전용 후보 API로 **전환 완료(✓)**했다. 280px 서브메뉴 안에서 제목 검색(250ms debounce)·분류 선택·「완료 포함」토글(`includeResolved`)을 제공하고, 후보 행에 `PENDING`/`RESOLVED` 라이프사이클 라벨을 표시한다. 엔트리별 후보 재조회·요청 경합 폐기·소속 변경 후 재조회·오류/정상 빈 결과 분리를 `journalThreadMembership.ts`가 담당한다.
 
@@ -599,21 +603,19 @@ interface TodoRow {
 
 **액션 결과 i18n**: 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 라이프사이클·상태 변경 실패, 관련 관계 연결·해제와 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. 관계 해제·변경·삭제 성공 후 스레드 상세가 열려 있으면 상세 본문·집계 태그·소속 엔트리와 주간·월간·일간 배경 목록을 함께 재조회하되 배경 스크롤은 하지 않는다. 상세가 닫힌 화면에서는 기존 목록 재조회와 일자 스크롤을 유지한다.
 
-**엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + 공통 `htmlToPlainText(content)` (TinyMCE HTML을 브라우저 HTML 파서로 이름·10진수·16진수 엔티티 디코딩 후 평문 변환, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음 — 레거시 `copy()` 동일)
+**엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + 공통 `htmlToPlainText(content)` (TinyMCE HTML을 브라우저 HTML 파서로 이름·10진수·16진수 엔티티 디코딩 후 평문 변환, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음.) 원문·해석은 한 몸 — 엔트리 본문 뒤에 그 엔트리를 문(target) 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). 챕터 복사도 같은 규칙.
 
-**본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-interpretation-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
+**본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-reflection-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
 
 **시스템 요약 챕터 = '그날 요약' 카드 (신규)**: 배경 tint·좌측 바 같은 '엔트리 상태' 언어는 이미 중요/참조/완결에 쓰이므로, 요약을 그 계열의 level 이 아니라 **별개 오브젝트**로 만들기 위해 시스템 요약 **챕터 전체(헤더+엔트리)**를 카드로 감싼다. `JournalChapterItem` 은 `isSummaryChapter`(=`summaryYn==='Y'`) 일 때 루트 `.journal-chapter-block` 에 `is-summary-chapter` 를 더해 중립 표면(`--bs-gray-100` 을 `--bs-body-bg` 와 섞어 한 단계 옅게)+테두리(1px `--bs-gray-300`)+라운드(0.65rem)+옅은 그림자로 감싸고, `margin-bottom` 으로 다음 챕터와 띄운다. 그 안의 요약 엔트리(`isSummary` prop)는 카드 안에서 크롬만 정리한다: (1) `#순번` 거터 `v-if="!isSummary"` 숨김(개요는 번호 매겨진 목록 항목이 아님), (2) 상태 좌측선(`::before`)을 `content: none !important` 로 제거(base `.journal-diary-item .journal-diary-content::before` 와 특이성 동률이라 강제). 색·형태는 `--bs-*` 토큰이라 다크모드 자동 대응. prop 은 `JournalChapterItem` 만 전달하며 스레드 상세·검색결과·꿈 섹션의 `JournalEntryItem` 은 기본 false 라 무영향. 트레이드오프: 요약 엔트리는 `#순번`·PENDING 배지·엔트리별 접힘 토글 버튼을 표시하지 않는다(챕터 헤더 접힘은 유지).
 
-### 23-2a. `JournalInterpretationItem` (저널 해석 아이템)
+### 23-2a. `JournalReflectionItem` (저널 리플렉션 슬림 임베드)
 
-**Vue 구현**: `app/frontend-vue/src/features/journal/interpretation/components/JournalInterpretationItem.vue`
+**Vue 구현**: `app/frontend-vue/src/features/journal/reflection/components/JournalReflectionItem.vue`
 
-**데이터·표시**: `InterpretationItem`의 순번·제목·본문·댓글·라이프사이클·상태를 표시한다. RESOLVED 또는 COLLAPSED 상태는 접힌 렌더를 사용하며, `localCollapsedOverride`는 서버 상태를 변경하지 않고 현재 화면에서만 펼침/접힘을 전환한다.
+**데이터·표시**: target 엔트리의 `reflectionList`(`JournalEntryDto`) 한 건을 target 엔트리 본문과 태그 사이에 슬림 임베드한다. 헤더·제목·마커 없이 본문·댓글(읽기)만 흐르게 표시해 target 엔트리와 이어지는 글처럼 붙이고, 옅은 1px 좌측선이 "이 엔트리에 매달린 해석"임을 알리는 유일한 신호다. 본문(`.journal-content`) 글자 크기는 일기 `JournalEntryItem`과 같다. 임베드는 본문을 항상 표시하고(자체 접기 UI 없음), 엔트리 접힘 시 `v-if="!isCollapsed"`로 DOM에서 제거된다. 엔트리를 다시 펼치면 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 임베드 ⋯(KTMenu)를 재바인딩한다. RESOLVED 는 옅은 좌측선 색(초록)으로만 신호한다(`.journal-reflection-embed`). 임베드는 flex `[본문 | 우측 액션]`이며, 댓글·복사·⋯ 액션을 target 엔트리 액션과 같은 오른쪽 열(min-width 80px, `.journal-reflection-embed__actions`)에 정렬한다.
 
-**액션 UI**: 댓글 등록·복사 버튼과 수정·이력·라이프사이클·상태·삭제 컨텍스트 메뉴를 제공한다. 펼침/접힘·접힌 상태·툴팁·메뉴·라이프사이클 및 상태 라벨은 현재 locale의 클라이언트 카탈로그를 사용한다.
-
-**액션 결과 i18n**: 라이프사이클·상태 변경 실패, 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. 변경·삭제 성공 후 스레드 상세이면 원본 엔트리를 포함한 열린 상세를 재조회하고, 그 밖의 route에서는 `refreshJournalDaysForRoute()`로 저널 목록을 갱신한다.
+**액션 UI**: Reflection 은 embed 전용(1급 행 없음)이므로 모든 관리 액션은 임베드가 담당한다. 바깥은 댓글 등록·복사·⋯(Metronic)이고, ⋯ 메뉴는 수정·이력·관련글·라이프사이클·상태(중요/참조)·삭제를 엔트리 메뉴와 같은 구조로 제공한다. Reflection→Reflection 중첩 등록은 제공하지 않는다(`REFLECTION_ONE_TYPE.md` §3.1). 일기·꿈·노트를 target으로 둔 Reflection에는 「스레드에 추가」를 두지 않는다(`isPrimaryContentTargetedReflection`, `REFLECTION_ONE_TYPE.md` §4). 접기(COLLAPSED)는 임베드가 본문을 항상 보이므로 메뉴에 두지 않는다. Reflection은 완결축 밖이므로 쓰기 가드는 소유권(`isCreatedBy !== false`)이다. 삭제 확인·실패 fallback은 `journal.reflection.delete.*`를 쓴다. 액션 성공 후 `refreshJournalEntryHostForRoute`로 호스트를 갱신한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -734,8 +736,8 @@ interface TodoRow {
 - 결과 태그 클릭 컨텍스트 메뉴(`JournalTagContextMenu`)와 태그 프로필 모달(`JournalTagProfileModal`) 마운트
 - 검색 팝업 내부 태그 검색은 같은 창 query 갱신으로 반영
 - 엔트리 수정 저장 성공 시 `JournalEntryRegistModal` `prepare-success` 이벤트로 현재 검색 목록/수정 대상 DOM을 먼저 준비하고, `success` 이벤트로 저장 위치 스크롤만 수행
-- 검색 결과에 포함된 저널 해석의 수정 액션은 같은 창에서 `JournalInterpretationRegistModal`을 열어야 한다. 검색 팝업이 이 모달을 직접 마운트하며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회로 제목/본문/순번을 채운 뒤 모달을 열어야 한다. 저장·스레드 소속·상태 등 엔트리 액션 성공 후 `refreshJournalEntryHostForRoute`가 `registerJournalEntrySearchHost`로 등록된 `loadEntries`를 호출해 검색 목록(스레드 칩 포함)을 재조회한다.
-- `JournalInterpretationRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 해석 등록/수정이 가능해야 한다.
+- 검색 결과에 포함된 리플렉션의 수정 액션은 같은 창에서 `JournalReflectionRegistModal`을 열어야 한다. 검색 팝업이 이 모달을 직접 마운트하며, 수정 모드는 `GET /api/journal/reflection/{id}` 상세 조회로 제목/본문을 채운 뒤 모달을 열어야 한다. 저장·스레드 소속·상태 등 엔트리 액션 성공 후 `refreshJournalEntryHostForRoute`가 `registerJournalEntrySearchHost`로 등록된 `loadEntries`를 호출해 검색 목록(스레드 칩 포함)을 재조회한다.
+- `JournalReflectionRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 리플렉션 등록/수정이 가능해야 한다.
 - 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 서버 `isHolyday` 가 true 이면 날짜·요일을 `text-danger` 로 표시하고 `holydayNm` 이 있으면 공휴일명을 붙인다(일자 카드와 동일 축; 프론트 재계산 없음). 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
 
 **표시 문구 i18n**: 컨트롤 바·고급 필터·유형/키워드/태그 입력·카테고리 선택·로딩/빈 결과·일자 새 창 tooltip과 결과 건수·연월 구분선·요일은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
@@ -770,11 +772,11 @@ interface TodoRow {
 
 **상위 서사·엔트리 소속 계약**: 저널 스레드는 특정 일자 엔트리로 쓰기 어려운 내용을 제목·본문으로 직접 서술하는 독립 상위 서사다. 엔트리를 스레드에 소속시키는 기능은 **✓ 구현 완료** — 백엔드(테이블 `journal_thread_entry` + 소속 등록/해제/조회/후보 API)와 엔트리 ⋯ 메뉴의 소속 지정 UI(「스레드에 추가」 서브메뉴 + 제목 검색·분류 필터 + 「새 스레드로 시작」 + 본문 소속 스레드 칩)와 **스레드 상세의 소속 엔트리 목록**도 완료됐다(✓). 스레드 상세는 소속 엔트리를 저널 일자와 동일한 `JournalEntryItem` 카드로 표시하되, 저널 일자·연간 상세와 동형으로 `stdrdDt` 별로 그룹핑해 그룹마다 `journal-day-header`(날짜 + `(요일)`, `getWeekDayStr`)를 얹는다 — 카드별 날짜 라벨은 일자 헤더로 대체됐다. `GET /api/journal/threads/{id}/entries` 가 소속 메타가 아니라 full `JournalEntryDto` 목록을 반환하며, `JournalThreadEntryService.getEntriesByThread` 가 `JournalEntryService.getListDtoByIds` 로 조회한 뒤 **일자 → 챕터 `sortOrder` → 원본 엔트리 `sortOrder` → ID 오름차순**으로 결정적 정렬한다(공용 헬퍼 `JournalEntryService.sortByChapterAndEntryOrder`; 챕터 sortOrder는 `JournalChapterRepository`로 배치 조회. 연간 결산 엔트리 목록 `getAnnualListDtoByUser`도 같은 헬퍼로 정렬해 저널 일자 화면과 순서를 일치시킨다). 엔트리 `sortOrder`가 챕터별로 1부터라 챕터 순서를 함께 봐야 저널 일자 화면과 같은 그룹 순서가 나온다. 스레드 소속 자체의 nullable `sort_order`는 사용하지 않으며, 챕터·엔트리 순서가 없거나 같으면 ID가 tiebreak다. 프론트 그룹핑은 백엔드 정렬 순서를 first-seen 으로 보존한다. 상세 카드가 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제 액션을 제공하는 것은 의도된 계약이다. 스레드에 보이는 항목은 읽기 전용 복제본이 아니라 같은 원본 엔트리이므로 저널 일자와 기능 경계를 달리하지 않는다.
 
-**lifecycle 표시·접힘 정책**: 소속 엔트리는 서버에서 lifecycle을 병합(`enrichLifecycleMixed`, 혼합 타입 그룹별 `getLifecycleMap`)해 내려준다. `RESOLVED`는 초록(꿈은 보라), `PENDING`은 회색 상태 표현을 사용한다. 스레드 맥락에서는 `JournalEntryItem`의 `disableLifecycleCollapse`로 lifecycle 자동 접힘을 억제하고, 상태 표시·수동 접기·서버 `COLLAPSED`는 유지한다. state는 병합하지 않는다.
+**lifecycle·Reflection 표시·접힘 정책**: 소속 엔트리는 서버에서 target 역참조 Reflection(`enrichMixed` → `reflectionList`)과 lifecycle(`enrichLifecycleMixed`, 교차뷰 Reflection 포함)을 일자 조회와 같은 계약으로 병합해 내려준다. `JournalEntryItem`이 일자와 동일하게 슬림 임베드 교차뷰를 렌더한다. `RESOLVED`는 초록(꿈은 보라), `PENDING`은 회색 상태 표현을 사용한다. 스레드 맥락에서는 `disableLifecycleCollapse`로 lifecycle 자동 접힘을 억제하고, 상태 표시·수동 접기·서버 `COLLAPSED`는 유지한다. state는 병합하지 않는다.
 
 **KTMenu 재초기화**: 소속 엔트리 목록은 `JournalThreadDetailContent`가 `detailEntries`·`detailModel.id` 변화를 watch해 `reinitMetronicAfterDom()`으로 ⋯ 컨텍스트 메뉴·헤더 라이프사이클 드롭다운(Metronic KTMenu)을 재바인딩한다(`{ immediate: true }`, 최초 로드와 `refreshOpenDetail` 재조회 모두 커버). 이 재초기화가 없으면 모달·독립 페이지의 ⋯ 메뉴가 열리지 않는다 — 검색·일자 화면이 목록 렌더 후 재초기화하는 것과 동형 계약이다.
 
-**엔트리 액션 호스트·갱신 계약**: 상세 모달을 연 현재 화면의 레이아웃은 엔트리 카드가 호출하는 `CommentRegistModal`, `CommentListModal`, `JournalInterpretationRegistModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalTagContextMenu`를 마운트한다. `JournalEntryRegistModal`·`JournalEntryViewModal`은 `App.vue`의 비팝업 전역 마운트를 재사용하고 검색·일간 팝업은 자체 마운트를 유지한다. 엔트리·해석의 수정/삭제, 댓글, 이력 복원, 관련글 연결/해제, 태그 프로필, 스레드 소속, 라이프사이클·상태 변경이 성공하면 `refreshJournalEntryHostForRoute`가 route가 아니라 `detailOpen`을 전경 판단 기준으로 사용한다. 열린 상세의 본문·집계 태그·소속 엔트리를 먼저 재조회하고, 배경이 주간·월간·일간이면 `refreshJournalDaysForRoute`도 실행하되 상세 축을 반환해 배경 스크롤을 막는다. 검색 배경은 기존 로컬 결과 갱신 이벤트를 함께 수행한다. 상세 재조회 실패 시 읽던 데이터를 비우지 않고 오류를 기록·표시한다.
+**엔트리 액션 호스트·갱신 계약**: 상세 모달을 연 현재 화면의 레이아웃은 엔트리 카드가 호출하는 `CommentRegistModal`, `CommentListModal`, `JournalReflectionRegistModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalTagContextMenu`를 마운트한다. `JournalEntryRegistModal`·`JournalEntryViewModal`은 `App.vue`의 비팝업 전역 마운트를 재사용하고 검색·일간 팝업은 자체 마운트를 유지한다. 엔트리·리플렉션의 수정/삭제, 댓글, 이력 복원, 관련글 연결/해제, 태그 프로필, 스레드 소속, 라이프사이클·상태 변경이 성공하면 `refreshJournalEntryHostForRoute`가 route가 아니라 `detailOpen`을 전경 판단 기준으로 사용한다. 열린 상세의 본문·집계 태그·소속 엔트리를 먼저 재조회하고, 배경이 주간·월간·일간이면 `refreshJournalDaysForRoute`도 실행하되 상세 축을 반환해 배경 스크롤을 막는다. 검색 배경은 기존 로컬 결과 갱신 이벤트를 함께 수행한다. 상세 재조회 실패 시 읽던 데이터를 비우지 않고 오류를 기록·표시한다.
 
 **도메인 메타 경계**: 스레드의 자기 설명 SSOT는 제목·본문이다. 시작·최근 시점은 소속 엔트리 일자에서 파생한다. **스레드 라이프사이클(`OPEN`/`PENDING`/`RESOLVED`)은 ✓** — 기본 상태 `OPEN`은 `lifecycle` row 부재로 표현하고, `PENDING`·`RESOLVED`만 `ref_content_type=JOURNAL_THREAD` row로 저장한다. 목록·상세 DTO enrich와 필터는 row 부재를 `OPEN`으로 해석하며, 목록 `lifecycleKey` 필터·후보 `includeResolved`·목록/상세 설정 UI(`PUT /api/lifecycles`)까지 구현한다. 일자 캐시 등록은 하지 않는다. 종결 시점·대표 엔트리(앵커)·별도 핵심 질문 필드는 현재 계약에 포함하지 않는다. 스레드 상세는 날짜순 전체 기록을 읽는 화면이며 nullable 소속 `journal_thread_entry.sort_order`를 표시 순서에 사용하지 않고 별도 소속 역할도 두지 않는다. 같은 일자의 순서는 원본 엔트리 `journal_entry.sort_order`를 따른다.
 
@@ -835,7 +837,7 @@ interface TodoRow {
 
 **Aside 열기 버튼 위치**: aside 숨김 시 데스크톱 열기 버튼(`bi-layout-sidebar-inset-reverse`)은 `JournalDayViewToolbar` 액션 행의 맨 오른쪽에서 일정 화면과 같은 구분자+아이콘 슬롯으로 표시되고, sticky 툴바와 함께 스크롤을 따라간다. 기존 본문 컨테이너의 `position-absolute; top: 4rem; right: 0` 버튼은 툴바 액션 영역이 숨겨지는 모바일(`d-md-none`)에서만 유지한다. 변경 전에는 모든 화면 크기에서 본문 우상단에 떠 있어 데스크톱 액션 행과 정렬되지 않았다.
 
-**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalInterpretationRegistModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`. (`JournalEntryRegistModal`·`JournalEntryViewModal`은 채팅 RAG 원문 딥링크를 위해 `App.vue`에서 비팝업 전역 마운트 — 레이아웃 중복 마운트 없음. 출처 클릭은 읽기 전용 뷰, 편집은 뷰 footer에서 수정 모달로 전환.)
+**마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalReflectionRegistModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`. (`JournalEntryRegistModal`·`JournalEntryViewModal`은 채팅 RAG 원문 딥링크를 위해 `App.vue`에서 비팝업 전역 마운트 — 레이아웃 중복 마운트 없음. 출처 클릭은 읽기 전용 뷰, 편집은 뷰 footer에서 수정 모달로 전환.)
 
 `JournalDayMetaModal.vue`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 각 일자는 카드형(날짜 → 메타·태그 → 시스템 요약, 구분선)으로 표시한다. 시스템 요약 챕터(`summaryYn=Y`, 없으면 첫 non-DREAM)의 첫 non-empty 엔트리 본문(`summaryEntryHtmlOf`, `journal-content`/`v-html`)은 레거시 `collapse-3`(최대 3줄)·`expand-btn`으로 미리보고 클릭·더보기로 전체를 펼친다. 접힘 중에는 빈 문단을 제거·문단 여백을 줄이고, 펼침 시 원문 HTML·간격을 그대로 둔다. 데이터는 SEARCH 목록의 `journalChapterList`를 파생하며 추가 API는 없다. locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 

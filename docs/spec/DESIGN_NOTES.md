@@ -8,7 +8,7 @@
     - journal-diary
     - journal-dream
     - journal-note
-    - journal-interpretation
+    - journal-reflection
 - journal-thread
 - journal-annual
   - journal-annual-review
@@ -64,11 +64,17 @@
 - NOTE 는 **chapter 타입**(`ChapterType.NOTE`)으로 존재한다. 현재 쓰기 경로에서 NOTE chapter 의 entry 는 `JOURNAL_DIARY` 로 저장된다(`JOURNAL_NOTE` contentType 은 예약).
 - Reflection 흡수 후 NOTE 의 추가 역할: day 없는 **orphan-NOTE 버킷 chapter** — 무소속 사유·이관 시 live target 없는 행의 착지처. 정본: `docs/migration/journal/reflection-absorption.md` §4.3.
 
-### 저널 해석(journal-interpretation)
+### 저널 리플렉션(journal-reflection)
 
-- **폐기·수렴 결정**: 독립 aggregate `journal_interpretation` / `JOURNAL_INTERPRETATION` 은 Entry 종류 **Reflection**(`JOURNAL_REFLECTION`)으로 흡수 후 제거한다.
-- target 설계·백필·phase 정본: `docs/migration/journal/reflection-absorption.md` (상태: 설계 확정 · 미구현).
-- as-built 화면/인터랙션/컴포넌트 스펙은 phase 착지 시에만 갱신한다(선반영 금지).
+- Entry 종류 **Reflection**(`JOURNAL_REFLECTION`). 독립 aggregate `journal_interpretation` 은 흡수·제거됐다.
+- 등록: `POST /api/journal/entries` 에 `contentType=JOURNAL_REFLECTION`을 실으면 `resolveForRegist`가 챕터 역산을 우회해 Reflection으로 영속한다. DIARY/DREAM 등록은 계속 챕터 타입에서 역산한다.
+- 태그: **독립** Reflection만 `tag_content`(ref_content_type=`JOURNAL_REFLECTION`)를 가진다. 딸린 Reflection은 태그를 두지 않는다. 독립 태그는 일기 축 집계(클라우드·결산 DIARY·챕터 접힘 요약)에서 `JOURNAL_DIARY`와 합친다(`REFLECTION_ONE_TYPE.md` §5.2). 저장·수정·삭제 후 캐시 무효화는 `JOURNAL_REFLECTION`→`JournalEntryCacheEvictor` 매핑으로 일자·챕터·엔트리·태그 캐시를 비운다.
+- 표시: same-chapter에서는 1급 행을 dedup하고, reflection을 target 엔트리 본문과 태그 사이에 슬림 임베드(헤더·제목 없이 본문만, 옅은 1px 좌측선, 우측 댓글·복사·⋯는 엔트리 액션과 같은 오른쪽 열에 정렬)로 보인다. 엔트리 접힘 시 함께 숨는다. 엔트리 액션도 본문 옆 head-row로 옮겨 두 액션 열을 맞췄다. same-chapter dedup 경로에서는 수정·삭제·이력·라이프사이클·상태(중요/참조)를 임베드 ⋯ 메뉴가 담당한다(접기 메뉴 없음). 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가를 제공하지 않는다(`REFLECTION_ONE_TYPE.md`).
+- target(refId/refContentType)·이관·phase 정본: `docs/migration/journal/reflection-absorption.md` (상태: Phase 1~4 착지).
+- 단일 타입·optional target·형제/독립(§3.1)·스레드 소속·lifecycle/state·primary↔딸린 연쇄·독립만 태그: `docs/spec/REFLECTION_ONE_TYPE.md`.
+- as-built: `docs/migration/journal/{screen,interaction,component}-spec.md` 의 Reflection 항목.
+- 스레드 상세 소속 엔트리도 일자와 같이 `enrichMixed`로 `reflectionList`를 채운다.
+- 스레드 소속: 일기·꿈·노트를 target으로 둔 Reflection은 소속 **추가** 대상이 아니다. 독립 Reflection은 허용. 독립 Reflection 소속 챕터는 DIARY·NOTE만(DREAM 제외), 같은 일자 안에서 챕터 이동 가능. 일기 검색(`type=DIARY`) 결과 행에 독립 Reflection 포함·딸린은 원문 키워드 EXISTS. Reflection→Reflection은 개념상 비권장·UI 숨김(§3.1); 레거시 행·API는 유지. 정본: `REFLECTION_ONE_TYPE.md` §3.1·§4.
 
 ### 저널 스레드(journal-thread)
 
@@ -239,6 +245,7 @@
 - 컬럼은 방향성을 드러내는 `src/dst`보다 중립적인 `left/right`를 사용한다.
 - "A-B"와 "B-A"를 같은 관계로 보고, 물리적으로는 1행만 저장한다. 조회는 양방향으로 푼다. 자기 자신과의 관계는 금지한다.
 - 저장 전에 항상 pair를 정규화한다. 정규화 후 앞쪽을 `left_*`, 뒤쪽을 `right_*`에 저장한다.
+- 관련글 API·연결 생성의 지원 타입은 `JOURNAL_DIARY`·`JOURNAL_DREAM`이다. 엔트리 삭제 후처리의 관련글 정리 오버로드는 미지원 타입(`JOURNAL_REFLECTION` 등)을 거절하지 않고 no-op 한다.
 
 #### FLOW — 폐기된 결정 기록
 

@@ -89,28 +89,15 @@ export interface HistoryCmpstn {
   historyTriggeredAt?: string;
 }
 
-/** 해석 항목 */
-export interface InterpretationItem {
-  id: number;
-  contentType?: string;
-  refId?: number;
-  refContentType?: string;
-  journalDayId?: number;
-  title?: string;
-  content?: string;
-  markdownContent?: string;
-  sortOrder?: number;
-  stdrdDt?: string;
-  state?: StateCmpstn;
-  lifecycle?: LifecycleCmpstn;
-  history?: HistoryCmpstn;
-  comment?: CommentCmpstn;
-}
 
-/** 저널 엔트리 (일기 / 꿈 / 노트) */
+/** 저널 엔트리 (일기 / 꿈 / 노트 / 리플렉션) */
 export interface JournalEntryDto {
   id: number;
   contentType?: string;
+  /** target(해석 대상) 엔트리 ID — Reflection 만 사용, nullable */
+  refId?: number;
+  /** target 엔트리 콘텐츠 타입 — Reflection 만 사용, nullable */
+  refContentType?: string;
   title?: string;
   content?: string;
   markdownContent?: string;
@@ -136,7 +123,10 @@ export interface JournalEntryDto {
   relatedContentList?: RelatedContentItem[];
   /** 이 엔트리가 속한 스레드 목록. 소속이 없으면 빈 목록. */
   threadList?: JournalThreadEntryDto[];
-  journalInterpretationList?: InterpretationItem[];
+  /** target 이 이 엔트리인 Reflection 목록 (역참조 교차뷰) */
+  reflectionList?: JournalEntryDto[];
+  /** 현재 로그인 사용자 소유 여부 (백엔드 BaseAuditRegDto getIsCreatedBy 직렬화) */
+  isCreatedBy?: boolean;
   /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
   diaryResolvedYn?: string;
   /** 소속 일자 꿈 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */

@@ -16,7 +16,7 @@ public enum JournalEntryTypePolicy {
 
     DIARY(ContentType.JOURNAL_DIARY, ChapterType.DIARY) {
         @Override public boolean supportsChapterChange() { return true; }
-        @Override public boolean supportsInterpretation() { return true; }
+        @Override public boolean canBeReflectionTarget() { return true; }
         @Override public String stateCacheName() { return JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DIARY); }
         @Override public String lifecycleCacheName() { return JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DIARY); }
         @Override public Integer resolveModifiedChapterId(Integer dtoChapterId, Integer entityChapterId) {
@@ -26,15 +26,31 @@ public enum JournalEntryTypePolicy {
 
     DREAM(ContentType.JOURNAL_DREAM, ChapterType.DREAM) {
         @Override public boolean supportsChapterChange() { return false; }
-        @Override public boolean supportsInterpretation() { return true; }
+        @Override public boolean canBeReflectionTarget() { return true; }
         @Override public String stateCacheName() { return JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DREAM); }
         @Override public String lifecycleCacheName() { return JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DREAM); }
+        @Override public Integer resolveModifiedChapterId(Integer dtoChapterId, Integer entityChapterId) {
+            return dtoChapterId != null ? dtoChapterId : entityChapterId;
+        }
+    },
+
+    /**
+     * Reflection = 별도 Aggregate(journal_reflection)의 콘텐츠 타입. Entry 스트림의 chapter 를 갖지 않으므로
+     * expectedChapterType 는 null 이다. 이 정책 항목은 Reflection 을 reflection target 타입으로 분류하고
+     * state·lifecycle 캐시명을 제공하는 데 쓰인다. 쓰기는 {@code JournalReflectionService} 가 담당한다.
+     */
+    REFLECTION(ContentType.JOURNAL_REFLECTION, null) {
+        @Override public boolean supportsChapterChange() { return true; }
+        @Override public boolean canBeReflectionTarget() { return true; }
+        @Override public String stateCacheName() { return JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_REFLECTION); }
+        @Override public String lifecycleCacheName() { return JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_REFLECTION); }
         @Override public Integer resolveModifiedChapterId(Integer dtoChapterId, Integer entityChapterId) {
             return dtoChapterId != null ? dtoChapterId : entityChapterId;
         }
     };
 
     public final ContentType contentType;
+    /** 이 타입을 담는 chapter 타입. REFLECTION은 본질 타입이라 chapter가 타입을 지시하지 않으므로 null(universal placement). */
     public final ChapterType expectedChapterType;
 
     JournalEntryTypePolicy(ContentType contentType, ChapterType expectedChapterType) {
@@ -45,8 +61,8 @@ public enum JournalEntryTypePolicy {
     /** 챕터 변경 지원 여부. */
     public abstract boolean supportsChapterChange();
 
-    /** 해석(interpretation) 지원 여부. */
-    public abstract boolean supportsInterpretation();
+    /** Reflection target 가능 여부. reflection 이 이 타입을 target 으로 가리킬 수 있는가(DIARY/DREAM/REFLECTION). */
+    public abstract boolean canBeReflectionTarget();
 
     /**
      * 월별 상태 캐시 이름. 상태 캐시가 없는 타입은 null 반환.
@@ -75,6 +91,7 @@ public enum JournalEntryTypePolicy {
     public static JournalEntryTypePolicy from(final ContentType contentType) {
         return switch (contentType) {
             case JOURNAL_DREAM -> DREAM;
+            case JOURNAL_REFLECTION -> REFLECTION;
             default -> DIARY;
         };
     }
@@ -91,19 +108,19 @@ public enum JournalEntryTypePolicy {
     }
 
     /**
-     * interpretation을 지원하는 정책 목록을 반환한다.
+     * Reflection target 이 될 수 있는 정책 목록을 반환한다.
      *
-     * @return 해석 지원 정책 목록
+     * @return reflection target 가능 정책 목록 (DIARY/DREAM/REFLECTION)
      */
-    public static List<JournalEntryTypePolicy> interpretableTypes() {
-        return INTERPRETABLE_TYPES;
+    public static List<JournalEntryTypePolicy> reflectionTargetTypes() {
+        return REFLECTION_TARGET_TYPES;
     }
 
-    private static final List<JournalEntryTypePolicy> INTERPRETABLE_TYPES;
+    private static final List<JournalEntryTypePolicy> REFLECTION_TARGET_TYPES;
 
     static {
-        INTERPRETABLE_TYPES = Arrays.stream(values())
-                .filter(JournalEntryTypePolicy::supportsInterpretation)
+        REFLECTION_TARGET_TYPES = Arrays.stream(values())
+                .filter(JournalEntryTypePolicy::canBeReflectionTarget)
                 .toList();
     }
 }

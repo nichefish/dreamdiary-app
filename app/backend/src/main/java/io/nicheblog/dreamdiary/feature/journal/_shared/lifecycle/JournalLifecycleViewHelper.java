@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.feature.journal._shared.lifecycle;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.LifecycleKey;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,24 +32,6 @@ public class JournalLifecycleViewHelper {
         if (CollectionUtils.isEmpty(listDto)) return;
 
         for (final JournalEntryDto dto : listDto) {
-            if (dto == null || dto.getId() == null) continue;
-            dto.setLifecycle(toCmpstn(lifecycleMap.get(dto.getId())));
-        }
-    }
-
-    /**
-     * 저널 해석 DTO 목록에 라이프사이클 값을 적용한다.
-     *
-     * @param listDto 라이프사이클을 붙일 해석 DTO 목록
-     * @param lifecycleMap 해석 ID 기준 라이프사이클 키 맵
-     */
-    public static void applyInterpretationLifecycle(
-            final List<JournalInterpretationDto> listDto,
-            final Map<Integer, String> lifecycleMap
-    ) {
-        if (CollectionUtils.isEmpty(listDto)) return;
-
-        for (final JournalInterpretationDto dto : listDto) {
             if (dto == null || dto.getId() == null) continue;
             dto.setLifecycle(toCmpstn(lifecycleMap.get(dto.getId())));
         }

@@ -32,38 +32,377 @@
 
     <!--begin::본문 영역-->
     <div :class="[contentClass, 'flex-grow-1', { 'is-summary-card': isSummary }]">
-      <!--begin::꿈 상태 배지 (꿈 엔트리 전용)-->
-      <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
-        <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!{{ t('state.nightmare') }}</span>
-        <span v-if="hasState('HALLUC')" class="badge badge-light-secondary">!{{ t('state.hallucination') }}</span>
-      </div>
-      <!--end::꿈 상태 배지-->
+      <!--begin::본문+액션 head-row (본문 옆에 액션 정렬; 리플렉션 임베드 액션과 같은 오른쪽 열)-->
+      <div class="d-flex gap-2 align-items-start">
+        <!--begin::head-main (배지·제목·본문)-->
+        <div class="flex-grow-1">
+          <!--begin::꿈 상태 배지 (꿈 엔트리 전용)-->
+          <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
+            <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!{{ t('state.nightmare') }}</span>
+            <span v-if="hasState('HALLUC')" class="badge badge-light-secondary">!{{ t('state.hallucination') }}</span>
+          </div>
+          <!--end::꿈 상태 배지-->
 
-      <!--begin::엔트리 제목 (유형 무관, title 있을 때만)
-        변경 전: 꿈 엔트리에서만 배지 행에 인라인(fs-7)으로 표시 → 일기·노트는 제목이 보이지 않았음
-        변경 후: 모든 유형에서 배지 행 아래 독립 행으로 표시. 본문(.journal-content = 1rem) 대비
-                 한 단계 위인 fs-5(1.15rem) + fw-bold.
-        접힘(isCollapsed) 상태와 무관하게 항상 표시한다 (기존 꿈 제목 동작 유지 — 본문만 숨김).
-        .journal-content 밖이라 유형별 본문 색상을 상속하지 않고 기본 텍스트색을 쓴다.
-        Prefix 소비 추가 후: 말머리는 제목 앞의 색상 배지로 표시하며 제목이 없어도 말머리만 남긴다. -->
-      <div v-if="entry.prefix || entry.title" class="d-flex align-items-center flex-wrap fw-bold fs-5 mb-1">
-        <span
-          v-if="entry.prefix"
-          class="badge me-2 fs-8"
-          :style="{ borderColor: entry.prefix.color || '', color: entry.prefix.color || '' }"
-        >{{ entry.prefix.name }}</span>
-        <span v-if="entry.title">{{ entry.title }}</span>
-      </div>
-      <!--end::엔트리 제목-->
+          <!--begin::엔트리 제목 (유형 무관, title 있을 때만)
+            변경 전: 꿈 엔트리에서만 배지 행에 인라인(fs-7)으로 표시 → 일기·노트는 제목이 보이지 않았음
+            변경 후: 모든 유형에서 배지 행 아래 독립 행으로 표시. 본문(.journal-content = 1rem) 대비
+                     한 단계 위인 fs-5(1.15rem) + fw-bold.
+            접힘(isCollapsed) 상태와 무관하게 항상 표시한다 (기존 꿈 제목 동작 유지 — 본문만 숨김).
+            .journal-content 밖이라 유형별 본문 색상을 상속하지 않고 기본 텍스트색을 쓴다.
+            Prefix 소비 추가 후: 말머리는 제목 앞의 색상 배지로 표시하며 제목이 없어도 말머리만 남긴다. -->
+          <div v-if="entry.prefix || entry.title" class="d-flex align-items-center flex-wrap fw-bold fs-5 mb-1">
+            <span
+              v-if="entry.prefix"
+              class="badge me-2 fs-8"
+              :style="{ borderColor: entry.prefix.color || '', color: entry.prefix.color || '' }"
+            >{{ entry.prefix.name }}</span>
+            <span v-if="entry.title">{{ entry.title }}</span>
+          </div>
+          <!--end::엔트리 제목-->
 
-      <!--begin::마크다운 본문-->
-      <div
-        v-if="!isCollapsed && entry.markdownContent"
-        class="journal-content p-2"
-        v-html="displayMarkdownContent"
-      ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">{{ t("journal.entry.collapsed") }}</div>
-      <!--end::마크다운 본문-->
+          <!--begin::마크다운 본문-->
+          <div
+            v-if="!isCollapsed && entry.markdownContent"
+            class="journal-content p-2"
+            v-html="displayMarkdownContent"
+          ></div>
+          <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">{{ t("journal.entry.collapsed") }}</div>
+          <!--end::마크다운 본문-->
+        </div>
+        <!--end::head-main-->
+        <!--begin::우측 액션 영역-->
+        <div v-if="entry.id" class="journal-entry-actions d-flex flex-row align-items-start pt-1 gap-1">
+          <!--begin::댓글 등록 버튼-->
+          <button
+            v-if="axisWritable"
+            type="button"
+            class="btn btn-xs btn-icon journal-entry-action-btn"
+            :title="t('comment.register')"
+            @click="openCommentRegist"
+          >
+            <i class="bi bi-chat-dots fs-8"></i>
+          </button>
+          <!--end::댓글 등록 버튼-->
+
+          <!--begin::복사 버튼-->
+          <button
+            type="button"
+            class="btn btn-xs btn-icon journal-entry-action-btn"
+            :title="t('common.copy')"
+            @click="copyEntry"
+          >
+            <i class="bi bi-copy fs-8"></i>
+          </button>
+          <!--end::복사 버튼-->
+
+          <!--begin::컨텍스트 메뉴-->
+          <div class="me-0">
+            <button
+              type="button"
+              class="btn btn-xs btn-icon journal-entry-action-btn"
+              data-kt-menu-trigger="click"
+              data-kt-menu-placement="bottom-end"
+              :title="t('common.menu')"
+            >
+              <i class="ki-solid ki-dots-horizontal fs-6"></i>
+            </button>
+            <div
+              class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
+              data-kt-menu="true"
+            >
+              <!--begin::메뉴 헤더-->
+              <div class="menu-item px-3">
+                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ contentLabel }}</div>
+              </div>
+              <!--end::메뉴 헤더-->
+
+              <!--begin::수정-->
+              <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="openModify">
+                  {{ t('common.edit') }}
+                  <i class="bi bi-pencil-square fs-8"></i>
+                </div>
+              </div>
+              <!--end::수정-->
+
+              <!--begin::해석 등록 — primary만. 1급 Reflection에서는 R→R을 열지 않는다(REFLECTION_ONE_TYPE §3.1).-->
+              <div
+                v-if="axisWritable && entry.contentType !== 'JOURNAL_REFLECTION'"
+                class="menu-item px-3 my-1 cursor-pointer"
+              >
+                <div class="menu-link flex-stack px-3" @click="openReflectionRegist">
+                  {{ t('journal.entry.reflection.register') }}
+                  <i class="bi bi-lightbulb fs-8"></i>
+                </div>
+              </div>
+              <!--end::해석 등록-->
+
+              <!--begin::이력 (historyTriggeredAt 없으면 disabled)-->
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div
+                  :class="['menu-link flex-stack px-3', { 'disabled text-muted': !hasHistory }]"
+                  @click="hasHistory ? openHistory() : undefined"
+                >
+                  {{ t('journal.entry.history') }}
+                  <i class="bi bi-clock-history fs-8"></i>
+                </div>
+              </div>
+              <!--end::이력-->
+
+              <!--begin::관련 글 추가 (다른 사람 꿈 제외)-->
+              <div v-if="axisWritable && !hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="openRelated">
+                  {{ t('journal.entry.related-content.add') }}
+                  <i class="bi bi-link-45deg fs-8"></i>
+                </div>
+              </div>
+              <!--end::관련 글 추가-->
+
+              <!--begin::스레드에 추가 서브메뉴 (다른 사람 꿈·일기/꿈/노트 target Reflection 제외)-->
+              <div
+                v-if="axisWritable && !hasDreamerName(entry) && !isPrimaryContentTargetedReflection(entry)"
+                class="menu-item px-3"
+                data-kt-menu-trigger="hover"
+                data-kt-menu-placement="right-end"
+                @mouseenter="ensureThreadOptions"
+              >
+                <a href="#" class="menu-link px-3" @click.prevent>
+                  <span class="menu-title">{{ t('journal.entry.thread.add') }}</span>
+                  <span class="menu-arrow"></span>
+                </a>
+                <div class="menu-sub menu-sub-dropdown py-3" style="width: 280px;">
+                  <!--begin::새 스레드로 시작-->
+                  <div class="menu-item px-3 my-1 cursor-pointer">
+                    <div class="menu-link flex-stack px-3 text-primary" @click="startNewThread">
+                      {{ t('journal.entry.thread.new') }}
+                      <i class="bi bi-plus-lg fs-8"></i>
+                    </div>
+                  </div>
+                  <!--end::새 스레드로 시작-->
+
+                  <div class="separator my-2"></div>
+
+                  <!--begin::스레드 후보 검색·말머리-->
+                  <div
+                    class="menu-item px-3"
+                    data-kt-menu-dismiss="false"
+                    @click.stop
+                    @keydown.stop
+                  >
+                    <div class="menu-content px-3 py-1 w-100">
+                      <input
+                        v-model="membershipStore.optionKeyword"
+                        type="search"
+                        class="form-control form-control-sm"
+                        :placeholder="t('journal.thread.filter.keyword.placeholder')"
+                        data-kt-menu-dismiss="false"
+                        @input="scheduleThreadCandidateSearch"
+                      />
+                      <select
+                        v-model="membershipStore.optionPrefix"
+                        class="form-select form-select-sm mt-2"
+                        :disabled="membershipStore.prefixesLoading"
+                        data-kt-menu-dismiss="false"
+                        @change="refreshThreadCandidates"
+                      >
+                        <option value="">{{ t("journal.thread.filter.all-prefixes") }}</option>
+                        <option
+                          v-for="item in membershipPrefixItems"
+                          :key="'thread-prefix-' + item.id"
+                          :value="String(item.id)"
+                        >
+                          {{ item.name }}
+                        </option>
+                      </select>
+                      <div v-if="membershipStore.prefixError" class="text-danger fs-9 mt-1">
+                        {{ membershipStore.prefixError }}
+                      </div>
+                      <label class="form-check form-check-custom form-check-sm form-check-solid mt-2 cursor-pointer">
+                        <input
+                          v-model="membershipStore.optionIncludeResolved"
+                          class="form-check-input"
+                          type="checkbox"
+                          data-kt-menu-dismiss="false"
+                          @change="refreshThreadCandidates"
+                        />
+                        <span class="form-check-label fs-8 text-gray-700">
+                          {{ t("journal.entry.thread.candidates.include-resolved") }}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                  <!--end::스레드 후보 검색·분류-->
+
+                  <div class="separator my-2"></div>
+
+                  <!--begin::스레드 후보 목록-->
+                  <div v-if="membershipStore.optionsLoading" class="menu-item px-3">
+                    <span class="menu-link px-3 text-muted fs-8">{{ t('common.loading') }}</span>
+                  </div>
+                  <div v-if="membershipStore.optionsError" class="menu-item px-3">
+                    <span class="menu-content px-3 text-danger fs-8">{{ membershipStore.optionsError }}</span>
+                  </div>
+                  <div
+                    v-if="!membershipStore.optionsLoading
+                      && !membershipStore.optionsError
+                      && membershipStore.threadOptions.length === 0"
+                    class="menu-item px-3"
+                  >
+                    <span class="menu-content px-3 text-muted fs-8">
+                      {{ hasThreadCandidateFilter
+                        ? t('journal.entry.thread.search.empty')
+                        : t('journal.entry.thread.empty') }}
+                    </span>
+                  </div>
+                  <template v-if="membershipStore.threadOptions.length > 0">
+                    <div
+                      v-for="opt in membershipStore.threadOptions"
+                      :key="'thread-opt-' + opt.id"
+                      class="menu-item px-3 my-1 cursor-pointer"
+                    >
+                      <div class="menu-link flex-stack px-3" @click="toggleThread(opt)">
+                        <span class="min-w-0">
+                          <span class="d-block text-truncate">
+                            {{ opt.title || t('journal.entry.thread.untitled') }}
+                          </span>
+                          <span class="d-block text-muted fs-9">
+                            <span v-if="threadPrefixName(opt)">{{ threadPrefixName(opt) }}</span>
+                            <span
+                              v-if="opt.lifecycleKey && opt.lifecycleKey !== 'OPEN'"
+                              :class="[
+                                threadPrefixName(opt) ? 'ms-1' : '',
+                                opt.lifecycleKey === 'PENDING' ? 'text-gray-600' : 'text-success',
+                              ]"
+                            >{{ threadLifecycleLabel(opt.lifecycleKey) }}</span>
+                          </span>
+                        </span>
+                        <i v-if="opt.member" class="bi bi-check-lg fs-8 text-success"></i>
+                      </div>
+                    </div>
+                  </template>
+                  <!--end::스레드 후보 목록-->
+                </div>
+              </div>
+              <!--end::스레드에 추가 서브메뉴-->
+
+              <div v-if="axisWritable" class="separator my-2"></div>
+
+              <!--begin::라이프사이클 서브메뉴-->
+              <div v-if="axisWritable" class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+                <a href="#" class="menu-link px-3" @click.prevent>
+                  <span class="menu-title">{{ t('common.lifecycle') }}</span>
+                  <span class="menu-arrow"></span>
+                </a>
+                <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                  <div v-for="lc in lifecycleOptions" :key="'lc-' + lc.key" class="menu-item px-3">
+                    <div class="menu-content px-3">
+                      <label class="form-check form-check-custom form-check-solid cursor-pointer">
+                        <input
+                          class="form-check-input w-18px h-18px cursor-pointer"
+                          type="radio"
+                          :name="'entry-lc-' + entry.id"
+                          :value="lc.key"
+                          :checked="lcKey === lc.key"
+                          @click="setLifecycle(lc.key)"
+                        />
+                        <span class="form-check-label fs-7" :class="lcKey === lc.key ? lc.activeClass : 'text-muted'">{{ lc.label }}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end::라이프사이클 서브메뉴-->
+
+              <!--begin::상태 서브메뉴-->
+              <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
+                <a href="#" class="menu-link px-3" @click.prevent>
+                  <span class="menu-title">{{ t('common.status') }}</span>
+                  <span class="menu-arrow"></span>
+                </a>
+                <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                  <!--begin::중요/참조 토글-->
+                  <template v-if="axisWritable">
+                  <div v-for="st in statusOptions" :key="'st-' + st.key" class="menu-item px-3">
+                    <div class="menu-content px-3">
+                      <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                        <input
+                          class="form-check-input w-30px h-20px cursor-pointer"
+                          type="checkbox"
+                          :checked="hasState(st.key)"
+                          @click="toggleState(st.key)"
+                        />
+                        <span class="form-check-label fs-7" :class="hasState(st.key) ? st.activeClass : 'text-muted'">{{ st.label }}</span>
+                      </label>
+                    </div>
+                  </div>
+                  <!--end::중요/참조 토글-->
+
+                  <!--begin::악몽/환각 토글 (꿈 전용)-->
+                  <template v-if="isDream">
+                    <div v-for="st in dreamStatusOptions" :key="'dst-' + st.key" class="menu-item px-3">
+                      <div class="menu-content px-3">
+                        <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                          <input
+                            class="form-check-input w-30px h-20px cursor-pointer"
+                            type="checkbox"
+                            :checked="hasState(st.key)"
+                            @click="toggleState(st.key)"
+                          />
+                          <span class="form-check-label fs-7" :class="hasState(st.key) ? st.activeClass : 'text-muted'">{{ st.label }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </template>
+                  <!--end::악몽/환각 토글-->
+                  </template>
+
+                  <!--begin::접기 토글-->
+                  <div class="menu-item px-3">
+                    <div class="menu-content px-3">
+                      <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                        <input
+                          class="form-check-input w-30px h-20px cursor-pointer"
+                          type="checkbox"
+                          :checked="hasState('COLLAPSED')"
+                          @click="toggleState('COLLAPSED')"
+                        />
+                        <span class="form-check-label fs-7" :class="hasState('COLLAPSED') ? 'text-gray-700' : 'text-muted'">{{ t('common.collapse') }}</span>
+                      </label>
+                    </div>
+                  </div>
+                  <!--end::접기 토글-->
+                </div>
+              </div>
+              <!--end::상태 서브메뉴-->
+
+              <div v-if="axisWritable" class="separator my-2"></div>
+
+              <!--begin::삭제-->
+              <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3 text-danger" @click="deleteEntry">
+                  {{ t('common.delete') }}
+                  <i class="bi bi-trash text-danger p-0 fs-8"></i>
+                </div>
+              </div>
+              <!--end::삭제-->
+            </div>
+          </div>
+          <!--end::컨텍스트 메뉴-->
+        </div>
+        <!--end::우측 액션 영역-->
+      </div>
+      <!--end::본문+액션 head-row-->
+
+      <!--begin::Reflection 슬림 임베드 (target=이 엔트리; 본문 아래·태그 위, 엔트리 접힘 시 함께 숨김)-->
+      <template v-if="!isCollapsed">
+        <JournalReflectionItem
+          v-for="reflection in reflectionList"
+          :key="reflection.id"
+          :reflection="reflection"
+          :force-collapsed="localCollapsedOverride"
+        />
+      </template>
+      <!--end::Reflection 슬림 임베드-->
 
       <!--begin::엔트리 태그-->
       <div v-if="tagList.length > 0" class="d-flex flex-wrap gap-1 mt-1 ps-2">
@@ -158,340 +497,14 @@
       <!--end::댓글-->
     </div>
     <!--end::본문 영역-->
-
-    <!--begin::우측 액션 영역-->
-    <div v-if="entry.id" class="journal-entry-actions d-flex flex-row align-items-start pt-1 gap-1">
-      <!--begin::댓글 등록 버튼-->
-      <button
-        v-if="axisWritable"
-        type="button"
-        class="btn btn-xs btn-icon journal-entry-action-btn"
-        :title="t('comment.register')"
-        @click="openCommentRegist"
-      >
-        <i class="bi bi-chat-dots fs-8"></i>
-      </button>
-      <!--end::댓글 등록 버튼-->
-
-      <!--begin::복사 버튼-->
-      <button
-        type="button"
-        class="btn btn-xs btn-icon journal-entry-action-btn"
-        :title="t('common.copy')"
-        @click="copyEntry"
-      >
-        <i class="bi bi-copy fs-8"></i>
-      </button>
-      <!--end::복사 버튼-->
-
-      <!--begin::컨텍스트 메뉴-->
-      <div class="me-0">
-        <button
-          type="button"
-          class="btn btn-xs btn-icon journal-entry-action-btn"
-          data-kt-menu-trigger="click"
-          data-kt-menu-placement="bottom-end"
-          :title="t('common.menu')"
-        >
-          <i class="ki-solid ki-dots-horizontal fs-6"></i>
-        </button>
-        <div
-          class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
-          data-kt-menu="true"
-        >
-          <!--begin::메뉴 헤더-->
-          <div class="menu-item px-3">
-            <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ contentLabel }}</div>
-          </div>
-          <!--end::메뉴 헤더-->
-
-          <!--begin::수정-->
-          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openModify">
-              {{ t('common.edit') }}
-              <i class="bi bi-pencil-square fs-8"></i>
-            </div>
-          </div>
-          <!--end::수정-->
-
-          <!--begin::해석 등록-->
-          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openInterpretationRegist">
-              {{ t('journal.entry.interpretation.register') }}
-              <i class="bi bi-lightbulb fs-8"></i>
-            </div>
-          </div>
-          <!--end::해석 등록-->
-
-          <!--begin::이력 (historyTriggeredAt 없으면 disabled)-->
-          <div class="menu-item px-3 my-1 cursor-pointer">
-            <div
-              :class="['menu-link flex-stack px-3', { 'disabled text-muted': !hasHistory }]"
-              @click="hasHistory ? openHistory() : undefined"
-            >
-              {{ t('journal.entry.history') }}
-              <i class="bi bi-clock-history fs-8"></i>
-            </div>
-          </div>
-          <!--end::이력-->
-
-          <!--begin::관련 글 추가 (다른 사람 꿈 제외)-->
-          <div v-if="axisWritable && !hasDreamerName(entry)" class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openRelated">
-              {{ t('journal.entry.related-content.add') }}
-              <i class="bi bi-link-45deg fs-8"></i>
-            </div>
-          </div>
-          <!--end::관련 글 추가-->
-
-          <!--begin::스레드에 추가 서브메뉴 (다른 사람 꿈 제외)-->
-          <div
-            v-if="axisWritable && !hasDreamerName(entry)"
-            class="menu-item px-3"
-            data-kt-menu-trigger="hover"
-            data-kt-menu-placement="right-end"
-            @mouseenter="ensureThreadOptions"
-          >
-            <a href="#" class="menu-link px-3" @click.prevent>
-              <span class="menu-title">{{ t('journal.entry.thread.add') }}</span>
-              <span class="menu-arrow"></span>
-            </a>
-            <div class="menu-sub menu-sub-dropdown py-3" style="width: 280px;">
-              <!--begin::새 스레드로 시작-->
-              <div class="menu-item px-3 my-1 cursor-pointer">
-                <div class="menu-link flex-stack px-3 text-primary" @click="startNewThread">
-                  {{ t('journal.entry.thread.new') }}
-                  <i class="bi bi-plus-lg fs-8"></i>
-                </div>
-              </div>
-              <!--end::새 스레드로 시작-->
-
-              <div class="separator my-2"></div>
-
-              <!--begin::스레드 후보 검색·말머리-->
-              <div
-                class="menu-item px-3"
-                data-kt-menu-dismiss="false"
-                @click.stop
-                @keydown.stop
-              >
-                <div class="menu-content px-3 py-1 w-100">
-                  <input
-                    v-model="membershipStore.optionKeyword"
-                    type="search"
-                    class="form-control form-control-sm"
-                    :placeholder="t('journal.thread.filter.keyword.placeholder')"
-                    data-kt-menu-dismiss="false"
-                    @input="scheduleThreadCandidateSearch"
-                  />
-                  <select
-                    v-model="membershipStore.optionPrefix"
-                    class="form-select form-select-sm mt-2"
-                    :disabled="membershipStore.prefixesLoading"
-                    data-kt-menu-dismiss="false"
-                    @change="refreshThreadCandidates"
-                  >
-                    <option value="">{{ t("journal.thread.filter.all-prefixes") }}</option>
-                    <option
-                      v-for="item in membershipPrefixItems"
-                      :key="'thread-prefix-' + item.id"
-                      :value="String(item.id)"
-                    >
-                      {{ item.name }}
-                    </option>
-                  </select>
-                  <div v-if="membershipStore.prefixError" class="text-danger fs-9 mt-1">
-                    {{ membershipStore.prefixError }}
-                  </div>
-                  <label class="form-check form-check-custom form-check-sm form-check-solid mt-2 cursor-pointer">
-                    <input
-                      v-model="membershipStore.optionIncludeResolved"
-                      class="form-check-input"
-                      type="checkbox"
-                      data-kt-menu-dismiss="false"
-                      @change="refreshThreadCandidates"
-                    />
-                    <span class="form-check-label fs-8 text-gray-700">
-                      {{ t("journal.entry.thread.candidates.include-resolved") }}
-                    </span>
-                  </label>
-                </div>
-              </div>
-              <!--end::스레드 후보 검색·분류-->
-
-              <div class="separator my-2"></div>
-
-              <!--begin::스레드 후보 목록-->
-              <div v-if="membershipStore.optionsLoading" class="menu-item px-3">
-                <span class="menu-link px-3 text-muted fs-8">{{ t('common.loading') }}</span>
-              </div>
-              <div v-if="membershipStore.optionsError" class="menu-item px-3">
-                <span class="menu-content px-3 text-danger fs-8">{{ membershipStore.optionsError }}</span>
-              </div>
-              <div
-                v-if="!membershipStore.optionsLoading
-                  && !membershipStore.optionsError
-                  && membershipStore.threadOptions.length === 0"
-                class="menu-item px-3"
-              >
-                <span class="menu-content px-3 text-muted fs-8">
-                  {{ hasThreadCandidateFilter
-                    ? t('journal.entry.thread.search.empty')
-                    : t('journal.entry.thread.empty') }}
-                </span>
-              </div>
-              <template v-if="membershipStore.threadOptions.length > 0">
-                <div
-                  v-for="opt in membershipStore.threadOptions"
-                  :key="'thread-opt-' + opt.id"
-                  class="menu-item px-3 my-1 cursor-pointer"
-                >
-                  <div class="menu-link flex-stack px-3" @click="toggleThread(opt)">
-                    <span class="min-w-0">
-                      <span class="d-block text-truncate">
-                        {{ opt.title || t('journal.entry.thread.untitled') }}
-                      </span>
-                      <span class="d-block text-muted fs-9">
-                        <span v-if="threadPrefixName(opt)">{{ threadPrefixName(opt) }}</span>
-                        <span
-                          v-if="opt.lifecycleKey && opt.lifecycleKey !== 'OPEN'"
-                          :class="[
-                            threadPrefixName(opt) ? 'ms-1' : '',
-                            opt.lifecycleKey === 'PENDING' ? 'text-gray-600' : 'text-success',
-                          ]"
-                        >{{ threadLifecycleLabel(opt.lifecycleKey) }}</span>
-                      </span>
-                    </span>
-                    <i v-if="opt.member" class="bi bi-check-lg fs-8 text-success"></i>
-                  </div>
-                </div>
-              </template>
-              <!--end::스레드 후보 목록-->
-            </div>
-          </div>
-          <!--end::스레드에 추가 서브메뉴-->
-
-          <div v-if="axisWritable" class="separator my-2"></div>
-
-          <!--begin::라이프사이클 서브메뉴-->
-          <div v-if="axisWritable" class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
-            <a href="#" class="menu-link px-3" @click.prevent>
-              <span class="menu-title">{{ t('common.lifecycle') }}</span>
-              <span class="menu-arrow"></span>
-            </a>
-            <div class="menu-sub menu-sub-dropdown w-175px py-4">
-              <div v-for="lc in lifecycleOptions" :key="'lc-' + lc.key" class="menu-item px-3">
-                <div class="menu-content px-3">
-                  <label class="form-check form-check-custom form-check-solid cursor-pointer">
-                    <input
-                      class="form-check-input w-18px h-18px cursor-pointer"
-                      type="radio"
-                      :name="'entry-lc-' + entry.id"
-                      :value="lc.key"
-                      :checked="lcKey === lc.key"
-                      @click="setLifecycle(lc.key)"
-                    />
-                    <span class="form-check-label fs-7" :class="lcKey === lc.key ? lc.activeClass : 'text-muted'">{{ lc.label }}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--end::라이프사이클 서브메뉴-->
-
-          <!--begin::상태 서브메뉴-->
-          <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
-            <a href="#" class="menu-link px-3" @click.prevent>
-              <span class="menu-title">{{ t('common.status') }}</span>
-              <span class="menu-arrow"></span>
-            </a>
-            <div class="menu-sub menu-sub-dropdown w-175px py-4">
-              <!--begin::중요/참조 토글-->
-              <template v-if="axisWritable">
-              <div v-for="st in statusOptions" :key="'st-' + st.key" class="menu-item px-3">
-                <div class="menu-content px-3">
-                  <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input
-                      class="form-check-input w-30px h-20px cursor-pointer"
-                      type="checkbox"
-                      :checked="hasState(st.key)"
-                      @click="toggleState(st.key)"
-                    />
-                    <span class="form-check-label fs-7" :class="hasState(st.key) ? st.activeClass : 'text-muted'">{{ st.label }}</span>
-                  </label>
-                </div>
-              </div>
-              <!--end::중요/참조 토글-->
-
-              <!--begin::악몽/환각 토글 (꿈 전용)-->
-              <template v-if="isDream">
-                <div v-for="st in dreamStatusOptions" :key="'dst-' + st.key" class="menu-item px-3">
-                  <div class="menu-content px-3">
-                    <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                      <input
-                        class="form-check-input w-30px h-20px cursor-pointer"
-                        type="checkbox"
-                        :checked="hasState(st.key)"
-                        @click="toggleState(st.key)"
-                      />
-                      <span class="form-check-label fs-7" :class="hasState(st.key) ? st.activeClass : 'text-muted'">{{ st.label }}</span>
-                    </label>
-                  </div>
-                </div>
-              </template>
-              <!--end::악몽/환각 토글-->
-              </template>
-
-              <!--begin::접기 토글-->
-              <div class="menu-item px-3">
-                <div class="menu-content px-3">
-                  <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input
-                      class="form-check-input w-30px h-20px cursor-pointer"
-                      type="checkbox"
-                      :checked="hasState('COLLAPSED')"
-                      @click="toggleState('COLLAPSED')"
-                    />
-                    <span class="form-check-label fs-7" :class="hasState('COLLAPSED') ? 'text-gray-700' : 'text-muted'">{{ t('common.collapse') }}</span>
-                  </label>
-                </div>
-              </div>
-              <!--end::접기 토글-->
-            </div>
-          </div>
-          <!--end::상태 서브메뉴-->
-
-          <div v-if="axisWritable" class="separator my-2"></div>
-
-          <!--begin::삭제-->
-          <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3 text-danger" @click="deleteEntry">
-              {{ t('common.delete') }}
-              <i class="bi bi-trash text-danger p-0 fs-8"></i>
-            </div>
-          </div>
-          <!--end::삭제-->
-        </div>
-      </div>
-      <!--end::컨텍스트 메뉴-->
-    </div>
-    <!--end::우측 액션 영역-->
   </div>
   <!--end::엔트리 행-->
-
-  <!--begin::해석 목록-->
-  <JournalInterpretationItem
-    v-for="interp in interpretationList"
-    :key="interp.id"
-    :interpretation="interp"
-    :is-dream="isDreamEntry"
-  />
-  <!--end::해석 목록-->
 </template>
 
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
-import { ref, computed, nextTick, onBeforeUnmount, provide } from "vue";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import { ref, computed, watch, nextTick, onBeforeUnmount, provide } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
@@ -507,10 +520,12 @@ import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journa
 import type { JournalEntryDto, RelatedContentItem } from "@/features/journal/stores/journal";
 import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
+import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { resolveEntryCollapsed } from "@/features/journal/utils/journalLifecycleCollapse";
+import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
+import JournalReflectionItem from "../../reflection/components/JournalReflectionItem.vue";
 import {
   useJournalDayResolved,
   mergeDayResolvedAxis,
@@ -629,7 +644,17 @@ const relatedList = computed(() => (props.entry.relatedContentList ?? []).filter
   (related) => related.id == null || !unlinkedRelatedIds.value.has(related.id)
 ));
 const commentList = computed(() => props.entry.comment?.list ?? []);
-const interpretationList = computed(() => props.entry.journalInterpretationList ?? []);
+const reflectionList = computed(() => props.entry.reflectionList ?? []);
+
+/**
+ * 엔트리 접힘 시 임베드 Reflection 은 v-if 로 DOM 에서 제거된다.
+ * 다시 펼치면 KTMenu(⋯) DOM 이 새로 마운트되므로 Metronic 핸들러를 재바인딩한다.
+ */
+watch(isCollapsed, (collapsed, wasCollapsed) => {
+  if (wasCollapsed !== true || collapsed) return;
+  if (reflectionList.value.length === 0) return;
+  void reinitMetronicAfterDom();
+});
 
 function highlightKeywordsInHtml(html: string, keywords: string[]): string {
   const uniqueKeywords = Array.from(new Set(keywords.map((keyword) => keyword.trim()).filter(Boolean)));
@@ -784,7 +809,7 @@ function toggleEntry(): void {
   localCollapsedOverride.value = !isCollapsed.value;
 }
 /** HTML 마크업을 제거하고 평문으로 변환한다 (복사 시 사용). */
-/** 엔트리 내용을 클립보드에 복사한다. 레거시 copy() 와 동일 형식: 날짜(요일)\n마크다운 원문 */
+/** 엔트리 내용을 클립보드에 복사한다. 형식: 날짜(요일) → 본문 → 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
 async function copyEntry(): Promise<void> {
   const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
   const dateLine = weekDay
@@ -792,7 +817,13 @@ async function copyEntry(): Promise<void> {
     : (props.entry.stdrdDt ?? "");
   /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
   const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
-  const text = [dateLine, raw].filter(Boolean).join("\n");
+  const parts = [dateLine, raw].filter(Boolean);
+  /* 원문과 해석은 한 몸 — 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+  for (const reflection of reflectionList.value) {
+    const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+    if (reflRaw) parts.push("", reflRaw);
+  }
+  const text = parts.join("\n");
   try {
     await navigator.clipboard.writeText(text);
     void swalFire({ icon: "success", text: t("common.copy.success") });
@@ -802,7 +833,7 @@ async function copyEntry(): Promise<void> {
   }
 }
 
-/** 엔트리 수정 모달 열기 */
+/** 엔트리 수정 모달 열기. 이 컴포넌트는 Primary 엔트리(일기·꿈·노트)만 렌더한다. */
 function openModify() {
   if (!guardAxisWrite()) return;
   if (!props.entry.id) return;
@@ -1006,13 +1037,15 @@ async function unlinkRelated(related: RelatedContentItem): Promise<void> {
   }
 }
 
-/** 해석 등록 모달 열기 */
-function openInterpretationRegist() {
+/** Reflection 등록 모달 열기. target = 이 엔트리, 기본 chapter = 이 엔트리의 chapter. */
+function openReflectionRegist() {
   if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
-  modalStore.openInterpretationRegist({
+  modalStore.openReflectionRegist({
     refId: props.entry.id,
     refContentType: props.entry.contentType,
+    journalDayId: props.entry.journalDayId,
+    journalChapterId: props.entry.journalChapterId,
     stdrdDt: props.entry.stdrdDt,
   });
 }

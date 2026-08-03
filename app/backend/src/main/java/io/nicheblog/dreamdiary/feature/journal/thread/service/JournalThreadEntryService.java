@@ -1,12 +1,14 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntrySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryReflectionEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
@@ -62,6 +64,7 @@ public class JournalThreadEntryService {
     private final JournalThreadEntryRepository repository;
     private final JournalThreadRepository journalThreadRepository;
     private final JournalEntryService journalEntryService;
+    private final JournalEntryReflectionEnricher journalEntryReflectionEnricher;
     private final JournalEntryStateEnricher journalEntryStateEnricher;
 
     /**
@@ -80,7 +83,8 @@ public class JournalThreadEntryService {
     public ServiceResponse regist(final Integer threadId, final Integer entryId, final Integer sortOrder) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
         this.requireOwnedThread(threadId, username);
-        this.requireOwnedEntry(entryId, username);
+        final JournalEntryEntity entry = this.requireOwnedEntry(entryId, username);
+        this.assertEligibleForThreadMembership(entry);
 
         final JournalThreadEntryEntity existing = repository.findAnyByPair(threadId, entryId, username).orElse(null);
         if (existing != null) {
@@ -136,6 +140,7 @@ public class JournalThreadEntryService {
      * 스레드의 소속 엔트리를 화면 카드용 full DTO 로 조회한다.
      * <p>
      * 스레드 상세에서 소속 엔트리를 저널 일자와 동일한 카드로 보여주기 위한 계약이다.
+     * Reflection 교차뷰({@code reflectionList})와 lifecycle 병합을 일자 조회와 같은 계약으로 채운다.
      * 소속 메타(JournalThreadEntryDto)가 아니라 실제 엔트리(JournalEntryDto)를 일자 오름차순으로 돌려준다.
      * 정렬 근거: 스레드의 선후는 엔트리 일자와 원본 엔트리 인덱스에서 파생한다
      * ({@link JournalEntryService#getListDtoByIds}).
@@ -156,8 +161,19 @@ public class JournalThreadEntryService {
         // 저널 일자 화면과 동일한 순서(날짜 → 챕터 sortOrder → 원본 엔트리 sortOrder → ID)로 정렬한다.
         // 챕터별로 1부터인 엔트리 sortOrder만 보면 같은 일자의 여러 챕터 #1들이 몰리므로, 챕터 순서를 함께 보는 공용 헬퍼를 쓴다.
         journalEntryService.sortByChapterAndEntryOrder(entries);
+        // 일자 화면과 동일하게 target 역참조 Reflection 을 싣는다. (혼합 타입)
+        journalEntryReflectionEnricher.enrichMixed(entries);
         // 소속 엔트리에 lifecycle 을 병합해 스레드 상세에서도 완료(RESOLVED) 초록 표시가 나오게 한다. (state 는 병합하지 않음)
         journalEntryStateEnricher.enrichLifecycleMixed(entries);
+        // 교차뷰 Reflection 에도 lifecycle 을 병합해 일자 화면과 같은 RESOLVED/PENDING 표시를 맞춘다.
+        final List<JournalEntryDto> nestedReflections = entries.stream()
+                .filter(entry -> entry != null && entry.getReflectionList() != null)
+                .flatMap(entry -> entry.getReflectionList().stream())
+                .filter(reflection -> reflection != null)
+                .toList();
+        if (!nestedReflections.isEmpty()) {
+            journalEntryStateEnricher.enrichLifecycleMixed(nestedReflections);
+        }
         return entries;
     }
 
@@ -330,7 +346,7 @@ public class JournalThreadEntryService {
      * @param entryId 엔트리 ID
      * @param username 사용자 계정명
      */
-    private void requireOwnedEntry(final Integer entryId, final String username) throws Exception {
+    private JournalEntryEntity requireOwnedEntry(final Integer entryId, final String username) throws Exception {
         final JournalEntryEntity entry;
         try {
             entry = journalEntryService.getDtlEntity(entryId);
@@ -343,6 +359,25 @@ public class JournalThreadEntryService {
                     entryId, username, entry.getCreatedBy());
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
+        return entry;
+    }
+
+    /**
+     * 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가 대상이 아니다.
+     * 정본: docs/spec/REFLECTION_ONE_TYPE.md §4
+     */
+    private void assertEligibleForThreadMembership(final JournalEntryEntity entry) {
+        if (entry == null || !ContentType.JOURNAL_REFLECTION.key.equals(entry.getContentType())) return;
+        if (entry.getRefId() == null) return;
+        final ContentType targetType = entry.getRefContentType();
+        if (targetType != ContentType.JOURNAL_DIARY
+                && targetType != ContentType.JOURNAL_DREAM
+                && targetType != ContentType.JOURNAL_NOTE) {
+            return;
+        }
+        log.warn("[JournalThreadEntry.regist] 원문 target Reflection 스레드 소속 차단. entryId={}, refId={}, refContentType={}",
+                entry.getId(), entry.getRefId(), targetType);
+        throw new BusinessException("journal.thread.entry.regist.reflection-target-forbidden");
     }
 
     /**

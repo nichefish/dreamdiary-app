@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.entry.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTagAxis;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntrySmpEntity;
@@ -62,8 +63,9 @@ public class JournalEntryTagSpec
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
         final Expression<LocalDate> effectiveDtExp = journalDayJoin.get("journalDate");
 
-        predicate.add(builder.equal(tagContentJoin.get("refContentType"), contentType.key));
-        predicate.add(builder.equal(entryJoin.get("contentType"), contentType.key));
+        final List<String> typeKeys = JournalEntryTagAxis.expandKeys(contentType);
+        predicate.add(tagContentJoin.get("refContentType").in(typeKeys));
+        predicate.add(entryJoin.get("contentType").in(typeKeys));
 
         for (final String key : searchParamMap.keySet()) {
             final Object value = searchParamMap.get(key);

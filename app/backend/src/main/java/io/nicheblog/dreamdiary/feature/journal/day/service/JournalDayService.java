@@ -5,11 +5,15 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateMaps;
+import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.mapstruct.JournalDayMapstruct;
@@ -20,7 +24,6 @@ import io.nicheblog.dreamdiary.feature.journal.day.repository.mybatis.JournalDay
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayStateMapHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.spec.JournalDaySpec;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -71,9 +74,9 @@ public class JournalDayService
 
     private final JournalDayMapper journalDayMapper;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
-    private final JournalInterpretationQueryService journalInterpretationQueryService;
     private final LifecycleService lifecycleService;
     private final JournalDayBootstrapService journalDayBootstrapService;
+    private final JournalReflectionRepository journalReflectionRepository;
 
     private final ApplicationContext context;
     private JournalDayService getSelf() {
@@ -101,20 +104,18 @@ public class JournalDayService
 
         // 1) stateMap 만들기
         final JournalStateMaps maps = JournalDayStateMapHelper.makeJournalStateMaps(myJournalDayEntityList);
-        final Map<Integer, io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState> interpretationStateMap =
-                this.getInterpretationStateMap(resolvedUsername, myJournalDayEntityList);
         final Map<Integer, String> diaryLifecycleMap = this.getEntryLifecycleMap(ContentType.JOURNAL_DIARY, myJournalDayEntityList);
         final Map<Integer, String> dreamLifecycleMap = this.getEntryLifecycleMap(ContentType.JOURNAL_DREAM, myJournalDayEntityList);
-        final Map<Integer, String> interpretationLifecycleMap = this.getInterpretationLifecycleMap(resolvedUsername, myJournalDayEntityList);
+        final ReflectionStateMaps reflectionMaps = this.buildReflectionStateMaps(myJournalDayEntityList);
         // 2) stateMap 캐시에 저장
         final SimpleKey cacheKey = new SimpleKey(resolvedUsername, yy, mnth);
         EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_CHAPTER), cacheKey, maps.getChapterMap());
         EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DIARY), cacheKey, maps.getDiaryMap());
         EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DREAM), cacheKey, maps.getDreamMap());
-        EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_INTERPRETATION), cacheKey, interpretationStateMap);
+        EhCacheUtils.put(JournalStateCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_REFLECTION), cacheKey, reflectionMaps.stateMap());
         EhCacheUtils.put(JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DIARY), cacheKey, diaryLifecycleMap);
         EhCacheUtils.put(JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_DREAM), cacheKey, dreamLifecycleMap);
-        EhCacheUtils.put(JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_INTERPRETATION), cacheKey, interpretationLifecycleMap);
+        EhCacheUtils.put(JournalLifecycleCacheRegistry.monthlyMapCacheName(ContentType.JOURNAL_REFLECTION), cacheKey, reflectionMaps.lifecycleMap());
 
         return mapstruct.toDtoList(myJournalDayEntityList);
     }
@@ -153,19 +154,17 @@ public class JournalDayService
         final List<JournalDayEntity> myJournalDayEntityList = this.getListEntity(searchParamMap);
 
         final JournalStateMaps maps = JournalDayStateMapHelper.makeJournalStateMaps(myJournalDayEntityList);
-        final Map<Integer, io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState> interpretationStateMap =
-                this.getInterpretationStateMap(resolvedUsername, myJournalDayEntityList);
         final Map<Integer, String> diaryLifecycleMap = this.getEntryLifecycleMap(ContentType.JOURNAL_DIARY, myJournalDayEntityList);
         final Map<Integer, String> dreamLifecycleMap = this.getEntryLifecycleMap(ContentType.JOURNAL_DREAM, myJournalDayEntityList);
-        final Map<Integer, String> interpretationLifecycleMap = this.getInterpretationLifecycleMap(resolvedUsername, myJournalDayEntityList);
+        final ReflectionStateMaps reflectionMaps = this.buildReflectionStateMaps(myJournalDayEntityList);
         final SimpleKey cacheKey = new SimpleKey(resolvedUsername, weekStartDt);
         EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_CHAPTER), cacheKey, maps.getChapterMap());
         EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_DIARY), cacheKey, maps.getDiaryMap());
         EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_DREAM), cacheKey, maps.getDreamMap());
-        EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_INTERPRETATION), cacheKey, interpretationStateMap);
+        EhCacheUtils.put(JournalStateCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_REFLECTION), cacheKey, reflectionMaps.stateMap());
         EhCacheUtils.put(JournalLifecycleCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_DIARY), cacheKey, diaryLifecycleMap);
         EhCacheUtils.put(JournalLifecycleCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_DREAM), cacheKey, dreamLifecycleMap);
-        EhCacheUtils.put(JournalLifecycleCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_INTERPRETATION), cacheKey, interpretationLifecycleMap);
+        EhCacheUtils.put(JournalLifecycleCacheRegistry.weeklyMapCacheName(ContentType.JOURNAL_REFLECTION), cacheKey, reflectionMaps.lifecycleMap());
 
         return mapstruct.toDtoList(myJournalDayEntityList);
     }
@@ -411,16 +410,6 @@ public class JournalDayService
         return deleted;
     }
 
-    private Map<Integer, io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState> getInterpretationStateMap(
-            final String createdBy,
-            final List<JournalDayEntity> journalDayEntityList
-    ) {
-        return journalInterpretationQueryService.getInterpretationStateMapByRefs(
-                this.collectInterpretationRefs(journalDayEntityList),
-                createdBy
-        );
-    }
-
     /**
      * 조회된 저널 일자 아래의 일기 라이프사이클 맵을 조회한다.
      *
@@ -433,23 +422,6 @@ public class JournalDayService
             final List<JournalDayEntity> journalDayEntityList
     ) {
         return lifecycleService.getLifecycleMap(contentType, this.collectEntryIds(contentType, journalDayEntityList));
-    }
-
-    /**
-     * 저널 일자 아래 일기에 붙은 해석 라이프사이클 맵을 조회한다.
-     *
-     * @param createdBy 해석 조회 범위를 제한할 작성자
-     * @param journalDayEntityList 저널 일자 엔티티 그래프
-     * @return 해석 ID 기준 라이프사이클 키 맵
-     */
-    private Map<Integer, String> getInterpretationLifecycleMap(
-            final String createdBy,
-            final List<JournalDayEntity> journalDayEntityList
-    ) {
-        return journalInterpretationQueryService.getInterpretationLifecycleMapByRefs(
-                this.collectInterpretationRefs(journalDayEntityList),
-                createdBy
-        );
     }
 
     /**
@@ -482,36 +454,86 @@ public class JournalDayService
         return entryIdList;
     }
 
-    private List<io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey> collectInterpretationRefs(
-            final List<JournalDayEntity> journalDayEntityList
-    ) {
-        final List<io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey> refKeyList = new java.util.ArrayList<>();
-        if (journalDayEntityList == null || journalDayEntityList.isEmpty()) return refKeyList;
+    /**
+     * 일자 그래프가 포함한 대상 엔트리에 달린 Reflection 의 state·lifecycle 맵을 구성한다.
+     *
+     * <p>Reflection 은 별도 Aggregate(journal_reflection)이라 일자 트리에서 순회할 수 없다. 대상 엔트리
+     * ID 로 역참조 로드(refId IN)한 뒤, Reflection 자신의 ID 를 키로 state 는 attachable state embed 에서,
+     * lifecycle 은 {@code JOURNAL_REFLECTION} 축 조회로 구성한다. 소비측(일/주간 뷰·월별 검색)은 기존
+     * {@code journalReflectionStateMapByUser}/lifecycle 캐시명을 그대로 읽는다.</p>
+     *
+     * @param journalDayEntityList 저널 일자 엔티티 그래프
+     * @return Reflection state·lifecycle 맵 묶음 (reflection ID 기준)
+     */
+    private ReflectionStateMaps buildReflectionStateMaps(final List<JournalDayEntity> journalDayEntityList) {
+        final List<Integer> targetIds = this.collectAllEntryIds(journalDayEntityList);
+        if (targetIds.isEmpty()) return ReflectionStateMaps.empty();
+
+        final List<JournalReflectionEntity> reflections =
+                journalReflectionRepository.findAllByRefIdInOrderByCreatedAtAsc(targetIds);
+        final Map<Integer, JournalState> stateMap = new HashMap<>();
+        final List<Integer> reflectionIds = new java.util.ArrayList<>();
+        for (final JournalReflectionEntity reflection : reflections) {
+            if (reflection == null || reflection.getId() == null) continue;
+            reflectionIds.add(reflection.getId());
+            stateMap.put(
+                    reflection.getId(),
+                    JournalState.builder()
+                            .collapsed(reflection.state.hasState(StateKey.COLLAPSED))
+                            .imprtc(reflection.state.hasState(StateKey.IMPRTC))
+                            .refrnc(reflection.state.hasState(StateKey.REFRNC))
+                            .build()
+            );
+        }
+        final Map<Integer, String> lifecycleMap =
+                lifecycleService.getLifecycleMap(ContentType.JOURNAL_REFLECTION, reflectionIds);
+        return new ReflectionStateMaps(stateMap, lifecycleMap);
+    }
+
+    /**
+     * 저널 일자/챕터 그래프에서 모든 엔트리 ID 를 타입 구분 없이 수집한다.
+     * Reflection 역참조 대상(일기·꿈·노트)을 한 번에 훑기 위한 수집이다.
+     *
+     * @param journalDayEntityList journal day 엔티티 그래프
+     * @return 엔트리 ID 목록
+     */
+    private List<Integer> collectAllEntryIds(final List<JournalDayEntity> journalDayEntityList) {
+        final List<Integer> entryIdList = new java.util.ArrayList<>();
+        if (journalDayEntityList == null || journalDayEntityList.isEmpty()) return entryIdList;
 
         for (final JournalDayEntity journalDayEntity : journalDayEntityList) {
             if (journalDayEntity == null || journalDayEntity.getJournalChapterList() == null) continue;
 
             for (final JournalChapterEntity journalChapterEntity : journalDayEntity.getJournalChapterList()) {
-                if (journalChapterEntity == null) continue;
+                if (journalChapterEntity == null || journalChapterEntity.getJournalEntryList() == null) continue;
 
-                final List<JournalEntryEntity> journalEntryList = journalChapterEntity.getJournalEntryList();
-                if (journalEntryList == null) continue;
-
-                for (final JournalEntryEntity journalEntryEntity : journalEntryList) {
+                for (final JournalEntryEntity journalEntryEntity : journalChapterEntity.getJournalEntryList()) {
                     if (journalEntryEntity == null || journalEntryEntity.getId() == null) continue;
-
-                    final ContentType contentType = ContentType.get(journalEntryEntity.getContentType());
-                    if (contentType != ContentType.JOURNAL_DIARY && contentType != ContentType.JOURNAL_DREAM) {
-                        continue;
-                    }
-
-                    refKeyList.add(new io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey(
-                            journalEntryEntity.getId(),
-                            contentType
-                    ));
+                    entryIdList.add(journalEntryEntity.getId());
                 }
             }
         }
-        return refKeyList;
+        return entryIdList;
     }
+
+    /**
+     * Reflection state·lifecycle 캐시 맵 묶음. 키는 Reflection 자신의 ID 다.
+     *
+     * @param stateMap reflection ID 기준 state 맵
+     * @param lifecycleMap reflection ID 기준 lifecycle 키 맵
+     */
+    private record ReflectionStateMaps(
+            Map<Integer, JournalState> stateMap,
+            Map<Integer, String> lifecycleMap
+    ) {
+        /**
+         * 대상이 없을 때 쓰는 빈 묶음.
+         *
+         * @return 빈 state·lifecycle 맵 묶음
+         */
+        private static ReflectionStateMaps empty() {
+            return new ReflectionStateMaps(new HashMap<>(), new HashMap<>());
+        }
+    }
+
 }

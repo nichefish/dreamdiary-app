@@ -235,7 +235,7 @@
 | 꿈 등록/수정 | `journal_dream_reg` | 꿈 등록/수정 버튼 클릭 |
 | 노트 등록/수정 | `journal_entry_reg` (NOTE) | 노트 등록/수정 버튼 클릭 |
 | 챕터 등록 | `_journal_chapter_regist_modal.ftlh` | 챕터 등록 버튼 클릭 |
-| 꿈 해석 등록 | `_journal_interpretation_regist_modal.ftlh` | 해석 등록 버튼 클릭 |
+| 리플렉션 등록 | `JournalReflectionRegistModal.vue` | 리플렉션 등록 버튼 클릭 |
 | 저널 일자 태그 상세 | `_journal_day_tag_dtl_modal.ftlh` | 태그 클릭 |
 | 저널 일자 메타 | `_journal_day_meta_modal.ftlh` | 메타 버튼 클릭 |
 | 태그 목록 | `_journal_tag_list_modal.ftlh` | 태그 관련 팝업 |
@@ -252,7 +252,7 @@
 
 `JournalDayDetailModal.vue`의 제목·기준 날짜 요일·날짜 정밀도 배지·빈 상태·조회 실패·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
-`JournalInterpretationRegistModal.vue`의 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API가 `message`를 반환하면 서버 메시지를 우선 표시하며, 해석 제목은 locale과 무관하게 선택값으로 유지한다.
+`JournalReflectionRegistModal.vue`의 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그(`journal.reflection.*`)를 사용한다. 저장 API가 `message`를 반환하면 서버 메시지를 우선 표시하며, 리플렉션 제목은 locale과 무관하게 선택값으로 유지한다.
 
 `JournalEntryRegistModal.vue`의 일기·꿈·노트·기본 엔트리별 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 말머리·제목·순서·꿈꾼 placeholder, 저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, locale 변경은 챕터·말머리 선택, 태그·꿈꾼 값과 저장 payload를 변경하지 않는다.
 
@@ -570,7 +570,7 @@
 | 스레드 상세 | `_journal_thread_detail_modal.ftlh` | 목록에서는 독립 상세 페이지를 사용하며, 모달은 저널 주간·월간·일간·검색의 문맥형 진입 전용 |
 | 엔트리 등록·수정 | `JournalEntryRegistModal.vue` (`App.vue` 전역 마운트) | 소속 엔트리 수정 |
 | 엔트리 원문 | `JournalEntryViewModal.vue` (`App.vue` 전역 마운트) | 관련글·스레드 칩 대상 열기 |
-| 해석 등록·수정 | `JournalInterpretationRegistModal.vue` | 소속 엔트리 해석 등록·수정 |
+| 리플렉션 등록·수정 | `JournalReflectionRegistModal.vue` | 소속 엔트리 대상 리플렉션 등록·수정 |
 | 이력 | `HistoryModal.vue` | 소속 엔트리 이력 조회·복원·삭제 |
 | 관련글 추가 | `RelatedContentAddModal.vue` | 소속 엔트리 관련글 추가 |
 | 태그 프로필 | `JournalTagProfileModal.vue` | 소속 엔트리 태그 설정 |
@@ -1133,7 +1133,7 @@ type TodoRow = {
 
 | Query | 의미 |
 |-------|------|
-| `type=DIARY` | 일기 검색 |
+| `type=DIARY` | 일기 검색 축 — Primary(일기)만 결과 행. 딸린 Reflection 본문 키워드가 대상 일기를 매칭(원문·해석 한 몸 EXISTS) |
 | `type=DREAM` | 꿈 검색 |
 | `tagIds=N` | 태그 ID 기반 검색. 검색 팝업의 태그 직접 입력은 기존 태그 자동완성/카테고리 선택으로 특정 태그 ID를 확정한 뒤 이 파라미터에 추가한다. |
 | `searchKeywords=...` | 키워드 검색 |
@@ -1157,7 +1157,7 @@ type TodoRow = {
 - 검색 팝업 내부에서 일기/꿈 태그의 `검색` 액션을 누르면 새 팝업을 열지 않고 같은 창의 URL query를 바꿔 결과를 재조회한다.
 - 검색 팝업 내부의 `태그 설정` 액션은 `JournalTagProfileModal`을 같은 창에서 연다. 저장·삭제 성공 후 `success` 이벤트로 검색 결과(`loadEntries`)를 재조회한다.
 - 스레드 소속 추가·해제·상태/라이프사이클 등 엔트리 액션 성공 후 `refreshJournalEntryHostForRoute`가 등록된 검색 호스트(`loadEntries`)로 로컬 결과를 갱신한다. 스레드 상세가 열려 있으면 전경 상세와 검색 결과를 함께 재조회한다.
-- 검색 팝업 내부 검색 결과에 저널 해석이 표시되면, 해석 행의 수정 액션은 `JournalInterpretationRegistModal`을 같은 창에서 열어야 한다.
+- 검색 팝업 내부 검색 결과에 리플렉션이 표시되면, 수정 액션은 `JournalReflectionRegistModal`을 같은 창에서 열어야 한다.
 - 각 검색 결과는 수정/삭제가 가능하다. 수정 저장 성공 시 성공 알림 표시 전에 현재 검색 조건 목록 또는 수정 대상 DOM을 준비하고, 성공 알림 OK 이후 저장한 결과 위치로 스크롤하며, 삭제 성공 시 결과 목록에서 제거한다.
 - 검색 팝업 내부에서 엔트리 본문/태그 프로필 다음에 이어지는 저널 해석 행은 같은 결과 묶음으로 읽히도록 공통 저널 행 간격보다 좁게 붙여 표시한다.
 - 날짜 헤더는 서버가 내려준 `isHolyday` 가 true 이면 날짜·요일을 `text-danger` 로 표시하고, `holydayNm` 이 있으면 옆에 공휴일명을 함께 보여 준다(저널 일자 카드와 동일 축). 프론트에서 주말·공휴일을 재계산하지 않는다.

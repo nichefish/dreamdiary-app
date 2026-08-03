@@ -412,7 +412,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 복사 버튼 (`bi-copy`, ⋯ 밖, 단독 버튼) → `copyEntry()` — 날짜(요일)·`htmlToPlainText(content)` 클립보드 복사. `content` = TinyMCE HTML 원문; 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML을 제거한 평문. (레거시 `copy()` 동일 포맷)
 - ⋯ 드롭다운:
   - 헤더: contentLabel (일기/꿈)
-  - 수정 → `modalStore.openEntryModify(id)`
+  - 수정 → `contentType === JOURNAL_REFLECTION` 이면 `openReflectionRegist({ id })`, 그 외 `openEntryModify(id)`
   - 이력 → `attachableStore.openHistory(contentType, id)`
   - 관련 글 추가 (지정 꿈꾼 이름 없을 때만 — `hasDreamerName(entry)` false) → `attachableStore.openRelated(contentType, id)`
   - 구분선
@@ -430,7 +430,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **관련 관계 표시·해제**: 일반 관련글은 엔트리 아래에서 `RelatedContentDto.relationType/reason/targetId/targetContentType/targetTitle`별 행을 표시하고 제목 클릭으로 원문을 열며 ×로 해제한다. (변경 후) FLOW 본문 요약 행·「흐름 보기」·전체 흐름 모달·백엔드 `flowSummary` 는 모두 제거됐다(나-2·다-2). 흐름은 스레드 소속으로 수렴.
 
-**스레드 소속 후보 메뉴**: 「스레드에 추가」 hover 서브메뉴는 일반 스레드 목록 상태와 분리된 `journalThreadMembership` store를 사용한다. 후보의 `member`가 소속 토글 판정의 SSOT이며, 엔트리 본문의 `threadList`는 소속 칩 표시를 담당한다. 제목 검색·분류 입력은 메뉴를 닫지 않고 후보 API만 갱신한다. 말머리 선택지는 콘텐츠 타입별 개인 목록 계약에 따라 `GET /api/my/prefixes/options?contentType=JOURNAL_THREAD`로 조회한다. 후보 조회 실패와 분류 선택지 조회 실패를 정상 빈 결과로 가장하지 않으며, 분류 조회 실패는 다음 메뉴 진입에서 재시도한다.
+**스레드 소속 후보 메뉴**: 「스레드에 추가」 hover 서브메뉴는 일반 스레드 목록 상태와 분리된 `journalThreadMembership` store를 사용한다. 일기·꿈·노트를 target으로 둔 `JOURNAL_REFLECTION`에는 서브메뉴를 렌더하지 않으며, API도 동일 조건을 거절한다. 후보의 `member`가 소속 토글 판정의 SSOT이며, 엔트리 본문의 `threadList`는 소속 칩 표시를 담당한다. 제목 검색·분류 입력은 메뉴를 닫지 않고 후보 API만 갱신한다. 말머리 선택지는 콘텐츠 타입별 개인 목록 계약에 따라 `GET /api/my/prefixes/options?contentType=JOURNAL_THREAD`로 조회한다. 후보 조회 실패와 분류 선택지 조회 실패를 정상 빈 결과로 가장하지 않으며, 분류 조회 실패는 다음 메뉴 진입에서 재시도한다.
 
 **관련 글 대상 검색**: 대상 유형 select의 `JOURNAL_DIARY|JOURNAL_DREAM`을 `DIARY|DREAM`으로 변환해 `GET /api/journal/entries?type=...&searchKeywords=...&pageSize=8&sort=DESC`를 호출한다. 키워드별 제목 OR 본문, 복수 키워드 사이는 AND다. API 실패는 별도 인라인 오류를 표시하고 정상 0건 문구를 함께 표시하지 않는다.
 
@@ -442,7 +442,15 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **PENDING 표시·접힘**: 일기·꿈·노트의 보류 상태는 약한 회색 배경·테두리·좌측선과 회색 배지로 표시하고 자동으로 접는다. 중요·참조 상태가 함께 있으면 빨강·노랑 상태 표현이 우선한다. 하위 엔트리가 1개 이상이고 모두 `PENDING`인 챕터는 같은 회색 상태를 표시하고 자동으로 접는다. 스레드 상세는 lifecycle 자동 접힘을 억제해 `PENDING`과 `RESOLVED` 본문을 펼친 상태로 표시한다.
 
-**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `prepare-success` 이벤트에서 현재 검색 목록 또는 수정 대상 article DOM을 성공 알림 전에 준비한다. 모달의 `success` 이벤트는 성공 알림 OK 이후 저장한 엔트리 article 스크롤만 담당한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 저널 해석 수정 액션은 `JournalInterpretationRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/interpretation/{id}` 상세 조회가 성공한 뒤 제목/본문/순번을 채운 폼을 표시한다. 해석 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 해석 저장 후 모달 내부의 `journalStore.fetchDays()` 완료를 감지해 검색 목록을 재조회한다.
+**검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `prepare-success` 이벤트에서 현재 검색 목록 또는 수정 대상 article DOM을 성공 알림 전에 준비한다. 모달의 `success` 이벤트는 성공 알림 OK 이후 저장한 엔트리 article 스크롤만 담당한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 리플렉션 수정 액션은 `JournalReflectionRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/reflection/{id}` 상세 조회가 성공한 뒤 제목/본문을 채운 폼을 표시한다. 리플렉션 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 저장 후 `refreshJournalEntryHostForRoute` / 검색 호스트 재조회로 목록을 갱신한다.
+
+**Reflection 등록**: Reflection 은 대상 필수(About-A)라 대상 엔트리(`JournalEntryItem`) ⋯ 메뉴의 「해석 등록」에서만 등록한다 → `openReflectionRegist({ refId, refContentType, journalDayId, journalChapterId, stdrdDt })`. 챕터 헤더의 독립(대상 없는) 등록 진입점은 없다(Standalone 폐기). 저장은 전용 API `POST /api/journal/reflections` 로 `refId`/`refContentType` 을 싣고, 성공 후 호스트 재조회는 엔트리 신규와 같다.
+
+**Reflection 태그**: Reflection 은 태그를 두지 않는다(모달에 태그 UI 없음, 서버 쓰기 DTO 에 tag 필드 없음). 저장 `content_type`/`ref_content_type`은 `JOURNAL_REFLECTION`이다. 결산·엔트리 태그클라우드·챕터 접힘 요약의 DIARY 집계는 `JOURNAL_DIARY`와 `JOURNAL_REFLECTION`을 합친다(과거 reflection 태그 잔재 집계 축은 유지하되 신규 reflection 태그는 없다). 원문 뷰(`JournalEntryViewModal`)의 「수정」은 `JournalReflectionRegistModal`로 열어 태그 입력을 포함하며, 일기용 `JournalEntryRegistModal`로 보내지 않는다. 백엔드 `JournalCacheEvictWorker`는 `JOURNAL_REFLECTION`을 `JournalEntryCacheEvictor`에 매핑해 저장 후 일자·챕터·태그 캐시를 무효화한다. 엔트리 삭제 후처리의 관련글 정리(`RelatedContentService.deleteAllByRef(key, createdBy)`)는 관련글 지원 타입(일기·꿈)만 수행하고, Reflection 등 미지원 타입은 no-op 한다. 스레드 소속: 일기·꿈·노트를 target으로 둔 Reflection은 UI·`JournalThreadEntryService.regist` 모두 추가를 거절한다. 정본 `docs/spec/REFLECTION_ONE_TYPE.md` §4. 라이프사이클·상태: Reflection은 OPEN/PENDING/RESOLVED와 COLLAPSED/IMPRTC/REFRNC를 허용한다(§5). Reflection은 대상 엔트리 아래 임베드로만 표시되며 본문 상시 표시(접기 메뉴 없음)다. primary(일기·꿈·노트) `RESOLVED` 시 딸린 Reflection도 `RESOLVED`로 맞추고, `RESOLVED` primary에 Reflection 신규 등록 시 primary를 `OPEN`(+`COLLAPSED` 해제)으로 재개한다(§5.1).
+
+**임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. ⋯에서 수정·이력·관련글·라이프사이클·중요/참조·삭제. Reflection→Reflection 중첩 등록 메뉴는 숨긴다(형제·독립이 기본, `REFLECTION_ONE_TYPE.md` §3.1). 일기·꿈·노트를 target으로 둔 Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
+
+**대상 삭제 Block(Reference→Block)**: 일기·꿈·노트를 가리키는 Reflection 이 있으면 그 대상 엔트리 삭제(`DELETE /api/journal/entry/{id}`)는 `journal.entry.delete.blocked-by-reflection` 으로 거부된다. Reflection 을 가리키는 하위 Reflection 이 있으면 부모 Reflection 삭제는 `journal.reflection.delete.blocked-by-child` 으로 거부된다. nullify·orphan 화는 하지 않으며, 사용자는 참조 Reflection 을 먼저 삭제한다. 명시 cascade(대상+Reflection 동시 삭제)는 미구현이다. 정본 `docs/migration/journal/reflection-domain-model.md` §5.
 
 ---
 
@@ -590,6 +598,7 @@ async function copyChapter(): Promise<void> {
 
 **검색 API**: `GET /api/journal/entries?type=DIARY|DREAM&sort=asc|desc&searchKeywords=...&tagIds=...`
 - 응답: `AjaxResponse.rsltList`
+- `type=DIARY`: 결과 행 = 일기(Primary)만. Reflection 은 별도 Aggregate(journal_reflection)이고 대상 필수(About-A, Standalone 폐기)라 검색 결과 행이 되지 않는다. 대상 일기를 가리키는 Reflection 본문에 키워드가 있으면 대상 일기가 매칭된다(원문·해석 한 몸, `JournalEntrySpec#targetReflectionKeywordSubquery` 가 journal_reflection 을 EXISTS 로 조회). 태그·state 검색 스코프는 요청 타입 단독이며(`JournalEntryTagAxis.searchScopeKeys`) Reflection 태그·state 는 대상을 매칭시키지 않는다. 태그 클릭 팝업도 동일(`type=DIARY`). 태그 클라우드·결산·챕터 요약의 DIARY∪REFLECTION 집계(`JournalEntryTagAxis.expandKeys`)는 검색과 별개다.
 
 **결과 클릭**: `RouterLink :to="{ name: 'journal-entry-search', query: { type, searchKeywords } }"`
 - 검색 팝업에서 직접 수정/삭제하지 않고 검색 페이지(`JournalEntrySearchPage`)로 이동
@@ -692,7 +701,7 @@ assistant 메시지는 서버가 저장한 평문 `content`(마크다운 기호 
 
 ### AI 챗 RAG 근거 → 원문 열기 (`AppChat.vue`)
 
-assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalModalStore().openEntryView(journalEntryId)`로 읽기 전용 엔트리 모달(`JournalEntryViewModal`)을 연다. 본문은 목록과 동일하게 `markdownContent` HTML(`journal-content`)을 표시한다. footer **편집**은 `openEntryModifyFromView`로 기존 `JournalEntryRegistModal`로 전환한다.
+assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalModalStore().openEntryView(journalEntryId)`로 읽기 전용 엔트리 모달(`JournalEntryViewModal`)을 연다. 본문은 목록과 동일하게 `markdownContent` HTML(`journal-content`)을 표시한다. footer **편집**은 `openEntryModifyFromView`로 전환하되, `JOURNAL_REFLECTION`이면 `JournalReflectionRegistModal`, 그 외는 `JournalEntryRegistModal`을 연다.
 
 - 모달 마운트: 비팝업 인증 라우트에서는 `App.vue`가 `JournalEntryViewModal`과 `JournalEntryRegistModal`을 전역 마운트한다 (`JournalDayLayout`에서는 등록/수정 모달 중복 마운트하지 않음).
 - 팝업 라우트(`journal-entry-search`, `journal-daily`)는 각자 레이아웃/페이지에 등록/수정 모달을 유지하고, `AppChat` 자체가 숨겨지므로 채팅 출처 딥링크 경로가 없다.

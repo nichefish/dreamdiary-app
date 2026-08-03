@@ -62,8 +62,7 @@ public class StateService
         final Set<ContentType> requiredTypes = EnumSet.of(
                 ContentType.JOURNAL_CHAPTER,
                 ContentType.JOURNAL_DIARY,
-                ContentType.JOURNAL_DREAM,
-                ContentType.JOURNAL_INTERPRETATION
+                ContentType.JOURNAL_DREAM
         );
 
         for (final ContentType requiredType : requiredTypes) {

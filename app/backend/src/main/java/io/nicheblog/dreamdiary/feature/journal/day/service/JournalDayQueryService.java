@@ -25,8 +25,7 @@ import io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntry
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalDreamSectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.service.JournalInterpretationQueryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryReflectionEnricher;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -58,7 +57,7 @@ public class JournalDayQueryService {
     private final ScheduleVacationQueryService scheduleVacationQueryService;
     private final RelatedContentQueryService relatedContentQueryService;
     private final JournalThreadEntryService journalThreadEntryService;
-    private final JournalInterpretationQueryService journalInterpretationQueryService;
+    private final JournalEntryReflectionEnricher reflectionEnricher;
     private final LifecycleService lifecycleService;
     private final TagProfileService tagProfileService;
 
@@ -171,7 +170,7 @@ public class JournalDayQueryService {
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, scheduleService.getHolydayMap());
         this.mergeVacationInfo(username, listDto);
-        this.mergeInterpretations(username, listDto);
+        this.mergeReflections(username,listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
@@ -196,7 +195,7 @@ public class JournalDayQueryService {
 
         JournalDayHolydayHelper.setHolydayInfo(listDto, scheduleService.getHolydayMap());
         this.mergeVacationInfo(username, listDto);
-        this.mergeInterpretations(username, listDto);
+        this.mergeReflections(username,listDto);
         if (searchParam != null) {
             JournalDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
@@ -220,7 +219,7 @@ public class JournalDayQueryService {
 
         JournalDayHolydayHelper.setHolydayInfo(retrieved, scheduleService.getHolydayMap());
         this.mergeVacationInfo(username, List.of(retrieved));
-        this.mergeInterpretations(username, List.of(retrieved));
+        this.mergeReflections(username,List.of(retrieved));
         JournalDayViewHelper.mergeStates(username, retrieved);
         this.mergeLifecycles(List.of(retrieved));
         this.mergeRelatedContents(username, List.of(retrieved));
@@ -249,23 +248,21 @@ public class JournalDayQueryService {
         JournalDayVacationHelper.setVacationInfo(listDto, vacationDayMap);
     }
 
-    private void mergeInterpretations(final String username, final List<JournalDayDto> listDto) throws Exception {
+    private void mergeReflections(final String username, final List<JournalDayDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
-        final List<BaseAttachableKey> refKeyList = new ArrayList<>();
-        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
-            this.forEachEntryByType(listDto, policy.contentType, entry ->
-                    refKeyList.add(new BaseAttachableKey(entry.getId(), policy.contentType))
-            );
+        final List<Integer> targetIds = new ArrayList<>();
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.reflectionTargetTypes()) {
+            this.forEachEntryByType(listDto, policy.contentType, entry -> targetIds.add(entry.getId()));
         }
 
-        final Map<String, List<JournalInterpretationDto>> interpretationMap =
-                journalInterpretationQueryService.getInterpretationMapByRefs(refKeyList, username);
+        final Map<String, List<JournalEntryDto>> reflectionMap =
+                reflectionEnricher.getReflectionMapByTargetIds(targetIds);
 
-        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.reflectionTargetTypes()) {
             this.forEachEntryByType(listDto, policy.contentType, entry ->
-                    entry.setJournalInterpretationList(
-                            interpretationMap.getOrDefault(buildRefMapKey(policy.contentType.key, entry.getId()), List.of())
+                    entry.setReflectionList(
+                            reflectionMap.getOrDefault(buildRefMapKey(policy.contentType.key, entry.getId()), List.of())
                     )
             );
         }
@@ -324,7 +321,7 @@ public class JournalDayQueryService {
     private void mergeLifecycles(final List<JournalDayDto> listDto) {
         if (listDto == null || listDto.isEmpty()) return;
 
-        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.interpretableTypes()) {
+        for (final JournalEntryTypePolicy policy : JournalEntryTypePolicy.reflectionTargetTypes()) {
             final List<JournalEntryDto> entryList = this.collectEntriesByType(listDto, policy.contentType);
             final List<Integer> entryIds = entryList.stream()
                     .map(JournalEntryDto::getId)
@@ -336,20 +333,20 @@ public class JournalDayQueryService {
                     lifecycleService.getLifecycleMap(policy.contentType, entryIds)
             );
 
-            final List<JournalInterpretationDto> interpretationList = entryList.stream()
-                    .flatMap(entry -> entry.getJournalInterpretationList() == null
+            final List<JournalEntryDto> reflectionList = entryList.stream()
+                    .flatMap(entry -> entry.getReflectionList() == null
                             ? java.util.stream.Stream.empty()
-                            : entry.getJournalInterpretationList().stream())
+                            : entry.getReflectionList().stream())
                     .filter(java.util.Objects::nonNull)
                     .toList();
-            final List<Integer> interpretationIds = interpretationList.stream()
-                    .map(JournalInterpretationDto::getId)
+            final List<Integer> reflectionIds = reflectionList.stream()
+                    .map(JournalEntryDto::getId)
                     .filter(java.util.Objects::nonNull)
                     .distinct()
                     .toList();
-            JournalLifecycleViewHelper.applyInterpretationLifecycle(
-                    interpretationList,
-                    lifecycleService.getLifecycleMap(ContentType.JOURNAL_INTERPRETATION, interpretationIds)
+            JournalLifecycleViewHelper.applyEntryLifecycle(
+                    reflectionList,
+                    lifecycleService.getLifecycleMap(ContentType.JOURNAL_REFLECTION, reflectionIds)
             );
         }
     }

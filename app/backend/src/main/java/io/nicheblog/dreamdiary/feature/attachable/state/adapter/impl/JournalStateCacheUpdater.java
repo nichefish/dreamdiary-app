@@ -83,8 +83,11 @@ public class JournalStateCacheUpdater
         final Map<Integer, JournalState> map = (Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache(cacheMapNm, cacheKey);
         if (map == null) return;
 
-        final JournalState state = map.get(toggle.getId());
-        if (state == null) return;
+        JournalState state = map.get(toggle.getId());
+        if (state == null) {
+            state = JournalState.builder().build();
+            map.put(toggle.getId(), state);
+        }
 
         JournalStateApplier.apply(state, toggle.getStateKey(), isEnabled);
         EhCacheUtils.put(cacheMapNm, cacheKey, map);

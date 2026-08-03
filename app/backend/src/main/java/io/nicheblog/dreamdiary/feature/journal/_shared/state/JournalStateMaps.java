@@ -8,7 +8,10 @@ import java.util.Map;
 
 /**
  * JournalStateMaps
- * 챕터·일기·꿈·해석별 상태 캐시 맵을 한 묶음으로 전달하기 위한 DTO.
+ * 챕터·일기·꿈별 상태 캐시 맵을 한 묶음으로 전달하기 위한 DTO.
+ *
+ * <p>Reflection 은 별도 Aggregate(journal_reflection)이므로 이 묶음에 포함하지 않는다.
+ * Reflection state 캐시 맵은 {@code JournalDayService} 가 대상 역참조 로드로 별도 구성한다.</p>
  *
  * @author nichefish
  */
@@ -22,6 +25,4 @@ public class JournalStateMaps {
     private Map<Integer, JournalState> diaryMap;
     /** 꿈 상태 맵 */
     private Map<Integer, JournalState> dreamMap;
-    /** 해석 상태 맵 */
-    private Map<Integer, JournalState> interpretationMap;
 }

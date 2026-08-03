@@ -8,7 +8,7 @@
     <!--begin::스레드 모달 컨테이너-->
     <CommentListModal />
     <CommentRegistModal />
-    <JournalInterpretationRegistModal />
+    <JournalReflectionRegistModal />
     <HistoryModal @success="refreshOpenThreadDetail" />
     <RelatedContentAddModal />
     <JournalTagProfileModal />
@@ -24,7 +24,7 @@ import { useRoute, useRouter } from "vue-router";
 import JournalThreadViewToolbar from "./components/JournalThreadViewToolbar.vue";
 import CommentListModal from "@/features/attachable/CommentListModal.vue";
 import CommentRegistModal from "@/features/journal/shared/modals/CommentRegistModal.vue";
-import JournalInterpretationRegistModal from "@/features/journal/interpretation/modals/JournalInterpretationRegistModal.vue";
+import JournalReflectionRegistModal from "@/features/journal/reflection/modals/JournalReflectionRegistModal.vue";
 import HistoryModal from "@/features/attachable/HistoryModal.vue";
 import RelatedContentAddModal from "@/features/journal/shared/modals/RelatedContentAddModal.vue";
 import JournalTagProfileModal from "@/features/journal/shared/modals/JournalTagProfileModal.vue";

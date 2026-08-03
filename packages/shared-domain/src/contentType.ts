@@ -33,8 +33,6 @@ export function getContentTypeLabel(contentType: ContentType | undefined): strin
       return "연간 기록";
     case JOURNAL_CONTENT_TYPES.ANNUAL_REVIEW:
       return "연간 회고";
-    case JOURNAL_CONTENT_TYPES.INTERPRETATION:
-      return "해석";
     default:
       return contentType ?? "";
   }

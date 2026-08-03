@@ -1,6 +1,9 @@
 # Reflection 흡수 (journal_interpretation → journal_entry)
 
-**상태: 설계 확정 · 미구현.**
+**상태: 마이그레이션 완료 (Phase 1~4 착지). `journal_interpretation` → `journal_entry`(JOURNAL_REFLECTION) 수렴, interpretation 모듈·enum·프론트·테이블·CSS 제거.**
+
+> **사용자 수동 적용 필요 (DB, 순서대로 · 실행 전 백업)**: `V0.26.0`(target 컬럼) → `V0.26.1`(데이터 이관) → `V0.26.2`(journal_interpretation DROP). flyway `enabled:false`(1.0 전) 이므로 수동 반영.
+> **범위 밖**: `app/mobile-react-native` 는 자체 interpretation 타입·API 를 써서 이 마이그레이션에 미포함(별도 정리 대상).
 
 이 문서는 "저널 해석(interpretation)"을 독립 Entry 종류인 **Reflection**으로 승격시키는 마이그레이션의 target 설계와 계약이다. 구현은 이 문서 확정 이후 별도 SAVEPOINT 로 진행한다. as-built 스펙(`screen-spec.md` / `interaction-spec.md` / `component-spec.md`)은 현재 구현된 현실을 기술하므로 **이 문서로 인해 선반영하지 않는다**. 각 phase 가 실제로 착지할 때 해당 스펙을 MISSING→✓ 로 갱신한다.
 
@@ -54,7 +57,7 @@
 
 ### 표시
 
-12. Reflection 은 **항상 자기 chapter 의 1급 엔트리**로 표시된다. target 이 있으면 **추가로** 그 target 밑에 "후대의 해석" 교차 뷰(백링크 렌더)로도 나타난다. 이는 서로 다른 지층의 두 뷰이지 중복이 아니다(chapter=작성 지층, target=대상 지층). **숨김 로직 없음.** 저자가 Reflection 을 target 과 동일 chapter 에 수동 배치한 경우에만 그 chapter 뷰에서 dedup 한다. chapter 목록 정렬은 entry `sort_order` 를 쓰고, target 밑 교차 뷰 정렬은 **역참조 쿼리의 별도 order**(`created_at` 등)를 쓰며 chapter `sort_order` 와 혼동하지 않는다(§4.2).
+12. Reflection 은 **항상 자기 chapter 의 1급 엔트리**로 표시된다. target 이 있으면 **추가로** 그 target 엔트리의 본문과 태그 사이에 "후대의 해석" 슬림 임베드(백링크 렌더)로도 나타난다 — 헤더·제목 없이 본문만 흐르고 우측에 복사·수정 액션을 두며(target 엔트리 액션과 같은 오른쪽 열에 정렬), 삭제·접기·라이프사이클은 자기 chapter 의 1급 행이 담당한다. 이는 서로 다른 지층의 두 뷰이지 중복이 아니다(chapter=작성 지층, target=대상 지층). **숨김 로직 없음.** 저자가 Reflection 을 target 과 동일 chapter 에 수동 배치한 경우에만 그 chapter 뷰에서 dedup 한다. chapter 목록 정렬은 entry `sort_order` 를 쓰고, 임베드 정렬은 **역참조 쿼리의 별도 order**(`created_at` 등)를 쓰며 chapter `sort_order` 와 혼동하지 않는다(§4.2).
 
 ### 검색
 
@@ -63,6 +66,8 @@
 ### 스키마
 
 14. 단일 테이블 상속: target 컬럼을 `journal_entry` 에 nullable 로 얹는다(기존 `elseDreamYn`/`elseDreamerNm` 와 동일한 트레이드오프). 순수성(제네릭 Node)보다 기존 패턴과의 일관성을 택한다. full schema SSOT(`schema/full/mariadb/schema-journal-mariadb.sql`)도 런타임과 맞춰 `journal_entry`(+ target 컬럼)를 정본으로 두고 `journal_interpretation` DROP 을 반영한다.
+
+> **스키마 전달 현실 (Phase 1 조사):** 런타임 DB 의 `journal_entry` DDL 은 `schema/migration/mariadb/<ver>/V*__...-mariadb.sql` 로 전달하고 **수동 반영**한다(flyway `enabled:false`, ddl-auto `none`; 1.0 전까지 자동반영 미사용). Phase 1 의 target 컬럼은 `0.26.x/V0.26.0__journal-entry-reflection-target-mariadb.sql` 로 추가한다. full schema 베이스라인은 현재 `journal_diary`/`journal_note`/`journal_dream` 분리 상태로 `journal_entry` 수렴이 미반영된 **선행 갭**이며, 이 베이스라인 수렴은 본 마이그레이션과 별개 작업으로 남긴다.
 
 ---
 
@@ -94,12 +99,97 @@
 | Phase | 내용 | 규모 | 회복비용 |
 |---|---|---|---|
 | **0. 스펙 확정** | 본 문서로 target 설계·백필(§4)·phase 계획 확정 + DESIGN_NOTES 포인터. **코드 0줄.** | 小 | 없음 |
-| **1. 스키마 축** | `JOURNAL_REFLECTION` contentType·`JournalEntryTypePolicy.REFLECTION` 배선, Entry 에 target(refId nullable) 수용, `assertChapterForEntry` REFLECTION-universal 예외, 명시 타입 생성 경로. 데이터 이관 없음. **쓰기 UI/공개 API 는 interpretation 유지.** Reflection create 는 내부·테스트만 또는 미노출(dual-path 남용 금지). | 中 | 낮음 |
-| **2. 데이터 마이그레이션** | `journal_interpretation` → `journal_entry` 이관 + id 맵·attachable 재키잉·chapter/sortOrder/NOTE 버킷 백필·orphan target nullify(§4). 1회성. | 大 | 높음 |
-| **3. 읽기 경로 수렴** | 조회·검색·표시(target 교차 뷰, day=null 완결 제외, chapter→day 검색 조인)·`reflectionList` enricher·**삭제 nullify 훅**을 entry 경로로 통합. interpretation **조회** 경로 제거. | 大 | 中 |
-| **4. 쓰기 경로 + 모듈 제거** | 등록/수정 흡수, `interpretation/**` dead 제거, Vue 흡수·제거, `JOURNAL_INTERPRETATION` enum·strategy 제거, CSS 이관, 테이블 DROP. | 中 | 中 |
+| **1. 스키마 축** ✓ | `JOURNAL_REFLECTION` contentType·`JournalEntryTypePolicy.REFLECTION` 배선, Entry 에 target(refId nullable) 수용, `assertChapterForEntry` REFLECTION-universal 예외, 명시 타입 생성 경로. 데이터 이관 없음. **쓰기 UI/공개 API 는 interpretation 유지.** Reflection create 는 내부·테스트만 또는 미노출(dual-path 남용 금지). | 中 | 낮음 |
+| **2. 데이터 마이그레이션** (SQL 작성·적용 대기) | `journal_interpretation` → `journal_entry` 이관 + id 맵·attachable 재키잉·chapter/sortOrder/NOTE 버킷 백필·orphan target nullify(§4). 1회성. | 大 | 높음 |
+| **3. 읽기 경로 수렴** ✓ | 조회·검색·표시(target 교차 뷰, day=null 완결 제외, chapter→day 검색 조인)·`reflectionList` enricher·**삭제 nullify 훅**을 entry 경로로 통합. interpretation **조회** 경로 제거. | 大 | 中 |
+| **4. 쓰기 경로 + 모듈 제거** ✓ | 등록/수정 흡수, `interpretation/**` dead 제거, Vue 흡수·제거, `JOURNAL_INTERPRETATION` enum·strategy 제거, CSS 이관, 테이블 DROP. | 中 | 中 |
 
 각 phase 착지 시 갱신할 as-built 스펙: 화면 추가·변경 → `screen-spec.md`, 인터랙션 → `interaction-spec.md`, 저널 전용 컴포넌트 → `component-spec.md`.
+
+### Phase 1 착지 기록 (스키마 축)
+
+- 배선: `ContentType.JOURNAL_REFLECTION`, `JournalEntryType.REFLECTION`(명시 타입 경로), `JournalEntryTypePolicy.REFLECTION`(expectedChapterType=null=universal, supportsChapterChange=true, `from()` 분기), `JournalEntryService.assertChapterForEntry` REFLECTION-universal 예외, `JournalEntryEntity` target 컬럼(`ref_id`/`ref_content_type` nullable), `packages/shared-types` content enum 동기화, 마이그레이션 `V0.26.0__journal-entry-reflection-target-mariadb.sql`.
+- `JournalEntryTypeResolver` 는 변경하지 않는다 — `expectedChapterType=null` 이라 REFLECTION 은 chapter 역산 필터에 자동 미매치이며, 생성은 명시 타입 경로만 쓴다.
+- **`supportsInterpretation()` 는 REFLECTION 에서 false.** 이 메서드의 현재 의미는 레거시 interpretation 모듈의 대상 여부이며, Phase 1 은 Reflection 을 그 모듈에 노출하지 않는다(미노출 원칙). 규칙 6 의 "Reflection 도 target 가능"은 Phase 3 의 `canBeReflectionTarget()` 재정의에서 다룬다.
+- state/lifecycle 캐시는 REFLECTION 에서 null — Reflection 전용 캐시 배선은 Phase 3 읽기 경로 수렴에서 처리한다.
+- 쓰기 UI/공개 API 미노출, 데이터 이관 없음 → as-built screen/interaction/component-spec 은 현행 그대로가 현실과 일치(갱신 불필요).
+
+### Phase 2 기록 (데이터 이관 SQL — 적용 대기)
+
+- 산출물: `V0.26.1__journal-interpretation-to-reflection-data-mariadb.sql` (선행 `V0.26.0` 필요). 실행은 사용자가 DB 백업 후 수동 적용한다.
+- 라이브 실측(dreamdiary_private) 기준 이관 규모: 활성 20행(ref 있는 live-DREAM 16 + orphan 4), soft-deleted 5행 폐기.
+- **사이드 테이블 재키잉·파일 복사·dead-target nullify 는 실제 참조 행이 0건이라 이 데이터에선 생략**한다. interpretation 을 참조하는 comment/state/tag/lifecycle/meta/managtr/history/viewer/prefix_content·file_group 행이 모두 없다. (참조 행이 생기면 §4 재키잉을 별도 적용해야 한다.)
+- ref 16행은 대상 dream 이 모두 live 라 그 chapter 로 백필하고 target 을 유지한다. orphan 4행은 orphan-NOTE 버킷(title NULL)에 착지한다. sort_order 는 chapter 별 append.
+- 적용 후에도 `journal_interpretation` 은 유지된다(읽기 경로 제거는 Phase 3, DROP 은 Phase 4). 적용~Phase 3 사이 구 interpretation 뷰와 신규 reflection 이 동시 노출될 수 있으나 수렴 과정의 허용 상태다.
+
+### Phase 3a 기록 (삭제 nullify 훅 + 완결축 제외)
+
+- **삭제 nullify(규칙 7)**: `JournalEntryRepository.nullifyReflectionTargetsByRefId` (`@Modifying` 벌크 UPDATE) 추가, `JournalEntryService.postDelete` 에서 호출. 엔트리 삭제 시 그 엔트리를 target 으로 가리키는 REFLECTION 의 `ref_id`/`ref_content_type` 만 비운다(cascade 삭제 아님, Chapter 직속 독립화). reflection→reflection 체인도 자동 커버. audit 오염 방지를 위해 load+save 대신 벌크 UPDATE 를 쓴다.
+- **완결축 제외(규칙 11)**: `JournalDayResolvedGuard.assertWritableForEntry`/`assertWritableForRef` 에 REFLECTION 명시 제외를 추가한다(기존에도 fall-through/default 로 면제됐던 계약을 명시화, 동작 불변).
+- 범위 밖: chapter cascade 삭제로 사라지는 target 의 nullify 는 이 훅(서비스 `delete()` 경로) 밖이다. 문서 §153 의 chapter cascade blast-radius 는 의도된 동작이다.
+- 테스트: `JournalDayResolvedGuardTest`(단위·규칙11), `JournalEntryReflectionTargetNullifyIntegrationTest`(통합·규칙7). as-built 화면/인터랙션 변화 없음(백엔드 계약) → screen/interaction/component-spec 갱신 불필요.
+
+### Phase 3b 진행 (읽기 경로 수렴) — reflectionList enricher 전환
+
+state/lifecycle 소스는 **완전 수렴(캐시 정식 배선)** 방향으로 정했다. 대형·상호의존이라 빌드 가능한 증분으로 나눈다.
+
+- **i-1 캐시 인프라 (착지)**: `JournalStateCacheRegistry`/`JournalLifecycleCacheRegistry` 에 `JOURNAL_REFLECTION` 추가(list + monthly/weekly 캐시명), `ehcache.xml` 에 `journalReflectionStateMapByUser`/`journalReflectionWeeklyStateMapByUser` 선언, `JournalEntryTypePolicy.REFLECTION` 캐시명 배선. `getStateMerger` 가 아직 REFLECTION 을 미지정이라 **표시 동작은 불변**(캐시만 준비). `JournalCacheEvictor` 는 reflection 상태 캐시도 함께 evict.
+- **i-2 캐시 population (착지)**: `JournalStateMaps` 에 `reflectionMap` 추가, `JournalDayStateMapHelper` 가 REFLECTION 엔트리 state(collapsed/imprtc/refrnc)를 채움, `JournalDayService` 월/주 조회에서 reflection state 맵과 `getEntryLifecycleMap(JOURNAL_REFLECTION)` lifecycle 맵을 캐시에 put. dream chapter 의 reflection 은 day 그래프에 포함되어 캐시됨(orphan-NOTE reflection 은 day 밖이라 미포함). 표시 동작은 여전히 불변(read merger 는 i-3).
+- **i-3 read 수렴 (편집 완료·빌드 대기)**: `journalInterpretationList: List<JournalInterpretationDto>` → `reflectionList: List<JournalEntryDto>`(DTO 2). enricher `JournalEntryInterpretationEnricher` → `JournalEntryReflectionEnricher`(target 역참조 로드, `findAllByContentTypeAndRefIdIn`). `JournalEntryTypePolicy`: `supportsInterpretation`→`canBeReflectionTarget`(DIARY/DREAM/REFLECTION=true), `interpretableTypes`→`reflectionTargetTypes`. state/lifecycle 파이프라인(`StateViewHelper`·`StateEnricher`·`SearchStateCacheHelper`·`JournalDayViewHelper`·`JournalChapterViewHelper`·day query `mergeReflections`/`mergeLifecycles`)을 reflection 캐시·entry-level 병합으로 수렴하고 interpretation 전용 병합(`JournalInterpretationViewHelper.applyState`·`applyInterpretationLifecycle`) 사용을 entry 경로에서 제거. `MyViewService` enricher 게이트 전환.
+  - **잔여(3d)**: chapter 안에 1급으로 놓인 reflection 의 표시 투영(어느 목록으로 렌더할지)과 프론트 표시 수렴은 Phase 3d. i-3 는 백엔드 read/state 파이프라인 수렴까지다.
+  - **빌드 검증**: 사용자 머신 `./gradlew build` 통과 확인(Phase 1+3a+3b 백엔드 스택 전체 컴파일·빌드 OK).
+
+### Phase 3c 기록 (검색 축 — refContentType facet)
+
+- `JournalEntrySearchParam` 에 `refContentType` 필드 추가, `JournalEntrySpec` 에 `case "refContentType"`(REFLECTION 검색 한정) 추가 — target 유형(JOURNAL_DIARY=일기해석 / JOURNAL_DREAM=꿈해석)으로 equal, 독립 마커(INDEPENDENT/NONE)로 `ref_content_type IS NULL`.
+- REFLECTION contentType 검색 자체는 `isEntryType(REFLECTION)=true` 라 이미 열려 별도 변경 없음.
+- **결정**: chapter→day 공유 INNER join 은 유지(사이드이펙트 회피). 그 결과 독립(ref IS NULL) reflection 은 모두 orphan(day=null)이라 INNER join 에 걸려 검색 결과가 비며, 실효 facet 은 일기해석/꿈해석이다. orphan 검색(독립 facet 채움)은 후속 범위로 남긴다.
+- 테스트: `JournalEntryReflectionSearchFacetIntegrationTest`(통합, day→dream chapter→reflection 픽스처로 refContentType facet 필터 검증; 실행은 사용자 빌드).
+
+### Phase 3d 기록 (프론트 표시 수렴 + interpretation 조회 경로 제거)
+
+- **표시**: `JournalEntryItem.vue` 가 `entry.journalInterpretationList` → `entry.reflectionList`(target 이 이 엔트리인 Reflection 교차뷰)로 전환. `journal.ts` `JournalEntryDto` 타입에 `reflectionList`·`refId`·`refContentType` 반영.
+- **전용 컴포넌트(수렴)**: interpretation 컴포넌트를 공유하지 않고 **`reflection/components/JournalReflectionItem.vue` 신설**(읽기전용 백링크). interpretation 마크업/CSS 클래스는 시각 동일성을 위해 미러링·재사용(§4)하되, 편집/삭제/댓글/이력/lifecycle **액션은 제거** — reflection 은 자기 chapter 의 1급 엔트리에서 entry 경로로 편집한다. 이로써 interpretation 컴포넌트는 orphan 이 되어 Phase 4 에서 통째로 제거 가능하다(coexistence 회피).
+- **조회 경로 제거**: `JournalInterpretationRestController` 의 GET 목록(`journalInterpretationListAjax`) 제거(미사용 확인). **GET 상세는 유지** — write 모달(`journalModal.ts`)이 편집 로드에 쓰므로 Phase 4(모듈 제거)까지 남긴다. 등록·삭제(write)도 Phase 4까지 유지.
+- **잔여**: reflection 쓰기 경로 흡수(등록 버튼은 아직 interpretation write) 와 interpretation 모듈·테이블·CSS 클래스 제거는 Phase 4.
+- **빌드 미검증(프론트)**: 이 환경은 프론트 빌드 불가. 사용자 `./gradlew buildFrontend` 로 type-check/vite 확인 필요.
+
+### Phase 4a 기록 (쓰기 경로 흡수)
+
+- **백엔드**: `JournalEntryPostDto` 에 `refId`/`refContentType`(ContentType) 추가. `JournalEntryMapstruct` 는 `unmappedTargetPolicy=IGNORE`+이름 자동매핑이라 별도 변경 없이 target 을 entity 로 반영. 등록 핸들러는 DTO `contentType` 으로 타입 판정(`policyResolver.resolve`)하므로 `contentType=JOURNAL_REFLECTION` + Phase 1 배선(assertChapterForEntry REFLECTION-universal)으로 reflection 생성이 성립.
+- **프론트**: `reflection/modals/JournalReflectionRegistModal.vue` 신설 — interpretation 등록 모달을 미러링하되 **entry 등록/수정 API(`POST /api/journal/entries`, `/api/journal/entry/{id}`)** 로 POST하고 `contentType=JOURNAL_REFLECTION`+refId/refContentType/journalChapterId 를 싣는다. `journalModal.ts` 에 `openReflectionRegist`/`closeReflectionRegist`/모델 추가(수정은 entry 상세로 로드). `JournalEntryItem.vue` 등록 버튼을 `openReflectionRegist` 로 전환(target=이 엔트리, 기본 chapter=이 엔트리의 chapter). 4개 레이아웃에 reflection 모달 마운트.
+- **결정**: 새 reflection 의 chapter = target 의 chapter(§12 dedup). 전용 모달(interpretation 모달 재사용 아님)이라 interpretation 모달은 이제 dead-triggered → 4c 에서 제거.
+- **잔여**: interpretation 잔재 디커플링(4b) + 모듈·enum·테이블·CSS 제거(4c).
+- **빌드 미검증(프론트)**: 사용자 `./gradlew buildFrontend` 필요.
+
+### Phase 4b 기록 (interpretation 잔재 디커플링)
+
+- `JournalDayService`: interpretation state/lifecycle 캐시 put(월/주) + `getInterpretationStateMap`/`getInterpretationLifecycleMap`/`collectInterpretationRefs` + `journalInterpretationQueryService` 의존 제거 → **JournalDayService 가 interpretation 모듈에 의존하지 않음**. (i-3 이후 interpretation 캐시는 아무도 읽지 않아 redundant)
+- `JournalStateCacheRegistry`·`JournalLifecycleCacheRegistry`: `JOURNAL_INTERPRETATION` 을 list·switch 에서 제거. 호출처는 JournalDayService 뿐이었고 interpretation 모듈은 registry 미사용이라 안전.
+- interpretation 모듈 자체 + guard/policy/evictorMap/StateService/ApiUrl/ReservedStructuralBoard 의 `JOURNAL_INTERPRETATION` 참조는 4c(모듈·enum 제거)까지 유지.
+- 백엔드 정적 검토 통과(잔존 참조 0, 테스트 무영향). 사용자 `./gradlew build` 로 확인 가능.
+
+### Phase 4c-1 기록 (프론트 interpretation 제거)
+
+- `JournalInterpretationItem.vue`·`JournalInterpretationRegistModal.vue` 삭제(interpretation 프론트 dir 비움). `journal.ts` `InterpretationItem` 타입 제거. `journalModal.ts` interpretation 등록 store 바인딩(`openInterpretationRegist`/`closeInterpretationRegist`/model/open + `JournalInterpretationRegistModel`) 제거. 4개 레이아웃에서 interpretation 모달 마운트·import 제거(reflection 모달 유지).
+- **deferred**: `content.ts` `INTERPRETATION`(shared-domain `contentType.ts` 가 참조) + `JournalTagContextMenu` 문자열 case 는 무해한 문자열 멤버라 4c-2 백엔드 enum 제거와 함께 정리.
+- 프론트 빌드 미검증(이 환경) → 사용자 `./gradlew buildFrontend` 필요.
+
+### Phase 4c-2 기록 (백엔드 모듈·enum 제거)
+
+- interpretation 백엔드 모듈 **17파일 삭제**(controller/entity/mapstruct/model/repo/service/spec).
+- 잔여 참조 디커플링: `JournalDayResolvedGuard`·`JournalContentOwnershipGuard`(switch case + `journalInterpretationRepository`), `JournalCacheEvictWorker`(evictorMap + evictor 주입 + validate), `AttachableContentStatePolicy`/`LifecyclePolicy`·`StateService`·`CommentCacheInvalidateWorker`(allowed/required 셋), `ReservedStructuralBoard` 상수, `ApiUrl` 3 URL, `JournalEntryMapstruct` `uses`, dead code(`JournalLifecycleViewHelper.applyInterpretationLifecycle`·`JournalCacheEvictParam.of(JournalInterpretationDto)`).
+- **`ContentType.JOURNAL_INTERPRETATION` enum 상수 제거.**
+- 테스트 3개 갱신: `AttachableContentStatePolicyTest`·`JournalDayResolvedGuardTest`·`JournalContentOwnershipGuardTest` 에서 interpretation 참조 제거.
+- 공유 타입: `content.ts`/`shared-domain contentType.ts`/`shared-types journal.ts`(`JournalInterpretation` 타입 삭제, `JournalEntry.journalInterpretationList`→`reflectionList`)/`JournalTagContextMenu` case.
+- **범위 밖**: `app/mobile-react-native` 는 자체 interpretation 타입을 써서 이 마이그레이션에 미포함(별도 정리 대상).
+- **최대 blind 변경**(enum cascade). grep 코드 참조 0 확인. 사용자 `./gradlew build`+`buildFrontend` 반복 필수. (사용자 머신 build 통과 확인됨)
+
+### Phase 4c-3 기록 (테이블 DROP + CSS 이관) — 마이그레이션 종료
+
+- 마이그레이션 `V0.26.2__drop-journal-interpretation-table-mariadb.sql` (`DROP TABLE IF EXISTS journal_interpretation`, 선행 V0.26.1 + 백업). full schema baseline 에서도 `journal_interpretation` CREATE 제거.
+- CSS 이관: `journal.scss` 의 `journal-interpretation`/`-item`/`-content` 클래스를 `journal-reflection`/`-item`/`-content` 로 rename, `JournalReflectionItem.vue`·`JournalEntrySearchPage.vue`(:deep override) 반영. 시각 동일성 유지.
+- 이로써 interpretation 은 코드·CSS·(적용 시)DB 에서 완전히 사라지고, Reflection 이 Entry 로 단일 경로 수렴한다.
 
 ---
 
@@ -127,7 +217,7 @@
 - `(ref_id, ref_content_type)` 로 묶인 attachable·부수 행(comment / tag / state / lifecycle / history 등): `ref_content_type = JOURNAL_INTERPRETATION` → `JOURNAL_REFLECTION`, `ref_id` 를 새 entry id 로 재매핑.
 - `file_group_id` 는 entry 행으로 복사한다(파일 그룹 행 자체 id 는 유지 가능).
 - **활성(`deleted_at IS NULL`) interpretation 만** 이관한다. soft-deleted interpretation 은 **폐기**(이관하지 않음).
-- **sortOrder**: 오늘 의미는 `(refId, refContentType)` 그룹 내 순서. 흡수 후 의미는 **chapter 내 entry 목록** 순서. 이관 시 chapter 별 `MAX(sort_order)+n` 으로 append 한다. 동일(구) target 을 갖던 행끼리는 구 `sort_order`·`created_at` 상대 순서를 보존한다. target 밑 교차 뷰 정렬은 chapter `sort_order` 가 아니라 역참조 쿼리 order 를 쓴다(규칙 12).
+- **sortOrder**: 오늘 의미는 `(refId, refContentType)` 그룹 내 순서. 흡수 후 의미는 **chapter 내 entry 목록** 순서. 이관 시 chapter 별 `MAX(sort_order)+n` 으로 append 한다. 동일(구) target 을 갖던 행끼리는 구 `sort_order`·`created_at` 상대 순서를 보존한다. 임베드 정렬은 chapter `sort_order` 가 아니라 역참조 쿼리 order 를 쓴다(규칙 12).
 
 ### 4.3 orphan-NOTE 버킷
 

@@ -155,8 +155,24 @@ public class RelatedContentService {
         repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), createdBy);
     }
 
+    /**
+     * 엔트리 삭제 후처리용 관련글 정리.
+     * 관련글 도메인 밖 타입({@code JOURNAL_REFLECTION} 등)은 연결을 만들지 않으므로 no-op 한다.
+     * 공개 API {@link #deleteAllByRef(BaseAttachableKey)} 의 지원 타입 검증과 달리, 삭제 경로를 막지 않는다.
+     *
+     * @param refKey 삭제된 콘텐츠 키
+     * @param createdBy 등록자 아이디
+     */
     @Transactional
     public void deleteAllByRef(final BaseAttachableKey refKey, final String createdBy) {
+        if (refKey == null || refKey.getId() == null || StringUtils.isBlank(refKey.getContentType())) {
+            throw new IllegalArgumentException("related content key is required.");
+        }
+        final ContentType contentType = refKey.getContentTypeEnum();
+        if (!SUPPORTED_TYPES.contains(contentType)) {
+            return;
+        }
+
         this.validateReadableKey(refKey);
         journalDayResolvedGuard.assertWritableForRef(refKey.getId(), refKey.getContentType());
 

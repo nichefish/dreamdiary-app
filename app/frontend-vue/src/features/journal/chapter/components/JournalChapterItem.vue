@@ -260,7 +260,7 @@ watch(
   { immediate: true },
 );
 
-/** 본인 작성 챕터만 수정·삭제·엔트리 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
+/** 본인 작성 챕터만 수정·삭제·엔트리/리플렉션 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
 const canManageChapter = computed(() => props.chapter.isCreatedBy === true);
 
 const dayResolvedAxis = useJournalDayResolved();
@@ -305,6 +305,10 @@ const typeLabel = computed(() => {
   return t("journal.chapter.type.diary");
 });
 
+/**
+ * 챕터 엔트리 목록(journal_entry 행: 일기·꿈·노트). Reflection 은 별도 Aggregate(journal_reflection)이라
+ * 이 목록에 1급 행으로 들어오지 않고, 대상 엔트리 아래 embed(reflectionList)로만 표시된다.
+ */
 const entryList = computed(() => props.chapter.journalEntryList ?? []);
 const tagList = computed(() => props.chapter.tag?.list ?? []);
 
@@ -514,7 +518,7 @@ async function deleteChapter(): Promise<void> {
 }
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
-/** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목\n#순번\n본문 */
+/** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목 → 각 엔트리 #순번·본문, 그 밑에 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
 async function copyChapter(): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
@@ -532,6 +536,14 @@ async function copyChapter(): Promise<void> {
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
     if (sortNum) lines.push(sortNum);
     if (raw) lines.push(raw);
+    /* 원문과 해석은 한 몸 — 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+    for (const reflection of entry.reflectionList ?? []) {
+      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+      if (reflRaw) {
+        lines.push("");
+        lines.push(reflRaw);
+      }
+    }
     lines.push("");
   }
   const text = lines.join("\n").trim();

@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.mapstruct.JournalEntryTagMa
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryTagContentParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryTagQuery;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTagAxis;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryTagRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.spec.JournalEntryTagSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
@@ -273,12 +274,14 @@ public class JournalEntryTagService
      * @return 태그 건수 집계 파라미터
      */
     private JournalEntryTagContentParam toTagContentParam(final String username, final JournalEntryTagQuery query) {
+        final ContentType contentType = query.contentType();
         return JournalEntryTagContentParam.builder()
                 .yy(query.yy())
                 .mnth(query.mnth())
                 .weekStartDt(query.weekStartDt())
                 .createdBy(AuthUtils.requireUsername(username))
-                .contentType(query.contentType().key)
+                .contentType(contentType.key)
+                .contentTypes(JournalEntryTagAxis.expandKeys(contentType))
                 .build();
     }
 
