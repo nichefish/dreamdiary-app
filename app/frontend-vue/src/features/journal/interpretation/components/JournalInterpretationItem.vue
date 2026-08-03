@@ -269,7 +269,7 @@ const commentList = computed(() => props.interpretation.comment?.list ?? []);
 /** 라이프사이클 옵션 */
 const lifecycleOptions = computed(() => [
   { key: "OPEN",     label: t("journal.interpretation.lifecycle.open"), activeClass: "text-gray-800" },
-  { key: "PENDING",  label: t("lifecycle.pending"), activeClass: "text-primary"  },
+  { key: "PENDING",  label: t("lifecycle.pending"), activeClass: "text-gray-600" },
   { key: "RESOLVED", label: t("status.completed"),  activeClass: "text-success"  },
 ]);
 

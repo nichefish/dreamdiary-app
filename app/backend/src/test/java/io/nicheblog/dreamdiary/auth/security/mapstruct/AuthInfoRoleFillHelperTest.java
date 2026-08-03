@@ -1,12 +1,11 @@
 package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
-import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.auth.type.Auth;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntityTestFactory;
-import io.nicheblog.dreamdiary.global.TestConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,12 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * AuthInfoRoleFillHelper — user_role → AuthInfo.roles (MapStruct uses @AfterMapping)
+ * AuthInfoRoleFillHelper — user_role → AuthInfo.roles 변환 테스트.
  */
 @ActiveProfiles("test")
 class AuthInfoRoleFillHelperTest {
-
-    private final AuthInfoRoleFillHelper helper = new AuthInfoRoleFillHelper();
 
     @Test
     @DisplayName("roleInfo가 있으면 AuthInfo.roles에 RoleDto가 채워진다")
@@ -31,12 +28,11 @@ class AuthInfoRoleFillHelperTest {
         final UserRoleEntity ur = UserRoleEntityTestFactory.create(Auth.USER);
         user.setUserRoles(List.of(ur));
 
-        final AuthInfo dto = AuthInfo.builder().username(TestConstant.TEST_USER).build();
-        helper.mapRolesFromUserRoles(user, dto);
+        final List<RoleDto> roles = AuthInfoRoleFillHelper.mapRolesFromUserRoles(user);
 
-        assertFalse(CollectionUtils.isEmpty(dto.getRoles()));
-        assertEquals(1, dto.getRoles().size());
-        assertEquals(Auth.USER.name(), dto.getRoles().get(0).getRoleKey());
+        assertFalse(CollectionUtils.isEmpty(roles));
+        assertEquals(1, roles.size());
+        assertEquals(Auth.USER.name(), roles.get(0).getRoleKey());
     }
 
     @Test
@@ -49,10 +45,9 @@ class AuthInfoRoleFillHelperTest {
                 .build();
         user.setUserRoles(List.of(ur));
 
-        final AuthInfo dto = AuthInfo.builder().username(TestConstant.TEST_USER).build();
-        helper.mapRolesFromUserRoles(user, dto);
+        final List<RoleDto> roles = AuthInfoRoleFillHelper.mapRolesFromUserRoles(user);
 
-        assertTrue(CollectionUtils.isEmpty(dto.getRoles()));
+        assertTrue(CollectionUtils.isEmpty(roles));
     }
 
     @Test
@@ -61,10 +56,9 @@ class AuthInfoRoleFillHelperTest {
         final UserEntity user = UserEntityTestFactory.create();
         user.setUserRoles(List.of());
 
-        final AuthInfo dto = AuthInfo.builder().username(TestConstant.TEST_USER).build();
-        helper.mapRolesFromUserRoles(user, dto);
+        final List<RoleDto> roles = AuthInfoRoleFillHelper.mapRolesFromUserRoles(user);
 
-        assertNotNull(dto.getRoles());
-        assertTrue(dto.getRoles().isEmpty());
+        assertNotNull(roles);
+        assertTrue(roles.isEmpty());
     }
 }

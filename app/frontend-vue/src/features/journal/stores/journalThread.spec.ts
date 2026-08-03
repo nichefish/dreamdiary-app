@@ -6,6 +6,7 @@ import { useJournalThreadStore } from "./journalThread";
 vi.mock("axios", () => ({
   default: {
     get: vi.fn(),
+    post: vi.fn(),
   },
 }));
 
@@ -32,6 +33,7 @@ const FIXTURE_ENTRY_ID = 101;
 
 describe("journalThread store 열린 상세 갱신", () => {
   const mockedGet = vi.mocked(axios.get);
+  const mockedPost = vi.mocked(axios.post);
 
   beforeEach(() => {
     setActivePinia(createPinia());
@@ -121,30 +123,71 @@ describe("journalThread store 열린 상세 갱신", () => {
     expect(store.registDirty).toBe(true);
   });
 
-  it("스레드 기능 공용 분류 선택지는 동시 요청을 합치고 정상 조회 뒤 계속 공유한다", async () => {
+  it("스레드 기능 공용 말머리 선택지는 동시 요청을 합치고 정상 조회 뒤 계속 공유한다", async () => {
     const store = useJournalThreadStore();
     mockedGet.mockResolvedValue({
       data: {
         rsltList: [
-          { code: "ISSUE", codeName: "이슈" },
-          { code: "REVIEW", codeName: "회고" },
+          { id: 11, name: "이슈", sortOrder: 0, activeYn: "Y" },
         ],
       },
     });
 
     await Promise.all([
-      store.ensureCategoryOptions(),
-      store.ensureCategoryOptions(),
+      store.ensurePrefixOptions(),
+      store.ensurePrefixOptions(),
     ]);
-    await store.ensureCategoryOptions();
+    await store.ensurePrefixOptions();
 
     expect(mockedGet).toHaveBeenCalledTimes(1);
-    expect(mockedGet).toHaveBeenCalledWith("/api/journal/threads/categories");
-    expect(store.categoryOptions).toEqual([
-      { code: "ISSUE", codeName: "이슈" },
-      { code: "REVIEW", codeName: "회고" },
+    expect(mockedGet).toHaveBeenCalledWith("/api/my/prefixes/options", {
+      params: { contentType: "JOURNAL_THREAD" },
+    });
+    expect(store.prefixOptions).toEqual([
+      { id: 11, name: "이슈", sortOrder: 0, activeYn: "Y" },
     ]);
-    expect(store.categoryError).toBe("");
+    expect(store.prefixError).toBe("");
+  });
+
+  it("빠른 추가 Prefix를 서버 옵션으로 재조회하고 현재 선택에 반영한다", async () => {
+    const store = useJournalThreadStore();
+    mockedGet
+      .mockResolvedValueOnce({
+        data: {
+          rsltList: [
+            { id: 11, name: "기존 항목", sortOrder: 3, activeYn: "Y" },
+          ],
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          rsltList: [
+            { id: 11, name: "기존 항목", sortOrder: 3, activeYn: "Y" },
+            { id: 12, name: "새 항목", sortOrder: 4, activeYn: "Y" },
+          ],
+        },
+      });
+    mockedPost.mockResolvedValue({
+      data: { rsltObj: { id: 12, name: "새 항목", sortOrder: 4, activeYn: "Y" } },
+    });
+    await store.ensurePrefixOptions();
+    store.openRegist();
+
+    await store.quickAddPrefix(" 새 항목 ");
+
+    expect(mockedPost).toHaveBeenCalledWith(
+      "/api/my/prefixes",
+      {
+        name: "새 항목",
+        color: null,
+        sortOrder: 4,
+      },
+      {
+        params: { contentType: "JOURNAL_THREAD" },
+      },
+    );
+    expect(store.prefixOptions.map((prefix) => prefix.id)).toEqual([11, 12]);
+    expect(store.registModel?.prefixId).toBe(12);
   });
 
   it("수정 상세 응답이 비었거나 다른 ID면 불완전한 편집 표면을 닫는다", async () => {
@@ -272,9 +315,9 @@ describe("journalThread store 목록 태그 필터", () => {
     expect(params.getAll("tagIds")).toEqual(["11", "22"]);
   });
 
-  it("filterCategory 를 메인 목록 categoryCode 파라미터로 전송한다", async () => {
+  it("filterPrefixId 를 메인 목록 prefixId 파라미터로 전송한다", async () => {
     const store = useJournalThreadStore();
-    store.filterCategory = "CASE";
+    store.filterPrefixId = "11";
 
     await store.fetchList(0);
 
@@ -282,7 +325,7 @@ describe("journalThread store 목록 태그 필터", () => {
     const [, config] = mockedGet.mock.calls[0];
     const params = config?.params as URLSearchParams;
     expect(params).toBeInstanceOf(URLSearchParams);
-    expect(params.get("categoryCode")).toBe("CASE");
+    expect(params.get("prefixId")).toBe("11");
   });
 
   it("addFilterTag 는 카테고리(ctgr)를 배지용으로 캐시한다", () => {

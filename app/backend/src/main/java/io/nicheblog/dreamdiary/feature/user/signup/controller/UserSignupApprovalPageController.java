@@ -1,13 +1,12 @@
 package io.nicheblog.dreamdiary.feature.user.signup.controller;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -45,7 +44,7 @@ public class UserSignupApprovalPageController
      * @return {@link String} -- Vue SPA 리다이렉트 경로
      */
     @GetMapping(Url.USER_SIGNUP_LIST)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     public String userSignupApprovalList() {
         // 변경: 계정 신청 승인이 계정 관리(/admin/users)의 `계정 신청 승인` 탭으로 흡수됐다.
         return "redirect:/vue-app/admin/users?tab=signup";

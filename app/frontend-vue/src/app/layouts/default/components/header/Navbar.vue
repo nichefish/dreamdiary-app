@@ -155,7 +155,7 @@ export default defineComponent({
 
     const themeMode = computed(() => store.mode);
     const menuMode = computed(() => menuStore.mode);
-    const canSwitchMenuMode = computed(() => !!authStore.user?.isMngr);
+    const canSwitchMenuMode = computed(() => authStore.canUseMngrMenuMode());
     const profileImageUrl = computed(() =>
       resolveProfileImageUrl(authStore.user?.profileImageUrl)
     );

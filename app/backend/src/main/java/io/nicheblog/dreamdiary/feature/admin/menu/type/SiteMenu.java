@@ -29,6 +29,7 @@ public enum SiteMenu {
     ERROR,
 
     AUTH_POLICY,
+    USER_GROUP,
     MENU_ADMIN,
     CODE_ADMIN,
 

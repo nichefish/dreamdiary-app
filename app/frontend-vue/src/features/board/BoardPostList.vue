@@ -34,18 +34,17 @@
         </div>
 
         <!--begin::검색 폼
-          store.filterKeyword/filterCategory 는 이미 fetchList 가 API(searchKeyword/categoryCode)로
-          전송하고 있었으나 입력 UI 가 없어 값을 넣을 수단이 없었다. -->
+          말머리는 게시판 Prefix Scope의 ID로 조회하고, 태그와 별개의 단일 대표 슬롯으로 유지한다. -->
         <form class="d-flex flex-wrap align-items-center gap-2 border-top pt-3" @submit.prevent="search">
-          <!--분류 그룹이 지정되지 않은 게시판은 선택지가 비므로 select 자체를 숨긴다-->
+          <!--활성 말머리가 없는 게시판은 선택지가 비므로 select 자체를 숨긴다-->
           <select
-            v-if="store.categoryOptions.length"
-            v-model="store.filterCategory"
+            v-if="store.prefixOptions.length"
+            v-model="store.filterPrefixId"
             class="form-select form-select-sm form-select-solid w-auto flex-shrink-0"
           >
-            <option value="">{{ t('board.post.filter.all-categories') }}</option>
-            <option v-for="category in store.categoryOptions" :key="category.code" :value="category.code">
-              {{ category.codeName }}
+            <option :value="null">{{ t('board.post.filter.all-prefixes') }}</option>
+            <option v-for="prefix in store.prefixOptions" :key="prefix.id" :value="prefix.id">
+              {{ prefix.name }}
             </option>
           </select>
           <input
@@ -58,7 +57,7 @@
           <button type="submit" class="btn btn-sm btn-light-primary">{{ t('common.search') }}</button>
           <button type="button" class="btn btn-sm btn-light" @click="store.resetFilters()">{{ t('common.reset') }}</button>
         </form>
-        <div v-if="store.categoryError" class="text-danger fs-8 mt-2">{{ store.categoryError }}</div>
+        <div v-if="store.prefixError" class="text-danger fs-8 mt-2">{{ store.prefixError }}</div>
         <!--end::검색 폼-->
       </div>
     </div>
@@ -94,7 +93,7 @@
             >
               <td class="text-center text-gray-500 fs-7 hidden-table">{{ post.rnum }}</td>
               <td class="ps-3">
-                <span v-if="post.ctgrNm" class="badge badge-light-primary me-2 fs-9">{{ post.ctgrNm }}</span>
+                <span v-if="post.prefix" class="badge badge-light-primary me-2 fs-9">{{ post.prefix.name }}</span>
                 <span class="fs-6">{{ post.title }}</span>
                 <span v-if="post.isNew" class="badge border-0 text-white bg-noti fs-8 ms-2">N</span>
                 <button
@@ -186,7 +185,7 @@
 
 <script setup lang="ts">
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { onMounted, watch } from "vue";
+import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { useBoardPostStore } from "@/features/board/stores/boardPost";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
@@ -198,7 +197,7 @@ const route = useRoute();
 const store = useBoardPostStore();
 const attachableStore = useAttachableModalStore();
 
-/** boardKey 변경 시 목록 재조회 */
+/** 게시판 화면 진입 및 boardKey 변경 시 게시글·말머리·태그 재조회 */
 watch(
   () => route.params.boardKey as string,
   async (key) => {
@@ -218,22 +217,18 @@ watch(
   }
 );
 
-onMounted(async () => {
-  const key = route.params.boardKey as string;
-  if (key) await store.setBoard(key);
-});
-
-/** 게시물 태그 보유 여부 */
-/** 검색 실행 — 조건이 바뀌었으므로 항상 첫 페이지부터 조회한다. */
+/** 게시물 행 클릭 시 컨텍스트 메뉴가 아니면 상세를 연다. */
 function onPostRowClick(event: MouseEvent, id: number): void {
   if (isMetronicMenuEventTarget(event.target)) return;
   store.openDetail(id);
 }
 
+/** 검색 실행 — 조건이 바뀌었으므로 항상 첫 페이지부터 조회한다. */
 function search(): void {
   void store.fetchList(0);
 }
 
+/** 게시물 태그 보유 여부 */
 function hasPostTags(post: BoardPostDto): boolean {
   return Array.isArray(post.tag?.list) && post.tag!.list!.length > 0;
 }

@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.mapstuct;
 
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.journal.thread.mapstruct.JournalThreadMapstruct;
@@ -12,6 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * JournalThreadMapstructTest
@@ -23,6 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @ActiveProfiles("test")
 class JournalThreadMapstructTest {
+
+    private static final int FIXTURE_REQUEST_PREFIX_ID = 101;
+    private static final int FIXTURE_EXISTING_PREFIX_ID = 202;
+    private static final String FIXTURE_REQUEST_PREFIX_NAME = "업무";
+    private static final String FIXTURE_EXISTING_PREFIX_NAME = "개인";
+    private static final String FIXTURE_THREAD_TITLE = "테스트 스레드";
 
     private final JournalThreadMapstruct journalThreadMapstruct = JournalThreadMapstruct.INSTANCE;
 
@@ -85,5 +95,33 @@ class JournalThreadMapstructTest {
     @Test
     void testUpdateFromDto_checkBasic() throws Exception {
         //
+    }
+
+    /**
+     * 쓰기 매핑은 검증 전 중첩 Prefix DTO를 영속 관계에 반영하지 않는다.
+     */
+    @Test
+    void testWriteMappingIgnoresNestedPrefix() throws Exception {
+        // Given::
+        final PrefixDto requestPrefix = PrefixDto.builder()
+                .id(FIXTURE_REQUEST_PREFIX_ID)
+                .name(FIXTURE_REQUEST_PREFIX_NAME)
+                .build();
+        final JournalThreadDto dto = JournalThreadDto.builder()
+                .title(FIXTURE_THREAD_TITLE)
+                .prefix(requestPrefix)
+                .prefixId(FIXTURE_REQUEST_PREFIX_ID)
+                .build();
+        // 콘텐츠는 prefix FK를 직접 들지 않고 PrefixEmbed(prefix_content 연결)를 물린다.
+        final PrefixEmbed existingPrefix = PrefixEmbed.builder().build();
+        journalThreadEntity.setPrefix(existingPrefix);
+
+        // When::
+        final JournalThreadEntity created = journalThreadMapstruct.toEntity(dto);
+        journalThreadMapstruct.updateFromDto(dto, journalThreadEntity);
+
+        // Then::
+        assertNull(created.getPrefix(), "등록 쓰기 매핑은 중첩 Prefix DTO를 임베드로 변환하지 않아야 합니다.");
+        assertSame(existingPrefix, journalThreadEntity.getPrefix(), "수정 쓰기 매핑은 검증 전 기존 Prefix 임베드를 변경하지 않아야 합니다.");
     }
 }

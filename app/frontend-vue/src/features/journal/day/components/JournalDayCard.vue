@@ -208,18 +208,19 @@
     <!--end::태그 행-->
 
     <!--begin::본문-->
-    <div class="journal-day-content row p-5">
+    <div class="journal-day-content row py-3 p-5">
       <!--begin::일기 챕터 목록-->
       <template v-if="showDiaries">
-        <div v-if="hiddenChapterCtgrList.length > 0" class="d-flex align-items-center mb-3">
+        <div v-if="hiddenChapterPrefixList.length > 0" class="d-flex align-items-center mb-3">
           <div class="d-flex flex-wrap align-items-center gap-2 ps-1 ps-md-5">
             <span class="badge badge-light-warning text-warning fw-semibold">{{ t("journal.day.list.chapter-filter") }}</span>
             <span class="text-muted fs-7">{{ t('journal.day.list.hidden-chapter-ctgr') }}</span>
             <span
-              v-for="ctgr in hiddenChapterCtgrList"
-              :key="ctgr.categoryCode"
-              class="badge badge-light-secondary text-muted"
-            >{{ ctgr.categoryName }} {{ ctgr.categoryCode }}</span>
+              v-for="prefix in hiddenChapterPrefixList"
+              :key="prefix.prefixId"
+              class="badge badge-light-secondary"
+              :style="{ color: prefix.prefixColor || 'var(--bs-gray-600)' }"
+            >{{ prefix.prefixName }}</span>
           </div>
         </div>
         <JournalChapterItem
@@ -313,7 +314,7 @@ const tagList = computed(() => props.day.tag?.list ?? []);
 const metaList = computed(() => props.day.meta?.list ?? []);
 const journalChapterList = computed(() => props.day.journalChapterList ?? []);
 const journalDreamSectionList = computed(() => props.day.journalDreamSectionList ?? []);
-const hiddenChapterCtgrList = computed(() => props.day.hiddenChapterCtgrList ?? []);
+const hiddenChapterPrefixList = computed(() => props.day.hiddenChapterPrefixList ?? []);
 
 const hasVisibleTags = computed(() => tagList.value.length > 0);
 const hasMeta = computed(() => metaList.value.length > 0);

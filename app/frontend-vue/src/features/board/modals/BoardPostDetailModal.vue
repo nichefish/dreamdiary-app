@@ -23,7 +23,7 @@
             <!--begin::헤더 (제목 + 작성자/일시)-->
             <div class="mb-0">
               <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
-                <span v-if="store.detailModel.ctgrNm" class="ctgr-span ctgr-gray">{{ store.detailModel.ctgrNm }}</span>
+                <span v-if="store.detailModel.prefix" class="ctgr-span ctgr-gray">{{ store.detailModel.prefix.name }}</span>
                 <span class="fs-3 fw-bolder text-gray-900">{{ store.detailModel.title }}</span>
               </div>
               <div class="d-flex align-items-center flex-wrap gap-3 text-muted fs-7">

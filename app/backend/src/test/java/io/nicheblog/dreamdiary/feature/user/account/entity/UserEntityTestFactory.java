@@ -20,11 +20,11 @@ import org.springframework.test.context.ActiveProfiles;
 public class UserEntityTestFactory {
 
     /**
-     * 테스트용 사용자 정보 Entity 객체 생성
+     * 계정 상태와 양방향 연관관계가 연결된 테스트용 사용자 정보 Entity 객체 생성
      */
     public static UserEntity create() throws Exception {
         // 객체 생성
-        return UserEntity.builder()
+        final UserEntity entity = UserEntity.builder()
                 .username(TestConstant.TEST_USER)
                 .password(TestConstant.TEST_PASSWORD_ENCODED)
                 .nickname(TestConstant.TEST_NICK_NM)
@@ -33,6 +33,8 @@ public class UserEntityTestFactory {
                 .content("test_cn")
                 .acntStus(UserStateEntity.builder().build())
                 .build();
+        entity.cascade();
+        return entity;
     }
 
     /**

@@ -59,8 +59,8 @@ public class JournalDaySearchParam
     private String diaryLifecycleKey;
     /** 꿈 라이프사이클 키 */
     private String dreamLifecycleKey;
-    /** 엔티티 카테고리 코드 */
-    private List<String> chapterCtgrCds;
+    /** 챕터 Prefix ID */
+    private List<Integer> chapterPrefixIds;
 
     /**
      * 저널 일자 목록 Cache key suffix

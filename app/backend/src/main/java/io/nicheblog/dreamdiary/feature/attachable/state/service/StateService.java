@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.policy.AttachableContentStatePolicy;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.spec.StateSpec;
+import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -50,6 +51,7 @@ public class StateService
     private final StateMapstruct mapstruct = StateMapstruct.INSTANCE;
 
     private final List<StateCacheUpdater> cacheUpdaters;
+    private final JournalContentOwnershipGuard journalContentOwnershipGuard;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     /**
@@ -116,6 +118,7 @@ public class StateService
                     .build();
         }
 
+        journalContentOwnershipGuard.assertOwned(stateToggle.getId(), stateToggle.getContentType());
         if (stateToggle.getContentType() != ContentType.JOURNAL_DAY) {
             journalDayResolvedGuard.assertWritableForRef(stateToggle.getId(), stateToggle.getContentType());
         }

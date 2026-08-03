@@ -6,6 +6,7 @@ import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shar
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import type { JournalEntryDto, LifecycleCmpstn } from "@/features/journal/stores/journal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
+import { usePersonalPrefixOptionsStore } from "@/features/attachable/stores/personalPrefixOptions";
 
 // ---- 타입 정의 ----
 
@@ -17,10 +18,12 @@ export interface ThreadTagItem {
 }
 
 /** 목록 검색 카드의 태그 클라우드 항목 */
-/** 저널 스레드 분류 선택지 */
-export interface ThreadCategoryItem {
-  code: string;
-  codeName: string;
+export interface ThreadPrefix {
+  id: number;
+  name: string;
+  color?: string | null;
+  sortOrder?: number;
+  activeYn?: "Y" | "N";
 }
 
 /** 태그 컴포지션 */
@@ -35,8 +38,8 @@ export interface JournalThreadDto {
   id?: number;
   rnum?: number;
   contentType?: string;
-  categoryCode?: string;
-  categoryName?: string;
+  prefix?: ThreadPrefix | null;
+  prefixId?: number | null;
   /** 활성 소속 엔트리 수 (목록 enrich). 없으면 0으로 취급해 숨긴다. */
   membershipCount?: number;
   /** 활성 소속 엔트리 기준일 min (YYYY-MM-DD). 목록 enrich. */
@@ -62,7 +65,7 @@ export interface JournalThreadDto {
 export interface JournalThreadRegistModel {
   id?: number;
   contentType?: string;
-  categoryCode?: string;
+  prefixId?: number | null;
   title?: string;
   content?: string;
 }
@@ -71,6 +74,8 @@ export interface JournalThreadRegistModel {
 export interface JournalPeriodThreadSummaryItem {
   threadId: number;
   title: string;
+  /** 스레드에 선택된 개인 말머리. 선택하지 않았으면 null. */
+  prefix?: ThreadPrefix | null;
   /** 조회 기간 안에서 이 스레드에 속한 엔트리 수 */
   entryCount: number;
   /** 조회 기간 안에서 스레드가 처음 등장한 일자 */
@@ -87,6 +92,7 @@ export type JournalPeriodThreadSummaryQuery =
 
 export const useJournalThreadStore = defineStore("journalThread", () => {
   const { t } = useLocaleStore();
+  const personalPrefixOptionsStore = usePersonalPrefixOptionsStore();
 
   // ---- 목록 ----
 
@@ -106,8 +112,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const error = ref<string | null>(null);
   /** 검색 키워드 필터 */
   const filterKeyword = ref("");
-  /** 카테고리 필터 */
-  const filterCategory = ref("");
+  /** 단일 말머리 필터 */
+  const filterPrefixId = ref("");
   /** 라이프사이클 필터 (OPEN/PENDING/RESOLVED, 빈 값=전체) */
   const filterLifecycleKey = ref("");
   /**
@@ -119,14 +125,12 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const filterTagLabelMap = ref<Record<string, string>>({});
   /** tagId → 태그 카테고리(ctgr). 배지에 `[ctgr]` 로 표시한다. */
   const filterTagCtgrMap = ref<Record<string, string>>({});
-  /** 분류 선택지 */
-  const categoryOptions = ref<ThreadCategoryItem[]>([]);
-  /** 분류 선택지 조회 오류 */
-  const categoryError = ref("");
-  /** 분류 선택지 최초 정상 조회 완료 여부. 스레드 기능 안에서 같은 목록을 계속 공유한다. */
-  const categoryOptionsLoaded = ref(false);
-  /** 스레드 하위 route가 빠르게 바뀌어도 동일한 분류 요청을 중복 전송하지 않게 합치는 진행 중 요청 */
-  let categoryOptionsRequest: Promise<void> | null = null;
+  /** 목록 검색·등록·수정이 공유하는 JOURNAL_THREAD 활성 개인 Prefix 선택지. */
+  const prefixOptions = computed<ThreadPrefix[]>(() =>
+    personalPrefixOptionsStore.optionsFor("JOURNAL_THREAD") as ThreadPrefix[]
+  );
+  /** 말머리 선택지 조회 또는 편집 폼 빠른 추가 오류 */
+  const prefixError = ref("");
 
   // ---- 기간별 요약 ----
 
@@ -205,7 +209,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         params.set("searchType", "title");
         params.set("searchKeyword", filterKeyword.value);
       }
-      if (filterCategory.value) params.set("categoryCode", filterCategory.value);
+      if (filterPrefixId.value) params.set("prefixId", filterPrefixId.value);
       if (filterLifecycleKey.value) params.set("lifecycleKey", filterLifecycleKey.value);
       // tagIds=1&tagIds=2 — Spring List<Integer> 바인딩 계약 (엔트리 검색과 동일)
       filterTagIds.value.forEach((tagId) => params.append("tagIds", tagId));
@@ -256,39 +260,58 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     delete filterTagCtgrMap.value[tagId];
   }
 
-  /** 현재 locale이 적용된 저널 스레드 분류 선택지를 조회한다. */
-  async function fetchCategoryOptions(): Promise<void> {
-    categoryError.value = "";
-    try {
-      const res = await axios.get("/api/journal/threads/categories");
-      categoryOptions.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
-      categoryOptionsLoaded.value = true;
-    } catch (e: unknown) {
-      console.error("[journalThread] fetchCategoryOptions failed", e);
-      categoryOptions.value = [];
-      categoryError.value = t("journal.thread.category.load.failure");
-      categoryOptionsLoaded.value = false;
-    }
+  /** 현재 사용자의 활성 말머리 선택지를 조회한다. */
+  async function fetchPrefixOptions(): Promise<void> {
+    const loaded = await personalPrefixOptionsStore.fetchOptions("JOURNAL_THREAD", true);
+    prefixError.value = loaded ? "" : t("journal.thread.prefix.load.failure");
   }
 
   /**
    * 스레드 기능 진입 시 목록 검색·등록·수정이 공유할 분류 목록을 최초 한 번 조회한다.
    * 실패한 조회는 완료로 캐시하지 않아 다음 스레드 route 동기화에서 재시도한다.
    */
-  async function ensureCategoryOptions(): Promise<void> {
-    if (categoryOptionsLoaded.value) return;
-    if (categoryOptionsRequest) return categoryOptionsRequest;
+  async function ensurePrefixOptions(): Promise<void> {
+    const loaded = await personalPrefixOptionsStore.fetchOptions("JOURNAL_THREAD");
+    prefixError.value = loaded ? "" : t("journal.thread.prefix.load.failure");
+  }
 
-    categoryOptionsRequest = fetchCategoryOptions().finally(() => {
-      categoryOptionsRequest = null;
-    });
-    await categoryOptionsRequest;
+  /**
+   * 스레드 편집 문맥에서 활성 말머리를 빠르게 추가하고 즉시 현재 선택에 반영한다.
+   * 관리 기능 전체는 /my/prefixes 탭에 두며 이름·정렬 검증의 SSOT는 관리 API다.
+   */
+  async function quickAddPrefix(rawName: string): Promise<ThreadPrefix> {
+    const name = rawName.trim();
+    if (!name) throw new Error(t("user.my.prefixes.name.required"));
+    const sortOrder = prefixOptions.value.reduce(
+      (maximum, prefix) => Math.max(maximum, prefix.sortOrder ?? 0),
+      -1,
+    ) + 1;
+    try {
+      const response = await axios.post("/api/my/prefixes", {
+        name,
+        color: null,
+        sortOrder,
+      }, {
+        params: { contentType: "JOURNAL_THREAD" },
+      });
+      const created = response.data?.rsltObj as ThreadPrefix | undefined;
+      if (!created?.id) {
+        console.error("[journalThread] quickAddPrefix rejected empty response");
+        throw new Error(t("journal.thread.prefix.quick-add.failure"));
+      }
+      await fetchPrefixOptions();
+      if (registModel.value) registModel.value.prefixId = created.id;
+      return created;
+    } catch (error) {
+      console.error("[journalThread] quickAddPrefix failed", { name }, error);
+      throw error;
+    }
   }
 
   /** 검색 조건을 비우고 첫 페이지를 조회한다. */
   async function resetFilters(): Promise<void> {
     filterKeyword.value = "";
-    filterCategory.value = "";
+    filterPrefixId.value = "";
     filterLifecycleKey.value = "";
     filterTagIds.value = [];
     filterTagLabelMap.value = {};
@@ -357,7 +380,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     return JSON.stringify({
       id: model.id ?? null,
       contentType: model.contentType ?? "JOURNAL_THREAD",
-      categoryCode: model.categoryCode ?? "",
+      prefixId: model.prefixId ?? null,
       title: model.title ?? "",
       content: model.content ?? "",
     });
@@ -371,7 +394,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     suspendedDetailId.value = null;
     registModel.value = {
       contentType: "JOURNAL_THREAD",
-      categoryCode: "",
+      prefixId: null,
       title: "",
       content: "",
     };
@@ -428,7 +451,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       registModel.value = {
         id: dto.id,
         contentType: dto.contentType ?? "JOURNAL_THREAD",
-        categoryCode: dto.categoryCode ?? "",
+        prefixId: dto.prefix?.id ?? dto.prefixId ?? null,
         title: dto.title ?? "",
         content: dto.content ?? "",
       };
@@ -516,7 +539,9 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
       const fd = new FormData();
       if (registModel.value.id != null) fd.append("id", String(registModel.value.id));
       fd.append("contentType", registModel.value.contentType ?? "JOURNAL_THREAD");
-      fd.append("categoryCode", registModel.value.categoryCode ?? "");
+      if (registModel.value.prefixId != null) {
+        fd.append("prefixId", String(registModel.value.prefixId));
+      }
       fd.append("title", registModel.value.title ?? "");
       fd.append("content", registModel.value.content ?? "");
 
@@ -779,19 +804,20 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     loading,
     error,
     filterKeyword,
-    filterCategory,
+    filterPrefixId,
     filterLifecycleKey,
     filterTagIds,
     filterTagLabelMap,
     filterTagCtgrMap,
-    categoryOptions,
-    categoryError,
+    prefixOptions,
+    prefixError,
     periodSummary,
     periodSummaryLoading,
     periodSummaryError,
     fetchList,
-    fetchCategoryOptions,
-    ensureCategoryOptions,
+    fetchPrefixOptions,
+    ensurePrefixOptions,
+    quickAddPrefix,
     fetchPeriodSummary,
     refreshPeriodSummary,
     clearPeriodSummaryQuery,

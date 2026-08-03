@@ -20,6 +20,7 @@ export interface AuthUser {
   roles: { roleKey: string }[];
   isMngr: boolean;
   isDev: boolean;
+  permissions?: string[];
 }
 
 /** Vue SPA 로그인 실패 후 추가 조치가 필요한 상태. */
@@ -169,6 +170,21 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+
+  /** permission key 보유 여부 (서버 AuthInfo.permissions 합집합). */
+  function hasPermission(permKey: string): boolean {
+    const perms = user.value?.permissions;
+    return Array.isArray(perms) && perms.includes(permKey);
+  }
+
+  /**
+   * 관리자 사이드바 모드 사용 가능 여부.
+   * SSOT는 menu.view.admin permission. isMngr 는 permissions 미포함 세션 fallback.
+   */
+  function canUseMngrMenuMode(): boolean {
+    if (hasPermission("menu.view.admin")) return true;
+    return !!user.value?.isMngr;
+  }
   return {
     user,
     isAuthenticated,
@@ -178,5 +194,7 @@ export const useAuthStore = defineStore("auth", () => {
     logout,
     verifyAuth,
     purgeAuth,
+    hasPermission,
+    canUseMngrMenuMode,
   };
 });

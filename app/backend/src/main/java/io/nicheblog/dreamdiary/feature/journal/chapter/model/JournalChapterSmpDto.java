@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.model;
 
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,10 +29,12 @@ public class JournalChapterSmpDto {
     private String title;
     /** 순번 */
     private Integer sortOrder;
-    /** 카테고리 코드 */
-    private String categoryCode;
-    /** 카테고리 이름 */
-    private String categoryName;
+    /** 일반 챕터가 선택한 개인 말머리(0..1) */
+    private PrefixDto prefix;
+    /** 선택한 개인 말머리 ID */
+    private Integer prefixId;
+    /** 시스템 요약 챕터 여부 */
+    private String summaryYn;
 
     /** 챕터 타입 (DIARY | DREAM | …) */
     private ChapterType chapterType;

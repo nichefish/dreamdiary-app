@@ -1,13 +1,19 @@
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
-import type { JournalDayDto, JournalEntryDto, MetaDto } from "@/features/journal/stores/journal";
+import type {
+  JournalDayDto,
+  JournalEntryDto,
+  JournalPrefixDto,
+  MetaDto,
+} from "@/features/journal/stores/journal";
 import { formatLocalDateStr } from "@/features/journal/utils/journalDate";
 import { mergeTagifyListIntoCategoryMap } from "@/shared/utils/tagifyHelper";
 import { requireApiPathSegment } from "@/shared/utils/appPath";
 import { swalRequestError } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { usePersonalPrefixOptionsStore } from "@/features/attachable/stores/personalPrefixOptions";
 
 // ---- categoryMap (앱 세션 SSOT: 로그인·마운트 시 preload 1회, 저장 시 Tagify JSON 병합 — 무효화·모달 오픈 재조회 없음) ----
 
@@ -90,15 +96,13 @@ export interface JournalChapterRegistModel {
   journalDayId?: number;
   stdrdDt?: string;
   chapterType?: "DIARY" | "NOTE" | "DREAM";
-  categoryCode?: string;
+  /** 일반 챕터에 선택할 개인 말머리. 시스템 요약·DREAM에는 적용하지 않는다. */
+  prefixId?: number | null;
+  prefix?: JournalPrefixDto | null;
+  /** 서버가 관리하는 시스템 요약 챕터 여부 */
+  summaryYn?: string;
   title?: string;
   sortOrder?: number;
-}
-
-/** 챕터 카테고리 옵션 항목 */
-export interface ChapterCategoryOption {
-  code: string;
-  codeName: string;
 }
 
 /** 저널 해석 등록/수정 폼 모델 */
@@ -149,8 +153,10 @@ export interface JournalChapterOption {
   id: number | string;
   title?: string;
   sortOrder?: number;
-  categoryCode?: string;
-  categoryName?: string;
+  prefix?: JournalPrefixDto | null;
+  prefixId?: number | null;
+  /** 서버가 관리하는 시스템 요약 챕터 여부 */
+  summaryYn?: string;
   chapterType?: string;
 }
 
@@ -162,7 +168,10 @@ export interface JournalEntryRegistModel {
   journalDayId?: number;
   journalChapterId?: number | string;
   stdrdDt?: string;
-  ctgrCd?: string;
+  /** 소속 챕터 유형으로 해석한 개인 Prefix 목록 content_type */
+  prefixContentType?: "JOURNAL_DIARY" | "JOURNAL_DREAM" | "JOURNAL_NOTE";
+  prefixId?: number | null;
+  prefix?: JournalPrefixDto | null;
   title?: string;
   sortOrder?: number;
   content?: string;
@@ -179,6 +188,25 @@ export interface JournalEntryRegistModel {
 
 export const useJournalModalStore = defineStore("journalModal", () => {
   const { t } = useLocaleStore();
+  const personalPrefixOptionsStore = usePersonalPrefixOptionsStore();
+
+  /**
+   * 신규 엔트리 저장 후 펼칠 챕터 ID.
+   * 저장된 COLLAPSED 상태는 변경하지 않고, 목록·상세에 마운트된 챕터가 일회성 로컬 펼침을 적용하는 동안만 유지한다.
+   */
+  const entryCreatedExpandChapterId = ref<number | string | null>(null);
+
+  /** 신규 엔트리가 들어간 챕터를 현재 화면에서 펼침 대상으로 표시한다. */
+  function requestEntryCreatedChapterExpand(chapterId: number | string): void {
+    entryCreatedExpandChapterId.value = chapterId;
+  }
+
+  /** 같은 저장 요청이 표시한 챕터만 해제하여 뒤이은 요청을 지우지 않는다. */
+  function clearEntryCreatedChapterExpand(chapterId: number | string): void {
+    if (String(entryCreatedExpandChapterId.value) === String(chapterId)) {
+      entryCreatedExpandChapterId.value = null;
+    }
+  }
 
   // ---- 일자 등록/수정 모달 ----
 
@@ -286,45 +314,68 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   const chapterRegistOpen = ref(false);
   /** 챕터 등록/수정 폼 모델 */
   const chapterRegistModel = ref<JournalChapterRegistModel | null>(null);
-  /** 챕터 카테고리 옵션 목록 — 일기 전용 (JOURNAL_CHAPTER_DIARY_CTGR_CD) */
-  const chapterDiaryCategoryOptions = ref<ChapterCategoryOption[]>([]);
-  /** 챕터 카테고리 옵션 목록 — 노트 전용 (JOURNAL_CHAPTER_NOTE_CTGR_CD) */
-  const chapterNoteCategoryOptions = ref<ChapterCategoryOption[]>([]);
-  /** 챕터 카테고리 프리페치 진행 중 Promise (동시 호출자는 같은 요청 완료를 기다린다.) */
-  let chapterCategoryFetchPromise: Promise<void> | null = null;
-
-  function mapCategoryOptions(list: unknown[]): ChapterCategoryOption[] {
-    return list.map((item: unknown) => {
-      const i = item as Record<string, string>;
-      return { code: i.code ?? "", codeName: i.codeName ?? "" };
-    });
+  /**
+   * 챕터 유형을 챕터 말머리 목록의 개인 content_type 으로 변환한다.
+   * 챕터의 attachable 정체성은 JOURNAL_CHAPTER 로 불변이지만, 말머리 목록은 일기 챕터
+   * (JOURNAL_CHAPTER_DIARY)와 노트 챕터(JOURNAL_CHAPTER_NOTE)가 각각 사용자 정의로 분리된다
+   * (백엔드 JournalChapterService.resolveChapterPrefixScopeContentType 과 동일 계약).
+   * DREAM 등 사용자 말머리가 없는 유형은 null 을 반환한다.
+   * @param chapterType 챕터 유형(DIARY | NOTE | ...)
+   * @return 말머리 목록 content_type 또는 null
+   */
+  function resolveChapterPrefixContentType(chapterType: string | null | undefined): string | null {
+    if (chapterType === "DIARY") return "JOURNAL_CHAPTER_DIARY";
+    if (chapterType === "NOTE") return "JOURNAL_CHAPTER_NOTE";
+    return null;
   }
 
   /**
-   * 챕터 카테고리 옵션을 조회한다. (일기/노트 각각 별도 코드 그룹)
-   * 화면 마운트 시점에도 호출하여 세션 캐시에 넣어 두면 모달 오픈 시 로딩 없이 사용 가능하다.
+   * 지정한 챕터 유형 범위의 활성 개인 말머리 선택지를 반환한다.
+   * 변경 전: DIARY·NOTE 가 JOURNAL_CHAPTER 한 목록을 공유했다.
+   * 변경 후: 챕터 유형별 목록을 읽고, 사용자 말머리가 없는 유형(DREAM 등)은 빈 목록을 반환한다.
+   * @param chapterType 챕터 유형(생략·미대응 유형이면 빈 목록)
    */
-  async function prefetchChapterCategories(): Promise<void> {
-    const diaryDone = chapterDiaryCategoryOptions.value.length > 0;
-    const noteDone  = chapterNoteCategoryOptions.value.length > 0;
-    if (diaryDone && noteDone) return;
-    if (chapterCategoryFetchPromise) return chapterCategoryFetchPromise;
-    chapterCategoryFetchPromise = (async () => {
-      const [diaryRes, noteRes] = await Promise.all([
-        diaryDone ? null : axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_DIARY_CTGR_CD" } }),
-        noteDone  ? null : axios.get("/api/code/items", { params: { groupCode: "JOURNAL_CHAPTER_NOTE_CTGR_CD"  } }),
-      ]);
-      if (diaryRes) chapterDiaryCategoryOptions.value = mapCategoryOptions(diaryRes.data?.rsltList ?? []);
-      if (noteRes)  chapterNoteCategoryOptions.value  = mapCategoryOptions(noteRes.data?.rsltList  ?? []);
-    })()
-      .catch((error) => {
-        console.error("[journalModal] 챕터 카테고리 조회 실패", error);
-      })
-      .finally(() => {
-        chapterCategoryFetchPromise = null;
-      });
-    return chapterCategoryFetchPromise;
+  function chapterPrefixOptionsFor(chapterType?: string | null): JournalPrefixDto[] {
+    const contentType = resolveChapterPrefixContentType(chapterType);
+    if (!contentType) return [];
+    return personalPrefixOptionsStore.optionsFor(contentType) as JournalPrefixDto[];
   }
+  /**
+   * 지정한 챕터 유형 말머리 선택지 조회 실패 여부.
+   * @param chapterType 챕터 유형(미대응 유형이면 false)
+   */
+  function chapterPrefixLoadFailedFor(chapterType?: string | null): boolean {
+    const contentType = resolveChapterPrefixContentType(chapterType);
+    return contentType ? personalPrefixOptionsStore.hasFailed(contentType) : false;
+  }
+
+  /**
+   * 챕터 개인 말머리 옵션을 조회한다.
+   * 화면 마운트 시점에도 호출하여 콘텐츠 타입 공통 캐시에 넣어 두면 모달 오픈 시 로딩 없이 사용 가능하다.
+   * 관리 화면 변경으로 무효화된 경우 다음 호출이 서버 확정 목록을 다시 조회한다.
+   * @param chapterType 조회할 챕터 유형. 생략하면 사용자 말머리를 갖는 모든 유형(DIARY·NOTE)을 워밍한다.
+   */
+  async function prefetchChapterPrefixes(chapterType?: string | null): Promise<void> {
+    if (chapterType == null) {
+      await Promise.all([
+        personalPrefixOptionsStore.fetchOptions("JOURNAL_CHAPTER_DIARY"),
+        personalPrefixOptionsStore.fetchOptions("JOURNAL_CHAPTER_NOTE"),
+      ]);
+      return;
+    }
+    const contentType = resolveChapterPrefixContentType(chapterType);
+    if (!contentType) return;
+    await personalPrefixOptionsStore.fetchOptions(contentType);
+  }
+
+  /** 등록/수정 폼에서 챕터 유형을 바꾸면 해당 유형의 말머리 목록을 미리 적재한다. */
+  watch(
+    () => chapterRegistModel.value?.chapterType,
+    (chapterType) => {
+      if (!chapterRegistOpen.value) return;
+      void prefetchChapterPrefixes(chapterType);
+    },
+  );
 
   /**
    * 챕터 등록/수정 모달을 연다.
@@ -334,12 +385,13 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     if (!await assertAuthenticatedBeforeModal()) return;
     chapterRegistModel.value = {
       chapterType: "DIARY",
-      categoryCode: "",
+      prefixId: null,
+      summaryYn: "N",
       title: "",
       ...payload,
     };
     chapterRegistOpen.value = true;
-    void prefetchChapterCategories();
+    void prefetchChapterPrefixes();
   }
 
   /** 챕터 등록/수정 모달을 닫는다. */
@@ -577,6 +629,10 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   /** 엔트리 DREAM 태그 categoryMap */
   const entryDreamCategoryMap = ref<Record<string, string[]>>({});
   const entryDreamCategoryMapLoaded = ref(false);
+  /**
+   * 엔트리 유형별 활성 개인 Prefix 선택지는 콘텐츠 타입 공통 캐시에서 읽는다.
+   * 빈 목록 캐시·실패 재시도·동시 요청 공유·이전 사용자 응답 폐기도 공통 store가 담당한다.
+   */
   /** 엔트리 모달용 뷰 (contentType 에 따라 diary/dream map 참조) */
   const entryCategoryMap = computed((): Record<string, string[]> | null => {
     const ct = entryRegistModel.value?.contentType;
@@ -586,6 +642,26 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     return null;
   });
   let dreamEntryRegistOpening = false;
+
+  /** 엔트리 유형별 활성 Prefix 선택지를 반환한다. */
+  function entryPrefixOptionsFor(contentType?: string): JournalPrefixDto[] {
+    if (!contentType) return [];
+    return personalPrefixOptionsStore.optionsFor(contentType) as JournalPrefixDto[];
+  }
+
+  /** 엔트리 유형별 Prefix 조회 실패 여부를 반환한다. */
+  function entryPrefixLoadFailedFor(contentType?: string): boolean {
+    if (!contentType) return false;
+    return personalPrefixOptionsStore.hasFailed(contentType);
+  }
+
+  /**
+   * 엔트리 유형별 개인 Prefix 선택지를 조회한다.
+   * 빈 목록도 정상 결과로 캐시하고 실패한 요청만 다음 모달 진입에서 재시도한다.
+   */
+  async function prefetchEntryPrefixes(contentType: string): Promise<void> {
+    await personalPrefixOptionsStore.fetchOptions(contentType);
+  }
 
   function categoryMapRefForUrl(url: string) {
     switch (url) {
@@ -648,7 +724,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     entryRegistModel.value = null;
     try {
       const model: JournalEntryRegistModel = {
-        ctgrCd: "",
+        prefixId: null,
         title: "",
         content: "",
         tag: { tagListStrWithCtgr: "" },
@@ -659,7 +735,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       const categoryUrl = resolveEntryCategoryMapUrl(payload.contentType);
       await Promise.all([
         showTagForType && categoryUrl ? ensureCategoryMap(categoryUrl) : Promise.resolve(),
-        hydrateEntryChapterOptions(model),
+        hydrateEntryPrefixContext(model),
       ]);
       entryRegistModel.value = model;
     } finally {
@@ -688,10 +764,13 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       const [res] = await Promise.all([
         axios.post("/api/journal/chapters/dream-auto", fd, { headers: { "Content-Type": "multipart/form-data" } }),
         ensureCategoryMap(CATEGORY_MAP_URL_ENTRY_DREAM),
+        prefetchEntryPrefixes("JOURNAL_DREAM"),
       ]);
       const chapter = res.data?.rsltObj;
       entryRegistModel.value = {
         contentType: "JOURNAL_DREAM",
+        prefixContentType: "JOURNAL_DREAM",
+        prefixId: null,
         journalDayId: params.journalDayId,
         journalChapterId: chapter?.id ?? "",
         stdrdDt: params.stdrdDt,
@@ -737,7 +816,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
       const categoryUrl = resolveEntryCategoryMapUrl(merged.contentType);
       await Promise.all([
         showTagForType && categoryUrl ? ensureCategoryMap(categoryUrl) : Promise.resolve(),
-        hydrateEntryChapterOptions(merged),
+        hydrateEntryPrefixContext(merged),
       ]);
       entryRegistModel.value = merged;
     } catch (e: unknown) {
@@ -805,8 +884,9 @@ export const useJournalModalStore = defineStore("journalModal", () => {
         id: raw.id as number | string,
         title: String(raw.title ?? ""),
         sortOrder: raw.sortOrder as number | undefined,
-        categoryCode: String(raw.categoryCode ?? ""),
-        categoryName: String(raw.categoryName ?? ""),
+        prefix: (raw.prefix as JournalPrefixDto | null | undefined) ?? null,
+        prefixId: raw.prefixId == null ? null : Number(raw.prefixId),
+        summaryYn: String(raw.summaryYn ?? "N"),
         chapterType: String(raw.chapterType ?? ""),
       }))
       .filter((chapter) => chapter.id !== undefined && chapter.id !== null && String(chapter.id) !== "");
@@ -835,6 +915,32 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     } catch {
       console.error("[journalModal] 엔트리 챕터 옵션 조회 실패", model.journalDayId);
     }
+  }
+
+  /**
+   * 엔트리가 사용할 개인 Prefix 목록 키를 소속 챕터 유형으로 결정한다.
+   * NOTE 엔트리는 영속 contentType이 JOURNAL_DIARY여도 JOURNAL_NOTE를 반환한다.
+   */
+  function resolveEntryPrefixContentType(
+    model: JournalEntryRegistModel,
+  ): "JOURNAL_DIARY" | "JOURNAL_DREAM" | "JOURNAL_NOTE" {
+    if (model.prefixContentType) return model.prefixContentType;
+    if (isDreamEntry(model.contentType)) return "JOURNAL_DREAM";
+    if (isNoteLikeEntry(model.contentType)) return "JOURNAL_NOTE";
+    const chapter = model.chapterList?.find(
+      (option) => String(option.id) === String(model.journalChapterId ?? ""),
+    );
+    if (chapter?.chapterType === "NOTE") return "JOURNAL_NOTE";
+    if (chapter?.chapterType === "DREAM") return "JOURNAL_DREAM";
+    return "JOURNAL_DIARY";
+  }
+
+  /** 챕터 선택지와 그 챕터 유형의 개인 Prefix 선택지를 순서대로 적재한다. */
+  async function hydrateEntryPrefixContext(model: JournalEntryRegistModel): Promise<void> {
+    await hydrateEntryChapterOptions(model);
+    const contentType = resolveEntryPrefixContentType(model);
+    model.prefixContentType = contentType;
+    await prefetchEntryPrefixes(contentType);
   }
 
   /** 엔트리 등록/수정 모달을 닫는다. */
@@ -903,7 +1009,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    * 변경 후: 서버가 evict 후 조회한 전역 map — 추가 GET 없이 삭제 포함 동기화.
    */
 
-  /** 로그아웃·세션 만료 시 앱 categoryMap 을 비운다 (다음 사용자 preload 용). */
+  /** 로그아웃·세션 만료 시 앱 categoryMap과 개인 Prefix 캐시를 비운다 (다음 사용자 preload 용). */
   function resetCategoryMaps(): void {
     dayTagCategoryMap.value = {};
     dayTagCategoryMapLoaded.value = false;
@@ -913,6 +1019,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     entryDiaryCategoryMapLoaded.value = false;
     entryDreamCategoryMap.value = {};
     entryDreamCategoryMapLoaded.value = false;
+    personalPrefixOptionsStore.resetAll();
   }
 
   function applyCategoryMapsFromSaveResponse(
@@ -956,9 +1063,9 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     // 챕터 등록/수정
     chapterRegistOpen,
     chapterRegistModel,
-    chapterDiaryCategoryOptions,
-    chapterNoteCategoryOptions,
-    prefetchChapterCategories,
+    chapterPrefixOptionsFor,
+    chapterPrefixLoadFailedFor,
+    prefetchChapterPrefixes,
     openChapterRegist,
     closeChapterRegist,
     // 해석 등록/수정
@@ -986,6 +1093,10 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     entryRegistOpen,
     entryRegistLoading,
     entryRegistModel,
+    entryPrefixOptionsFor,
+    entryPrefixLoadFailedFor,
+    prefetchEntryPrefixes,
+    entryCreatedExpandChapterId,
     dayTagCategoryMap,
     dayMetaCategoryMap,
     entryCategoryMap,
@@ -993,6 +1104,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     openDreamEntryRegist,
     openEntryModify,
     closeEntryRegist,
+    requestEntryCreatedChapterExpand,
+    clearEntryCreatedChapterExpand,
     // 엔트리 읽기 전용
     entryViewOpen,
     entryViewLoading,

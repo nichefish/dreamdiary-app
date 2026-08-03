@@ -11,7 +11,6 @@ public class BoardEntityTestFactory {
         return BoardEntity.builder()
                 .boardKey(boardKey)
                 .boardName(boardKey + " name")
-                .categoryGroupCode("BOARD")
                 .description("test board")
                 .sortOrder(1)
                 .useYn("Y")

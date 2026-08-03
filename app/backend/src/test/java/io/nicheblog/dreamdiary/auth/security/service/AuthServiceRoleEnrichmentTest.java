@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.service;
 
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
+import io.nicheblog.dreamdiary.auth.permission.service.PermissionResolveService;
 import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthInfoMapstruct;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
@@ -39,13 +40,21 @@ class AuthServiceRoleEnrichmentTest {
     private RoleRepository roleRepository;
     @Mock
     private AuthPolicyQueryService authPolicyQueryService;
+    @Mock
+    private PermissionResolveService permissionResolveService;
 
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
         final AuthInfoMapstruct authInfoMapstruct = Mappers.getMapper(AuthInfoMapstruct.class);
-        authService = new AuthService(userRepository, roleRepository, authPolicyQueryService, authInfoMapstruct);
+        authService = new AuthService(
+                userRepository,
+                roleRepository,
+                authPolicyQueryService,
+                authInfoMapstruct,
+                permissionResolveService
+        );
     }
 
     @Test
@@ -66,6 +75,7 @@ class AuthServiceRoleEnrichmentTest {
                 .roleName("사용자")
                 .build();
         when(roleRepository.findById(10)).thenReturn(Optional.of(roleEntity));
+        when(permissionResolveService.resolvePermKeys(user)).thenReturn(List.of());
 
         final AuthInfo authInfo = authService.loadUserByUsername(TestConstant.TEST_USER);
 

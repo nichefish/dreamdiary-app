@@ -9,16 +9,18 @@
  * 목록 페이지 상태에 의존하면 안 되기 때문이다.
  */
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import axios from "axios";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAjaxResult, swalRequestError } from "@/shared/utils/swal";
+import type { ThreadPrefix } from "@/features/journal/stores/journalThread";
+import { usePersonalPrefixOptionsStore } from "@/features/attachable/stores/personalPrefixOptions";
 
 /** 서브메뉴에 띄우는 스레드 후보 항목 (경량) */
 export interface ThreadOption {
   id: number;
   title?: string;
-  categoryCode?: string;
+  prefix?: ThreadPrefix | null;
   /** OPEN/PENDING/RESOLVED. 미설정은 서버가 OPEN 으로 내린다. */
   lifecycleKey?: string;
   membershipCount: number;
@@ -26,22 +28,17 @@ export interface ThreadOption {
   member: boolean;
 }
 
-/** 스레드 후보 분류 선택지 */
-export interface ThreadOptionCategory {
-  code: string;
-  codeName: string;
-}
-
+/** 스레드 후보 말머리 선택지 */
 export const useJournalThreadMembershipStore = defineStore("journalThreadMembership", () => {
-  const localeStore = useLocaleStore();
-  const { t } = localeStore;
+  const { t } = useLocaleStore();
+  const personalPrefixOptionsStore = usePersonalPrefixOptionsStore();
 
   /**
    * 서브메뉴에 띄울 스레드 후보 목록.
    *
    * 변경 전: 일반 스레드 목록의 첫 7개를 모든 엔트리 메뉴가 공유했다.
    * 변경 후: 후보 API가 현재 엔트리 소속·최근 사용·소속 수를 반영해 정렬한 결과를
-   * 엔트리별로 조회하고, 제목·분류 필터를 서버에 전달한다.
+   * 엔트리별로 조회하고, 제목·말머리 필터를 서버에 전달한다.
    */
   const threadOptions = ref<ThreadOption[]>([]);
   const optionsLoading = ref(false);
@@ -51,24 +48,23 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   const candidateEntryId = ref<number | null>(null);
   /** 후보 제목 검색어 */
   const optionKeyword = ref("");
-  /** 후보 분류 필터 */
-  const optionCategory = ref("");
+  /** 후보 말머리 필터 */
+  const optionPrefix = ref("");
   /** 완료(RESOLVED) 스레드 후보 포함 여부. 기본 false. */
   const optionIncludeResolved = ref(false);
-  /** 현재 locale의 스레드 분류 선택지 */
-  const categoryOptions = ref<ThreadOptionCategory[]>([]);
-  const categoriesLoading = ref(false);
-  const categoryError = ref("");
-  /** 빈 분류 목록도 정상 로드로 기억하기 위한 완료 상태와 그때의 locale. */
-  const categoriesLoaded = ref(false);
-  const categoryLocale = ref("");
+  /** 스레드 목록·편집과 같은 JOURNAL_THREAD 활성 개인 Prefix 선택지. */
+  const prefixOptions = computed<ThreadPrefix[]>(() =>
+    personalPrefixOptionsStore.optionsFor("JOURNAL_THREAD") as ThreadPrefix[]
+  );
+  const prefixesLoading = computed(() => personalPrefixOptionsStore.isLoading("JOURNAL_THREAD"));
+  const prefixError = computed(() => personalPrefixOptionsStore.hasFailed("JOURNAL_THREAD")
+    ? t("journal.thread.prefix.load.failure")
+    : "");
 
   /** 서브메뉴에 노출할 스레드 후보 최대 개수 */
   const OPTION_LIMIT = 7;
   /** 늦게 끝난 이전 엔트리 요청이 현재 후보를 덮어쓰지 못하게 하는 순번. */
   let candidateRequestSequence = 0;
-  /** 여러 엔트리 메뉴가 동시에 열릴 때 분류 조회를 하나로 합친다. */
-  let categoryRequest: Promise<boolean> | null = null;
 
   /**
    * 현재 엔트리에 맞는 스레드 후보 목록을 조회한다.
@@ -86,13 +82,13 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
     optionsError.value = "";
     try {
       const keyword = optionKeyword.value.trim();
-      const categoryCode = optionCategory.value;
+      const prefixId = optionPrefix.value;
       const res = await axios.get("/api/journal/threads/candidates", {
         params: {
           entryId,
           limit: OPTION_LIMIT,
           ...(keyword ? { keyword } : {}),
-          ...(categoryCode ? { categoryCode } : {}),
+          ...(prefixId ? { prefixId } : {}),
           ...(optionIncludeResolved.value ? { includeResolved: true } : {}),
         },
       });
@@ -118,7 +114,7 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
       console.error("[journalThreadMembership] fetchThreadOptions failed", {
         entryId,
         keyword: optionKeyword.value.trim(),
-        categoryCode: optionCategory.value,
+        prefixId: optionPrefix.value,
         includeResolved: optionIncludeResolved.value,
       }, e);
       optionsError.value = t("journal.entry.thread.candidates.load.failure");
@@ -131,44 +127,14 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   }
 
   /**
-   * 현재 locale의 스레드 분류 선택지를 최초 한 번 조회한다.
+   * 스레드 말머리 선택지를 콘텐츠 타입 공통 캐시에서 조회한다.
    *
-   * 실패 상태는 후보 조회 실패와 분리하며 다음 메뉴 진입에서 다시 시도한다.
+   * 개인 말머리 목록은 콘텐츠 타입별로 분리되므로 스레드 타입을 명시한다.
+   * 관리 화면 변경으로 캐시가 무효화되면 다음 메뉴 진입에서 최신 목록을 다시 조회한다.
+   * 실패 상태는 후보 조회 실패와 분리하며 다음 메뉴 진입에서 재시도한다.
    */
-  async function fetchCategoryOptions(): Promise<boolean> {
-    const requestedLocale = localeStore.locale;
-    if (categoriesLoaded.value && categoryLocale.value === requestedLocale) return true;
-    if (categoryRequest) return categoryRequest;
-
-    categoriesLoading.value = true;
-    categoryError.value = "";
-    categoryRequest = (async () => {
-      try {
-        const res = await axios.get("/api/journal/threads/categories");
-        if (localeStore.locale !== requestedLocale) {
-          console.debug("[journalThreadMembership] stale category response ignored", {
-            requestedLocale,
-            activeLocale: localeStore.locale,
-          });
-          return false;
-        }
-        categoryOptions.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
-        categoriesLoaded.value = true;
-        categoryLocale.value = requestedLocale;
-        return true;
-      } catch (e: unknown) {
-        console.error("[journalThreadMembership] fetchCategoryOptions failed", e);
-        categoryOptions.value = [];
-        categoriesLoaded.value = false;
-        categoryLocale.value = "";
-        categoryError.value = t("journal.thread.category.load.failure");
-        return false;
-      } finally {
-        categoriesLoading.value = false;
-        categoryRequest = null;
-      }
-    })();
-    return categoryRequest;
+  async function fetchPrefixOptions(): Promise<boolean> {
+    return personalPrefixOptionsStore.fetchOptions("JOURNAL_THREAD");
   }
 
   /**
@@ -183,14 +149,14 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
     if (candidateEntryId.value !== entryId) {
       candidateEntryId.value = entryId;
       optionKeyword.value = "";
-      optionCategory.value = "";
+      optionPrefix.value = "";
       optionIncludeResolved.value = false;
       optionsError.value = "";
       threadOptions.value = [];
     }
     await Promise.all([
       fetchThreadOptions(entryId),
-      fetchCategoryOptions(),
+      fetchPrefixOptions(),
     ]);
   }
 
@@ -252,7 +218,6 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
     try {
       const fd = new FormData();
       fd.append("contentType", "JOURNAL_THREAD");
-      fd.append("categoryCode", "");
       fd.append("title", title);
       fd.append("content", "");
       fd.append("tag.tagListStr", "");
@@ -282,13 +247,13 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
     optionsError,
     candidateEntryId,
     optionKeyword,
-    optionCategory,
+    optionPrefix,
     optionIncludeResolved,
-    categoryOptions,
-    categoriesLoading,
-    categoryError,
+    prefixOptions,
+    prefixesLoading,
+    prefixError,
     fetchThreadOptions,
-    fetchCategoryOptions,
+    fetchPrefixOptions,
     openThreadOptions,
     addToThread,
     removeFromThread,

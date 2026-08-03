@@ -18,7 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -48,7 +48,7 @@ public class UserRestController
      * 사용자 목록 조회 (Ajax)
      */
     @GetMapping(Url.USERS)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userListAjax(
             @ModelAttribute final UserSearchParam searchParam,
@@ -67,7 +67,7 @@ public class UserRestController
      * 사용자 상세 조회 (Ajax)
      */
     @GetMapping(Url.USER)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userDetailAjax(
             final @PathVariable("id") Integer id
@@ -124,7 +124,7 @@ public class UserRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USERS)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userRegistAjax(
             final @Valid UserDto user
@@ -137,7 +137,7 @@ public class UserRestController
     }
 
     @PostMapping(Url.USER)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userModifyAjax(
             final @PathVariable("id") Integer id,
@@ -159,7 +159,7 @@ public class UserRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_PASSWORD_RESET)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> passwordResetAjax(
             final @PathVariable("id") Integer id
@@ -182,7 +182,7 @@ public class UserRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.USER)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userDelAjax(
             final @PathVariable("id") Integer id
@@ -210,7 +210,7 @@ public class UserRestController
      * TODO: 더 일반화하기
      */
     @GetMapping(Url.USERS_XLSX_DOWNLOAD)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userListXlsxDownload(
             final @ModelAttribute("searchParam") UserSearchParam searchParam

@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.thread.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntrySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
@@ -392,8 +393,27 @@ public class JournalThreadEntryService {
         return JournalThreadPeriodSummaryDto.builder()
                 .threadId(projection.getThreadId())
                 .title(projection.getTitle())
+                .prefix(toPeriodSummaryPrefixDto(projection))
                 .entryCount(projection.getEntryCount() != null ? projection.getEntryCount().longValue() : 0L)
                 .firstEntryDate(projection.getFirstEntryDate())
+                .build();
+    }
+
+    /**
+     * 기간 요약 Projection의 nullable 말머리를 공통 {@link PrefixDto} 계약으로 변환한다.
+     * 비활성 과거 말머리도 연결이 남아 있으면 이름·색과 활성 상태를 그대로 반환한다.
+     *
+     * @param projection 스레드별 기간 집계
+     * @return 선택된 말머리 DTO 또는 null
+     */
+    private PrefixDto toPeriodSummaryPrefixDto(final JournalThreadPeriodSummaryProjection projection) {
+        if (projection.getPrefixId() == null) return null;
+        return PrefixDto.builder()
+                .id(projection.getPrefixId())
+                .name(projection.getPrefixName())
+                .color(projection.getPrefixColor())
+                .sortOrder(0)
+                .activeYn(projection.getPrefixActiveYn())
                 .build();
     }
 }

@@ -9,7 +9,10 @@
 ### HTTP 클라이언트
 
 - 저널·게시판·attachable 스토어는 **axios** (`axios.get/post` 등) 사용.
-- 레거시 `cF.ajax` / 전역 `fetch` 오버라이드(blockUI)는 SPA 빌드에서 **별도 이식 여부는 코드 확인 필요** — 스토어 레벨에서는 axios 인터셉터에 의존하지 않고 각 `catch`에서 메시지 처리.
+- 레거시 `cF.ajax` / 전역 `fetch` 오버라이드(`cF.ui.blockUI`)는 SPA 컷오버(`eb86539`)에서 소스와 함께 제거됐다. Vue SPA는 blockUI를 이식하지 않는다.
+- 전역 AJAX 진행 표시는 **nprogress** 상단 로딩바로 대체한다. `shared/http/ajaxLoadingBar.ts`의 `installAjaxLoadingBar(axios)`가 in-flight 카운터로 request/response 인터셉터를 등록하며, `main.ts`에서 부트 시 한 번 호출한다.
+- 제외: `config.skipLoadingBar === true`, `/api/session/ping`(모달 선행 핑). 영역별 스피너·`로딩...` 텍스트(태그클라우드 등)는 기존대로 유지하고 전역 바와 병행한다.
+- 스토어 레벨 오류 메시지는 axios 로딩 인터셉터에 의존하지 않고 각 `catch`에서 처리한다(401은 전역 응답 인터셉터).
 
 ### 목록 갱신 (저널)
 
@@ -106,7 +109,7 @@ cF.ajax.request(url, options, callback, continueBlock?)
 
 ### Vue 전환 후 패턴
 
-레거시 `cF.ajax.*` 대신 Vue 서비스 모듈(`journalEntryCrudService`, `journalAnnualCrudService` 등)이 직접 `fetch` API 사용. 전역 fetch 오버라이드는 그대로 유효하여 blockUI/에러 처리가 자동 적용된다.
+레거시 `cF.ajax.*` / 전역 `fetch`+blockUI 경로는 SPA에서 제거됐다. Vue 스토어·서비스는 **axios**를 사용하며, 전역 진행 표시는 nprogress(`installAjaxLoadingBar`)가 담당한다. 401 등 공통 오류는 `main.ts` axios 응답 인터셉터, 그 외 메시지는 호출부 `catch`에서 처리한다.
 
 ### Vue SPA 에러 핸들링 (전역 Axios 인터셉터)
 
@@ -728,5 +731,56 @@ window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
 
 ## 테마 (다크모드 / 라이트모드)
 
-- useThemeStore.setThemeMode(mode) → document.documentElement.setAttribute("data-bs-theme", ...) + localStorage 저장 (kt_theme_mode_value).
-- **로그인 화면(AuthLayout.vue)은 테마 설정과 무관하게 항상 라이트 모드**: onMounted에서 data-bs-theme=light 강제 적용, onUnmounted에서 localStorage 저장값으로 복원.
+- `useThemeStore.setThemeMode(mode)` → `document.documentElement.setAttribute("data-bs-theme", ...)` + localStorage 저장 (`kt_theme_mode_value`, `kt_theme_mode_menu`) + Pinia `mode` 갱신.
+- **부트 hydrate**: store 생성 시 `mode` 초기값은 `index.html`이 세팅한 `data-bs-theme`를 우선하고, 없으면 `kt_theme_mode_value`를 해석한다. 새로고침 후에도 Navbar 아이콘/툴팁이 실제 테마와 일치해야 한다.
+- **로그인 화면(`AuthLayout.vue`)은 테마 설정과 무관하게 항상 라이트 모드로 표시**: onMounted에서 DOM만 `data-bs-theme=light` 강제(Pinia `mode`는 사용자 설정 유지). onUnmounted에서는 `applyStoredThemeMode()`로 localStorage 값을 DOM + Pinia에 함께 복원한다.
+- 커스텀 SCSS(저널 툴바·챗 등)의 라이트 하드코딩 대응은 별도 작업 범위다. 이 절은 테마 상태 정합만 다룬다.
+
+---
+
+## Prefix API 계약
+
+### Prefix 관리
+
+- `GET /api/my/prefixes?contentType=`: 로그인 사용자의 `(PERSONAL, user_id, content_type)` 개인 Scope에 속한 Prefix를 비활성 포함 `sort_order,id` 순으로 조회한다. Scope가 없으면 빈 목록을 반환한다.
+- `GET /api/my/prefixes/options?contentType=`: 같은 개인 Scope의 활성 Prefix만 편집·검색 선택지로 반환하며 Scope가 없으면 빈 목록을 반환한다.
+- `POST /api/my/prefixes?contentType=`, `PUT /api/my/prefixes/{prefixId}?contentType=`: 해당 개인 Scope에 Prefix를 생성하고 같은 Scope 소속 Prefix만 수정한다. 최초 등록은 `(user_id, content_type)` Scope를 lazy 생성한다.
+- `PATCH /api/my/prefixes/{prefixId}/active?contentType=&active=`: 기존 `prefix_content` 연결을 보존하고 Prefix 활성 상태만 변경한다.
+- Prefix 소유권 SSOT는 `created_by`가 아니라 `prefix_scope.(scope_type, user_id, content_type)`와 `prefix.scope_id`의 일치다. `created_by`·`updated_by`는 감사 정보로만 사용한다.
+- 사용자 등록 트랜잭션에서 개인 PrefixScope를 사전 생성하지 않는다. 각 content_type의 첫 Prefix 등록 시 Scope를 만들며, 조회 시 Scope 누락은 아직 목록이 없는 정상 상태로 취급한다.
+
+### 스레드 선택
+
+- 스레드 등록·수정 multipart payload는 nullable `prefixId`, 조회 DTO는 `prefix` 표시 정보와 `prefixId`를 사용한다.
+- 서버는 Prefix가 로그인 사용자의 개인 Scope에 속하고 스레드가 로그인 사용자 소유인지 확인하며 비활성 Prefix의 신규 선택을 거부한다.
+- 목록·후보 검색은 단일 `prefixId`를 사용한다.
+
+### 게시판 선택
+
+- `GET /api/board/{boardKey}/prefixes`는 서버가 게시판 존재를 확인한 뒤 `GLOBAL + boardKey` Scope의 활성 Prefix만 정렬 반환한다. Scope가 없으면 아직 Prefix가 없는 정상 상태로 보고 빈 목록을 반환하며, 공통 코드 관리 API나 `category_group_code`를 조회하지 않는다.
+- 게시글 등록·수정 multipart payload는 nullable `prefixId`, 조회 DTO는 `prefix` 표시 정보와 `prefixId`를 사용한다. 목록 검색도 단일 `prefixId`를 사용한다.
+- 서버는 Prefix가 대상 게시판의 `GLOBAL + boardKey` Scope에 속하는지 검증하고 비활성 Prefix의 신규 선택을 거부한다. 기존 글의 동일한 비활성 선택은 다른 필드 수정에서 유지할 수 있으며 목록·상세에도 표시한다.
+- 게시글 선택은 `prefix_content(ref_id, ref_content_type=boardKey, prefix_id)`에 저장하고 `PrefixEmbed`로 조회한다. 목록 검색은 같은 동적 boardKey 연결을 EXISTS로 필터한다.
+
+### 게시판 Prefix 관리
+
+- 관리자 전용 `GET /api/board/groups/{id}/prefixes`는 게시판 ID로 boardKey를 확정하고 해당 GLOBAL Scope의 비활성 포함 Prefix를 반환한다. Scope 식별자와 게시판 간 공유 메타데이터는 클라이언트 관리 폼에 노출하지 않는다.
+- 관리자 전용 `POST /api/board/groups/{id}/prefixes`, `PUT /api/board/groups/{id}/prefixes/{prefixId}`, `PATCH /api/board/groups/{id}/prefixes/{prefixId}/active?active=`는 게시판 ID로 `GLOBAL + boardKey` Scope를 확정한 뒤 공통 Prefix 이름·색상·정렬·중복 불변식을 적용한다. 최초 등록은 Scope를 lazy 생성한다.
+- URL의 게시판 Scope와 요청 Prefix의 Scope가 다르면 수정·활성 상태 변경을 거부하고 구조화 로그를 남긴다. 게시판별 목록은 독립적이므로 한 게시판의 변경이 다른 게시판에 전파되지 않는다.
+- 게시판 관리 행의 ⋯ 메뉴에서 전용 모달을 열며, 로그인 preflight 뒤 게시판 ID 기준 관리 정보를 조회한다. 저장·활성 상태 변경 성공 후 같은 API를 다시 조회해 서버 응답을 화면 SSOT로 삼는다.
+- 신규 게시판 등록은 Prefix 목록을 만들지 않으며 관리 모달에서 첫 Prefix를 추가할 때 독립 GLOBAL Scope가 생긴다.
+- `boardKey`는 생성 후 변경 불가다. 수정 화면 read-only와 별개로 서버가 변경을 거부하고, 신규 키가 고정 시스템 ContentType과 충돌해도 등록을 거부한다.
+
+### 내 설정 Prefix 관리 UI
+
+- `/my`는 `/my/profile`로 redirect하고 공통 정체성 헤더 아래 `/my/profile`, `/my/security`, `/my/prefixes` 하위 route 탭을 제공한다.
+- 탭 이동은 사용자/관리자 메뉴 모드를 변경하지 않으며 브라우저 URL·새로고침·앞뒤 이동으로 선택 탭을 복원한다.
+- `PUT /api/user/my`는 요청의 사용자 식별자를 받지 않고 로그인 사용자 본인을 수정한다. 허용 필드는 `nickname`, `phoneNumber`, `brthdy`, `lunarYn`, `proflCn`이며 이메일·역할·허용 IP·재직 정보는 이 계약에서 제외한다.
+- 닉네임은 필수·20자 이하, 연락처는 선택·20자 이하, 생년월일은 오늘 이전 날짜, 음력 여부는 `Y|N`, 자기소개는 선택·4000자 이하로 검증한다. 기존 `user_profile` 행이 없으면 저장 트랜잭션에서 생성한다.
+- 내 정보 편집의 오른쪽 주 액션 자리는 조회 상태의 「편집」에서 편집 상태의 「저장」으로 전환하고, 「취소」는 저장 왼쪽의 보조 액션으로 표시한다. 저장은 「내 정보를 저장하시겠습니까?」 확인을 거쳐야 하며 확인을 취소하면 API를 호출하지 않고 편집 상태를 유지한다. 편집 취소는 저장하지 않고 서버에서 조회한 값으로 복원한다.
+- 내 정보 저장 성공 후 `GET /api/user/my`와 인증 정보 조회를 다시 수행해 닉네임·프로필 표시를 서버 확정 상태로 동기화한다.
+- `/my/prefixes` 진입 시 Scope 존재 여부와 무관하게 작은 `저널` 도메인 헤더 아래 `일기 챕터 / 노트 챕터 / 일기 / 꿈 / 노트 / 스레드` 고정 대상 6행을 표시한다. 각 행은 `JOURNAL_CHAPTER_DIARY`, `JOURNAL_CHAPTER_NOTE`, `JOURNAL_DIARY`, `JOURNAL_DREAM`, `JOURNAL_NOTE`, `JOURNAL_THREAD` 실제 `contentType`에 대응하며 사용자가 대상을 추가·삭제하지 않는다. 이후 다른 도메인은 같은 화면 카탈로그의 별도 그룹으로 추가한다.
+- 초기 대상 목록에서는 Prefix API를 호출하거나 각 행에 말머리 미리보기를 표시하지 않는다. 행을 누르면 해당 목록만 서버에서 조회해 관리 모달을 열고, Prefix가 없으면 빈 상태와 추가 액션을 표시한다. 최초 등록 시 서버가 해당 `(user, content_type)` Scope를 lazy 생성한다.
+- 관리 모달을 닫으면 표시 목록을 비우고 진행 중인 조회를 무효화해 다른 content_type 항목을 임시로 재사용하지 않는다. 늦게 끝난 이전 응답은 요청 순번으로 폐기한다.
+- 말머리 편집 중 관리 모달을 닫으면 미저장 변경 폐기 확인을 먼저 표시한다. 확인하면 폼·오류를 초기화하고 닫으며, 취소하면 현재 모달과 편집 상태를 유지한다.
+- 저장·활성 상태 변경 성공 후 현재 대상의 서버 목록을 다시 조회한다. 색상은 `#RRGGBB`, 정렬은 0 이상의 정수로 전송한다.

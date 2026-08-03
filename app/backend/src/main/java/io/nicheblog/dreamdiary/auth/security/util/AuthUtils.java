@@ -15,6 +15,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
 
 /**
  * AuthUtils
@@ -192,6 +193,29 @@ public class AuthUtils {
      *
      * @return {@link Boolean} -- 해당 권한 보유시 true.
      */
+
+    /**
+     * 공통 > 특정 permission 키 보유 여부 체크
+     *
+     * @return {@link Boolean} -- 해당 permission 보유시 true.
+     */
+
+    /**
+     * 메뉴 캐시 키용 권한 지문. 현재 사용자 permission 키를 정렬·연결한다.
+     * 미인증이면 "anon".
+     */
+    public static String getPermissionCacheKey() {
+        final AuthInfo authInfo = getAuthenticatedUser();
+        if (authInfo == null || authInfo.getPermissions() == null || authInfo.getPermissions().isEmpty()) {
+            return "anon";
+        }
+        return authInfo.getPermissions().stream().sorted().collect(Collectors.joining("|"));
+    }
+    public static Boolean hasPermission(final String permKey) {
+        final AuthInfo authInfo = getAuthenticatedUser();
+        assert authInfo != null;
+        return authInfo.hasPermission(permKey);
+    }
     public static Boolean hasAuthority(final String roleStr) {
         final AuthInfo authInfo = getAuthenticatedUser();
         assert authInfo != null;

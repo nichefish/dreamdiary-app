@@ -14,6 +14,10 @@ $color-dream-resolved-bg: rgba(95, 0, 130, 0.04);
 $color-dream-resolved-border: rgba(95, 0, 130, 0.13);
 $color-dream-resolved-line: rgba(95, 0, 130, 0.66);
 $color-dream-resolved-muted: #9a78aa;
+/** PENDING 표시 — 콘텐츠를 압도하지 않는 중립 회색 팔레트 */
+$color-pending-bg: rgba(100, 116, 139, 0.035);
+$color-pending-border: rgba(148, 163, 184, 0.1);
+$color-pending-line: rgba(100, 116, 139, 0.48);
 /** 가상 섹션·챕터 헤더 「꿈」「{이름} 꿈」 — 본문 보라보다 옅게, 일기 헤더 gray 와 큰 차이 없이 */
 $color-dream-section-title: color.mix($color-dream, #5e6278, 22%);
 /** 타인 꿈(지정 꿈꾼) 엔트리 좌측 이중선 — RESOLVED·중요·참조와 별도, 눈에 덜 띄는 회색 */
@@ -24,8 +28,8 @@ $color-else-dream-line-2: rgba(148, 163, 184, 0.4);
 /** ----------------------- */
 
 .journal-day {
-    padding-top: 1.5rem !important;
-    padding-bottom: 1.5rem !important;
+    padding-top: calc(1.5rem - 1pt) !important;
+    padding-bottom: calc(1.5rem - 1pt) !important;
 
     .journal-day-header {
         display: flex !important;
@@ -209,9 +213,9 @@ $color-else-dream-line-2: rgba(148, 163, 184, 0.4);
     justify-content: start;
     align-items: center;
     /* BEFORE: margin 1rem — 엔트리 사이 간격 2rem(상하 합)
-       AFTER : 0.5pt씩 줄여 인접 엔트리 간 세로 간격 1pt 축소 */
-    margin-top: calc(1rem - 0.5pt) !important;
-    margin-bottom: calc(1rem - 0.5pt) !important;
+       AFTER : 1.5pt씩 줄여 인접 엔트리 간 세로 간격 3pt 축소 (0.5pt→1.5pt, 전체 세로 압축) */
+    margin-top: calc(1rem - 1.5pt) !important;
+    margin-bottom: calc(1rem - 1.5pt) !important;
 }
 
 .journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
@@ -490,9 +494,8 @@ $journal-dream-paired-states: (
         }
     }
 
-    /* 챕터 접힘 외곽 상태선: 하위 엔트리 IMPRTC/REFRNC/전체 RESOLVED 집계. $journal-paired-states 와 동일 inset 다중선.
-     * BEFORE: 전체 RESOLVED 규칙이 마지막이라 중요·참조가 있는 접힘 바도 초록 단선만 보였음.
-     * AFTER: 밖에서도 완료(1px 초록)·중요(2px 빨강)·참조(4px 노랑) 조합 표시. 단독 우선순위 중요>참조>완료. */
+    /* 챕터 접힘 외곽 상태선은 하위 엔트리의 완료·중요·참조를 집계한다.
+     * 완료(1px 초록)·중요(2px 빨강)·참조(4px 노랑)를 조합하며 단독 우선순위는 중요>참조>완료다. */
 
     /* 완료만 (중요·참조 없음) */
     &:has(> .journal-chapter-content.collapsed):has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])):not(:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"])):not(:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"])) {
@@ -554,12 +557,28 @@ $journal-dream-paired-states: (
     }
 }
 
+/* 하위 엔트리가 모두 PENDING인 접힌 챕터. 중요·참조 상태선은 더 강한 의미로 우선한다. */
+.journal-chapter-block.is-all-pending > .journal-chapter-item:has(> .journal-chapter-content.collapsed):not(:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"])):not(:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"])) {
+    @include chapter-highlight(
+        $color-pending-bg,
+        inset 1px 0 0 $color-pending-line,
+        0.85rem
+    );
+}
+
 @media (max-width: 767.98px) {
     .journal-chapter-item {
         &:has(> .journal-chapter-content.collapsed) {
             --chapter-collapsed-indent: 0.5rem;
         }
     }
+}
+
+/* 모든 엔트리가 PENDING인 펼친 챕터는 헤더를 포함한 전체 블록에 회색 상태를 표시한다. */
+.journal-chapter-block.is-all-pending:not(:has(> .journal-chapter-item > .journal-chapter-content.collapsed)) {
+    background: rgba(100, 116, 139, 0.025);
+    border-radius: 0 0.5rem 0.5rem 0;
+    box-shadow: inset 1px 0 0 $color-pending-line;
 }
 
 /* 챕터 펼친 상태에서 모든 엔트리가 RESOLVED인 경우: 전체 블록(헤더 포함)에 초록 배경 */
@@ -962,6 +981,18 @@ $journal-dream-paired-states: (
             border-color: rgba(14, 165, 233, 0.2);
             color: #0284c7;
         }
+    }
+}
+
+/* PENDING 엔트리는 약한 회색 선·테두리·음영을 공유한다. 중요·참조 상태 규칙은 아래에서 우선 적용된다. */
+.journal-diary-item[data-lifecycle="PENDING"] .journal-diary-content,
+.journal-dream-item[data-lifecycle="PENDING"]:not([data-else-dream="Y"]) .journal-dream-content,
+.journal-note-item[data-lifecycle="PENDING"] .journal-note-content {
+    background: $color-pending-bg;
+    border-color: $color-pending-border;
+
+    &::before {
+        background: $color-pending-line;
     }
 }
 

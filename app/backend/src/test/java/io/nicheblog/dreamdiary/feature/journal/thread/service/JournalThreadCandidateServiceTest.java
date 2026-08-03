@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.service.PrefixContentService;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateDto;
@@ -21,11 +22,13 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -54,6 +57,8 @@ class JournalThreadCandidateServiceTest {
     private JournalThreadSpec spec;
     @Mock
     private ApplicationEventPublisherWrapper publisher;
+    @Mock
+    private PrefixContentService prefixContentService;
 
     @InjectMocks
     private JournalThreadService service;
@@ -79,7 +84,9 @@ class JournalThreadCandidateServiceTest {
         final JournalThreadCandidateProjection projection = mock(JournalThreadCandidateProjection.class);
         when(projection.getId()).thenReturn(10);
         when(projection.getTitle()).thenReturn("가상 흐름");
-        when(projection.getCategoryCode()).thenReturn("CASE");
+        when(projection.getPrefixId()).thenReturn(101);
+        when(projection.getPrefixName()).thenReturn("가상 말머리");
+        when(projection.getPrefixActiveYn()).thenReturn("Y");
         when(projection.getLifecycleKey()).thenReturn("OPEN");
         when(projection.getMembershipCount()).thenReturn(3L);
         when(projection.getLastMembershipAt()).thenReturn(LocalDateTime.of(2026, 7, 20, 12, 0));
@@ -88,18 +95,18 @@ class JournalThreadCandidateServiceTest {
                 eq(FIXTURE_USERNAME),
                 eq(FIXTURE_ENTRY_ID),
                 eq("검색어"),
-                eq("CASE"),
+                eq(101),
                 eq("N"),
                 any(Pageable.class)
         )).thenReturn(List.of(projection));
-
         final List<JournalThreadCandidateDto> result =
-                service.getCandidates(FIXTURE_ENTRY_ID, "  검색어  ", " CASE ", false, 7);
+                service.getCandidates(FIXTURE_ENTRY_ID, "  검색어  ", 101, false, 7);
 
         assertEquals(1, result.size());
         assertEquals(10, result.get(0).getId());
         assertEquals(3L, result.get(0).getMembershipCount());
         assertEquals("OPEN", result.get(0).getLifecycleKey());
+        assertEquals("가상 말머리", result.get(0).getPrefix().getName());
         assertTrue(result.get(0).isMember());
     }
 
@@ -110,7 +117,7 @@ class JournalThreadCandidateServiceTest {
                 eq(FIXTURE_USERNAME),
                 eq(FIXTURE_ENTRY_ID),
                 eq(""),
-                eq(""),
+                isNull(),
                 eq("Y"),
                 any(Pageable.class)
         )).thenReturn(List.of());
@@ -122,7 +129,7 @@ class JournalThreadCandidateServiceTest {
                 eq(FIXTURE_USERNAME),
                 eq(FIXTURE_ENTRY_ID),
                 eq(""),
-                eq(""),
+                isNull(),
                 eq("Y"),
                 pageableCaptor.capture()
         );

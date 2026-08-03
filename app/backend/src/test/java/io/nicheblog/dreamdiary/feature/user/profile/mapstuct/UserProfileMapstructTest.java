@@ -30,6 +30,6 @@ class UserProfileMapstructTest {
         final UserProfileDto userProfileDto = UserProfileDtoTestFactory.create();
         final UserProfileEntity userProfileEntity = userProfileMapstruct.toEntity(userProfileDto);
         assertNotNull(userProfileEntity, "변환된 프로필 정보 Entity는 null일 수 없습니다.");
-        assertEquals(DateUtils.asDate("2000-01-01"), userProfileEntity.getBrthdy(), "프로필 생일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asLocalDate("2000-01-01"), userProfileEntity.getBrthdy(), "프로필 생일 정보가 제대로 매핑되지 않았습니다.");
     }
 }

@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.model.param.BaseAttach
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.Size;
-
 /**
  * BoardPostSearchParam
  * <pre>
@@ -22,7 +20,6 @@ import javax.validation.constraints.Size;
 @ToString(callSuper = true)
 public class BoardPostSearchParam extends BaseAttachableSearchParam {
 
-    /** 글 분류 코드 (목록 필터) */
-    @Size(max = 50)
-    private String categoryCode;
+    /** 말머리 ID (목록 필터) */
+    private Integer prefixId;
 }

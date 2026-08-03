@@ -1,12 +1,19 @@
 package io.nicheblog.dreamdiary.auth.security.controller;
 
+import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
+import io.nicheblog.dreamdiary.auth.security.handler.SecurityErrorResponseWriter;
+import io.nicheblog.dreamdiary.auth.security.matcher.PublicApiRequestMatcher;
+import io.nicheblog.dreamdiary.auth.security.service.AuthSessionPolicyService;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.infrastructure.web.config.WebMvcTestSliceSupportConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author nichefish
  */
 @WebMvcTest(LoginPageController.class)
+@Import(WebMvcTestSliceSupportConfig.class)
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @AutoConfigureRestDocs(outputDir = "build/snippets")
 class LoginPageControllerTest {
@@ -36,12 +45,22 @@ class LoginPageControllerTest {
     @MockBean(name = "userMyService")
     private UserMyService userMyService;
 
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    private AuthSessionPolicyService authSessionPolicyService;
+
+    @MockBean
+    private SecurityErrorResponseWriter securityErrorResponseWriter;
+
+    @MockBean
+    private PublicApiRequestMatcher publicApiRequestMatcher;
+
     /**
      * 로그인 화면 조회 Test
      * 로그인 사용자가 아닐 때 로그인 페이지 접근
-     *
-     * 변경 전: FTL 뷰 이름과 템플릿 파일 존재를 검증했다 (FreeMarker 렌더 시절).
-     * 변경 후: 컨트롤러가 Vue SPA 로그인 화면으로 리다이렉트만 반환하므로 리다이렉트 경로를 검증한다.
+     * Vue SPA 로그인 화면으로 이동하는 리다이렉트 경로를 검증한다.
      */
     @Test
     void testLoginFormAnonymous() throws Exception {
@@ -56,9 +75,7 @@ class LoginPageControllerTest {
     /**
      * 로그인 화면 조회 Test
      * 로그인 사용자일 떄 메인 화면으로 리다이렉트
-     *
-     * 변경 전: 미사용 지역변수(authInfo, result)가 남아 있었다. 검증(302)은 동일하게 유지하고,
-     * 변경 후: 리다이렉트 목적지(메인 화면)까지 명시 검증한다.
+     * 메인 화면으로 이동하는 리다이렉트 경로를 검증한다.
      */
     @Test
     @WithMockUser

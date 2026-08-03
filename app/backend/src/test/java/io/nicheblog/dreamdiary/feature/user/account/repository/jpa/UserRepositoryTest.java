@@ -151,7 +151,7 @@ class UserRepositoryTest {
         // When::
         UserEntity toModify = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setContent("modified");
-        UserEntity modified = userRepository.save(toModify);
+        UserEntity modified = userRepository.saveAndFlush(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");

@@ -340,7 +340,7 @@ class ChatAIServiceTest {
                 List.of("긴장·경계 축(2)"),
                 Map.of("DIARY", 4, "DREAM", 1),
                 Map.of("[엔서클]#조직역동", 5),
-                Map.of("DYNAMICS", 4)
+                Map.of("회고", 4)
         );
 
         assertTrue(lead.contains("민수"));
@@ -348,7 +348,7 @@ class ChatAIServiceTest {
         assertTrue(lead.contains("긴장"));
         assertTrue(lead.contains("일기"));
         assertTrue(lead.contains("조직역동"));
-        assertTrue(lead.contains("DYNAMICS"));
+        assertTrue(lead.contains("회고"));
     }
     /**
      * person-stance 해석 리드는 3인칭 주어(민수는) 없이 2인칭 비춤으로 시작해야 합니다.
@@ -374,7 +374,7 @@ class ChatAIServiceTest {
                 List.of("긴장·경계 축(2)"),
                 Map.of("DIARY", 4, "DREAM", 1),
                 Map.of("[엔서클]#조직역동", 5),
-                Map.of("DYNAMICS", 4)
+                Map.of("회고", 4)
         );
 
         assertTrue(lead.startsWith("네가 기록에 남긴 태도로 보면,"));
@@ -431,7 +431,7 @@ class ChatAIServiceTest {
         final Object ragContext = buildTestRagContextWithTaggedResults("민수");
         final String interpretiveResponse =
                 "기록상 민수는 [엔서클]#조직역동 태그가 자주 같이 붙는 "
-                        + "DYNAMICS 일기에서 조직 역동 맥락의 인물로 반복돼.";
+                        + "회고 말머리의 일기에서 조직 역동 맥락의 인물로 반복돼.";
 
         final boolean hollow = (boolean) method.invoke(
                 service,
@@ -466,7 +466,7 @@ class ChatAIServiceTest {
     }
 
     /**
-     * person-meaning fallback은 연결 맥락 태그와 책터 분류를 포함해야 합니다.
+     * person-meaning fallback은 연결 맥락 태그와 챕터 말머리를 포함해야 합니다.
      */
     @Test
     void buildPersonMeaningDeterministicFallback_shouldIncludeLinkedContextAndChapter() throws Exception {
@@ -482,8 +482,8 @@ class ChatAIServiceTest {
 
         assertTrue(fallback.contains("연결 맥락"));
         assertTrue(fallback.contains("조직역동"));
-        assertTrue(fallback.contains("책터 분류"));
-        assertTrue(fallback.contains("DYNAMICS"));
+        assertTrue(fallback.contains("챕터 말머리"));
+        assertTrue(fallback.contains("회고"));
         assertFalse(fallback.toLowerCase().contains("entity catalog"));
     }
 
@@ -633,7 +633,7 @@ class ChatAIServiceTest {
                 .embeddingText("본문: " + target + "님과 회의했다")
                 .embeddingPayloadJson(
                         "{\"tags\":\"" + personTag + " [엔서클]#조직역동\","
-                                + "\"chapterCategory\":\"DYNAMICS\"}"
+                                + "\"journalChapterPrefixName\":\"회고\"}"
                 )
                 .build();
         final RagSearchResult taggedResult = RagSearchResult.builder()
@@ -673,7 +673,7 @@ class ChatAIServiceTest {
                     .embeddingText("본문: 장면" + i + " " + target + "님과 회의했다")
                     .embeddingPayloadJson(
                             "{\"tags\":\"" + fixturePersonTagFor(target) + " [엔서클]#조직역동\","
-                                    + "\"chapterCategory\":\"DYNAMICS\"}"
+                                    + "\"journalChapterPrefixName\":\"회고\"}"
                     )
                     .build();
             results.add(RagSearchResult.builder()

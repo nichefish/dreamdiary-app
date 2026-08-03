@@ -31,14 +31,6 @@
       <router-link to="/my" class="menu-link px-5">{{ t("account.menu.my-info") }}</router-link>
     </div>
 
-    <div v-if="user?.isMngr" class="menu-item px-5">
-      <router-link to="/admin" class="menu-link px-5">{{ t("account.menu.admin-home") }}</router-link>
-    </div>
-
-    <div v-if="user?.isMngr" class="menu-item px-5">
-      <router-link to="/admin/menu" class="menu-link px-5">{{ t("account.menu.menu-admin") }}</router-link>
-    </div>
-
     <div class="separator my-2"></div>
 
     <div class="menu-item px-5">

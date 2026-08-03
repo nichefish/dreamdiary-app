@@ -8,14 +8,12 @@
         <!--begin::검색 폼-->
         <form class="d-flex flex-wrap align-items-center gap-2" @submit.prevent="search">
           <select
-            v-model="store.filterCategory"
+            v-model="store.filterPrefixId"
             class="form-select form-select-sm form-select-solid w-auto flex-shrink-0"
             @change="search"
           >
-            <option value="">{{ t("journal.thread.filter.all-categories") }}</option>
-            <option v-for="category in store.categoryOptions" :key="category.code" :value="category.code">
-              {{ category.codeName }}
-            </option>
+            <option value="">{{ t("journal.thread.filter.all-prefixes") }}</option>
+            <option v-for="prefix in store.prefixOptions" :key="prefix.id" :value="String(prefix.id)">{{ prefix.name }}</option>
           </select>
           <select
             v-model="store.filterLifecycleKey"
@@ -106,7 +104,7 @@
           </button>
         </div>
         <!--end::태그 필터-->
-        <div v-if="store.categoryError" class="text-danger fs-8 mt-2">{{ store.categoryError }}</div>
+        <div v-if="store.prefixError" class="text-danger fs-8 mt-2">{{ store.prefixError }}</div>
         <!--end::검색 폼-->
       </div>
     </div>
@@ -142,7 +140,7 @@
             >
               <td class="text-center text-gray-500 fs-7 hidden-table">{{ thread.rnum }}</td>
               <td class="ps-3">
-                <span v-if="thread.categoryName" class="badge badge-light-primary me-2 fs-9">{{ thread.categoryName }}</span>
+                <span v-if="thread.prefix" class="badge me-2 fs-9" :style="prefixBadgeStyle(thread.prefix.color)">{{ thread.prefix.name }}</span>
                 <span class="fs-6 fw-semibold">{{ thread.title }}</span>
                 <span
                   v-if="membershipCountOf(thread) > 0"
@@ -350,7 +348,7 @@ function onThreadRowClick(event: MouseEvent, id: number): void {
 
 const lifecycleOptions = computed(() => [
   { key: "OPEN", label: t("journal.entry.lifecycle.open"), activeClass: "text-gray-800" },
-  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-primary" },
+  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-gray-600" },
   { key: "RESOLVED", label: t("status.completed"), activeClass: "text-success" },
 ]);
 
@@ -366,7 +364,7 @@ function lifecycleLabel(key: string): string {
 }
 
 function lifecycleBadgeClass(key: string): string {
-  if (key === "PENDING") return "badge-light-primary";
+  if (key === "PENDING") return "badge-light-secondary text-gray-600";
   if (key === "RESOLVED") return "badge-light-success";
   return "badge-light";
 }
@@ -382,6 +380,10 @@ function openModify(id: number): void {
 /** 스레드 태그 보유 여부 */
 function hasThreadTags(thread: JournalThreadDto): boolean {
   return Array.isArray(thread.tag?.list) && thread.tag!.list!.length > 0;
+}
+
+function prefixBadgeStyle(color?: string | null): Record<string, string> {
+  return color ? { borderColor: color, color } : {};
 }
 
 /** 활성 소속 엔트리 수. 없거나 비정상이면 0. */

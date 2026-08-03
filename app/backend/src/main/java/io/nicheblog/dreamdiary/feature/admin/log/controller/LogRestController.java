@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.feature.admin.log.controller;
 import io.nicheblog.dreamdiary.feature.admin.log.model.LogQueryDto;
 import io.nicheblog.dreamdiary.feature.admin.log.service.LogQueryService;
 import io.nicheblog.dreamdiary.feature.admin.log.service.LogStatsUserQueryService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.model.LogSearchParam;
@@ -18,7 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +48,7 @@ public class LogRestController
      * 로그 목록 조회 (Ajax)
      */
     @GetMapping(Url.LOGS)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.log')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getLogs(
             @ModelAttribute final LogSearchParam searchParam,
@@ -67,7 +66,7 @@ public class LogRestController
      * (기간 미지정 시 오늘 통계 — 레거시 log_stats_user_list 기본 노출과 동일.)
      */
     @GetMapping(Url.LOG_STATS_USER)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.log_stats')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getLogStatsUser(
             @ModelAttribute final LogStatsSearchParam searchParam
@@ -84,7 +83,7 @@ public class LogRestController
      * 로그 상세 조회 (Ajax)
      */
     @GetMapping(Url.LOG)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.log')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getLog(
             final @PathVariable Integer id

@@ -1,17 +1,15 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.service;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +17,6 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mockStatic;
 
 /**
  * JournalThreadServiceTest
@@ -34,14 +31,11 @@ import static org.mockito.Mockito.mockStatic;
 @ActiveProfiles("test")
 @Import(TestAuditConfig.class)
 @Transactional
+@WithMockUser(username = TestConstant.TEST_AUDITOR)
 class JournalThreadServiceTest {
     
     @Resource
     private JournalThreadService journalThreadService;
-
-    @MockBean
-    @SuppressWarnings("unused")
-    private AuthUtils authUtils;
 
     private JournalThreadDto journalThread;
 
@@ -53,11 +47,7 @@ class JournalThreadServiceTest {
         // 공통적으로 사용할 JournalThreadDto 초기화
         journalThread = JournalThreadDtoTestFactory.create();
 
-        // AuthUtils Mock
-        try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
-            mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
-            mockedStatic.when(AuthUtils::getLoginUsername).thenReturn(TestConstant.TEST_AUDITOR);
-        }
+        // 인증 사용자는 @WithMockUser가 테스트마다 설정한다.
     }
 
     /**
@@ -119,4 +109,3 @@ class JournalThreadServiceTest {
         );
     }
 }
-

@@ -83,7 +83,7 @@ class JournalTodoRepositoryTest {
         final JournalTodoEntity toModify = journalTodoRepository.findById(key)
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setContent("modified");
-        final JournalTodoEntity modified = journalTodoRepository.save(toModify);
+        final JournalTodoEntity modified = journalTodoRepository.saveAndFlush(toModify);
 
         // Then::
         assertNotNull(modified, "Could not load modified entity.");
@@ -113,4 +113,3 @@ class JournalTodoRepositoryTest {
         assertNull(retrieved, "Delete did not remove the entity.");
     }
 }
-

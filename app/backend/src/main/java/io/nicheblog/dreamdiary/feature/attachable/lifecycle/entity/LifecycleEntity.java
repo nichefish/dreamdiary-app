@@ -14,7 +14,8 @@ import javax.persistence.*;
  * 임의 컨텐츠에 붙는 라이프사이클 저장 엔티티.
  *
  * <p>유니크 기준은 {@code ref_content_type + ref_id}이다.
- * 라이프사이클은 toggle 이력이 아니라 현재 단계를 저장한다.</p>
+ * 라이프사이클은 toggle 이력이 아니라 현재 단계를 저장하며,
+ * 기본 상태 {@code OPEN}은 row 부재로 표현한다.</p>
  */
 @Entity
 @Table(name = "lifecycle")

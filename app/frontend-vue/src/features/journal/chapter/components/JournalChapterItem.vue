@@ -1,18 +1,24 @@
 <template>
   <!--begin::챕터-->
-  <div class="journal-chapter-block" :id="'journal-chapter-' + chapter.id">
+  <div
+    class="journal-chapter-block"
+    :class="{ 'is-summary-chapter': isSummaryChapter, 'is-all-pending': allEntriesPending }"
+    :id="'journal-chapter-' + chapter.id"
+  >
     <!--begin::챕터 헤더-->
     <div class="d-flex align-items-center mt-2">
-      <!--begin::챕터 타입·카테고리 라벨 + 아이콘-->
+      <!--begin::챕터 타입·말머리 라벨 + 아이콘-->
       <div
         class="d-flex-align-center fs-6 ps-1 ps-md-5 me-5 fw-bolder"
         :class="isDreamChapter ? 'journal-dream-section-header' : 'text-gray-700'"
       >
         <span class="me-2">
-          {{ typeLabel }}<template v-if="chapter.categoryCode">:</template>
-          <template v-if="chapter.categoryCode">
-            <span v-if="chapter.categoryName" style="color:#287D94;">{{ chapter.categoryName }}</span>
-            <span class="text-muted fs-8 me-1">{{ chapter.categoryCode }}</span>
+          {{ typeLabel }}<template v-if="isSummaryChapter || chapter.prefix">:</template>
+          <template v-if="isSummaryChapter">
+            <span style="color:#287D94;">{{ t("journal.chapter.summary") }}</span>
+          </template>
+          <template v-else-if="chapter.prefix">
+            <span :style="{ color: chapter.prefix.color || '#287D94' }">{{ chapter.prefix.name }}</span>
           </template>
           <!--begin::챕터 제목 (분류 뒤 인라인 강조, 접힘·펼침 무관 항상) — 같은 분류 챕터 구분용 -->
           <span v-if="chapter.title" class="ms-1 text-gray-700">· {{ chapter.title }}</span>
@@ -21,7 +27,7 @@
         </span>
         <i class="bi fs-4" :class="iconClass"></i>
       </div>
-      <!--end::챕터 타입·카테고리 라벨 + 아이콘-->
+      <!--end::챕터 타입·말머리 라벨 + 아이콘-->
 
       <!--begin::챕터 액션 버튼 (col-3) — 본인 작성 챕터만-->
       <div v-if="canManageChapter" class="col-3 d-none d-md-flex align-items-center gap-2">
@@ -142,6 +148,7 @@
           :entry="entry"
           :is-dream="chapter.chapterType === 'DREAM'"
           :force-collapsed="localCollapsedOverride"
+          :is-summary="entry.id != null && entry.id === summaryEntryId"
         />
         <div v-if="entryList.length === 0 && !isCollapsed" class="text-muted fs-8 ps-5 py-2">{{ t("journal.chapter.empty") }}</div>
       </div>
@@ -192,6 +199,11 @@ import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayR
 import type { JournalChapterDto, JournalThreadEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import { findFirstNonEmptyEntry } from "@/features/journal/utils/summaryEntryPreview";
+import {
+  resolveChapterAggregateLifecycle,
+  resolveChapterCollapsed,
+} from "@/features/journal/utils/journalLifecycleCollapse";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalEntryItem from "../../entry/components/JournalEntryItem.vue";
 import { useJournalDayResolved } from "@/features/journal/utils/journalDayResolved";
@@ -223,15 +235,30 @@ const serverCollapsed = computed(() =>
 const localCollapsedOverride = ref<boolean | null>(null);
 
 const isCollapsed = computed(() => {
-  if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
-  /* 하위 엔트리 전체 RESOLVED 시 자동 접힘 */
-  if (allEntriesResolved.value) return true;
-  return serverCollapsed.value;
+  return resolveChapterCollapsed({
+    localOverride: localCollapsedOverride.value,
+    aggregateLifecycleKey: aggregateLifecycleKey.value,
+    serverCollapsed: serverCollapsed.value,
+  });
 });
 
 watch(serverCollapsed, () => {
   localCollapsedOverride.value = null;
 });
+
+/**
+ * 신규 엔트리 등록 대상 챕터는 완료 자동 접힘·서버 COLLAPSED보다 우선해 현재 화면에서 펼친다.
+ * 서버 상태는 유지하며, 목록과 일자 상세에 같은 챕터가 동시에 있으면 각 인스턴스가 동일 신호를 적용한다.
+ */
+watch(
+  () => modalStore.entryCreatedExpandChapterId,
+  (chapterId) => {
+    if (chapterId == null || String(chapterId) !== String(props.chapter.id)) return;
+    localCollapsedOverride.value = false;
+    console.info("[JournalChapterItem] 신규 엔트리 등록 챕터를 펼침", { chapterId });
+  },
+  { immediate: true },
+);
 
 /** 본인 작성 챕터만 수정·삭제·엔트리 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
 const canManageChapter = computed(() => props.chapter.isCreatedBy === true);
@@ -282,6 +309,18 @@ const entryList = computed(() => props.chapter.journalEntryList ?? []);
 const tagList = computed(() => props.chapter.tag?.list ?? []);
 
 /**
+ * 이 챕터가 서버가 지정한 그날 요약 챕터인지 여부.
+ * 프리뷰용 findSummaryChapter 의 non-DREAM fallback 과 달리 summaryYn 엄격 매칭만 쓴다 —
+ * 요약 챕터가 없는 날에 임의 챕터를 요약으로 강조하지 않기 위함이다.
+ */
+const isSummaryChapter = computed(() => props.chapter.summaryYn === "Y");
+
+/** 요약 강조 대상 엔트리 id — 시스템 요약 챕터의 첫 non-empty 엔트리(그날 전체 요약). 그 외엔 undefined. */
+const summaryEntryId = computed(() =>
+  isSummaryChapter.value ? findFirstNonEmptyEntry(entryList.value)?.id : undefined,
+);
+
+/**
  * 접힌 챕터 밖에 표시할 소속 스레드 목록.
  * <p>
  * 변경 전에는 스레드 칩이 각 엔트리 본문 안에만 있어 챕터 접기 시 함께 숨겨졌다.
@@ -301,20 +340,39 @@ const chapterThreadList = computed<JournalThreadEntryDto[]>(() => {
   return Array.from(threadMap.values());
 });
 
+/** 챕터가 전체 완료 또는 전체 보류 상태에 진입하면 자동 접힘이 적용되도록 임시 펼침 상태를 해제한다. */
+const aggregateLifecycleKey = computed(() => resolveChapterAggregateLifecycle(entryList.value));
+
 /** 하위 엔트리가 1개 이상이고 전부 RESOLVED인지 여부 */
-const allEntriesResolved = computed(() => {
-  const list = entryList.value;
-  return list.length > 0 && list.every((e) => e.lifecycle?.lifecycleKey === 'RESOLVED');
-});
+const allEntriesResolved = computed(() => aggregateLifecycleKey.value === "RESOLVED");
+
+/** 하위 엔트리가 1개 이상이고 전부 PENDING인지 여부 */
+const allEntriesPending = computed(() => aggregateLifecycleKey.value === "PENDING");
+
+watch(
+  aggregateLifecycleKey,
+  (lifecycleKey, previousLifecycleKey) => {
+    if (lifecycleKey === null || lifecycleKey === previousLifecycleKey) return;
+    if (localCollapsedOverride.value === null) return;
+
+    localCollapsedOverride.value = null;
+    console.info('[JournalChapterItem] 전체 lifecycle 자동 접힘으로 임시 펼침 상태를 해제함', {
+      chapterId: props.chapter.id,
+      lifecycleKey,
+    });
+  },
+  { immediate: true },
+);
 
 /**
- * 하위 엔트리 중 데이터 규칙(RESOLVED 자동 접힘 · 서버 COLLAPSED)으로 접히는 것이 있는지 여부.
+ * 하위 엔트리 중 lifecycle 자동 접힘 또는 서버 COLLAPSED로 접히는 것이 있는지 여부.
  * 엔트리 개별 로컬 토글(localCollapsedOverride)은 각 엔트리가 소유해 챕터에서 볼 수 없으므로
  * 데이터 기준으로만 판정한다 — 사용자가 손으로 접은 엔트리는 감지하지 못하는 근사치다.
  */
 const hasDataCollapsedEntry = computed(() =>
   entryList.value.some((e) =>
     e.lifecycle?.lifecycleKey === 'RESOLVED'
+    || e.lifecycle?.lifecycleKey === 'PENDING'
     || (e.state?.list ?? []).some((s) => s.stateKey === 'COLLAPSED')
   )
 );
@@ -347,7 +405,9 @@ function openChapterModify() {
     journalDayId: props.chapter.journalDayId,
     stdrdDt: props.chapter.stdrdDt,
     chapterType: props.chapter.chapterType,
-    categoryCode: props.chapter.categoryCode,
+    prefixId: props.chapter.prefixId,
+    prefix: props.chapter.prefix,
+    summaryYn: props.chapter.summaryYn,
     title: props.chapter.title,
     sortOrder: props.chapter.sortOrder,
   });
@@ -364,23 +424,22 @@ function openEntryNew() {
     journalDayId: props.chapter.journalDayId,
     journalChapterId: props.chapter.id,
     stdrdDt: props.chapter.stdrdDt,
-    chapterList: [{ id: props.chapter.id, title: props.chapter.title, categoryCode: props.chapter.categoryCode, categoryName: props.chapter.categoryName, sortOrder: props.chapter.sortOrder }],
+    chapterList: [{
+      id: props.chapter.id,
+      title: props.chapter.title,
+      prefixId: props.chapter.prefixId,
+      prefix: props.chapter.prefix,
+      summaryYn: props.chapter.summaryYn,
+      sortOrder: props.chapter.sortOrder,
+      chapterType: props.chapter.chapterType,
+    }],
   });
 }
 
 /**
- * 클라이언트 접힘/펼침 (서버 상태 저장 없음).
- *
- * 변경 전: 항상 `!isCollapsed` 로 토글했다. 챕터가 펼쳐진 상태에서 하위 엔트리만 접혀 있으면
- * (일부 엔트리만 RESOLVED 등) 첫 클릭이 챕터를 접어버려, 엔트리를 펼치려면 접기→펼치기 2클릭이 필요했다.
- * 원인은 엔트리에 넘기는 forceCollapsed(=localCollapsedOverride)가 토글 전까지 null 이라
- * "챕터가 펼쳐져 있다"는 신호가 엔트리에 전달되지 않았기 때문이다.
- *
- * 변경 후: 아직 사용자가 토글하지 않았고(override=null) 챕터가 펼쳐져 있는데 데이터 규칙으로
- * 접힌 엔트리가 있으면, 접기 대신 override=false 로 하위 엔트리를 전체 펼친다(1클릭).
- * 이후 클릭부터는 override 가 non-null 이므로 기존대로 접기/펼치기 토글이 동작한다.
- *
- * 트레이드오프: 이 상태에서 "챕터를 접으려면" 전체 펼침 후 한 번 더 눌러야 한다(접기 2클릭).
+ * 클라이언트 접힘/펼침. 서버 상태는 변경하지 않는다.
+ * 챕터가 펼쳐진 상태에서 lifecycle 또는 서버 상태로 접힌 엔트리가 있으면 첫 클릭은 하위 엔트리를
+ * 전체 펼친다. 이후 클릭은 챕터와 하위 엔트리를 함께 접거나 펼친다.
  */
 function toggleChapter(): void {
   if (localCollapsedOverride.value === null && !isCollapsed.value && hasDataCollapsedEntry.value) {
@@ -455,7 +514,7 @@ async function deleteChapter(): Promise<void> {
 }
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
-/** 챕터 전체 내용을 클립보드에 복사. 레거시 형식: 날짜(요일) / 카테고리 / 제목\n#순번\n본문 */
+/** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목\n#순번\n본문 */
 async function copyChapter(): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
@@ -463,7 +522,8 @@ async function copyChapter(): Promise<void> {
     const weekDay = getWeekDayStr(props.chapter.stdrdDt, t);
     headerParts.push(weekDay ? `${props.chapter.stdrdDt} (${weekDay})` : props.chapter.stdrdDt);
   }
-  if (props.chapter.categoryName) headerParts.push(props.chapter.categoryName);
+  if (isSummaryChapter.value) headerParts.push(t("journal.chapter.summary"));
+  else if (props.chapter.prefix?.name) headerParts.push(props.chapter.prefix.name);
   if (props.chapter.title) headerParts.push(props.chapter.title);
   if (headerParts.length > 0) lines.push(headerParts.join(" / "));
   for (const entry of entryList.value) {
@@ -484,3 +544,18 @@ async function copyChapter(): Promise<void> {
   }
 }
 </script>
+
+<style scoped>
+/* 시스템 요약 챕터를 '그날 전체 요약' 카드로 분리 — 챕터 헤더+엔트리 전체를 중립 표면 카드로 감싼다.
+   배경 tint·좌측선은 '같은 엔트리의 상태' 언어라 요약이 그 계열의 level 로 오인됐다.
+   카드 재질(gray-100 표면+테두리+라운드+옅은 그림자)로 챕터 전체를 감싸 '다른 종류'로 읽히게 하고,
+   아래는 margin 으로 다음 챕터와 띄운다. 다크모드: --bs-* 토큰 자동 대응. */
+.is-summary-chapter {
+  background: color-mix(in srgb, var(--bs-gray-100) 40%, var(--bs-body-bg));
+  border: 1px solid var(--bs-gray-300);
+  border-radius: 0.65rem;
+  padding: calc(0.75rem - 1pt) 1.25rem calc(0.75rem - 3pt);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+</style>

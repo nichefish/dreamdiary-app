@@ -64,7 +64,6 @@
               <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
                 <th class="text-center board-group-order-col">{{ t('board.group.list.order') }}</th>
                 <th>{{ t('board.group.list.board-name-short') }}</th>
-                <th class="text-center hidden-table">{{ t('board.group.list.category-code') }}</th>
                 <th class="hidden-table">{{ t('board.group.list.col.description') }}</th>
                 <th class="text-center hidden-table">{{ t('board.group.list.posts') }}</th>
                 <th class="text-center">{{ t('common.use') }}</th>
@@ -73,7 +72,7 @@
             </thead>
             <tbody>
               <tr v-if="!store.rows.length">
-                <td colspan="7" class="text-center text-muted py-8">{{ t('board.group.empty') }}</td>
+                <td colspan="6" class="text-center text-muted py-8">{{ t('board.group.empty') }}</td>
               </tr>
               <tr v-for="(row, index) in store.rows" :key="row.id">
                 <td class="text-center">
@@ -104,7 +103,6 @@
                     <span>{{ row.boardKey }}</span>
                   </div>
                 </td>
-                <td class="text-center hidden-table text-gray-700">{{ row.categoryGroupCode || "-" }}</td>
                 <td class="hidden-table">
                   <div class="board-group-description">{{ row.description || "-" }}</div>
                 </td>
@@ -143,6 +141,12 @@
                       data-kt-menu="true"
                       @click.stop
                     >
+                      <div class="menu-item px-3 my-1">
+                        <div class="menu-link flex-stack px-3" @click="openPrefixManagement(row)">
+                          {{ t('board.group.prefix.manage') }}
+                          <i class="bi bi-bookmark fs-8"></i>
+                        </div>
+                      </div>
                       <div class="menu-item px-3 my-1">
                         <div class="menu-link flex-stack px-3" @click="store.openEdit(row.id)">
                           {{ t('common.edit') }}
@@ -241,16 +245,6 @@
                     />
                   </div>
                   <div class="board-group-form-row">
-                    <label for="categoryGroupCode" class="form-label">{{ t('board.group.form.category-code') }}</label>
-                    <input
-                      id="categoryGroupCode"
-                      v-model.trim="store.form.categoryGroupCode"
-                      type="text"
-                      class="form-control form-control-solid"
-                      maxlength="30"
-                    />
-                  </div>
-                  <div class="board-group-form-row">
                     <label for="description" class="form-label">{{ t('board.group.list.col.description') }}</label>
                     <textarea
                       id="description"
@@ -289,6 +283,8 @@
       </div>
       <div class="modal-backdrop fade show"></div>
     </template>
+
+    <BoardPrefixManagementModal />
   </div>
 </template>
 
@@ -297,9 +293,15 @@ import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { computed, onMounted, watch } from "vue";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
-import { useBoardGroupStore, type BoardGroupRow } from "@/features/admin/stores/boardGroup";
+import {
+  useBoardGroupStore,
+  type BoardGroupRow,
+} from "@/features/admin/stores/boardGroup";
+import { useBoardPrefixesStore } from "@/features/admin/stores/boardPrefixes";
+import BoardPrefixManagementModal from "@/features/admin/components/BoardPrefixManagementModal.vue";
 
 const store = useBoardGroupStore();
+const prefixStore = useBoardPrefixesStore();
 const { t } = useLocaleStore();
 
 const pageNumbers = computed(() => {
@@ -370,6 +372,15 @@ async function deleteBoard(row: BoardGroupRow) {
     await store.deleteBoard(row.id);
   } catch (e) {
     void swalAlert(e instanceof Error ? e.message : t("board.group.delete.failure"));
+  }
+}
+
+/** 게시판 행 문맥으로 Prefix 관리 모달을 열고, 조회 오류는 모달 내부 상태로 표시한다. */
+async function openPrefixManagement(row: BoardGroupRow) {
+  try {
+    await prefixStore.open(row);
+  } catch {
+    return;
   }
 }
 

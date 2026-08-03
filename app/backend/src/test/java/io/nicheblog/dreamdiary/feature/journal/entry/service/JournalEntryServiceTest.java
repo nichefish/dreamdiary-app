@@ -2,7 +2,9 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service;
 
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -65,6 +68,19 @@ class JournalEntryServiceTest {
         service.sortByChapterAndEntryOrder(entries);
 
         assertEquals(List.of(2, 1), entries.stream().map(JournalEntryDto::getId).toList());
+    }
+
+    /** Prefix 목록 Scope는 영속 엔트리 contentType이 아니라 소속 챕터 유형으로 분리한다. */
+    @Test
+    void resolvePrefixScopeContentTypeUsesChapterType() {
+        assertEquals(ContentType.JOURNAL_DIARY,
+                JournalEntryService.resolvePrefixScopeContentType(ChapterType.DIARY));
+        assertEquals(ContentType.JOURNAL_NOTE,
+                JournalEntryService.resolvePrefixScopeContentType(ChapterType.NOTE));
+        assertEquals(ContentType.JOURNAL_DREAM,
+                JournalEntryService.resolvePrefixScopeContentType(ChapterType.DREAM));
+        assertThrows(RuntimeException.class,
+                () -> JournalEntryService.resolvePrefixScopeContentType(null));
     }
 
     private JournalChapterEntity chapter(final int id, final int sortOrder) {

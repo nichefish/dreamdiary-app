@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.strategy;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,8 @@ import static org.mockito.Mockito.mockStatic;
 
 class JournalDayCacheEvictorTest {
 
+    private static final String FIXTURE_USERNAME = "alice";
+
     @Test
     void evict_clearsCurrentMonthListCacheAndStateMaps() throws Exception {
         final JournalDayCacheEvictor evictor = new JournalDayCacheEvictor();
@@ -18,38 +19,35 @@ class JournalDayCacheEvictorTest {
                 .id(101)
                 .yy(2026)
                 .mnth(3)
+                .createdBy(FIXTURE_USERNAME)
                 .build();
 
         try (
-                final MockedStatic<AuthUtils> authUtils = mockStatic(AuthUtils.class);
                 final MockedStatic<EhCacheUtils> ehCacheUtils = mockStatic(EhCacheUtils.class)
         ) {
-            authUtils.when(AuthUtils::getLoginUsername).thenReturn("nichefish");
-
             evictor.evict(param);
 
-            ehCacheUtils.verify(() -> EhCacheUtils.evictMyCacheByKey("journalDayDtlDtoByUser", 101));
+            ehCacheUtils.verify(() -> EhCacheUtils.evictUserCacheByKey("journalDayDtlDtoByUser", FIXTURE_USERNAME, 101));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(
                     "journalDayYyMnthListByUser",
-                    new SimpleKey("nichefish", 2026, 3)
+                    new SimpleKey(FIXTURE_USERNAME, 2026, 3)
             ));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(
                     "journalChapterStateMapByUser",
-                    new SimpleKey("nichefish", 2026, 3)
+                    new SimpleKey(FIXTURE_USERNAME, 2026, 3)
             ));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(
                     "journalDiaryStateMapByUser",
-                    new SimpleKey("nichefish", 2026, 3)
+                    new SimpleKey(FIXTURE_USERNAME, 2026, 3)
             ));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(
                     "journalDreamStateMapByUser",
-                    new SimpleKey("nichefish", 2026, 3)
+                    new SimpleKey(FIXTURE_USERNAME, 2026, 3)
             ));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(
                     "journalInterpretationStateMapByUser",
-                    new SimpleKey("nichefish", 2026, 3)
+                    new SimpleKey(FIXTURE_USERNAME, 2026, 3)
             ));
         }
     }
 }
-

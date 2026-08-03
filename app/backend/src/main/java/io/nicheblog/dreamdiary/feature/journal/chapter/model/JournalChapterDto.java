@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.chapter.model;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
@@ -40,16 +41,18 @@ public class JournalChapterDto
     @Builder.Default
     private String contentType = ContentType.JOURNAL_CHAPTER.key;
 
-    /** 챕터 타입 (DIARY | DREAM) */
+    /** 챕터 타입 (DIARY | NOTE | DREAM) */
     @Builder.Default
     private ChapterType chapterType = ChapterType.DIARY;
 
     /** 제목 */
     private String title;
-    /** 카테고리 코드: join 없이 화면 표시용으로 사용 */
-    private String categoryCode;
-    /** 카테고리 이름: join 없이 화면 표시용으로 사용 */
-    private String categoryName;
+    /** 일반 챕터가 선택한 개인 말머리(0..1) */
+    private PrefixDto prefix;
+    /** 등록·수정 payload에서 선택한 개인 말머리 ID */
+    private Integer prefixId;
+    /** 시스템 요약 챕터 여부. 사용자 선택 Prefix와 독립적인 서버 관리 값 */
+    private String summaryYn;
 
     /** 마크다운 변환용 원문 */
     private String markdownContent;

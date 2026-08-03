@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS board (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'board id',
     board_key VARCHAR(30) NOT NULL COMMENT 'board key',
     board_name VARCHAR(120) NOT NULL COMMENT 'board name',
-    category_group_code VARCHAR(30) COMMENT 'category group code',
     description VARCHAR(2000) COMMENT 'description',
     -- STATE (module)
     sort_order INT DEFAULT 0 COMMENT 'sort order',
@@ -31,7 +30,7 @@ CREATE TABLE IF NOT EXISTS board (
 
 -- Board post
 -- @extends: BasePostEntity
--- @implements: TagEmbed, CommentEmbed, ViewerEmbed
+-- @implements: TagEmbed, CommentEmbed, ViewerEmbed, PrefixEmbed
 CREATE TABLE IF NOT EXISTS board_post(
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'post id',
@@ -39,7 +38,6 @@ CREATE TABLE IF NOT EXISTS board_post(
     -- POST
     title VARCHAR(200) COMMENT 'title',
     content LONGTEXT COMMENT 'content',
-    category_code VARCHAR(50) COMMENT 'category code',
     -- FILE_GROUP
     file_group_id INT COMMENT 'file group id',
     -- AUDIT

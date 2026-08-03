@@ -44,7 +44,8 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 | 앱 런타임 상태 | `shared/components/system/AppRuntimeStatus.vue` + `shared/utils/appRuntimeStatus.ts` | — | 라우팅 지연·렌더 예외·전역 런타임 예외를 화면에 표시 |
 | 오류 화면 | `app/pages/ErrorPage.vue` | legacy 오류 화면 | 오류 분류·제목·설명·메인 이동 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. URL query로 전달된 상세 메시지는 서버 원문을 그대로 표시하며 오류 유형·상태 코드·메인 이동 흐름은 유지한다. |
 | 앱 헤더 Navbar | `app/layouts/default/components/header/Header.vue`, `Navbar.vue` — 테마·사용자/관리자 모드·국기 버튼(🇰🇷/🇺🇸)·프로필·모바일 헤더/사이드바 메뉴 | — | `useLocaleStore.setLocale()` ko↔en 토글. 테마 전환 tooltip, 사용자/관리자 모드 선택지, 언어 전환 tooltip, 프로필 대체 텍스트, 모바일 헤더·사이드바 메뉴 tooltip은 현재 locale의 클라이언트 카탈로그를 사용하며 locale 변경은 테마·메뉴 모드·라우트·인증 상태를 변경하지 않는다. |
-| 사용자 계정 메뉴·사이드바 Footer | `app/layouts/default/components/menus/UserAccountMenu.vue`, `sidebar/SidebarFooter.vue` | — | 사용자 역할·내 정보·관리 홈·메뉴 관리·로그아웃·로그아웃 확인 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 기존 권한별 메뉴 노출, 로그아웃 API, 로그인 화면 이동 흐름은 유지한다. |
+| 사용자 계정 메뉴·사이드바 Footer | `app/layouts/default/components/menus/UserAccountMenu.vue`, `sidebar/SidebarFooter.vue` | — | 사용자 역할·내 설정·로그아웃·로그아웃 확인 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 사용자 계정 dropdown에는 권한별로 노출되는 메뉴 항목을 두지 않으며(역할 뱃지 아이콘만 isMngr 기준으로 구분), 로그아웃 API, 로그인 화면 이동 흐름은 유지한다. |
+| 내 설정 허브 | `features/user/UserMyPage.vue`, `components/UserMy*Tab.vue`, `stores/userMy.ts`, `stores/userPrefixes.ts` | `user_my_page.ftlh` + 비밀번호 변경 모달 | ✓ `/my/profile`, `/my/security`, `/my/prefixes` URL 기반 탭. 공통 정체성 헤더 아래 내 정보·보안·말머리 관리를 분리하며 `/my`는 프로필 탭으로 redirect한다. 마이페이지 내부 섹션 이동은 요약 영역 버튼을 중복 제공하지 않고 이 탭만 사용한다. 내 정보 탭은 조회/편집 상태를 분리하고 닉네임·개인 연락처·생년월일·음력 여부·자기소개만 `PUT /api/user/my`로 저장한다. 생년월일과 양력/음력 토글은 같은 행에 두고 모바일에서 세로 배치한다. 이메일·재직 정보는 조회 전용이며, 저장 성공 후 내 정보와 인증 상태를 다시 조회해 공통 헤더 닉네임까지 서버 확정 상태로 갱신한다. |
 | 언어 토글 (로그인) | `features/auth/SignIn.vue` — 로그인 패널 우상단 국기 버튼 | — | `localeStore.setLocale()` + `localeStore.t()` 카탈로그로 화면 텍스트 전환. 언어 선택지 레이블은 `locale.label.ko` / `locale.label.en` |
 
 화면 위치/제목/설명 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title 또는 메뉴 설명을 별도로 렌더링하지 않고, 필요한 액션 버튼만 둔다.
@@ -771,8 +772,8 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 |------|----------|-----------|
 | 기본 레이아웃 | `app/frontend-vue/src/app/layouts/default/DefaultLayout.vue` | 패키지명은 `layouts/default`로 둔다. `default-layout`처럼 의미가 중복되는 경로명은 쓰지 않는다. |
 | 사이드바 메뉴 | `layouts/default/components/sidebar/SidebarMenu.vue`, `SidebarMenuItem.vue` | 첫 진입 화면에서도 사용자가 이동할 수 있는 메뉴가 보여야 한다. 메뉴 accordion은 항상 펼쳐진 상태로 표시하고, `menuLabel`은 최상위 섹션 라벨에만 사용한다. |
-| 동적 메뉴 | `app/frontend-vue/src/shared/menu/stores/menu.ts` | `GET /api/menus?mode=USER|MNGR` 결과는 `sidebarVisibleYn=Y`인 사이드바 메뉴만 렌더링 대상으로 보존한다. `GET /api/menus?mode=USER|MNGR&includeHidden=true` 결과는 `sidebarVisibleYn=N`인 숨김/시스템 메뉴까지 포함한 breadcrumb·화면 설명 메타 원천으로 보존한다. 하드코딩된 1차원 메뉴는 fallback으로만 허용한다. |
-| 사용자/관리자 전환 | `Navbar.vue` + `useMenuStore.setMenuMode()` | 관리자 권한이 있을 때만 `MNGR` 모드 진입. 모드 전환 시 메뉴 캐시를 무효화하고 다시 조회한다. |
+| 동적 메뉴 | `app/frontend-vue/src/shared/menu/stores/menu.ts` | `GET /api/menus?mode=USER|MNGR` 결과는 `sidebarVisibleYn=Y`인 사이드바 메뉴만 렌더링 대상으로 보존한다. 서버는 각 메뉴의 `required_perm_key`를 현재 사용자 유효 permission(롤∪그룹 합집합)으로 필터하며, 메뉴 캐시 키는 locale + permission 지문을 사용한다. `admin_yn`은 USER/MNGR 모드 트리 분리에 유지하고, 세부 노출은 permission 단일 경로로 판정한다. `GET /api/menus?mode=USER|MNGR&includeHidden=true` 결과는 `sidebarVisibleYn=N`인 숨김/시스템 메뉴까지 포함한 breadcrumb·화면 설명 메타 원천으로 보존한다. 하드코딩된 1차원 메뉴는 fallback으로만 허용한다. |
+| 사용자/관리자 전환 | `Navbar.vue` + `useMenuStore.setMenuMode()` | 관리자 메뉴 모드 진입 기준은 `menu.view.admin` permission(`canUseMngrMenuMode`, 서버 `AuthUtils.hasPermission`)이다. `isMngr`는 fallback. 모드 전환 시 메뉴 캐시를 무효화하고 다시 조회한다. |
 | 경로별 메뉴 모드 복구 | `app/router/index.ts` + `useMenuStore.setMenuMode()` | 세션 만료 후 재로그인 redirect, 직접 URL 진입, 새로고침으로 관리자 경로(`/admin/**`)에 들어오면 관리자 권한 계정에 한해 사이드바 메뉴 모드를 `MNGR`로 복구한다. 사용자 경로(`/journal/**`, `/annual/**`, `/thread/**`, `/schedule`, `/board/**`)에 들어오면 사이드바 메뉴 모드를 `USER`로 복구한다. `/my`는 현재 사용자/관리자 메뉴 모드를 유지하는 계정 화면이며, 모드 전환 트리거로 쓰지 않는다. |
 | legacy URL 매핑 | `app/frontend-vue/src/shared/utils/urlMapping.ts` | `.do`/FTL 진입 URL은 Vue route로 흡수한다. 서버 redirect와 클라이언트 라우터가 같은 목적지를 가리켜야 한다. |
 | Bootstrap tooltip | `app/frontend-vue/src/main.ts` 전역 `v-tooltip` directive | Vue 렌더링 생명주기에 맞춰 Bootstrap Tooltip 인스턴스를 mount/update/unmount에서 생성·정리한다. Vue 템플릿에서는 `data-bs-toggle="tooltip"`을 직접 반복하지 않고 `v-tooltip` + `title`로 활성화한다. |
@@ -784,6 +785,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | boardGroup 관리자 화면 | `/admin/board-group` | `features/admin/BoardGroupAdminPage.vue`, `features/admin/stores/boardGroup.ts` | 목록/상세/등록·수정/사용여부/삭제 흐름을 legacy와 비교 검수한다. |
 | 코드 관리 | `/admin/code` | `features/admin/CodeAdminPage.vue`, `features/admin/stores/codeAdmin.ts` | 코드그룹 + 상세코드 CRUD, 정렬/사용여부 동작을 검수한다. |
 | 메뉴 관리 | `/admin/menu` | `features/admin/MenuAdminPage.vue`, `features/admin/MenuAdminTreeNode.vue`, `features/admin/stores/menuAdmin.ts` | tree depth, 사용자/관리자 구분, `submenuExpandType`, `sidebarVisibleYn` 기준 사이드바 표시/숨김 분리, 순서 변경을 legacy 기준으로 검수한다. |
+| 사용자 그룹 관리 | `/admin/user-groups` | `features/admin/UserGroupAdminPage.vue`, `features/admin/stores/userGroup.ts` | 그룹 CRUD·멤버십·permission 부여를 검수한다. |
 | 계정 관리 | `/admin/users` | `features/admin/UserAdminPage.vue`, `features/admin/stores/userAdmin.ts` | 검색/권한 필터/상세/등록·수정/프로필·고용정보 서브폼을 검수한다. |
 | 계정 신청 승인 | `/admin/users?tab=signup` | `UserSignupApprovalList.vue` | 계정 관리 화면의 `계정 신청 승인` 탭. 구 경로 `/user/signup/approval` 은 이 탭으로 리다이렉트된다. |
 | 로그 | `/admin/log` | `features/admin/LogAdminPage.vue`, `features/admin/stores/logAdmin.ts` | 운영 로그 목록/검색/상세 모달을 검수한다. |
@@ -811,6 +813,20 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | 태그 목록 | `openTagList` + `JournalTagListModal.vue` |
 | 태그 프로필 | `openTagProfile` + `JournalTagProfileModal.vue` |
 | 파일 그룹 | `FileGroup` 계열 컴포넌트로 흡수한다. FTLH가 owner인 상태를 최종 상태로 보지 않는다. |
+
+### Prefix 기반축
+
+| 영역 | 구현 상태 | 계약 |
+|------|-----------|------|
+| Prefix 영속 모델 | ✓ | `prefix_scope.scope_type`은 `PERSONAL/GLOBAL`이며 개인은 `(user_id, content_type)`, 게시판은 `(GLOBAL, boardKey)`가 목록 경계의 SSOT다. `created_by`는 감사 정보로만 쓰며 삭제 대신 `active_yn=N`으로 비활성화한다. |
+| 콘텐츠 연결 모델 | ✓ | 개인 저널과 게시글은 `prefix_content(ref_id, ref_content_type, prefix_id)` attachable 연결로 콘텐츠당 활성 Prefix 0..1을 표현한다. 게시글의 `ref_content_type`은 동적 boardKey이며 Prefix 선택은 공통 연결 모델에서 관리한다. |
+| Prefix 관리 서비스 | ✓ | 개인·게시판이 참조하는 PrefixScope 공통 경계에서 비활성 포함 이름 중복 금지, `sort_order,id` 정렬, `#RRGGBB` 색상과 Scope 소속을 서버에서 검증한다. 개인 API는 `/api/my/prefixes`, 게시판 관리자 API는 `/api/board/groups/{id}/prefixes`다. |
+| 게시판 GLOBAL Scope | ✓ | 게시판 ID로 boardKey를 확정하고 첫 Prefix 등록 시 `GLOBAL + boardKey` Scope를 lazy 생성한다. 게시판별 목록은 독립적이며 다른 게시판에 변경을 전파하지 않는다. |
+| 개인 Prefix 관리 UI | ✓ | 내 설정 `/my/prefixes` 초기 화면의 작은 `저널` 도메인 헤더 아래 Scope 존재 여부와 무관한 `일기 챕터 / 노트 챕터 / 일기 / 꿈 / 노트 / 스레드` 고정 6행을 표시한다. 화면 카탈로그는 도메인 그룹별 대상 배열로 구성해 다른 도메인을 같은 형식으로 아래에 추가할 수 있고, 영속 Prefix 구조는 바꾸지 않는다. 행을 누르면 실제 `JOURNAL_CHAPTER_DIARY / JOURNAL_CHAPTER_NOTE / JOURNAL_DIARY / JOURNAL_DREAM / JOURNAL_NOTE / JOURNAL_THREAD`별 관리 모달을 열어 이름·색상·정렬·활성 상태를 관리하며 서버 응답을 store SSOT로 사용한다. 초기 화면은 목록과 말머리 미리보기를 조회하지 않고, 모달 종료 시 목록과 진행 중 조회를 비우며 늦은 이전 응답을 폐기한다. 관리 등록·수정·활성 변경 성공 시 해당 `contentType`의 공통 활성 선택지 캐시만 무효화하고, 다음 소비 화면 진입이 서버 확정 목록을 다시 조회한다. 챕터의 attachable 정체성은 `JOURNAL_CHAPTER`를 유지하되 일기 챕터와 노트 챕터는 서로 다른 개인 Scope를 사용한다. 시스템 요약(`summaryYn=Y`)과 DREAM 챕터는 Prefix를 갖지 않는다. 일기·꿈·노트 엔트리도 각각의 개인 Prefix 목록을 등록·수정·조회·표시에 사용한다. NOTE 엔트리는 공통 `journal_entry`의 실제 연결 타입 `JOURNAL_DIARY`를 유지하되 선택 Scope만 소속 NOTE 챕터에서 `JOURNAL_NOTE`로 확정한다. |
+| 게시판 Prefix 관리 UI | ✓ | `BoardPrefixManagementModal.vue`와 `stores/boardPrefixes.ts`가 게시판 관리 행 문맥에서 boardKey별 비활성 포함 Prefix를 관리한다. Scope ID·공유·연결 변경 UI는 노출하지 않는다. |
+| 스레드 소비 | ✓ | DTO·저장·목록·후보·상세·내보내기·Vue 편집/필터/표시는 단일 `prefix`/`prefixId` 계약을 사용한다. 쓰기 MapStruct는 읽기용 중첩 `prefix`를 무시하고 서버가 검증한 `prefixId`만 FK에 반영한다. 비활성 과거 Prefix는 표시를 유지하고 신규 선택은 거부한다. |
+| 게시판 소비 | ✓ | 게시글 DTO·저장·목록·상세·Vue 편집/필터/표시는 `GLOBAL + boardKey` Scope의 단일 `prefix`/`prefixId` 계약을 사용한다. 선택은 `prefix_content`에 저장하고 `PrefixEmbed`로 조립하며 검색도 같은 연결을 사용한다. 활성 선택지만 신규 선택하고 비활성 과거 Prefix는 표시·동일 선택 유지를 허용한다. |
+| 스레드 편집 UX | ✓ | 공용 편집 폼에서 Prefix를 빠르게 추가하고 서버 옵션 재조회 후 현재 선택에 반영한다. 전체 관리는 `/my/prefixes` 탭으로 연결한다. |
 
 ### static/vue/global 흡수 기준
 

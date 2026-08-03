@@ -62,7 +62,7 @@ class BoardRepositoryTest {
         final BoardEntity toModify = boardRepository.findByBoardKey(boardKey)
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setDescription("modified");
-        final BoardEntity modified = boardRepository.save(toModify);
+        final BoardEntity modified = boardRepository.saveAndFlush(toModify);
 
         assertNotNull(modified);
         assertNotNull(modified.getId());

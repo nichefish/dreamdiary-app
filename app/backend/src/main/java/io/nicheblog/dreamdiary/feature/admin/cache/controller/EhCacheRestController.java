@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.admin.cache.controller;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.model.CacheParam;
@@ -11,7 +10,7 @@ import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,7 +44,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.CACHE_ACTIVE_MAP_AJAX)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheActiveListAjax() {
 
@@ -65,7 +64,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.CACHE_ACTIVE_DTL_AJAX)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheActiveDtlAjax(
             final CacheParam cacheParam
@@ -87,7 +86,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.CACHE_EVICT_AJAX)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheEvictAjax(
             final CacheParam cacheParam
@@ -109,7 +108,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.CACHE_CLEAR_BY_NM_AJAX)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheClearByNmAjax(
             final CacheParam cacheParam
@@ -130,7 +129,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.CACHE_CLEAR_AJAX)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheClearAjax() {
 

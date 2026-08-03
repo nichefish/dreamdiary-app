@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS journal_chapter (
     journal_day_id INT COMMENT '저널 일자 번호',
     --
     title VARCHAR(200) COMMENT '제목',
-    category_code VARCHAR(50) COMMENT '글 분류 코드',
+    summary_yn CHAR(1) NOT NULL DEFAULT 'N' COMMENT '시스템 요약 챕터 여부 (Y/N)',
     sort_order INT DEFAULT 1 COMMENT '저널 챕터 인덱스',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- AUDIT
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS journal_thread(
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    category_code VARCHAR(50) COMMENT '글 분류 코드',
+    -- 말머리 선택은 journal_thread 컬럼이 아니라 prefix_content(ref_id, ref_content_type) 연결로 보유한다.
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT

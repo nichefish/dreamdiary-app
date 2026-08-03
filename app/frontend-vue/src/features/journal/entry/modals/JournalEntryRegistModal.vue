@@ -60,7 +60,7 @@
                 </label>
               </div>
 
-              <!--begin::DIARY: 챕터 선택 + 카테고리 + 제목-->
+              <!--begin::DIARY: 챕터 선택 + 개인 말머리 + 제목-->
               <template v-if="isDiary">
                 <div class="col-lg-2">
                   <select name="journalChapterId" class="form-select form-select-solid" v-model="model.journalChapterId">
@@ -69,29 +69,47 @@
                     </option>
                   </select>
                 </div>
-                <div class="col-lg-2">
-                  <select name="ctgrCd" class="form-select form-select-solid" v-model="model.ctgrCd">
-                    <option value="">{{ t('common.category.select') }}</option>
-                    <!--TODO: 일기 카테고리 옵션 서버 조회 미구현-->
+                <div v-if="showEntryPrefixField" class="col-lg-2">
+                  <select name="prefixId" class="form-select form-select-solid" v-model="model.prefixId">
+                    <option :value="null">{{ t('journal.entry.prefix.select') }}</option>
+                    <option v-if="prefixLoadFailed" disabled>{{ t('journal.aside.prefix-load-failure') }}</option>
+                    <option v-if="currentInactivePrefix" :value="currentInactivePrefix.id" disabled>
+                      [{{ currentInactivePrefix.name }}] ({{ t('status.unuse') }})
+                    </option>
+                    <option v-for="prefix in entryPrefixOptions" :key="prefix.id" :value="prefix.id">
+                      [{{ prefix.name }}]
+                    </option>
                   </select>
                 </div>
-                <div :class="isModify ? 'col-lg-7' : 'col-lg-8'">
+                <div :class="diaryTitleColumnClass">
                   <input type="text" name="title" class="form-control" v-model="model.title"
                     :placeholder="t('common.title')" maxlength="100" />
                 </div>
               </template>
               <!--end::DIARY-->
 
-              <!--begin::DREAM: 제목만-->
+              <!--begin::DREAM: 개인 말머리 + 제목-->
               <template v-else-if="isDream">
-                <div :class="isModify ? 'col-lg-11' : 'col-lg-12'">
+                <div v-if="showEntryPrefixField" class="col-lg-2">
+                  <select name="prefixId" class="form-select form-select-solid" v-model="model.prefixId">
+                    <option :value="null">{{ t('journal.entry.prefix.select') }}</option>
+                    <option v-if="prefixLoadFailed" disabled>{{ t('journal.aside.prefix-load-failure') }}</option>
+                    <option v-if="currentInactivePrefix" :value="currentInactivePrefix.id" disabled>
+                      [{{ currentInactivePrefix.name }}] ({{ t('status.unuse') }})
+                    </option>
+                    <option v-for="prefix in entryPrefixOptions" :key="prefix.id" :value="prefix.id">
+                      [{{ prefix.name }}]
+                    </option>
+                  </select>
+                </div>
+                <div :class="dreamTitleColumnClass">
                   <input type="text" name="title" class="form-control" v-model="model.title"
                     :placeholder="t('common.title')" maxlength="100" />
                 </div>
               </template>
               <!--end::DREAM-->
 
-              <!--begin::NOTE: 챕터 선택 + 제목-->
+              <!--begin::NOTE: 챕터 선택 + 개인 말머리 + 제목-->
               <template v-else-if="isNote">
                 <div class="col-lg-1">
                   <select name="journalChapterId" class="form-select form-select-solid" v-model="model.journalChapterId">
@@ -100,7 +118,19 @@
                     </option>
                   </select>
                 </div>
-                <div :class="isModify ? 'col-lg-10' : 'col-lg-11'">
+                <div v-if="showEntryPrefixField" class="col-lg-2">
+                  <select name="prefixId" class="form-select form-select-solid" v-model="model.prefixId">
+                    <option :value="null">{{ t('journal.entry.prefix.select') }}</option>
+                    <option v-if="prefixLoadFailed" disabled>{{ t('journal.aside.prefix-load-failure') }}</option>
+                    <option v-if="currentInactivePrefix" :value="currentInactivePrefix.id" disabled>
+                      [{{ currentInactivePrefix.name }}] ({{ t('status.unuse') }})
+                    </option>
+                    <option v-for="prefix in entryPrefixOptions" :key="prefix.id" :value="prefix.id">
+                      [{{ prefix.name }}]
+                    </option>
+                  </select>
+                </div>
+                <div :class="noteTitleColumnClass">
                   <input type="text" name="title" class="form-control" v-model="model.title"
                     :placeholder="t('common.title')" maxlength="100" />
                 </div>
@@ -206,6 +236,7 @@ import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journa
 import type { JournalChapterOption } from "@/features/journal/stores/journalModal";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { resolveJournalPrefixField } from "@/features/journal/utils/journalPrefixField";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
@@ -260,12 +291,53 @@ const showSortCol = computed(() => {
 /** 챕터 선택 목록 (DIARY: 비DREAM 챕터, NOTE: 같음) */
 const chapterList = computed<JournalChapterOption[]>(() => model.value?.chapterList ?? []);
 
+/** 소속 챕터 유형에 대응하는 개인 Prefix 선택지 */
+const entryPrefixOptions = computed(() =>
+  modalStore.entryPrefixOptionsFor(model.value?.prefixContentType),
+);
+
+/** 개인 Prefix 선택지 조회 실패 여부 */
+const prefixLoadFailed = computed(() =>
+  modalStore.entryPrefixLoadFailedFor(model.value?.prefixContentType),
+);
+
+/** 활성 목록과 비활성 과거 선택을 합산한 말머리 필드 표시 상태. */
+const prefixFieldPresentation = computed(() => resolveJournalPrefixField(
+  entryPrefixOptions.value,
+  model.value?.prefix,
+  prefixLoadFailed.value,
+));
+
+/** 수정 화면의 비활성 기존 말머리는 표시하고 같은 선택 유지 저장만 허용한다. */
+const currentInactivePrefix = computed(() => prefixFieldPresentation.value.inactivePrefix);
+
+/** 선택 가능한 말머리, 기존 비활성 선택 또는 조회 오류가 있는 엔트리에 말머리 영역을 표시한다. */
+const showEntryPrefixField = computed(() => prefixFieldPresentation.value.visible);
+
+/** 말머리 영역의 표시 여부에 맞춘 일기 제목 열 너비. */
+const diaryTitleColumnClass = computed(() => {
+  if (showEntryPrefixField.value) return isModify.value ? "col-lg-7" : "col-lg-8";
+  return isModify.value ? "col-lg-9" : "col-lg-10";
+});
+
+/** 말머리 영역의 표시 여부에 맞춘 꿈 제목 열 너비. */
+const dreamTitleColumnClass = computed(() => {
+  if (showEntryPrefixField.value) return isModify.value ? "col-lg-9" : "col-lg-10";
+  return isModify.value ? "col-lg-11" : "col-lg-12";
+});
+
+/** 말머리 영역의 표시 여부에 맞춘 노트 제목 열 너비. */
+const noteTitleColumnClass = computed(() => {
+  if (showEntryPrefixField.value) return isModify.value ? "col-lg-8" : "col-lg-9";
+  return isModify.value ? "col-lg-10" : "col-lg-11";
+});
+
 /** 챕터 선택 옵션 레이블 */
 function chapterLabel(ch: JournalChapterOption): string {
-  const prefix = ch.categoryName
-    ? `[${ch.categoryName}] `
-    : ch.categoryCode
-    ? `[${ch.categoryCode}] `
+  const prefix = ch.summaryYn === "Y"
+    ? `[${t("journal.chapter.summary")}] `
+    : ch.prefix?.name
+    ? `[${ch.prefix.name}] `
     : "";
   return `${prefix}${ch.sortOrder ?? ""} ${ch.title ?? ""}`.trim();
 }
@@ -408,7 +480,7 @@ async function submit() {
     formData.append("journalDayId", String(model.value.journalDayId ?? ""));
     formData.append("journalChapterId", String(model.value.journalChapterId ?? ""));
     formData.append("title", model.value.title ?? "");
-    formData.append("ctgrCd", model.value.ctgrCd ?? "");
+    formData.append("prefixId", model.value.prefixId == null ? "" : String(model.value.prefixId));
     formData.append("content", model.value.content ?? "");
     if (model.value.sortOrder != null) formData.append("sortOrder", String(model.value.sortOrder));
     if (isDiary.value) {
@@ -438,6 +510,7 @@ async function submit() {
       const savedEntryId = resolveSavedEntryId(res.data ?? {}, fallbackEntryId);
       const savedDate = resolveSavedDate(res.data ?? {}, fallbackDate);
       const savedContentType = model.value.contentType;
+      const savedChapterId = model.value.journalChapterId;
       close();
       const successPayload = { entryId: savedEntryId, stdrdDt: savedDate, isModify: wasModify };
       const prepareTasks: Promise<void>[] = [];
@@ -463,8 +536,26 @@ async function submit() {
         }
         emit("success", successPayload);
       } else {
-        const detailRefreshed = await refreshCurrentDayView(savedContentType);
-        scrollDayDetailIfRefreshed(savedEntryId, detailRefreshed);
+        const shouldExpandCreatedChapter = !wasModify
+          && savedChapterId !== undefined
+          && savedChapterId !== null
+          && String(savedChapterId) !== "";
+        if (shouldExpandCreatedChapter) {
+          modalStore.requestEntryCreatedChapterExpand(savedChapterId);
+          console.info("[JournalEntryRegistModal] 신규 엔트리 등록 챕터 펼침 요청", {
+            entryId: savedEntryId,
+            chapterId: savedChapterId,
+          });
+        }
+        try {
+          const detailRefreshed = await refreshCurrentDayView(savedContentType);
+          scrollDayDetailIfRefreshed(savedEntryId, detailRefreshed);
+          await nextTick();
+        } finally {
+          if (shouldExpandCreatedChapter) {
+            modalStore.clearEntryCreatedChapterExpand(savedChapterId);
+          }
+        }
       }
     } else {
       void swalAjaxResult({

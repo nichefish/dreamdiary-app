@@ -3,14 +3,13 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import { swalConfirm, swalAlert } from "@/shared/utils/swal";
+import { swalAlert } from "@/shared/utils/swal";
 
 export interface BoardGroupRow {
   rnum?: number;
   id: number;
   boardKey: string;
   boardName: string;
-  categoryGroupCode?: string;
   description?: string;
   sortOrder?: number;
   useYn: string;
@@ -21,7 +20,6 @@ export interface BoardGroupForm {
   id: number | null;
   boardKey: string;
   boardName: string;
-  categoryGroupCode: string;
   description: string;
   useYn: string;
 }
@@ -30,7 +28,6 @@ const EMPTY_FORM: BoardGroupForm = {
   id: null,
   boardKey: "",
   boardName: "",
-  categoryGroupCode: "",
   description: "",
   useYn: "Y",
 };
@@ -40,7 +37,6 @@ function toFormData(form: BoardGroupForm): FormData {
   if (form.id != null) fd.append("id", String(form.id));
   fd.append("boardKey", form.boardKey.trim());
   fd.append("boardName", form.boardName.trim());
-  fd.append("categoryGroupCode", form.categoryGroupCode.trim());
   fd.append("description", form.description.trim());
   fd.append("useYn", form.useYn === "Y" ? "Y" : "N");
   return fd;
@@ -52,7 +48,6 @@ function normalizeForm(row?: Partial<BoardGroupRow>): BoardGroupForm {
     id: row?.id ?? null,
     boardKey: row?.boardKey ?? "",
     boardName: row?.boardName ?? "",
-    categoryGroupCode: row?.categoryGroupCode ?? "",
     description: row?.description ?? "",
     useYn: String(row?.useYn ?? "Y").toUpperCase() === "Y" ? "Y" : "N",
   };

@@ -112,17 +112,25 @@ public interface JournalThreadEntryRepository
      */
     @Query("SELECT te.threadId AS threadId, " +
             "       thread.title AS title, " +
+            "       prefix.id AS prefixId, " +
+            "       prefix.name AS prefixName, " +
+            "       prefix.color AS prefixColor, " +
+            "       prefix.activeYn AS prefixActiveYn, " +
             "       COUNT(DISTINCT te.entryId) AS entryCount, " +
             "       MIN(day.journalDate) AS firstEntryDate " +
             "FROM JournalThreadEntryEntity te " +
             "JOIN te.journalThread thread " +
+            "LEFT JOIN PrefixContentEntity prefixContent " +
+            "  ON prefixContent.refId = te.threadId " +
+            " AND prefixContent.refContentType = 'JOURNAL_THREAD' " +
+            "LEFT JOIN prefixContent.prefix prefix " +
             "JOIN te.journalEntry entry " +
             "JOIN entry.journalChapter chapter " +
             "JOIN chapter.journalDay day " +
             "WHERE te.createdBy = :createdBy " +
             "  AND thread.createdBy = :createdBy " +
             "  AND day.weekStartDt = :weekStartDt " +
-            "GROUP BY te.threadId, thread.title")
+            "GROUP BY te.threadId, thread.title, prefix.id, prefix.name, prefix.color, prefix.activeYn")
     List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByWeekStartDt(
             final @Param("createdBy") String createdBy,
             final @Param("weekStartDt") LocalDate weekStartDt
@@ -139,10 +147,18 @@ public interface JournalThreadEntryRepository
      */
     @Query("SELECT te.threadId AS threadId, " +
             "       thread.title AS title, " +
+            "       prefix.id AS prefixId, " +
+            "       prefix.name AS prefixName, " +
+            "       prefix.color AS prefixColor, " +
+            "       prefix.activeYn AS prefixActiveYn, " +
             "       COUNT(DISTINCT te.entryId) AS entryCount, " +
             "       MIN(day.journalDate) AS firstEntryDate " +
             "FROM JournalThreadEntryEntity te " +
             "JOIN te.journalThread thread " +
+            "LEFT JOIN PrefixContentEntity prefixContent " +
+            "  ON prefixContent.refId = te.threadId " +
+            " AND prefixContent.refContentType = 'JOURNAL_THREAD' " +
+            "LEFT JOIN prefixContent.prefix prefix " +
             "JOIN te.journalEntry entry " +
             "JOIN entry.journalChapter chapter " +
             "JOIN chapter.journalDay day " +
@@ -150,7 +166,7 @@ public interface JournalThreadEntryRepository
             "  AND thread.createdBy = :createdBy " +
             "  AND day.yy = :yy " +
             "  AND day.mnth = :mnth " +
-            "GROUP BY te.threadId, thread.title")
+            "GROUP BY te.threadId, thread.title, prefix.id, prefix.name, prefix.color, prefix.activeYn")
     List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByMonth(
             final @Param("createdBy") String createdBy,
             final @Param("yy") Integer yy,
@@ -167,17 +183,25 @@ public interface JournalThreadEntryRepository
      */
     @Query("SELECT te.threadId AS threadId, " +
             "       thread.title AS title, " +
+            "       prefix.id AS prefixId, " +
+            "       prefix.name AS prefixName, " +
+            "       prefix.color AS prefixColor, " +
+            "       prefix.activeYn AS prefixActiveYn, " +
             "       COUNT(DISTINCT te.entryId) AS entryCount, " +
             "       MIN(day.journalDate) AS firstEntryDate " +
             "FROM JournalThreadEntryEntity te " +
             "JOIN te.journalThread thread " +
+            "LEFT JOIN PrefixContentEntity prefixContent " +
+            "  ON prefixContent.refId = te.threadId " +
+            " AND prefixContent.refContentType = 'JOURNAL_THREAD' " +
+            "LEFT JOIN prefixContent.prefix prefix " +
             "JOIN te.journalEntry entry " +
             "JOIN entry.journalChapter chapter " +
             "JOIN chapter.journalDay day " +
             "WHERE te.createdBy = :createdBy " +
             "  AND thread.createdBy = :createdBy " +
             "  AND day.yy = :yy " +
-            "GROUP BY te.threadId, thread.title")
+            "GROUP BY te.threadId, thread.title, prefix.id, prefix.name, prefix.color, prefix.activeYn")
     List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByYear(
             final @Param("createdBy") String createdBy,
             final @Param("yy") Integer yy

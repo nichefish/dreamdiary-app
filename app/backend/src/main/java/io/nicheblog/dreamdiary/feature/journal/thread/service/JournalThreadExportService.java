@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * JournalThreadExportService
@@ -34,7 +35,7 @@ public class JournalThreadExportService {
      * 소속 엔트리는 {@link io.nicheblog.dreamdiary.feature.journal.thread.service.JournalThreadEntryService#getEntriesByThread}
      * 가 일자 오름차순으로 내려준 순서를 그대로 사용한다. 태그·요일이 채워지지 않은 경량 엔트리도 안전하게 처리한다.
      *
-     * @param thread 스레드 DTO (제목·분류)
+     * @param thread 스레드 DTO (제목·말머리)
      * @param entries 소속 엔트리 목록 (일자 오름차순)
      * @return 텍스트 포맷 문자열
      */
@@ -44,8 +45,9 @@ public class JournalThreadExportService {
 
         final String title = (thread == null || StringUtils.isEmpty(thread.getTitle())) ? "" : thread.getTitle();
         sb.append("thread: ").append(title).append("\r\n");
-        if (thread != null && !StringUtils.isEmpty(thread.getCategoryName())) {
-            sb.append("category: ").append(thread.getCategoryName()).append("\r\n");
+        final String prefixName = prefixName(thread);
+        if (!StringUtils.isEmpty(prefixName)) {
+            sb.append("prefix: ").append(prefixName).append("\r\n");
         }
         sb.append("total: ")
           .append(CollectionUtils.isEmpty(entries) ? 0 : entries.size())
@@ -83,5 +85,11 @@ public class JournalThreadExportService {
             sb.append("\r\n\n");
         }
         return sb.toString();
+    }
+
+    /** 선택된 단일 말머리 이름을 내보내기 표시 문자열로 만든다. */
+    private String prefixName(final JournalThreadDto thread) {
+        if (thread == null || thread.getPrefix() == null) return "";
+        return thread.getPrefix().getName() == null ? "" : thread.getPrefix().getName();
     }
 }

@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
+import io.nicheblog.dreamdiary.feature.user.my.model.UserMyUpdateRequest;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -18,12 +19,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Nullable;
+import javax.validation.Valid;
 
 /**
  * UserMyRestController
@@ -56,6 +60,28 @@ public class UserMyRestController
         final UserDto retrievedDto = userService.getDtlDto(loginUsername);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(retrievedDto));
+    }
+
+    /**
+     * 로그인 사용자의 개인 연락처·프로필 수정.
+     * 계정 식별자·이메일·권한·허용 IP·재직 정보는 요청 계약에서 제외한다.
+     *
+     * @param request 수정할 개인 프로필 정보
+     * @return 처리 결과
+     */
+    @PutMapping(Url.USER_MY_INFO)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> modifyMyInfo(
+            final @Valid @RequestBody UserMyUpdateRequest request
+    ) throws Exception {
+
+        final boolean isSuccess = userMyService.modifyMyInfo(request);
+        final String rsltMsg = MessageUtils.getMessage(
+                isSuccess ? "common.result.success" : "common.result.failure"
+        );
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**

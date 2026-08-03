@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.thread.model;
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
@@ -13,8 +14,6 @@ import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import javax.validation.constraints.Size;
 
 /**
  * JournalThreadDto
@@ -29,7 +28,8 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 public class JournalThreadDto
         extends BaseAttachableDto
-        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, LifecycleCmpstnModule {
+        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule,
+        LifecycleCmpstnModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_THREAD;
@@ -43,11 +43,11 @@ public class JournalThreadDto
 
     private String markdownContent;
 
-    @Size(max = 50)
-    private String categoryCode;
+    /** 콘텐츠당 없거나 하나만 선택하는 말머리. */
+    private PrefixDto prefix;
 
-    @Size(max = 50)
-    private String categoryName;
+    /** 등록·수정 payload에서 선택한 말머리 ID. */
+    private Integer prefixId;
 
     /**
      * 활성 소속 엔트리 수.

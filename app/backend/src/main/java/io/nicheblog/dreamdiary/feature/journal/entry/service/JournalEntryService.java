@@ -11,6 +11,9 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAtt
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableProcPostProcessor;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.service.PrefixContentService;
 import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
@@ -77,6 +80,7 @@ public class JournalEntryService
     private final JournalEntryEntityQueueService journalEntryEntityQueueService;
     private final JournalEntryEntityRefSyncService journalEntryEntityRefSyncService;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
+    private final PrefixContentService prefixContentService;
 
     /**
      * ref(id + contentType) 기반으로 엔트리를 안전 조회한다.
@@ -208,6 +212,22 @@ public class JournalEntryService
     public ServiceResponse regist(final ContentType contentType, final JournalEntryPostDto dto, final MultipartHttpServletRequest request) throws Exception {
         dto.setContentType(policyResolver.resolve(contentType).contentType.key);
         return BaseMultipartWritableService.super.regist(dto, request);
+    }
+
+    /**
+     * 엔트리 본문과 개인 Prefix 선택을 같은 트랜잭션에서 등록한다.
+     * Prefix 목록 Scope는 영속 contentType이 아니라 소속 챕터 타입으로 결정한다.
+     *
+     * @param registDto 등록 DTO
+     * @return 등록 결과
+     */
+    @Override
+    @Transactional
+    public ServiceResponse regist(final JournalEntryPostDto registDto) throws Exception {
+        final ServiceResponse response = BaseAttachableService.super.regist(registDto);
+        final JournalEntryDto updatedDto = (JournalEntryDto) response.getRsltObj();
+        applyPrefixSelection(updatedDto, registDto.getPrefixId());
+        return response;
     }
 
     /**
@@ -471,6 +491,11 @@ public class JournalEntryService
     public void postDelete(final JournalEntryDto deletedDto) throws Exception {
         final JournalEntryTypePolicy policy = policyResolver.resolve(deletedDto);
         journalEntryOrderService.normalizeSortOrder(deletedDto.getJournalChapterId(), policy.contentType, DTL_CACHE_NAME);
+        prefixContentService.applySelection(
+                new BaseAttachableKey(deletedDto.getKey(), policy.contentType.key),
+                policy.contentType.key,
+                null
+        );
         relatedContentService.deleteAllByRef(new BaseAttachableKey(deletedDto.getKey(), policy.contentType), deletedDto.getCreatedBy());
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), policy.contentType);
         journalEntryEntityRefSyncService.removeByJournalEntryId(deletedDto.getKey());
@@ -509,6 +534,7 @@ public class JournalEntryService
         final Integer fromHistoryId = postDto.getFromHistoryId();
         BaseAttachableHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
 
+        applyPrefixSelection(updatedDto, postDto.getPrefixId());
         this.postModify(postDto, updatedDto);
 
         final ServiceResponse response = new ServiceResponse();
@@ -690,6 +716,70 @@ public class JournalEntryService
      */
     private boolean isChapterChanged(final JournalEntryPostDto modifyDto, final JournalEntryEntity modifyEntity) {
         return !Objects.equals(modifyDto.getJournalChapterId(), modifyEntity.getJournalChapter().getId());
+    }
+
+    /**
+     * 선택한 Prefix의 소유권·활성 상태를 검증하고 prefix_content 연결을 반영한다.
+     * NOTE 엔트리는 journal_entry.content_type이 JOURNAL_DIARY여도 JOURNAL_NOTE 개인 목록을 사용한다.
+     *
+     * @param dto 저장된 엔트리 DTO
+     * @param requestedPrefixId 요청한 Prefix ID
+     */
+    private void applyPrefixSelection(final JournalEntryDto dto, final Integer requestedPrefixId) {
+        final JournalEntryEntity entity = repository.findByIdAndContentType(dto.getId(), dto.getContentType())
+                .orElseThrow(() -> new EntityNotFoundException("Journal entry not found."));
+        if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
+            log.warn("[JournalEntry.prefix] 엔트리 소유권 검증 실패. entryId={}, contentType={}, createdBy={}, loginUsername={}",
+                    entity.getId(), entity.getContentType(), entity.getCreatedBy(), AuthUtils.getLoginUsername());
+            throw new NotAuthorizedException("common.result.access-not-authorized");
+        }
+        final JournalChapterEntity chapter = journalChapterRepository.findById(entity.getJournalChapterId())
+                .orElseThrow(() -> new BusinessException("journal.chapter.not-found"));
+        final ContentType prefixScopeContentType = resolvePrefixScopeContentType(chapter.getChapterType());
+        final PrefixEntity prefix = prefixContentService.applySelection(
+                new BaseAttachableKey(entity.getId(), entity.getContentType()),
+                prefixScopeContentType.key,
+                requestedPrefixId
+        );
+        dto.setPrefix(toPrefixDto(prefix));
+        dto.setPrefixId(requestedPrefixId);
+        dto.setPrefixContentType(prefixScopeContentType.key);
+        log.debug("[JournalEntry.prefix] 선택 반영. entryId={}, refContentType={}, prefixScopeContentType={}, prefixId={}",
+                entity.getId(), entity.getContentType(), prefixScopeContentType.key, requestedPrefixId);
+    }
+
+    /**
+     * 챕터 유형을 개인 Prefix 목록의 content_type으로 변환한다.
+     *
+     * @param chapterType 소속 챕터 유형
+     * @return Prefix Scope content_type
+     */
+    static ContentType resolvePrefixScopeContentType(final ChapterType chapterType) {
+        if (chapterType == null) {
+            throw new BusinessException("journal.entry.invalid-chapter-type");
+        }
+        return switch (chapterType) {
+            case DIARY -> ContentType.JOURNAL_DIARY;
+            case NOTE -> ContentType.JOURNAL_NOTE;
+            case DREAM -> ContentType.JOURNAL_DREAM;
+        };
+    }
+
+    /**
+     * 선택 결과 엔티티를 응답 DTO로 변환한다.
+     *
+     * @param prefix 선택된 Prefix
+     * @return 표시용 Prefix DTO
+     */
+    private PrefixDto toPrefixDto(final PrefixEntity prefix) {
+        if (prefix == null) return null;
+        return PrefixDto.builder()
+                .id(prefix.getId())
+                .name(prefix.getName())
+                .color(prefix.getColor())
+                .sortOrder(prefix.getSortOrder())
+                .activeYn(prefix.getActiveYn())
+                .build();
     }
 
     /**

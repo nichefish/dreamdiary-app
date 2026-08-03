@@ -25,6 +25,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,7 @@ import java.util.List;
  * @author nichefish
  */
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 @Log4j2
 public class DreamdiaryInitializer

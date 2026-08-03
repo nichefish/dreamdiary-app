@@ -1,9 +1,71 @@
--- 분류 기능 관련 테이블 생성 쿼리 정보를 입력한다.
+-- 말머리 기능 관련 테이블 생성 쿼리 정보를 입력한다.
 -- JPA CASCADE INSERT에서는 먼저 INSERT 후 나중에 FK 값을 업데이트하므로,
 -- 연관관계 컬럼이 NOT NULL이면 에러가 발생할 수 있다.
 -- 따라서 JPA가 관리하는 연관관계 FK 컬럼은 NULL 허용을 권장한다.
 -- @database : mariadb
 -- @author : nichefish
+
+-- ---------- --
+
+-- Prefix Scope
+-- 평면 말머리 목록의 소유·선택 경계.
+-- PERSONAL=(user_id, content_type), GLOBAL=(content_type)으로 정규화한다.
+CREATE TABLE IF NOT EXISTS prefix_scope (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Prefix Scope ID',
+    scope_type VARCHAR(20) NOT NULL COMMENT 'Scope 소유 유형(PERSONAL/GLOBAL)',
+    user_id INT NULL COMMENT 'PERSONAL 목록 소유자(user.id), GLOBAL은 NULL',
+    content_type VARCHAR(50) NOT NULL COMMENT '목록 적용 대상 논리 콘텐츠 타입 또는 boardKey',
+    owner_key INT AS (IFNULL(user_id, 0)) PERSISTENT COMMENT 'Scope 유일키용 정규화 소유자 키',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정 일시',
+    deleted_at DATETIME COMMENT '삭제 일시',
+    CONSTRAINT ck_prefix_scope_owner CHECK (
+        (scope_type = 'PERSONAL' AND user_id IS NOT NULL)
+        OR (scope_type = 'GLOBAL' AND user_id IS NULL)
+    ),
+    CONSTRAINT fk_prefix_scope_user FOREIGN KEY (user_id) REFERENCES user(id),
+    UNIQUE KEY uq_prefix_scope_type_owner_content (scope_type, owner_key, content_type)
+) COMMENT = '말머리 목록 소유·선택 경계';
+
+-- Prefix
+-- 하나의 Prefix Scope에 속하는 평면 말머리.
+CREATE TABLE IF NOT EXISTS prefix (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Prefix ID',
+    scope_id INT NOT NULL COMMENT 'Prefix Scope ID',
+    name VARCHAR(100) NOT NULL COMMENT '말머리명',
+    color CHAR(7) COMMENT '표시 색상(#RRGGBB)',
+    sort_order INT NOT NULL DEFAULT 0 COMMENT '정렬 순서',
+    active_yn CHAR(1) NOT NULL DEFAULT 'Y' COMMENT '사용 여부',
+    created_by VARCHAR(20) NOT NULL COMMENT '소유자 ID',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정 일시',
+    deleted_at DATETIME COMMENT '삭제 일시',
+    CONSTRAINT ck_prefix_active_yn CHECK (active_yn IN ('Y', 'N')),
+    CONSTRAINT ck_prefix_color CHECK (color IS NULL OR color REGEXP '^#[0-9A-Fa-f]{6}$'),
+    CONSTRAINT fk_prefix_scope FOREIGN KEY (scope_id) REFERENCES prefix_scope(id),
+    UNIQUE KEY uk_prefix_scope_name (scope_id, name),
+    INDEX idx_prefix_scope_sort (scope_id, sort_order, id)
+) COMMENT = 'Scope 소속 말머리';
+
+-- Prefix Content
+-- 콘텐츠가 선택한 말머리 연결. (ref_id, ref_content_type)=BaseAttachableKey로 콘텐츠를 가리키고
+-- prefix_id로 선택 말머리를 기록한다. 콘텐츠당 0..1(단일 active는 앱 로직 보장). meta_content와 동일 구조.
+CREATE TABLE IF NOT EXISTS prefix_content (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '말머리-컨텐츠 ID',
+    prefix_id INT COMMENT '선택된 말머리 ID',
+    ref_id INT COMMENT '참조 글 번호',
+    ref_content_type VARCHAR(50) COMMENT '참조 컨텐츠 타입',
+    -- AUDIT
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    -- CONSTRAINT
+    CONSTRAINT fk_prefix_content_prefix FOREIGN KEY (prefix_id) REFERENCES prefix(id),
+    INDEX idx_prefix_content_ref (ref_id, ref_content_type)
+) COMMENT = '말머리-컨텐츠';
 
 -- ---------- --
 
@@ -182,6 +244,7 @@ CREATE TABLE IF NOT EXISTS lifecycle (
     --
     lifecycle_key VARCHAR(32) NOT NULL COMMENT 'lifecycle key',
     deleted_at DATETIME COMMENT 'deleted at',
+    CONSTRAINT ck_lifecycle_persisted_key CHECK (lifecycle_key IN ('PENDING', 'RESOLVED')),
     UNIQUE KEY uk_lifecycle (ref_content_type, ref_id),
     INDEX idx_lifecycle_key (lifecycle_key),
     INDEX idx_lifecycle_ref (ref_id, ref_content_type)

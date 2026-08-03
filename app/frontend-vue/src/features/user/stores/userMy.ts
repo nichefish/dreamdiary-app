@@ -58,6 +58,15 @@ export interface PasswordChangePayload {
   newPw: string;
 }
 
+/** 로그인 사용자가 직접 수정할 수 있는 개인 프로필 필드. */
+export interface UserMyUpdatePayload {
+  nickname: string;
+  phoneNumber: string | null;
+  brthdy: string | null;
+  lunarYn: "Y" | "N";
+  proflCn: string | null;
+}
+
 const EMPTY_USER: UserMyUser = {
   username: "",
   userRoles: [],
@@ -70,6 +79,7 @@ export const useUserMyStore = defineStore("userMy", () => {
   const { t } = useLocaleStore();
   const user = ref<UserMyUser>({ ...EMPTY_USER });
   const loading = ref(false);
+  const saving = ref(false);
 
   const hasAllowedIp = computed(() => {
     return user.value.isAllowedIpY === true || user.value.useAllowedIp === true || user.value.useAllowedIpYn === "Y";
@@ -85,6 +95,23 @@ export const useUserMyStore = defineStore("userMy", () => {
       };
     } finally {
       loading.value = false;
+    }
+  }
+
+  /**
+   * 로그인 사용자의 개인 프로필 허용 필드만 저장하고 서버 확정 상태를 다시 조회한다.
+   * 이메일·계정·권한·허용 IP·재직 정보는 payload 타입과 API 계약에서 제외한다.
+   */
+  async function updateMyInfo(payload: UserMyUpdatePayload) {
+    saving.value = true;
+    try {
+      const res = await axios.put("/api/user/my", payload);
+      if (!res.data?.rslt) {
+        throw new Error(res.data?.message ?? t("user.my.profile.update.failure"));
+      }
+      await fetchMyInfo();
+    } finally {
+      saving.value = false;
     }
   }
 
@@ -114,8 +141,10 @@ export const useUserMyStore = defineStore("userMy", () => {
   return {
     user,
     loading,
+    saving,
     hasAllowedIp,
     fetchMyInfo,
+    updateMyInfo,
     uploadProfileImage,
     removeProfileImage,
     changePassword,

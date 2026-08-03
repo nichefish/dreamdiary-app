@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS user (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 고유 ID',
     -- ACCOUNT_BASIC_INFO
     username VARCHAR(20) COMMENT '로그인 ID',
+    -- 개인 말머리 목록 소유는 user가 아니라 prefix_scope(PERSONAL, user_id, content_type)가 보유한다.
     password VARCHAR(64) COMMENT '비밀번호',
     nickname VARCHAR(50) COMMENT '사용자 표시이름',
     profile_image_url VARCHAR(1000) COMMENT '프로필 이미지 경로',
@@ -182,3 +183,77 @@ CREATE TABLE IF NOT EXISTS user_emplym (
     -- CONSTRAINT
     FOREIGN KEY(user_id) REFERENCES user (id)
 ) COMMENT = '사용자 인사정보';
+
+-- -----------------------
+
+-- 권한(permission) 카탈로그 — 원자 권한 문자열. 시스템 롤/사용자 그룹에 부여한다.
+CREATE TABLE IF NOT EXISTS permission (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '권한 ID',
+    perm_key VARCHAR(100) NOT NULL COMMENT '권한 키 (예: menu.view.user)',
+    perm_name VARCHAR(100) COMMENT '권한 표시명',
+    description VARCHAR(500) COMMENT '권한 설명',
+    sort_order INT DEFAULT 0 COMMENT '정렬 순서',
+    use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    UNIQUE KEY uk_permission_perm_key (perm_key)
+) COMMENT = '권한 카탈로그';
+
+-- 시스템 롤 ↔ 권한
+CREATE TABLE IF NOT EXISTS role_permission (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '롤-권한 ID',
+    role_id INT COMMENT '롤 ID',
+    permission_id INT COMMENT '권한 ID',
+    deleted_at DATETIME COMMENT '삭제일시',
+    FOREIGN KEY (role_id) REFERENCES `role` (id),
+    FOREIGN KEY (permission_id) REFERENCES permission (id),
+    UNIQUE KEY uk_role_permission (role_id, permission_id),
+    INDEX (role_id),
+    INDEX (permission_id)
+) COMMENT = '롤-권한 부여';
+
+-- 사용자 그룹
+CREATE TABLE IF NOT EXISTS user_group (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 그룹 ID',
+    group_key VARCHAR(50) NOT NULL COMMENT '그룹 키',
+    group_name VARCHAR(100) COMMENT '그룹 표시명',
+    description VARCHAR(500) COMMENT '그룹 설명',
+    sort_order INT DEFAULT 0 COMMENT '정렬 순서',
+    use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    UNIQUE KEY uk_user_group_group_key (group_key)
+) COMMENT = '사용자 그룹';
+
+-- 사용자 ↔ 그룹 멤버십
+CREATE TABLE IF NOT EXISTS user_group_member (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '그룹 멤버 ID',
+    user_id INT COMMENT '사용자 ID',
+    group_id INT COMMENT '그룹 ID',
+    is_primary_yn CHAR(1) DEFAULT 'N' COMMENT '주 그룹 여부 (Y/N)',
+    deleted_at DATETIME COMMENT '삭제일시',
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (group_id) REFERENCES user_group (id),
+    UNIQUE KEY uk_user_group_member (user_id, group_id),
+    INDEX (user_id),
+    INDEX (group_id)
+) COMMENT = '사용자 그룹 멤버십';
+
+-- 사용자 그룹 ↔ 권한
+CREATE TABLE IF NOT EXISTS group_permission (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '그룹-권한 ID',
+    group_id INT COMMENT '그룹 ID',
+    permission_id INT COMMENT '권한 ID',
+    deleted_at DATETIME COMMENT '삭제일시',
+    FOREIGN KEY (group_id) REFERENCES user_group (id),
+    FOREIGN KEY (permission_id) REFERENCES permission (id),
+    UNIQUE KEY uk_group_permission (group_id, permission_id),
+    INDEX (group_id),
+    INDEX (permission_id)
+) COMMENT = '그룹-권한 부여';

@@ -33,7 +33,7 @@ public class JournalDayBootstrapService {
     private final ObjectProvider<JournalChapterService> journalChapterServiceProvider;
 
     /**
-     * 저널 일자에 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다.
+     * 저널 일자에 시스템 요약 챕터({@code summaryYn=Y})와 빈 DIARY 엔트리 구조를 보장한다.
      * 기존 DIARY 챕터가 이미 있으면 아무 작업도 하지 않는다.
      *
      * @param journalDayId 저널 일자 ID
@@ -58,7 +58,7 @@ public class JournalDayBootstrapService {
             return;
         }
 
-        log.info("Journal day bootstrap creating default SUMMARY DIARY. journalDayId={}, createdBy={}",
+        log.info("Journal day bootstrap creating system summary DIARY. journalDayId={}, createdBy={}",
                 journalDayId, day.getCreatedBy());
         final JournalChapterDto chapterDto = new JournalChapterDto();
         chapterDto.setJournalDayId(journalDayId);

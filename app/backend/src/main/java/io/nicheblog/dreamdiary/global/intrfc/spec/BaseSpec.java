@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,18 +43,19 @@ public interface BaseSpec<Entity> {
      * @return {@link Specification} -- 검색 조건에 맞는 Specification 객체
      */
     default Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
+        final Map<String, Object> effectiveSearchParamMap = new HashMap<>(searchParamMap);
         // exclude filter
-        searchParamMap.remove("backToList");
-        searchParamMap.remove("actvtyCtgr");
+        effectiveSearchParamMap.remove("backToList");
+        effectiveSearchParamMap.remove("actvtyCtgr");
 
         return (root, query, builder) -> {
             List<Predicate> predicate = new ArrayList<>();
             try {
-                predicate = getPredicateWithParams(searchParamMap, root, query, builder);
+                predicate = getPredicateWithParams(effectiveSearchParamMap, root, query, builder);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
-            this.postQuery(root, query, builder, searchParamMap);
+            this.postQuery(root, query, builder, effectiveSearchParamMap);
             return builder.and(predicate.toArray(new Predicate[0]));
         };
     }

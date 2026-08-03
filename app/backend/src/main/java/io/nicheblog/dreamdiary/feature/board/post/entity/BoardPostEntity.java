@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.feature.board.post.entity;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.viewer.entity.embed.ViewerEmbed;
@@ -40,7 +42,7 @@ import javax.persistence.Table;
 @SQLDelete(sql = "UPDATE board_post SET deleted_at = NOW() WHERE id = ?")
 public class BoardPostEntity
         extends BaseAttachableEntity
-        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, ViewerEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, ViewerEmbedModule, PrefixEmbedModule {
 
     /** 글 번호 */
     @Id
@@ -73,10 +75,14 @@ public class BoardPostEntity
     @Comment("content")
     private String content;
 
-    /** 글 분류 코드 */
-    @Column(name = "category_code", length = 50)
-    @Comment("category code")
-    private String categoryCode;
+    /**
+     * 제목 앞에 표시할 게시판 GLOBAL Scope 소속 말머리(0..1).
+     * 변경 전에는 {@code board_post.prefix_id} 직접 FK를 보유했다. 변경 후에는
+     * {@code (ref_id, ref_content_type=boardKey)}로 조인되는 prefix_content 연결을
+     * PrefixEmbed로 조립하며 저장 시 GLOBAL Scope 일치 여부를 검증한다.
+     */
+    @Embedded
+    public PrefixEmbed prefix;
 
     /* ----- */
 

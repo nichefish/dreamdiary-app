@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEm
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbedModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -31,7 +33,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE journal_thread SET deleted_at = NOW() WHERE id = ?")
 public class JournalThreadEntity
         extends BaseAttachableEntity
-        implements FileEmbedModule, CommentEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, PrefixEmbedModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_THREAD;
@@ -47,18 +49,19 @@ public class JournalThreadEntity
     @Comment("콘텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
-    @Column(name = "category_code", length = 50)
-    @Comment("저널 스레드 글분류 코드 정보")
-    private String categoryCode;
-
-    @Transient
-    private String categoryName;
-
     @Column(name = "title")
     private String title;
 
     @Column(name = "content")
     private String content;
+
+    /**
+     * 제목 앞에 표시할 사용자 소유 말머리(0..1).
+     * 콘텐츠는 prefix FK를 직접 들지 않고, (ref_id, ref_content_type)로 조인되는 prefix_content
+     * 연결을 PrefixEmbed로 조립한다. (변경 전: journal_thread.prefix_id ad-hoc FK를 직접 보유했다.)
+     */
+    @Embedded
+    public PrefixEmbed prefix;
 
     @Embedded
     public FileEmbed file;

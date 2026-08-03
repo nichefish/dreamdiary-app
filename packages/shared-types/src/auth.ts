@@ -11,6 +11,7 @@ export type AuthUser = {
   roles: AuthRole[];
   isMngr: boolean;
   isDev: boolean;
+  permissions?: string[];
 };
 
 export type LoginCredentials = {

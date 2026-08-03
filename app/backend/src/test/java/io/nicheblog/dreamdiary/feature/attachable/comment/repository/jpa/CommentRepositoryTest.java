@@ -93,7 +93,7 @@ class CommentRepositoryTest {
         // When::
         CommentEntity toModify = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setContent("modified.");
-        CommentEntity modified = commentRepository.save(toModify);
+        CommentEntity modified = commentRepository.saveAndFlush(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");

@@ -1,31 +1,34 @@
 package io.nicheblog.dreamdiary.feature.attachable.comment.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.CommentSearchParam;
 import io.nicheblog.dreamdiary.feature.attachable.comment.service.CommentService;
 import io.nicheblog.dreamdiary.global.Url;
-import org.apache.http.entity.ContentType;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,8 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author nichefish
  */
-@WebMvcTest(CommentRestController.class)
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 public class CommentApiControllerTest {
 
     private MockMvc mockMvc;
@@ -54,104 +56,107 @@ public class CommentApiControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(commentApiController).build();
     }
 
-    /**
-     * TEST:: boardCommentListAjax
-     * 목록 조회
-     * TODO: 케이스별로 쪼개야 하나??? 얼마나??
-     */
     @Test
-    public void test_boardCommentListAjax() throws Exception {
-        /* 준비arrange = 테스트에 필요한 조건 및 데이터 준비 */
-        // 헬퍼 메소드 호출 (mock객체 또는 구체적인 인스턴스)
-        Boolean onlyMock = false;
-        Page<CommentDto> mockPage = createMockPage(onlyMock);
+    void commentListReturnsPagedContent() throws Exception {
+        final Page<CommentDto> mockPage = createMockPage(false);
+        when(commentService.getPageDto(any(CommentSearchParam.class), any(Pageable.class)))
+                .thenReturn(mockPage);
 
-        /* 실행조건when: 모킹 프레임워크 사용시 처리하는 단계. (준비arrange의 일부) */
-        // "you can mock the service's response here."
-        when(commentService.getPageDto(new CommentSearchParam(), Pageable.unpaged()))
-            .thenReturn(mockPage);
-        
-        /* 실행act & 검증assert */
-        // 이 부분에서는 실제로 컨트롤러의 특정 경로에 대한 요청을 보내고 (Act), 그 결과를 검증합니다 (Assert). */
-        mockMvc.perform(get(Url.COMMENTS))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$.rslt").value(true))
-               .andExpect(jsonPath("$.rsltList").value(mockPage));
-    }
+        try (final MockedStatic<MessageUtils> messages = mockStatic(MessageUtils.class)) {
+            messages.when(() -> MessageUtils.getMessage("common.result.success")).thenReturn("success");
 
-    @Test
-    public void testCommentListAjax_WithInvalidParameters() throws Exception {
-        mockMvc.perform(get(Url.COMMENTS)
-                           .param("invalidParam", "invalidValue"))
-                .andExpect(status().isBadRequest());
-
-        // 잘못된 페이지 번호 (예: 음수)와 페이지 크기를 파라미터로 전달
-        mockMvc.perform(get(Url.COMMENTS)
-                        .param("page", "-1")
-                        .param("size", "10"))
-                .andExpect(status().isBadRequest()); // 잘못된 요청에 대한 HTTP 상태 400 (Bad Request)을 기대
-
-        // 잘못된 페이지 크기 (예: 너무 크거나 작은 값)를 파라미터로 전달
-        mockMvc.perform(get(Url.COMMENTS)
-                        .param("page", "0")
-                        .param("size", "1000")) // 페이지 크기가 너무 큼
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void testCommentRegAjax() throws Exception {
-        // Arrange
-        CommentDto boardCommentDto = new CommentDto();
-        // Initialize the Dto as needed
-        // when(boardCommentService.regist(...)).thenReturn(...);
-
-        // Act & Assert
-        mockMvc.perform(post(Url.COMMENTS) // Replace with actual URL
-                            .contentType(ContentType.APPLICATION_JSON.toString())
-                            .content(asJsonString(boardCommentDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.someField").value("expectedValue")); // Replace with actual JSON path and value
-    }
-
-    @Test
-    public void testCommentMdfAjax() throws Exception {
-        // Arrange
-        CommentDto boardCommentDto = new CommentDto();
-        // Initialize the Dto as needed
-        // when(boardCommentService.regist(...)).thenReturn(...);
-
-        // Act & Assert
-        mockMvc.perform(post(Url.COMMENT) // Replace with actual URL
-                            .contentType(ContentType.APPLICATION_JSON.toString())
-                            .content(asJsonString(boardCommentDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.someField").value("expectedValue")); // Replace with actual JSON path and value
-    }
-
-    @Test
-    public void testCommentDelAjax() throws Exception {
-        // Arrange
-        String commentNo = "1";
-        /* when: you can mock the service's response here */
-        // when(boardCommentService.delete(...)).thenReturn(true);
-
-        // Act & Assert
-        mockMvc.perform(post(Url.COMMENT) // Replace with actual URL
-                .param("commentNo", commentNo))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.someField").value("expectedValue")); // Replace with actual JSON path and value
-    }
-
-    // Helper method to convert object to JSON string
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+            mockMvc.perform(get(Url.COMMENTS))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.rslt").value(true))
+                    .andExpect(jsonPath("$.rsltList.length()").value(2))
+                    .andExpect(jsonPath("$.rsltList[0].id").value(101));
         }
+
+        verify(commentService).getPageDto(any(CommentSearchParam.class), any(Pageable.class));
     }
 
-    // Helper method to create Page<CommentDto>
+    @Test
+    void commentRegistrationAcceptsMultipartForm() throws Exception {
+        final CommentDto savedComment = CommentDto.builder().id(101).content("댓글 내용").build();
+        when(commentService.regist(any(CommentDto.class), any(MultipartHttpServletRequest.class)))
+                .thenReturn(ServiceResponse.builder().rslt(true).rsltObj(savedComment).build());
+
+        try (final MockedStatic<MessageUtils> messages = mockStatic(MessageUtils.class)) {
+            messages.when(() -> MessageUtils.getMessage("common.result.success")).thenReturn("success");
+
+            mockMvc.perform(multipart(Url.COMMENTS)
+                            .param("content", "댓글 내용")
+                            .param("refId", "1001")
+                            .param("refContentType", "BC001"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.rslt").value(true))
+                    .andExpect(jsonPath("$.rsltObj.id").value(101));
+        }
+
+        verify(commentService).regist(any(CommentDto.class), any(MultipartHttpServletRequest.class));
+    }
+
+    @Test
+    void commentModificationAcceptsMultipartForm() throws Exception {
+        final CommentDto savedComment = CommentDto.builder().id(101).content("수정된 댓글").build();
+        when(commentService.modify(any(CommentDto.class), any(MultipartHttpServletRequest.class)))
+                .thenReturn(ServiceResponse.builder().rslt(true).rsltObj(savedComment).build());
+
+        try (final MockedStatic<MessageUtils> messages = mockStatic(MessageUtils.class)) {
+            messages.when(() -> MessageUtils.getMessage("common.result.success")).thenReturn("success");
+
+            mockMvc.perform(multipart(Url.COMMENT, 101)
+                            .param("id", "101")
+                            .param("content", "수정된 댓글")
+                            .param("refId", "1001")
+                            .param("refContentType", "BC001"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.rslt").value(true))
+                    .andExpect(jsonPath("$.rsltObj.id").value(101));
+        }
+
+        verify(commentService).modify(any(CommentDto.class), any(MultipartHttpServletRequest.class));
+    }
+
+    @Test
+    void commentDetailReturnsRequestedComment() throws Exception {
+        when(commentService.getDtlDto(101))
+                .thenReturn(CommentDto.builder().id(101).content("댓글 내용").build());
+
+        try (final MockedStatic<MessageUtils> messages = mockStatic(MessageUtils.class)) {
+            messages.when(() -> MessageUtils.getMessage("common.result.success")).thenReturn("success");
+
+            mockMvc.perform(get(Url.COMMENT, 101))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.rslt").value(true))
+                    .andExpect(jsonPath("$.rsltObj.id").value(101));
+        }
+
+        verify(commentService).getDtlDto(101);
+    }
+
+    @Test
+    void commentDeletionUsesResourceIdentifier() throws Exception {
+        when(commentService.delete(101))
+                .thenReturn(ServiceResponse.builder().rslt(true).build());
+
+        try (final MockedStatic<MessageUtils> messages = mockStatic(MessageUtils.class)) {
+            messages.when(() -> MessageUtils.getMessage("common.result.success")).thenReturn("success");
+
+            mockMvc.perform(delete(Url.COMMENT, 101))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.rslt").value(true));
+        }
+
+        verify(commentService).delete(101);
+    }
+
+    /**
+     * 댓글 목록 응답 검증에 사용할 페이지 픽스처를 생성한다.
+     *
+     * @param onlyMock 데이터 없는 Page 목 사용 여부
+     * @return 댓글 페이지 픽스처
+     */
     public static Page<CommentDto> createMockPage(Boolean onlyMock) {
         // 1. mock을 써서 간소화 객체 생성
         // mock을 써서 생성된 목 객체는 해당 유형의 응답이 온다는 것만 체크하고 실제 데이터나 동작을 포함하지 않으므로, json응답의 필드값을 검증할 수 없다.

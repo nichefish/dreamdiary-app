@@ -1,17 +1,15 @@
 package io.nicheblog.dreamdiary.feature.journal.todo.service;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDto;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +17,6 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mockStatic;
 
 /**
  * JournalTodoServiceTest
@@ -34,14 +31,11 @@ import static org.mockito.Mockito.mockStatic;
 @ActiveProfiles("test")
 @Import(TestAuditConfig.class)
 @Transactional
+@WithMockUser(username = TestConstant.TEST_AUDITOR)
 class JournalTodoServiceTest {
 
     @Resource
     private JournalTodoService journalTodoService;
-
-    @MockBean
-    @SuppressWarnings("unused")
-    private AuthUtils authUtils;
 
     private JournalTodoDto journalTodo;
 
@@ -51,11 +45,6 @@ class JournalTodoServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         journalTodo = JournalTodoDtoTestFactory.create();
-
-        try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
-            mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
-            mockedStatic.when(AuthUtils::getLoginUsername).thenReturn(TestConstant.TEST_AUDITOR);
-        }
     }
 
     /**
@@ -117,4 +106,3 @@ class JournalTodoServiceTest {
                 "Deleted entity was still retrievable.");
     }
 }
-

@@ -1,10 +1,11 @@
 package io.nicheblog.dreamdiary.feature.board.group.controller;
 
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardParam;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardSearchParam;
+import io.nicheblog.dreamdiary.feature.board.group.service.BoardPrefixService;
 import io.nicheblog.dreamdiary.feature.board.group.service.BoardService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -18,7 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -46,6 +47,8 @@ public class BoardRestController extends BaseControllerImpl {
 
     /** 게시판 서비스 */
     private final BoardService boardService;
+    /** 게시판 GLOBAL Prefix 관리 서비스 */
+    private final BoardPrefixService boardPrefixService;
 
     /**
      * 게시판 그룹 목록 조회.
@@ -57,7 +60,7 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @GetMapping(Url.BOARD_GROUPS)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardListAjax(
             @ModelAttribute final BoardSearchParam searchParam,
@@ -78,7 +81,7 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @PostMapping(Url.BOARD_GROUPS)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardRegAjax(final @Valid BoardDto board) throws Exception {
         final ServiceResponse result = boardService.regist(board);
@@ -96,7 +99,7 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @GetMapping(Url.BOARD_GROUP)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     public ResponseEntity<AjaxResponse> boardDtlAjax(final @PathVariable Integer id) throws Exception {
         final BoardDto board = boardService.getDtlDto(id);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(board));
@@ -110,7 +113,7 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @PostMapping(Url.BOARD_GROUP)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardMdfItemAjax(final @Valid BoardDto board) throws Exception {
         final ServiceResponse result = boardService.modify(board);
@@ -128,7 +131,7 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @DeleteMapping(Url.BOARD_GROUP)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDelAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.delete(id);
@@ -143,7 +146,7 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @PostMapping(Url.BOARD_GROUP_USE)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardUseAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.setUse(id, "Y");
@@ -158,7 +161,7 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @PostMapping(Url.BOARD_GROUP_UNUSE)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardUnuseAjax(final @PathVariable Integer id) throws Exception {
         final ServiceResponse result = boardService.setUse(id, "N");
@@ -173,10 +176,83 @@ public class BoardRestController extends BaseControllerImpl {
      * @throws Exception 처리 중 예외
      */
     @PutMapping(Url.BOARD_GROUPS_SORT_ORDERS)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.board')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardSortOrderAjax(final @RequestBody BoardParam boardParam) throws Exception {
         final ServiceResponse result = boardService.sortOrder(boardParam.getSortOrders());
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(result.getRslt(), MessageUtils.getMessage("common.result.success")));
+    }
+
+    /**
+     * 게시판 boardKey의 비활성 포함 GLOBAL Prefix 목록을 조회한다.
+     *
+     * @param id 게시판 식별자
+     * @return Prefix 관리 정보
+     */
+    @GetMapping(Url.BOARD_GROUP_PREFIXES)
+    @PreAuthorize("hasAuthority('menu.admin.board')")
+    public ResponseEntity<AjaxResponse> boardPrefixListAjax(final @PathVariable Integer id) {
+        return ResponseEntity.ok(AjaxResponse
+                .withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
+                .withObj(boardPrefixService.getManagement(id)));
+    }
+
+    /**
+     * 게시판 boardKey의 GLOBAL Scope에 Prefix를 등록한다.
+     *
+     * @param id 게시판 식별자
+     * @param request Prefix 등록 요청
+     * @return 등록된 Prefix
+     */
+    @PostMapping(Url.BOARD_GROUP_PREFIXES)
+    @PreAuthorize("hasAuthority('menu.admin.board')")
+    public ResponseEntity<AjaxResponse> boardPrefixRegAjax(
+            final @PathVariable Integer id,
+            final @Valid @RequestBody PrefixDto request
+    ) {
+        return ResponseEntity.ok(AjaxResponse
+                .withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
+                .withObj(boardPrefixService.create(id, request)));
+    }
+
+    /**
+     * 게시판 boardKey의 GLOBAL Scope 소속 Prefix를 수정한다.
+     *
+     * @param id 게시판 식별자
+     * @param prefixId Prefix 식별자
+     * @param request Prefix 수정 요청
+     * @return 수정된 Prefix
+     */
+    @PutMapping(Url.BOARD_GROUP_PREFIX)
+    @PreAuthorize("hasAuthority('menu.admin.board')")
+    public ResponseEntity<AjaxResponse> boardPrefixMdfAjax(
+            final @PathVariable Integer id,
+            final @PathVariable Integer prefixId,
+            final @Valid @RequestBody PrefixDto request
+    ) {
+        return ResponseEntity.ok(AjaxResponse
+                .withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
+                .withObj(boardPrefixService.update(id, prefixId, request)));
+    }
+
+    /**
+     * 게시판 boardKey의 GLOBAL Scope 소속 Prefix의 활성 상태를 변경한다.
+     *
+     * @param id 게시판 식별자
+     * @param prefixId Prefix 식별자
+     * @param active 활성 여부
+     * @return 처리 결과
+     */
+    @PatchMapping(Url.BOARD_GROUP_PREFIX_ACTIVE)
+    @PreAuthorize("hasAuthority('menu.admin.board')")
+    public ResponseEntity<AjaxResponse> boardPrefixActiveAjax(
+            final @PathVariable Integer id,
+            final @PathVariable Integer prefixId,
+            final @RequestParam boolean active
+    ) {
+        boardPrefixService.setActive(id, prefixId, active);
+        return ResponseEntity.ok(AjaxResponse
+                .withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
+                .withObj(null));
     }
 }

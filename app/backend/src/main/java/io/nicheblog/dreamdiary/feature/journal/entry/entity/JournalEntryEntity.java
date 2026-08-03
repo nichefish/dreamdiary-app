@@ -5,6 +5,8 @@ import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEm
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
@@ -34,7 +36,8 @@ import javax.persistence.Table;
 @SQLDelete(sql = "UPDATE journal_entry SET deleted_at = NOW() WHERE id = ?")
 public class JournalEntryEntity
         extends BaseAttachableEntity
-        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule,
+        HistoryEmbedModule, PrefixEmbedModule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,4 +89,8 @@ public class JournalEntryEntity
 
     @Embedded
     public HistoryEmbed history;
+
+    /** 콘텐츠 말머리 선택. NOTE 엔트리도 영속 contentType은 JOURNAL_DIARY지만 Scope 검증은 챕터 타입으로 분리한다. */
+    @Embedded
+    public PrefixEmbed prefix;
 }

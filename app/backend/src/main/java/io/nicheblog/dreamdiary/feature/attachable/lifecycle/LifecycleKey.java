@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
  * 부착 가능 컨텐츠의 라이프사이클 키.
  *
  * <p>{@code StateKey}와 달리 라이프사이클은 단일 현재값이다.
- * 컨텐츠 하나는 한 시점에 {@code OPEN}, {@code PENDING}, {@code RESOLVED} 중 하나로 해석된다.</p>
+ * 컨텐츠 하나는 한 시점에 {@code OPEN}, {@code PENDING}, {@code RESOLVED} 중 하나로 해석된다.
+ * {@code OPEN}은 저장 row가 없는 기본 상태이며, 나머지 두 값만 영속화한다.</p>
  */
 @Getter
 @RequiredArgsConstructor

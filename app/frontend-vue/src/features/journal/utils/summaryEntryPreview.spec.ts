@@ -27,12 +27,12 @@ describe("summaryEntryPreview", () => {
     vi.clearAllMocks();
   });
 
-  it("SUMMARY 챕터의 첫 non-empty 엔트리 HTML 전체를 반환한다", () => {
+  it("시스템 요약 챕터의 첫 non-empty 엔트리 HTML 전체를 반환한다", () => {
     const html = summaryEntryHtmlOf(dayWithChapters([
       {
         id: 1,
         chapterType: "DIARY",
-        categoryCode: "SUMMARY",
+        summaryYn: "Y",
         journalEntryList: [
           { id: 11, sortOrder: 1, content: "" },
           {
@@ -47,11 +47,19 @@ describe("summaryEntryPreview", () => {
     expect(html).toBe("<p>병원 방문 후 <u>경과</u>를 정리한다. 긴 본문도 자르지 않는다.</p>");
   });
 
-  it("SUMMARY 가 없으면 첫 non-DREAM 챕터를 fallback 한다", () => {
+  it("시스템 요약이 없으면 첫 non-DREAM 챕터를 fallback 한다", () => {
     const chapter = findSummaryChapter([
-      { id: 1, chapterType: "DREAM", categoryCode: "SUMMARY", journalEntryList: [] },
-      { id: 2, chapterType: "NOTE", categoryCode: "NOTE", journalEntryList: [] },
-      { id: 3, chapterType: "DIARY", categoryCode: "CASE", journalEntryList: [] },
+      { id: 1, chapterType: "DREAM", summaryYn: "Y", journalEntryList: [] },
+      { id: 2, chapterType: "NOTE", summaryYn: "N", journalEntryList: [] },
+      { id: 3, chapterType: "DIARY", summaryYn: "N", journalEntryList: [] },
+    ]);
+    expect(chapter?.id).toBe(2);
+  });
+
+  it("SUMMARY 코드만으로는 시스템 요약으로 판정하지 않는다", () => {
+    const chapter = findSummaryChapter([
+      { id: 1, chapterType: "DIARY", prefixId: 11, summaryYn: "N", journalEntryList: [] },
+      { id: 2, chapterType: "NOTE", summaryYn: "Y", journalEntryList: [] },
     ]);
     expect(chapter?.id).toBe(2);
   });
@@ -60,14 +68,14 @@ describe("summaryEntryPreview", () => {
     expect(summaryEntryOf(dayWithChapters([
       {
         id: 1,
-        categoryCode: "SUMMARY",
+        summaryYn: "Y",
         journalEntryList: [{ id: 11, content: "<p>  </p>" }],
       },
     ]))).toBeUndefined();
     expect(summaryEntryHtmlOf(dayWithChapters([
       {
         id: 1,
-        categoryCode: "SUMMARY",
+        summaryYn: "Y",
         journalEntryList: [{ id: 11, content: "<p>  </p>" }],
       },
     ]))).toBe("");
@@ -97,7 +105,7 @@ describe("summaryEntryPreview", () => {
     const day = dayWithChapters([
       {
         id: 1,
-        categoryCode: "SUMMARY",
+        summaryYn: "Y",
         journalEntryList: [
           {
             id: 1,
@@ -117,7 +125,7 @@ describe("summaryEntryPreview", () => {
     expect(summaryEntryHtmlOf(dayWithChapters([
       {
         id: 1,
-        categoryCode: "SUMMARY",
+        summaryYn: "Y",
         journalEntryList: [{ id: 1, content: "<p>원문만</p>" }],
       },
     ]))).toBe("<p>원문만</p>");

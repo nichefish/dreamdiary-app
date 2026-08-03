@@ -22,6 +22,7 @@ const URL_MAP: Record<string, string> = {
   "/app/schedule/cal.do": "/schedule",
   "/app/admin/admin-page.do": "/admin",
   "/app/auth/policy/page.do": "/admin/auth-policy",
+  "/app/user/group/page.do": "/admin/user-groups",
   "/app/admin/menu/page.do": "/admin/menu",
   "/app/admin/board/page.do": "/admin/board-group",
   "/app/admin/code/page.do": "/admin/code",

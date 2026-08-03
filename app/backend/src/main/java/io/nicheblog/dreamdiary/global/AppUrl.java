@@ -67,6 +67,9 @@ public interface AppUrl {
     /** 인증 정책 관리 화면 (싱글톤 설정 1건, MVC는 타 페이지와 동일하게 *.do) */
     String AUTH_POLICY_PAGE = Prefix.APP + "/auth/policy/page.do";
 
+    /** 사용자 그룹 관리 화면 */
+    String USER_GROUP_PAGE = Prefix.APP + "/user/group/page.do";
+
     /** 메뉴 관리 */
     String MENU_ADMIN_PAGE = Prefix.APP + "/admin/menu/page.do";
 

@@ -85,7 +85,6 @@ public interface ApiUrl {
     String JOURNAL_THREAD_CANDIDATES = Prefix.API + "/journal/threads/candidates";
     /** 월간·주간 저널 화면용 기간별 스레드 집계 */
     String JOURNAL_THREAD_PERIOD_SUMMARY = Prefix.API + "/journal/threads/period-summary";
-    String JOURNAL_THREAD_CATEGORIES = Prefix.API + "/journal/threads/categories";
     String JOURNAL_THREAD_API = Prefix.API + "/journal/threads/{id}";
     /** 스레드 텍스트 내보내기 */
     String JOURNAL_THREAD_EXPORT = Prefix.API + "/journal/threads/{id}/export";
@@ -115,8 +114,8 @@ public interface ApiUrl {
     /** 게시판 */
     String BOARD_POSTS = Prefix.API + "/board/posts";
     String BOARD_POST = Prefix.API + "/board/posts/{id}";
-    /** 게시판별 분류 코드 목록 (사용자 화면 검색 필터용) */
-    String BOARD_CATEGORIES = Prefix.API + "/board/{boardKey}/categories";
+    /** 게시판별 활성 말머리 목록 */
+    String BOARD_PREFIXES = Prefix.API + "/board/{boardKey}/prefixes";
 
     /** 사용자 관리 */
     String USERS = Prefix.API + "/users";
@@ -160,6 +159,12 @@ public interface ApiUrl {
     /** 인증 정책 (싱글톤 리소스: GET 조회, PUT 갱신) */
     String AUTH_POLICY = Prefix.API + "/auth/policy";
 
+    /** 사용자 그룹 관리 */
+    String USER_GROUPS = Prefix.API + "/user/groups";
+    String USER_GROUP = Prefix.API + "/user/groups/{id}";
+    /** 권한 카탈로그 목록 */
+    String PERMISSIONS = Prefix.API + "/permissions";
+
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
     String MENUS = Prefix.API + "/menus";
@@ -173,6 +178,12 @@ public interface ApiUrl {
     String BOARD_GROUP_USE = Prefix.API + "/board/groups/{id}/use";
     String BOARD_GROUP_UNUSE = Prefix.API + "/board/groups/{id}/unuse";
     String BOARD_GROUPS_SORT_ORDERS = Prefix.API + "/board/groups/sort-orders";
+    /** 게시판 관리 문맥의 말머리 목록·등록 */
+    String BOARD_GROUP_PREFIXES = Prefix.API + "/board/groups/{id}/prefixes";
+    /** 게시판 관리 문맥의 말머리 수정 */
+    String BOARD_GROUP_PREFIX = Prefix.API + "/board/groups/{id}/prefixes/{prefixId}";
+    /** 게시판 관리 문맥의 말머리 활성 상태 변경 */
+    String BOARD_GROUP_PREFIX_ACTIVE = Prefix.API + "/board/groups/{id}/prefixes/{prefixId}/active";
 
     /** 팝업 관리 (TODO) */
     String POPUP_LIST = "";

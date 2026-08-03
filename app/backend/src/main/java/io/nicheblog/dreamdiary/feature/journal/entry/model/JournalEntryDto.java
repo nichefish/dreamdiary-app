@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCm
 import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
@@ -65,6 +66,12 @@ public class JournalEntryDto extends BaseAttachableDto
     private Integer sortOrder;
 
     private String contentType;
+    /** 엔트리가 선택한 개인 말머리(0..1) */
+    private PrefixDto prefix;
+    /** 등록·수정 payload에서 선택한 개인 말머리 ID */
+    private Integer prefixId;
+    /** 소속 챕터 유형으로 해석한 개인 Prefix 목록 content_type */
+    private String prefixContentType;
 
     @Builder.Default
     private Boolean isSortOrderChanged = false;

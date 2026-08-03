@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.auth.security.service;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
+import io.nicheblog.dreamdiary.auth.permission.service.PermissionResolveService;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthInfoMapstruct;
@@ -47,6 +48,7 @@ public class AuthService
     private final RoleRepository roleRepository;
     private final AuthPolicyQueryService authPolicyQueryService;
     private final AuthInfoMapstruct authInfoMapstruct;
+    private final PermissionResolveService permissionResolveService;
 
     /**
      * username으로 계정 + 사용자 정보 조회
@@ -73,6 +75,7 @@ public class AuthService
 
         final AuthInfo authInfo = authInfoMapstruct.toDto(rsUser);
         this.fillRolesFromUserByRoleIdIfMissing(rsUser, authInfo);
+        authInfo.setPermissions(permissionResolveService.resolvePermKeys(rsUser));
         return authInfo;
     }
 
@@ -89,6 +92,7 @@ public class AuthService
 
         final AuthInfo authInfo = authInfoMapstruct.toDto(rsUser);
         this.fillRolesFromUserByRoleIdIfMissing(rsUser, authInfo);
+        authInfo.setPermissions(permissionResolveService.resolvePermKeys(rsUser));
         return authInfo;
     }
 

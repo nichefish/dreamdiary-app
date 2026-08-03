@@ -113,7 +113,7 @@ function moveNext(): void {
 
 onMounted(() => {
   load(currentDt.value || undefined);
-  void modalStore.prefetchChapterCategories();
+  void modalStore.prefetchChapterPrefixes();
 });
 
 watch(

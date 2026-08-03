@@ -2,10 +2,14 @@ package io.nicheblog.dreamdiary.feature.journal.chapter.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableManagtHelper;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableProcPostProcessor;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.service.PrefixContentService;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
@@ -61,8 +65,10 @@ public class JournalChapterService
 
     public static final String DETAIL_CACHE_NAME = "journalChapterDetailDtoByUser";
 
-    /** 동일 일자 내 첫 항목 등록 시 기본 카테고리 코드 */
-    private static final String FIRST_CHAPTER_CTGR_CD = "SUMMARY";
+    /** 시스템 요약 챕터 */
+    private static final String SUMMARY_YN = "Y";
+    /** 일반 챕터 */
+    private static final String NON_SUMMARY_YN = "N";
 
     @Getter
     private final JournalChapterRepository repository;
@@ -85,6 +91,7 @@ public class JournalChapterService
     private final JournalEntryService journalEntryService;
     private final JournalEntryRepository journalEntryRepository;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
+    private final PrefixContentService prefixContentService;
 
     private final ApplicationContext context;
     private JournalChapterService getSelf() {
@@ -94,6 +101,32 @@ public class JournalChapterService
     public List<JournalChapterDto> getListDtoByUser(final String username, final JournalChapterSearchParam searchParam) throws Exception {
         searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
+    }
+
+    /**
+     * 챕터 본문과 개인 Prefix 선택을 같은 트랜잭션에서 등록한다.
+     * 시스템 요약·DREAM 챕터는 Prefix를 갖지 않는다.
+     */
+    @Override
+    @Transactional
+    public ServiceResponse regist(final JournalChapterDto registDto) throws Exception {
+        final ServiceResponse response = BaseAttachableService.super.regist(registDto);
+        final JournalChapterDto updatedDto = (JournalChapterDto) response.getRsltObj();
+        applyPrefixSelection(updatedDto, registDto.getPrefixId());
+        return response;
+    }
+
+    /**
+     * 챕터 본문과 개인 Prefix 선택을 같은 트랜잭션에서 수정한다.
+     * 시스템 요약·DREAM 챕터는 Prefix를 갖지 않는다.
+     */
+    @Override
+    @Transactional
+    public ServiceResponse modify(final JournalChapterDto modifyDto) throws Exception {
+        final ServiceResponse response = BaseAttachableService.super.modify(modifyDto);
+        final JournalChapterDto updatedDto = (JournalChapterDto) response.getRsltObj();
+        applyPrefixSelection(updatedDto, modifyDto.getPrefixId());
+        return response;
     }
 
     /**
@@ -127,7 +160,7 @@ public class JournalChapterService
             throw new BusinessException("journal.chapter.dream-auto-only");
         }
         journalDayResolvedGuard.assertWritable(registDto.getJournalDayId(), JournalDayResolvedAxis.DIARY);
-        applyNewChapterSortOrderAndDefaultCategory(registDto);
+        applyNewChapterSortOrderAndSummaryRole(registDto);
     }
 
     /**
@@ -137,29 +170,47 @@ public class JournalChapterService
      */
     private void preRegistDreamChapterAuto(final JournalChapterDto registDto) throws Exception {
         registDto.setChapterType(ChapterType.DREAM);
+        registDto.setSummaryYn(NON_SUMMARY_YN);
+        registDto.setPrefixId(null);
         applyNewChapterSortOrder(registDto);
     }
 
     /**
-     * 새 챕터의 정렬값을 계산하고, 첫 일반(non-DREAM) 챕터에는 기본 SUMMARY 카테고리를 보정한다.
+     * 새 챕터의 정렬값을 계산하고, 첫 일반(non-DREAM) 챕터에는 시스템 요약 역할을 부여한다.
      * <p>
      * 변경 전: {@code sortOrder == 1} 을 기준으로 SUMMARY 를 부여했다. 그러나 sortOrder 는
      * DREAM 챕터까지 포함해 계산되므로, 꿈 챕터가 먼저 있던 날에 첫 일반 챕터를 등록하면
      * sortOrder 가 2 이상이 되어 SUMMARY 가 누락됐다.
      * 변경 후: DREAM 은 항상 마지막에 배치되는 개념 챕터이므로 판정에서 제외하고,
-     * "기존 non-DREAM 챕터가 없을 때"를 첫 일반 챕터로 보아 SUMMARY 를 부여한다.
+     * "기존 non-DREAM 챕터가 없을 때"를 첫 일반 챕터로 보아 {@code summaryYn=Y}를 부여한다.
      * sortOrder 계산 자체는 그대로 두어 배치/순서에는 영향을 주지 않는다.
+     * <p>
+     * 시스템 요약 동작은 {@code summaryYn}이 담당한다. 첫 일반 챕터는 클라이언트가 보낸
+     * Prefix와 무관하게 시스템 요약으로 확정하며 Prefix 선택을 제거한다.
+     * </p>
      *
      * @param registDto 등록할 챕터 DTO
      */
-    private void applyNewChapterSortOrderAndDefaultCategory(final JournalChapterDto registDto) throws Exception {
+    private void applyNewChapterSortOrderAndSummaryRole(final JournalChapterDto registDto) throws Exception {
         applyNewChapterSortOrder(registDto);
         final boolean hasNonDreamChapter = repository.existsByJournalDayIdAndChapterTypeNot(registDto.getJournalDayId(), ChapterType.DREAM);
-        if (!hasNonDreamChapter && StringUtils.isBlank(registDto.getCategoryCode())) {
-            registDto.setCategoryCode(FIRST_CHAPTER_CTGR_CD);
-            log.debug("[applyNewChapterSortOrderAndDefaultCategory] 첫 일반 챕터 → SUMMARY 부여. journalDayId={}, sortOrder={}",
+        if (!hasNonDreamChapter) {
+            if (registDto.getPrefixId() != null) {
+                log.warn("[JournalChapter.summary] 첫 일반 챕터의 사용자 Prefix를 무시하고 시스템 요약으로 확정. journalDayId={}, requestedPrefixId={}",
+                        registDto.getJournalDayId(), registDto.getPrefixId());
+            }
+            registDto.setSummaryYn(SUMMARY_YN);
+            registDto.setPrefixId(null);
+            log.debug("[JournalChapter.summary] 첫 일반 챕터 → 시스템 요약 부여. journalDayId={}, sortOrder={}",
                     registDto.getJournalDayId(), registDto.getSortOrder());
+            return;
         }
+        if (StringUtils.equals(registDto.getSummaryYn(), SUMMARY_YN)) {
+            log.warn("[JournalChapter.summary] 일반 챕터의 시스템 요약 직접 지정 거부. journalDayId={}, summaryYn={}",
+                    registDto.getJournalDayId(), registDto.getSummaryYn());
+            throw new BusinessException("journal.chapter.summary-auto-only");
+        }
+        registDto.setSummaryYn(NON_SUMMARY_YN);
     }
 
     /**
@@ -188,7 +239,13 @@ public class JournalChapterService
 
         final JournalChapterEntity existing = repository.findFirstByJournalDayIdAndChapterType(journalDayId, ChapterType.DREAM).orElse(null);
         if (existing != null) {
-            clearFirstChapterCategoryIfDream(existing);
+            clearSummaryRoleIfDream(existing);
+            // DREAM 챕터는 사용자 말머리를 갖지 않는다. 기존 선택이 남아 있으면 해제만 한다(해제는 Scope content_type이 필요 없다).
+            prefixContentService.applySelection(
+                    new BaseAttachableKey(existing.getId(), ContentType.JOURNAL_CHAPTER.key),
+                    null,
+                    null
+            );
             this.getSelf().normalizeSortOrder(journalDayId);
             final JournalChapterEntity synced = repository.findById(existing.getId()).orElse(existing);
             final JournalChapterDto dto = mapstruct.toDto(synced);
@@ -232,23 +289,23 @@ public class JournalChapterService
     }
 
     /**
-     * 과거 로직으로 DREAM 자동 챕터에 SUMMARY가 들어간 경우 즉시 제거한다.
-     * SUMMARY 기본값은 첫 DIARY 챕터 전용 정책이다.
+     * 과거 로직으로 DREAM 자동 챕터에 시스템 요약 역할이 들어간 경우 즉시 제거한다.
+     * 시스템 요약 역할은 첫 일반(non-DREAM) 챕터 전용 정책이다.
      *
      * @param chapter 보정할 기존 꿈 챕터 엔티티
      */
-    private void clearFirstChapterCategoryIfDream(final JournalChapterEntity chapter) {
+    private void clearSummaryRoleIfDream(final JournalChapterEntity chapter) {
         if (chapter == null || chapter.getChapterType() != ChapterType.DREAM) return;
-        if (!StringUtils.equals(chapter.getCategoryCode(), FIRST_CHAPTER_CTGR_CD)) return;
-        chapter.setCategoryCode(null);
+        if (!StringUtils.equals(chapter.getSummaryYn(), SUMMARY_YN)) return;
+        chapter.setSummaryYn(NON_SUMMARY_YN);
         repository.saveAndFlush(chapter);
+        log.warn("[JournalChapter.summary] DREAM 챕터의 잘못된 시스템 요약 역할 제거. chapterId={}", chapter.getId());
     }
 
     private void createDefaultDiaryWhenSummaryAutoApplied(final JournalChapterDto updatedDto) throws Exception {
         if (updatedDto == null || updatedDto.getId() == null) return;
         if (updatedDto.getChapterType() != ChapterType.DIARY) return;
-        if (updatedDto.getSortOrder() == null || updatedDto.getSortOrder() != 1) return;
-        if (!StringUtils.equals(updatedDto.getCategoryCode(), FIRST_CHAPTER_CTGR_CD)) return;
+        if (!StringUtils.equals(updatedDto.getSummaryYn(), SUMMARY_YN)) return;
 
         final boolean hasDiary = journalEntryRepository
                 .findFirstByJournalChapterIdAndContentTypeOrderBySortOrderDesc(
@@ -293,10 +350,81 @@ public class JournalChapterService
         } else if (modifyDto.getChapterType() == ChapterType.DREAM) {
             throw new BusinessException("journal.chapter.dream-auto-only");
         }
+        if (modifyDto.getSummaryYn() != null
+                && !StringUtils.equals(modifyDto.getSummaryYn(), modifyEntity.getSummaryYn())) {
+            log.warn("[JournalChapter.summary] 수정 요청의 시스템 요약 역할 변경 무시. chapterId={}, requestedSummaryYn={}, persistedSummaryYn={}",
+                    modifyEntity.getId(), modifyDto.getSummaryYn(), modifyEntity.getSummaryYn());
+        }
+        modifyDto.setSummaryYn(modifyEntity.getSummaryYn());
+        if (StringUtils.equals(modifyEntity.getSummaryYn(), SUMMARY_YN)) {
+            modifyDto.setPrefixId(null);
+        }
         final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
         modifyDto.setIsSortOrderChanged(isSortOrderChanged);
     }
-    
+
+    /**
+     * 선택한 Prefix의 소유권·활성 상태를 검증하고 prefix_content 연결을 반영한다.
+     * 시스템 요약·DREAM 챕터는 사용자 Prefix를 허용하지 않는다.
+     *
+     * @param dto 저장된 챕터 DTO
+     * @param requestedPrefixId 요청한 Prefix ID
+     */
+    private void applyPrefixSelection(final JournalChapterDto dto, final Integer requestedPrefixId) {
+        final JournalChapterEntity entity = repository.findByIdAndCreatedBy(
+                        dto.getId(), AuthUtils.requireLoginUsername())
+                .orElseThrow(() -> new javax.persistence.EntityNotFoundException("Journal chapter not found."));
+        final boolean prefixForbidden = entity.getChapterType() == ChapterType.DREAM
+                || StringUtils.equals(entity.getSummaryYn(), SUMMARY_YN);
+        final Integer resolvedPrefixId = prefixForbidden ? null : requestedPrefixId;
+        if (prefixForbidden && requestedPrefixId != null) {
+            log.warn("[JournalChapter.prefix] 시스템 챕터 Prefix 선택 무시. chapterId={}, chapterType={}, summaryYn={}, requestedPrefixId={}",
+                    entity.getId(), entity.getChapterType(), entity.getSummaryYn(), requestedPrefixId);
+        }
+        // 말머리 목록 Scope는 챕터 유형(일기/노트)으로 분리한다. attachable 정체성 키는 JOURNAL_CHAPTER로 유지한다.
+        // 말머리 금지(요약·DREAM) 챕터는 기존 선택을 해제만 하므로 Scope content_type이 필요 없다(검증 경로가 null이면 조회하지 않음).
+        final String prefixScopeContentType = prefixForbidden
+                ? null
+                : resolveChapterPrefixScopeContentType(entity.getChapterType()).key;
+        final PrefixEntity prefix = prefixContentService.applySelection(
+                new BaseAttachableKey(entity.getId(), ContentType.JOURNAL_CHAPTER.key),
+                prefixScopeContentType,
+                resolvedPrefixId
+        );
+        dto.setPrefix(prefix == null ? null : PrefixDto.builder()
+                .id(prefix.getId())
+                .name(prefix.getName())
+                .color(prefix.getColor())
+                .sortOrder(prefix.getSortOrder())
+                .activeYn(prefix.getActiveYn())
+                .build());
+        dto.setPrefixId(resolvedPrefixId);
+    }
+
+    /**
+     * 챕터 유형을 챕터 말머리 목록의 content_type으로 변환한다.
+     * <p>
+     * 챕터의 attachable 정체성은 {@link ContentType#JOURNAL_CHAPTER}로 불변이지만, 말머리 목록은
+     * 일기 챕터({@link ContentType#JOURNAL_CHAPTER_DIARY})와 노트 챕터
+     * ({@link ContentType#JOURNAL_CHAPTER_NOTE})가 각각 사용자 정의로 분리된다.
+     * DREAM 챕터는 사용자 말머리를 허용하지 않으므로(요약 챕터와 함께 {@code prefixForbidden})
+     * 이 변환을 호출하지 않는다. 방어적으로 DREAM·null 입력은 예외로 차단한다.
+     * </p>
+     *
+     * @param chapterType 챕터 유형 (DIARY 또는 NOTE)
+     * @return 챕터 말머리 Scope content_type
+     */
+    static ContentType resolveChapterPrefixScopeContentType(final ChapterType chapterType) {
+        if (chapterType == null) {
+            throw new BusinessException("journal.chapter.invalid-chapter-type");
+        }
+        return switch (chapterType) {
+            case DIARY -> ContentType.JOURNAL_CHAPTER_DIARY;
+            case NOTE -> ContentType.JOURNAL_CHAPTER_NOTE;
+            case DREAM -> throw new BusinessException("journal.chapter.prefix-not-allowed");
+        };
+    }
+
     /**
      * 수정 후처리. (override)
      *

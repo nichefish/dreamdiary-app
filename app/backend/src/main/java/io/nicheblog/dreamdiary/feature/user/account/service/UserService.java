@@ -149,6 +149,9 @@ public class UserService
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
         registEntity.setAcntStus(UserStateEntity.getRegistStus());
+        // 개인 Prefix 목록(prefix_scope)은 사전 프로비저닝하지 않는다.
+        // 목록은 (PERSONAL, user_id, content_type)로 정규화되며, 사용자가 해당 content_type의 첫 말머리를
+        // 등록하는 시점에 lazy 생성한다. (이전에는 등록 시 빈 Scope를 함께 생성했다.)
         this.applyRoleIds(registEntity);
         registEntity.cascade();
     }
