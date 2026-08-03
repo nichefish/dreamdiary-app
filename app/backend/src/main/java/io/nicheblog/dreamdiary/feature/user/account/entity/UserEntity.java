@@ -67,6 +67,9 @@ public class UserEntity
     @Comment("사용자 아이디")
     private String username;
 
+    // 개인 말머리 목록 소유권은 UserEntity가 아니라 prefix_scope가 (PERSONAL, user_id, content_type)로 보유한다.
+    // (이전에는 user.prefix_scope_id FK로 사용자당 Scope 하나를 가리켰으나, 소유 방향을 뒤집었다.)
+
     /** 비밀번호 :: 암호화된 비밀번호(64bit)를 저장하기 위해 길이=64이다. */
     @Column(name = "password", length = 64)
     @Comment("비밀번호")

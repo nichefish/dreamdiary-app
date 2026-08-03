@@ -62,18 +62,21 @@ class ScheduleServiceValidationTest {
     @Mock
     private AuthService authService;
 
+    private AuthService previousAuthService;
+
     @InjectMocks
     private ScheduleService scheduleService;
 
     @BeforeEach
     void initializeAuditorUtils() {
+        previousAuthService = (AuthService) ReflectionTestUtils.getField(AuditorUtils.class, "authService");
         ReflectionTestUtils.setField(AuditorUtils.class, "authService", authService);
     }
 
     @AfterEach
     void clearSecurityContext() {
         SecurityContextHolder.clearContext();
-        ReflectionTestUtils.setField(AuditorUtils.class, "authService", null);
+        ReflectionTestUtils.setField(AuditorUtils.class, "authService", previousAuthService);
     }
 
     @Test

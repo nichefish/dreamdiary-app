@@ -189,22 +189,23 @@
 
           <div v-if="store.showDiaries" class="d-flex flex-column gap-2 ps-3">
             <div>
-              <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.aside.chapter-categories") }}</div>
-              <div v-if="chapterCategoryLoading" class="text-muted fs-8 px-1">{{ t("journal.aside.loading") }}</div>
-              <div v-else-if="chapterCategoryOptions.length === 0" class="text-muted fs-8 px-1">{{ t("journal.aside.category-load-failure") }}</div>
+              <div class="text-muted fs-8 fw-bold mb-1">- {{ t("journal.aside.chapter-prefixes") }}</div>
+              <div v-if="chapterPrefixLoading" class="text-muted fs-8 px-1">{{ t("journal.aside.loading") }}</div>
+              <div v-else-if="modalStore.chapterPrefixLoadFailedFor('DIARY')" class="text-muted fs-8 px-1">{{ t("journal.aside.prefix-load-failure") }}</div>
+              <div v-else-if="chapterPrefixOptions.length === 0" class="text-muted fs-8 px-1">{{ t("journal.aside.prefix-empty") }}</div>
               <div v-else class="journal-aside-chapter-categories d-flex flex-column gap-1">
                 <label
-                  v-for="ctgr in chapterCategoryOptions"
-                  :key="ctgr.code"
+                  v-for="prefix in chapterPrefixOptions"
+                  :key="prefix.id"
                   class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer"
                 >
                   <input
                     class="form-check-input w-16px h-16px"
                     type="checkbox"
-                    :checked="isChapterCategorySelected(ctgr.code)"
-                    @change="toggleChapterCategory(ctgr.code)"
+                    :checked="isChapterPrefixSelected(prefix.id)"
+                    @change="toggleChapterPrefix(prefix.id)"
                   />
-                  <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+                  <span class="form-check-label fs-8" :style="{ color: prefix.color || 'var(--bs-gray-600)' }">[{{ prefix.name }}]</span>
                 </label>
               </div>
             </div>
@@ -336,6 +337,7 @@ import { ref, computed, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { formatLocalDateStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { useJournalStore } from "@/features/journal/stores/journal";
+import type { JournalPrefixDto } from "@/features/journal/stores/journal";
 import { useJournalAsideStore } from "@/features/journal/stores/journalAside";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import JournalAsideTodoCard from "@/features/journal/day/components/JournalAsideTodoCard.vue";
@@ -373,13 +375,8 @@ const weekPickerRef = ref<HTMLInputElement | null>(null);
 /** 요일 버튼에서 선택된 날짜 (기본: 오늘) */
 const selectedDt = ref<string>(formatLocalDateStr(new Date()));
 
-interface ChapterCategoryOption {
-  code: string;
-  codeName: string;
-}
-
-const chapterCategoryOptions = ref<ChapterCategoryOption[]>([]);
-const chapterCategoryLoading = ref(false);
+const chapterPrefixOptions = ref<JournalPrefixDto[]>([]);
+const chapterPrefixLoading = ref(false);
 const lifecycleOptions = computed(() => [
   { key: "OPEN", label: t("journal.entry.lifecycle.open") },
   { key: "PENDING", label: t("lifecycle.pending") },
@@ -420,7 +417,7 @@ const hasActiveFilters = computed(() =>
   store.dreamKeyword.trim() !== "" ||
   store.diaryLifecycleKey !== "" ||
   store.dreamLifecycleKey !== "" ||
-  store.chapterCtgrCds.length > 0
+  store.chapterPrefixIds.length > 0
 );
 
 /** 요일 버튼 클릭 → 해당 날짜를 선택 상태로 전환 후 해당 일자 카드로 스크롤 */
@@ -539,43 +536,30 @@ function toggleDreams() {
 }
 
 onMounted(() => {
-  void fetchChapterCategories();
+  void fetchChapterPrefixes();
 });
 
-async function fetchChapterCategories(): Promise<void> {
-  if (chapterCategoryOptions.value.length > 0) return;
-  chapterCategoryLoading.value = true;
+async function fetchChapterPrefixes(): Promise<void> {
+  if (chapterPrefixOptions.value.length > 0) return;
+  chapterPrefixLoading.value = true;
   try {
-    // 변경 전: JOURNAL_CHAPTER_CTGR_CD(삭제된 그룹) 조회 → rsltList 빈 배열, 체크박스 미표시.
-    // 변경 후: 일기·노트 코드 그룹을 modalStore 와 동일 경로로 병합한다.
-    await modalStore.prefetchChapterCategories();
-    const merged = new Map<string, ChapterCategoryOption>();
-    for (const item of modalStore.chapterDiaryCategoryOptions) {
-      if (item.code) {
-        merged.set(item.code, { code: item.code, codeName: item.codeName || item.code });
-      }
-    }
-    for (const item of modalStore.chapterNoteCategoryOptions) {
-      if (item.code && !merged.has(item.code)) {
-        merged.set(item.code, { code: item.code, codeName: item.codeName || item.code });
-      }
-    }
-    chapterCategoryOptions.value = Array.from(merged.values());
+    await modalStore.prefetchChapterPrefixes("DIARY");
+    chapterPrefixOptions.value = [...modalStore.chapterPrefixOptionsFor("DIARY")];
   } catch {
-    chapterCategoryOptions.value = [];
+    chapterPrefixOptions.value = [];
   } finally {
-    chapterCategoryLoading.value = false;
+    chapterPrefixLoading.value = false;
   }
 }
 
-function isChapterCategorySelected(code: string): boolean {
-  return store.chapterCtgrCds.includes(code);
+function isChapterPrefixSelected(prefixId: number): boolean {
+  return store.chapterPrefixIds.includes(prefixId);
 }
 
-function toggleChapterCategory(code: string): void {
-  store.chapterCtgrCds = isChapterCategorySelected(code)
-    ? store.chapterCtgrCds.filter((item) => item !== code)
-    : [...store.chapterCtgrCds, code];
+function toggleChapterPrefix(prefixId: number): void {
+  store.chapterPrefixIds = isChapterPrefixSelected(prefixId)
+    ? store.chapterPrefixIds.filter((item) => item !== prefixId)
+    : [...store.chapterPrefixIds, prefixId];
   void store.fetchDays();
 }
 
@@ -588,7 +572,7 @@ async function resetFilters(): Promise<void> {
   store.dreamKeyword = "";
   store.diaryLifecycleKey = "";
   store.dreamLifecycleKey = "";
-  store.chapterCtgrCds = [];
+  store.chapterPrefixIds = [];
   if (shouldRefreshTagCloud) {
     void store.fetchTagCloud();
   }

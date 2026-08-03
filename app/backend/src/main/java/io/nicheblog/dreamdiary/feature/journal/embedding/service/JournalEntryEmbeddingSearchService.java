@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.RagSearchResult;
 import io.nicheblog.dreamdiary.feature.journal.embedding.repository.jpa.JournalEntryEmbeddingRepository;
@@ -57,6 +58,7 @@ public class JournalEntryEmbeddingSearchService {
 
     private final JournalEntryEmbeddingRepository repository;
     private final OllamaClient ollamaClient;
+    private final JournalProperties journalProperties;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /** journalEntryId → 벡터(double[]) 캐시 */
@@ -69,6 +71,10 @@ public class JournalEntryEmbeddingSearchService {
      */
     @PostConstruct
     public void initCache() {
+        if (!Boolean.TRUE.equals(journalProperties.getEmbedding().getCacheOnStartup())) {
+            log.info("Journal entry embedding cache initialization skipped. reason=disabled");
+            return;
+        }
         final long start = System.currentTimeMillis();
         final List<JournalEntryEmbeddingEntity> entityList =
                 repository.findAllByEmbeddingStatus(STATUS_EMBEDDED);
@@ -419,8 +425,7 @@ public class JournalEntryEmbeddingSearchService {
         final String chapterHaystack = normalizeHaystack(String.join("\n",
                 payloadString(payload, "title"),
                 payloadString(payload, "journalChapterTitle"),
-                payloadString(payload, "journalChapterCategoryName"),
-                payloadString(payload, "journalChapterCategoryCode")
+                payloadString(payload, "journalChapterPrefixName")
         ));
         final String bodyHaystack = normalizeHaystack(StringUtils.defaultString(entity.getEmbeddingText())
                 + "\n"

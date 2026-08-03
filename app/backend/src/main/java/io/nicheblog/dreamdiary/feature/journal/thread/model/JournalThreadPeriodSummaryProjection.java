@@ -19,6 +19,18 @@ public interface JournalThreadPeriodSummaryProjection {
     /** 스레드 제목 */
     String getTitle();
 
+    /** 스레드에 선택된 말머리 ID */
+    Integer getPrefixId();
+
+    /** 스레드에 선택된 말머리 이름 */
+    String getPrefixName();
+
+    /** 스레드에 선택된 말머리 색상 */
+    String getPrefixColor();
+
+    /** 스레드에 선택된 말머리 활성 상태 */
+    String getPrefixActiveYn();
+
     /** 조회 기간 안의 소속 엔트리 수 */
     Number getEntryCount();
 

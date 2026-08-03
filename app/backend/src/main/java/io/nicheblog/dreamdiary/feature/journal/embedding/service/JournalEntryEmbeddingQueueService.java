@@ -510,7 +510,7 @@ public class JournalEntryEmbeddingQueueService {
         appendLine(builder, "유형", contentKind);
         appendLine(builder, "날짜", formatDate(journalDay == null ? null : journalDay.getJournalDate()));
         appendLine(builder, "챕터", chapter == null ? null : chapter.getTitle());
-        appendLine(builder, "챕터 분류", chapter == null ? null : StringUtils.firstNonBlank(chapter.getCategoryName(), chapter.getCategoryCode()));
+        appendLine(builder, "챕터 말머리", resolveChapterPrefixName(chapter));
         appendLine(builder, "핵심 태그", tagSummary);
         appendLine(builder, "주제 태그", tagSummary);
         appendLine(builder, "태그", tagSummary);
@@ -562,8 +562,9 @@ public class JournalEntryEmbeddingQueueService {
         payload.put("journalChapterId", entry.getJournalChapterId());
         payload.put("journalChapterTitle", chapter == null ? null : chapter.getTitle());
         payload.put("journalChapterType", chapter == null || chapter.getChapterType() == null ? null : chapter.getChapterType().name());
-        payload.put("journalChapterCategoryCode", chapter == null ? null : chapter.getCategoryCode());
-        payload.put("journalChapterCategoryName", chapter == null ? null : chapter.getCategoryName());
+        payload.put("journalChapterSummaryYn", chapter == null ? null : chapter.getSummaryYn());
+        payload.put("journalChapterPrefixId", chapter == null ? null : chapter.getSelectedPrefixId());
+        payload.put("journalChapterPrefixName", resolveChapterPrefixName(chapter));
         payload.put("journalDayId", chapter == null ? null : chapter.getJournalDayId());
         payload.put("journalDate", formatDate(journalDay == null ? null : journalDay.getJournalDate()));
         payload.put("journalDatePrecision", journalDay == null || journalDay.getJournalDatePrecision() == null ? null : journalDay.getJournalDatePrecision().name());
@@ -574,6 +575,19 @@ public class JournalEntryEmbeddingQueueService {
         payload.put("elseDreamerNm", entry.getElseDreamerNm());
         payload.put("tags", buildTagSummary(entry));
         return payload;
+    }
+
+    /**
+     * 임베딩 문맥에 사용할 챕터 말머리를 반환한다.
+     * 시스템 요약은 사용자 Prefix가 아니므로 고정 역할명으로 표현하고, 일반 챕터는 선택된 Prefix 이름을 사용한다.
+     *
+     * @param chapter 소속 저널 챕터
+     * @return 시스템 요약 역할명 또는 개인 Prefix 이름
+     */
+    private String resolveChapterPrefixName(final JournalChapterEntity chapter) {
+        if (chapter == null) return null;
+        if ("Y".equals(chapter.getSummaryYn())) return "요약";
+        return chapter.getSelectedPrefix() == null ? null : chapter.getSelectedPrefix().getName();
     }
 
     /**

@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.feature.board.post.entity;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbedModule;
 import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +33,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE board_post SET deleted_at = NOW() WHERE id = ?")
-public class BoardPostSmpEntity extends BaseAttachableEntity {
+public class BoardPostSmpEntity extends BaseAttachableEntity implements PrefixEmbedModule {
 
     /** 글 번호 */
     @Id
@@ -57,10 +59,12 @@ public class BoardPostSmpEntity extends BaseAttachableEntity {
     @Comment("content")
     private String content;
 
-    /** 글 분류 코드 */
-    @Column(name = "category_code", length = 50)
-    @Comment("category code")
-    private String categoryCode;
+    /**
+     * 게시판 GLOBAL Scope 소속 단일 말머리.
+     * 전체 엔티티와 동일하게 prefix_content 연결을 PrefixEmbed로 조립한다.
+     */
+    @Embedded
+    public PrefixEmbed prefix;
 
     /* ----- */
 

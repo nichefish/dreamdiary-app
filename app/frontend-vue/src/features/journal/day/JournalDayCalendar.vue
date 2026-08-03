@@ -180,8 +180,8 @@ watch(
 );
 
 onMounted(() => {
-  /* 챕터 카테고리를 화면 로드 시점에 미리 캐시해 모달 오픈 시 로딩 없이 사용한다. */
-  void modalStore.prefetchChapterCategories();
+  /* 챕터 개인 Prefix를 화면 로드 시점에 미리 캐시해 모달 오픈 시 로딩 없이 사용한다. */
+  void modalStore.prefetchChapterPrefixes();
 });
 
 watch(

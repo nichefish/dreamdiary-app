@@ -2,8 +2,12 @@ package io.nicheblog.dreamdiary.feature.journal.thread.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.service.PrefixContentService;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleViewHelper;
 import io.nicheblog.dreamdiary.feature.attachable.managt.event.ManagtrAddEvent;
@@ -20,6 +24,7 @@ import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.spec.JournalThreadSpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -59,6 +64,7 @@ public class JournalThreadService
     private final JournalThreadEntryService journalThreadEntryService;
     private final JournalEntryService journalEntryService;
     private final LifecycleService lifecycleService;
+    private final PrefixContentService prefixContentService;
     @Getter
     private final JournalThreadSpec spec;
     @Getter
@@ -81,13 +87,13 @@ public class JournalThreadService
      * 엔트리 소속 메뉴에 노출할 스레드 후보를 조회한다.
      * <p>
      * 현재 소속, 최근 소속 추가 시각, 활성 소속 수, 스레드 수정·생성 시각 순의
-     * 서버 우선순위를 사용한다. 검색어와 분류는 후보 집합을 먼저 좁힌 뒤 같은 순위를 적용한다.
+     * 서버 우선순위를 사용한다. 검색어와 말머리는 후보 집합을 먼저 좁힌 뒤 같은 순위를 적용한다.
      * 기본은 완료({@code RESOLVED}) 스레드를 숨기고, {@code includeResolved=true} 일 때만 포함한다.
      * </p>
      *
      * @param entryId 후보를 요청한 엔트리 ID
      * @param keyword 제목 검색어
-     * @param categoryCode 분류 코드
+     * @param prefixId 말머리 ID
      * @param includeResolved 완료 스레드 포함 여부
      * @param limit 최대 후보 수
      * @return 경량 스레드 후보 목록
@@ -96,13 +102,12 @@ public class JournalThreadService
     public List<JournalThreadCandidateDto> getCandidates(
             final Integer entryId,
             final String keyword,
-            final String categoryCode,
+            final Integer prefixId,
             final Boolean includeResolved,
             final Integer limit
     ) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
         final String resolvedKeyword = StringUtils.trimToEmpty(keyword);
-        final String resolvedCategoryCode = StringUtils.trimToEmpty(categoryCode);
         final String resolvedIncludeResolved = Boolean.TRUE.equals(includeResolved) ? "Y" : "N";
         final int requestedLimit = (limit == null) ? DEFAULT_CANDIDATE_LIMIT : limit;
         final int resolvedLimit = Math.max(1, Math.min(requestedLimit, MAX_CANDIDATE_LIMIT));
@@ -115,17 +120,17 @@ public class JournalThreadService
                 username,
                 entryId,
                 resolvedKeyword,
-                resolvedCategoryCode,
+                prefixId,
                 resolvedIncludeResolved,
                 PageRequest.of(0, resolvedLimit)
         );
-        log.debug("[JournalThread.candidates] 후보 조회. entryId={}, keyword={}, categoryCode={}, includeResolved={}, limit={}, size={}, username={}",
-                entryId, resolvedKeyword, resolvedCategoryCode, resolvedIncludeResolved, resolvedLimit, candidates.size(), username);
+        log.debug("[JournalThread.candidates] 후보 조회. entryId={}, keyword={}, prefixId={}, includeResolved={}, limit={}, size={}, username={}",
+                entryId, resolvedKeyword, prefixId, resolvedIncludeResolved, resolvedLimit, candidates.size(), username);
         return candidates.stream()
                 .map(candidate -> JournalThreadCandidateDto.builder()
                         .id(candidate.getId())
                         .title(candidate.getTitle())
-                        .categoryCode(candidate.getCategoryCode())
+                        .prefix(toPrefixDto(candidate))
                         .lifecycleKey(StringUtils.defaultIfBlank(candidate.getLifecycleKey(), "OPEN"))
                         .membershipCount(candidate.getMembershipCount() == null
                                 ? 0L
@@ -178,6 +183,30 @@ public class JournalThreadService
     }
 
     /**
+     * 스레드 본문과 단일 Prefix 참조를 같은 트랜잭션에서 등록한다.
+     */
+    @Override
+    @Transactional
+    public ServiceResponse regist(final JournalThreadDto registDto) throws Exception {
+        final ServiceResponse response = BaseAttachableService.super.regist(registDto);
+        final JournalThreadDto updatedDto = (JournalThreadDto) response.getRsltObj();
+        applyPrefixSelection(updatedDto, registDto.getPrefixId());
+        return response;
+    }
+
+    /**
+     * 스레드 본문과 단일 Prefix 참조를 같은 트랜잭션에서 수정한다.
+     */
+    @Override
+    @Transactional
+    public ServiceResponse modify(final JournalThreadDto modifyDto) throws Exception {
+        final ServiceResponse response = BaseAttachableService.super.modify(modifyDto);
+        final JournalThreadDto updatedDto = (JournalThreadDto) response.getRsltObj();
+        applyPrefixSelection(updatedDto, modifyDto.getPrefixId());
+        return response;
+    }
+
+    /**
      * 상세 페이지 조회 전처리. (dto level)
      *
      * @param key 조회할 DTO 식별자
@@ -190,6 +219,34 @@ public class JournalThreadService
         return dto;
     }
 
+    /** 선택한 Prefix의 소유권·활성 상태를 검증하고 prefix_content 연결을 반영한다. */
+    private void applyPrefixSelection(final JournalThreadDto dto, final Integer prefixId) {
+        final JournalThreadEntity entity = repository.findByIdAndCreatedBy(
+                        dto.getId(), AuthUtils.requireLoginUsername())
+                .orElseThrow(() -> new javax.persistence.EntityNotFoundException("Journal thread not found."));
+        final BaseAttachableKey key = new BaseAttachableKey(entity.getId(), ContentType.JOURNAL_THREAD.key);
+        final PrefixEntity prefix = prefixContentService.applySelection(
+                key, ContentType.JOURNAL_THREAD.key, prefixId);
+        dto.setPrefix(prefix == null ? null : PrefixDto.builder()
+                .id(prefix.getId())
+                .name(prefix.getName())
+                .color(prefix.getColor())
+                .sortOrder(prefix.getSortOrder())
+                .activeYn(prefix.getActiveYn())
+                .build());
+        dto.setPrefixId(prefixId);
+    }
+
+    private PrefixDto toPrefixDto(final JournalThreadCandidateProjection candidate) {
+        if (candidate.getPrefixId() == null) return null;
+        return PrefixDto.builder()
+                .id(candidate.getPrefixId())
+                .name(candidate.getPrefixName())
+                .color(candidate.getPrefixColor())
+                .sortOrder(0)
+                .activeYn(candidate.getPrefixActiveYn())
+                .build();
+    }
 
     /**
      * 스레드 목록·상세에 부착 라이프사이클을 일괄 병합한다.

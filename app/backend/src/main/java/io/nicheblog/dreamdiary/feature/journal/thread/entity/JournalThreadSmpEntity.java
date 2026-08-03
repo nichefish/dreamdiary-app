@@ -48,7 +48,4 @@ public class JournalThreadSmpEntity
     @Column(name = "content")
     private String content;
 
-    @Column(name = "category_code", length = 50)
-    @Comment("글 분류 코드")
-    private String categoryCode;
 }

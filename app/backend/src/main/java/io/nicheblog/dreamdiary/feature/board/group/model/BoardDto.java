@@ -27,9 +27,6 @@ public class BoardDto extends BaseAuditDto implements Identifiable<Integer>, Sor
     @Size(max = 120)
     private String boardName;
 
-    @Size(max = 30)
-    private String categoryGroupCode;
-
     @Size(max = 2000)
     private String description;
 

@@ -16,7 +16,13 @@ public interface JournalThreadCandidateProjection {
 
     String getTitle();
 
-    String getCategoryCode();
+    Integer getPrefixId();
+
+    String getPrefixName();
+
+    String getPrefixColor();
+
+    String getPrefixActiveYn();
 
     /** 스레드 라이프사이클 키. 행이 없으면 쿼리가 {@code OPEN} 으로 보정한다. */
     String getLifecycleKey();

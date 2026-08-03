@@ -3,7 +3,7 @@
     <!--begin::헤더 (제목 + 작성자/일시)-->
     <div class="mb-0">
       <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
-        <span v-if="store.detailModel.categoryName" class="ctgr-span ctgr-gray">{{ store.detailModel.categoryName }}</span>
+        <span v-if="store.detailModel?.prefix" class="ctgr-span" :style="{ borderColor: store.detailModel.prefix.color || '', color: store.detailModel.prefix.color || '' }">{{ store.detailModel.prefix.name }}</span>
         <span
           v-if="detailLifecycleKey"
           class="badge fs-8"
@@ -107,7 +107,7 @@
           :key="'thread-entry-' + entry.id"
           :entry="entry"
           :is-dream="entry.contentType === 'JOURNAL_DREAM'"
-          :disable-resolved-collapse="true"
+          :disable-lifecycle-collapse="true"
         />
       </template>
     </div>
@@ -221,7 +221,7 @@ const hasDetailTags = computed(() =>
 
 const lifecycleOptions = computed(() => [
   { key: "OPEN", label: t("journal.entry.lifecycle.open"), activeClass: "text-gray-800" },
-  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-primary" },
+  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-gray-600" },
   { key: "RESOLVED", label: t("status.completed"), activeClass: "text-success" },
 ]);
 
@@ -234,7 +234,7 @@ const detailLifecycleLabel = computed(() => {
 });
 const detailLifecycleBadgeClass = computed(() => {
   const key = detailLifecycleKey.value;
-  if (key === "PENDING") return "badge-light-primary";
+  if (key === "PENDING") return "badge-light-secondary text-gray-600";
   if (key === "RESOLVED") return "badge-light-success";
   return "badge-light";
 });

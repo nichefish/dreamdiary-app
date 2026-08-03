@@ -36,10 +36,6 @@ public class BoardEntity extends BaseAuditEntity implements Usable, Sortable {
     @Comment("board name")
     private String boardName;
 
-    @Column(name = "category_group_code", length = 30)
-    @Comment("category group code")
-    private String categoryGroupCode;
-
     @Column(name = "description", length = 2000)
     @Comment("description")
     private String description;

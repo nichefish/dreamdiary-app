@@ -1,9 +1,11 @@
 package io.nicheblog.dreamdiary.feature.board.post.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixContentEntity;
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
@@ -56,6 +58,20 @@ public class BoardPostSpec implements BaseAttachableSpec<BoardPostEntity> {
                 case "searchEndDt":
                     // 기간 검색
                     predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asLocalDateTime(value)));
+                    continue;
+                case "prefixId":
+                    // 직접 FK가 없으므로 동적 boardKey까지 일치하는 prefix_content 연결로 필터한다.
+                    if (value != null && StringUtils.isNotBlank(value.toString())) {
+                        final Subquery<Integer> prefixSubquery = query.subquery(Integer.class);
+                        final Root<PrefixContentEntity> prefixRoot = prefixSubquery.from(PrefixContentEntity.class);
+                        prefixSubquery.select(prefixRoot.get("id"));
+                        prefixSubquery.where(
+                                builder.equal(prefixRoot.get("refId"), root.get("id")),
+                                builder.equal(prefixRoot.get("refContentType"), root.get("contentType")),
+                                builder.equal(prefixRoot.get("prefixId"), Integer.valueOf(value.toString()))
+                        );
+                        predicate.add(builder.exists(prefixSubquery));
+                    }
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

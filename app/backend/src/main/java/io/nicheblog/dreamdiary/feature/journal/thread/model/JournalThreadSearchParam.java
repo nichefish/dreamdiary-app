@@ -25,9 +25,8 @@ import java.util.List;
 public class JournalThreadSearchParam
         extends BaseAttachableSearchParam {
 
-    /** 글 분류 코드 (목록 필터) */
-    @Size(max = 50)
-    private String categoryCode;
+    /** 단일 말머리 필터. */
+    private Integer prefixId;
 
     /**
      * 소속 엔트리 태그 필터 (멀티, AND).
@@ -41,10 +40,9 @@ public class JournalThreadSearchParam
     /**
      * 스레드 라이프사이클 필터 ({@code OPEN}/{@code PENDING}/{@code RESOLVED}).
      * <p>
-     * 비우면 전체. {@code OPEN} 은 행 없음도 포함한다.
+     * 비우면 전체. {@code OPEN}은 lifecycle 행이 없는 스레드를 뜻한다.
      * </p>
      */
     @Size(max = 50)
     private String lifecycleKey;
 }
-

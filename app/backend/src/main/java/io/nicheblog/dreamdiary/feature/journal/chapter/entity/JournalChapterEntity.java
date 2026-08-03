@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.chapter.entity;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
@@ -37,7 +39,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE journal_chapter SET deleted_at = NOW() WHERE id = ?")
 public class JournalChapterEntity
         extends BaseAttachableEntity
-        implements StateEmbedModule {
+        implements StateEmbedModule, PrefixEmbedModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_CHAPTER;
@@ -62,12 +64,14 @@ public class JournalChapterEntity
     @Column(name = "title")
     private String title;
 
-    @Column(name = "category_code", length = 50)
-    @Comment("journal chapter category code")
-    private String categoryCode;
-
-    @Transient
-    private String categoryName;
+    /**
+     * 시스템 요약 챕터 여부.
+     * 사용자 선택 Prefix와 분리하여, 말머리 변경이 요약 동작을 바꾸지 않게 한다.
+     */
+    @Builder.Default
+    @Column(name = "summary_yn", nullable = false, length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("system summary chapter (Y/N)")
+    private String summaryYn = "N";
 
     @Column(name = "journal_day_id")
     @Comment("journal day id")
@@ -91,6 +95,13 @@ public class JournalChapterEntity
     @Builder.Default
     @Transient
     private Boolean isSortOrderChanged = false;
+
+    /**
+     * 일반 챕터가 선택한 개인 말머리(0..1).
+     * 시스템 요약·DREAM 챕터는 선택하지 않으며, 연결은 prefix_content에 저장한다.
+     */
+    @Embedded
+    public PrefixEmbed prefix;
 
     @Embedded
     public StateEmbed state;

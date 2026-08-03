@@ -97,43 +97,6 @@ INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_ord
 
 -- -----------------------
 
--- 저널 챕터 일기/노트 전용 글분류 코드 그룹 추가 (기존 JOURNAL_CHAPTER_CTGR_CD 에서 분리)
--- 기존 JOURNAL_CHAPTER_CTGR_CD 항목은 모두 DIARY 챕터용이었으므로 DIARY 그룹으로 복사한다.
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', '저널 챕터 일기 글분류', '저널 챕터 일기 전용 글분류 코드');
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('JOURNAL_CHAPTER_NOTE_CTGR_CD', '저널 챕터 노트 글분류', '저널 챕터 노트 전용 글분류 코드');
-
--- 저널 챕터 일기 전용 글분류 상세 코드 추가
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', 'SUMMARY',     '요약',     '요약',     0);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', 'INTERACTION', '관계',     '관계',     1);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', 'FAMILY',      '가족',     '가족',     3);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', 'EMOTION',     '감정',     '감정',     4);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', 'EXCERPT',     '발췌',     '발췌',     5);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', 'DYNAMICS',    '회사역동', '회사역동', 4);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_DIARY_CTGR_CD', 'ETC',         '기타',     '기타',     6);
--- 저널 챕터 일기 글분류 영문(en) 명칭 추가
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Summary' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_DIARY_CTGR_CD' AND code = 'SUMMARY';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Interaction' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_DIARY_CTGR_CD' AND code = 'INTERACTION';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Family' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_DIARY_CTGR_CD' AND code = 'FAMILY';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Emotion' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_DIARY_CTGR_CD' AND code = 'EMOTION';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Excerpt' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_DIARY_CTGR_CD' AND code = 'EXCERPT';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Workplace dynamics' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_DIARY_CTGR_CD' AND code = 'DYNAMICS';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Etc.' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_DIARY_CTGR_CD' AND code = 'ETC';
-
--- 저널 챕터 노트 전용 글분류 상세 코드 추가
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_NOTE_CTGR_CD', 'EXCERPT', '발췌',   '발췌',   1);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_NOTE_CTGR_CD', 'REVIEW',  '리뷰',   '리뷰',   2);
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_CHAPTER_NOTE_CTGR_CD', 'PLAY',    '플레이', '플레이', 3);
--- 저널 챕터 노트 글분류 영문(en) 명칭 추가
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Excerpt' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_NOTE_CTGR_CD' AND code = 'EXCERPT';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Review' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_NOTE_CTGR_CD' AND code = 'REVIEW';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Play' FROM code_item WHERE group_code = 'JOURNAL_CHAPTER_NOTE_CTGR_CD' AND code = 'PLAY';
-
--- 기존 JOURNAL_CHAPTER_CTGR_CD 항목 및 그룹을 제거한다.
-DELETE FROM code_item  WHERE group_code = 'JOURNAL_CHAPTER_CTGR_CD';
-DELETE FROM code_group WHERE group_code = 'JOURNAL_CHAPTER_CTGR_CD';
-
--- -----------------------
-
 -- 필수 :: 권한 분류 코드 추가 (기존 DB 에만 있던 그룹 — 시드 커버리지 정합)
 INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('AUTH_CD', '권한 분류 코드', '권한 분류 코드');
 -- 필수 :: 권한 상세 코드 추가
@@ -178,19 +141,6 @@ INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, '
 INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Test' FROM code_item WHERE group_code = 'JANDI_TOPIC_CD' AND code = 'TEST';
 
 -- -----------------------
-
--- 필수 :: 저널 스레드 분류 코드 추가 (기존 DB 에만 있던 그룹 — 시드 커버리지 정합)
-INSERT IGNORE INTO code_group (group_code, group_name, description) VALUES ('JOURNAL_THREAD_CTGR_CD', '저널 스레드 분류 코드', '저널 스레드 글분류 코드');
--- 필수 :: 저널 스레드 분류 상세 코드 추가
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'FNNC', '금융', '금융 관련', '1');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'JOB', '직업', '직업 관련', '2');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'LIFE', '생활', '생활 관련 코드', '3');
-INSERT IGNORE INTO code_item (group_code, code, code_name, description, sort_order) VALUES ('JOURNAL_THREAD_CTGR_CD', 'RFLX', '성찰', '자기성찰 관련', '4');
--- 저널 스레드 분류 영문(en) 명칭 추가
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Finance' FROM code_item WHERE group_code = 'JOURNAL_THREAD_CTGR_CD' AND code = 'FNNC';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Career' FROM code_item WHERE group_code = 'JOURNAL_THREAD_CTGR_CD' AND code = 'JOB';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Life' FROM code_item WHERE group_code = 'JOURNAL_THREAD_CTGR_CD' AND code = 'LIFE';
-INSERT IGNORE INTO code_item_i18n (code_item_id, locale, code_name) SELECT id, 'en', 'Reflection' FROM code_item WHERE group_code = 'JOURNAL_THREAD_CTGR_CD' AND code = 'RFLX';
 
 -- -----------------------
 

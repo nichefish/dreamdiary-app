@@ -1,6 +1,11 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixContentEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixScopeEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.type.PrefixScopeType;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
@@ -11,22 +16,33 @@ import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryProjection;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserStateEntity;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
+import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 
 /**
  * 기간별 스레드 집계 repository 계약 검증.
@@ -53,6 +69,18 @@ class JournalThreadPeriodSummaryRepositoryTest {
     private JournalThreadRepository journalThreadRepository;
     @Resource
     private JournalThreadEntryRepository journalThreadEntryRepository;
+    @Resource
+    private UserRepository userRepository;
+    @Resource
+    private EntityManager entityManager;
+
+    @MockBean(name = "auditorRef")
+    private AuditorAware<String> auditorRef;
+
+    @BeforeEach
+    void setUp() {
+        useAuditor(FIXTURE_USERNAME);
+    }
 
     /** 주간 집계는 같은 주의 엔트리만 세고 다른 사용자와 다른 주의 소속을 제외한다. */
     @Test
@@ -61,6 +89,7 @@ class JournalThreadPeriodSummaryRepositoryTest {
         final JournalThreadEntity firstThread = saveThread("첫 번째 스레드", FIXTURE_USERNAME);
         final JournalThreadEntity secondThread = saveThread("두 번째 스레드", FIXTURE_USERNAME);
         final JournalThreadEntity otherThread = saveThread("다른 사용자 스레드", OTHER_USERNAME);
+        final PrefixEntity firstPrefix = savePrefix(firstThread, "가상 말머리", "#336699");
 
         final JournalEntryEntity firstEntry = saveEntry(LocalDate.of(2026, 7, 6), weekStartDt, FIXTURE_USERNAME);
         final JournalEntryEntity secondEntry = saveEntry(LocalDate.of(2026, 7, 8), weekStartDt, FIXTURE_USERNAME);
@@ -86,8 +115,13 @@ class JournalThreadPeriodSummaryRepositoryTest {
         assertEquals(2, result.size());
         assertEquals(2L, result.get(firstThread.getId()).getEntryCount().longValue());
         assertEquals(LocalDate.of(2026, 7, 6), result.get(firstThread.getId()).getFirstEntryDate());
+        assertEquals(firstPrefix.getId(), result.get(firstThread.getId()).getPrefixId());
+        assertEquals("가상 말머리", result.get(firstThread.getId()).getPrefixName());
+        assertEquals("#336699", result.get(firstThread.getId()).getPrefixColor());
+        assertEquals("Y", result.get(firstThread.getId()).getPrefixActiveYn());
         assertEquals(1L, result.get(secondThread.getId()).getEntryCount().longValue());
         assertEquals(LocalDate.of(2026, 7, 8), result.get(secondThread.getId()).getFirstEntryDate());
+        assertNull(result.get(secondThread.getId()).getPrefixId());
     }
 
     /** 월간 집계는 월 경계를 넘는 같은 스레드의 소속을 해당 월 건수에 포함하지 않는다. */
@@ -113,11 +147,42 @@ class JournalThreadPeriodSummaryRepositoryTest {
 
     /** 기간 집계 테스트용 가상 스레드를 저장한다. */
     private JournalThreadEntity saveThread(final String title, final String username) {
+        useAuditor(username);
         return journalThreadRepository.saveAndFlush(JournalThreadEntity.builder()
                 .contentType("JOURNAL_THREAD")
                 .title(title)
                 .createdBy(username)
                 .build());
+    }
+
+    /** 스레드 기간 요약의 말머리 LEFT JOIN을 검증할 가상 Prefix 연결을 저장한다. */
+    private PrefixEntity savePrefix(
+            final JournalThreadEntity thread,
+            final String name,
+            final String color
+    ) {
+        final String username = thread.getCreatedBy();
+        final PrefixScopeEntity scope = PrefixScopeEntity.builder()
+                .scopeType(PrefixScopeType.PERSONAL)
+                .userId(ensureUser(username))
+                .contentType("PERIOD_SUMMARY:" + thread.getId())
+                .build();
+        entityManager.persist(scope);
+        final PrefixEntity prefix = PrefixEntity.builder()
+                .scope(scope)
+                .name(name)
+                .color(color)
+                .sortOrder(0)
+                .activeYn("Y")
+                .createdBy(username)
+                .build();
+        entityManager.persist(prefix);
+        entityManager.persist(new PrefixContentEntity(
+                prefix.getId(),
+                new BaseAttachableKey(thread.getId(), "JOURNAL_THREAD")
+        ));
+        entityManager.flush();
+        return prefix;
     }
 
     /** 지정 일자의 가상 일자·챕터·엔트리를 저장한다. */
@@ -126,6 +191,7 @@ class JournalThreadPeriodSummaryRepositoryTest {
             final LocalDate weekStartDt,
             final String username
     ) {
+        useAuditor(username);
         final JournalDayEntity day = journalDayRepository.saveAndFlush(JournalDayEntity.builder()
                 .contentType("JOURNAL_DAY")
                 .journalDate(journalDate)
@@ -149,10 +215,34 @@ class JournalThreadPeriodSummaryRepositoryTest {
 
     /** 가상 스레드 소속을 저장한다. */
     private void saveMembership(final Integer threadId, final Integer entryId, final String username) {
-        journalThreadEntryRepository.save(JournalThreadEntryEntity.builder()
+        useAuditor(username);
+        journalThreadEntryRepository.saveAndFlush(JournalThreadEntryEntity.builder()
                 .threadId(threadId)
                 .entryId(entryId)
                 .createdBy(username)
                 .build());
+    }
+
+    /** PERSONAL Prefix Scope가 참조할 가상 사용자를 저장하고 ID를 반환한다. */
+    private Integer ensureUser(final String username) {
+        return userRepository.findByUsername(username)
+                .map(UserEntity::getId)
+                .orElseGet(() -> {
+                    useAuditor(username);
+                    final UserEntity user = UserEntity.builder()
+                            .username(username)
+                            .password(TestConstant.TEST_PASSWORD_ENCODED)
+                            .nickname(username)
+                            .email(username + "@example.test")
+                            .acntStus(UserStateEntity.getRegistStus())
+                            .build();
+                    user.cascade();
+                    return userRepository.saveAndFlush(user).getId();
+                });
+    }
+
+    /** 다음 영속화 작업의 가상 감사 사용자를 지정한다. */
+    private void useAuditor(final String username) {
+        when(auditorRef.getCurrentAuditor()).thenReturn(Optional.of(username));
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JournalThreadRepository
@@ -21,6 +22,8 @@ import java.util.List;
 @Repository
 public interface JournalThreadRepository
         extends BaseStreamRepository<JournalThreadEntity, Integer> {
+
+    Optional<JournalThreadEntity> findByIdAndCreatedBy(Integer id, String createdBy);
 
     /**
      * 엔트리 소속 메뉴에 노출할 스레드 후보를 조회한다.
@@ -35,14 +38,14 @@ public interface JournalThreadRepository
      * @param createdBy 현재 사용자 계정명
      * @param entryId 후보를 요청한 엔트리 ID
      * @param keyword 제목 검색어 (빈 문자열이면 전체)
-     * @param categoryCode 분류 코드 (빈 문자열이면 전체)
+     * @param prefixId 말머리 ID. {@code null}이면 필터하지 않는다.
      * @param includeResolved {@code Y}이면 완료 스레드 포함, 그 외는 제외
      * @param pageable 최대 후보 수
      * @return 우선순위가 적용된 후보 집계 목록
      */
     @Query(value = "SELECT jt.id AS id, " +
             "       jt.title AS title, " +
-            "       jt.category_code AS categoryCode, " +
+            "       p.id AS prefixId, p.name AS prefixName, p.color AS prefixColor, p.active_yn AS prefixActiveYn, " +
             "       COALESCE(( " +
             "           SELECT lc.lifecycle_key " +
             "           FROM lifecycle lc " +
@@ -55,6 +58,8 @@ public interface JournalThreadRepository
             "       MAX(jte.created_at) AS lastMembershipAt, " +
             "       MAX(CASE WHEN jte.entry_id = :entryId THEN 1 ELSE 0 END) AS currentEntryMembershipCount " +
             "FROM journal_thread jt " +
+            "LEFT JOIN prefix_content pc ON pc.ref_id = jt.id AND pc.ref_content_type = 'JOURNAL_THREAD' AND pc.deleted_at IS NULL " +
+            "LEFT JOIN prefix p ON p.id = pc.prefix_id AND p.deleted_at IS NULL " +
             "LEFT JOIN journal_thread_entry jte " +
             "  ON jte.thread_id = jt.id " +
             " AND jte.created_by = :createdBy " +
@@ -62,7 +67,7 @@ public interface JournalThreadRepository
             "WHERE jt.created_by = :createdBy " +
             "  AND jt.deleted_at IS NULL " +
             "  AND (:keyword = '' OR LOWER(COALESCE(jt.title, '')) LIKE CONCAT('%', LOWER(:keyword), '%')) " +
-            "  AND (:categoryCode = '' OR jt.category_code = :categoryCode) " +
+            "  AND (:prefixId IS NULL OR pc.prefix_id = :prefixId) " +
             "  AND (:includeResolved = 'Y' OR COALESCE(( " +
             "           SELECT lc.lifecycle_key " +
             "           FROM lifecycle lc " +
@@ -71,7 +76,8 @@ public interface JournalThreadRepository
             "             AND lc.deleted_at IS NULL " +
             "           LIMIT 1 " +
             "       ), 'OPEN') <> 'RESOLVED') " +
-            "GROUP BY jt.id, jt.title, jt.category_code, jt.created_at, jt.updated_at " +
+            "GROUP BY jt.id, jt.title, jt.created_at, jt.updated_at, " +
+            "         p.id, p.name, p.color, p.active_yn " +
             "ORDER BY MAX(CASE WHEN jte.entry_id = :entryId THEN 1 ELSE 0 END) DESC, " +
             "         CASE WHEN MAX(jte.created_at) IS NULL THEN 1 ELSE 0 END ASC, " +
             "         MAX(jte.created_at) DESC, " +
@@ -83,7 +89,7 @@ public interface JournalThreadRepository
             final @Param("createdBy") String createdBy,
             final @Param("entryId") Integer entryId,
             final @Param("keyword") String keyword,
-            final @Param("categoryCode") String categoryCode,
+            final @Param("prefixId") Integer prefixId,
             final @Param("includeResolved") String includeResolved,
             final Pageable pageable
     );

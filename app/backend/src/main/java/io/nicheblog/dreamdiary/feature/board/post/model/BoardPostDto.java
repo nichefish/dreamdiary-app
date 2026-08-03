@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.board.post.model;
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.viewer.model.cmpstn.ViewerCmpstn;
@@ -12,8 +13,6 @@ import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import javax.validation.constraints.Size;
 
 /**
  * BoardPostDto
@@ -41,21 +40,11 @@ public class BoardPostDto
     /** 마크다운 처리된 내용 */
     private String markdownContent;
 
-    /** 글분류 그룹 코드 */
-    @Size(max = 50)
-    private String categoryGroupCode;
+    /** 게시판 Scope 소속 단일 말머리 */
+    private PrefixDto prefix;
 
-    /** 글 분류 코드 */
-    @Size(max = 50)
-    private String categoryCode;
-
-    /** 글분류 코드 이름 */
-    @Size(max = 50)
-    private String ctgrNm;
-
-    /** 글분류 존재 여부 */
-    @Builder.Default
-    private Boolean hasCtgrNm = false;
+    /** 등록·수정·검색에 사용하는 말머리 ID */
+    private Integer prefixId;
 
     /**
      * 게시판 게시물 상세 (DTL) Dto.

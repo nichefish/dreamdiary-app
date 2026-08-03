@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.controller;
 
 import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
-import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemDto;
-import io.nicheblog.dreamdiary.feature.admin.code.service.CodeItemService;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
@@ -61,7 +59,6 @@ public class JournalThreadRestController
 
     private final JournalThreadService journalThreadService;
     private final JournalThreadEntryService journalThreadEntryService;
-    private final CodeItemService codeItemService;
     private final JournalThreadExportService journalThreadExportService;
 
     /**
@@ -75,7 +72,7 @@ public class JournalThreadRestController
      *
      * @param entryId 후보를 요청한 엔트리 식별자
      * @param keyword 제목 검색어
-     * @param categoryCode 분류 코드
+     * @param prefixId 말머리 ID 필터
      * @param includeResolved 완료({@code RESOLVED}) 스레드 포함 여부
      * @param limit 최대 후보 수 (서버에서 1~20으로 제한)
      * @return {@link ResponseEntity} -- 경량 스레드 후보 목록
@@ -86,34 +83,17 @@ public class JournalThreadRestController
     public ResponseEntity<AjaxResponse> journalThreadCandidateListAjax(
             final @RequestParam("entryId") Integer entryId,
             final @RequestParam(value = "keyword", required = false) String keyword,
-            final @RequestParam(value = "categoryCode", required = false) String categoryCode,
+            final @RequestParam(value = "prefixId", required = false) Integer prefixId,
             final @RequestParam(value = "includeResolved", defaultValue = "false") Boolean includeResolved,
             final @RequestParam(value = "limit", defaultValue = "7") Integer limit
     ) throws Exception {
 
         final List<JournalThreadCandidateDto> resultList =
-                journalThreadService.getCandidates(entryId, keyword, categoryCode, includeResolved, limit);
+                journalThreadService.getCandidates(entryId, keyword, prefixId, includeResolved, limit);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(resultList));
-    }
-
-    /**
-     * 저널 스레드 분류 목록 조회 (Ajax).
-     * 관리 화면 API를 우회하지 않고 사용자 화면이 읽을 수 있는 전용 읽기 계약을 제공한다.
-     *
-     * @return {@link ResponseEntity} -- 현재 locale이 적용된 분류 코드 목록
-     */
-    @GetMapping(Url.JOURNAL_THREAD_CATEGORIES)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> journalThreadCategoryListAjax() {
-        final List<CodeItemDto> categoryList = codeItemService.getCdDtoListByGroupCode("JOURNAL_THREAD_CTGR_CD");
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage("common.result.success");
-
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(categoryList));
     }
 
     /**
@@ -147,7 +127,7 @@ public class JournalThreadRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      * 추가(thread-1): Vue SPA 목록 조회용 REST 엔드포인트.
      *
-     * @param searchParam 검색 조건 (categoryCode, searchKeyword, tagIds 등)
+     * @param searchParam 검색 조건 (prefixId, searchKeyword, tagIds 등)
      * @param page 페이지 번호 (0-based, 기본값: 0)
      * @param size 페이지 크기 (기본값: 10)
      * @return {@link ResponseEntity} -- Spring Page 직렬화 (content, totalElements, totalPages, number)

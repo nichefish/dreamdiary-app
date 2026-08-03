@@ -1,14 +1,13 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrHintDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
+import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterPrefixHintDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDreamSectionDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryViewProjectionHelper;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +23,6 @@ import java.util.*;
 @UtilityClass
 public final class JournalDayFilterHelper {
 
-    private static final String CHAPTER_CTGR_NONE = "__NONE__";
     public static List<JournalDayDto> filterInMemory(final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto) || searchParam == null) return listDto;
 
@@ -41,33 +39,28 @@ public final class JournalDayFilterHelper {
         final boolean filterDiaryLifecycle = showDiaries && StringUtils.isNotEmpty(diaryLifecycleKey);
         final boolean filterDreamLifecycle = showDreams && StringUtils.isNotEmpty(dreamLifecycleKey);
 
-        final List<String> chapterCtgrCds = normalizeChapterCtgrCds(searchParam.getChapterCtgrCds());
-        final boolean filterChapterCtgr = showDiaries && CollectionUtils.isNotEmpty(chapterCtgrCds);
+        final List<Integer> chapterPrefixIds = searchParam.getChapterPrefixIds();
+        final boolean filterChapterPrefix = showDiaries && CollectionUtils.isNotEmpty(chapterPrefixIds);
 
-        if (!filterDiaries && !filterDreams && !filterDiaryLifecycle && !filterDreamLifecycle && !filterChapterCtgr) return listDto;
+        if (!filterDiaries && !filterDreams && !filterDiaryLifecycle && !filterDreamLifecycle && !filterChapterPrefix) return listDto;
 
-        final boolean hasNoneCategory = filterChapterCtgr && chapterCtgrCds.contains(CHAPTER_CTGR_NONE);
-        final Set<String> ctgrSet = new HashSet<>();
-        if (filterChapterCtgr) {
-            for (final String ctgr : chapterCtgrCds) {
-                if (StringUtils.isBlank(ctgr) || CHAPTER_CTGR_NONE.equals(ctgr)) continue;
-                ctgrSet.add(ctgr.trim());
-            }
-        }
+        final Set<Integer> prefixIdSet = filterChapterPrefix
+                ? new HashSet<>(chapterPrefixIds)
+                : Set.of();
 
         final List<JournalDayDto> result = new ArrayList<>();
         for (final JournalDayDto day : listDto) {
             List<JournalChapterDto> filteredEntries = day.getJournalChapterList();
             final boolean hadChapters = CollectionUtils.isNotEmpty(day.getJournalChapterList());
-            final List<JournalChapterCtgrHintDto> hiddenChapterCtgrList = filterChapterCtgr
-                    ? collectHiddenChapterCtgrList(day.getJournalChapterList(), hasNoneCategory, ctgrSet)
+            final List<JournalChapterPrefixHintDto> hiddenChapterPrefixList = filterChapterPrefix
+                    ? collectHiddenChapterPrefixList(day.getJournalChapterList(), prefixIdSet)
                     : List.of();
-            if (filterChapterCtgr || filterDiaries || filterDiaryLifecycle) {
+            if (filterChapterPrefix || filterDiaries || filterDiaryLifecycle) {
                 filteredEntries = new ArrayList<>();
                 final List<JournalChapterDto> chapterList = day.getJournalChapterList();
                 if (CollectionUtils.isNotEmpty(chapterList)) {
                     for (final JournalChapterDto chapter : chapterList) {
-                        if (filterChapterCtgr && !matchesChapterCtgr(chapter, hasNoneCategory, ctgrSet)) continue;
+                        if (filterChapterPrefix && !matchesChapterPrefix(chapter, prefixIdSet)) continue;
 
                         if (filterDiaries || filterDiaryLifecycle) {
                             final List<JournalEntryDto> diaryList = JournalEntryViewProjectionHelper.getDiaryEntries(chapter);
@@ -100,17 +93,17 @@ public final class JournalDayFilterHelper {
                 filteredDreamSections = filterDreamSections(day.getJournalDreamSectionList(), dreamKeyword, dreamLifecycleKey);
             }
 
-            final boolean hasHiddenChapterCtgr = !filterDiaries && !filterDiaryLifecycle && CollectionUtils.isNotEmpty(hiddenChapterCtgrList);
+            final boolean hasHiddenChapterPrefix = !filterDiaries && !filterDiaryLifecycle && CollectionUtils.isNotEmpty(hiddenChapterPrefixList);
 
-            // 챕터가 원래부터 없던 날은 챕터 카테고리 필터로 제외하지 않는다.
-            if ((filterDiaries || filterDiaryLifecycle || (filterChapterCtgr && hadChapters))
+            // 챕터가 원래부터 없던 날은 챕터 Prefix 필터로 제외하지 않는다.
+            if ((filterDiaries || filterDiaryLifecycle || (filterChapterPrefix && hadChapters))
                     && CollectionUtils.isEmpty(filteredEntries)
-                    && !hasHiddenChapterCtgr) continue;
+                    && !hasHiddenChapterPrefix) continue;
             if ((filterDreams || filterDreamLifecycle) && CollectionUtils.isEmpty(filteredDreamSections)) continue;
 
             final JournalDayDto nextDay = day.toBuilder()
                     .journalChapterList(filteredEntries)
-                    .hiddenChapterCtgrList(hiddenChapterCtgrList)
+                    .hiddenChapterPrefixList(hiddenChapterPrefixList)
                     .journalDreamSectionList(filteredDreamSections)
                     .build();
             result.add(nextDay);
@@ -119,31 +112,32 @@ public final class JournalDayFilterHelper {
         return result;
     }
 
-    private static boolean matchesChapterCtgr(final JournalChapterDto chapter, final boolean hasNoneCategory, final Set<String> ctgrSet) {
+    /**
+     * 시스템 요약과 Prefix 미선택 챕터는 Prefix 필터 계약상 항상 유지한다.
+     */
+    private static boolean matchesChapterPrefix(final JournalChapterDto chapter, final Set<Integer> prefixIdSet) {
         if (chapter == null) return false;
-        final String categoryCode = StringUtils.trimToEmpty(chapter.getCategoryCode());
-        if (categoryCode.isEmpty()) return true;
-        return ctgrSet.contains(categoryCode);
+        if ("Y".equals(chapter.getSummaryYn()) || chapter.getPrefixId() == null) return true;
+        return prefixIdSet.contains(chapter.getPrefixId());
     }
 
-    private static List<JournalChapterCtgrHintDto> collectHiddenChapterCtgrList(
+    private static List<JournalChapterPrefixHintDto> collectHiddenChapterPrefixList(
             final List<JournalChapterDto> chapterList,
-            final boolean hasNoneCategory,
-            final Set<String> ctgrSet
+            final Set<Integer> prefixIdSet
     ) {
         if (CollectionUtils.isEmpty(chapterList)) return List.of();
 
-        final Map<String, JournalChapterCtgrHintDto> hiddenMap = new LinkedHashMap<>();
+        final Map<Integer, JournalChapterPrefixHintDto> hiddenMap = new LinkedHashMap<>();
         for (final JournalChapterDto chapter : chapterList) {
-            if (chapter == null || matchesChapterCtgr(chapter, hasNoneCategory, ctgrSet)) continue;
+            if (chapter == null || chapter.getPrefix() == null
+                    || matchesChapterPrefix(chapter, prefixIdSet)) continue;
+            final Integer prefixId = chapter.getPrefix().getId();
+            if (prefixId == null || hiddenMap.containsKey(prefixId)) continue;
 
-            final String categoryCode = StringUtils.trimToEmpty(chapter.getCategoryCode());
-            final String ctgrKey = StringUtils.isNotEmpty(categoryCode) ? categoryCode : CHAPTER_CTGR_NONE;
-            if (hiddenMap.containsKey(ctgrKey)) continue;
-
-            hiddenMap.put(ctgrKey, JournalChapterCtgrHintDto.builder()
-                    .categoryCode(categoryCode)
-                    .categoryName(StringUtils.defaultIfBlank(chapter.getCategoryName(), categoryCode.isEmpty() ? MessageUtils.getMessage("common.category.none", null) : categoryCode))
+            hiddenMap.put(prefixId, JournalChapterPrefixHintDto.builder()
+                    .prefixId(prefixId)
+                    .prefixName(chapter.getPrefix().getName())
+                    .prefixColor(chapter.getPrefix().getColor())
                     .build());
         }
 
@@ -192,20 +186,4 @@ public final class JournalDayFilterHelper {
         return CollectionUtils.isEmpty(filtered) ? null : filtered;
     }
 
-    private static List<String> normalizeChapterCtgrCds(final List<String> chapterCtgrCds) {
-        if (CollectionUtils.isEmpty(chapterCtgrCds)) return chapterCtgrCds;
-        if (chapterCtgrCds.size() != 1) return chapterCtgrCds;
-        final String raw = chapterCtgrCds.get(0);
-        if (StringUtils.isBlank(raw) || !raw.contains(",")) return chapterCtgrCds;
-
-        final String[] parts = StringUtils.split(raw, ",");
-        final List<String> normalized = new ArrayList<>();
-        if (parts != null) {
-            for (final String part : parts) {
-                final String trimmed = StringUtils.trimToNull(part);
-                if (trimmed != null) normalized.add(trimmed);
-            }
-        }
-        return normalized;
-    }
 }

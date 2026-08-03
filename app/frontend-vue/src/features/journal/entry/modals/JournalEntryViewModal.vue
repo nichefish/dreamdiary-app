@@ -43,9 +43,16 @@
               </div>
             </div>
 
-            <div v-if="entry.title" class="mb-4">
+            <div v-if="entry.prefix || entry.title" class="mb-4">
               <div class="text-gray-700 fs-6 fw-bolder mb-2">{{ t('common.title') }}</div>
-              <div class="fs-5 fw-bold">{{ entry.title }}</div>
+              <div class="d-flex align-items-center flex-wrap fs-5 fw-bold">
+                <span
+                  v-if="entry.prefix"
+                  class="badge me-2 fs-8"
+                  :style="{ borderColor: entry.prefix.color || '', color: entry.prefix.color || '' }"
+                >{{ entry.prefix.name }}</span>
+                <span v-if="entry.title">{{ entry.title }}</span>
+              </div>
             </div>
 
             <div v-if="isDream && entry.elseDreamerNm" class="mb-4">

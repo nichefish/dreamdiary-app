@@ -7,10 +7,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
- * JournalChapterCtgrHintDto
- * <pre>
- *  저널 챕터 카테고리 힌트 Dto.
- * </pre>
+ * 챕터 Prefix 필터로 화면에서 숨겨진 말머리 힌트 DTO.
  *
  * @author nichefish
  */
@@ -19,10 +16,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @ToString
-public class JournalChapterCtgrHintDto {
+public class JournalChapterPrefixHintDto {
 
-    /** 카테고리 코드 */
-    private String categoryCode;
-    /** 카테고리명 */
-    private String categoryName;
+    /** 말머리 ID */
+    private Integer prefixId;
+    /** 말머리명 */
+    private String prefixName;
+    /** 말머리 표시 색상 */
+    private String prefixColor;
 }

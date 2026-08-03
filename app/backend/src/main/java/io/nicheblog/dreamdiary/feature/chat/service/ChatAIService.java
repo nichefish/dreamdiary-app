@@ -90,11 +90,6 @@ public class ChatAIService {
             Map.entry(JournalEntityRoleType.SYMBOLIC_FIGURE, "상징·대상 축"),
             Map.entry(JournalEntityRoleType.UNKNOWN, "미분류 축")
     );
-    /** Maps chapter category codes to Korean labels for person-meaning fallback. */
-    private static final Map<String, String> PERSON_CHAPTER_CATEGORY_LABELS = Map.of(
-            "DYNAMICS", "역동",
-            "INTERACTION", "상호작용"
-    );
     /** person focus 토큰 최소 길이 */
     private static final int PERSON_FOCUS_MIN_TOKEN_LENGTH = 2;
     /** person-meaning 질문에서 person focus를 감지하는 문장 힌트 */
@@ -1222,7 +1217,7 @@ public class ChatAIService {
 
         final Map<String, Object> payload = readEmbeddingPayload(result);
         appendSourcePart(sb, payload.get("chapterTitle"));
-        appendSourcePart(sb, payload.get("chapterCategory"));
+        appendSourcePart(sb, payload.get("journalChapterPrefixName"));
         appendSourcePart(sb, payload.get("entryTitle"));
         appendSourcePart(sb, payload.get("dreamProviderName"));
         return sb.toString();
@@ -1490,10 +1485,10 @@ public class ChatAIService {
                     .append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 8))
                     .append('\n');
         }
-        if (!snapshot.chapterCategoryCountMap().isEmpty()) {
-            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.chapter-category"))
+        if (!snapshot.chapterPrefixCountMap().isEmpty()) {
+            sb.append(chatMsg("chat.ai.prompt.rag.hybrid.snapshot.label.chapter-prefix"))
                     .append(": ")
-                    .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()))
+                    .append(formatChapterPrefixSpread(snapshot.chapterPrefixCountMap()))
                     .append('\n');
         }
         if (!snapshot.roleAxesKo().isEmpty()) {
@@ -1532,7 +1527,7 @@ public class ChatAIService {
                     snapshot.roleAxesKo(),
                     snapshot.contentKindCountMap(),
                     snapshot.linkedContextTagCountMap(),
-                    snapshot.chapterCategoryCountMap()
+                    snapshot.chapterPrefixCountMap()
             );
         } else if (isPersonAppearanceQuery(queryText)) {
             interpretiveSeed = buildPersonAppearanceInterpretiveLead(
@@ -1541,7 +1536,7 @@ public class ChatAIService {
                     snapshot.roleAxesKo(),
                     snapshot.contentKindCountMap(),
                     snapshot.linkedContextTagCountMap(),
-                    snapshot.chapterCategoryCountMap()
+                    snapshot.chapterPrefixCountMap()
             );
         } else {
             interpretiveSeed = buildPersonMeaningInterpretiveLead(
@@ -1550,7 +1545,7 @@ public class ChatAIService {
                     snapshot.roleAxesKo(),
                     snapshot.contentKindCountMap(),
                     snapshot.linkedContextTagCountMap(),
-                    snapshot.chapterCategoryCountMap()
+                    snapshot.chapterPrefixCountMap()
             );
         }
         if (StringUtils.isNotBlank(interpretiveSeed)) {
@@ -2215,10 +2210,10 @@ public class ChatAIService {
                         .append(formatTopTags(snapshot.linkedContextTagCountMap(), 4))
                         .append('\n');
             }
-            if (!snapshot.chapterCategoryCountMap().isEmpty()) {
-                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.chapter-category"))
+            if (!snapshot.chapterPrefixCountMap().isEmpty()) {
+                sb.append(chatMsg("chat.ai.prompt.rag.retry.label.chapter-prefix"))
                         .append(": ")
-                        .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()))
+                        .append(formatChapterPrefixSpread(snapshot.chapterPrefixCountMap()))
                         .append('\n');
             }
             if (!snapshot.contentKindCountMap().isEmpty()) {
@@ -2258,7 +2253,7 @@ public class ChatAIService {
                     snapshot.roleAxesKo(),
                     snapshot.contentKindCountMap(),
                     snapshot.linkedContextTagCountMap(),
-                    snapshot.chapterCategoryCountMap()
+                    snapshot.chapterPrefixCountMap()
             );
             if (StringUtils.isNotBlank(interpretiveLead)) {
                 sb.append(chatMsg("chat.ai.prompt.rag.retry.label.interpretive-seed"))
@@ -2312,7 +2307,7 @@ public class ChatAIService {
         if (citesPersonMeaningTagEvidence(response, snapshot.repeatedTagCountMap())) return true;
         if (citesPersonMeaningRoleAxisEvidence(response, snapshot.roleAxesKo())) return true;
         if (citesPersonMeaningTagEvidence(response, snapshot.linkedContextTagCountMap())) return true;
-        if (citesPersonMeaningChapterCategoryEvidence(response, snapshot.chapterCategoryCountMap())) return true;
+        if (citesPersonMeaningChapterPrefixEvidence(response, snapshot.chapterPrefixCountMap())) return true;
         if (citesPersonMeaningContentKindEvidence(response, snapshot.contentKindCountMap())) return true;
         return citesPersonMeaningSnippetEvidence(response, snapshot.evidenceSnippets());
     }
@@ -2352,24 +2347,19 @@ public class ChatAIService {
     }
 
     /**
-     * person-meaning 답변이 책터 분류 코드/한국어 라벨을 인용했는지 확인합니다.
+     * person-meaning 답변이 챕터 말머리를 인용했는지 확인합니다.
      */
-    private boolean citesPersonMeaningChapterCategoryEvidence(
+    private boolean citesPersonMeaningChapterPrefixEvidence(
             final String response,
-            final Map<String, Integer> chapterCategoryCountMap
+            final Map<String, Integer> chapterPrefixCountMap
     ) {
-        if (StringUtils.isBlank(response) || chapterCategoryCountMap == null || chapterCategoryCountMap.isEmpty()) {
+        if (StringUtils.isBlank(response) || chapterPrefixCountMap == null || chapterPrefixCountMap.isEmpty()) {
             return false;
         }
 
-        for (final String chapterCategory : chapterCategoryCountMap.keySet()) {
-            if (StringUtils.isBlank(chapterCategory)) continue;
-            if (StringUtils.containsIgnoreCase(response, chapterCategory)) return true;
-
-            final String label = PERSON_CHAPTER_CATEGORY_LABELS.get(chapterCategory);
-            if (StringUtils.isNotBlank(label) && StringUtils.contains(response, label)) {
-                return true;
-            }
+        for (final String chapterPrefix : chapterPrefixCountMap.keySet()) {
+            if (StringUtils.isNotBlank(chapterPrefix)
+                    && StringUtils.containsIgnoreCase(response, chapterPrefix)) return true;
         }
         return false;
     }
@@ -2564,16 +2554,16 @@ public class ChatAIService {
     }
 
     /**
-     * Aggregates linked context tags and chapter categories for person-meaning fallback/scaffold.
+     * Aggregates linked context tags and chapter Prefix values for person-meaning fallback/scaffold.
      */
     private PersonMeaningContextAggregates buildPersonMeaningContextAggregates(
             final List<RagSearchResult> focusedResults,
             final PersonFocus personFocus
     ) {
         final Map<String, Integer> linkedContextTagCountMap = new LinkedHashMap<>();
-        final Map<String, Integer> chapterCategoryCountMap = new LinkedHashMap<>();
+        final Map<String, Integer> chapterPrefixCountMap = new LinkedHashMap<>();
         if (focusedResults == null || focusedResults.isEmpty()) {
-            return new PersonMeaningContextAggregates(linkedContextTagCountMap, chapterCategoryCountMap);
+            return new PersonMeaningContextAggregates(linkedContextTagCountMap, chapterPrefixCountMap);
         }
 
         for (final RagSearchResult result : focusedResults) {
@@ -2582,34 +2572,34 @@ public class ChatAIService {
                     linkedContextTagCountMap,
                     filterPersonMeaningLinkedContextTags(extractSourceTags(result), personFocus)
             );
-            final String chapterCategory = extractSourceChapterCategory(result);
-            if (StringUtils.isNotBlank(chapterCategory)) {
-                chapterCategoryCountMap.merge(chapterCategory, 1, Integer::sum);
+            final String chapterPrefix = extractSourceChapterPrefix(result);
+            if (StringUtils.isNotBlank(chapterPrefix)) {
+                chapterPrefixCountMap.merge(chapterPrefix, 1, Integer::sum);
             }
         }
-        return new PersonMeaningContextAggregates(linkedContextTagCountMap, chapterCategoryCountMap);
+        return new PersonMeaningContextAggregates(linkedContextTagCountMap, chapterPrefixCountMap);
     }
 
     /**
-     * Reads chapter category code from a RAG source embedding payload.
+     * Reads the selected chapter Prefix name from a RAG source embedding payload.
      */
-    private String extractSourceChapterCategory(final RagSearchResult result) {
+    private String extractSourceChapterPrefix(final RagSearchResult result) {
         if (result == null || result.getEntity() == null) return "";
         final Map<String, Object> payload = readEmbeddingPayload(result);
-        return StringUtils.trimToEmpty(String.valueOf(payload.getOrDefault("chapterCategory", "")));
+        return StringUtils.trimToEmpty(String.valueOf(payload.getOrDefault("journalChapterPrefixName", "")));
     }
 
     /**
-     * Appends role/function text from linked context tags and chapter categories.
+     * Appends role/function text from linked context tags and chapter Prefix values.
      */
     private void appendPersonMeaningLinkedContextRoleHint(
             final StringBuilder sb,
             final Map<String, Integer> linkedContextTagCountMap,
-            final Map<String, Integer> chapterCategoryCountMap,
+            final Map<String, Integer> chapterPrefixCountMap,
             final boolean scaffoldStyle
     ) {
         if ((linkedContextTagCountMap == null || linkedContextTagCountMap.isEmpty())
-                && (chapterCategoryCountMap == null || chapterCategoryCountMap.isEmpty())) {
+                && (chapterPrefixCountMap == null || chapterPrefixCountMap.isEmpty())) {
             if (scaffoldStyle) {
                 sb.append(chatMsg("chat.ai.fallback.linked-context.scaffold-empty"));
             } else {
@@ -2625,8 +2615,8 @@ public class ChatAIService {
         if (linkedContextTagCountMap != null && !linkedContextTagCountMap.isEmpty()) {
             hintParts.add(formatTopTags(linkedContextTagCountMap, 3));
         }
-        if (chapterCategoryCountMap != null && !chapterCategoryCountMap.isEmpty()) {
-            hintParts.add(formatChapterCategorySpread(chapterCategoryCountMap));
+        if (chapterPrefixCountMap != null && !chapterPrefixCountMap.isEmpty()) {
+            hintParts.add(formatChapterPrefixSpread(chapterPrefixCountMap));
         }
         sb.append(String.join(" · ", hintParts));
         if (scaffoldStyle) {
@@ -2637,34 +2627,24 @@ public class ChatAIService {
     }
 
     /**
-     * Formats chapter category counts for person-meaning sentences.
+     * Formats chapter Prefix counts for person-meaning sentences.
      */
-    private String formatChapterCategorySpread(final Map<String, Integer> chapterCategoryCountMap) {
-        if (chapterCategoryCountMap == null || chapterCategoryCountMap.isEmpty()) return "";
+    private String formatChapterPrefixSpread(final Map<String, Integer> chapterPrefixCountMap) {
+        if (chapterPrefixCountMap == null || chapterPrefixCountMap.isEmpty()) return "";
 
-        return chapterCategoryCountMap.entrySet().stream()
+        return chapterPrefixCountMap.entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
                 .limit(6)
-                .map(entry -> formatChapterCategoryLabel(entry.getKey()) + "(" + entry.getValue() + ")")
+                .map(entry -> entry.getKey() + "(" + entry.getValue() + ")")
                 .collect(Collectors.joining(", "));
     }
 
     /**
-     * Formats one chapter category code with an optional Korean label.
-     */
-    private String formatChapterCategoryLabel(final String chapterCategory) {
-        final String code = StringUtils.defaultString(chapterCategory);
-        final String label = PERSON_CHAPTER_CATEGORY_LABELS.getOrDefault(code, code);
-        if (StringUtils.equals(code, label)) return code;
-        return label + "(" + code + ")";
-    }
-
-    /**
-     * Holds linked context tag and chapter category counts for person-meaning aggregation.
+     * Holds linked context tag and chapter Prefix counts for person-meaning aggregation.
      */
     private record PersonMeaningContextAggregates(
             Map<String, Integer> linkedContextTagCountMap,
-            Map<String, Integer> chapterCategoryCountMap
+            Map<String, Integer> chapterPrefixCountMap
     ) {}
 
     /**
@@ -2819,7 +2799,7 @@ public class ChatAIService {
                 roleAxesKo,
                 contentKindCountMap,
                 contextAggregates.linkedContextTagCountMap(),
-                contextAggregates.chapterCategoryCountMap(),
+                contextAggregates.chapterPrefixCountMap(),
                 evidenceSnippets,
                 firstDate,
                 lastDate
@@ -2983,7 +2963,7 @@ public class ChatAIService {
             final List<String> roleAxesKo,
             final Map<String, Integer> contentKindCountMap,
             final Map<String, Integer> linkedContextTagCountMap,
-            final Map<String, Integer> chapterCategoryCountMap
+            final Map<String, Integer> chapterPrefixCountMap
     ) {
         final List<String> leadParts = new ArrayList<>();
         if (repeatedTagCountMap != null && !repeatedTagCountMap.isEmpty()) {
@@ -2992,8 +2972,8 @@ public class ChatAIService {
         if (linkedContextTagCountMap != null && !linkedContextTagCountMap.isEmpty()) {
             leadParts.add(chatMsg("chat.ai.fallback.lead-body.linked-tags", formatTopTagsForDisplay(linkedContextTagCountMap, 2)));
         }
-        if (chapterCategoryCountMap != null && !chapterCategoryCountMap.isEmpty()) {
-            leadParts.add(chatMsg("chat.ai.fallback.lead-body.chapter", formatChapterCategorySpread(chapterCategoryCountMap)));
+        if (chapterPrefixCountMap != null && !chapterPrefixCountMap.isEmpty()) {
+            leadParts.add(chatMsg("chat.ai.fallback.lead-body.chapter", formatChapterPrefixSpread(chapterPrefixCountMap)));
         }
         if (roleAxesKo != null && !roleAxesKo.isEmpty()) {
             final String topRoleAxis = roleAxesKo.get(0);
@@ -3021,7 +3001,7 @@ public class ChatAIService {
             final List<String> roleAxesKo,
             final Map<String, Integer> contentKindCountMap,
             final Map<String, Integer> linkedContextTagCountMap,
-            final Map<String, Integer> chapterCategoryCountMap
+            final Map<String, Integer> chapterPrefixCountMap
     ) {
         if (StringUtils.isBlank(target)) return "";
 
@@ -3030,7 +3010,7 @@ public class ChatAIService {
                 roleAxesKo,
                 contentKindCountMap,
                 linkedContextTagCountMap,
-                chapterCategoryCountMap
+                chapterPrefixCountMap
         );
         if (StringUtils.isBlank(leadBody)) return "";
         return chatMsg("chat.ai.lead.person-meaning", target, leadBody);
@@ -3047,14 +3027,14 @@ public class ChatAIService {
             final List<String> roleAxesKo,
             final Map<String, Integer> contentKindCountMap,
             final Map<String, Integer> linkedContextTagCountMap,
-            final Map<String, Integer> chapterCategoryCountMap
+            final Map<String, Integer> chapterPrefixCountMap
     ) {
         final String leadBody = buildPersonMeaningLeadBody(
                 repeatedTagCountMap,
                 roleAxesKo,
                 contentKindCountMap,
                 linkedContextTagCountMap,
-                chapterCategoryCountMap
+                chapterPrefixCountMap
         );
         if (StringUtils.isBlank(leadBody)) return "";
         return chatMsg("chat.ai.lead.person-stance", leadBody);
@@ -3101,7 +3081,7 @@ public class ChatAIService {
                 snapshot.roleAxesKo(),
                 snapshot.contentKindCountMap(),
                 snapshot.linkedContextTagCountMap(),
-                snapshot.chapterCategoryCountMap()
+                snapshot.chapterPrefixCountMap()
         );
         if (StringUtils.isNotBlank(interpretiveLead)) {
             sb.append(interpretiveLead).append("\n\n");
@@ -3124,9 +3104,9 @@ public class ChatAIService {
             sb.append(chatMsg("chat.ai.fallback.person-meaning.linked-context-interpret", target)).append('\n');
         }
 
-        if (!snapshot.chapterCategoryCountMap().isEmpty()) {
-            sb.append(chatMsg("chat.ai.fallback.section.chapter-category")).append(' ')
-                    .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()))
+        if (!snapshot.chapterPrefixCountMap().isEmpty()) {
+            sb.append(chatMsg("chat.ai.fallback.section.chapter-prefix")).append(' ')
+                    .append(formatChapterPrefixSpread(snapshot.chapterPrefixCountMap()))
                     .append('\n');
         }
 
@@ -3137,7 +3117,7 @@ public class ChatAIService {
             appendPersonMeaningLinkedContextRoleHint(
                     sb,
                     snapshot.linkedContextTagCountMap(),
-                    snapshot.chapterCategoryCountMap(),
+                    snapshot.chapterPrefixCountMap(),
                     false
             );
             sb.append('\n');
@@ -3184,7 +3164,7 @@ public class ChatAIService {
                 snapshot.roleAxesKo(),
                 snapshot.contentKindCountMap(),
                 snapshot.linkedContextTagCountMap(),
-                snapshot.chapterCategoryCountMap()
+                snapshot.chapterPrefixCountMap()
         );
         if (StringUtils.isNotBlank(interpretiveLead)) {
             sb.append(interpretiveLead).append("\n\n");
@@ -3210,10 +3190,10 @@ public class ChatAIService {
                     .append(formatTopTagsForDisplay(snapshot.linkedContextTagCountMap(), 6));
             hasRepeatPattern = true;
         }
-        if (!snapshot.chapterCategoryCountMap().isEmpty()) {
+        if (!snapshot.chapterPrefixCountMap().isEmpty()) {
             if (hasRepeatPattern) sb.append("; ");
             sb.append(chatMsg("chat.ai.fallback.person-appearance.chapter-prefix")).append(' ')
-                    .append(formatChapterCategorySpread(snapshot.chapterCategoryCountMap()));
+                    .append(formatChapterPrefixSpread(snapshot.chapterPrefixCountMap()));
             hasRepeatPattern = true;
         }
         if (!snapshot.contentKindCountMap().isEmpty()) {
@@ -3259,7 +3239,7 @@ public class ChatAIService {
             final List<String> roleAxesKo,
             final Map<String, Integer> contentKindCountMap,
             final Map<String, Integer> linkedContextTagCountMap,
-            final Map<String, Integer> chapterCategoryCountMap
+            final Map<String, Integer> chapterPrefixCountMap
     ) {
         if (StringUtils.isBlank(target)) return "";
 
@@ -3268,7 +3248,7 @@ public class ChatAIService {
                 roleAxesKo,
                 contentKindCountMap,
                 linkedContextTagCountMap,
-                chapterCategoryCountMap
+                chapterPrefixCountMap
         );
         if (StringUtils.isBlank(leadBody)) return "";
         return chatMsg("chat.ai.lead.person-appearance", target, leadBody);
@@ -3296,7 +3276,7 @@ public class ChatAIService {
                 snapshot.roleAxesKo(),
                 snapshot.contentKindCountMap(),
                 snapshot.linkedContextTagCountMap(),
-                snapshot.chapterCategoryCountMap()
+                snapshot.chapterPrefixCountMap()
         );
         if (StringUtils.isNotBlank(interpretiveLead)) {
             sb.append(interpretiveLead);
@@ -3459,7 +3439,7 @@ public class ChatAIService {
             List<String> roleAxesKo,
             Map<String, Integer> contentKindCountMap,
             Map<String, Integer> linkedContextTagCountMap,
-            Map<String, Integer> chapterCategoryCountMap,
+            Map<String, Integer> chapterPrefixCountMap,
             List<String> evidenceSnippets,
             String firstDate,
             String lastDate

@@ -1,16 +1,17 @@
 package io.nicheblog.dreamdiary.feature.board.group.service;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntity;
 import io.nicheblog.dreamdiary.feature.board.group.jpa.BoardRepository;
 import io.nicheblog.dreamdiary.feature.board.group.mapstruct.BoardMapstruct;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
 import io.nicheblog.dreamdiary.feature.board.group.spec.BoardSpec;
-import io.nicheblog.dreamdiary.feature.board.group.type.ReservedStructuralBoard;
 import io.nicheblog.dreamdiary.feature.board.post.repository.jpa.BoardPostRepository;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -87,6 +87,35 @@ public class BoardService
      */
     public BoardMapstruct getWriteMapstruct() {
         return this.mapstruct;
+    }
+
+    /**
+     * 게시판 기본 정보를 등록한다.
+     * <p>
+     * 변경 전에는 nullable {@code prefixSourceBoardId}로 기존 게시판 Scope를 공유하거나
+     * 신규 빈 Scope를 함께 생성했다. 변경 후 게시판은 Scope FK를 가지지 않으며 첫 Prefix
+     * 등록 시 {@code GLOBAL + boardKey} Scope를 lazy 생성하므로 등록 트랜잭션은 게시판
+     * 기본 정보만 저장한다.
+     * </p>
+     *
+     * @param registDto 등록할 게시판 DTO
+     * @return 등록 결과
+     */
+    @Override
+    @Transactional
+    public ServiceResponse regist(final BoardDto registDto) throws Exception {
+        this.preRegist(registDto);
+        final BoardEntity registEntity = getWriteMapstruct().toEntity(registDto);
+        this.preRegist(registEntity);
+
+        final BoardEntity updatedEntity = this.updt(registEntity);
+        final BoardDto updatedDto = getReadMapstruct().toDto(updatedEntity);
+        this.postRegist(updatedDto);
+
+        return ServiceResponse.builder()
+                .rslt(updatedDto.getKey() != null)
+                .rsltObj(updatedDto)
+                .build();
     }
 
     /**
@@ -225,8 +254,8 @@ public class BoardService
         }
         final String boardKey = registDto.getBoardKey().trim();
         registDto.setBoardKey(boardKey);
-        if (ReservedStructuralBoard.isStructuralReservedKey(boardKey)) {
-            log.warn("Board preRegist rejected: structural reserved board_key not allowed via admin regist. key={}", boardKey);
+        if (isFixedContentTypeKey(boardKey)) {
+            log.warn("[Board] 등록 거부: 고정 ContentType과 boardKey 충돌. boardKey={}", boardKey);
             throw new IllegalStateException("board.group.board-key.reserved-forbidden");
         }
         if (repository.findByBoardKey(boardKey).isEmpty()) {
@@ -237,9 +266,25 @@ public class BoardService
     }
 
     /**
-     * 수정 전처리. 예약 키로의 신규 지정을 막고, {@code board_key} 가 다른 행과 중복되게 바꾸는 경우를 차단한다.
+     * 신규 게시판 엔티티 등록 전 Prefix Scope를 사전 생성하지 않는다.
      * <p>
-     * 이미 DB 에 예약 키를 갖는 행(시드)은 동일 키 유지 수정만 허용한다.
+     * 변경 전에는 독립 빈 Scope 또는 명시적으로 선택한 공유 Scope를 게시판 FK에 연결했다.
+     * 변경 후에는 첫 Prefix 등록 시 {@code GLOBAL + boardKey} Scope를 lazy 생성하므로
+     * 이 훅에서는 소유 관계를 만들지 않고 해당 분기를 구조화 로그로 남긴다.
+     * </p>
+     */
+    @Override
+    public void preRegist(final BoardEntity registEntity) {
+        log.info("[Board] 신규 게시판 등록: GLOBAL Prefix Scope는 첫 Prefix 등록까지 생성하지 않음. boardKey={}",
+                registEntity.getBoardKey());
+    }
+
+    /**
+     * 수정 전처리. 영속 content type 식별자인 {@code board_key} 변경을 차단한다.
+     * <p>
+     * 변경 전에는 예약 키·중복만 검사해 일반 boardKey 변경을 허용했다. 변경 후에는
+     * 게시글·attachable 연결·라우팅·GLOBAL PrefixScope가 같은 키를 사용하므로 기존 키와
+     * 다른 값은 모두 거부한다. 이미 DB에 예약 키를 갖는 시드 행도 동일 키 유지 수정은 허용한다.
      * </p>
      *
      * @param postDto   수정 Dto
@@ -253,21 +298,18 @@ public class BoardService
         final String boardKey = postDto.getBoardKey().trim();
         postDto.setBoardKey(boardKey);
         final String existingKey = modifyEntity.getBoardKey() == null ? "" : modifyEntity.getBoardKey().trim();
-        if (ReservedStructuralBoard.isStructuralReservedKey(boardKey) && !boardKey.equals(existingKey)) {
-            log.warn("Board preModify rejected: cannot assign structural reserved board_key. key={}, existingKey={}", boardKey,
-                    existingKey);
-            throw new IllegalStateException("board.group.board-key.reserved-forbidden");
+        if (boardKey.equals(existingKey)) return;
+        log.warn("[Board] 수정 거부: boardKey는 생성 후 변경할 수 없음. boardId={}, existingKey={}, requestedKey={}",
+                modifyEntity.getId(), existingKey, boardKey);
+        throw new IllegalStateException("board.group.board-key.immutable");
+    }
+
+    /** 신규 동적 boardKey가 고정 attachable ContentType 키와 충돌하는지 확인한다. */
+    private boolean isFixedContentTypeKey(final String boardKey) {
+        for (final ContentType contentType : ContentType.values()) {
+            if (contentType.getKey().equalsIgnoreCase(boardKey)) return true;
         }
-        repository.findByBoardKey(boardKey).ifPresent(other -> {
-            if (!Objects.equals(other.getId(), postDto.getKey())) {
-                final String msgKey = ReservedStructuralBoard.isStructuralReservedKey(boardKey)
-                        ? "board.group.board-key.reserved-in-use"
-                        : "board.group.board-key.duplicate";
-                log.warn("Board preModify rejected: board_key conflicts with another row. key={}, thisId={}, otherId={}, reservedStructural={}",
-                        boardKey, postDto.getKey(), other.getId(), ReservedStructuralBoard.isStructuralReservedKey(boardKey));
-                throw new IllegalStateException(msgKey);
-            }
-        });
+        return false;
     }
 
     /**

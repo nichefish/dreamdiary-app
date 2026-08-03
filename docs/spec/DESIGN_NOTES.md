@@ -19,7 +19,7 @@
 - **축별 완결·쓰기 잠금** (diaryResolvedYn / dreamResolvedYn): 일자 provide 가 있는 목록·상세뿐 아니라 검색 팝업·엔트리 뷰 모달도 잠겠야 한다. 엔트리 DTO에 일자 플래그를 투영하고 mergeDayResolvedAxis 로 provide·DTO 를 병합한다. 서버 JournalDayResolvedGuard 가 우회 POST 를 거절한다.
 - 클라이언트 쪽 마이그레이션·Phase 요약표는 `docs/DEV_NOTES.md`(저널 일자 마이그레이션 롤업)를 본다.
 - 사용자별 일자 데이터.
-- 저널 일자 신규 등록 후에는 `JournalDayBootstrapService`가 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. 이미 DIARY 챕터가 있으면 추가 생성하지 않는다.
+- 저널 일자 신규 등록 후에는 `JournalDayBootstrapService`가 시스템 요약 챕터(`summaryYn=Y`)와 빈 DIARY 엔트리 구조를 보장한다. 이미 DIARY 챕터가 있으면 추가 생성하지 않는다.
 - 월간(monthly)/달력(calendar) 조회: 정형 데이터. 성능 최적화 및 응답 일관성 확보를 위해 캐시 기반 조회 유지.
   - "월 단위 데이터는 해당 월 이후부턴 조회 빈도 대비 변경 빈도가 낮다. DB 조회 비용보다 캐시 유지 + 서버 필터링이 더 효율적이다."
   - 특정 년월(yyyy-mm) 단위로 데이터를 캐싱.
@@ -35,14 +35,13 @@
   - "단순 컨테이너가 아니라, 일기들의 상위 서사 프레임에 더 가깝다. '구조적 구획'이면서 동시에 '의미 있는 묶음'이다."
   - "chapter는 삭제하면 안 된다. 오히려 앞으로 더 중요해질 테이블이다."
   - "실제로 중요한 것은 데이터 값이 아니라 도메인 경계다. chapter는 이미 '하루의 사건 단위'라는 도메인 경계를 가지고 있다."
-- 최초 등록 챕터는 카테고리 미지정시 자동으로 "SUMMARY"로 지정한다.
-- 챕터 헤더 카테고리 표시는 `카테고리명 카테고리코드` 순서로 한 줄에 붙인다.
-  - 예: `회사역동 DYNAMICS`, `리뷰 REVIEW`
+- 최초 non-DREAM 챕터는 제출 Prefix와 무관하게 시스템 요약 역할(`summaryYn=Y`)로 지정한다. 이 역할은 사용자가 선택하는 Prefix가 아니며 일반 챕터에서 직접 지정할 수 없다.
+- 요약 챕터는 헤더에 고정 `요약` 명칭을 표시하고 Prefix를 보유하지 않는다.
+- 일반 챕터 헤더는 선택한 개인 Prefix 이름을 타입 라벨 뒤에 한 줄로 붙인다.
+  - 예: `일기:관계`, `노트:리뷰`
   - 타입 라벨 바로 뒤에 공백 없이 `:`를 붙인다.
-  - 카테고리명은 헤더 크기(`fs-6`)를 상속하고 `#287D94` 색을 쓴다.
-  - 카테고리코드는 회색 보조 텍스트(`text-muted fs-8 me-1`)로 표시한다.
-  - 카테고리명과 코드는 DOM 사이 공백으로만 구분하고, 대괄호·배지·추가 장식은 쓰지 않는다.
-  - `SUMMARY`의 `요약`처럼 카테고리명이 있는 경우 이름이 코드보다 크게 보이는 것이 정상이다.
+  - Prefix 이름은 헤더 크기(`fs-6`)를 상속하고 설정 색상(없으면 `#287D94`)을 쓴다.
+  - 시스템 요약 챕터에는 Prefix 대신 고정 `요약` 명칭만 표시한다.
 - 글접기시 하위 일기 태그 묶음을 요약해서 보여준다.
 
 ### 저널 일기(journal-diary)
@@ -165,48 +164,58 @@
   - "Filter에서 모든 요청에 traceId를 생성한다."
   - "이 구조면 서버 로그 ↔ DB access 로그 ↔ audit 로그, 전부 하나의 traceId로 묶인다. 이게 운영 관측성(Observability)의 최소 단위다."
 
-## 분류(attachable)
+## 말머리(Prefix)
 
-### 카테고리(category) — 별도 개선 TODO
+> PERSONAL/GLOBAL Scope와 게시판 boardKey 수렴의 상세 SSOT는 `docs/spec/PREFIX_SCOPE_DESIGN.md`다.
 
-- **현재 상태와 범위**
-  - [ ] 범용 카테고리는 스레드 기능을 닫은 뒤 별도 개선으로 진행한다. 현행 저널 스레드의 `JOURNAL_THREAD_CTGR_CD`·`category_code` 기반 등록·수정·목록·검색·상세 계약은 현재 완료 상태이며, 이 TODO가 미구현이라는 이유로 스레드 기능을 다시 열거나 롤백하지 않는다.
-  - [ ] 범용 카테고리 구현이 완료되면 스레드를 첫 소비자로 전환하고 기존 공통 코드·컬럼 경로를 제거한다. 두 경로를 장기 공존시키거나 실패 시 기존 경로로 복귀하는 fallback은 두지 않는다.
+### 도메인 계약
 
-- **태그·공통 코드와의 경계**
-  - 태그는 자유 생성·다중 선택되는 내용 키워드다. 카테고리는 이름·정렬·색상·사용 여부와 선택 규칙을 가진 관리 대상이며, 한 콘텐츠가 태그와 카테고리를 동시에 가질 수 있다.
-  - 공통 코드는 애플리케이션이 통제하는 고정된 기술 값에 사용한다. 사용자가 자기 분류 체계와 항목을 만들고 관리하는 요구를 공통 코드 관리자 화면이나 전역 코드 그룹으로 처리하지 않는다.
-  - 여러 종류의 카테고리를 한 콘텐츠에 적용할 수 있으므로 단일 `category`가 아니라 **분류 체계(Category Scheme)**를 기준으로 모델링한다.
+- **용어와 역할**
+  - 사용자 UI 명칭은 **말머리**, 코드·도메인 명칭은 **Prefix**로 통일한다.
+  - Prefix는 제목 앞에 표시되어 콘텐츠를 읽는 대표 맥락을 제공하는, 게시판의 보편적인 말머리다. 콘텐츠를 여러 축으로 분류하는 Category/Taxonomy가 아니다.
+  - 태그는 자유 생성·다중 선택되는 내용 키워드다. Prefix는 사용자가 미리 관리하는 평면 선택지 중 콘텐츠당 하나만 고르는 대표 슬롯이며 두 기능을 합치지 않는다.
+  - 담당자·상태·프로젝트처럼 서로 다른 축이 추가로 필요해져도 Prefix를 다중화하지 않는다. 기존 태그로 표현하거나 실제 요구가 확인된 축을 별도 속성으로 설계한다.
+  - 개인 저널과 게시판의 말머리는 관리 권한과 적용 대상은 다르지만, 「특정 범위가 관리하는 평면 선택지 중 콘텐츠당 하나를 선택한다」는 같은 도메인 계약을 가진다. 소비처마다 `JournalPrefix`, `BoardPrefix` 테이블을 만들지 않고 공통 Prefix 기반축을 사용한다.
+  - **PrefixScope**는 Prefix 목록의 소유·선택 경계다. 개인 목록은 `(PERSONAL, user_id, content_type)`, 공용 목록은 `(GLOBAL, content_type)`으로 정규화하며 한 관리 문맥의 평면 목록 하나를 묶는다.
 
-- **확정된 도메인 계약**
-  - [ ] Scheme은 사용자 소유다. 모든 Scheme·항목·연결 조회와 쓰기는 로그인 사용자의 소유 범위로 제한하고 서버가 최종 검증한다.
-  - [ ] Scheme은 `SINGLE` 또는 `MULTI` 선택 규칙을 가진다. 단일 선택 Scheme은 같은 콘텐츠·Scheme에 하나의 활성 항목만 허용하며, 서버가 기존 연결 교체와 정합성을 책임진다.
-  - [ ] Scheme 단계에서 적용 가능한 콘텐츠 타입을 명시한다. 모든 ATTACHABLE에 자동 적용되는 무제한 Scheme은 두지 않는다.
-  - [ ] 하나의 Scheme은 의미·항목·선택 규칙이 동일할 때 여러 콘텐츠 타입에 재사용할 수 있다. 콘텐츠 타입별 의미나 선택 규칙이 달라지면 별도 Scheme으로 분리한다.
-  - [ ] 카테고리 연결 저장 시 서버가 Scheme 소유권, 항목의 Scheme 소속, Scheme의 대상 콘텐츠 타입 허용 여부와 참조 콘텐츠 소유권을 검증한다.
-  - [ ] 사용 중인 Scheme·항목은 물리 삭제하지 않고 비활성화한다. 이름 변경·정렬 변경은 ID 기반 기존 연결을 유지한다.
+- **카디널리티와 범용 범위**
+  - 콘텐츠는 Prefix를 **0개 또는 1개** 가진다. 선택하지 않은 상태를 허용하며 같은 콘텐츠에 둘 이상의 Prefix를 연결하지 않는다.
+  - 하나의 PrefixScope는 여러 Prefix를 가지며, 각 Prefix는 정확히 하나의 PrefixScope에 속한다. 관계는 `PrefixScope 1:N Prefix`, `Content 0..1 Prefix`로 고정한다.
+  - 개인 Scope에서는 사용자가, 게시판 Scope에서는 게시판 관리자가 해당 Scope의 Prefix 이름·색상·정렬·활성 상태를 관리한다. 선택지는 계층·Scheme·Assignment 없이 Scope별 평면 목록이다.
+  - PrefixScope에는 `SINGLE|MULTI` 같은 선택 방식이 없다. 콘텐츠당 `prefix_content` 단일 연결(0..1)이라는 소비자 계약이 카디널리티를 결정한다.
+  - 범용성은 소비자 resolver가 관리 권한과 논리 content type으로 PERSONAL/GLOBAL PrefixScope를 확정하는 수준으로 제한한다. 새로운 소비처는 실제 관리 권한·선택 화면·Scope 일치 검증·삭제 계약이 함께 마련될 때만 추가한다.
+  - 개인 저널과 게시판이 현재 소비 대상이다. PrefixScope 도입 자체가 임의의 `ContentType`이나 ATTACHABLE 전체에 Prefix를 허용하지 않는다.
 
-- **구조 후보 — 명칭은 구현 진입 시 확정**
-  - `category_scheme`: 소유자, 이름, `selection_type`, 정렬, 사용 여부.
-  - `category_scheme_target`: Scheme과 허용 `content_type`의 N:M 연결.
-  - `category_item`: Scheme 소속 항목, 이름, 색상, 정렬, 사용 여부.
-  - `category_content`: Scheme·항목과 `ref_content_type + ref_id`의 ATTACHABLE 연결 및 등록자.
-  - 기존 ATTACHABLE 합성 패턴과 같은 `CategoryCmpstn`, `CategoryCmpstnModule`, 처리 서비스 구성을 우선 검토한다. 구체 클래스명과 테이블명은 기존 tag/meta 합성 계약을 다시 대조한 뒤 확정한다.
+- **데이터·쓰기 계약**
+  - 목록과 선택 연결을 분리한다. 목록은 `prefix_scope`+`prefix.scope_id`가, 선택은 attachable 연결 `prefix_content`가 담당한다.
+  - **목록 정체성은 `prefix_scope(scope_type, owner_key, content_type)`로 정규화한다.** PERSONAL은 실제 `user_id`, GLOBAL은 `user_id=NULL`과 생성 컬럼 `owner_key=0`을 사용한다. Prefix는 정확히 하나의 Scope에 속한다(`prefix.scope_id`).
+  - Scope는 사전 프로비저닝하지 않는다. 개인 또는 게시판 관리 문맥에서 해당 content type의 첫 Prefix를 등록하는 시점에 lazy 생성한다.
+  - 개인 저널과 게시글 선택은 attachable 연결 `prefix_content(ref_id, ref_content_type, prefix_id)`에 저장하고 `PrefixEmbed`로 조립한다. 게시글의 `ref_content_type`은 동적 boardKey다.
+  - `scope_type`은 `PERSONAL|GLOBAL` 소유 유형만 표현하고 임의 테이블을 가리키는 `scope_ref_id` 다형 pseudo-FK는 쓰지 않는다. PERSONAL 소유자는 `prefix_scope.user_id` 직접 FK이며 GLOBAL은 사용자 소유자가 없다.
+  - Prefix 소유권 SSOT는 `created_by`가 아니라 `prefix_scope.(scope_type, user_id, content_type)`와 `prefix.scope_id` 관계다. `created_by`·`updated_by`는 감사 정보로만 유지한다.
+  - 선택 쓰기는 고른 Prefix가 콘텐츠 문맥의 Scope에 속하는지 서버가 최종 검증한다. 개인 저널은 `PrefixService.requireSelectable`, 게시글은 `PrefixService.requireSelectableGlobal`을 사용하며 게시글 Scope content type은 boardKey와 일치해야 한다.
+  - 비활성 Prefix는 신규 선택지에서 제외하고 새 연결을 거부하되, 과거 콘텐츠의 표시와 다른 필드 수정 과정에서 기존 선택을 임의로 유실하지 않는다.
+  - 콘텐츠 soft-delete 시 Prefix 선택지와 `prefix_content` 연결을 보존해 복원 시 기존 선택을 유지한다.
+  - 핵심 분기와 예외는 Scope 접근 권한 거부, 콘텐츠–Prefix Scope 불일치, 비활성 Prefix 신규 선택에 구조화 로그를 남긴다.
+  - 개인 목록은 PERSONAL, 게시판 목록은 `GLOBAL + boardKey` Scope를 사용하며 모든 소비자는 `prefix_content` 단일 선택 경로를 사용한다.
 
-- **사용자 관리 기능 TODO**
-  - [ ] 일반 사용자가 자신의 Scheme을 생성·수정하고 적용 콘텐츠 타입·단일/다중 선택·정렬·사용 여부를 관리할 수 있어야 한다.
-  - [ ] Scheme 안에서 카테고리 항목의 생성·수정·정렬·색상·사용 여부를 관리할 수 있어야 한다.
-  - [ ] 콘텐츠 편집 화면은 관리 기능 전체를 복제하지 않고 기존 항목 선택, 필요한 경우의 빠른 항목 추가, 공통 분류 관리 화면 진입만 제공한다.
-  - [ ] 시스템 전역 기본 Scheme이나 조직 공유 Scheme이 실제 요구될 때 별도 소유 범위와 권한을 설계한다. 개인 Scheme을 `ROLE_MNGR` 전용 시스템 관리 데이터로 취급하지 않는다.
+- **관리 API와 권한 경계**
+  - 개인 관리 UI와 API는 `/my/prefixes`·`/api/my/prefixes`를 유지하며 로그인 사용자의 `(user, content_type)`별 개인 Scope만 다룬다. 관리 화면은 Scope 존재 여부와 무관하게 작은 `저널` 도메인 헤더 아래 `일기 챕터 / 노트 챕터 / 일기 / 꿈 / 노트 / 스레드` 고정 6행을 표시하고, 행을 누르면 각각 `JOURNAL_CHAPTER_DIARY / JOURNAL_CHAPTER_NOTE / JOURNAL_DIARY / JOURNAL_DREAM / JOURNAL_NOTE / JOURNAL_THREAD` 목록을 조회하는 관리 모달을 연다. 이후 다른 도메인은 동일한 화면 카탈로그 그룹으로 추가하며 Prefix 영속 구조를 바꾸지 않는다. 초기 화면에서는 목록 조회나 말머리 미리보기를 하지 않는다.
+  - 개인 활성 선택지는 `contentType`별 공통 클라이언트 캐시를 사용한다. 관리 등록·수정·활성 변경이 성공하면 해당 타입만 무효화하고 다음 소비 화면 진입에서 서버 확정 목록을 다시 조회한다. 정상 빈 목록과 동시 요청은 캐시하되 실패는 재시도하고, 로그아웃·사용자 전환 및 타입별 무효화 전에 시작한 늦은 응답은 세대·버전 검사로 폐기한다.
+  - 사용자는 관리 대상을 추가·삭제하지 않는다. Prefix가 없는 대상도 고정 행으로 표시하며, 해당 관리 모달에서 첫 Prefix를 등록할 때 Scope를 lazy 생성한다. 일기·꿈·노트를 하나의 `JOURNAL_ENTRY` 논리 목록으로 합치지 않는다.
+  - 게시판 Prefix 관리는 게시판 관리 문맥의 별도 UI와 `/api/board/groups/{boardId}/prefixes` 권한 API에서 수행한다. 일반 게시판 사용자는 `/api/board/{boardKey}/prefixes` 읽기 API로 활성 선택지만 조회한다.
+  - API와 권한 서비스는 소비 문맥별로 분리할 수 있지만 PrefixScope·Prefix 영속 모델과 공통 불변식 검증은 공유한다.
+  - 게시판 관리자에게 개인 Prefix 관리 권한을 주거나, 개인 사용자가 게시판 Scope를 자기 설정에서 변경하게 하지 않는다.
 
-- **UI 철학 — 「내 설정」 허브**
-  - [ ] 현재 `/my`의 사용자 소유 관리 범위를 프로필 정보에 한정하지 않고 「내 설정」 허브로 확장한다. 계정 메뉴의 화면 명칭은 「내 설정」을 사용하고, 기존 「내 정보」는 그 안의 탭으로 둔다.
-  - [ ] 초기 탭은 목적 단위의 `내 정보 / 보안 / 분류 관리`로 구성한다. 프로필·재직 정보는 「내 정보」, 비밀번호·허용 IP는 「보안」, Category Scheme·항목 관리는 「분류 관리」에 둔다.
-  - [ ] 탭은 로컬 표시 상태가 아니라 `/my/profile`, `/my/security`, `/my/categories` 같은 URL 기반 하위 route로 표현한다. 실제 route 명칭은 구현 진입 시 기존 라우터 계약과 대조해 확정하고, `/my`의 기본 진입은 프로필 탭으로 수렴시킨다.
-  - [ ] 프로필 이미지·닉네임·계정·역할의 공통 정체성 헤더는 탭 위에 유지한다. 비밀번호 변경 액션은 공통 헤더에서 「보안」 탭으로 이동한다.
-  - [ ] `/my` 진입이 사용자/관리자 메뉴 모드를 강제로 전환하지 않는 현재 계약은 유지한다. 관리자 모드에서 진입해도 관리 대상은 로그인 사용자 자신의 데이터다.
-  - [ ] `/my`에는 여러 기능이 함께 소비하는 사용자 소유 설정만 둔다. 특정 기능에만 의미가 있는 화면 설정은 해당 기능 안에 유지한다.
-  - [ ] 상위 탭은 4~5개 이내로 제한한다. 알림·화면·외부 연동 등의 요구로 이를 넘기면 탭을 계속 늘리지 않고 설정 전용 좌측 내비게이션으로 전환한다.
+- **구현 상태** (dev_0.25.0 기준)
+  - [x] 개인 목록은 `prefix_scope(PERSONAL, user_id, content_type)`, 게시판 목록은 `prefix_scope(GLOBAL, boardKey)`를 사용한다.
+  - [x] `/my/prefixes`는 6개 개인 저널 대상을 관리하고 각 content type의 첫 등록에서 Scope를 lazy 생성한다.
+  - [x] 일기·노트 챕터는 각각 `JOURNAL_CHAPTER_DIARY`, `JOURNAL_CHAPTER_NOTE` Scope를 사용하며 attachable 정체성은 `JOURNAL_CHAPTER`로 유지한다.
+  - [x] 일기·꿈·노트 엔트리와 스레드는 각 PERSONAL Scope의 Prefix를 0..1개 선택한다.
+  - [x] 게시판별 GLOBAL Scope는 관리 화면과 게시글 등록·수정·검색에서 같은 boardKey 목록을 사용한다.
+  - [x] 모든 선택은 `prefix_content`와 `PrefixEmbed`를 사용하며 Scope 일치를 서버가 검증한다.
+  - [x] 비활성 Prefix는 기존 콘텐츠에서 표시하고 동일 선택을 유지할 수 있으며 신규 선택은 거부한다.
+  - [x] `prefix_scope`, `prefix`, `prefix_content` full schema와 운영 DB가 같은 계약을 사용한다.
 
 ### 댓글(comment)
 
@@ -300,3 +309,11 @@
 - `AM_HALF`·`PM_HALF`는 각각 반일 상태이며 같은 날짜에 둘 다 있으면 `FULL_DAY`로 합친다. `ANNUAL`, `PBLEN`, `CTSNN`, `MNSTR`, `UNPAID`는 전일이다.
 - 기존 NULL 또는 정책에 등록되지 않은 신규 코드는 제목으로 추정하지 않고 `UNKNOWN`으로 드러내며 경고 로그를 남긴다. 따라서 휴가 세부 코드는 표시·관리 데이터가 기본이지만, **저널 휴무 시간 의미가 있는 신규 코드 추가는 `VacationDayStatus` 판정 정책도 함께 배포하는 계약**이다.
 - 사유는 일정 본문이 아니라 제목을 중복 제거한 목록으로 노출한다. 본문은 일자 헤더에 싣기에는 길고 민감할 수 있으며, 제목은 사용자가 달력에서 의도적으로 정한 표시명이다.
+
+---
+
+## 인증·권한 (RBAC)
+
+- 사용자 그룹 / Permission 축 설계·현행 계약: [`docs/spec/RBAC_USER_GROUP.md`](./RBAC_USER_GROUP.md).
+- 시스템 롤(`USER`/`MNGR`/`DEV`)과 직교. 1차 소비처는 메뉴 `required_perm_key`.
+- `auth_policy`는 로그인·세션 정책이며 RBAC 가드와 별 도메인이다.

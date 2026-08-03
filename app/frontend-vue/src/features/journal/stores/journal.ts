@@ -122,6 +122,10 @@ export interface JournalEntryDto {
   /** 공휴일명(복수면 콤마 연결). 주말 단독이면 비움 */
   holydayNm?: string;
   sortOrder?: number;
+  prefix?: JournalPrefixDto | null;
+  prefixId?: number | null;
+  /** 소속 챕터 유형으로 해석한 개인 Prefix 목록 content_type */
+  prefixContentType?: "JOURNAL_DIARY" | "JOURNAL_DREAM" | "JOURNAL_NOTE";
   elseDreamYn?: string;
   elseDreamerNm?: string;
   tag?: TagCmpstn;
@@ -139,13 +143,25 @@ export interface JournalEntryDto {
   dreamResolvedYn?: string;
 }
 
+/** 저널 Prefix — 백엔드 PrefixDto 직렬화 구조 */
+export interface JournalPrefixDto {
+  id: number;
+  name: string;
+  color?: string | null;
+  sortOrder?: number;
+  activeYn?: "Y" | "N";
+}
+
 /** 저널 챕터 */
 export interface JournalChapterDto {
   id: number;
   chapterType?: "DIARY" | "NOTE" | "DREAM";
   title?: string;
-  categoryCode?: string;
-  categoryName?: string;
+  /** 일반 챕터에 선택된 개인 말머리. 시스템 요약·DREAM에는 존재하지 않는다. */
+  prefix?: JournalPrefixDto | null;
+  prefixId?: number | null;
+  /** 시스템 요약 챕터 여부. 사용자 선택 분류와 독립적이다. */
+  summaryYn?: string;
   journalDayId?: number;
   stdrdDt?: string;
   sortOrder?: number;
@@ -196,10 +212,11 @@ export interface MetaDto {
   metaClass?: string;
 }
 
-/** 챕터 필터로 숨겨진 카테고리 힌트 — 백엔드 JournalChapterCtgrHintDto 직렬화 구조 */
-export interface JournalChapterCtgrHintDto {
-  categoryCode?: string;
-  categoryName?: string;
+/** 챕터 Prefix 필터로 숨겨진 말머리 힌트 — 백엔드 JournalChapterPrefixHintDto 직렬화 구조 */
+export interface JournalChapterPrefixHintDto {
+  prefixId?: number;
+  prefixName?: string;
+  prefixColor?: string;
 }
 
 /** 저널 일자에 투영된 현재 사용자 휴가의 시간 범위 상태 */
@@ -226,8 +243,8 @@ export interface JournalDayDto {
   journalDreamSectionList?: JournalDreamSectionDto[];
   /** 꿈 목록 보유 여부 — 백엔드 getHasDream() getter 직렬화 */
   hasDream?: boolean;
-  /** 챕터 필터로 숨겨진 카테고리 목록 */
-  hiddenChapterCtgrList?: JournalChapterCtgrHintDto[];
+  /** 챕터 Prefix 필터로 숨겨진 말머리 목록 */
+  hiddenChapterPrefixList?: JournalChapterPrefixHintDto[];
   tag?: TagCmpstn;
   meta?: MetaCmpstn;
   state?: StateCmpstn;
@@ -251,7 +268,7 @@ export interface JournalDaySearchParam {
   dreamKeyword?: string;
   diaryLifecycleKey?: string;
   dreamLifecycleKey?: string;
-  chapterCtgrCds?: string[];
+  chapterPrefixIds?: number[];
   /** 정렬 (ASC/DESC) — 백엔드 JournalDaySearchParam.sort */
   sort?: "ASC" | "DESC";
 }
@@ -354,7 +371,7 @@ export const useJournalStore = defineStore("journal", () => {
   const dreamKeyword = ref<string>("");
   const diaryLifecycleKey = ref<string>("");
   const dreamLifecycleKey = ref<string>("");
-  const chapterCtgrCds = ref<string[]>([]);
+  const chapterPrefixIds = ref<number[]>([]);
 
   /** 메타 목록 */
   const metaList = ref<MetaDto[]>([]);
@@ -426,9 +443,9 @@ export const useJournalStore = defineStore("journal", () => {
         ...(dreamKeyword.value ? { dreamKeyword: dreamKeyword.value } : {}),
         ...(diaryLifecycleKey.value ? { diaryLifecycleKey: diaryLifecycleKey.value } : {}),
         ...(dreamLifecycleKey.value ? { dreamLifecycleKey: dreamLifecycleKey.value } : {}),
-        // axios 1.x 는 배열을 chapterCtgrCds[]=A 형식으로 직렬화해 Spring @ModelAttribute 바인딩이 안 됨.
-        // normalizeChapterCtgrCds 가 콤마 구분 단일 문자열을 분리 처리하므로, join(',') 으로 전송.
-        ...(chapterCtgrCds.value.length > 0 ? { chapterCtgrCds: chapterCtgrCds.value.join(",") } : {}),
+        // axios 1.x 는 배열을 chapterPrefixIds[]=1 형식으로 직렬화해 Spring @ModelAttribute 바인딩이 안 됨.
+        // Spring 컬렉션 변환기가 처리할 수 있도록 콤마 구분 단일 문자열로 전송한다.
+        ...(chapterPrefixIds.value.length > 0 ? { chapterPrefixIds: chapterPrefixIds.value.join(",") } : {}),
         ...(resolvedViewType === "WEEKLY" && weekStartDt.value
           ? { weekStartDt: weekStartDt.value }
           : {}),
@@ -672,7 +689,7 @@ export const useJournalStore = defineStore("journal", () => {
     dreamKeyword,
     diaryLifecycleKey,
     dreamLifecycleKey,
-    chapterCtgrCds,
+    chapterPrefixIds,
     metaList,
     selectedMetas,
     metaLoading,

@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.attachable.meta.model.cmpstn.MetaCmpstnMo
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
-import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrHintDto;
+import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterPrefixHintDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
@@ -108,8 +108,8 @@ public class JournalDayDto
     private List<JournalChapterDto> journalChapterList;
     /** 저널 챕터 간단 목록 */
     private List<JournalChapterSmpDto> chapterList;
-    /** 챕터 필터로 숨겨진 카테고리 목록 */
-    private List<JournalChapterCtgrHintDto> hiddenChapterCtgrList;
+    /** 챕터 Prefix 필터로 숨겨진 말머리 목록 */
+    private List<JournalChapterPrefixHintDto> hiddenChapterPrefixList;
 
     /** 저널 꿈 가상 섹션 (내 꿈 + 꿈꾼 이름별) */
     private List<JournalDreamSectionDto> journalDreamSectionList;

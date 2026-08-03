@@ -38,7 +38,7 @@
 | 스레드 등록 | `/app/journal/thread/regist-form.do` | `/thread/new` | `JournalThreadList.vue` | ✓ |
 | 스레드 상세 | `/app/journal/thread/detail.do?id={id}` | `/thread/:id` | `JournalThreadDetailPage.vue` | ✓ |
 | 스레드 수정 | `/app/journal/thread/modify-form.do?id={id}` | `/thread/:id/edit` | `JournalThreadEditPage.vue` | ✓ |
-| 내 정보 | `/app/user/my/page.do` | `/my` | `UserMyPage.vue` | ✓ |
+| 내 설정 | `/app/user/my/page.do` | `/my/profile`, `/my/security`, `/my/prefixes` | `UserMyPage.vue` + `UserMy*Tab.vue` | ✓ |
 | 일정 | `/app/schedule/calendar.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
 
 ### 저널 달력 (`JournalDayCalendar.vue`)
@@ -126,7 +126,7 @@
 #### Modals (layout 마운트)
 
 - `JournalDayMetaModal`, `JournalMetaProfileModal`, `JournalMetaContextMenu`
-- `JournalDayMetaModal`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 각 일자는 카드형으로 표시하고 SUMMARY 첫 엔트리 본문을 최대 3줄 미리보기한 뒤 클릭·더보기로 전체를 펼친다(접힘 중 빈 줄 제거). locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다. 태그 입력 검색(자동완성·카테고리 선택·AND 필터 추가)은 interaction-spec 「일자 필터 모달」 항목을 따른다.
+- `JournalDayMetaModal`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 각 일자는 카드형으로 표시하고 시스템 요약 챕터(`summaryYn=Y`)의 첫 엔트리 본문을 최대 3줄 미리보기한 뒤 클릭·더보기로 전체를 펼친다(접힘 중 빈 줄 제거). locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다. 태그 입력 검색(자동완성·카테고리 선택·AND 필터 추가)은 interaction-spec 「일자 필터 모달」 항목을 따른다.
 
 ### 저널 API (`useJournalStore`)
 
@@ -156,7 +156,7 @@
   - 상단: `JournalDayViewToolbar.vue` (탭 네비게이션 + 저널 일자 등록 버튼, flex `justify-content-between`) — 레거시 본문 상단 탭 행 + `_journal_day_page_header.ftlh` 의 `header_btn_reg_modal` 동작
   - 카드: `.card.post` (margin-top: 0 !important)
     - 카드 헤더: 태그 헤더 (`_journal_day_tag_header.ftlh`) → Vue: `JournalTagCloudHeader.vue` ✓ 구현 완료
-    - 기간별 스레드 요약: 태그클라우드 아래 월간 스레드 집계(상위 10개 + 펼치기, 라벨 `스레드`) ✓ 구현 완료
+    - 기간별 스레드 요약: 태그클라우드 아래 월간 스레드 집계(스레드 Prefix 색상 배지 + 제목 + 기간 건수, 상위 10개 + 펼치기, 라벨 `스레드`) ✓ 구현 완료
     - 카드 바디: `JournalDayCard` (`store.dayList`) — 레거시 `#journal_day_list_div` 텔레포트는 SPA 미사용
     - 로딩 렌더: `store.dayList`가 비어 있는 초기 조회에서만 본문 전체 스피너를 표시한다. 이미 목록 DOM이 렌더된 상태의 재조회(등록/수정 후 갱신, 필터 갱신 등)에서는 기존 `JournalDayCard` DOM을 유지해 문서 높이 축소로 인한 스크롤 초기화를 막는다.
   - 사이드 패널: `_journal_day_aside_base.ftlh` include
@@ -173,14 +173,14 @@
 | 메타 탭 | `<a>` | `.nav-link.px-6.cursor-pointer` | `Url.JOURNAL_DAY_META_VIEW` | `bi-bar-chart-line` 아이콘 (Vue) |
 | 탭 라벨 | text | — | — | `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW` |
 | 상단 뷰 툴바 | Vue | `JournalDayViewToolbar` | — | 주간/월간/달력/메타 탭 + 우측 검색·등록·aside 열기 액션; 그림자 없이 고정 앱 헤더 아래 sticky floating하며 열린 aside와 상단선 일치; `JournalMonthly` / `JournalWeekly` / `JournalCalendar` / `JournalMeta` 공유 |
-| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex`. 신규 등록 성공 시 서버가 기본 SUMMARY 챕터와 빈 DIARY 엔트리 구조를 보장한다. |
+| 저널 일자 등록 | `<button>` | `.btn-light-primary.btn-outlined` | `useJournalModalStore.openDayRegist()` | 레거시 `header_btn_reg_modal` → `data-journal-day-action=reg-modal`; 라벨 「저널 일자 등록」, `bi-calendar-plus`; `d-none d-md-flex`. 신규 등록 성공 시 서버가 시스템 요약 챕터(`summaryYn=Y`)와 빈 DIARY 엔트리 구조를 보장한다. |
 | 키워드 검색 | Vue | `JournalDayViewToolbar.vue` | `openSearchTab` → `/journal/entry/search` | 레거시 팝업 대체 ✓ — 툴바 일기·꿈 키워드 입력 후 새 탭 검색 |
 | 태그 헤더 | include | `_journal_day_tag_header.ftlh` | 태그 목록 | 카드 헤더 내부. 일자/일기/꿈 태그 행의 목록 시작 x좌표는 동일해야 하며, `꿈 태그` 라벨 길이 차이로 들여쓰기 차이가 생기면 안 된다. |
 | 목록 컨테이너 | `<div>` | `#journal_day_list_div` | Vue 렌더 | `JournalDayMonthlyListApp` 마운트 대상 |
 
 `JournalDayViewToolbar.vue`의 주간·월간·달력·메타 탭, 일기·꿈 전체검색 placeholder/tooltip, 저널 일자 등록 문구와 월간·주간·일간 목록의 빈 상태는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 라벨만 바꾸며 탭 route, 로컬 검색어, 새 탭 검색 URL과 등록 모달 호출, 목록 조회 조건은 유지한다.
 
-저널 일자 목록과 엔트리 검색 화면에서 완료된 꿈 엔트리는 일기 완료의 초록과 구분되는 은은한 보라 배경·테두리·좌측선으로 표시한다. 접힌 완료 표시·순번·라이프사이클 메뉴의 완료 라벨도 보라색이며, 중요·참조의 빨강·노랑 상태선은 완료 보라선과 함께 유지한다. 일기·노트·해석 및 챕터 완료 집계는 기존 초록색을 유지한다.
+저널 일자 목록과 엔트리 검색 화면에서 보류(`PENDING`) 엔트리는 약한 회색 배경·테두리·좌측선과 회색 배지로 표시하고 자동으로 접는다. 하위 엔트리가 1개 이상이고 모두 보류이면 챕터도 같은 회색 상태를 표시하며 자동으로 접는다. 완료된 꿈 엔트리는 일기 완료의 초록과 구분되는 은은한 보라 배경·테두리·좌측선으로 표시한다. 접힌 완료 표시·순번·라이프사이클 메뉴의 완료 라벨도 보라색이며, 중요·참조의 빨강·노랑 상태선은 완료 보라선과 함께 유지한다. 일기·노트·해석 및 챕터 완료 집계는 초록색을 사용한다.
 
 ### Action Buttons & Interactions
 
@@ -254,7 +254,9 @@
 
 `JournalInterpretationRegistModal.vue`의 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API가 `message`를 반환하면 서버 메시지를 우선 표시하며, 해석 제목은 locale과 무관하게 선택값으로 유지한다.
 
-`JournalEntryRegistModal.vue`의 일기·꿈·노트·기본 엔트리별 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 카테고리·제목·순서·꿈꾼 placeholder, 저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, locale 변경은 챕터 선택·태그·꿈꾼 값과 저장 payload를 변경하지 않는다.
+`JournalEntryRegistModal.vue`의 일기·꿈·노트·기본 엔트리별 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 말머리·제목·순서·꿈꾼 placeholder, 저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, locale 변경은 챕터·말머리 선택, 태그·꿈꾼 값과 저장 payload를 변경하지 않는다.
+
+엔트리 등록·수정 폼의 말머리 select는 소속 챕터의 논리 유형에 맞는 개인 목록 하나만 사용한다. 일기는 `JOURNAL_DIARY`, 꿈은 `JOURNAL_DREAM`, 노트는 `JOURNAL_NOTE` 활성 Prefix를 표시하며 선택하지 않는 것도 허용한다. 활성 선택지가 없는 정상 상태에서는 말머리 필드를 렌더링하지 않고 제목 입력이 해당 영역을 사용한다. 수정 시 비활성 과거 선택은 흐리게 표시해 유지·해제할 수 있으며, 이 경우 활성 선택지가 없어도 말머리 필드를 표시한다. NOTE 엔트리의 화면과 선택 Scope는 소속 NOTE 챕터를 기준으로 한다.
 
 ### Special behaviors
 
@@ -280,7 +282,7 @@
   - 상단: `JournalDayViewToolbar.vue` (탭 + 저널 일자 등록 버튼) — 월간 목록과 동일 컴포넌트
   - 카드: `.card.post` (margin-top: 0 !important)
     - 카드 헤더: 태그 헤더 (`_journal_day_tag_header.ftlh`) → Vue: `JournalTagCloudHeader.vue` ✓ 구현 완료
-    - 기간별 스레드 요약: 태그클라우드 아래 주간 스레드 집계(최초 등장일순 전체, 라벨 `스레드`) ✓ 구현 완료
+    - 기간별 스레드 요약: 태그클라우드 아래 주간 스레드 집계(스레드 Prefix 색상 배지 + 제목 + 기간 건수, 최초 등장일순 전체, 라벨 `스레드`) ✓ 구현 완료
     - 카드 바디: `JournalDayCard` (`JournalDayWeekly.vue`, `viewType: WEEKLY`)
     - 로딩 렌더: `store.dayList`가 비어 있는 초기 조회에서만 본문 전체 스피너를 표시한다. 이미 목록 DOM이 렌더된 상태의 재조회(등록/수정 후 갱신, 필터 갱신 등)에서는 기존 `JournalDayCard` DOM을 유지해 문서 높이 축소로 인한 스크롤 초기화를 막는다.
   - 사이드 패널: `_journal_day_aside_base.ftlh`
@@ -405,6 +407,7 @@
   - 결산 상세 카드: `#journal_annual_detail_div.card.post` — `JournalAnnualDetailCardApp` 텔레포트 대상
   - 탭 네비게이션: DIARY(일기 요약) / DREAM(꿈 요약) 2개 탭
   - 태그 헤더: `_journal_annual_detail_tag_header.ftlh` include + `<hr>`
+  - 기간별 스레드 요약: 태그 헤더 아래 연간 스레드 집계(Prefix 색상 배지 + 제목 + 기간 건수, 상위 10개 + 펼치기, 라벨 `스레드`)
   - 중요도/참조 토글 체크박스 영역
   - 태그 분류 div 3개: `.journal_annual_day_tag_div`, `.journal_annual_diary_tag_div`, `.journal_annual_dream_tag_div`
   - 엔트리 목록: `.card-post.p-10`
@@ -460,7 +463,7 @@
 - **중요·참조 모두 해제 = 빈 결과**: 두 토글이 모두 해제되면 상세 엔트리 목록은 빈 결과를 반환한다(`JournalAnnualRestController.isNoStateSelected` 가 조회 없이 빈 목록 응답). 변경 전에는 **전체가 조회됐다** — 공통 `BaseAttachableSpec.resolveStatesPredicate` 가 states 가 비면 상태 조건을 걸지 않고 return 하기 때문이다. 공통 스펙의 의미를 바꾸면 저널 일자·검색 등 다른 화면에 회귀 위험이 있어 결산 상세 경로에서만 처리한다.
 - 결산 상세의 SUMMARY·REVIEWS·로딩·태그 메뉴 tooltip·IMPORTANT·REFERENCE와 상세/목록 aside의 FILTER·TAGCLOUD·ENTRY FILTER·SUMMARY FILTER·키워드 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. 영어는 기존 대문자 표기를 유지하며 locale 변경은 선택 연도·활성 탭·필터값·토글 상태를 변경하지 않는다.
 - Vue SPA의 상세 aside는 연도 이동·태그클라우드·엔트리 필터 전용 영역이며 결산 등록 액션을 두지 않는다. 신규 결산 등록은 목록 화면 총 집계 카드 우측 액션 영역에서 수행한다.
-- 결산 상세의 SUMMARY 본문과 DIARY/DREAM 엔트리 본문은 저널 일자 엔트리와 같은 `journal-content p-2` 타이포그래피 계약을 따른다. 상세 엔트리 제목도 일자 엔트리와 맞춰 `fs-5 fw-bold` 크기로 표시한다(변경 전 `fs-7`). 본문(`.journal-content`)은 fs 클래스 없이 base 1rem 을 상속하므로, 제목은 본문보다 한 단계 위 크기가 된다. 상세 엔트리 목록은 행 왼쪽 날짜 칼럼을 반복하지 않고, 저널 일자 카드처럼 `journal-day-header` 날짜 헤더 아래에 해당 날짜의 엔트리 본문을 배치한다. DIARY/DREAM 엔트리 태그는 일자 `JournalEntryItem` 과 동일하게 밑줄 primary `#이름`(ctgr·클릭 메뉴 포함, `bi-tag` 없음)으로 표시한다(변경 전: `bi-tag` + 단순 `#name`).
+- 결산 상세의 SUMMARY 본문과 DIARY/DREAM 엔트리 본문은 저널 일자 엔트리와 같은 `journal-content p-2` 타이포그래피 계약을 따른다. 상세 엔트리 제목도 일자 엔트리와 맞춰 `fs-5 fw-bold` 크기로 표시한다(변경 전 `fs-7`). 선택된 Prefix는 같은 행의 제목 앞 색상 배지로 표시하고 제목이 없어도 배지만 남긴다. 본문(`.journal-content`)은 fs 클래스 없이 base 1rem 을 상속하므로, 제목은 본문보다 한 단계 위 크기가 된다. 상세 엔트리 목록은 행 왼쪽 날짜 칼럼을 반복하지 않고, 저널 일자 카드처럼 `journal-day-header` 날짜 헤더 아래에 해당 날짜의 엔트리 본문을 배치한다. DIARY/DREAM 엔트리 태그는 일자 `JournalEntryItem` 과 동일하게 밑줄 primary `#이름`(ctgr·클릭 메뉴 포함, `bi-tag` 없음)으로 표시한다(변경 전: `bi-tag` + 단순 `#name`).
 - Vue SPA `JournalAnnualLayout`은 태그 컨텍스트 메뉴와 짝으로 `JournalTagProfileModal`·`JournalDayMetaModal`을 마운트한다. 일자(`JOURNAL_DAY`) 태그 검색은 `openDayFilterModal` → `JournalDayMetaModal`이며, 짝 모달 미마운트 시 무반응처럼 보였다.
 - 부트 순서: `journalAnnualCrudService` → `journalAnnualStateService` → `journalAnnualService` → `JournalAnnualDetailCardApp` → `JournalAnnualEntryTagListApp` → `JournalAnnualEntryListApp` → `JournalAnnualDetailPageBoot`
 - `preloadJournalDayTagService.js` 적재 (태그 클릭 대비)
@@ -495,7 +498,7 @@
 |---------|------|----------------|-------------|-------|
 | 태그 필터바 | include | `_tag_list_header.ftlh` | 태그 목록 | 태그 클릭 필터 |
 | 뷰 툴바 | `JournalThreadViewToolbar` | Vue 신규 툴바 | Vue Router `thread-create` | 등록 버튼만. 결산·일자 액션 행과 동형(`pe-5 mt-3 mb-1`). ASIDE 없음. 탭용 `mt-5` 빈 여백 없음 |
-| Vue 검색 카드 | `.card.mb-4` + `margin-top: 0` | Vue 신규 검색 카드 | `/api/journal/threads/categories`, `tagIds` | 분류·제목·멀티 태그 AND 검색(태그 클라우드는 2c-A 제거). 등록은 뷰 툴바로 이동. 툴바에 붙는 상단 여백 |
+| Vue 검색 카드 | `.card.mb-4` + `margin-top: 0` | Vue 신규 검색 카드 | `/api/my/prefixes/options`, `prefixId`, `tagIds` | 단일 말머리·제목·멀티 태그 AND 검색. 등록은 뷰 툴바에 둔다. |
 | 테이블 | `<table>` | `.table.align-middle.table-row-dashed.fs-small.gy-5.table-fixed.hoverTable.mb-3` | 서버 모델 | 고정 레이아웃, 행 hover |
 | 번호 열 | `<th>` | `.text-center.wb-keepall.w-10.hidden-table` | `post.rnum` | 모바일 숨김 |
 | 제목 열 | `<th>` | `.col-lg-9.col-9.text-center.wb-keepall` | `post.title` | `txt.title` i18n |
@@ -506,7 +509,9 @@
 
 `JournalThreadList.vue`의 분류·라이프사이클 필터·제목 placeholder·태그 빈 상태와 조회 실패, 등록 버튼·테이블 헤더·빈 상태·댓글 목록·컨텍스트 메뉴(수정·라이프사이클·삭제) 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 목록 행 선두는 카테고리 배지 몫이라, 라이프사이클(진행중 등) 배지는 제목·메타(개수·기간·댓글) 뒤=댓글 버튼 뒤·태그 줄 앞(`ms-2`)에 표시한다.
 
-`JournalThreadLayout.vue`는 목록 검색과 등록·수정이 공유할 카테고리 선택지를 스레드 영역 진입 시 조회해 store에 유지한다. `JournalThreadRegistModal.vue`와 `JournalThreadEditPage.vue`의 등록·수정 제목, 공용 카테고리·제목·본문 필드, placeholder, 저장·닫기/취소 버튼과 저장·미저장 이탈 확인창은 현재 locale의 클라이언트 카탈로그를 사용한다. 카테고리 조회 실패는 목록 검색 카드와 편집 폼 안에 현재 locale 오류를 표시한다. 목록·수정·상세 조회 실패와 등록·수정 결과 fallback도 현재 locale을 사용하며, API가 `message`를 반환하면 서버 메시지를 우선 표시한다.
+`JournalThreadLayout.vue`는 목록 검색과 등록·수정이 공유할 활성 Prefix 선택지를 콘텐츠 타입별 공통 store에서 조회한다. 내 설정의 등록·수정·활성 변경 성공 시 해당 `contentType` 캐시를 무효화하므로 스레드 화면 재진입은 서버 확정 목록을 다시 조회한다(변경 전: `journalThread` store의 최초 정상 조회가 세션 동안 고정되어 관리 변경 뒤에도 이전 옵션을 표시). 등록·수정은 단일 말머리 select와 nullable `prefixId`를 사용한다. 비활성 과거 Prefix는 옵션에서 제외하되 목록·상세 DTO의 이름·색으로 계속 표시한다. Prefix 조회 실패는 목록 검색 카드와 편집 폼에 현재 locale 오류를 표시한다. 개인 말머리 목록은 `(user, content_type)`로 분리되므로 `/api/my/prefixes` 계열(옵션 조회·빠른 추가·관리) 호출은 `contentType` 파라미터를 요구하며, 스레드 문맥은 `JOURNAL_THREAD`를 보낸다. UI의 단일 select·nullable `prefixId` 계약은 그대로이고, 저장 시 서버가 이를 attachable 연결(`prefix_content`)로 흡수한다(콘텐츠는 prefix FK를 직접 두지 않는다).
+
+공용 편집 폼은 Prefix 이름 빠른 추가를 제공하고 생성 성공 시 서버 옵션 재조회와 현재 선택 반영을 마친다. 전체 관리는 「말머리 관리 탭」 링크로 `/my/prefixes`에 진입한다.
 
 스레드 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 삭제 API의 서버 `message`가 있으면 우선 표시하고, 성공 알림 확인 후 첫 페이지 목록을 다시 조회한다.
 
@@ -521,9 +526,9 @@
 | 상세 소속 엔트리 정렬 | 독립 상세 페이지 또는 문맥형 모달 조회·갱신 | `GET /api/journal/threads/{id}/entries` | 일자 → 원본 엔트리 `sortOrder` → ID 오름차순. 소속 `sort_order`는 미사용 |
 | 문맥형 상세에서 수정 | 상세 모달 헤더 「수정」 클릭 | `store.openModifyFromDetail(id)` | route·배경 스크롤과 상세 데이터를 유지하고 같은 앱의 수정 모달로 전환. 저장·취소 뒤 원래 상세 모달로 복귀하며 저장 성공 시 상세와 주간·월간·일간 배경을 갱신 |
 | 등록 모달 열기 | 뷰 툴바(`JournalThreadViewToolbar`) 등록 버튼 클릭 | `router.push({ name: "thread-create" })` | 등록 모달 오픈 + URL `/thread/new` 동기화 |
-| 카테고리 검색·선택 | 스레드 영역 진입 또는 검색·편집 select 변경 | `ensureCategoryOptions()`, `filterCategory`, `registModel.categoryCode` | 영역 진입 때 `/api/journal/threads/categories`를 최초 조회해 store에 유지하고 목록 검색과 등록·수정이 공유 |
+| 말머리 검색·선택 | 스레드 영역 진입 또는 검색·편집 선택 변경 | `ensurePrefixOptions()`, `filterPrefixId`, `registModel.prefixId` | `/api/my/prefixes/options`를 조회해 목록 검색과 등록·수정이 공유 |
 | 태그 필터 | 검색 카드에서 태그 추가/배지 제거 | `filterTagIds` + `tagIds` 반복 파라미터로 `fetchList(0)` | 멀티 태그 AND. 배지에 `[ctgr]`(`text-noti`) + 이름 모두 `fs-7`, 세로 가운데. 소속 엔트리 태그 합집합이 선택 태그를 모두 포함하는 스레드만 |
-| 분류·제목 검색 | 분류 select 변경 또는 검색 버튼·Enter | `filterCategory`, `filterKeyword` 설정 후 `fetchList(0)` | 분류는 변경 즉시, 제목은 검색 실행 시 `categoryCode`, `searchType=title`, `searchKeyword`로 첫 페이지 조회 |
+| 말머리·제목 검색 | 말머리 select 변경 또는 검색 버튼·Enter | `filterPrefixId`, `filterKeyword` 설정 후 `fetchList(0)` | 말머리는 단일 `prefixId`, 제목은 `searchType=title`, `searchKeyword`로 첫 페이지 조회 |
 | 검색 초기화 | 초기화 버튼 클릭 | `resetFilters()` | 태그·분류·제목 조건을 모두 비우고 첫 페이지 조회 |
 | 목록에서 수정 페이지 열기 | ⋯ 메뉴의 수정 클릭 | `router.push({ name: "thread-edit", params: { id } })` | 같은 탭의 독립 수정 페이지 `/thread/:id/edit`로 이동 |
 | 댓글 모달 | 댓글 수 클릭 | `CommentList.modal(id, contentType)` | 댓글 목록 모달 |
@@ -542,7 +547,7 @@
 | `rnum` | number | 행 번호 |
 | `id` | number | 스레드 ID |
 | `contentType` | string | 컨텐츠 타입 |
-| `categoryName` | string | 카테고리명 |
+| `prefix` | `PrefixDto` | 단일 Prefix ID와 이름·색·활성 상태. 비활성 과거 선택도 표시 |
 | `title` | string | 제목 |
 | `isNew` | boolean | 신규 여부 (N 배지 표시) |
 | `commentCnt` | number | 댓글 수 |
@@ -821,9 +826,11 @@ const pinnedMnth = ref<number | null>(null);
 
 **레거시 소스**: `legacy/static/vue/feature/journal/day/JournalDayAsideEntryFiltersApp.ts`
 
-**챕터 카테고리 옵션 데이터 출처**:
-- 레거시: FTL이 `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` 에 서버 코드 목록을 주입
-- Vue SPA: `journalModalStore.prefetchChapterCategories()` → `GET /api/code/items?groupCode=JOURNAL_CHAPTER_DIARY_CTGR_CD` + `GET /api/code/items?groupCode=JOURNAL_CHAPTER_NOTE_CTGR_CD` 병합
+**챕터 말머리 옵션 데이터 출처**:
+- Vue SPA: `journalModalStore.prefetchChapterPrefixes("DIARY")` → `GET /api/my/prefixes/options?contentType=JOURNAL_CHAPTER_DIARY`
+- 챕터 말머리 목록은 챕터 유형별로 분리된다. 일기 챕터는 `JOURNAL_CHAPTER_DIARY`, 노트 챕터는 `JOURNAL_CHAPTER_NOTE`를 사용하며, 이 일기 필터는 일기 챕터 목록을 조회한다. 시스템 요약·DREAM은 Prefix 선택 대상이 아니다.
+- 챕터 등록·수정 폼은 활성 선택지가 없는 정상 상태에서 말머리 필드를 렌더링하지 않고 제목 입력이 해당 영역을 사용한다. 수정 중인 챕터에 비활성 말머리가 연결되어 있으면 유지·해제를 위해 말머리 필드를 표시한다.
+- 챕터 필터의 정상 빈 목록은 `등록된 말머리가 없습니다.`로 안내하고 조회 실패와 구분한다.
 
 **필터 구조 계약**:
 
@@ -856,15 +863,15 @@ const pinnedMnth = ref<number | null>(null);
                    :checked="store.showDiaries"
                    @change="toggleDiaries">
         </div>
-        <!-- B-2: CHAPTER CATEGORIES 체크박스 목록 (DIARIES 블록 안에만 있음) -->
+        <!-- B-2: CHAPTER PREFIXES 체크박스 목록 (DIARIES 블록 안에만 있음) -->
         <div class="journal-aside-chapter-categories d-flex flex-column gap-1">
-            <label v-for="ctgr in chapterCategoryOptions" :key="ctgr.code"
+            <label v-for="prefix in chapterPrefixOptions" :key="prefix.id"
                    class="form-check form-check-sm form-check-custom form-check-solid cursor-pointer">
                 <input class="form-check-input w-16px h-16px"
                        type="checkbox"
-                       :checked="isChapterCategorySelected(ctgr.code)"
-                       @change="toggleChapterCategory(ctgr.code)">
-                <span class="form-check-label text-muted fs-8">[{{ ctgr.codeName }}]</span>
+                       :checked="isChapterPrefixSelected(prefix.id)"
+                       @change="toggleChapterPrefix(prefix.id)">
+                <span class="form-check-label text-muted fs-8">[{{ prefix.name }}]</span>
             </label>
         </div>
         <!-- B-3: DIARY LIFECYCLE 선택 -->
@@ -973,7 +980,7 @@ const pinnedMnth = ref<number | null>(null);
 
 **부모-자식 배치 계약**:
 - `TAGCLOUD`는 엔트리 필터와 독립된 표시 토글로 둔다.
-- `DIARIES` 토글은 `CHAPTER CATEGORIES`, `DIARY LIFECYCLE`, `DIARY KEYWORDS`의 부모 항목이다.
+- `DIARIES` 토글은 `CHAPTER PREFIXES`, `DIARY LIFECYCLE`, `DIARY KEYWORDS`의 부모 항목이다.
 - `DREAMS` 토글은 `DREAM LIFECYCLE`, `DREAM KEYWORDS`의 부모 항목이다.
 - `DIARIES=false` 또는 `DREAMS=false`일 때 해당 하위 필터 값은 삭제하지 않고 보존하되, 하위 필터 UI는 렌더링하지 않는다.
 - `ENTRY FILTER` 레이블은 위 필터 묶음 아래에 표시한다.
@@ -983,8 +990,8 @@ const pinnedMnth = ref<number | null>(null);
 |---------|----------|---------|
 | TAGCLOUD 체크박스 | `#toggleTagCloud` | `store.showTagCloud` — ON 변경 시 `store.fetchTagCloud()` |
 | DIARIES 체크박스 | `#toggleDiaries` | `store.showDiaries` — 변경 시 `store.fetchDays()` |
-| CHAPTER CATEGORIES 항목 체크박스 | `.journal-aside-chapter-categories input[type=checkbox]` | `store.chapterCtgrCds: string[]` — `store.showDiaries=true` 시에만 표시, 변경 시 `store.fetchDays()` |
-| 챕터 옵션 목록 | `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` | `journalModalStore.chapterDiaryCategoryOptions` + `chapterNoteCategoryOptions` — `prefetchChapterCategories()` 로 로드 |
+| CHAPTER PREFIXES 항목 체크박스 | `.journal-aside-chapter-categories input[type=checkbox]` | `store.chapterPrefixIds: number[]` — `store.showDiaries=true` 시에만 표시, 변경 시 `store.fetchDays()` |
+| 챕터 옵션 목록 | 변경 전 `window.__journalAsideEntryFiltersBootstrap.chapterCtgrOptions` | `journalModalStore.chapterPrefixOptionsFor("DIARY")` — `prefetchChapterPrefixes("DIARY")`로 로드 (일기 챕터 목록) |
 | DREAMS 체크박스 | `#toggleDreams` | `store.showDreams` — 변경 시 `store.fetchDays()` |
 | 일기 라이프사이클 | `#diaryLifecycleFilter` | `store.diaryLifecycleKey` — `store.showDiaries=true` 시에만 표시, 변경 시 `store.fetchDays()` |
 | 꿈 라이프사이클 | `#dreamLifecycleFilter` | `store.dreamLifecycleKey` — `store.showDreams=true` 시에만 표시, 변경 시 `store.fetchDays()` |
@@ -993,9 +1000,9 @@ const pinnedMnth = ref<number | null>(null);
 
 `JournalDayLayout.vue`의 필터 패널 열기와 `JournalAside.vue`의 필터 패널 닫기·정렬 변경·날짜 선택·Pinpoint 저장/복귀 tooltip, 월 단위와 요일 축약명은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 필터 상태·기간·선택 일자·Pinpoint 저장값·route query를 변경하지 않는다.
 
-필터 영역의 고정 영문 제목·토글·섹션명, 로딩·카테고리 조회 실패, 라이프사이클 선택지, 일기·꿈 키워드 placeholder/적용 tooltip, 필터 초기화와 TODO 카드 제목·할일 등록 문구도 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 기존 필터값과 조회·초기화·모달 호출 동작을 변경하지 않는다.
+필터 영역의 고정 영문 제목·토글·섹션명, 로딩·말머리 조회 실패, 라이프사이클 선택지, 일기·꿈 키워드 placeholder/적용 tooltip, 필터 초기화와 TODO 카드 제목·할일 등록 문구도 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 기존 필터값과 조회·초기화·모달 호출 동작을 변경하지 않는다.
 
-- 챕터 카테고리 필터로 숨겨진 무카테고리 챕터 힌트는 서버가 `common.category.none`을 현재 locale로 조회해 `카테고리 없음`/`No category`로 표시한다.
+- 챕터 말머리 필터로 제외된 Prefix는 서버가 ID·이름·색상을 `hiddenChapterPrefixList`로 반환하고 일자 카드가 배지로 표시한다. 시스템 요약과 Prefix 미선택 챕터는 필터 선택과 무관하게 유지한다.
 
 ---
 
@@ -1103,7 +1110,7 @@ type TodoRow = {
 | 2. Pinpoint | 돌아가기 버튼 | ✓ `turnback()` — 고정된 yy/mnth 로 이동 (`gotoYyMnth`) |
 | 3. 엔트리 필터 | TAGCLOUD 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | DIARIES 토글 | ✓ 구현 |
-| 3. 엔트리 필터 | CHAPTER CATEGORIES (체크박스, 일기·노트 코드 병합) | ✓ |
+| 3. 엔트리 필터 | CHAPTER PREFIXES (체크박스, DIARY·NOTE 공용 개인 목록) | ✓ |
 | 3. 엔트리 필터 | 일기 키워드 | ✓ 구현 (위치 다름) |
 | 3. 엔트리 필터 | DREAMS 토글 | ✓ 구현 |
 | 3. 엔트리 필터 | 꿈 키워드 | ✓ 구현 (위치 다름) |

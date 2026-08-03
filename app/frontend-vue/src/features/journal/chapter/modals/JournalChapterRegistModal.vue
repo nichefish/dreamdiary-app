@@ -56,7 +56,7 @@
             </div>
             <!--end::날짜-->
 
-            <!--begin::챕터 유형 + 카테고리 + 제목-->
+            <!--begin::챕터 유형 + 말머리 + 제목-->
             <div class="row d-flex mb-8">
               <div class="col-12">
                 <label class="d-flex align-items-center mb-2">
@@ -75,23 +75,38 @@
                 </template>
                 <!--begin::일반 챕터 유형 선택-->
                 <template v-else>
-                  <select name="chapterType" id="chapterType" class="form-select form-select-solid" v-model="model.chapterType">
+                  <select name="chapterType" id="chapterType" class="form-select form-select-solid" v-model="model.chapterType" @change="onChapterTypeChanged">
                     <option value="DIARY">{{ t("journal.chapter.type.diary") }}</option>
                     <option value="NOTE">{{ t("journal.chapter.type.note") }}</option>
                   </select>
                 </template>
               </div>
-              <div class="col-lg-2">
-                <select name="categoryCode" id="categoryCode" class="form-select form-select-solid" v-model="model.categoryCode">
-                  <option value="">{{ t("common.category.select") }}</option>
-                  <option
-                    v-for="ctgr in currentCategoryOptions"
-                    :key="ctgr.code"
-                    :value="ctgr.code"
-                  >[{{ ctgr.codeName }}]</option>
-                </select>
+              <div v-if="showChapterPrefixField" class="col-lg-2">
+                <!--begin::시스템 요약은 사용자 선택 말머리가 아님-->
+                <div
+                  v-if="isSummaryChapter"
+                  class="form-control form-control-solid d-flex align-items-center"
+                >[{{ t("journal.chapter.summary") }}]</div>
+                <!--end::시스템 요약-->
+                <select
+                  v-else
+                  name="prefixId"
+                  id="prefixId"
+                  class="form-select form-select-solid"
+                  v-model="model.prefixId"
+                >
+                    <option :value="null">{{ t("journal.chapter.prefix.select") }}</option>
+                    <option v-if="currentInactivePrefix" :value="currentInactivePrefix.id" disabled>
+                      [{{ currentInactivePrefix.name }}] ({{ t("status.unuse") }})
+                    </option>
+                    <option
+                      v-for="prefix in chapterPrefixOptions"
+                      :key="prefix.id"
+                      :value="prefix.id"
+                    >[{{ prefix.name }}]</option>
+                  </select>
               </div>
-              <div :class="isModify ? 'col-lg-7' : 'col-lg-8'">
+              <div :class="chapterTitleColumnClass">
                 <input
                   type="text"
                   name="title"
@@ -117,7 +132,7 @@
                 />
               </div>
             </div>
-            <!--end::챕터 유형 + 카테고리 + 제목-->
+            <!--end::챕터 유형 + 말머리 + 제목-->
 
           </form>
         </div>
@@ -163,6 +178,7 @@ import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { resolveJournalPrefixField } from "@/features/journal/utils/journalPrefixField";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 
 const modalStore = useJournalModalStore();
@@ -193,18 +209,43 @@ const isModify = computed(() => !!model.value?.id);
 /** 수정 모드의 DREAM 챕터 여부 (타입 변경 불가) */
 const isModifyDream = computed(() => isModify.value && model.value?.chapterType === "DREAM");
 
-/** chapterType에 따라 일기/노트 전용 카테고리 목록을 분기한다. */
-const currentCategoryOptions = computed(() =>
-  model.value?.chapterType === "NOTE"
-    ? modalStore.chapterNoteCategoryOptions
-    : modalStore.chapterDiaryCategoryOptions
-);
+/** 서버가 관리하는 시스템 요약 챕터 여부 */
+const isSummaryChapter = computed(() => model.value?.summaryYn === "Y");
 
-/* chapterType 변경 시 카테고리 선택 초기화 */
-watch(
-  () => model.value?.chapterType,
-  () => { if (model.value) model.value.categoryCode = ""; }
-);
+/**
+ * 현재 폼 챕터 유형(일기/노트)에 대응하는 활성 개인 말머리 선택지.
+ * 유형을 바꾸면 일기 챕터·노트 챕터가 각각 자기 목록을 표시한다(DREAM 등은 빈 목록).
+ */
+const chapterPrefixOptions = computed(() => modalStore.chapterPrefixOptionsFor(model.value?.chapterType));
+
+/** 활성 목록과 비활성 과거 선택을 합산한 말머리 필드 표시 상태. */
+const prefixFieldPresentation = computed(() => resolveJournalPrefixField(
+  chapterPrefixOptions.value,
+  model.value?.prefix,
+  isSummaryChapter.value,
+));
+
+/** 기존 비활성 말머리는 수정 화면에 표시하고 같은 선택 유지 저장만 허용한다. */
+const currentInactivePrefix = computed(() => prefixFieldPresentation.value.inactivePrefix);
+
+/** 시스템 요약 또는 선택 가능한 말머리가 있는 챕터에 말머리 영역을 표시한다. */
+const showChapterPrefixField = computed(() => prefixFieldPresentation.value.visible);
+
+/** 말머리 영역의 표시 여부에 맞춰 제목 입력이 남은 열을 사용한다. */
+const chapterTitleColumnClass = computed(() => {
+  if (showChapterPrefixField.value) return isModify.value ? "col-lg-7" : "col-lg-8";
+  return isModify.value ? "col-lg-9" : "col-lg-10";
+});
+
+/**
+ * 사용자가 챕터 유형을 바꾸면 이전 유형 목록의 말머리 선택을 초기화한다.
+ * 챕터 말머리 목록이 유형(일기/노트)별로 분리되어, 이전 유형의 prefixId는 새 유형 목록에 없으므로
+ * 그대로 두면 저장 시 서버 Scope 검증에서 거부된다. 사용자 조작(@change)에서만 초기화하고,
+ * 모달을 여는 시점(수정 폼의 기존 선택)은 건드리지 않는다.
+ */
+function onChapterTypeChanged(): void {
+  if (model.value) model.value.prefixId = null;
+}
 
 onMounted(() => {
   if (modalEl.value) {
@@ -373,7 +414,7 @@ async function submit() {
     if (model.value.id) formData.append("id", String(model.value.id));
     formData.append("journalDayId", String(model.value.journalDayId ?? ""));
     formData.append("chapterType", model.value.chapterType ?? "DIARY");
-    formData.append("categoryCode", model.value.categoryCode ?? "");
+    formData.append("prefixId", model.value.prefixId == null ? "" : String(model.value.prefixId));
     formData.append("title", model.value.title ?? "");
     if (model.value.sortOrder != null) formData.append("sortOrder", String(model.value.sortOrder));
 

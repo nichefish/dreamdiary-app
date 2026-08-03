@@ -1,6 +1,6 @@
 /**
  * summaryEntryPreview.ts
- * 일자 필터 모달 등에서 SUMMARY 챕터 첫 엔트리를 SEARCH 응답에서 고른다.
+ * 일자 필터 모달 등에서 시스템 요약 챕터 첫 엔트리를 SEARCH 응답에서 고른다.
  *
  * 전용 summaryPreview 필드는 없다. journalChapterList/journalEntryList 를 파생한다.
  * 표시 HTML은 `markdownContent` 우선 전체 문자열이다.
@@ -11,10 +11,10 @@ import type { JournalChapterDto, JournalDayDto, JournalEntryDto } from "@/featur
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 
 /**
- * 일자 DTO 에서 SUMMARY 챕터의 첫 non-empty 엔트리를 반환한다.
+ * 일자 DTO 에서 시스템 요약 챕터의 첫 non-empty 엔트리를 반환한다.
  *
  * @param day 필터 목록의 일자 DTO
- * @return 엔트리. SUMMARY/본문이 없으면 undefined
+ * @return 엔트리. 요약 챕터/본문이 없으면 undefined
  */
 export function summaryEntryOf(
   day: JournalDayDto | null | undefined,
@@ -84,7 +84,7 @@ export function stripBlankParagraphs(html: string): string {
 }
 
 /**
- * SUMMARY 카테고리 챕터를 고른다. 없으면 첫 non-DREAM 챕터를 fallback 한다.
+ * {@code summaryYn=Y} 시스템 요약 챕터를 고른다. 없으면 첫 non-DREAM 챕터를 fallback 한다.
  * (백엔드가 DREAM 을 journalChapterList 에서 분리하지만, 방어적으로 제외한다.)
  */
 export function findSummaryChapter(
@@ -93,7 +93,7 @@ export function findSummaryChapter(
   if (!Array.isArray(chapters) || chapters.length === 0) return undefined;
   const nonDream = chapters.filter((chapter) => chapter?.chapterType !== "DREAM");
   if (nonDream.length === 0) return undefined;
-  return nonDream.find((chapter) => chapter.categoryCode === "SUMMARY") ?? nonDream[0];
+  return nonDream.find((chapter) => chapter.summaryYn === "Y") ?? nonDream[0];
 }
 
 /** sortOrder → id 순으로 첫 non-empty 엔트리. */

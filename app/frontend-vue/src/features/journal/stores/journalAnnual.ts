@@ -4,6 +4,7 @@ import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import type { JournalPrefixDto } from "@/features/journal/stores/journal";
 
 // ---- 타입 정의 ----
 
@@ -71,6 +72,9 @@ export interface AnnualEntryDto {
   markdownContent?: string;
   stdrdDt?: string;
   sortOrder?: number;
+  prefix?: JournalPrefixDto | null;
+  prefixId?: number | null;
+  prefixContentType?: "JOURNAL_DIARY" | "JOURNAL_DREAM" | "JOURNAL_NOTE";
   elseDreamYn?: string;
   tag?: AnnualTagCmpstn;
   state?: { list?: Array<{ stateKey?: string }> };

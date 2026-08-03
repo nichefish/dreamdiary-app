@@ -7,15 +7,16 @@
     :data-imprtc="hasState('IMPRTC') ? 'Y' : 'N'"
     :data-refrnc="hasState('REFRNC') ? 'Y' : 'N'"
     :data-resolved="isResolved ? 'Y' : 'N'"
+    :data-lifecycle="lcKey || 'OPEN'"
     :data-else-dream="isElseDream ? 'Y' : 'N'"
     :data-stdrd-dt="entry.stdrdDt"
     :data-yy="entryCacheYy"
     :data-mnth="entryCacheMnth"
   >
     <!--begin::순번-->
-    <div class="d-none d-md-flex flex-column align-items-center pt-1 ps-2" style="width:56px; min-width:56px;">
+    <div v-if="!isSummary" class="d-none d-md-flex flex-column align-items-center pt-1 ps-2" style="width:56px; min-width:56px;">
       <span :class="['fw-bold fs-7', isResolved ? (isDreamEntry ? 'text-dream' : 'text-success') : 'text-muted']">#{{ entry.sortOrder }}</span>
-      <span v-if="lcKey === 'PENDING'" class="badge badge-light-warning fs-8 mt-1">{{ t("journal.entry.pending-badge") }}</span>
+      <span v-if="isPending" class="badge badge-light-secondary text-gray-600 fs-8 mt-1">{{ t("journal.entry.pending-badge") }}</span>
       <!--begin::클라이언트 임시 접힘/펼침 버튼-->
       <button
         type="button"
@@ -30,7 +31,7 @@
     <!--end::순번-->
 
     <!--begin::본문 영역-->
-    <div :class="[contentClass, 'flex-grow-1']">
+    <div :class="[contentClass, 'flex-grow-1', { 'is-summary-card': isSummary }]">
       <!--begin::꿈 상태 배지 (꿈 엔트리 전용)-->
       <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
         <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!{{ t('state.nightmare') }}</span>
@@ -43,8 +44,16 @@
         변경 후: 모든 유형에서 배지 행 아래 독립 행으로 표시. 본문(.journal-content = 1rem) 대비
                  한 단계 위인 fs-5(1.15rem) + fw-bold.
         접힘(isCollapsed) 상태와 무관하게 항상 표시한다 (기존 꿈 제목 동작 유지 — 본문만 숨김).
-        .journal-content 밖이라 유형별 본문 색상을 상속하지 않고 기본 텍스트색을 쓴다. -->
-      <div v-if="entry.title" class="fw-bold fs-5 mb-1">{{ entry.title }}</div>
+        .journal-content 밖이라 유형별 본문 색상을 상속하지 않고 기본 텍스트색을 쓴다.
+        Prefix 소비 추가 후: 말머리는 제목 앞의 색상 배지로 표시하며 제목이 없어도 말머리만 남긴다. -->
+      <div v-if="entry.prefix || entry.title" class="d-flex align-items-center flex-wrap fw-bold fs-5 mb-1">
+        <span
+          v-if="entry.prefix"
+          class="badge me-2 fs-8"
+          :style="{ borderColor: entry.prefix.color || '', color: entry.prefix.color || '' }"
+        >{{ entry.prefix.name }}</span>
+        <span v-if="entry.title">{{ entry.title }}</span>
+      </div>
       <!--end::엔트리 제목-->
 
       <!--begin::마크다운 본문-->
@@ -259,7 +268,7 @@
 
               <div class="separator my-2"></div>
 
-              <!--begin::스레드 후보 검색·분류-->
+              <!--begin::스레드 후보 검색·말머리-->
               <div
                 class="menu-item px-3"
                 data-kt-menu-dismiss="false"
@@ -276,23 +285,23 @@
                     @input="scheduleThreadCandidateSearch"
                   />
                   <select
-                    v-model="membershipStore.optionCategory"
+                    v-model="membershipStore.optionPrefix"
                     class="form-select form-select-sm mt-2"
-                    :disabled="membershipStore.categoriesLoading"
+                    :disabled="membershipStore.prefixesLoading"
                     data-kt-menu-dismiss="false"
                     @change="refreshThreadCandidates"
                   >
-                    <option value="">{{ t("journal.thread.filter.all-categories") }}</option>
+                    <option value="">{{ t("journal.thread.filter.all-prefixes") }}</option>
                     <option
-                      v-for="category in membershipStore.categoryOptions"
-                      :key="'thread-category-' + category.code"
-                      :value="category.code"
+                      v-for="item in membershipPrefixItems"
+                      :key="'thread-prefix-' + item.id"
+                      :value="String(item.id)"
                     >
-                      {{ category.codeName }}
+                      {{ item.name }}
                     </option>
                   </select>
-                  <div v-if="membershipStore.categoryError" class="text-danger fs-9 mt-1">
-                    {{ membershipStore.categoryError }}
+                  <div v-if="membershipStore.prefixError" class="text-danger fs-9 mt-1">
+                    {{ membershipStore.prefixError }}
                   </div>
                   <label class="form-check form-check-custom form-check-sm form-check-solid mt-2 cursor-pointer">
                     <input
@@ -343,12 +352,12 @@
                         {{ opt.title || t('journal.entry.thread.untitled') }}
                       </span>
                       <span class="d-block text-muted fs-9">
-                        <span v-if="opt.categoryCode">{{ threadCategoryName(opt.categoryCode) }}</span>
+                        <span v-if="threadPrefixName(opt)">{{ threadPrefixName(opt) }}</span>
                         <span
                           v-if="opt.lifecycleKey && opt.lifecycleKey !== 'OPEN'"
                           :class="[
-                            opt.categoryCode ? 'ms-1' : '',
-                            opt.lifecycleKey === 'PENDING' ? 'text-primary' : 'text-success',
+                            threadPrefixName(opt) ? 'ms-1' : '',
+                            opt.lifecycleKey === 'PENDING' ? 'text-gray-600' : 'text-success',
                           ]"
                         >{{ threadLifecycleLabel(opt.lifecycleKey) }}</span>
                       </span>
@@ -499,6 +508,7 @@ import type { JournalEntryDto, RelatedContentItem } from "@/features/journal/sto
 import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import { resolveEntryCollapsed } from "@/features/journal/utils/journalLifecycleCollapse";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalInterpretationItem from "../../interpretation/components/JournalInterpretationItem.vue";
 import {
@@ -512,12 +522,14 @@ const props = defineProps<{
   isDream?: boolean;
   /** 챕터 토글이 전파하는 강제 접힘 여부. null=챕터 미개입, true/false=챕터 강제 */
   forceCollapsed?: boolean | null;
-  /** 스레드 상세 등에서 RESOLVED 자동 접힘을 억제한다(초록 표시는 유지). 기본 false. */
-  disableResolvedCollapse?: boolean;
+  /** 스레드 상세 등에서 lifecycle 자동 접힘을 억제한다. 상태 표시는 유지한다. 기본 false. */
+  disableLifecycleCollapse?: boolean;
   /** Parent-provided DOM id, used by popup/search contexts that render the same entry component. */
   domId?: string;
   /** Search-only keyword highlights. Empty by default so monthly/weekly/chapter renders stay unchanged. */
   highlightKeywords?: string[];
+  /** 시스템 요약 챕터의 첫 엔트리(그날 전체 요약)를 상태 언어가 아닌 별개 '카드'로 분리 표시한다(#순번 숨김·본문 박스 카드화). 기본 false — 챕터 외 호출처 무영향. */
+  isSummary?: boolean;
 }>();
 
 const modalStore = useJournalModalStore();
@@ -577,6 +589,7 @@ const contentLabel = computed(() => {
 
 const lcKey = computed(() => props.entry.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
+const isPending = computed(() => lcKey.value === "PENDING");
 /** 지정 꿈꾼(타인 꿈) — journal.scss 좌측 회색 이중선·RESOLVED 색상과 별도 */
 const isElseDream = computed(() => {
   if (!(props.isDream || props.entry.contentType === "JOURNAL_DREAM")) return false;
@@ -587,13 +600,16 @@ const hasHistory = computed(() => !!props.entry.history?.historyTriggeredAt);
 /** 클라이언트 임시 접힘 오버라이드. null=서버 상태 따름, true=강제 접힘, false=강제 펼침 */
 const localCollapsedOverride = ref<boolean | null>(null);
 
-/** 서버 상태(COLLAPSED) + 클라이언트 임시 오버라이드를 합산한 최종 접힘 여부. RESOLVED 시 자동 접힘.
- * 우선순위: 엔트리 자체 토글 > 챕터 강제(forceCollapsed) > RESOLVED 자동 접힘 > 서버 COLLAPSED */
+/** 서버 상태와 클라이언트 임시 오버라이드를 합산한 최종 접힘 여부.
+ * 우선순위: 엔트리 자체 토글 > 챕터 강제 > lifecycle 자동 접힘 > 서버 COLLAPSED */
 const isCollapsed = computed(() => {
-  if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
-  if (props.forceCollapsed !== null && props.forceCollapsed !== undefined) return props.forceCollapsed;
-  if (isResolved.value && !props.disableResolvedCollapse) return true;
-  return hasState("COLLAPSED");
+  return resolveEntryCollapsed({
+    localOverride: localCollapsedOverride.value,
+    forceCollapsed: props.forceCollapsed,
+    lifecycleKey: lcKey.value,
+    disableLifecycleCollapse: props.disableLifecycleCollapse,
+    serverCollapsed: hasState("COLLAPSED"),
+  });
 });
 
 function hasState(key: string): boolean {
@@ -737,7 +753,7 @@ function resolveJournalCacheContext(): JournalCacheContext {
 /** 라이프사이클 옵션 (OPEN/PENDING/RESOLVED) */
 const lifecycleOptions = computed(() => [
   { key: "OPEN", label: t("journal.entry.lifecycle.open"), activeClass: "text-gray-800" },
-  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-primary" },
+  { key: "PENDING", label: t("lifecycle.pending"), activeClass: "text-gray-600" },
   { key: "RESOLVED", label: t("status.completed"), activeClass: isDreamEntry.value ? "text-dream" : "text-success" },
 ]);
 
@@ -818,9 +834,9 @@ function openRelated() {
 /** 이 엔트리가 속한 스레드 목록. */
 const entryThreadList = computed(() => props.entry.threadList ?? []);
 
-/** 검색·분류가 적용 중인지 여부. 정상 빈 목록의 안내 문구를 구분한다. */
+/** 검색·말머리가 적용 중인지 여부. 정상 빈 목록의 안내 문구를 구분한다. */
 const hasThreadCandidateFilter = computed(() =>
-  membershipStore.optionKeyword.trim() !== "" || membershipStore.optionCategory !== "",
+  membershipStore.optionKeyword.trim() !== "" || membershipStore.optionPrefix !== "",
 );
 
 /** 제목 입력마다 API를 호출하지 않도록 마지막 입력 뒤 250ms에 조회한다. */
@@ -860,10 +876,11 @@ function threadLifecycleLabel(lifecycleKey: string): string {
   return t("journal.entry.lifecycle.open");
 }
 
-/** 후보 분류 코드를 현재 locale의 표시명으로 변환한다. */
-function threadCategoryName(categoryCode: string): string {
-  return membershipStore.categoryOptions.find((category) => category.code === categoryCode)?.codeName
-    ?? categoryCode;
+/** 후보 말머리 선택지를 표시한다. */
+const membershipPrefixItems = computed(() => membershipStore.prefixOptions);
+
+function threadPrefixName(option: ThreadOption): string {
+  return option.prefix?.name ?? "";
 }
 
 /** 스레드 소속 토글: 속해 있으면 제외, 아니면 추가. 성공 시 목록 갱신. */
@@ -1097,5 +1114,14 @@ async function deleteEntry(): Promise<void> {
   color: inherit;
   font-weight: 700;
   padding: 0 0.12em;
+}
+
+/* 시스템 요약 챕터를 '그날 전체 요약' 카드로 분리 — 카드 재질은 챕터 전체(헤더+엔트리)를 감싼다(JournalChapterItem .is-summary-chapter).
+   엔트리 레벨에서는 요약 엔트리의 크롬만 정리한다: #순번 거터 숨김(템플릿 v-if)·상태 좌측선(::before) 제거.
+   변경 전: 배경 tint + 2px 좌측 바(=엔트리 상태 언어)라 요약이 '상태'로 오인됐고, 이후 본문 박스만 카드화했으나 챕터 헤더가 카드 밖이었다.
+   변경 후: 카드는 챕터 래퍼로 올리고 엔트리는 카드 안에서 크롬만 뺀다. 접힘(is-collapsed) 시 챕터가 엔트리를 숨긴다(의도된 동작). */
+.is-summary-card::before {
+  /* base 좌측선(.journal-diary-item .journal-diary-content::before, 특이성 0,2,1)과 동률이라 순서 의존을 피해 강제 제거 */
+  content: none !important;
 }
 </style>

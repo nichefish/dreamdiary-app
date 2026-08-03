@@ -7,10 +7,13 @@ import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } fr
 
 // ---- 타입 정의 ----
 
-/** 게시판 분류 선택지 (코드 관리의 상세 코드) */
-export interface BoardCategoryItem {
-  code: string;
-  codeName: string;
+/** 게시판 Prefix Scope의 말머리 선택지 */
+export interface BoardPrefix {
+  id: number;
+  name: string;
+  color?: string;
+  sortOrder?: number;
+  activeYn?: string;
 }
 
 /** 태그 클라우드 항목 (`/api/tags` 응답) */
@@ -43,8 +46,8 @@ export interface BoardPostDto {
   id?: number;
   rnum?: number;
   contentType?: string;
-  categoryCode?: string;
-  ctgrNm?: string;
+  prefixId?: number;
+  prefix?: BoardPrefix;
   title?: string;
   content?: string;
   markdownContent?: string;
@@ -61,7 +64,8 @@ export interface BoardPostDto {
 export interface BoardPostRegistModel {
   id?: number;
   contentType?: string;
-  categoryCode?: string;
+  prefixId?: number;
+  prefix?: BoardPrefix;
   title?: string;
   content?: string;
   tag?: { tagListStrWithCtgr?: string };
@@ -89,11 +93,10 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   const loading = ref(false);
   /** 목록 에러 */
   const error = ref<string | null>(null);
-  /** 검색 키워드 필터 */
-  /** 분류 선택지 (게시판의 category_group_code 기준). 비어 있으면 화면이 분류 select 를 숨긴다 */
-  const categoryOptions = ref<BoardCategoryItem[]>([]);
-  /** 분류 선택지 조회 오류 */
-  const categoryError = ref("");
+  /** 게시판 Scope의 활성 말머리. 비어 있으면 화면이 말머리 select를 숨긴다 */
+  const prefixOptions = ref<BoardPrefix[]>([]);
+  /** 말머리 선택지 조회 오류 */
+  const prefixError = ref("");
 
   /** 선택된 태그 필터 (단일). null 이면 태그 조건 없음 */
   const filterTagId = ref<number | null>(null);
@@ -104,9 +107,10 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   /** 태그 클라우드 조회 오류 */
   const tagCloudError = ref("");
 
+  /** 검색 키워드 필터 */
   const filterKeyword = ref("");
-  /** 카테고리 필터 */
-  const filterCategory = ref("");
+  /** 말머리 필터 */
+  const filterPrefixId = ref<number | null>(null);
 
   // ---- 등록/수정 모달 ----
 
@@ -147,7 +151,7 @@ export const useBoardPostStore = defineStore("boardPost", () => {
         size: pageSize.value,
       };
       if (filterKeyword.value) params.searchKeyword = filterKeyword.value;
-      if (filterCategory.value) params.categoryCode = filterCategory.value;
+      if (filterPrefixId.value != null) params.prefixId = filterPrefixId.value;
       /* 태그 필터는 공통 BaseAttachableSearchParam.tags(List<Integer>) 로 전달한다 (스레드와 동일) */
       if (filterTagId.value != null) params.tags = [filterTagId.value];
       const res = await axios.get("/api/board/posts", { params });
@@ -166,21 +170,24 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   }
 
   /**
-   * boardKey 를 세팅하고 목록을 재조회한다.
-   * 라우트 파라미터가 변경될 때 호출한다.
+   * 게시판 화면 진입 시 boardKey를 확정하고 게시글·말머리·태그를 조회한다.
+   * 같은 게시판에 재진입해도 관리 화면 등에서 변경된 최신 보조 데이터를 다시 조회한다.
    * @param key - contentType (boardKey)
    */
   async function setBoard(key: string) {
-    if (boardKey.value === key) return;
-    boardKey.value = key;
-    filterKeyword.value = "";
-    filterCategory.value = "";
-    filterTagId.value = null;
-    postList.value = [];
-    categoryOptions.value = [];
-    tagCloud.value = [];
-    /* 분류 그룹·태그는 게시판마다 다르므로 게시판이 바뀔 때마다 다시 조회한다. */
-    await Promise.all([fetchList(0), fetchCategoryOptions(), fetchTagCloud()]);
+    const boardChanged = boardKey.value !== key;
+    if (boardChanged) {
+      boardKey.value = key;
+      filterKeyword.value = "";
+      filterPrefixId.value = null;
+      filterTagId.value = null;
+      postList.value = [];
+      prefixOptions.value = [];
+      tagCloud.value = [];
+    }
+    console.info("[boardPost] 게시판 데이터 조회", { boardKey: key, boardChanged });
+    /* 말머리 Scope·태그는 게시판별 데이터이며, 화면 재진입 시 서버의 최신 상태를 반영한다. */
+    await Promise.all([fetchList(0), fetchPrefixOptions(), fetchTagCloud()]);
   }
 
   /**
@@ -214,30 +221,29 @@ export const useBoardPostStore = defineStore("boardPost", () => {
   }
 
   /**
-   * 현재 게시판의 분류 선택지를 조회한다.
-   * 게시판에 분류 그룹(`board.category_group_code`)이 없으면 서버가 빈 목록을 주고,
-   * 화면은 분류 select 를 렌더링하지 않는다.
+   * 현재 게시판 Scope의 활성 말머리를 조회한다.
+   * 활성 말머리가 없으면 화면은 말머리 select를 렌더링하지 않는다.
    */
-  async function fetchCategoryOptions(): Promise<void> {
-    categoryError.value = "";
+  async function fetchPrefixOptions(): Promise<void> {
+    prefixError.value = "";
     if (!boardKey.value) {
-      categoryOptions.value = [];
+      prefixOptions.value = [];
       return;
     }
     try {
-      const res = await axios.get(`/api/board/${encodeURIComponent(boardKey.value)}/categories`);
-      categoryOptions.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+      const res = await axios.get(`/api/board/${encodeURIComponent(boardKey.value)}/prefixes`);
+      prefixOptions.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
     } catch (e: unknown) {
-      console.error("[boardPost] fetchCategoryOptions failed", e);
-      categoryOptions.value = [];
-      categoryError.value = t("board.post.category.load.failure");
+      console.error("[boardPost] fetchPrefixOptions failed", e);
+      prefixOptions.value = [];
+      prefixError.value = t("board.post.prefix.load.failure");
     }
   }
 
   /** 검색 조건을 비우고 첫 페이지를 조회한다. */
   async function resetFilters(): Promise<void> {
     filterKeyword.value = "";
-    filterCategory.value = "";
+    filterPrefixId.value = null;
     filterTagId.value = null;
     await fetchList(0);
   }
@@ -249,7 +255,7 @@ export const useBoardPostStore = defineStore("boardPost", () => {
     if (!await assertAuthenticatedBeforeModal()) return;
     registModel.value = {
       contentType: boardKey.value,
-      categoryCode: "",
+      prefixId: undefined,
       title: "",
       content: "",
       tag: { tagListStrWithCtgr: "" },
@@ -272,7 +278,8 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       registModel.value = {
         id: dto.id,
         contentType: dto.contentType ?? boardKey.value,
-        categoryCode: dto.categoryCode ?? "",
+        prefixId: dto.prefixId ?? dto.prefix?.id,
+        prefix: dto.prefix,
         title: dto.title ?? "",
         content: dto.content ?? "",
         tag: { tagListStrWithCtgr: dto.tag?.tagListStrWithCtgr ?? "" },
@@ -304,7 +311,7 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       const fd = new FormData();
       if (registModel.value.id != null) fd.append("id", String(registModel.value.id));
       fd.append("contentType", registModel.value.contentType ?? boardKey.value);
-      fd.append("categoryCode", registModel.value.categoryCode ?? "");
+      if (registModel.value.prefixId != null) fd.append("prefixId", String(registModel.value.prefixId));
       fd.append("title", registModel.value.title ?? "");
       fd.append("content", registModel.value.content ?? "");
       fd.append("tag.tagListStr", registModel.value.tag?.tagListStrWithCtgr ?? "");
@@ -409,15 +416,15 @@ export const useBoardPostStore = defineStore("boardPost", () => {
     loading,
     error,
     filterKeyword,
-    filterCategory,
-    categoryOptions,
-    categoryError,
+    filterPrefixId,
+    prefixOptions,
+    prefixError,
     filterTagId,
     tagCloud,
     tagCloudLoading,
     tagCloudError,
     fetchList,
-    fetchCategoryOptions,
+    fetchPrefixOptions,
     fetchTagCloud,
     toggleTagFilter,
     resetFilters,

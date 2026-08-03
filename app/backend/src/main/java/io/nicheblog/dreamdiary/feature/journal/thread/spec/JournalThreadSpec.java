@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.entity.LifecycleEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixContentEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
@@ -92,8 +93,22 @@ public class JournalThreadSpec
                     // 소속 엔트리 태그 합집합 AND 필터
                     resolveMemberEntryTagIdsPredicate(predicate, root, query, builder, value);
                     continue;
+                case "prefixId":
+                    // 콘텐츠는 prefix FK를 직접 들지 않으므로 prefix_content 연결을 EXISTS 서브쿼리로 필터한다.
+                    if (value != null && StringUtils.isNotBlank(value.toString())) {
+                        final Subquery<Integer> prefixSubquery = query.subquery(Integer.class);
+                        final Root<PrefixContentEntity> prefixRoot = prefixSubquery.from(PrefixContentEntity.class);
+                        prefixSubquery.select(prefixRoot.get("id"));
+                        prefixSubquery.where(
+                                builder.equal(prefixRoot.get("refId"), root.get("id")),
+                                builder.equal(prefixRoot.get("refContentType"), ContentType.JOURNAL_THREAD.key),
+                                builder.equal(prefixRoot.get("prefixId"), Integer.valueOf(value.toString()))
+                        );
+                        predicate.add(builder.exists(prefixSubquery));
+                    }
+                    continue;
                 case "lifecycleKey":
-                    // 스레드 부착 라이프사이클. OPEN 은 행 없음 포함.
+                    // 스레드 부착 라이프사이클. OPEN은 lifecycle 행 부재로 판정한다.
                     resolveLifecycleKeyPredicate(predicate, root, query, builder, value);
                     continue;
                 default:
@@ -175,7 +190,7 @@ public class JournalThreadSpec
     /**
      * 스레드 라이프사이클 필터.
      * <p>
-     * {@code OPEN} 은 lifecycle 행이 없거나 키가 OPEN 인 경우를 포함한다.
+     * {@code OPEN} 은 lifecycle 행이 없는 경우다.
      * {@code PENDING}/{@code RESOLVED} 는 해당 키 행이 있는 스레드만 남긴다.
      * </p>
      */
@@ -189,15 +204,6 @@ public class JournalThreadSpec
         if (value == null || StringUtils.isBlank(value.toString())) return;
         final String lifecycleKey = value.toString().trim();
 
-        final Subquery<Integer> exactSubquery = query.subquery(Integer.class);
-        final Root<LifecycleEntity> exactRoot = exactSubquery.from(LifecycleEntity.class);
-        exactSubquery.select(exactRoot.get("refId"));
-        exactSubquery.where(
-                builder.equal(exactRoot.get("refId"), root.get("id")),
-                builder.equal(exactRoot.get("refContentType"), ContentType.JOURNAL_THREAD.key),
-                builder.equal(exactRoot.get("lifecycleKey"), lifecycleKey)
-        );
-
         if ("OPEN".equals(lifecycleKey)) {
             final Subquery<Integer> anySubquery = query.subquery(Integer.class);
             final Root<LifecycleEntity> anyRoot = anySubquery.from(LifecycleEntity.class);
@@ -206,12 +212,18 @@ public class JournalThreadSpec
                     builder.equal(anyRoot.get("refId"), root.get("id")),
                     builder.equal(anyRoot.get("refContentType"), ContentType.JOURNAL_THREAD.key)
             );
-            predicate.add(builder.or(
-                    builder.not(builder.exists(anySubquery)),
-                    builder.exists(exactSubquery)
-            ));
+            predicate.add(builder.not(builder.exists(anySubquery)));
             return;
         }
+
+        final Subquery<Integer> exactSubquery = query.subquery(Integer.class);
+        final Root<LifecycleEntity> exactRoot = exactSubquery.from(LifecycleEntity.class);
+        exactSubquery.select(exactRoot.get("refId"));
+        exactSubquery.where(
+                builder.equal(exactRoot.get("refId"), root.get("id")),
+                builder.equal(exactRoot.get("refContentType"), ContentType.JOURNAL_THREAD.key),
+                builder.equal(exactRoot.get("lifecycleKey"), lifecycleKey)
+        );
         predicate.add(builder.exists(exactSubquery));
     }
 }

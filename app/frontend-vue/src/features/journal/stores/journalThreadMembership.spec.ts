@@ -36,13 +36,34 @@ describe("journalThreadMembership store", () => {
     vi.clearAllMocks();
   });
 
-  it("현재 엔트리와 검색·분류 조건으로 전용 후보 API를 조회한다", async () => {
+  it("스레드용 말머리 선택지를 JOURNAL_THREAD 콘텐츠 타입으로 조회한다", async () => {
+    mockedGet
+      .mockResolvedValueOnce({ data: { rsltObj: { content: [] } } })
+      .mockResolvedValueOnce({
+        data: {
+          rsltList: [{ id: 11, name: "이슈", activeYn: "Y" }],
+        },
+      });
+    const store = useJournalThreadMembershipStore();
+
+    await store.openThreadOptions(FIXTURE_ENTRY_ID);
+
+    expect(mockedGet).toHaveBeenCalledWith("/api/my/prefixes/options", {
+      params: { contentType: "JOURNAL_THREAD" },
+    });
+    expect(store.prefixOptions).toEqual([
+      { id: 11, name: "이슈", activeYn: "Y" },
+    ]);
+    expect(store.prefixError).toBe("");
+  });
+
+  it("현재 엔트리와 검색·말머리 조건으로 전용 후보 API를 조회한다", async () => {
     mockedGet.mockResolvedValueOnce({
       data: {
         rsltList: [{
           id: FIXTURE_THREAD_ID,
           title: "프로젝트 회고",
-          categoryCode: "ISSUE",
+          prefix: { id: 11, name: "이슈", activeYn: "Y" },
           membershipCount: 3,
           member: true,
         }],
@@ -50,7 +71,7 @@ describe("journalThreadMembership store", () => {
     });
     const store = useJournalThreadMembershipStore();
     store.optionKeyword = "회고";
-    store.optionCategory = "ISSUE";
+    store.optionPrefix = "11";
 
     const result = await store.fetchThreadOptions(FIXTURE_ENTRY_ID);
 
@@ -60,7 +81,7 @@ describe("journalThreadMembership store", () => {
         entryId: FIXTURE_ENTRY_ID,
         limit: 7,
         keyword: "회고",
-        categoryCode: "ISSUE",
+        prefixId: "11",
       },
     });
     expect(store.threadOptions).toEqual([

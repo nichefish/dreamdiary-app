@@ -24,7 +24,6 @@ public class JournalThreadEntityTestFactory {
                 .contentType(ContentType.JOURNAL_THREAD.key)
                 .title("test_title")
                 .content("test_cn")
-                .categoryCode("test_category_code")
                 .build();
     }
 }

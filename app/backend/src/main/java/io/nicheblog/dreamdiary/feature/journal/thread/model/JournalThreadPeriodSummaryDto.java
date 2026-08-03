@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.model;
 
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,9 @@ public class JournalThreadPeriodSummaryDto {
 
     /** 스레드 제목 */
     private String title;
+
+    /** 스레드에 선택된 말머리. 선택하지 않았으면 null. */
+    private PrefixDto prefix;
 
     /** 조회 기간 안의 소속 엔트리 수 */
     private long entryCount;

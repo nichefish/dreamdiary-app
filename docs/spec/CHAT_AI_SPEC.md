@@ -47,6 +47,7 @@ Chat and embedding model names are **not** hardcoded in `OllamaClient`. They bin
 | `app.ollama.num-predict` | `768` | Chat `options.num_predict` max tokens |
 | `app.ollama.connect-timeout-ms` | `5000` | Ollama HTTP connect timeout |
 | `app.ollama.read-timeout-ms` | `300000` | Ollama HTTP read timeout (14B local generation) |
+| `app.journal.embedding.cache-on-startup` | `true` | Load persisted `EMBEDDED` vectors into the in-memory RAG cache during application startup; the test profile sets it to `false` |
 
 Local override example (`application-local.yml`):
 
@@ -252,7 +253,7 @@ Current keyword weights:
 | Field group | Weight |
 | --- | --- |
 | Tags | `5` |
-| Entry title, chapter title, chapter category | `3` |
+| Entry title, chapter title, chapter Prefix | `3` |
 | Body / full embedding text / payload fallback | `1` |
 
 ### Embedding Text
@@ -264,7 +265,7 @@ Current fields included:
 - content kind
 - journal date
 - chapter title
-- chapter category
+- chapter Prefix (`journalChapterPrefixId`, `journalChapterPrefixName`; system summary role is `journalChapterSummaryYn`)
 - tags as `[category]#tag`
 - repeated tag signal lines (`핵심 태그`, `주제 태그`, `태그`) so embedding search also treats tags as strong topic hints
 - entry title
@@ -555,9 +556,9 @@ When a `SYNTHESIS` person-meaning question resolves `personFocus`, the server va
 4. The chat drawer RAG details block may show `personFocus.roleAxesKo` and `responseMode` (`LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK` (legacy), `PERSON_APPEARANCE_FALLBACK`, `LANGUAGE_FALLBACK`) for diagnosis.
 5. Degraded responses trigger **one** `PERSON_MEANING_RETRY` Ollama call with explicit tag/context citation instructions. Only if the retry is still hollow (or language-guard invalid) does the server replace the answer with `buildPersonMeaningDeterministicFallback(...)`.
 6. `chat_message.metadataJson.responseMode` records `LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_STANCE_FALLBACK` (legacy, no longer emitted — historical rows only), `PERSON_APPEARANCE_FALLBACK`, or `LANGUAGE_FALLBACK`. Person retry fallbacks and `RULE_PRIMARY` also persist `guardDetail` / `retryGuardDetail` when guards reject the LLM output; `LANGUAGE_FALLBACK` sets `guardDetail=language_guard`.
-7. `PERSON_MEANING_FALLBACK` must not stop at person-tag counts alone. It also aggregates **linked context tags** from the same tagged sources (for example `[엠서클]#조직역동`, `[엠서클]#김종순`) and **chapter categories** from embedding payload (`DYNAMICS`, `INTERACTION`) to explain how the person appears in the user's intentional classification axes.
-8. When entity-catalog role axes are unavailable in the person-meaning path, fallback/scaffold role text must use linked context tags + chapter categories instead of the misleading `entity catalog ... not extracted` boilerplate.
-9. Hollow-guard evidence accepts, in order: person tags (full tag or `#` stem), role axes, linked context tags (full tag or `#` stem), chapter category code/label, content-kind words (`꿈`/`일기`/`노트`), and sanitized snippet probes. Generic workplace buckets without these anchors remain hollow.
+7. `PERSON_MEANING_FALLBACK` must not stop at person-tag counts alone. It also aggregates **linked context tags** from the same tagged sources and **chapter Prefix names** from embedding payload to explain how the person appears in the user's intentional journal grouping.
+8. When entity-catalog role axes are unavailable in the person-meaning path, fallback/scaffold role text must use linked context tags + chapter Prefix names instead of the misleading `entity catalog ... not extracted` boilerplate.
+9. Hollow-guard evidence accepts, in order: person tags (full tag or `#` stem), role axes, linked context tags (full tag or `#` stem), chapter Prefix names, content-kind words (`꿈`/`일기`/`노트`), and sanitized snippet probes. Generic workplace buckets without these anchors remain hollow.
 10. `isDegradedPersonResponse(...)` also covers `LOOKUP` person-attitude questions (`isPersonMeaningQuery` + extracted person token). Answers that cite generic workplace buckets such as `조직 내` or `업무 협업` without `#`, `기록상`, `반복`, or `태그` evidence are retried once and may fall back to `PERSON_MEANING_FALLBACK`.
 11. `LOOKUP` questions with an extracted person token receive an additional intent prompt that forbids unsupported organizational role inference and internal `[N]` citations.
 ## Language Guard

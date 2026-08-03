@@ -20,6 +20,11 @@
             @click.stop="openThreadDetail(thread.threadId)"
           >
             <i class="bi bi-diagram-3 p-0 fs-8"></i>
+            <span
+              v-if="thread.prefix"
+              class="journal-period-thread-summary__prefix badge fs-9"
+              :style="prefixBadgeStyle(thread.prefix.color)"
+            >{{ thread.prefix.name }}</span>
             <span>{{ thread.title }}</span>
             <span class="text-muted fs-9">
               {{ formatEntryCount(thread.entryCount) }}
@@ -123,6 +128,11 @@ function formatEntryCount(count: number): string {
   return t("journal.thread.period-summary.entry-count").replace("{0}", String(count));
 }
 
+/** 스레드 목록과 같은 이름·색 계약으로 기간 요약 말머리를 표시한다. */
+function prefixBadgeStyle(color?: string | null): Record<string, string> {
+  return color ? { borderColor: color, color } : {};
+}
+
 function openThreadDetail(threadId: number): void {
   void threadStore.openDetail(threadId);
 }
@@ -132,5 +142,16 @@ function openThreadDetail(threadId: number): void {
 .journal-period-thread-summary__label {
   width: 6.25rem;
   justify-content: center;
+}
+
+/**
+ * prefix 뱃지 세로 광학 보정.
+ * 작은 뱃지 텍스트(fs-9)가 옆의 제목 텍스트와 폰트 baseline 차이로 1~2px 위로 떠 보인다.
+ * flex(align-items:center)는 박스를 정확히 중앙정렬하므로 원인은 박스가 아니라 텍스트 광학이며,
+ * margin은 flex 라인 높이·줄바꿈에 영향을 주므로 레이아웃 중립인 transform으로만 시각 보정한다.
+ * 보정량은 렌더 폰트에 따라 달라질 수 있어 미세 조정 대상이다.
+ */
+.journal-period-thread-summary__prefix {
+  transform: translateY(1px);
 }
 </style>

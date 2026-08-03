@@ -25,7 +25,26 @@
 
             <!--begin::제목-->
             <div class="row d-flex mb-8">
-              <div class="col-12">
+              <div v-if="hasRegistPrefixOptions" class="col-lg-2">
+                <label class="d-flex align-items-center mb-2" for="boardPostPrefixId">
+                  <span class="text-gray-700 fs-6 fw-bolder">{{ t('board.post.form.prefix') }}</span>
+                </label>
+                <select
+                  id="boardPostPrefixId"
+                  name="prefixId"
+                  v-model="model.prefixId"
+                  class="form-select form-select-solid"
+                >
+                  <option :value="undefined">-</option>
+                  <option v-if="currentInactivePrefix" :value="currentInactivePrefix.id" disabled>
+                    {{ currentInactivePrefix.name }} ({{ t('status.unuse') }})
+                  </option>
+                  <option v-for="prefix in store.prefixOptions" :key="prefix.id" :value="prefix.id">
+                    {{ prefix.name }}
+                  </option>
+                </select>
+              </div>
+              <div :class="hasRegistPrefixOptions ? 'col-lg-10' : 'col-12'">
                 <label class="d-flex align-items-center mb-2">
                   <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.title') }}</span>
                 </label>
@@ -106,6 +125,15 @@ let bsModal: InstanceType<typeof Modal> | null = null;
 
 const model = computed(() => store.registModel);
 const isModify = computed(() => !!model.value?.id);
+/** 기존 비활성 말머리는 수정 화면에 표시하고 같은 선택 유지 저장만 허용한다. */
+const currentInactivePrefix = computed(() => {
+  const prefix = model.value?.prefix;
+  if (!prefix || prefix.activeYn === "Y") return null;
+  return store.prefixOptions.some((option) => option.id === prefix.id) ? null : prefix;
+});
+const hasRegistPrefixOptions = computed(() =>
+  store.prefixOptions.length > 0 || currentInactivePrefix.value != null
+);
 
 const tagListStrWithCtgr = computed({
   get: () => model.value?.tag?.tagListStrWithCtgr ?? "",

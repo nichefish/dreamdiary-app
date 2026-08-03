@@ -32,6 +32,8 @@ public class JournalEntryPostDto extends BaseAttachableDto
     private Integer mnth;
     private Integer sortOrder;
     private String contentType;
+    /** 선택할 개인 말머리 ID. 소속 챕터 타입에 맞는 개인 Scope에서 검증한다. */
+    private Integer prefixId;
     private Integer journalDayId;
     private Integer prevJournalChapterId;
     private Integer fromHistoryId;

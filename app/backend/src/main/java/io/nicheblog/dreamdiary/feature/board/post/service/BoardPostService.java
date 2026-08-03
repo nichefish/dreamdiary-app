@@ -1,14 +1,17 @@
 package io.nicheblog.dreamdiary.feature.board.post.service;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixEntity;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
+import io.nicheblog.dreamdiary.feature.board.group.service.BoardPrefixService;
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
 import io.nicheblog.dreamdiary.feature.board.post.mapstruct.BoardPostMapstruct;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.board.post.repository.jpa.BoardPostRepository;
 import io.nicheblog.dreamdiary.feature.board.post.spec.BoardPostSpec;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -48,7 +51,7 @@ public class BoardPostService
         return this.mapstruct;
     }
 
-    private final CodeLookupService codeLookupService;
+    private final BoardPrefixService boardPrefixService;
 
     /**
      * 목록 {@code Page<Entity>} -> {@code Page<Dto>} 변환 (override)
@@ -63,8 +66,6 @@ public class BoardPostService
         for (BoardPostEntity entity : entityPage.getContent()) {
             final BoardPostDto listDto = mapstruct.toDto(entity);
             listDto.setRnum(CmmUtils.getPageRnum(entityPage, i));
-            final String ctgrNm = codeLookupService.getCodeName(listDto.getCategoryGroupCode(), listDto.getCategoryCode());
-            listDto.setCtgrNm(ctgrNm);
             dtoList.add(listDto);
             i++;
         }
@@ -87,19 +88,48 @@ public class BoardPostService
         return this.getDtlDto(key);
     }
 
-    /**
-     * 게시판 > 게시판 조회 (dto level) (override)
-     *
-     * @param key 글 번호와 컨텐츠 타입을 포함하는 복합키 객체
-     */
+    /** 게시글 본문과 GLOBAL Scope 소속 단일 Prefix 연결을 같은 트랜잭션에서 등록한다. */
     @Override
-    @Transactional(readOnly = true)
-    public BoardPostDto getDtlDto(final Integer key) throws Exception {
-        final BoardPostEntity retrievedEntity = this.getDtlEntity(key);       // Entity 레벨 조회
-        final BoardPostDto retrievedDto = mapstruct.toDto(retrievedEntity);
-        final String ctgrNm = codeLookupService.getCodeName(retrievedDto.getCategoryGroupCode(), retrievedDto.getCategoryCode());
-        retrievedDto.setCtgrNm(ctgrNm);
+    @Transactional
+    public ServiceResponse regist(final BoardPostDto registDto) throws Exception {
+        final ServiceResponse response = BaseAttachableService.super.regist(registDto);
+        final BoardPostDto updatedDto = (BoardPostDto) response.getRsltObj();
+        applyPrefixSelection(updatedDto, registDto.getPrefixId());
+        return response;
+    }
 
-        return retrievedDto;
+    /** 게시글 본문과 GLOBAL Scope 소속 단일 Prefix 연결을 같은 트랜잭션에서 수정한다. */
+    @Override
+    @Transactional
+    public ServiceResponse modify(final BoardPostDto modifyDto) throws Exception {
+        final ServiceResponse response = BaseAttachableService.super.modify(modifyDto);
+        final BoardPostDto updatedDto = (BoardPostDto) response.getRsltObj();
+        applyPrefixSelection(updatedDto, modifyDto.getPrefixId());
+        return response;
+    }
+
+    /**
+     * 선택한 Prefix의 GLOBAL Scope·활성 상태를 검증하고 prefix_content 연결을 반영한다.
+     * 변경 전에는 게시글 엔티티의 직접 FK를 교체하고 다시 저장했다. 변경 후에는 게시글의
+     * {@code (id, boardKey)} attachable 키를 사용해 공통 연결만 생성·교체·해제한다.
+     */
+    private void applyPrefixSelection(final BoardPostDto dto, final Integer prefixId) {
+        final BoardPostEntity entity = repository.findById(dto.getId())
+                .orElseThrow(() -> new javax.persistence.EntityNotFoundException("Board post not found."));
+        final PrefixEntity prefix = boardPrefixService.applySelection(
+                entity.getContentType(),
+                entity.getAttachableKey(),
+                prefixId
+        );
+        dto.setPrefix(prefix == null ? null : PrefixDto.builder()
+                .id(prefix.getId())
+                .name(prefix.getName())
+                .color(prefix.getColor())
+                .sortOrder(prefix.getSortOrder())
+                .activeYn(prefix.getActiveYn())
+                .build());
+        dto.setPrefixId(prefixId);
+        log.info("[BoardPost] Prefix 연결 반영. postId={}, boardKey={}, prefixId={}",
+                entity.getId(), entity.getContentType(), prefixId);
     }
 }

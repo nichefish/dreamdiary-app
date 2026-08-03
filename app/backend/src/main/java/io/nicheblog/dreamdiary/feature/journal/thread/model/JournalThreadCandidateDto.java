@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.thread.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +22,7 @@ public class JournalThreadCandidateDto {
 
     private String title;
 
-    private String categoryCode;
+    private PrefixDto prefix;
 
     /**
      * 스레드 라이프사이클 키 ({@code OPEN}/{@code PENDING}/{@code RESOLVED}).
