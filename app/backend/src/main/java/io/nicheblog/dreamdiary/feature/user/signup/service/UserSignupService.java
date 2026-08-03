@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.user.signup.model.UserSignupRequestDto;
 import io.nicheblog.dreamdiary.feature.user.signup.repository.jpa.UserSignupRequestRepository;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.RequiredArgsConstructor;
@@ -108,6 +109,7 @@ public class UserSignupService {
                 .phoneNumber(updatedEntity.getPhoneNumber())
                 .content(updatedEntity.getContent())
                 .createdBy(updatedEntity.getCreatedBy())
+                .createdAt(DateUtils.asStr(updatedEntity.getCreatedAt(), DatePtn.DATETIME))
                 .build();
 
         return ServiceResponse.builder()
@@ -130,6 +132,8 @@ public class UserSignupService {
             return ServiceResponse.builder().rslt(false).build();
         }
 
+        // 개인 Prefix 목록(prefix_scope)은 사전 프로비저닝하지 않는다. (PERSONAL, user_id, content_type)
+        // 정규화 목록으로, 첫 말머리 등록 시점에 lazy 생성한다.
         final UserEntity userEntity = UserEntity.builder()
                 .username(req.getUsername())
                 .password(req.getPassword())

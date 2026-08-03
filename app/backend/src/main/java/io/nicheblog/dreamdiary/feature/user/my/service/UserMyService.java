@@ -11,10 +11,13 @@ import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserPasswordHistoryService;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
+import io.nicheblog.dreamdiary.feature.user.my.model.UserMyUpdateRequest;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -26,6 +29,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import java.time.LocalDateTime;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import javax.persistence.EntityNotFoundException;
 
 /**
  * UserMyService
@@ -37,6 +41,7 @@ import java.security.MessageDigest;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserMyService {
 
     private final UserService userService;
@@ -45,6 +50,45 @@ public class UserMyService {
     private final RefreshTokenService refreshTokenService;
     private final AuthPolicyQueryService authPolicyQueryService;
     private final UserPasswordHistoryService userPasswordHistoryService;
+
+    /**
+     * 로그인 사용자의 개인 연락처·프로필 수정.
+     * 요청에서 사용자 식별자를 받지 않고 인증 컨텍스트의 계정만 변경한다.
+     *
+     * @param request 수정할 개인 프로필 정보
+     * @return 수정 성공 여부
+     */
+    @Transactional
+    public boolean modifyMyInfo(final UserMyUpdateRequest request) throws Exception {
+        final String loginUsername = AuthUtils.getLoginUsername();
+        final UserEntity user = userService.getDtlEntity(loginUsername);
+        if (user == null) {
+            log.warn("My profile update rejected: authenticated user not found. username={}", loginUsername);
+            throw new EntityNotFoundException();
+        }
+
+        user.setNickname(StringUtils.trim(request.getNickname()));
+        user.setPhoneNumber(StringUtils.trimToNull(request.getPhoneNumber()));
+
+        boolean profileCreated = false;
+        UserProfileEntity profile = user.getProfile();
+        if (profile == null) {
+            profile = UserProfileEntity.builder()
+                    .user(user)
+                    .build();
+            user.setProfile(profile);
+            profileCreated = true;
+        }
+        profile.setBrthdy(request.getBrthdy());
+        profile.setLunarYn(request.getLunarYn());
+        profile.setProflCn(StringUtils.trimToNull(request.getProflCn()));
+
+        final UserEntity updated = userRepository.saveAndFlush(user);
+        EhCacheUtils.evictCacheByKey("auditorInfo", loginUsername);
+        log.info("My profile updated. username={} profileCreated={}", loginUsername, profileCreated);
+
+        return updated.getId() != null;
+    }
 
     /**
      * 비밀번호 만료시 비밀번호 변경 (미로그인 상태)
