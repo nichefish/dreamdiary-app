@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupDto;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupPatchDto;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.code.service.CodeGroupService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -18,7 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,7 +34,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     private final CodeGroupService codeGroupService;
 
     @GetMapping(value = {Url.CODE_GROUPS})
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeGroupListAjax(
             @ModelAttribute final CodeGroupSearchParam searchParam,
@@ -48,7 +47,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     }
 
     @PostMapping(value = {Url.CODE_GROUPS})
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeGroupRegAjax(final @Valid CodeGroupDto codeGroupDto) throws Exception {
         final ServiceResponse result = codeGroupService.regist(codeGroupDto);
@@ -58,7 +57,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     }
 
     @PostMapping(value = {Url.CODE_GROUP})
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeGroupMdfAjax(final @PathVariable("id") Integer id, final @Valid CodeGroupDto codeGroupDto) throws Exception {
         codeGroupDto.setId(id);
@@ -69,7 +68,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     }
 
     @GetMapping(Url.CODE_GROUP)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeGroupDtlAjax(final @PathVariable("id") Integer id) throws Exception {
         final CodeGroupDto codeGroup = codeGroupService.getDtlDto(id);
@@ -79,7 +78,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     }
 
     @PatchMapping(Url.CODE_GROUP)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeGroupPatchAjax(final @PathVariable("id") Integer id, final @RequestBody CodeGroupPatchDto patchDto) throws Exception {
         final ServiceResponse result = codeGroupService.patch(id, patchDto);
@@ -89,7 +88,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     }
 
     @DeleteMapping(Url.CODE_GROUP)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeGroupDelAjax(final @PathVariable("id") Integer id) throws Exception {
         final ServiceResponse result = codeGroupService.delete(id);

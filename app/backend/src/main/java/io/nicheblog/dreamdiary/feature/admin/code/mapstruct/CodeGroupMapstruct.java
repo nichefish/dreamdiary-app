@@ -7,7 +7,11 @@ import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeGroupEntity;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        builder = @Builder(disableBuilder = true)
+)
 public interface CodeGroupMapstruct
         extends BaseWriteMapstruct<CodeGroupDto, CodeGroupEntity>, BaseReadMapstruct<CodeGroupDto, CodeGroupEntity> {
 

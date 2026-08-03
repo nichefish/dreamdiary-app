@@ -41,6 +41,9 @@ public class AuthUserDto {
     /** 개발자 여부 */
     private Boolean isDev;
 
+    /** 유효 권한 키 목록 (롤∪그룹) */
+    private List<String> permissions;
+
     /* ----- */
 
     /**
@@ -58,6 +61,7 @@ public class AuthUserDto {
                 .roles(authInfo.getRoles())
                 .isMngr(authInfo.hasAuthority(Constant.ROLE_MNGR))
                 .isDev(authInfo.hasAuthority(Constant.ROLE_DEV))
+                .permissions(authInfo.getPermissions())
                 .build();
     }
 }

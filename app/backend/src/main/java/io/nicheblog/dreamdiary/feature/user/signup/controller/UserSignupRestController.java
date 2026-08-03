@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.user.signup.controller;
 
 import io.nicheblog.dreamdiary.feature.user.signup.model.UserSignupRequestDto;
 import io.nicheblog.dreamdiary.feature.user.signup.service.UserSignupService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -13,7 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.nicheblog.dreamdiary.feature.user.signup.entity.UserSignupRequestEntity;
 import io.nicheblog.dreamdiary.feature.user.signup.repository.jpa.UserSignupRequestRepository;
 import org.springframework.data.domain.Sort;
@@ -90,7 +89,7 @@ public class UserSignupRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_SIGNUP_REQUEST_APPROVAL)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userCfAjax(
             final @PathVariable("id") Integer id
@@ -114,7 +113,7 @@ public class UserSignupRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_SIGNUP_REQUEST_REJECTION)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userUncfAjax(
             final @PathVariable("id") Integer id
@@ -137,7 +136,7 @@ public class UserSignupRestController
      * @return {@link ResponseEntity} -- pendingList / recentList
      */
     @GetMapping(Url.USER_SIGNUP_REQUESTS)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.user_account')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> userSignupApprovalListAjax() {
 

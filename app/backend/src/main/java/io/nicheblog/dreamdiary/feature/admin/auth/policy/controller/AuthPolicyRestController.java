@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.admin.auth.policy.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -13,7 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,7 +50,7 @@ public class AuthPolicyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.AUTH_POLICY)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.auth_policy')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> authPolicyGet(
     ) throws Exception {
@@ -71,7 +70,7 @@ public class AuthPolicyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PutMapping(Url.AUTH_POLICY)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.auth_policy')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> authPolicyPut(
             final @Valid @RequestBody AuthPolicyDto authPolicy

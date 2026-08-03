@@ -88,6 +88,9 @@ public class MenuPostDto
     @Pattern(regexp = "^[YN]$")
     private String sidebarVisibleYn;
 
+    /** 메뉴 노출에 필요한 권한 키 */
+    private String requiredPermKey;
+
     /** 아이콘 (bootstrap icon 또는 font-awesome) TODO: svg? */
     private String icon;
 

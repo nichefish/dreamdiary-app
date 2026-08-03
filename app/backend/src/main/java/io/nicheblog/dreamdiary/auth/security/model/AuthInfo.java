@@ -46,6 +46,9 @@ public class AuthInfo
     /** Spring Security에 매핑할 부여 역할 목록 (RoleDto) */
     private List<RoleDto> roles;
 
+    /** 유효 권한 키 목록 (롤∪그룹 합집합). GrantedAuthority 에도 동일 키로 올린다. */
+    private List<String> permissions;
+
     /** 사용자 이름 */
     private String nickname;
 
@@ -135,7 +138,7 @@ public class AuthInfo
             throw new AuthenticationServiceException(MessageUtils.getMessage("user.auth.empty"));
         }
 
-        return this.roles.stream()
+        final List<GrantedAuthority> authorities = this.roles.stream()
                 .map(entity -> {
                     try {
                         if (Code.AUTH_DEV.equals(entity.getRoleKey())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
@@ -144,7 +147,30 @@ public class AuthInfo
                         throw new RuntimeException(e);
                     }
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(java.util.ArrayList::new));
+
+        if (CollectionUtils.isNotEmpty(this.permissions)) {
+            for (final String permKey : this.permissions) {
+                if (StringUtils.isNotBlank(permKey)) {
+                    authorities.add(new SimpleGrantedAuthority(permKey));
+                }
+            }
+        }
+        return authorities;
+    }
+
+    /**
+     * 특정 permission 키 보유 여부.
+     * roles 기반 ROLE_* 와 별도로, 롤∪그룹에서 전개된 permission 키를 검사한다.
+     */
+    public boolean hasPermission(final String permKey) {
+        if (StringUtils.isBlank(permKey)) return false;
+        if (CollectionUtils.isNotEmpty(this.permissions)) {
+            for (final String p : this.permissions) {
+                if (permKey.equals(p)) return true;
+            }
+        }
+        return this.hasAuthority(permKey);
     }
 
     /**

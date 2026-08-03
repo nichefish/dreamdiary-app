@@ -119,6 +119,10 @@ public class MenuDto
     @Builder.Default
     private String sidebarVisibleYn = "Y";
 
+    /** 메뉴 노출에 필요한 권한 키 */
+    @Size(max = 100)
+    private String requiredPermKey;
+
     /** 셀프 참조 :: 상위메뉴 조회 */
     private MenuDto upperMenu;
     /** 셀프 참조 :: 상위메뉴명 */

@@ -15,6 +15,7 @@
 | 게시판 그룹 관리 | `/admin/board-group` | `BoardGroupAdminPage.vue` | ✓ |
 | 코드 관리 | `/admin/code` | `CodeAdminPage.vue` | ✓ |
 | 메뉴 관리 | `/admin/menu` | `MenuAdminPage.vue` | ✓ |
+| 사용자 그룹 관리 | `/admin/user-groups` | `UserGroupAdminPage.vue` | ✓ |
 | 계정 관리 | `/admin/users` | `UserAdminPage.vue` | ✓ |
 | 로그 관측 | `/admin/log` | `LogAdminPage.vue` | ✓ |
 | 사용자별 로그 통계 | `/admin/log/stats-user` | `LogAdminPage.vue` (route로 분기) | ✓ |
@@ -75,6 +76,21 @@
 
 ---
 
+
+## 사용자 그룹 관리 (`user-group-admin`)
+
+**Vue view**: `app/frontend-vue/src/features/admin/UserGroupAdminPage.vue`  
+**스토어**: `features/admin/stores/userGroup.ts`
+
+**기능**:
+- 화면 설명은 `USER_GROUP` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다.
+- 사용자 그룹 목록 조회/검색/페이지네이션 → `GET /api/user/groups`
+- 그룹 상세(멤버십·부여 permission) → `GET /api/user/groups/{id}`
+- 그룹 등록/수정/삭제 → `POST /api/user/groups`, `PUT /api/user/groups/{id}`, `DELETE /api/user/groups/{id}`
+- 권한 카탈로그 목록 → `GET /api/permissions`
+- 시스템 롤(`USER`/`MNGR`/`DEV`)과 직교하는 축이다. 그룹에 permission을 부여하면 멤버의 유효 권한(롤∪그룹 합집합)에 반영된다.
+- API는 `@PreAuthorize("hasAuthority('menu.admin.user_group')")` 이다.
+
 ## 게시판 그룹 관리 (`board-group-admin`)
 
 **Vue view**: `app/frontend-vue/src/features/admin/BoardGroupAdminPage.vue`  
@@ -84,9 +100,15 @@
 - 등록은 저널 스레드·게시판·코드/계정 관리와 동형인 뷰 툴바(`board-group-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `BOARD_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다. 본문 상단 전용 새로고침 버튼은 두지 않는다.
 - 목록 관리 열의 ⋯ 컨텍스트 메뉴는 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu`를 쓴다. `.table-responsive` overflow 클리핑은 `data-kt-menu-overflow="true"`(body portal)로 해결하며, 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다. 트리거 `@click.stop` 금지(KTMenu body 위임); 행 클릭이 있으면 `isMetronicMenuEventTarget` 가드. **변경 전**: Bootstrap `strategy:fixed` 땜빵으로 메뉴가 여러 행에서 열린 채 겹쳤다. 메뉴 관리 트리(Bootstrap·비테이블)와는 다른 계약이다.
 - 게시판 그룹 목록/등록/수정/삭제
+- 게시판 등록은 게시판 기본 정보만 저장하고 PrefixScope를 사전 생성하거나 다른 게시판 목록을 공유하지 않는다. 첫 Prefix 등록 시 서버가 `GLOBAL + boardKey` Scope를 lazy 생성한다. 기존 `categoryGroupCode` 자유 입력과 목록 열, `prefixSourceBoardId` 공유 선택 행은 제거됐고 Scope 식별자는 관리 폼에 노출하지 않는다.
+- `boardKey`는 게시글·attachable 연결·라우팅·GLOBAL PrefixScope가 공유하는 영속 content type이다. 수정 모달은 기존처럼 read-only로 표시하고, 서버도 생성 후 다른 값으로의 변경을 거부한다. 신규 등록은 고정 시스템 `ContentType`과 충돌하는 키를 거부한다.
+- 목록 행의 ⋯ 컨텍스트 메뉴에서 `말머리 관리`를 선택하면 게시판 전용 Prefix 관리 모달을 연다. 모달은 비활성 포함 평면 목록과 이름·색상·정렬 순서 등록/수정, 사용/미사용 전환을 제공하며 삭제 대신 비활성화로 기존 게시글 참조를 보존한다(✓).
+- 기존 공통 코드에서 이관된 게시판은 boardKey별로 복제된 Prefix를 즉시 관리할 수 있고, Prefix가 없는 신규 게시판은 같은 모달에서 첫 Prefix를 등록한다.
+- 관리자 Prefix 조회 응답은 Scope 내부 ID나 공유 메타데이터를 노출하지 않는다. 생성·수정·활성 변경은 게시판 ID로 boardKey를 확정한 뒤 해당 `GLOBAL + boardKey` Scope 소속 Prefix에만 허용한다.
+- 변경 전에는 여러 게시판이 Scope 하나를 공유해 공동 반영 경고를 표시했다. 변경 후 게시판 목록은 서로 독립적이며 관리 모달에서 공유 경고·연결 변경·병합 UI를 제공하지 않는다.
 - 사용/미사용 토글
-- 드래그로 정렬 순서 변경
-- API: `GET/POST /api/board/groups`, `POST/DELETE /api/board/groups/{id}`, `POST .../use|unuse`, `PUT .../sort-orders`
+- 위/아래 이동 버튼으로 현재 페이지의 정렬 순서를 바꾸고 별도 저장
+- API: `GET/POST /api/board/groups`, `POST/DELETE /api/board/groups/{id}`, `POST .../use|unuse`, `PUT .../sort-orders`, `GET/POST /api/board/groups/{id}/prefixes`, `PUT /api/board/groups/{id}/prefixes/{prefixId}`, `PATCH .../{prefixId}/active`
 
 ---
 

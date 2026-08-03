@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.admin.menu.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.model.*;
 import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
+import io.nicheblog.dreamdiary.auth.permission.PermissionKey;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -17,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,13 +48,13 @@ public class MenuRestController
 
     /**
      * 메뉴 관리 (메인) 목록 조회 (Ajax)
-     * (관리자MNGR만 접근 가능.)
+     * (menu.admin.menu permission 필요.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENU_MAIN_LIST_AJAX)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.menu')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> mainMenuListAjax(
             final @ModelAttribute("searchParam") MenuSearchParam searchParam
@@ -68,8 +70,8 @@ public class MenuRestController
     }
 
     /**
-     * 사이드바 메뉴 (사용자, useYn=Y) 목록 조회 (Ajax)
-     * Vue SPA 사이드바 메뉴 렌더링용. 비관리자 메뉴만 반환.
+     * 사이드바 메뉴 (useYn=Y) 목록 조회 (Ajax)
+     * Vue SPA 사이드바 메뉴 렌더링용. mode=MNGR 은 menu.view.admin permission 이 있을 때만 관리자 메뉴를 반환.
      *
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
@@ -82,7 +84,7 @@ public class MenuRestController
     ) throws Exception {
 
         final boolean mngrModeRequested = Code.AUTH_MNGR.equals(mode);
-        final boolean canUseMngrMode = AuthUtils.hasAuthority(Constant.ROLE_MNGR);
+        final boolean canUseMngrMode = AuthUtils.hasPermission(PermissionKey.MENU_VIEW_ADMIN);
         final List<MenuDto> menuList = mngrModeRequested && canUseMngrMode
                 ? (includeHidden ? menuService.getMngrMenuMetaList() : menuService.getMngrMenuList())
                 : (includeHidden ? menuService.getUserMenuMetaList() : menuService.getUserMenuList());
@@ -94,13 +96,13 @@ public class MenuRestController
 
     /**
      * 메뉴 등록/수정 (Ajax)
-     * (관리자MNGR만 접근 가능.)
+     * (menu.admin.menu permission 필요.)
      *
      * @param menu 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.MENUS, Url.MENU})
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.menu')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegistAjax(
             final @PathVariable(value = "id", required = false) Integer id,
@@ -118,13 +120,13 @@ public class MenuRestController
 
     /**
      * 메뉴 관리 상세 조회 (Ajax)
-     * (관리자MNGR만 접근 가능.)
+     * (menu.admin.menu permission 필요.)
      *
      * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENU)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.menu')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDetailAjax(
             final @PathVariable("id") Integer id
@@ -143,13 +145,13 @@ public class MenuRestController
 
     /**
      * 메뉴 상태 변경 (Ajax)
-     * (관리자MNGR만 접근 가능.)
+     * (menu.admin.menu permission 필요.)
      *
      * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PatchMapping(Url.MENU)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.menu')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuPatchAjax(
             final @PathVariable("id") Integer id,
@@ -165,13 +167,13 @@ public class MenuRestController
 
     /**
      * 관리자 > 메뉴 관리 > 정렬 순서 저장 (드래그앤드랍 결과 반영) (Ajax)
-     * (관리자MNGR만 접근 가능.)
+     * (menu.admin.menu permission 필요.)
      *
      * @param menuParam 키+정렬 순서 목록을 담은 파라미터
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PutMapping(Url.MENUS_SORT_ORDERS)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.menu')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuSortOrdrAjax(
             final @RequestBody MenuParam menuParam
@@ -192,7 +194,7 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PutMapping(Url.MENUS_TREE)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.menu')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuTreeMoveAjax(
             final @RequestBody MenuTreeMoveParam moveParam
@@ -207,13 +209,13 @@ public class MenuRestController
 
     /**
      * 메뉴 관리 삭제 (Ajax)
-     * (관리자MNGR만 접근 가능.)
+     * (menu.admin.menu permission 필요.)
      *
      * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.MENU)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.menu')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDeleteAjax(
             final @PathVariable("id") Integer id

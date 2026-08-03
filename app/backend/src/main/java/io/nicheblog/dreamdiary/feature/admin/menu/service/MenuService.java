@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.service;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuI18nEntity;
 import io.nicheblog.dreamdiary.feature.admin.menu.exception.MenuNotExistsException;
@@ -111,7 +112,7 @@ public class MenuService
      * @return {@link List} 사용 가능한 포털 사이드바 메뉴 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="userMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
+    @Cacheable(value="userMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getUserMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -121,7 +122,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort))));
+        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)))));
     }
 
     /**
@@ -131,7 +132,7 @@ public class MenuService
      * @return {@link List} 사용자 메뉴 메타 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="userMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
+    @Cacheable(value="userMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getUserMenuMetaList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -140,7 +141,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.localizeMenuTree(this.attachBoardSubMenus(this.getListDto(searchParamMap, sort)));
+        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(this.getListDto(searchParamMap, sort))));
     }
 
     /**
@@ -149,7 +150,7 @@ public class MenuService
      * @return {@link Page} 관리자 메인 메뉴 목록을 담고 있는 페이지 객체
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="mngrMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
+    @Cacheable(value="mngrMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getMngrMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -159,7 +160,7 @@ public class MenuService
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
-        return this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort))));
+        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)))));
     }
 
     /**
@@ -169,7 +170,7 @@ public class MenuService
      * @return {@link List} 관리자 메뉴 메타 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="mngrMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage()")
+    @Cacheable(value="mngrMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getMngrMenuMetaList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuType(MenuType.MAIN.name())
@@ -180,9 +181,43 @@ public class MenuService
 
         final List<MenuDto> menuList = this.getListDto(searchParamMap, sort);
         this.addSharedHiddenUserMenuMeta(menuList);
-        return this.localizeMenuTree(this.attachBoardSubMenus(menuList));
+        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(menuList)));
     }
 
+
+    /**
+     * Filter menu tree by required_perm_key against current user permissions.
+     * Blank required key passes. Folder nodes with no URL and no remaining children are dropped
+     * (except BOARD expand type which may still receive injected boards).
+     */
+    private List<MenuDto> filterByRequiredPermission(final List<MenuDto> menuList) {
+        if (CollectionUtils.isEmpty(menuList)) return menuList;
+        final List<MenuDto> filtered = new ArrayList<>();
+        for (final MenuDto menu : menuList) {
+            final MenuDto node = filterByRequiredPermission(menu);
+            if (node != null) filtered.add(node);
+        }
+        return filtered;
+    }
+
+    private MenuDto filterByRequiredPermission(final MenuDto menu) {
+        if (menu == null) return null;
+        final String required = menu.getRequiredPermKey();
+        if (StringUtils.isNotBlank(required) && !Boolean.TRUE.equals(AuthUtils.hasPermission(required))) {
+            return null;
+        }
+        if (CollectionUtils.isNotEmpty(menu.getSubMenuList())) {
+            menu.setSubMenuList(this.filterByRequiredPermission(menu.getSubMenuList()));
+        }
+        final boolean noUrl = StringUtils.isBlank(menu.getUrl());
+        final boolean noChildren = CollectionUtils.isEmpty(menu.getSubMenuList());
+        if (noUrl && noChildren && menu.getSubmenuExpandType() != null
+                && !"NO_SUB".equals(menu.getSubmenuExpandType())
+                && !"BOARD".equals(menu.getSubmenuExpandType())) {
+            return null;
+        }
+        return menu;
+    }
     private List<MenuDto> filterSidebarVisible(final List<MenuDto> menuList) {
         if (CollectionUtils.isEmpty(menuList)) return menuList;
 

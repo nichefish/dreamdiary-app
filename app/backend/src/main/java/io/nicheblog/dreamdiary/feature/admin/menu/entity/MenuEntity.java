@@ -99,6 +99,11 @@ public class MenuEntity
     @Comment("사이드바 표시 여부 (Y/N)")
     private String sidebarVisibleYn = "Y";
 
+    /** 메뉴 노출에 필요한 권한 키 (null이면 추가 검사 없음) */
+    @Column(name = "required_perm_key", length = 100)
+    @Comment("메뉴 노출에 필요한 권한 키")
+    private String requiredPermKey;
+
     /** 하위메뉴 확장유형 */
     @Column(name = "submenu_expand_type")
     @Comment("하위메뉴 확장유형")

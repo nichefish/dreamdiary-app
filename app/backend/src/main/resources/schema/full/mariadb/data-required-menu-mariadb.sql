@@ -77,6 +77,13 @@ WITH T AS ( SELECT 'USER' AS upper_label )
 SELECT M.id, 'SUB', '인증 정책 관리', '/app/auth/policy/page.do', NULL, 14, 'nichefish', 'NO_SUB', 'AUTH_POLICY', 'N', 'Y', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
+INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, use_yn, required_perm_key )
+WITH T AS ( SELECT 'USER' AS upper_label )
+SELECT M.id, 'SUB', '사용자 그룹 관리', '/app/user/group/page.do', NULL, 13, 'system', 'NO_SUB', 'USER_GROUP', 'N', 'Y', 'Y', 'menu.admin.user_group'
+FROM T
+INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL
+WHERE NOT EXISTS (SELECT 1 FROM menu C WHERE C.menu_label = 'USER_GROUP' AND C.deleted_at IS NULL);
+
 
 -- 사이트 관리
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, use_yn )
@@ -141,6 +148,7 @@ SET menu_description = CASE menu_label
   WHEN 'BOARD_ADMIN' THEN '게시판 그룹과 카테고리 코드, 사용 여부, 노출 순서를 관리합니다.'
   WHEN 'USER_ACCOUNT' THEN '사용자 계정과 권한을 관리합니다.'
   WHEN 'AUTH_POLICY' THEN '로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.'
+  WHEN 'USER_GROUP' THEN '사용자 그룹, 멤버십, 그룹 권한을 관리합니다.'
   WHEN 'LOG_LIST' THEN '실패, 지연, trace 흐름을 중심으로 운영 로그를 확인합니다.'
   WHEN 'LOG_STATS_USER' THEN '사용자별 활동 로그 통계를 확인합니다.'
   WHEN 'USER_MY' THEN '내 계정과 프로필 정보를 확인하고 관리합니다.'
@@ -153,6 +161,7 @@ WHERE menu_label IN (
     'BOARD_ADMIN',
     'USER_ACCOUNT',
     'AUTH_POLICY',
+    'USER_GROUP',
     'LOG_LIST',
     'LOG_STATS_USER',
     'USER_MY'

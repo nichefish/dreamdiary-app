@@ -6,14 +6,13 @@ import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbed
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQualityEvalService;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingSyncJobService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,7 +37,7 @@ public class JournalEntryEmbeddingAdminRestController {
      * @return 임베딩 작업 통계 DTO를 담은 Ajax 응답
      */
     @GetMapping(Url.ADMIN_JOURNAL_ENTRY_EMBEDDING_STATS)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getStats() {
         final JournalEntryEmbeddingStatsDto stats = journalEntryEmbeddingQueueService.getStats()
@@ -53,7 +52,7 @@ public class JournalEntryEmbeddingAdminRestController {
      * @throws Exception 동기화 중 예외가 발생한 경우
      */
     @PostMapping(Url.ADMIN_JOURNAL_ENTRY_EMBEDDING_SYNC)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> sync() throws Exception {
         final JournalEntryEmbeddingSyncJobStatusDto status = journalEntryEmbeddingSyncJobService.startSync();
@@ -66,7 +65,7 @@ public class JournalEntryEmbeddingAdminRestController {
      * @return 재대기 처리한 row 수
      */
     @PostMapping(Url.ADMIN_JOURNAL_ENTRY_EMBEDDING_REQUEUE_FAILED)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> requeueFailed() {
         final long requeued = journalEntryEmbeddingQueueService.requeueFailed();
@@ -79,7 +78,7 @@ public class JournalEntryEmbeddingAdminRestController {
      * @return Ollama health DTO
      */
     @GetMapping(Url.ADMIN_OLLAMA_HEALTH)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getOllamaHealth() {
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success"))
@@ -94,7 +93,7 @@ public class JournalEntryEmbeddingAdminRestController {
      * @return 품질 실측 리포트
      */
     @GetMapping(Url.ADMIN_JOURNAL_ENTRY_EMBEDDING_QUALITY_EVAL)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> runQualityEval() {
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success"))

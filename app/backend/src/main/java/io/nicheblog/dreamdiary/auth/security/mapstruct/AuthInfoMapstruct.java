@@ -20,7 +20,11 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, UserProfileMapstruct.class}, uses = AuthInfoRoleFillHelper.class)
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        imports = {DateUtils.class, StringUtils.class, UserProfileMapstruct.class, AuthInfoRoleFillHelper.class}
+)
 public interface AuthInfoMapstruct
         extends BaseMapstruct<AuthInfo, UserEntity> {
 
@@ -41,7 +45,7 @@ public interface AuthInfoMapstruct
     @Mapping(target = "passwordResetTokenIssuedAt", expression = "java(entity.acntStus.getPasswordResetTokenIssuedAt())")
     @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toDto(entity.getProfile()))")
     @Mapping(target = "userProfileId", expression = "java(entity.getProfile() != null ? entity.getProfile().getUserProfileId() : null)")
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "roles", expression = "java(AuthInfoRoleFillHelper.mapRolesFromUserRoles(entity))")
     AuthInfo toDto(final UserEntity entity) throws Exception;
 
     /**

@@ -138,7 +138,7 @@ export const useMenuStore = defineStore("menu", () => {
 
   function resolveAllowedMode(requestedMode = mode.value): MenuMode {
     const authStore = useAuthStore();
-    if (requestedMode === "MNGR" && !authStore.user?.isMngr) return "USER";
+    if (requestedMode === "MNGR" && !authStore.canUseMngrMenuMode()) return "USER";
     return requestedMode;
   }
 

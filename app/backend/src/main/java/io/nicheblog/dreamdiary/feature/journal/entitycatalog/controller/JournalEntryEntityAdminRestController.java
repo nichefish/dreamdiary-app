@@ -3,14 +3,13 @@ package io.nicheblog.dreamdiary.feature.journal.entitycatalog.controller;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.model.JournalEntryEntityQueueStatsDto;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.model.JournalEntryEntityQueueSyncResultDto;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityQueueService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,7 +31,7 @@ public class JournalEntryEntityAdminRestController {
      * @return queue stats
      */
     @GetMapping(Url.ADMIN_JOURNAL_ENTRY_ENTITY_STATS)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getStats() {
         final JournalEntryEntityQueueStatsDto stats = journalEntryEntityQueueService.getStats();
@@ -46,7 +45,7 @@ public class JournalEntryEntityAdminRestController {
      * @throws Exception when queue sync fails
      */
     @PostMapping(Url.ADMIN_JOURNAL_ENTRY_ENTITY_SYNC)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> sync() throws Exception {
         final JournalEntryEntityQueueSyncResultDto result = journalEntryEntityQueueService.syncWithJournalEntries();
@@ -59,7 +58,7 @@ public class JournalEntryEntityAdminRestController {
      * @return requeued row count
      */
     @PostMapping(Url.ADMIN_JOURNAL_ENTRY_ENTITY_REQUEUE_FAILED)
-    @Secured(Constant.ROLE_MNGR)
+    @PreAuthorize("hasAuthority('menu.admin.page')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> requeueFailed() {
         final long requeued = journalEntryEntityQueueService.requeueFailed();

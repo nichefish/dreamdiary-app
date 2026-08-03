@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemDto;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemParam;
 import io.nicheblog.dreamdiary.feature.admin.code.model.CodeItemSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.code.service.CodeItemService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -16,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,7 +33,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     private final CodeItemService codeItemService;
 
     @GetMapping(Url.CODE_ITEMS)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeItemListAjax(final @RequestParam("groupCode") String groupCode) throws Exception {
         final CodeItemSearchParam searchParam = CodeItemSearchParam.builder().groupCode(groupCode).build();
@@ -46,7 +45,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     }
 
     @PostMapping(value = {Url.CODE_ITEMS})
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeItemRegAjax(final @Valid CodeItemDto codeItemDto) throws Exception {
         final ServiceResponse result = codeItemService.regist(codeItemDto);
@@ -56,7 +55,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     }
 
     @PostMapping(value = {Url.CODE_ITEM})
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeItemMdfAjax(final @Valid CodeItemDto codeItemDto) throws Exception {
         final ServiceResponse result = codeItemService.modify(codeItemDto);
@@ -66,7 +65,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     }
 
     @GetMapping(Url.CODE_ITEM)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeItemDtlAjax(final @RequestParam("id") Integer id) throws Exception {
         final CodeItemDto codeItemDto = codeItemService.getDtlDto(id);
@@ -78,7 +77,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     }
 
     @DeleteMapping(Url.CODE_ITEM)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeItemDelAjax(final @RequestParam("id") Integer id) throws Exception {
         final ServiceResponse result = codeItemService.delete(id);
@@ -88,7 +87,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     }
 
     @PutMapping(Url.CODE_ITEMS_SORT_ORDERS)
-    @Secured({Constant.ROLE_MNGR})
+    @PreAuthorize("hasAuthority('menu.admin.code')")
     @ResponseBody
     public ResponseEntity<AjaxResponse> codeItemSortOrdrAjax(final @RequestBody CodeItemParam codeItemParam) throws Exception {
         final ServiceResponse result = codeItemService.sortOrder(codeItemParam.getSortOrders());

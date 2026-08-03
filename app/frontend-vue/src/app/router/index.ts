@@ -148,6 +148,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { pageTitleKey: "route.title.menu-admin" },
       },
       {
+        path: "/admin/user-groups",
+        name: "user-group-admin",
+        component: () => import("@/features/admin/UserGroupAdminPage.vue"),
+        meta: { pageTitleKey: "route.title.user-group-admin" },
+      },
+      {
         path: "/admin/users",
         name: "user-admin",
         component: () => import("@/features/admin/UserAdminPage.vue"),
@@ -167,9 +173,29 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "/my",
-        name: "user-my",
         component: () => import("@/features/user/UserMyPage.vue"),
         meta: { pageTitleKey: "route.title.user-my" },
+        children: [
+          {
+            path: "",
+            redirect: { name: "user-my-profile" },
+          },
+          {
+            path: "profile",
+            name: "user-my-profile",
+            component: () => import("@/features/user/components/UserMyProfileTab.vue"),
+          },
+          {
+            path: "security",
+            name: "user-my-security",
+            component: () => import("@/features/user/components/UserMySecurityTab.vue"),
+          },
+          {
+            path: "prefixes",
+            name: "user-my-prefixes",
+            component: () => import("@/features/user/components/UserMyPrefixesTab.vue"),
+          },
+        ],
       },
       {
         /*
@@ -322,7 +348,7 @@ async function syncMenuModeForRoute(path: string) {
   const authStore = useAuthStore();
   const nextMode = resolveMenuModeForRoute(path);
   if (!nextMode) return;
-  if (nextMode === "MNGR" && !authStore.user?.isMngr) return;
+  if (nextMode === "MNGR" && !authStore.canUseMngrMenuMode()) return;
 
   const menuStore = useMenuStore();
   if (menuStore.mode === nextMode) return;
