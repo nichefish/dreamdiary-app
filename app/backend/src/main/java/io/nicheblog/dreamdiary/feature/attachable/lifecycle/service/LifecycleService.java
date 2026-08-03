@@ -14,6 +14,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.model.CacheContext;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.service.StateService;
+import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -43,13 +44,16 @@ public class LifecycleService {
     private final StateRepository stateRepository;
     private final StateService stateService;
     private final List<LifecycleCacheUpdater> cacheUpdaters;
+    private final JournalContentOwnershipGuard journalContentOwnershipGuard;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     /**
      * 컨텐츠 하나의 현재 라이프사이클 값을 설정한다.
      *
-     * <p>{@code contentType + id} 기준으로 row 하나를 upsert한다. 새 값이 {@code RESOLVED}이면
-     * 기존 화면 동작과 맞추기 위해 {@code COLLAPSED} state를 함께 켠다.</p>
+     * <p>{@code PENDING}/{@code RESOLVED}는 {@code contentType + id} 기준 row 하나로 저장하고,
+     * 기본 상태인 {@code OPEN}은 row를 제거해 표현한다. 새 값이 {@code RESOLVED}이면
+     * {@code COLLAPSED} state를 함께 켠다. 저장 전에는 현재 로그인 사용자가 원본 저널
+     * 콘텐츠의 작성자인지 검증한다.</p>
      *
      * @param lifecycleSet 라이프사이클 설정 요청 및 캐시 컨텍스트
      * @return 이전 라이프사이클과 현재 라이프사이클을 담은 처리 결과
@@ -75,9 +79,8 @@ public class LifecycleService {
                     .build();
         }
 
-        if (lifecycleSet.getContentType() != ContentType.JOURNAL_DAY) {
-            journalDayResolvedGuard.assertWritableForRef(lifecycleSet.getId(), lifecycleSet.getContentType());
-        }
+        journalContentOwnershipGuard.assertOwned(lifecycleSet.getId(), lifecycleSet.getContentType());
+        journalDayResolvedGuard.assertWritableForRef(lifecycleSet.getId(), lifecycleSet.getContentType());
 
         final LifecycleEntity lifecycle = repository.findByRefIdAndRefContentType(
                         lifecycleSet.getId(),
@@ -85,15 +88,32 @@ public class LifecycleService {
                 )
                 .orElse(null);
         final LifecycleKey previousKey = lifecycle == null
-                ? null
-                : LifecycleKey.getByKey(lifecycle.getLifecycleKey());
+                ? LifecycleKey.OPEN
+                : normalize(lifecycle.getLifecycleKey());
+        final String persistenceAction;
 
-        if (lifecycle == null) {
+        if (LifecycleKey.OPEN.equals(lifecycleSet.getLifecycleKey())) {
+            final int deletedCount = repository.deleteCurrentByRef(
+                    lifecycleSet.getId(),
+                    lifecycleSet.getContentType().key
+            );
+            persistenceAction = deletedCount > 0 ? "DELETE" : "NOOP";
+        } else if (lifecycle == null) {
             repository.save(LifecycleEntity.of(lifecycleSet));
+            persistenceAction = "INSERT";
         } else {
             lifecycle.setLifecycleKey(lifecycleSet.getLifecycleKey().key);
             repository.save(lifecycle);
+            persistenceAction = "UPDATE";
         }
+        log.debug(
+                "[Lifecycle.set] lifecycle persistence. contentType={}, id={}, previous={}, current={}, action={}",
+                lifecycleSet.getContentType(),
+                lifecycleSet.getId(),
+                previousKey,
+                lifecycleSet.getLifecycleKey(),
+                persistenceAction
+        );
 
         final StateToggleDto derivedCollapsedToggle = this.applyDerivedStates(lifecycleSet);
         this.scheduleCacheUpdateAfterCommit(
@@ -104,7 +124,7 @@ public class LifecycleService {
         );
 
         final Map<String, String> rsltObj = new LinkedHashMap<>();
-        rsltObj.put("previousLifecycleKey", previousKey == null ? null : previousKey.key);
+        rsltObj.put("previousLifecycleKey", previousKey.key);
         rsltObj.put("currentLifecycleKey", lifecycleSet.getLifecycleKey().key);
 
         return ServiceResponse.builder()

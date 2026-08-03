@@ -106,6 +106,7 @@ public class JournalLifecycleCacheUpdater
 
     /**
      * 이미 존재하는 라이프사이클 보조 맵 캐시를 부분 갱신한다.
+     * {@code OPEN}은 저장 row와 동일하게 맵 항목 부재로 표현한다.
      *
      * @param dto 라이프사이클 변경 요청
      * @param cacheMapNm {@code id -> lifecycleKey}를 저장하는 캐시명
@@ -122,7 +123,26 @@ public class JournalLifecycleCacheUpdater
         final Map<Integer, String> map = (Map<Integer, String>) EhCacheUtils.getObjectFromCache(cacheMapNm, cacheKey);
         if (map == null) return;
 
-        map.put(dto.getId(), currentKey.key);
+        applyCurrentKey(map, dto.getId(), currentKey);
         EhCacheUtils.put(cacheMapNm, cacheKey, map);
+    }
+
+    /**
+     * 라이프사이클 현재값을 보조 맵 저장 계약에 맞춰 적용한다.
+     *
+     * @param map 라이프사이클 보조 맵
+     * @param refId 컨텐츠 ID
+     * @param currentKey 현재 라이프사이클
+     */
+    static void applyCurrentKey(
+            final Map<Integer, String> map,
+            final Integer refId,
+            final LifecycleKey currentKey
+    ) {
+        if (LifecycleKey.OPEN.equals(currentKey)) {
+            map.remove(refId);
+            return;
+        }
+        map.put(refId, currentKey.key);
     }
 }
