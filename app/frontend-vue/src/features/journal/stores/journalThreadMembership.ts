@@ -205,22 +205,24 @@ export const useJournalThreadMembershipStore = defineStore("journalThreadMembers
   }
 
   /**
-   * 제목만으로 새 스레드를 만들고 엔트리를 바로 소속시킨다.
+   * 제목·선택 말머리로 새 스레드를 만들고 엔트리를 바로 소속시킨다.
    *
-   * 스레드 생성 API(멀티파트)를 재사용해 제목만 채워 만들고, 반환된 id 로 소속을 건다.
+   * 스레드 생성 API(멀티파트)를 재사용해 제목과 nullable prefixId 를 채워 만들고, 반환된 id 로 소속을 건다.
    * 본문·태그·첨부는 이후 스레드 상세에서 채우는 것을 전제로 비운다.
    *
    * @param title 스레드 제목 (비어 있지 않아야 함)
    * @param entryId 엔트리 ID
+   * @param prefixId 스레드 말머리 ID (없으면 미선택)
    * @returns 처리 성공 여부
    */
-  async function createThreadAndAdd(title: string, entryId: number): Promise<boolean> {
+  async function createThreadAndAdd(title: string, entryId: number, prefixId?: number | null): Promise<boolean> {
     try {
       const fd = new FormData();
       fd.append("contentType", "JOURNAL_THREAD");
       fd.append("title", title);
       fd.append("content", "");
       fd.append("tag.tagListStr", "");
+      if (prefixId != null) fd.append("prefixId", String(prefixId));
       const res = await axios.post("/api/journal/threads", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });

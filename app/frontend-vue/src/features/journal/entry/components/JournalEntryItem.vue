@@ -931,24 +931,62 @@ async function toggleThread(option: ThreadOption): Promise<void> {
   }
 }
 
-/** 제목만 받아 새 스레드를 만들고 이 엔트리를 소속시킨다. */
+/**
+ * 말머리·제목을 받아 새 스레드를 만들고 이 엔트리를 소속시킨다.
+ * 서브메뉴 말머리 필터가 있으면 생성 폼의 기본값으로 쓴다.
+ */
 async function startNewThread(): Promise<void> {
   if (!guardAxisWrite()) return;
   if (!props.entry.id) return;
+  await membershipStore.fetchPrefixOptions();
+  const defaultPrefix = membershipStore.optionPrefix;
+  const prefixOptionsHtml = membershipStore.prefixOptions
+    .map((item) => {
+      const id = String(item.id);
+      const selected = id === defaultPrefix ? " selected" : "";
+      const name = escapeHtmlAttr(item.name ?? "");
+      return `<option value="${id}"${selected}>${name}</option>`;
+    })
+    .join("");
   const result = await swalFire({
-    input: "text",
-    inputLabel: t("journal.entry.thread.new.prompt"),
-    inputPlaceholder: t("journal.entry.thread.new.placeholder"),
+    title: t("journal.entry.thread.new"),
+    html: [
+      `<div class="text-start">`,
+      `<label class="form-label fs-7 mb-1">${escapeHtmlAttr(t("journal.thread.prefix.label"))}</label>`,
+      `<select id="swal-thread-prefix" class="form-select form-select-sm mb-3">`,
+      `<option value="">${escapeHtmlAttr(t("journal.thread.prefix.select"))}</option>`,
+      prefixOptionsHtml,
+      `</select>`,
+      `<label class="form-label fs-7 mb-1">${escapeHtmlAttr(t("journal.entry.thread.new.prompt"))}</label>`,
+      `<input id="swal-thread-title" class="form-control form-control-sm" maxlength="200"`,
+      ` placeholder="${escapeHtmlAttr(t("journal.entry.thread.new.placeholder"))}" />`,
+      `</div>`,
+    ].join(""),
+    focusConfirm: false,
     showCancelButton: true,
     confirmButtonText: t("common.save"),
     cancelButtonText: t("common.cancel"),
-    inputValidator: (value: string) =>
-      value && value.trim() ? null : t("journal.entry.thread.new.required"),
+    didOpen: () => {
+      const titleEl = document.getElementById("swal-thread-title") as HTMLInputElement | null;
+      titleEl?.focus();
+    },
+    preConfirm: () => {
+      const titleEl = document.getElementById("swal-thread-title") as HTMLInputElement | null;
+      const prefixEl = document.getElementById("swal-thread-prefix") as HTMLSelectElement | null;
+      const title = titleEl?.value?.trim() ?? "";
+      if (!title) {
+        Swal.showValidationMessage(t("journal.entry.thread.new.required"));
+        return false;
+      }
+      const prefixRaw = prefixEl?.value ?? "";
+      const prefixId = prefixRaw ? Number(prefixRaw) : null;
+      return { title, prefixId: Number.isFinite(prefixId as number) ? prefixId : null };
+    },
   });
-  const title = typeof result.value === "string" ? result.value.trim() : "";
-  if (!title) return;
+  if (!result.isConfirmed || !result.value || typeof result.value !== "object") return;
+  const created = result.value as { title: string; prefixId: number | null };
   const entryId = props.entry.id;
-  const ok = await membershipStore.createThreadAndAdd(title, entryId);
+  const ok = await membershipStore.createThreadAndAdd(created.title, entryId, created.prefixId);
   if (ok) {
     if (membershipStore.candidateEntryId === entryId) {
       await membershipStore.fetchThreadOptions(entryId);
@@ -956,6 +994,15 @@ async function startNewThread(): Promise<void> {
     void threadStore.refreshPeriodSummary();
     scrollAfterFetch();
   }
+}
+
+/** Swal HTML 옵션·라벨용 최소 이스케이프 */
+function escapeHtmlAttr(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 onBeforeUnmount(() => {
