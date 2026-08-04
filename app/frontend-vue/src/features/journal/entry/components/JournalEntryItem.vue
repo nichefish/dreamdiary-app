@@ -88,7 +88,7 @@
           <button
             type="button"
             class="btn btn-xs btn-icon journal-entry-action-btn"
-            :title="t('common.copy')"
+            :title="authStore.isLocalProfile ? t('common.copy') + ' (id ' + entry.id + ')' : t('common.copy')"
             @click="copyEntry"
           >
             <i class="bi bi-copy fs-8"></i>
@@ -508,6 +508,7 @@ import { ref, computed, watch, nextTick, onBeforeUnmount, provide } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import {
   useJournalThreadMembershipStore,
@@ -548,6 +549,7 @@ const props = defineProps<{
 }>();
 
 const modalStore = useJournalModalStore();
+const authStore = useAuthStore();
 const attachableStore = useAttachableModalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();

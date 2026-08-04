@@ -44,15 +44,19 @@ public class AuthUserDto {
     /** 유효 권한 키 목록 (롤∪그룹) */
     private List<String> permissions;
 
+    /** 활성 Spring 프로필 (local/dev/stg/prod/test). 개발용 UI 게이팅 신호. */
+    private String activeProfile;
+
     /* ----- */
 
     /**
      * AuthInfo → AuthUserDto 변환.
      *
      * @param authInfo Spring Security 인증 정보
+     * @param activeProfile 활성 Spring 프로필 (local/dev/stg/prod/test)
      * @return {@link AuthUserDto} Vue SPA 전달용 DTO
      */
-    public static AuthUserDto from(final AuthInfo authInfo) {
+    public static AuthUserDto from(final AuthInfo authInfo, final String activeProfile) {
         return AuthUserDto.builder()
                 .username(authInfo.getUsername())
                 .nickname(authInfo.getNickname())
@@ -62,6 +66,7 @@ public class AuthUserDto {
                 .isMngr(authInfo.hasAuthority(Constant.ROLE_MNGR))
                 .isDev(authInfo.hasAuthority(Constant.ROLE_DEV))
                 .permissions(authInfo.getPermissions())
+                .activeProfile(activeProfile)
                 .build();
     }
 }

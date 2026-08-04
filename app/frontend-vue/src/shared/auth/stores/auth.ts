@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import ApiService from "@metronic/core/services/ApiService";
 import axios, { type AxiosError } from "axios";
@@ -21,6 +21,8 @@ export interface AuthUser {
   isMngr: boolean;
   isDev: boolean;
   permissions?: string[];
+  /** 활성 Spring 프로필. local 에서만 개발용 UI(예: id 툴팁)를 노출한다. */
+  activeProfile?: string;
 }
 
 /** Vue SPA 로그인 실패 후 추가 조치가 필요한 상태. */
@@ -50,6 +52,8 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthenticated = ref(false);
   const errors = ref<string[]>([]);
   const loginAction = ref<LoginActionState | null>(null);
+  /** local 프로필에서만 true. 개발용 UI 게이팅에 쓴다. */
+  const isLocalProfile = computed(() => user.value?.activeProfile === "local");
 
   /** 인증 상태 세팅 */
   function setAuth(authUser: AuthUser) {
@@ -187,6 +191,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
   return {
     user,
+    isLocalProfile,
     isAuthenticated,
     errors,
     loginAction,

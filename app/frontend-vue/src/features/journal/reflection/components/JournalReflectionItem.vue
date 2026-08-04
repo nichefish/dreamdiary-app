@@ -42,7 +42,7 @@
       <button
         type="button"
         class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
-        :title="t('common.copy')"
+        :title="authStore.isLocalProfile ? t('common.copy') + ' (id ' + reflection.id + ')' : t('common.copy')"
         @click="copyReflection"
       >
         <i class="bi bi-copy fs-8"></i>
@@ -290,6 +290,7 @@ import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import {
   useJournalThreadMembershipStore,
@@ -316,6 +317,7 @@ const props = defineProps<{
 
 const { t } = useLocaleStore();
 const modalStore = useJournalModalStore();
+const authStore = useAuthStore();
 const attachableStore = useAttachableModalStore();
 const membershipStore = useJournalThreadMembershipStore();
 const threadStore = useJournalThreadStore();
