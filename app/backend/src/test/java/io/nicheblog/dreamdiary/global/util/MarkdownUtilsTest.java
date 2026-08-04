@@ -29,6 +29,35 @@ class MarkdownUtilsTest {
         assertFalse(result.contains("md-text-muted"));
     }
 
+
+    @Test
+    @DisplayName("((plain)) wraps content in md-text-noti")
+    void markdownDoubleParenWrapsPlainContent() {
+        final String result = MarkdownUtils.markdown("<p>((plain note))</p>");
+
+        assertTrue(result.contains("md-text-noti"));
+        assertTrue(result.contains("plain note"));
+    }
+
+    @Test
+    @DisplayName("(((nested))) treats inner single parens as content of (( ))")
+    void markdownDoubleParenKeepsBalancedInnerSingleParens() {
+        final String result = MarkdownUtils.markdown("<p>(((A: 1. B: 2.)))</p>");
+
+        assertTrue(result.contains("md-text-noti"));
+        assertTrue(result.contains("(A: 1. B: 2.)"));
+        assertFalse(result.contains("(A: 1. B: 2.</span>)"));
+    }
+
+    @Test
+    @DisplayName("((a (b) c)) keeps mid single parens inside noti span")
+    void markdownDoubleParenAllowsMidSingleParens() {
+        final String result = MarkdownUtils.markdown("<p>((a (b) c))</p>");
+
+        assertTrue(result.contains("md-text-noti"));
+        assertTrue(result.contains("a (b) c"));
+    }
+
     @Test
     @DisplayName("custom inline markdown escapes literal angle brackets")
     void markdownEscapesLiteralAngleBracketsInCustomInlineMarkup() {
