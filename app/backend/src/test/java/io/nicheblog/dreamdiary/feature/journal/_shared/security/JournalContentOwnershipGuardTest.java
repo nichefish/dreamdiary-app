@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -53,6 +54,8 @@ class JournalContentOwnershipGuardTest {
     @Mock
     private JournalEntryRepository journalEntryRepository;
     @Mock
+    private JournalReflectionRepository journalReflectionRepository;
+    @Mock
     private JournalThreadRepository journalThreadRepository;
 
     private MockedStatic<AuthUtils> authUtils;
@@ -66,6 +69,7 @@ class JournalContentOwnershipGuardTest {
                 journalDayRepository,
                 journalChapterRepository,
                 journalEntryRepository,
+                journalReflectionRepository,
                 journalThreadRepository
         );
     }

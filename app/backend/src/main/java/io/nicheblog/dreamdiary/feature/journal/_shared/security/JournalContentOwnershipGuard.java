@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalCha
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +29,7 @@ public class JournalContentOwnershipGuard {
     private final JournalDayRepository journalDayRepository;
     private final JournalChapterRepository journalChapterRepository;
     private final JournalEntryRepository journalEntryRepository;
+    private final JournalReflectionRepository journalReflectionRepository;
     private final JournalThreadRepository journalThreadRepository;
 
     /**
@@ -66,10 +68,9 @@ public class JournalContentOwnershipGuard {
                     .filter(entity -> contentType.equals(resolveEntryContentType(entity)))
                     .map(JournalEntryEntity::getCreatedBy)
                     .orElse(null);
-            // Reflection 은 챕터 타입 역산이 아니라 영속 contentType 으로 소유자를 확정한다.
-            case JOURNAL_REFLECTION -> journalEntryRepository.findById(refId)
-                    .filter(entity -> ContentType.JOURNAL_REFLECTION.key.equals(entity.getContentType()))
-                    .map(JournalEntryEntity::getCreatedBy)
+            // Reflection 은 journal_reflection 테이블에 독립 영속된다. journal_entry 가 아니다.
+            case JOURNAL_REFLECTION -> journalReflectionRepository.findById(refId)
+                    .map(entity -> entity.getCreatedBy())
                     .orElse(null);
             case JOURNAL_THREAD -> journalThreadRepository.findById(refId)
                     .map(entity -> entity.getCreatedBy())
