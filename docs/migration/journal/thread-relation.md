@@ -1,6 +1,12 @@
 # 스레드 연관(thread-relation) 설계
 
-> **상태: 설계 확정 · 구현 보류(deferred).** 이 문서가 도메인 규칙·결정 로그 정본이다.
+> **상태: 설계 확정 · 백엔드/프론트엔드 전체 구현 완료.** 이 문서가 도메인 규칙·결정 로그 정본이다.
+>
+> **Sub-A 완료 (백엔드 연관 CRUD):** `RelatedContentService.SUPPORTED_TYPES` JOURNAL_THREAD 추가, `resolveCreatedBy`/`resolveTitle` contentType별 디스패치 일반화, `JournalDayResolvedGuard.assertWritableForRef` JOURNAL_THREAD 잠금 없이 통과. `GET/POST/DELETE /api/related/JOURNAL_THREAD/{id}` API 동작.
+>
+> **Sub-B 완료 (백엔드 뷰 합성):** `JournalEntryDto.sourceThreadId` provenance 필드 추가, `JournalThreadEntryService.getEntriesByThread(threadId, includeRelated)` 오버로드 추가 — 1-hop 연관 스레드 엔트리 합성·중복 제거·provenance 세팅. `GET /api/journal/threads/{id}/entries?includeRelated=true` 동작.
+>
+> **프론트엔드 완료:** `JournalThreadPickerModal.vue`(스레드 검색·선택 피커), 연관 스레드 목록 표시 및 삭제, 뷰 합성 토글(`includeRelated`), 빌려온 엔트리 출처 스레드 배지 표시 및 멤버십 제거 버튼 게이팅(`sourceThreadId` 시 빼기 숨김).
 
 ## 1. 의도 (그림)
 

@@ -131,6 +131,12 @@ export interface JournalEntryDto {
   diaryResolvedYn?: string;
   /** 소속 일자 꿈 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
   dreamResolvedYn?: string;
+  /**
+   * 뷰 합성(includeRelated) 응답에서 이 엔트리의 출처 스레드 ID.
+   * null이면 base 스레드 소속 엔트리. 값이 있으면 연관 스레드에서 빌려온 엔트리.
+   * 설계 정본: docs/migration/journal/thread-relation.md §4
+   */
+  sourceThreadId?: number | null;
 }
 
 /** 저널 Prefix — 백엔드 PrefixDto 직렬화 구조 */

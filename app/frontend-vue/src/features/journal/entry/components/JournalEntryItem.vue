@@ -254,9 +254,9 @@
                         : t('journal.entry.thread.empty') }}
                     </span>
                   </div>
-                  <template v-if="membershipStore.threadOptions.length > 0">
+                  <template v-if="filteredThreadOptions.length > 0">
                     <div
-                      v-for="opt in membershipStore.threadOptions"
+                      v-for="opt in filteredThreadOptions"
                       :key="'thread-opt-' + opt.id"
                       class="menu-item px-3 my-1 cursor-pointer"
                     >
@@ -916,10 +916,22 @@ function threadPrefixName(option: ThreadOption): string {
   return option.prefix?.name ?? "";
 }
 
+/**
+ * 표시용 스레드 후보 목록.
+ * 설계 §2-6: 연관 스레드에서 빌려온 엔트리(sourceThreadId 존재)는 멤버십 제거("스레드에서 빼기")를 숨긴다.
+ */
+const filteredThreadOptions = computed(() => {
+  const options = membershipStore.threadOptions;
+  if (!props.entry.sourceThreadId) return options;
+  return options.filter((opt) => !opt.member);
+});
+
 /** 스레드 소속 토글: 속해 있으면 제외, 아니면 추가. 성공 시 목록 갱신. */
 async function toggleThread(option: ThreadOption): Promise<void> {
   if (!guardAxisWrite()) return;
   if (!props.entry.id) return;
+  // 빌려온 엔트리의 멤버십 제거 시도 거부 (설계 §2-6)
+  if (props.entry.sourceThreadId && option.member) return;
   const entryId = props.entry.id;
   const ok = option.member
     ? await membershipStore.removeFromThread(option.id, entryId)

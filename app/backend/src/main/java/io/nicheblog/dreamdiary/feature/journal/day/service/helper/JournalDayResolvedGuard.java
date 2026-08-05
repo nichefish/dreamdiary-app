@@ -118,6 +118,7 @@ public class JournalDayResolvedGuard {
                 assertWritableForEntry(entry.getJournalChapter().getId(), refContentType);
             }
             case JOURNAL_REFLECTION -> { /* Reflection 은 완결축 밖: 잠금 없음 (규칙 11) */ }
+            case JOURNAL_THREAD -> { /* 스레드는 일자 완결축 밖: 잠금 없음 (thread-relation 설계 §5) */ }
             default -> { /* 저널 외·일자 자체는 무시 */ }
         }
     }

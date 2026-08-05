@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationOriginTyp
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationType;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -34,9 +35,14 @@ import java.util.Objects;
 @Service
 public class RelatedContentService {
 
+    /**
+     * 관련글 기능이 지원하는 콘텐츠 타입.
+     * JOURNAL_THREAD는 스레드 ↔ 스레드 연관(thread-relation) 설계(docs/migration/journal/thread-relation.md §3) 에 따라 포함한다.
+     */
     private static final EnumSet<ContentType> SUPPORTED_TYPES = EnumSet.of(
             ContentType.JOURNAL_DIARY,
-            ContentType.JOURNAL_DREAM
+            ContentType.JOURNAL_DREAM,
+            ContentType.JOURNAL_THREAD
     );
 
     @Getter
@@ -45,17 +51,20 @@ public class RelatedContentService {
     private final RelatedContentMapstruct mapstruct;
 
     private final JournalEntryService journalEntryService;
+    private final JournalThreadRepository journalThreadRepository;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     public RelatedContentService(
             final RelatedContentRepository repository,
             final RelatedContentMapstruct mapstruct,
             final @Lazy JournalEntryService journalEntryService,
+            final JournalThreadRepository journalThreadRepository,
             final JournalDayResolvedGuard journalDayResolvedGuard
     ) {
         this.repository = repository;
         this.mapstruct = mapstruct;
         this.journalEntryService = journalEntryService;
+        this.journalThreadRepository = journalThreadRepository;
         this.journalDayResolvedGuard = journalDayResolvedGuard;
     }
 
@@ -265,11 +274,35 @@ public class RelatedContentService {
         return createdBy;
     }
 
+    /**
+     * refKey contentType 에 따라 등록자 아이디를 해석한다.
+     * JOURNAL_THREAD는 스레드 엔티티에서, 그 외(JOURNAL_DIARY/JOURNAL_DREAM)는 저널 엔트리 서비스에 위임한다.
+     *
+     * @param refKey 복합 키
+     * @return 등록자 아이디
+     */
     private String resolveCreatedBy(final BaseAttachableKey refKey) {
+        if (ContentType.JOURNAL_THREAD.key.equals(refKey.getContentType())) {
+            return journalThreadRepository.findById(refKey.getId())
+                    .map(entity -> entity.getCreatedBy())
+                    .orElse(null);
+        }
         return journalEntryService.resolveCreatedBy(refKey);
     }
 
+    /**
+     * refKey contentType 에 따라 제목을 해석한다.
+     * JOURNAL_THREAD는 스레드 엔티티에서, 그 외(JOURNAL_DIARY/JOURNAL_DREAM)는 저널 엔트리 서비스에 위임한다.
+     *
+     * @param refKey 복합 키
+     * @return 제목
+     */
     private String resolveTitle(final BaseAttachableKey refKey) {
+        if (ContentType.JOURNAL_THREAD.key.equals(refKey.getContentType())) {
+            return journalThreadRepository.findById(refKey.getId())
+                    .map(entity -> entity.getTitle())
+                    .orElse(null);
+        }
         return journalEntryService.resolveTitle(refKey);
     }
 
