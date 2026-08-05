@@ -48,4 +48,17 @@ public interface JournalReflectionRepository
      * @return Reflection 목록
      */
     List<JournalReflectionEntity> findAllByRefIdAndRefContentType(Integer refId, ContentType refContentType);
+
+    /**
+     * 대상 ID 집합·콘텐츠 타입 집합을 가리키는 활성 Reflection 이 하나라도 있는지 확인한다.
+     * 챕터 삭제 Block(챕터 내 엔트리에 딸린 Reflection 존재 검사)에 쓴다.
+     *
+     * @param refIdList 대상 엔티티 번호 목록
+     * @param refContentTypeList 대상 콘텐츠 타입 목록
+     * @return 참조 Reflection 존재 여부
+     */
+    boolean existsByRefIdInAndRefContentTypeIn(
+            Collection<Integer> refIdList,
+            Collection<ContentType> refContentTypeList
+    );
 }

@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepo
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,8 @@ class JournalChapterServiceTest {
     private JournalEntryService journalEntryService;
     @Mock
     private JournalEntryRepository journalEntryRepository;
+    @Mock
+    private JournalReflectionRepository journalReflectionRepository;
     @Mock
     private JournalDayResolvedGuard journalDayResolvedGuard;
     @Mock

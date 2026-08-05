@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflecti
 import io.nicheblog.dreamdiary.feature.journal.reflection.model.JournalReflectionPostDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 
 /**
@@ -18,7 +19,7 @@ import org.mapstruct.*;
 @Mapper(
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    imports = { MarkdownUtils.class },
+    imports = { MarkdownUtils.class, StringUtils.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalReflectionMapstruct
@@ -49,8 +50,9 @@ public abstract class JournalReflectionMapstruct
     public abstract void updateFromDto(final JournalReflectionPostDto dto, final @MappingTarget JournalReflectionEntity entity) throws Exception;
 
     /**
-     * Reflection 엔티티를 엔트리 상세 DTO 로 변환한다(대상 역참조 embed 표시용).
+     * Reflection 엔티티를 엔트리 상세 DTO 로 변환한다(대상 역참조 embed·수정 로드용).
      * Reflection 은 chapter·prefix 가 없으므로 말머리 매핑을 하지 않는다.
+     * 화면 본문은 Entry 와 같이 {@code markdownContent}(MarkdownUtils HTML)를 쓴다.
      *
      * @param reflection Reflection 엔티티
      * @return 상세 DTO
@@ -60,5 +62,6 @@ public abstract class JournalReflectionMapstruct
     @Mapping(target = "prefix", ignore = true)
     @Mapping(target = "prefixId", ignore = true)
     @Mapping(target = "prefixContentType", ignore = true)
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(reflection.getContent()) ? \"-\" : MarkdownUtils.markdown(reflection.getContent()))")
     public abstract JournalEntryDto toDto(final JournalReflectionEntity reflection) throws Exception;
 }

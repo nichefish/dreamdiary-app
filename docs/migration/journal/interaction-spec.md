@@ -450,7 +450,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. ⋯에서 수정·이력·관련글·라이프사이클·중요/참조·삭제. Reflection→Reflection 중첩 등록 메뉴는 숨긴다(형제·독립이 기본, `REFLECTION_ONE_TYPE.md` §3.1). 일기·꿈·노트를 target으로 둔 Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
 
-**대상 삭제 Block(Reference→Block)**: 일기·꿈·노트를 가리키는 Reflection 이 있으면 그 대상 엔트리 삭제(`DELETE /api/journal/entry/{id}`)는 `journal.entry.delete.blocked-by-reflection` 으로 거부된다. Reflection 을 가리키는 하위 Reflection 이 있으면 부모 Reflection 삭제는 `journal.reflection.delete.blocked-by-child` 으로 거부된다. nullify·orphan 화는 하지 않으며, 사용자는 참조 Reflection 을 먼저 삭제한다. 명시 cascade(대상+Reflection 동시 삭제)는 미구현이다. 정본 `docs/migration/journal/reflection-domain-model.md` §5.
+**대상 삭제 Block(Reference→Block)**: 일기·꿈·노트를 가리키는 Reflection 이 있으면 그 대상 엔트리 삭제(`DELETE /api/journal/entry/{id}`)는 `journal.entry.delete.blocked-by-reflection` 으로 거부된다. Reflection 을 가리키는 하위 Reflection 이 있으면 부모 Reflection 삭제는 `journal.reflection.delete.blocked-by-child` 으로 거부된다. 챕터 내 엔트리에 참조 Reflection 이 있으면 챕터 삭제(`DELETE /api/journal/chapter/{id}`)는 `journal.chapter.delete.blocked-by-reflection` 으로 거부된다(Hibernate cascade 가 엔트리 서비스 `preDelete` 를 우회하므로 챕터 `preDelete` 에서 막는다). nullify·orphan 화는 하지 않으며, 사용자는 참조 Reflection 을 먼저 삭제한다. 명시 cascade(대상+Reflection 동시 삭제)는 미구현이다. 정본 `docs/migration/journal/reflection-domain-model.md` §5.
 
 ---
 
@@ -737,6 +737,8 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 **저널 스레드 상세 엔트리 액션 계약**: 소속 엔트리는 스레드용 읽기 전용 복제본이 아니라 원본 `JournalEntryDto`이므로 저널 일자와 같은 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제 액션을 유지한다. 현재 화면 레이아웃이 해당 액션의 자식 모달을 마운트하고, 전역 마운트된 엔트리 수정·원문 모달은 중복 마운트하지 않는다. 액션 성공 후에는 모달·페이지 공용 `detailOpen`을 전경 판단 기준으로 활성 스레드 상세의 본문·집계 태그·소속 엔트리를 함께 재조회한다. `detailSurface=modal`이고 배경이 주간·월간·일간이면 배경 목록도 재조회하지만 상세 축을 반환해 배경 스크롤은 하지 않고, 검색 팝업 배경이면 등록된 `loadEntries`로 로컬 결과(스레드 칩 포함)를 함께 재조회한다. 독립 페이지는 같은 상세 SSOT만 갱신한다. 현재 스레드 소속 해제·엔트리 삭제는 재조회 결과에서 카드를 제거하고, 수정·관계·라이프사이클·상태·태그 변경은 같은 카드의 최신 DTO로 교체한다. 재조회 실패는 기존 상세를 보존한 채 오류 로그와 안내로 드러낸다.
 
 **저널 스레드 상세 복사·다운로드**: 상세 모달·독립 페이지 모두 「복사」·「다운로드」를 제공한다. 복사는 클라이언트에서 스레드 제목 + 소속 엔트리를 검색 전체 복사와 같은 평문 포맷(`날짜(요일)`·`#순번`·본문)으로 클립보드에 쓴다. 다운로드는 서버 `GET /api/journal/threads/{id}/export`가 `=== dreamdiary export ===` 배너 + `thread: 제목` + 선택 시 `prefix: 말머리` + 소속 엔트리 텍스트를 `thread_{id}_@yyyyMMdd.txt` 첨부로 내려준다(챕터/엔트리 내보내기와 동일 계약, 소유권은 `getEntriesByThread`가 검증). 두 액션은 표시 데이터를 바꾸지 않고 `detailModel`·`detailEntries` SSOT만 읽으며, 로직은 `journalThreadExport.ts` util을 공유한다.
+
+**저널 스레드 연관 뷰 합성 및 스레드 피커 정책**: 서로 관련된 스레드를 1-hop 대칭 연관으로 묶고(`POST/DELETE /api/related/JOURNAL_THREAD/{id}`), 스레드 상세의 「연관 뷰 합성(`includeRelated`)」 토글 버튼으로 연관 스레드의 엔트리를 같은 시간축에 겹쳐 본다(토글 기본 OFF, 임시 화면 옵션). 연관 스레드 추가는 `JournalThreadPickerModal`을 통해 대상 스레드를 키워드로 검색·선택하며, 자기 자신 및 이미 연관된 스레드는 목록에서 선택 불가(비활성화) 처리한다. 빌려온 연관 엔트리(`sourceThreadId` 존재)는 출처 스레드 배지를 노출하고 설계 §2-6에 따라 「스레드에서 빼기」 멤버십 제거 메뉴를 숨긴다(`filteredThreadOptions` / `toggleThread` 가드).
 
 **저널 스레드 상세 lifecycle 표시·접힘 정책**: 소속 엔트리는 `JournalThreadEntryService.getEntriesByThread`가 `JournalEntryStateEnricher.enrichLifecycleMixed`로 lifecycle을 병합해 내려준다. 완료(`RESOLVED`) 엔트리의 `#순번`은 저널 일자와 같은 초록(꿈은 보라), 보류(`PENDING`) 엔트리는 같은 회색 상태 표현을 사용한다. 스레드 상세는 `JournalEntryItem`에 `disableLifecycleCollapse`를 넘겨 lifecycle 자동 접힘을 억제하고 본문을 펼친 상태로 표시한다. 수동 접기와 서버 `COLLAPSED`는 유지하며 state는 병합하지 않는다.
 

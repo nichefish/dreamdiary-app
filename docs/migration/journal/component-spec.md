@@ -788,6 +788,19 @@ interface TodoRow {
 - **엔트리 응답에 소속이 실린다**: `JournalEntryDto.threadList` (소속 없으면 빈 목록). 엔트리마다 단건 조회하면 목록 화면에서 N+1 이 나므로 `JournalEntryRelatedEnricher`·`JournalDayQueryService.mergeRelatedContents` 가 엔트리 목록 단위로 **일괄 주입**한다. 조회 대상 사용자는 `username` 파라미터로 받는다 (`getRelatedContentMapByRefs` 와 동일한 계약).
 - **변경 전**: 이 계약은 RELATED/FLOW 그래프와 «별도» 축으로 유지할 계획이었다. **변경 후**: FLOW 를 이 소속 구조로 **수렴 완료**했다 (근거·단계는 `docs/spec/DESIGN_NOTES.md` 참조). FLOW 간선은 스레드 소속으로 이관되고 FLOW 경로는 제거됐다(다-2) — 공존 구간은 종료됐다.
 
+---
+
+### 23-6. `JournalThreadPickerModal` (연관 스레드 선택 피커 모달)
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/thread/modals/JournalThreadPickerModal.vue`
+
+**컴포넌트 책임**: 저널 스레드 상세(`JournalThreadDetailContent`)에서 연관 스레드를 추가할 때 대칭 1-hop 연관 대상 스레드를 검색하고 선택하는 전용 모달이다.
+
+**동작 및 게이팅 계약**:
+- 스레드 제목/설명 키워드 검색(`GET /api/journal/threads?searchKeyword=...`) 결과를 목록으로 표시한다.
+- **자기 자신 및 이미 연관된 스레드 제외/비활성화**: 현재 보고 있는 base 스레드 ID와 이미 `detailRelatedThreads`에 포함된 연관 스레드는 선택 불가능(비활성화 및 뱃지 표시)하게 처리한다.
+- 선택 후 추가 버튼 클릭 시 `store.addRelatedThread(baseThreadId, targetThreadId)`를 호출하여 `POST /api/related/JOURNAL_THREAD/{baseId}` 연결을 생성하고 모달을 닫는다.
+
 **i18n**: 모달·독립 페이지 제목, 수정·목록·댓글 섹션·빈 상태·등록·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
 **현재 Vue 동등**: ✓ 구현 완료

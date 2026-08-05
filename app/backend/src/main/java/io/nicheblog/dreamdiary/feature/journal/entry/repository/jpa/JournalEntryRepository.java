@@ -42,6 +42,15 @@ public interface JournalEntryRepository
 
 
     /**
+     * 챕터에 속한 엔트리 목록을 조회한다.
+     * 챕터 삭제 Block(참조 Reflection 검사)에 쓴다.
+     *
+     * @param journalChapterId 챕터 ID
+     * @return 엔트리 목록
+     */
+    List<JournalEntryEntity> findAllByJournalChapterId(Integer journalChapterId);
+
+    /**
      * 챕터/콘텐츠 타입 기준으로 순번 오름차순 목록을 조회한다.
      *
      * @param journalChapterId 챕터 ID

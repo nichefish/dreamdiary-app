@@ -68,4 +68,4 @@ Reflection 은 별도 Aggregate Root 이므로 **독립 영속 모델**(Reposito
 
 ## 5. 대상 삭제 메커니즘 (잠정 Block · 전체 의미론 보류)
 
-도메인 정책([reflection-domain-model.md](reflection-domain-model.md) §5)이 잠정 **Reference→Block(재귀)+명시 cascade** 로 정해졌다. 런타임(R4c): `JournalEntryService.preDelete`·`JournalReflectionService.preDelete` 가 참조 Reflection 존재 시 삭제를 거부한다(DB FK 없음 → 서비스 레벨 Block). nullify→독립화 훅은 제거됐다. chapter 삭제 cascade Block 과 명시 cascade(대상+Reflection 동시 삭제)는 후속이다. 전체 관계 생명주기 의미론은 [RELATIONSHIP_LIFECYCLE.md](../../spec/RELATIONSHIP_LIFECYCLE.md)(보류).
+도메인 정책([reflection-domain-model.md](reflection-domain-model.md) §5)이 잠정 **Reference→Block(재귀)+명시 cascade** 로 정해졌다. 런타임(R4c/R4d): `JournalEntryService.preDelete`·`JournalReflectionService.preDelete`·`JournalChapterService.preDelete` 가 참조 Reflection 존재 시 삭제를 거부한다(DB FK 없음 → 서비스 레벨 Block). nullify→독립화 훅은 제거됐다. 명시 cascade(대상+Reflection 동시 삭제)는 후속이다. 전체 관계 생명주기 의미론은 [RELATIONSHIP_LIFECYCLE.md](../../spec/RELATIONSHIP_LIFECYCLE.md)(보류).

@@ -28,6 +28,8 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayReso
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayResolvedAxis;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -48,6 +50,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * JournalChapterService
@@ -90,6 +93,7 @@ public class JournalChapterService
     private final JournalDayService journalDayService;
     private final JournalEntryService journalEntryService;
     private final JournalEntryRepository journalEntryRepository;
+    private final JournalReflectionRepository journalReflectionRepository;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
     private final PrefixContentService prefixContentService;
 
@@ -445,7 +449,9 @@ public class JournalChapterService
     }
 
     /**
-     * 삭제 전처리. (override)
+     * 삭제 전처리. 작성자·일자 잠금·Reflection 참조 Block 을 검증한다.
+     * 챕터 내 엔트리를 대상으로 둔 Reflection 이 있으면 삭제를 거부한다(Reference→Block).
+     * Hibernate cascade 는 서비스 preDelete 를 우회하므로 여기서 막는다.
      *
      * @param deletedDto - 삭제된 객체
      */
@@ -455,6 +461,37 @@ public class JournalChapterService
             throw new NotAuthorizedException("common.result.not-owner");
         }
         journalDayResolvedGuard.assertWritableForChapter(deletedDto.getId());
+        assertNoAttachedReflections(deletedDto.getId());
+    }
+
+    /**
+     * 챕터 내 엔트리에 참조 Reflection 이 있으면 삭제를 Block 한다.
+     *
+     * @param chapterId 삭제 대상 챕터 ID
+     */
+    private void assertNoAttachedReflections(final Integer chapterId) {
+        if (chapterId == null) return;
+        final List<JournalEntryEntity> entries = journalEntryRepository.findAllByJournalChapterId(chapterId);
+        if (CollectionUtils.isEmpty(entries)) return;
+
+        final List<Integer> entryIds = entries.stream()
+                .map(JournalEntryEntity::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        final List<ContentType> contentTypes = entries.stream()
+                .map(JournalEntryEntity::getContentType)
+                .filter(StringUtils::isNotBlank)
+                .map(ContentType::get)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        if (entryIds.isEmpty() || contentTypes.isEmpty()) return;
+
+        if (journalReflectionRepository.existsByRefIdInAndRefContentTypeIn(entryIds, contentTypes)) {
+            log.warn("[JournalChapter] 삭제 Block — 챕터 내 엔트리에 참조 Reflection 존재. chapterId={}, entryCount={}",
+                    chapterId, entryIds.size());
+            throw new BusinessException("journal.chapter.delete.blocked-by-reflection");
+        }
     }
 
     /**
