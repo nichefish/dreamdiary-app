@@ -49,14 +49,16 @@
                      한 단계 위인 fs-5(1.15rem) + fw-bold.
             접힘(isCollapsed) 상태와 무관하게 항상 표시한다 (기존 꿈 제목 동작 유지 — 본문만 숨김).
             .journal-content 밖이라 유형별 본문 색상을 상속하지 않고 기본 텍스트색을 쓴다.
-            Prefix 소비 추가 후: 말머리는 제목 앞의 색상 배지로 표시하며 제목이 없어도 말머리만 남긴다. -->
-          <div v-if="entry.prefix || entry.title" class="d-flex align-items-center flex-wrap fw-bold fs-5 mb-1">
+            Prefix 소비 추가 후: 말머리는 제목 앞의 색상 배지로 표시하며 제목이 없어도 말머리만 남긴다.
+            접힘 시: 제목 + (collapsed)를 한 줄에 fs-8로 표시. -->
+          <div v-if="entry.prefix || entry.title" class="d-flex align-items-center flex-wrap mb-1" :class="isCollapsed ? 'fs-7' : 'fw-bold fs-5'">
             <span
               v-if="entry.prefix"
               class="badge me-2 fs-8"
               :style="{ borderColor: entry.prefix.color || '', color: entry.prefix.color || '' }"
             >{{ entry.prefix.name }}</span>
             <span v-if="entry.title">{{ entry.title }}</span>
+            <span v-if="isCollapsed" class="text-muted fst-italic ms-2">(collapsed)</span>
           </div>
           <!--end::엔트리 제목-->
 
@@ -69,7 +71,7 @@
             class="journal-content p-2"
             v-html="displayMarkdownContent"
           ></div>
-          <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
+          <div v-else-if="isCollapsed && !entry.prefix && !entry.title" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
           <!--end::마크다운 본문-->
         </div>
         <!--end::head-main-->

@@ -83,6 +83,13 @@
             </div>
           </div>
 
+          <div v-if="canWrite" class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="wrapEntireNoti">
+              {{ t('journal.reflection.wrap-noti') }}
+              <i class="bi bi-highlighter fs-8"></i>
+            </div>
+          </div>
+
                     <div class="menu-item px-3 my-1 cursor-pointer">
             <div
               :class="['menu-link flex-stack px-3', { 'disabled text-muted': !hasHistory }]"
@@ -306,13 +313,14 @@ import {
   resolveReflectionCollapsed,
   useJournalReflectionDefaultCollapsed,
 } from "@/features/journal/utils/journalReflectionCollapseMode";
+import { wrapHtmlWithDoubleParen } from "@/features/journal/utils/wrapDoubleParen";
 
 /**
  * target 엔트리 본문과 태그 사이에 슬림 임베드되는 Reflection 한 건.
  * 헤더·제목 없이 본문·댓글만 흐르게 표시해 target 엔트리와 하나의 글처럼 이어지게 하고,
  * 우측 액션(댓글·복사·⋯)은 엔트리 액션과 같은 오른쪽 열에 정렬한다(`.journal-reflection-embed__actions`).
  * same-chapter dedup 으로 1급 행이 숨겨지므로 수정·삭제·이력·라이프사이클·상태(중요/참조)는
- * 이 임베드 컨텍스트 메뉴에서 수행한다. Reflection→Reflection 중첩 등록 메뉴는 두지 않는다(형제·독립이 기본, REFLECTION_ONE_TYPE §3.1). 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가를 두지 않는다.
+ * 이 임베드 컨텍스트 메뉴에서 수행한다. ⋯ 메뉴의 「전체 (( ))」는 저장 본문 각 `<p>`/`<li>`에 Markdown `((...))` 마커를 멱등적으로 씌운다. Reflection→Reflection 중첩 등록 메뉴는 두지 않는다(형제·독립이 기본, REFLECTION_ONE_TYPE §3.1). 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가를 두지 않는다.
  * 접기(COLLAPSED)는 임베드가 본문을 항상 보이므로 메뉴에 두지 않는다.
  * Reflection 은 완결축 밖이므로 쓰기 가드는 소유권(`isCreatedBy`)이다. 본문 글자 크기는 일기 엔트리와 같다.
  */
@@ -679,7 +687,71 @@ async function deleteReflection(): Promise<void> {
   }
 }
 
-/** Reflection 내용 클립보드 복사. 형식: 날짜(요일)\n본문 평문 */
+
+/**
+ * 본문 전체에 Markdown `((...))`(md-text-noti) 를 멱등 적용한다.
+ * 변경이 없으면 API 를 호출하지 않는다. 목록에 content 가 없으면 상세를 조회한다.
+ * 저장은 Reflection modify 경로를 쓴다.
+ */
+async function wrapEntireNoti(): Promise<void> {
+  if (!guardWrite()) return;
+  if (!props.reflection.id) return;
+
+  let raw = props.reflection.content ?? "";
+  if (!raw.trim()) {
+    try {
+      const detail = await axios.get(`/api/journal/reflection/${props.reflection.id}`);
+      raw = detail.data?.obj?.content ?? "";
+    } catch (e: unknown) {
+      void swalRequestError(e);
+      return;
+    }
+  }
+  if (!raw.trim()) {
+    void swalFire({ icon: "info", text: t("journal.reflection.wrap-noti.empty") });
+    return;
+  }
+
+  const { html, changed } = wrapHtmlWithDoubleParen(raw);
+  if (!changed) {
+    void swalFire({ icon: "info", text: t("journal.reflection.wrap-noti.already") });
+    return;
+  }
+
+  const confirmed = await swalConfirm(t("journal.reflection.wrap-noti.confirm"));
+  if (!confirmed) return;
+
+  try {
+    const formData = new FormData();
+    formData.append("id", String(props.reflection.id));
+    formData.append("contentType", contentType.value);
+    if (props.reflection.refId != null) formData.append("refId", String(props.reflection.refId));
+    if (props.reflection.refContentType) formData.append("refContentType", props.reflection.refContentType);
+    formData.append("title", props.reflection.title ?? "");
+    formData.append("content", html);
+
+    const res = await axios.post(`/api/journal/reflection/${props.reflection.id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data?.rslt) {
+      await swalAjaxResult({
+        rslt: true,
+        message: res.data?.message,
+        successFallback: t("journal.reflection.wrap-noti.done"),
+      });
+      refreshHost();
+    } else {
+      void swalAjaxResult({
+        rslt: false,
+        message: res.data?.message,
+        failureFallback: t("journal.reflection.wrap-noti.failure"),
+      });
+    }
+  } catch (e: unknown) {
+    void swalRequestError(e);
+  }
+}
+
 async function copyReflection(): Promise<void> {
   const weekDay = getWeekDayStr(props.reflection.stdrdDt, t);
   const dateLine = weekDay
