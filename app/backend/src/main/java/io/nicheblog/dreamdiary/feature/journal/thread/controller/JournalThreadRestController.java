@@ -220,12 +220,12 @@ public class JournalThreadRestController
      * 스레드 소속 엔트리 목록 조회 (Ajax) — 상세 화면 카드 표시용 full 엔트리.
      * (사용자USER, 관리자MNGR만 접근 가능.)
      * <p>
-     * {@code includeRelated=true} 이면 직접 연관 스레드(1-hop 대칭)의 엔트리를 합성해 반환한다.
+     * {@code relatedThreadIds} 가 있으면 해당 연관 스레드(실제 1-hop 연관만)의 엔트리를 합성해 반환한다.
      * 빌려온 엔트리는 {@code sourceThreadId}에 연관 스레드 ID를 실어 프론트가 배지·제거 게이팅에 활용한다.
      * (설계 정본: docs/migration/journal/thread-relation.md §4)
      *
      * @param id 스레드 식별자
-     * @param includeRelated 연관 스레드 엔트리 합성 여부 (기본값: false)
+     * @param relatedThreadIds 뷰에 합성할 연관 스레드 ID 목록 (미전달/빈 목록이면 base만)
      * @return {@link ResponseEntity} -- 소속(+연관) 엔트리(JournalEntryDto) 목록, 일자순
      */
     @GetMapping(Url.JOURNAL_THREAD_ENTRIES)
@@ -233,10 +233,10 @@ public class JournalThreadRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalThreadEntryListAjax(
             final @PathVariable("id") Integer id,
-            final @RequestParam(value = "includeRelated", defaultValue = "false") boolean includeRelated
+            final @RequestParam(value = "relatedThreadIds", required = false) List<Integer> relatedThreadIds
     ) throws Exception {
 
-        final List<JournalEntryDto> resultList = journalThreadEntryService.getEntriesByThread(id, includeRelated);
+        final List<JournalEntryDto> resultList = journalThreadEntryService.getEntriesByThread(id, relatedThreadIds);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 

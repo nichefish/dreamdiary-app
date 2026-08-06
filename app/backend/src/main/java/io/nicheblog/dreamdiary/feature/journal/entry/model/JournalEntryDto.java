@@ -102,7 +102,7 @@ public class JournalEntryDto extends BaseAttachableDto
     private List<JournalThreadEntryDto> threadList = List.of();
 
     /**
-     * 뷰 합성(includeRelated) 응답에서 이 엔트리의 출처 스레드 ID.
+     * 뷰 합성(relatedThreadIds) 응답에서 이 엔트리의 출처 스레드 ID.
      * <p>
      * base 스레드 소속 엔트리는 {@code null}. 연관 스레드에서 빌려온 엔트리는 연관 스레드 ID.
      * base·연관 양쪽 소속(중복)은 base 멤버로 취급해 {@code null}.

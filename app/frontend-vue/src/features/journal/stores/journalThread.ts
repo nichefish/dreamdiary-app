@@ -187,8 +187,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const detailEntries = ref<JournalEntryDto[]>([]);
   /** 엔트리 목록 로딩 여부 */
   const detailEntriesLoading = ref(false);
-  /** 뷰 합성(includeRelated) 사용 여부 — 토글 상태=화면 임시 (기본 OFF) */
-  const detailIncludeRelated = ref(false);
+  /** 뷰에 합성 중인 연관 스레드 ID 목록 — 행 단위 토글, 화면 임시 (기본 빈 목록) */
+  const detailIncludedRelatedThreadIds = ref<number[]>([]);
   /** 직접 연관된 스레드 목록 */
   const detailRelatedThreads = ref<RelatedContentItem[]>([]);
   /** 연관 스레드 목록 로딩 여부 */
@@ -659,18 +659,22 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
 
   /**
    * 스레드 상세 소속 엔트리를 조회한다.
-   * includeRelated가 true이면 연관 스레드의 엔트리까지 합성하여 조회한다.
+   * relatedThreadIds가 있으면 해당 연관 스레드 엔트리까지 합성하여 조회한다.
    *
    * @param id 스레드 ID
    * @param requestToken 요청 토큰
-   * @param includeRelated 뷰 합성 토글 여부
+   * @param relatedThreadIds 뷰에 합성할 연관 스레드 ID 목록
    */
-  async function fetchDetailEntries(id: number, requestToken: number, includeRelated = false) {
+  async function fetchDetailEntries(id: number, requestToken: number, relatedThreadIds: number[] = []) {
     detailEntriesLoading.value = true;
     detailEntries.value = [];
     try {
+      const params = new URLSearchParams();
+      for (const relatedThreadId of relatedThreadIds) {
+        params.append("relatedThreadIds", String(relatedThreadId));
+      }
       const res = await axios.get(`/api/journal/threads/${id}/entries`, {
-        params: includeRelated ? { includeRelated: true } : undefined,
+        params: params.toString() ? params : undefined,
       });
       if (requestToken !== detailRequestToken || detailModel.value?.id !== id) {
         console.info("[journalThread] fetchDetailEntries discarded stale response", {
@@ -703,6 +707,10 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     try {
       const res = await axios.get(`/api/related/JOURNAL_THREAD/${id}`);
       detailRelatedThreads.value = (res.data?.rsltList ?? []) as RelatedContentItem[];
+      const aliveIds = new Set(
+        detailRelatedThreads.value.map((r) => r.targetId).filter((tid): tid is number => tid != null),
+      );
+      detailIncludedRelatedThreadIds.value = detailIncludedRelatedThreadIds.value.filter((tid) => aliveIds.has(tid));
     } catch (e: unknown) {
       console.error("[journalThread] fetchRelatedThreads failed", { id }, e);
       detailRelatedThreads.value = [];
@@ -722,6 +730,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   async function addRelatedThread(baseThreadId: number, targetThreadId: number): Promise<boolean> {
     try {
       const res = await axios.post(`/api/related/JOURNAL_THREAD/${baseThreadId}`, {
+        srcId: baseThreadId,
+        srcContentType: "JOURNAL_THREAD",
         targetId: targetThreadId,
         targetContentType: "JOURNAL_THREAD",
         relationType: "REFERENCE",
@@ -731,9 +741,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         return false;
       }
       await fetchRelatedThreads(baseThreadId);
-      if (detailIncludeRelated.value) {
-        await fetchDetailEntries(baseThreadId, detailRequestToken, true);
-      }
+      await fetchDetailEntries(baseThreadId, detailRequestToken, detailIncludedRelatedThreadIds.value);
       return true;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -757,10 +765,9 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         void swalAjaxResult({ rslt: false, message: res.data?.message, failureFallback: t("common.result.failure") });
         return false;
       }
+      // fetchRelatedThreads가 살아 있는 targetId만 남기도록 합성 선택을 prune한다
       await fetchRelatedThreads(baseThreadId);
-      if (detailIncludeRelated.value) {
-        await fetchDetailEntries(baseThreadId, detailRequestToken, true);
-      }
+      await fetchDetailEntries(baseThreadId, detailRequestToken, detailIncludedRelatedThreadIds.value);
       return rslt;
     } catch (e: unknown) {
       void swalRequestError(e);
@@ -769,14 +776,21 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   }
 
   /**
-   * includeRelated 토글을 전환하고 엔트리 목록을 다시 조회한다.
-   * 설계 정본: docs/migration/journal/thread-relation.md §2 결정 3 (토글 상태 = 화면 임시)
+   * 연관 스레드 행의 뷰 합성 토글을 전환하고 엔트리 목록을 다시 조회한다.
+   * 설계 정본: docs/migration/journal/thread-relation.md §2 결정 3 (토글 상태 = 화면 임시, 행 단위)
+   *
+   * @param relatedThreadId 토글 대상 연관 스레드 ID
    */
-  async function toggleIncludeRelated(): Promise<void> {
+  async function toggleRelatedThreadInclude(relatedThreadId: number): Promise<void> {
     const id = detailModel.value?.id;
-    if (!id) return;
-    detailIncludeRelated.value = !detailIncludeRelated.value;
-    await fetchDetailEntries(id, detailRequestToken, detailIncludeRelated.value);
+    if (!id || relatedThreadId == null) return;
+    const current = detailIncludedRelatedThreadIds.value;
+    if (current.includes(relatedThreadId)) {
+      detailIncludedRelatedThreadIds.value = current.filter((tid) => tid !== relatedThreadId);
+    } else {
+      detailIncludedRelatedThreadIds.value = [...current, relatedThreadId];
+    }
+    await fetchDetailEntries(id, detailRequestToken, detailIncludedRelatedThreadIds.value);
   }
 
   /** 스레드 피커 모달 열기. 인증 확인 후에만 연다. */
@@ -858,7 +872,8 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         return false;
       }
       detailModel.value = loadedDetail;
-      void fetchDetailEntries(id, requestToken, detailIncludeRelated.value);
+      detailIncludedRelatedThreadIds.value = [];
+      void fetchDetailEntries(id, requestToken, detailIncludedRelatedThreadIds.value);
       void fetchRelatedThreads(id);
       return true;
     } catch (e: unknown) {
@@ -997,7 +1012,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     detailEntriesLoading,
     detailLoading,
     detailModel,
-    detailIncludeRelated,
+    detailIncludedRelatedThreadIds,
     detailRelatedThreads,
     detailRelatedThreadsLoading,
     openDetail,
@@ -1007,7 +1022,7 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     fetchRelatedThreads,
     addRelatedThread,
     removeRelatedThread,
-    toggleIncludeRelated,
+    toggleRelatedThreadInclude,
     // 스레드 피커 모달
     pickerOpen,
     pickerLoading,

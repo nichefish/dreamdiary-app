@@ -146,14 +146,14 @@ public class JournalThreadEntryService {
     /**
      * 스레드의 소속 엔트리를 화면 카드용 full DTO 로 조회한다.
      * <p>
-     * {@link #getEntriesByThread(Integer, boolean)} 의 기본값 오버로드. includeRelated=false.
+     * {@link #getEntriesByThread(Integer, Collection)} 의 기본값 오버로드. 합성 대상 없음.
      *
      * @param threadId 스레드 ID
      * @return 소속 엔트리 DTO 목록 (일자, 원본 엔트리 sortOrder, ID 오름차순)
      */
     @Transactional(readOnly = true)
     public List<JournalEntryDto> getEntriesByThread(final Integer threadId) throws Exception {
-        return this.getEntriesByThread(threadId, false);
+        return this.getEntriesByThread(threadId, List.of());
     }
 
     /**
@@ -167,7 +167,7 @@ public class JournalThreadEntryService {
      * 같은 일자 안에서는 원본 엔트리 {@code sortOrder}를 우선하고, 값이 없거나 중복된 경우에만
      * 엔트리 ID 오름차순을 tiebreak 로 써서 매 조회마다 순서가 뒤바뀌지 않게 고정한다.
      * <p>
-     * {@code includeRelated=true} 이면 직접 연관된 스레드(1-hop 대칭)의 멤버 엔트리를 합성한다.
+     * {@code relatedThreadIds} 가 비어 있지 않으면 요청된 연관 스레드 중 실제 1-hop 연관인 것만 합성한다.
      * 합성 규칙(설계 정본: docs/migration/journal/thread-relation.md §2·§4):
      * <ul>
      *   <li>base·연관 양쪽 소속 엔트리는 한 번만, base 멤버로 표시 ({@code sourceThreadId=null})</li>
@@ -176,11 +176,11 @@ public class JournalThreadEntryService {
      * </ul>
      *
      * @param threadId 스레드 ID
-     * @param includeRelated true 이면 연관 스레드 엔트리 합성
+     * @param relatedThreadIds 뷰에 합성할 연관 스레드 ID 목록 (화면 임시 선택). null/빈 목록이면 base만
      * @return 소속 엔트리 DTO 목록 (일자, 원본 엔트리 sortOrder, ID 오름차순)
      */
     @Transactional(readOnly = true)
-    public List<JournalEntryDto> getEntriesByThread(final Integer threadId, final boolean includeRelated) throws Exception {
+    public List<JournalEntryDto> getEntriesByThread(final Integer threadId, final Collection<Integer> relatedThreadIds) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
         this.requireOwnedThread(threadId, username);
         final List<Integer> entryIds = repository.findAllByThread(threadId, username).stream()
@@ -199,7 +199,7 @@ public class JournalThreadEntryService {
             journalEntryStateEnricher.enrichLifecycleMixed(nestedReflections);
         }
 
-        if (!includeRelated) return entries;
+        if (CollectionUtils.isEmpty(relatedThreadIds)) return entries;
 
         // ----- 연관 스레드 엔트리 합성 -----
         // base 소속 entryId 집합 (중복 제거 기준)
@@ -208,13 +208,17 @@ public class JournalThreadEntryService {
                 .map(JournalEntryDto::getId)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        // 1-hop 직접 연관 스레드 ID 목록 조회
-        final List<Integer> relatedThreadIds = this.resolveRelatedThreadIds(threadId, username);
-        if (CollectionUtils.isEmpty(relatedThreadIds)) return entries;
+        // 요청 ID ∩ 실제 1-hop 연관 ID — 비연관 ID는 무시한다
+        final Set<Integer> allowedRelatedIds = new LinkedHashSet<>(this.resolveRelatedThreadIds(threadId, username));
+        final List<Integer> selectedRelatedIds = relatedThreadIds.stream()
+                .filter(id -> id != null && allowedRelatedIds.contains(id))
+                .distinct()
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(selectedRelatedIds)) return entries;
 
         // 연관 스레드별 엔트리 합성
         final List<JournalEntryDto> merged = new ArrayList<>(entries);
-        for (final Integer relatedThreadId : relatedThreadIds) {
+        for (final Integer relatedThreadId : selectedRelatedIds) {
             final List<Integer> relatedEntryIds = repository.findAllByThread(relatedThreadId, username).stream()
                     .map(JournalThreadEntryEntity::getEntryId)
                     .collect(Collectors.toList());
@@ -243,7 +247,7 @@ public class JournalThreadEntryService {
         // 합성 후 전체를 동일 정렬축으로 재정렬
         journalEntryService.sortByChapterAndEntryOrder(merged);
         log.debug("[JournalThreadEntry.getEntriesByThread] 연관 합성. threadId={}, base={}, merged={}, relatedThreads={}",
-                threadId, entries.size(), merged.size(), relatedThreadIds.size());
+                threadId, entries.size(), merged.size(), selectedRelatedIds.size());
         return merged;
     }
 

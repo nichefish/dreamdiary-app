@@ -111,6 +111,16 @@
         <i class="bi bi-diagram-3 fs-8 text-gray-500"></i>
         <span class="fs-7 text-gray-800 flex-grow-1">{{ rel.targetTitle ?? String(rel.targetId) }}</span>
         <button
+          v-if="rel.targetId != null"
+          type="button"
+          class="btn btn-xs btn-icon"
+          :class="isRelatedThreadIncluded(rel.targetId) ? 'btn-light-primary' : 'btn-light'"
+          :title="t('journal.thread.related.toggle.tooltip')"
+          @click="onToggleRelatedThreadInclude(rel.targetId)"
+        >
+          <i class="bi bi-intersect fs-8"></i>
+        </button>
+        <button
           type="button"
           class="btn btn-xs btn-icon btn-light btn-active-color-danger"
           :title="t('journal.thread.related.remove.tooltip')"
@@ -128,18 +138,6 @@
       <i class="bi bi-diagram-3 text-gray-700"></i>
       <span class="fs-6 fw-bold text-gray-800">{{ t("journal.thread.entries.title") }}</span>
       <span v-if="store.detailEntries.length > 0" class="badge badge-light-primary">{{ store.detailEntries.length }}</span>
-      <!--begin::연관 스레드 합성 토글 — 설계 §2 결정 3: 토글 상태=화면 임시, 기본 OFF-->
-      <button
-        v-if="store.detailRelatedThreads.length > 0"
-        type="button"
-        class="btn btn-xs ms-2"
-        :class="store.detailIncludeRelated ? 'btn-light-primary' : 'btn-light'"
-        :title="t('journal.thread.related.toggle.tooltip')"
-        @click="store.toggleIncludeRelated()"
-      >
-        <i class="bi bi-intersect fs-8 me-1"></i>{{ t("journal.thread.related.toggle.label") }}
-      </button>
-      <!--end::연관 스레드 합성 토글-->
     </div>
     <div v-if="store.detailEntriesLoading" class="text-muted fs-7 px-5 py-2">{{ t("common.loading") }}</div>
     <div v-else-if="store.detailEntries.length === 0" class="text-muted fs-7 px-5 py-2">{{ t("journal.thread.entries.empty") }}</div>
@@ -360,6 +358,24 @@ function resolveRelatedThreadTitle(sourceThreadId: number): string {
  */
 function openRelatedThreadPicker(): void {
   store.openPicker();
+}
+
+/**
+ * 연관 스레드 행의 뷰 합성 토글.
+ *
+ * @param relatedThreadId 연관 스레드 ID
+ */
+function isRelatedThreadIncluded(relatedThreadId: number): boolean {
+  return store.detailIncludedRelatedThreadIds.includes(relatedThreadId);
+}
+
+/**
+ * 연관 스레드 행의 뷰 합성 토글을 전환한다.
+ *
+ * @param relatedThreadId 연관 스레드 ID
+ */
+async function onToggleRelatedThreadInclude(relatedThreadId: number): Promise<void> {
+  await store.toggleRelatedThreadInclude(relatedThreadId);
 }
 
 /**
