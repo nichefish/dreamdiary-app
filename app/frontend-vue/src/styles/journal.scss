@@ -525,21 +525,9 @@ $journal-dream-paired-states: (
         }
     }
 
-    /* 챕터 접힘 외곽 상태선은 하위 엔트리의 완료·중요·참조를 집계한다.
-     * 완료(1px 초록)·중요(2px 빨강)·참조(4px 노랑)를 조합하며 단독 우선순위는 중요>참조>완료다. */
-
-    /* 완료만 (중요·참조 없음) */
-    &:has(> .journal-chapter-content.collapsed):has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])):not(:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"])):not(:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"])) {
-        @include chapter-highlight(
-            rgba(34, 197, 94, 0.05),
-            inset 1px 0 0 rgba(34, 197, 94, 0.82),
-            0.85rem
-        );
-
-        .journal-chapter-content.collapsed::before {
-            color: #8ab89a;
-        }
-    }
+    /* 챕터 접힘 외곽 상태선은 하위 엔트리의 중요·참조를 집계한다.
+     * 전체 RESOLVED 초록은 `.journal-chapter-block.is-all-resolved` 가 담당한다.
+     * 단독 우선순위는 중요>참조다. */
 
     /* 참조만 (중요 없음) */
     &:has(> .journal-chapter-content.collapsed):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]):not(:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"])) {
@@ -549,33 +537,6 @@ $journal-dream-paired-states: (
     /* 중요만 (참조 없음, 미완료 엔트리 포함) */
     &:has(> .journal-chapter-content.collapsed):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):not(:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"])):has(.journal-diary-item[data-resolved="N"], .journal-note-item[data-resolved="N"], .journal-dream-item[data-resolved="N"]) {
         @include chapter-highlight(#fff5f5, inset 2px 0 0 #ef4444, 0.4rem);
-    }
-
-    /* 참조 + 전체 완료 (중요 없음) */
-    &:has(> .journal-chapter-content.collapsed):has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]):not(:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"])) {
-        @include chapter-highlight(
-            rgba(234, 179, 8, 0.08),
-            (inset 1px 0 0 rgba(34, 197, 94, 0.82), inset 2px 0 0 rgba(245, 158, 11, 0.82)),
-            0.85rem
-        );
-    }
-
-    /* 중요 + 전체 완료 (참조 없음) */
-    &:has(> .journal-chapter-content.collapsed):has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):not(:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"])) {
-        @include chapter-highlight(
-            rgba(248, 113, 113, 0.08),
-            (inset 1px 0 0 rgba(34, 197, 94, 0.82), inset 2px 0 0 rgba(239, 68, 68, 0.8)),
-            0.85rem
-        );
-    }
-
-    /* 중요 + 참조 + 전체 완료 */
-    &:has(> .journal-chapter-content.collapsed):has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
-        @include chapter-highlight(
-            rgba(245, 208, 120, 0.1),
-            (inset 1px 0 0 rgba(34, 197, 94, 0.82), inset 2px 0 0 rgba(239, 68, 68, 0.8), inset 4px 0 0 rgba(245, 158, 11, 0.82)),
-            1.1rem
-        );
     }
 
     /* 중요 + 참조, 미완료 엔트리 포함 */
@@ -597,6 +558,46 @@ $journal-dream-paired-states: (
     );
 }
 
+/* 하위 엔트리가 모두 RESOLVED인 접힌 챕터. Vue `allEntriesResolved` → `is-all-resolved`. */
+.journal-chapter-block.is-all-resolved > .journal-chapter-item:has(> .journal-chapter-content.collapsed):not(:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"])):not(:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"])) {
+    @include chapter-highlight(
+        rgba(34, 197, 94, 0.05),
+        inset 1px 0 0 rgba(34, 197, 94, 0.82),
+        0.85rem
+    );
+
+    .journal-chapter-content.collapsed::before {
+        color: #8ab89a;
+    }
+}
+
+/* 참조 + 전체 완료 (중요 없음) */
+.journal-chapter-block.is-all-resolved > .journal-chapter-item:has(> .journal-chapter-content.collapsed):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]):not(:has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"])) {
+    @include chapter-highlight(
+        rgba(234, 179, 8, 0.08),
+        (inset 1px 0 0 rgba(34, 197, 94, 0.82), inset 2px 0 0 rgba(245, 158, 11, 0.82)),
+        0.85rem
+    );
+}
+
+/* 중요 + 전체 완료 (참조 없음) */
+.journal-chapter-block.is-all-resolved > .journal-chapter-item:has(> .journal-chapter-content.collapsed):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):not(:has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"])) {
+    @include chapter-highlight(
+        rgba(248, 113, 113, 0.08),
+        (inset 1px 0 0 rgba(34, 197, 94, 0.82), inset 2px 0 0 rgba(239, 68, 68, 0.8)),
+        0.85rem
+    );
+}
+
+/* 중요 + 참조 + 전체 완료 */
+.journal-chapter-block.is-all-resolved > .journal-chapter-item:has(> .journal-chapter-content.collapsed):has(.journal-content.imprtc, .journal-diary-item[data-imprtc="Y"], .journal-note-item[data-imprtc="Y"], .journal-dream-item[data-imprtc="Y"]):has(.journal-content.refrnc, .journal-diary-item[data-refrnc="Y"], .journal-note-item[data-refrnc="Y"], .journal-dream-item[data-refrnc="Y"]) {
+    @include chapter-highlight(
+        rgba(245, 208, 120, 0.1),
+        (inset 1px 0 0 rgba(34, 197, 94, 0.82), inset 2px 0 0 rgba(239, 68, 68, 0.8), inset 4px 0 0 rgba(245, 158, 11, 0.82)),
+        1.1rem
+    );
+}
+
 @media (max-width: 767.98px) {
     .journal-chapter-item {
         &:has(> .journal-chapter-content.collapsed) {
@@ -612,8 +613,8 @@ $journal-dream-paired-states: (
     box-shadow: inset 1px 0 0 $color-pending-line;
 }
 
-/* 챕터 펼친 상태에서 모든 엔트리가 RESOLVED인 경우: 전체 블록(헤더 포함)에 초록 배경 */
-.journal-chapter-block:has(.journal-diary-item, .journal-note-item, .journal-dream-item):not(:has(.journal-diary-item[data-resolved="N"])):not(:has(.journal-note-item[data-resolved="N"])):not(:has(.journal-dream-item[data-resolved="N"])):not(:has(> .journal-chapter-item > .journal-chapter-content.collapsed)) {
+/* 모든 엔트리가 RESOLVED인 펼친 챕터는 헤더를 포함한 전체 블록에 초록 상태를 표시한다. */
+.journal-chapter-block.is-all-resolved:not(:has(> .journal-chapter-item > .journal-chapter-content.collapsed)) {
     background: rgba(34, 197, 94, 0.03);
     border-radius: 0 0.5rem 0.5rem 0;
 }

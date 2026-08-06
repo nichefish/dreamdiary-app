@@ -532,10 +532,11 @@ interface TodoRow {
 **Reflection 표시 = embed 전용**: `journalEntryList`(journal_entry 행: 일기·꿈·노트)를 그대로 1급 `JournalEntryItem` 행으로 렌더한다. Reflection 은 별도 Aggregate(journal_reflection)이라 이 목록에 들어오지 않고, 대상 엔트리 아래 embed(`JournalReflectionItem`, `entry.reflectionList`)로만 표시된다. 챕터 차원의 1급 Reflection 행·중복 제거(dedup)는 없다.
 
 **scss 클래스 바인딩**:
-- root div: `class="journal-chapter-block"` + `:id="'journal-chapter-' + chapter.id"` — 챕터 등록/수정 후 저장 위치 스크롤 앵커
+- root div: `class="journal-chapter-block"` + `:id="'journal-chapter-' + chapter.id"` — 챕터 등록/수정 후 저장 위치 스크롤 앵커. `is-all-pending` / `is-all-resolved`는 하위 엔트리 집계 라이프사이클(`aggregateLifecycleKey`)을 반영한다.
 - 외부 div: `class="journal-chapter-item"` + `:data-collapsed` — journal.scss `:has(.collapsed)` 선택자 연동
 - 콘텐츠 div: `:class="['journal-chapter-content', { 'collapsed': isCollapsed }]"` — `&.collapsed > * { display: none !important }` CSS 연동
-- 접힘 외곽 상태선: `journal.scss` — 하위 `data-imprtc`/`data-refrnc`/전체 `data-resolved` 집계. 펼침 엔트리 `::before` 이중·삼중선과 동일 inset(완료·중요·참조 조합)
+- 접힘 외곽 상태선: `journal.scss` — 전체 RESOLVED/PENDING은 루트 클래스, 중요·참조는 하위 `data-imprtc`/`data-refrnc` `:has` 조합. 펼침 엔트리 `::before` 이중·삼중선과 동일 inset(완료·중요·참조 조합)
+- 디버그: `localStorage("debug_collapse")==="true"`이면 루트에 접힘·집계 메타 스트립을 표시하고 `toggleChapter` 콘솔 로그를 남긴다(엔트리·리플렉션과 동일 키).
 - 접힘 요약: 챕터가 접히면 태그와 함께 하위 엔트리의 `threadList`를 `threadId`로 중복 제거한 스레드 버튼을 `.journal-chapter-content` 바깥에 표시한다. 스레드 순서는 엔트리·소속 목록의 최초 등장 순서를 보존하고, 버튼 클릭은 기존 엔트리 스레드 칩과 동일하게 현재 저널 화면 위에 전역 상세 모달을 직접 연다.
 
 **챕터 태그 표시 규칙**: 챕터 태그는 하위 엔트리 태그를 집계한 요약이므로 **챕터가 접힌 상태일 때만 표시**. 챕터는 **자체 태그를 소유하지 않는다** — 엔티티 `TagEmbed` 를 제거했고(tag_content 0행, vestigial), 화면 태그는 100% `JournalDayViewHelper.applyChapterTagSummary` 가 소속 일기 축(DIARY + Reflection) 엔트리 태그를 집계해 `JournalChapterDto.tag` 에 채운 것이다. 저장 경로는 태그를 영구화하지 않는다.
