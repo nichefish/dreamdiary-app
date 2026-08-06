@@ -115,6 +115,7 @@
           type="button"
           class="btn btn-xs btn-icon"
           :class="isRelatedThreadIncluded(rel.targetId) ? 'btn-light-primary' : 'btn-light'"
+          :style="isRelatedThreadIncluded(rel.targetId) ? { color: accentForRelatedThread(rel.targetId), borderColor: accentForRelatedThread(rel.targetId) } : undefined"
           :title="t('journal.thread.related.toggle.tooltip')"
           @click="onToggleRelatedThreadInclude(rel.targetId)"
         >
@@ -153,17 +154,27 @@
         </div>
         <!--end::일자 헤더-->
         <template v-for="entry in group.entries" :key="'thread-entry-' + entry.id">
-          <!--begin::출처 스레드 배지 — 연관 스레드에서 빌려온 엔트리만 표시 (설계 §2 결정 4)-->
-          <div v-if="entry.sourceThreadId" class="d-flex align-items-center gap-1 mt-2 mb-n1 px-2">
-            <i class="bi bi-link-45deg fs-8 text-gray-500"></i>
-            <span class="fs-9 text-gray-500">{{ resolveRelatedThreadTitle(entry.sourceThreadId) }}</span>
+          <!--begin::출처 칩 — 빌려온 엔트리만 (설계 §2 결정 4)-->
+          <div class="thread-synth-entry">
+            <div v-if="entry.sourceThreadId != null" class="thread-synth-source px-1 mb-1">
+              <span
+                class="badge fs-8 fw-semibold thread-synth-source__chip"
+                :style="{
+                  backgroundColor: accentForRelatedThread(entry.sourceThreadId),
+                  borderColor: accentForRelatedThread(entry.sourceThreadId),
+                  color: '#fff',
+                }"
+              >
+                <i class="bi bi-link-45deg me-1"></i>{{ resolveRelatedThreadTitle(entry.sourceThreadId) }}
+              </span>
+            </div>
+            <JournalEntryItem
+              :entry="entry"
+              :is-dream="entry.contentType === 'JOURNAL_DREAM'"
+              :disable-lifecycle-collapse="true"
+            />
           </div>
-          <!--end::출처 스레드 배지-->
-          <JournalEntryItem
-            :entry="entry"
-            :is-dream="entry.contentType === 'JOURNAL_DREAM'"
-            :disable-lifecycle-collapse="true"
-          />
+          <!--end::출처 칩-->
         </template>
       </template>
     </div>
@@ -341,9 +352,30 @@ function openCommentList(): void {
   void attachableStore.openCommentList(id, threadContentType.value);
 }
 
+/** 빌려온 엔트리 출처 칩 색 — 스레드 ID로 팔레트 고정 */
+const THREAD_SYNTH_ACCENTS = [
+  "#009ef7",
+  "#7239ea",
+  "#50cd89",
+  "#ffc700",
+  "#f1416c",
+  "#181c32",
+] as const;
+
+/**
+ * 연관 스레드 ID에 대응하는 합성 강조색을 반환한다.
+ *
+ * @param relatedThreadId 연관 스레드 ID
+ * @returns CSS 색상 문자열
+ */
+function accentForRelatedThread(relatedThreadId: number): string {
+  const idx = Math.abs(relatedThreadId) % THREAD_SYNTH_ACCENTS.length;
+  return THREAD_SYNTH_ACCENTS[idx];
+}
+
 /**
  * 연관 스레드 제목을 detailRelatedThreads 목록에서 해석한다.
- * 빌려온 엔트리의 출처 배지 표시에 사용한다.
+ * 빌려온 엔트리의 출처 칩 표시에 사용한다.
  *
  * @param sourceThreadId 출처 스레드 ID
  * @returns 스레드 제목. 목록에 없으면 ID 문자열 반환.
@@ -389,3 +421,15 @@ async function onRemoveRelatedThread(rel: { id?: number; targetTitle?: string; t
   await store.removeRelatedThread(baseThreadId, rel.id);
 }
 </script>
+
+<style scoped>
+/* 빌려온(연관) 엔트리: 채워진 출처 칩만으로 base와 구분 */
+.thread-synth-entry {
+  margin-top: 0.25rem;
+}
+
+.thread-synth-source__chip {
+  border: 1px solid transparent;
+  letter-spacing: 0;
+}
+</style>

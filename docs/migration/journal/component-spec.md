@@ -756,7 +756,7 @@ interface TodoRow {
 - 독립 상세 페이지: `app/frontend-vue/src/features/journal/thread/JournalThreadDetailPage.vue`
 - 공용 상세 콘텐츠: `app/frontend-vue/src/features/journal/thread/components/JournalThreadDetailContent.vue`
 
-**컴포넌트 책임**: `JournalThreadDetailModal`은 Bootstrap 표시·명시적 닫기·같은 앱의 문맥형 수정 전환처럼 모달 표면에만 속한 계약을 담당한다. `JournalThreadDetailPage`는 독립 route의 카드 셸·수정·목록 복귀를 담당한다. `JournalThreadDetailContent`는 단일 Prefix 배지·제목·소속 기간·작성 정보·본문·소속 엔트리 집계 태그·연관 스레드 목록(행별 뷰 합성 토글·삭제)·일자 그룹 엔트리(빌려온 엔트리 출처 배지)·댓글 렌더링과 해당 댓글 액션을 담당한다. Prefix 배지는 `prefix`의 이름과 검증된 색을 사용하며 비활성 과거 선택도 표시한다. 연관 스레드 행 토글은 `relatedThreadIds`로 엔트리 목록을 재조회하며, 상태는 화면 임시(기본 OFF)이다.
+**컴포넌트 책임**: `JournalThreadDetailModal`은 Bootstrap 표시·명시적 닫기·같은 앱의 문맥형 수정 전환처럼 모달 표면에만 속한 계약을 담당한다. `JournalThreadDetailPage`는 독립 route의 카드 셸·수정·목록 복귀를 담당한다. `JournalThreadDetailContent`는 단일 Prefix 배지·제목·소속 기간·작성 정보·본문·소속 엔트리 집계 태그·연관 스레드 목록(행별 뷰 합성 토글·삭제)·일자 그룹 엔트리(빌려온 엔트리 출처 배지)·댓글 렌더링과 해당 댓글 액션을 담당한다. Prefix 배지는 `prefix`의 이름과 검증된 색을 사용하며 비활성 과거 선택도 표시한다. 연관 스레드 행 토글은 `relatedThreadIds`로 엔트리 목록을 재조회하며, 상태는 화면 임시(기본 OFF)이다. 합성으로 빌려온 엔트리(`sourceThreadId`)는 출처 스레드 제목 칩(스레드별 고정 색)으로 base 소속 카드와 구분한다.
 
 **마운트·진입 계약**: 인증된 SPA의 `App.vue`가 문맥형 상세 모달과 등록/수정 모달을 각각 전역 단일 인스턴스로 마운트한다. 저널 엔트리 스레드 칩·접힌 챕터 스레드 요약·기간별 스레드 요약은 `JournalThreadStore.openDetail(threadId)`를 직접 호출해 현재 주간·월간·일간·검색 화면과 스크롤 문맥을 보존한다. 스레드 목록 행과 외부 딥링크는 `thread-detail` route의 `JournalThreadDetailPage`를 렌더한다. 스토어는 두 표면에 같은 `detailModel`·`detailEntries`를 제공하고 `detailSurface=modal|page`로 전역 모달 표시 여부만 구분한다.
 
