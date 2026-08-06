@@ -208,4 +208,41 @@ public class JournalReflectionService
                 .weekStartDt(targetDay != null ? DateUtils.asStr(targetDay.getWeekStartDt(), DatePtn.DATE) : null)
                 .build();
     }
+
+    /**
+     * 이력 복원용 본문 수정. 이력 조회·복원 전략({@code JournalReflectionHistoryStrategy})이 호출한다.
+     *
+     * @param key Reflection ID
+     * @param content 복원할 본문
+     * @param historyType 이력 타입
+     * @param fromHistoryId 원본 이력 ID
+     * @return 수정된 Reflection DTO
+     * @throws Exception 수정 중 예외
+     */
+    @Transactional
+    public JournalEntryDto updtContent(
+            final Integer key,
+            final String content,
+            final io.nicheblog.dreamdiary.feature.attachable.history.HistoryType historyType,
+            final Integer fromHistoryId
+    ) throws Exception {
+        final JournalReflectionEntity entity = this.getDtlEntity(key);
+        if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
+            throw new NotAuthorizedException("common.result.access-not-authorized");
+        }
+        final JournalReflectionEntity historySnapshot = entity.toBuilder().build();
+
+        entity.setContent(content);
+        io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableHistoryHelper.applyModifyHistory(historySnapshot, entity);
+
+        final JournalReflectionEntity updatedEntity = repository.saveAndFlush(entity);
+        io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableHistoryHelper.publishHistoryEventIfSupported(
+                this, historySnapshot, updatedEntity, historyType, fromHistoryId
+        );
+
+        final JournalEntryDto updatedDto = mapstruct.toDto(updatedEntity);
+        final JournalDayEntity targetDay = resolveTargetDay(updatedDto.getRefId(), updatedDto.getRefContentType());
+        journalCacheEvictWorker.evictAfterCommit(buildEvictParam(updatedDto, targetDay), ContentType.JOURNAL_REFLECTION);
+        return updatedDto;
+    }
 }
