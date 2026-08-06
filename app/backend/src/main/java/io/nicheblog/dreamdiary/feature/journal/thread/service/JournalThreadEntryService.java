@@ -19,6 +19,8 @@ import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipStatsProjection;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipTagProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadEntryRepository;
@@ -293,6 +295,37 @@ public class JournalThreadEntryService {
             grouped.computeIfAbsent(membership.getThreadId(), ignored -> new ArrayList<>()).add(membership.getEntryId());
         }
         return grouped;
+    }
+
+
+    /**
+     * 스레드 목록 enrich 용 소속 수·기간 집계.
+     *
+     * @param threadIds 스레드 ID 집합
+     * @return 스레드별 집계. 소속 없는 스레드는 결과에 없다.
+     */
+    @Transactional(readOnly = true)
+    public List<JournalThreadMembershipStatsProjection> getMembershipStatsByThreadIds(
+            final Collection<Integer> threadIds
+    ) throws Exception {
+        if (CollectionUtils.isEmpty(threadIds)) return List.of();
+        final String username = AuthUtils.requireLoginUsername();
+        return repository.findMembershipStatsByThreadIds(threadIds, username);
+    }
+
+    /**
+     * 스레드 목록 enrich 용 소속 엔트리 태그 원천 행.
+     *
+     * @param threadIds 스레드 ID 집합
+     * @return 스레드·태그 행 (tagId 중복 가능)
+     */
+    @Transactional(readOnly = true)
+    public List<JournalThreadMembershipTagProjection> getMembershipTagsByThreadIds(
+            final Collection<Integer> threadIds
+    ) throws Exception {
+        if (CollectionUtils.isEmpty(threadIds)) return List.of();
+        final String username = AuthUtils.requireLoginUsername();
+        return repository.findMembershipTagsByThreadIds(threadIds, username);
     }
 
     /**
