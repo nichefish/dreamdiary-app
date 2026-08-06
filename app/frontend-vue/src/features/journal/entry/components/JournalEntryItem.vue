@@ -61,12 +61,15 @@
           <!--end::엔트리 제목-->
 
           <!--begin::마크다운 본문-->
+          <div v-if="debugCollapse" class="fs-9 text-danger px-2">
+            [E#{{entry.id}}] isCollapsed={{isCollapsed}} | lc={{lcKey}} | force={{props.forceCollapsed}} | localOvr={{localCollapsedOverride}} | signal={{reflectionForceSignal}}
+          </div>
           <div
             v-if="!isCollapsed && entry.markdownContent"
             class="journal-content p-2"
             v-html="displayMarkdownContent"
           ></div>
-          <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">{{ t("journal.entry.collapsed") }}</div>
+          <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
           <!--end::마크다운 본문-->
         </div>
         <!--end::head-main-->
@@ -399,7 +402,7 @@
           v-for="reflection in reflectionList"
           :key="reflection.id"
           :reflection="reflection"
-          :force-collapsed="localCollapsedOverride"
+          :force-collapsed-signal="reflectionForceSignal"
         />
       </template>
       <!--end::Reflection 슬림 임베드-->
@@ -607,6 +610,8 @@ const contentLabel = computed(() => {
 const lcKey = computed(() => props.entry.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
 const isPending = computed(() => lcKey.value === "PENDING");
+/** localStorage("debug_collapse")=true 일 때 접힘 메타정보를 표시한다. */
+const debugCollapse = computed(() => localStorage.getItem("debug_collapse") === "true");
 /** 지정 꿈꾼(타인 꿈) — journal.scss 좌측 회색 이중선·RESOLVED 색상과 별도 */
 const isElseDream = computed(() => {
   if (!(props.isDream || props.entry.contentType === "JOURNAL_DREAM")) return false;
@@ -632,6 +637,21 @@ const isCollapsed = computed(() => {
 function hasState(key: string): boolean {
   return (props.entry.state?.list ?? []).some((s) => s.stateKey === key);
 }
+
+/**
+ * 리플렉션에 전달할 forceCollapsedSignal.
+ * 엔트리가 현재 펼쳐져 있고, 자연 상태(lifecycle·서버)에서는 접혔을 것인데 누군가(자체 토글 또는 상위)가
+ * 펼친 경우 "expand"를 전달한다. 자연 상태에서도 펼쳐져 있는 엔트리(OPEN + 서버 미접힘)면 null.
+ */
+const reflectionForceSignal = computed<"expand" | "collapse" | null>(() => {
+  if (localCollapsedOverride.value === false) return "expand";
+  if (localCollapsedOverride.value === true) return "collapse";
+  // 자연 상태에서 접혔을 엔트리가 상위 force로 펼쳐진 경우
+  const wouldNaturallyCollapse = (lcKey.value === "PENDING" || lcKey.value === "RESOLVED")
+    || hasState("COLLAPSED");
+  if (wouldNaturallyCollapse && !isCollapsed.value) return "expand";
+  return null;
+});
 
 const tagList = computed(() => props.entry.tag?.list ?? []);
 const displayMarkdownContent = computed(() => highlightKeywordsInHtml(props.entry.markdownContent ?? "", props.highlightKeywords ?? []));

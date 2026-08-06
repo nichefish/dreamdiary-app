@@ -984,6 +984,7 @@ const pinnedMnth = ref<number | null>(null);
 - `DREAMS` 토글은 `DREAM LIFECYCLE`, `DREAM KEYWORDS`의 부모 항목이다.
 - `DIARIES=false` 또는 `DREAMS=false`일 때 해당 하위 필터 값은 삭제하지 않고 보존하되, 하위 필터 UI는 렌더링하지 않는다.
 - `ENTRY FILTER` 레이블은 위 필터 묶음 아래에 표시한다.
+- `REFLECTION COLLAPSED`(`#toggleReflectionDefaultCollapsed`)는 일기/꿈 조회 필터가 아니라 임베드 리플렉션의 **표시 기본 접힘 모드**다. `journal` store `reflectionDefaultCollapsed` + localStorage `journal_reflection_default_collapsed`로 복원하며, 기본값은 OFF(기존 계약). 변경 시 API 재조회 없이 클라이언트 접힘만 재평가하고, 필터 초기화 대상이 아니다.
 
 **엔트리 필터 Vue 상태 바인딩**:
 | Element | 레거시 ID | Vue 상태 |
@@ -997,6 +998,7 @@ const pinnedMnth = ref<number | null>(null);
 | 꿈 라이프사이클 | `#dreamLifecycleFilter` | `store.dreamLifecycleKey` — `store.showDreams=true` 시에만 표시, 변경 시 `store.fetchDays()` |
 | 일기 키워드 | `#diaryFilterKeyword` | `store.diaryKeyword` — `store.showDiaries=true` 시에만 표시, Enter 시 `store.fetchDays()` |
 | 꿈 키워드 | `#dreamFilterKeyword` | `store.dreamKeyword` — `store.showDreams=true` 시에만 표시, Enter 시 `store.fetchDays()` |
+| REFLECTION COLLAPSED 체크박스 | `#toggleReflectionDefaultCollapsed` | `store.reflectionDefaultCollapsed` — 표시 모드, 변경 시 재조회 없음·필터 초기화 제외 |
 
 `JournalDayLayout.vue`의 필터 패널 열기와 `JournalAside.vue`의 필터 패널 닫기·정렬 변경·날짜 선택·Pinpoint 저장/복귀 tooltip, 월 단위와 요일 축약명은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 필터 상태·기간·선택 일자·Pinpoint 저장값·route query를 변경하지 않는다.
 

@@ -8,12 +8,15 @@
   >
     <!--begin::본문 (헤더·제목 없이 본문만 흐른다 — target 엔트리와 이어지는 글처럼)-->
     <div class="journal-reflection-content flex-grow-1">
+      <div v-if="debugCollapse" class="fs-9 text-danger px-2">
+        [R#{{reflection.id}}] isCollapsed={{isCollapsed}} | lcKey={{lcKey}} | signal={{props.forceCollapsedSignal}} | localOvr={{localCollapsedOverride}}
+      </div>
       <div
         v-if="!isCollapsed && reflection.markdownContent"
         class="journal-content p-2"
         v-html="reflection.markdownContent"
       ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2">{{ t('journal.reflection.collapsed') }}</div>
+      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
       <!--begin::댓글 (읽기)-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
         <div
@@ -281,7 +284,7 @@
 <script setup lang="ts">
 import { swalConfirm, swalAlert, swalRequestError, swalFire, swalAjaxResult } from "@/shared/utils/swal";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { ref, computed, onBeforeUnmount, watch } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
@@ -299,6 +302,10 @@ import {
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
+import {
+  resolveReflectionCollapsed,
+  useJournalReflectionDefaultCollapsed,
+} from "@/features/journal/utils/journalReflectionCollapseMode";
 
 /**
  * target 엔트리 본문과 태그 사이에 슬림 임베드되는 Reflection 한 건.
@@ -309,11 +316,18 @@ import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journa
  * 접기(COLLAPSED)는 임베드가 본문을 항상 보이므로 메뉴에 두지 않는다.
  * Reflection 은 완결축 밖이므로 쓰기 가드는 소유권(`isCreatedBy`)이다. 본문 글자 크기는 일기 엔트리와 같다.
  */
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   reflection: JournalEntryDto;
-  /** 상위 엔트리의 수동 접힘 전달. null=엔트리 미개입, true/false=강제(엔트리 토글 따라감). */
-  forceCollapsed?: boolean | null;
-}>();
+  /**
+   * 상위 엔트리의 수동 접힘 전달.
+   * "expand"=강제 펼침, "collapse"=강제 접힘, null/undefined=엔트리 미개입(리플렉션 자체 lifecycle 따름).
+   * boolean 이 아니라 string 인 이유: Vue 3 Boolean casting 이 absent prop 을 false 로 만들어
+   * lifecycle 자동 접힘을 무효화하기 때문이다.
+   */
+  forceCollapsedSignal?: "expand" | "collapse" | null;
+}>(), {
+  forceCollapsedSignal: null,
+});
 
 const { t } = useLocaleStore();
 const modalStore = useJournalModalStore();
@@ -334,19 +348,42 @@ const contentType = computed(() => props.reflection.contentType ?? "JOURNAL_REFL
 /** 본인 작성 Reflection 만 쓰기 가능. isCreatedBy 미전달 시 잠그지 않는다. */
 const canWrite = computed(() => props.reflection.isCreatedBy !== false);
 
+/** localStorage("debug_collapse") が true のとき接힘 메타정보를 표시한다. */
+const debugCollapse = computed(() => localStorage.getItem("debug_collapse") === "true");
+
 const lcKey = computed(() => props.reflection.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
-/** PENDING(보류)는 회색 배경으로 신호한다. */
-const isPending = computed(() => lcKey.value === "PENDING");
 /** 클라이언트 임시 접힘 오버라이드. null=상위 신호 따름, true/false=강제. */
 const localCollapsedOverride = ref<boolean | null>(null);
-/** 접힘 우선순위: 로컬 토글 > 엔트리 force > lifecycle(RESOLVED/PENDING) 자동 > 서버 COLLAPSED. */
-const isCollapsed = computed(() => {
-  if (localCollapsedOverride.value !== null) return localCollapsedOverride.value;
-  if (props.forceCollapsed !== null && props.forceCollapsed !== undefined) return props.forceCollapsed;
-  if (isResolved.value || isPending.value) return true;
-  return hasState("COLLAPSED");
+/** 저널 일자 aside 토글. provide 없는 검색·스레드에서는 항상 false(기존 계약). */
+const reflectionDefaultCollapsed = useJournalReflectionDefaultCollapsed();
+
+/**
+ * 부모 엔트리의 forceCollapsed 가 바뀌면 리플렉션의 로컬 오버라이드를 초기화한다.
+ * 부모를 접었다 펼쳤을 때, 이전에 리플렉션을 직접 토글한 상태가 남아 있으면
+ * 부모 신호를 무시하는 문제를 방지한다.
+ */
+watch(() => props.forceCollapsedSignal, () => {
+  localCollapsedOverride.value = null;
 });
+/**
+ * 기본 접힘 모드 토글 전환 시 수동 펼침/접힘을 지워 모드 기본 분기가 다시 적용되게 한다.
+ */
+watch(reflectionDefaultCollapsed, () => {
+  localCollapsedOverride.value = null;
+});
+/**
+ * 접힘 우선순위: 로컬 토글 > 엔트리 signal > lifecycle(RESOLVED/PENDING) 자동
+ * > 기본 접힘 모드(일자 aside) > 서버 COLLAPSED.
+ * signal="expand" 이면 lifecycle·모드 기본 접힘도 무시한다.
+ */
+const isCollapsed = computed(() => resolveReflectionCollapsed({
+  localOverride: localCollapsedOverride.value,
+  forceSignal: props.forceCollapsedSignal,
+  lifecycleKey: lcKey.value,
+  serverCollapsed: hasState("COLLAPSED"),
+  defaultCollapsed: reflectionDefaultCollapsed.value,
+}));
 /** 임베드 자리에서 접힘/펼침만 로컬 토글한다(서버 상태 무변경). */
 function toggleCollapse(): void {
   localCollapsedOverride.value = !isCollapsed.value;

@@ -56,6 +56,7 @@ import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { provideJournalReflectionDefaultCollapsed } from "@/features/journal/utils/journalReflectionCollapseMode";
 import JournalAside from "./components/JournalAside.vue";
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
 import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
@@ -77,6 +78,9 @@ const journalStore = useJournalStore();
 const threadStore = useJournalThreadStore();
 const route = useRoute();
 const { t } = useLocaleStore();
+
+/** 일자 레이아웃 하위에서만 리플렉션 기본 접힘 토글을 적용한다. 검색·스레드는 provide 없어 기존 계약. */
+provideJournalReflectionDefaultCollapsed(() => journalStore.reflectionDefaultCollapsed);
 
 /** 이력 복원/삭제 성공 시 열린 스레드 상세와 배경 일지 목록을 현재 호스트 계약으로 다시 조회한다. */
 function onHistorySuccess(): void {

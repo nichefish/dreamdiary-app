@@ -5,6 +5,10 @@ import { formatLocalDateStr, resolveWeekStartDt } from "@/features/journal/utils
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import type { JournalDreamSectionDto } from "@/features/journal/utils/journalDream";
+import {
+  readReflectionDefaultCollapsedFromStorage,
+  writeReflectionDefaultCollapsedToStorage,
+} from "@/features/journal/utils/journalReflectionCollapseMode";
 
 // ---- 타입 정의 ----
 
@@ -357,6 +361,8 @@ export const useJournalStore = defineStore("journal", () => {
   // 필터 상태
   const showDiaries = ref<boolean>(true);
   const showDreams = ref<boolean>(true);
+  /** 리플렉션 기본 접힘 표시 모드. 조회 필터가 아니며 필터 초기화 대상이 아니다. localStorage 로 복원한다. */
+  const reflectionDefaultCollapsed = ref<boolean>(readReflectionDefaultCollapsedFromStorage());
   /** 레거시 기본: 태그 클라우드 표시 (aside TAGCLOUD 토글과 연동) */
   const showTagCloud = ref<boolean>(true);
   /** 일자 목록 정렬 — FILTER 헤더 SORT 버튼과 연동. 레거시 기본: DESC, localStorage("journal_day_sort") 로 복원 */
@@ -660,6 +666,14 @@ export const useJournalStore = defineStore("journal", () => {
   }
 
   /**
+   * 리플렉션 기본 접힘 표시 모드 토글. API 재조회 없이 localStorage 만 갱신한다.
+   */
+  function toggleReflectionDefaultCollapsed() {
+    reflectionDefaultCollapsed.value = !reflectionDefaultCollapsed.value;
+    writeReflectionDefaultCollapsedToStorage(reflectionDefaultCollapsed.value);
+  }
+
+  /**
    * FILTER 헤더 SORT 토글. 정렬 방향 변경 후 목록 재조회.
    */
   function toggleSort() {
@@ -679,6 +693,7 @@ export const useJournalStore = defineStore("journal", () => {
     error,
     showDiaries,
     showDreams,
+    reflectionDefaultCollapsed,
     showTagCloud,
     sortOrder,
     diaryKeyword,
@@ -701,6 +716,7 @@ export const useJournalStore = defineStore("journal", () => {
     gotoToday,
     gotoYyMnth,
     setViewType,
+    toggleReflectionDefaultCollapsed,
     toggleSort,
     tagCloud,
     tagCloudLoading,

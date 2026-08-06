@@ -2,9 +2,23 @@
   <!--begin::챕터-->
   <div
     class="journal-chapter-block"
-    :class="{ 'is-summary-chapter': isSummaryChapter, 'is-all-pending': allEntriesPending }"
+    :class="{
+      'is-summary-chapter': isSummaryChapter,
+      'is-all-pending': allEntriesPending,
+      'is-all-resolved': allEntriesResolved,
+    }"
     :id="'journal-chapter-' + chapter.id"
+    :data-collapsed="isCollapsed ? 'Y' : 'N'"
+    :data-agg-lifecycle="aggregateLifecycleKey ?? ''"
+    :data-local-ovr="localCollapsedOverride === null ? 'null' : String(localCollapsedOverride)"
+    :data-server-collapsed="serverCollapsed ? 'Y' : 'N'"
   >
+    <div
+      v-if="debugCollapse"
+      class="fs-9 text-danger px-2"
+    >
+      [C#{{ chapter.id }}] isCollapsed={{ isCollapsed }} | agg={{ aggregateLifecycleKey }} | localOvr={{ localCollapsedOverride }} | server={{ serverCollapsed }} | allResolved={{ allEntriesResolved }} | allPending={{ allEntriesPending }} | forceToEntries={{ localCollapsedOverride }}
+    </div>
     <!--begin::챕터 헤더-->
     <div class="d-flex align-items-center mt-2">
       <!--begin::챕터 타입·말머리 라벨 + 아이콘-->
@@ -353,6 +367,9 @@ const allEntriesResolved = computed(() => aggregateLifecycleKey.value === "RESOL
 /** 하위 엔트리가 1개 이상이고 전부 PENDING인지 여부 */
 const allEntriesPending = computed(() => aggregateLifecycleKey.value === "PENDING");
 
+/** localStorage("debug_collapse")=true 일 때 챕터 접힘/집계 메타정보를 표시한다. */
+const debugCollapse = computed(() => localStorage.getItem("debug_collapse") === "true");
+
 watch(
   aggregateLifecycleKey,
   (lifecycleKey, previousLifecycleKey) => {
@@ -446,11 +463,32 @@ function openEntryNew() {
  * 전체 펼친다. 이후 클릭은 챕터와 하위 엔트리를 함께 접거나 펼친다.
  */
 function toggleChapter(): void {
+  const before = {
+    isCollapsed: isCollapsed.value,
+    localOverride: localCollapsedOverride.value,
+    aggregateLifecycleKey: aggregateLifecycleKey.value,
+    allEntriesResolved: allEntriesResolved.value,
+  };
   if (localCollapsedOverride.value === null && !isCollapsed.value && hasDataCollapsedEntry.value) {
     localCollapsedOverride.value = false;
+    if (debugCollapse.value) {
+      console.info("[JournalChapterItem] toggleChapter expand-entries-first", { chapterId: props.chapter.id, before, afterLocalOvr: false });
+    }
     return;
   }
   localCollapsedOverride.value = !isCollapsed.value;
+  if (debugCollapse.value) {
+    console.info("[JournalChapterItem] toggleChapter", {
+      chapterId: props.chapter.id,
+      before,
+      afterLocalOvr: localCollapsedOverride.value,
+      afterCollapsed: resolveChapterCollapsed({
+        localOverride: localCollapsedOverride.value,
+        aggregateLifecycleKey: aggregateLifecycleKey.value,
+        serverCollapsed: serverCollapsed.value,
+      }),
+    });
+  }
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */

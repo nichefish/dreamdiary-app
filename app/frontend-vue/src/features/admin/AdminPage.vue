@@ -394,6 +394,29 @@
         </div>
       </section>
 
+      <section v-if="activeTab === 'general'" class="card post admin-dev-tools-card">
+        <div class="card-body">
+          <h3 class="admin-section-title">{{ t('admin.page.section.dev-tools') }}</h3>
+
+          <div class="admin-tool-row">
+            <div>
+              <div class="fw-bold">{{ t('admin.page.dev-tools.debug-collapse.title') }}</div>
+              <div class="text-muted fs-8">{{ t('admin.page.dev-tools.debug-collapse.desc') }}</div>
+            </div>
+            <div class="admin-tool-actions">
+              <label class="form-check form-switch mb-0">
+                <input
+                  v-model="debugCollapseEnabled"
+                  class="form-check-input"
+                  type="checkbox"
+                />
+                <span class="form-check-label">{{ t('admin.page.dev-tools.debug-collapse.label') }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section v-if="activeTab === 'general'" class="card post admin-role-card">
         <div class="card-body">
           <h3 class="admin-section-title">{{ t('admin.page.section.roles') }}</h3>
@@ -518,6 +541,16 @@ const router = useRouter();
 const holydayYy = ref(String(new Date().getFullYear()));
 const notionDataType = ref("PAGE");
 const notionDataId = ref("");
+
+/** localStorage("debug_collapse") 토글 — 저널 접힘 상태 디버그 표시 */
+const debugCollapseEnabled = ref(localStorage.getItem("debug_collapse") === "true");
+watch(debugCollapseEnabled, (enabled) => {
+  if (enabled) {
+    localStorage.setItem("debug_collapse", "true");
+  } else {
+    localStorage.removeItem("debug_collapse");
+  }
+});
 const cacheListModalEl = ref<HTMLElement | null>(null);
 const cacheDetailModalEl = ref<HTMLElement | null>(null);
 let cacheListModal: Modal | null = null;

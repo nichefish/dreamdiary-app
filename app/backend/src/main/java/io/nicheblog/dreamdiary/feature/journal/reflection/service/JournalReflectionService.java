@@ -51,6 +51,7 @@ public class JournalReflectionService
     private final JournalReflectionLifecycleCascade journalReflectionLifecycleCascade;
     private final JournalEntryService journalEntryService;
     private final JournalDayRepository journalDayRepository;
+    private final io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService lifecycleService;
 
     public JournalReflectionMapstruct getReadMapstruct() {
         return this.mapstruct;
@@ -98,6 +99,14 @@ public class JournalReflectionService
     public void postRegist(final JournalEntryDto updatedDto) throws Exception {
         final JournalDayEntity targetDay = resolveTargetDay(updatedDto.getRefId(), updatedDto.getRefContentType());
         journalCacheEvictWorker.evictAfterCommit(buildEvictParam(updatedDto, targetDay), ContentType.JOURNAL_REFLECTION);
+
+        // 등록된 Reflection 은 기본 PENDING(접힘) 상태로 시작한다.
+        lifecycleService.set(io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.LifecycleSetDto.builder()
+                .id(updatedDto.getId())
+                .contentType(ContentType.JOURNAL_REFLECTION)
+                .lifecycleKey(io.nicheblog.dreamdiary.feature.attachable.lifecycle.LifecycleKey.PENDING)
+                .build());
+
         // RESOLVED primary 에 Reflection 을 묶으면 primary 를 OPEN 으로 재개한다. (REFLECTION_ONE_TYPE §5)
         if (updatedDto.getRefId() != null && updatedDto.getRefContentType() != null) {
             final AttachableCacheContext cacheContext = AttachableCacheContext.builder()
