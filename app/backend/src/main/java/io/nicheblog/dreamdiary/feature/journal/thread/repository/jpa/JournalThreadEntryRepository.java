@@ -250,13 +250,14 @@ public interface JournalThreadEntryRepository
     @Query("SELECT te.threadId AS threadId, " +
             "       tc.tagId AS tagId, " +
             "       tag.name AS name, " +
-            "       tag.ctgr AS ctgr " +
+            "       tagCategory.name AS ctgr " +
             "FROM JournalThreadEntryEntity te " +
             "JOIN te.journalEntry entry " +
             "JOIN TagContentEntity tc " +
             "  ON tc.refId = entry.id " +
             " AND tc.refContentType = entry.contentType " +
             "JOIN tc.tag tag " +
+            "LEFT JOIN tag.tagCategory tagCategory " +
             "WHERE te.threadId IN :threadIds " +
             "  AND te.createdBy = :createdBy " +
             "ORDER BY te.threadId ASC, tag.name ASC, tc.tagId ASC")
