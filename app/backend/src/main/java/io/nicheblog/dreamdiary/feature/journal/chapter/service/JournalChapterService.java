@@ -441,7 +441,7 @@ public class JournalChapterService
             // sortOrder 변경 시에는 목표 위치로 삽입 재배치 후 정규화
             this.getSelf().insert(updatedDto.getJournalDayId(), updatedDto.getId(), postDto.getSortOrder());
         }
-        // DREAM 마지막 규칙을 포함한 최종 정규화
+        // 시스템 요약 맨 앞·DREAM 맨 뒤 규칙을 포함한 최종 정규화
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
 
         // 관련 캐시 삭제
@@ -542,6 +542,11 @@ public class JournalChapterService
     
     /**
      * 해당 그룹 전체를 sortOrder = 1부터 다시 정렬한다.
+     * <p>
+     * 고정 배치: 시스템 요약({@code summaryYn=Y})은 항상 맨 앞, DREAM은 항상 맨 뒤.
+     * 일반 책터의 사용자 {@code #} 입력은 이 정규화 뒤 요약 다음 구간에 반영된다.
+     * 예: 요약이 있는 날 일반 책터를 {@code #1}로 저장하면 요약 바로 다음(전체 순번 2)이 된다.
+     * </p>
      *
      * @param journalDayId 정렬을 수행할 상위 키
      */
@@ -551,8 +556,7 @@ public class JournalChapterService
         if (CollectionUtils.isEmpty(list)) return;
 
         list.sort(Comparator
-                // DREAM 챕터는 sortOrder와 무관하게 항상 마지막으로 배치
-                .comparingInt((JournalChapterEntity e) -> e.getChapterType() == ChapterType.DREAM ? 1 : 0)
+                .comparingInt(JournalChapterService::chapterSortBucket)
                 .thenComparingInt((JournalChapterEntity e) -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
                 .thenComparing(JournalChapterEntity::getId));
 
@@ -564,13 +568,18 @@ public class JournalChapterService
     }
 
     /**
-     * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
+     * 책터 정렬 버킷. 0=시스템 요약(맨 앞), 1=일반, 2=DREAM(맨 뒤).
      *
-     * @param journalDayId 정렬을 수행할 상위 키
-     * @param id 게시물 PK
-     * @param targetSortOrder 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     * @param chapter 대상 책터
+     * @return 정렬 버킷
      */
-    @Transactional
+    static int chapterSortBucket(final JournalChapterEntity chapter) {
+        if (chapter == null) return 1;
+        if (StringUtils.equals(chapter.getSummaryYn(), SUMMARY_YN)) return 0;
+        if (chapter.getChapterType() == ChapterType.DREAM) return 2;
+        return 1;
+    }
+
     public void insert(final Integer journalDayId, final Integer id, Integer targetSortOrder) throws Exception {
         final List<JournalChapterDto> list = journalChapterMapper.findAllForReorder(journalDayId);
 
@@ -672,7 +681,7 @@ public class JournalChapterService
 
         // 구 일자 정규화
         this.getSelf().normalizeSortOrder(oldJournalDayId);
-        // 신 일자 정규화 (DREAM 마지막 규칙 포함)
+        // 신 일자 정규화 (시스템 요약 맨 앞·DREAM 맨 뒤 규칙 포함)
         this.getSelf().normalizeSortOrder(newJournalDayId);
 
         // 구 일자 캐시 무효화

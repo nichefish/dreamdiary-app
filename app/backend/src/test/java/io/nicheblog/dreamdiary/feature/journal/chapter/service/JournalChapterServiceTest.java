@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.chapter.service;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.service.PrefixContentService;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.mapstruct.JournalChapterMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
@@ -23,11 +24,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
@@ -143,5 +147,38 @@ class JournalChapterServiceTest {
                 () -> JournalChapterService.resolveChapterPrefixScopeContentType(ChapterType.DREAM));
         assertThrows(BusinessException.class,
                 () -> JournalChapterService.resolveChapterPrefixScopeContentType(null));
+    }
+
+    /**
+     * 정규화 후 시스템 요약은 맨 앞, 일반 #은 요약 다음, DREAM은 맨 뒤.
+     * 일반이 기존 sortOrder=1이어도 요약을 밀어내지 않는다.
+     */
+    @Test
+    void normalizeSortOrderPinsSummaryFirstAndDreamLast() {
+        final JournalChapterEntity summary = JournalChapterEntity.builder()
+                .id(1).summaryYn("Y").chapterType(ChapterType.DIARY).sortOrder(9).build();
+        final JournalChapterEntity normal = JournalChapterEntity.builder()
+                .id(2).summaryYn("N").chapterType(ChapterType.DIARY).sortOrder(1).build();
+        final JournalChapterEntity dream = JournalChapterEntity.builder()
+                .id(3).summaryYn("N").chapterType(ChapterType.DREAM).sortOrder(2).build();
+        when(repository.findAllByJournalDayId(FIXTURE_DAY_ID))
+                .thenReturn(new ArrayList<>(List.of(normal, dream, summary)));
+        when(repository.saveAllAndFlush(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        service.normalizeSortOrder(FIXTURE_DAY_ID);
+
+        assertEquals(1, summary.getSortOrder());
+        assertEquals(2, normal.getSortOrder());
+        assertEquals(3, dream.getSortOrder());
+    }
+
+    @Test
+    void chapterSortBucketRanksSummaryThenNormalThenDream() {
+        assertEquals(0, JournalChapterService.chapterSortBucket(
+                JournalChapterEntity.builder().summaryYn("Y").chapterType(ChapterType.DIARY).build()));
+        assertEquals(1, JournalChapterService.chapterSortBucket(
+                JournalChapterEntity.builder().summaryYn("N").chapterType(ChapterType.DIARY).build()));
+        assertEquals(2, JournalChapterService.chapterSortBucket(
+                JournalChapterEntity.builder().summaryYn("N").chapterType(ChapterType.DREAM).build()));
     }
 }
