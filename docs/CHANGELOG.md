@@ -1,15 +1,33 @@
 # CHANGELOG
 
-### 2026-08-04 | v0.26.0
+### 2026-08-07 | v0.26.0
 - 신규 기능
   - 저널 "해석(interpretation)"을 독립 Entry 종류 **Reflection**(`JOURNAL_REFLECTION`)으로 승격했다.
-    - Reflection 은 본질로 타입이 정해지는 Entry 로, 어느 챕터(일기/꿈/노트)에든 자유 배치한다. 소속 챕터는 hard-owned 이고, target(가리키는 대상 엔트리)은 표시위치만 결정하는 nullable 참조다.
-    - 표시·검색·등록·수정·삭제를 모두 Entry 경로로 통합하고, 대상 엔트리 밑에 교차뷰(백링크)로 Reflection 을 함께 보여준다.
+    - Reflection 은 어느 챕터(일기/꿈/노트)에든 자유 배치한다. 소속 챕터는 hard-owned 이고, target(가리키는 대상 엔트리)은 표시위치만 결정하는 nullable 참조다.
+    - 표시·검색·등록·수정·삭제를 모두 Entry 경로로 통합하고, 대상 엔트리 밑에 교차뷰(백링크)로 함께 보여준다.
     - 통합검색에 Reflection facet 과 target 유형(일기해석/꿈해석) 서브 facet 을 추가했다.
-- 구조 정리
+    - 리플렉션 이력(history) strategy 로 이력 조회·복원을 지원한다.
+  - **스레드(Thread) 관계 구조**를 도입했다.
+    - 엔트리 간 연결을 담는 스레드와 thread-relation(연관 스레드)까지 확장.
+    - 엔트리에서 새 스레드 시작 시 접두사(말머리)를 수집한다.
+    - 관련 스레드 출처를 filled source chips 로 표시하고, 스레드별 related 뷰를 합성한다.
+  - **리플렉션 접힘/펼침**을 확정했다 — forceCollapsed string signal(Vue Boolean 캐스팅 우회)·신규 리플렉션 PENDING 기본 접힘·부모 펼침 신호의 중첩 전파·aside 기본접힘 토글.
+  - **삭제 가드**: 리플렉션이 참조 중이거나 하위 엔트리가 남은 챕터/엔트리는 삭제를 차단한다.
+  - 멱등 리플렉션 `(( ))` 감싸기 메뉴 액션과, 마크다운 내부 단일 괄호 균형 시 `(( ))` 닫기 처리를 추가했다.
+  - admin 개발자 도구: 접힘 상태 디버그 토글(localStorage) + `DEBUG_MODE.md`.
+- 구조 정리 · 개선
   - `journal_interpretation` 테이블·모듈을 `journal_entry` 로 수렴하고 `JOURNAL_INTERPRETATION` enum·백엔드 모듈·프론트 컴포넌트·CSS 를 제거해 단일 경로로 통일했다.
   - target 삭제 시 Reflection 을 cascade 삭제하지 않고 target 만 비워 챕터 직속으로 독립화한다. Reflection 은 일자 완결 축 밖에 둔다.
-  - DB 마이그레이션(수동 적용, 순서·백업 후): `V0.26.0`(target 컬럼) → `V0.26.1`(데이터 이관) → `V0.26.2`(journal_interpretation DROP).
+  - 리플렉션 ownership guard 를 `journal_reflection` 테이블 기준으로 수정했다(이전에는 항상 auth 거부).
+  - 요약 챕터를 일간 정렬 최상단에 고정하고, 챕터 resolved 강조를 `is-all-resolved` 로 구동한다.
+  - membership 태그 카테고리를 tagCategory join 으로 해소하고, 스레드 목록 소속을 하위 엔트리 로딩 없이 집계한다(성능).
+  - tagify 태그/카테고리 입력에 maxlength 30 을 적용했다.
+- 개발 규율 · 문서
+  - 에이전트 룰 SSOT 통합 — `AGENTS.md` 를 단일 원천으로 하고 `CLAUDE.md`·`.cursor/rules/cursor.mdc` 로 동기화하는 스크립트·게이트를 두었다.
+  - 커밋 메시지 한글 규약을 도입했다.
+  - 릴리스 체크리스트 문서를 정비했다.
+- 스키마
+  - `journal_entry` STI·Reflection target 축을 마스터 스키마(`schema-journal-mariadb.sql`)에 반영한다. **1.0 전까지 Flyway 증분 마이그레이션 없이 마스터 스키마만 SSOT** 로 유지한다(기존 증분 마이그레이션 쿼리 정리, 1.0부터 누적).
 
 ### 2026-08-03 | v0.25.0
 - 신규 기능
