@@ -62,6 +62,17 @@ public class JournalEntryViewProjectionHelper {
     }
 
     /**
+     * 챕터의 Reflection 엔트리 목록을 반환한다.
+     *
+     * @param chapter 대상 챕터
+     * @return Reflection 엔트리 목록
+     */
+    public static List<JournalEntryDto> getReflectionEntries(final JournalChapterDto chapter) {
+        if (chapter == null) return List.of();
+        return defaultList(filterByContentType(getChapterEntries(chapter), ContentType.JOURNAL_REFLECTION));
+    }
+
+    /**
      * 콘텐츠 타입에 맞는 엔트리 목록을 반환한다.
      *
      * @param chapter 대상 챕터
@@ -73,6 +84,7 @@ public class JournalEntryViewProjectionHelper {
         return switch (contentType) {
             case JOURNAL_DIARY -> getDiaryEntries(chapter);
             case JOURNAL_DREAM -> getDreamEntries(chapter);
+            case JOURNAL_REFLECTION -> getReflectionEntries(chapter);
             default -> List.of();
         };
     }

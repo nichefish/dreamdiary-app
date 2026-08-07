@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleSer
 import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalLifecycleViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -69,24 +68,21 @@ public class JournalEntryStateEnricher {
                 lifecycleService.getLifecycleMap(policy.contentType, entryIds)
         );
 
-        final List<JournalInterpretationDto> interpretationList = listDto.stream()
+        final List<JournalEntryDto> reflectionList = listDto.stream()
                 .filter(Objects::nonNull)
-                .flatMap(entry -> entry.getJournalInterpretationList() == null
+                .flatMap(entry -> entry.getReflectionList() == null
                         ? java.util.stream.Stream.empty()
-                        : entry.getJournalInterpretationList().stream())
+                        : entry.getReflectionList().stream())
                 .filter(Objects::nonNull)
                 .toList();
-        final List<Integer> interpretationIds = interpretationList.stream()
-                .map(JournalInterpretationDto::getId)
+        final List<Integer> reflectionIds = reflectionList.stream()
+                .map(JournalEntryDto::getId)
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList();
-        JournalLifecycleViewHelper.applyInterpretationLifecycle(
-                interpretationList,
-                lifecycleService.getLifecycleMap(
-                        io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType.JOURNAL_INTERPRETATION,
-                        interpretationIds
-                )
+        JournalLifecycleViewHelper.applyEntryLifecycle(
+                reflectionList,
+                lifecycleService.getLifecycleMap(ContentType.JOURNAL_REFLECTION, reflectionIds)
         );
     }
 
@@ -127,7 +123,7 @@ public class JournalEntryStateEnricher {
      */
     private JournalSearchStateCacheHelper.MonthlyStateApplier<JournalEntryDto> getStateMerger(final JournalEntryTypePolicy policy) {
         return switch (policy) {
-            case DIARY -> JournalEntryStateViewHelper::applyStates;
+            case DIARY, REFLECTION -> JournalEntryStateViewHelper::applyStates;
             case DREAM -> JournalEntryStateViewHelper::applyDreamStates;
             default -> null;
         };

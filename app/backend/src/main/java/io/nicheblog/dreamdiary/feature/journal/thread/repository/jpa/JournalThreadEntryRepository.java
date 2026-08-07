@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa;
 
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipStatsProjection;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipTagProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryProjection;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -205,6 +207,63 @@ public interface JournalThreadEntryRepository
     List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByYear(
             final @Param("createdBy") String createdBy,
             final @Param("yy") Integer yy
+    );
+
+
+    /**
+     * 스레드 목록 enrich 용 소속 수·기간 집계.
+     * <p>
+     * 엔트리 풀 DTO 로드 없이 활성 소속 수와 기준일 min/max 만 조회한다.
+     * {@code @Where(deleted_at IS NULL)} 로 소프트 삭제된 소속·엔트리·챕터·일자는 제외된다.
+     * </p>
+     *
+     * @param threadIds 대상 스레드 ID 집합
+     * @param createdBy 등록자 계정명
+     * @return 스레드별 소속 집계. 소속이 없는 스레드는 결과에 없다.
+     */
+    @Query("SELECT te.threadId AS threadId, " +
+            "       COUNT(DISTINCT te.entryId) AS membershipCount, " +
+            "       MIN(day.journalDate) AS firstEntryDate, " +
+            "       MAX(day.journalDate) AS lastEntryDate " +
+            "FROM JournalThreadEntryEntity te " +
+            "JOIN te.journalEntry entry " +
+            "JOIN entry.journalChapter chapter " +
+            "JOIN chapter.journalDay day " +
+            "WHERE te.threadId IN :threadIds " +
+            "  AND te.createdBy = :createdBy " +
+            "GROUP BY te.threadId")
+    List<JournalThreadMembershipStatsProjection> findMembershipStatsByThreadIds(
+            final @Param("threadIds") Collection<Integer> threadIds,
+            final @Param("createdBy") String createdBy
+    );
+
+    /**
+     * 스레드 목록 enrich 용 소속 엔트리 태그 합집합 원천.
+     * <p>
+     * 동일 tagId 가 여러 엔트리에 있으면 행이 중복될 수 있다. 서비스가 tagId 기준 중복을 제거한다.
+     * </p>
+     *
+     * @param threadIds 대상 스레드 ID 집합
+     * @param createdBy 등록자 계정명
+     * @return 스레드·태그 행 목록
+     */
+    @Query("SELECT te.threadId AS threadId, " +
+            "       tc.tagId AS tagId, " +
+            "       tag.name AS name, " +
+            "       tagCategory.name AS ctgr " +
+            "FROM JournalThreadEntryEntity te " +
+            "JOIN te.journalEntry entry " +
+            "JOIN TagContentEntity tc " +
+            "  ON tc.refId = entry.id " +
+            " AND tc.refContentType = entry.contentType " +
+            "JOIN tc.tag tag " +
+            "LEFT JOIN tag.tagCategory tagCategory " +
+            "WHERE te.threadId IN :threadIds " +
+            "  AND te.createdBy = :createdBy " +
+            "ORDER BY te.threadId ASC, tag.name ASC, tc.tagId ASC")
+    List<JournalThreadMembershipTagProjection> findMembershipTagsByThreadIds(
+            final @Param("threadIds") Collection<Integer> threadIds,
+            final @Param("createdBy") String createdBy
     );
 
     /**

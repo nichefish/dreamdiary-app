@@ -16,7 +16,10 @@ import java.util.Map;
 
 /**
  * JournalDayStateMapHelper
- * 일간 엔티티 트리로부터 챕터·일기·꿈·해석 상태 맵을 구성한다.
+ * 일간 엔티티 트리로부터 챕터·일기·꿈 상태 맵을 구성한다.
+ *
+ * <p>Reflection 은 별도 Aggregate(journal_reflection)이라 일간 트리에 속하지 않으므로 여기서 다루지 않는다.
+ * Reflection state 맵은 {@code JournalDayService} 가 대상 역참조 로드로 별도 구성한다.</p>
  *
  * @author nichefish
  */
@@ -37,14 +40,12 @@ public final class JournalDayStateMapHelper {
         final Map<Integer, JournalState> chapterMap = new HashMap<>();
         final Map<Integer, JournalState> diaryMap = new HashMap<>();
         final Map<Integer, JournalState> dreamMap = new HashMap<>();
-        final Map<Integer, JournalState> interpretationMap = new HashMap<>();
 
         if (CollectionUtils.isEmpty(journalDayEntityList)) {
             return JournalStateMaps.builder()
                     .chapterMap(chapterMap)
                     .diaryMap(diaryMap)
                     .dreamMap(dreamMap)
-                    .interpretationMap(interpretationMap)
                     .build();
         }
 
@@ -91,7 +92,6 @@ public final class JournalDayStateMapHelper {
                 .chapterMap(chapterMap)
                 .diaryMap(diaryMap)
                 .dreamMap(dreamMap)
-                .interpretationMap(interpretationMap)
                 .build();
     }
 }

@@ -79,7 +79,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         for (final String key : searchParamMap.keySet()) {
             switch (key) {
                 case "tags":
-                    resolveTagsPredicate(predicate, root, builder, searchParamMap.get(key), null, null);
+                    resolveTagsPredicate(predicate, root, builder, searchParamMap.get(key), null, List.<String>of());
                     keysToRemove.add(key);
                     continue;
                 default:
@@ -99,8 +99,24 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
             final String createdBy,
             final ContentType contentType
     ) {
+        resolveTagIdPredicate(predicate, root, builder, value, createdBy, refContentTypeKeysOf(contentType));
+    }
+
+    /**
+     * 태그 ID 단일 조건. {@code refContentTypeKeys} 가 여러 개면 IN 으로 스코프한다(일기 축 DIARY∪REFLECTION).
+     *
+     * @param refContentTypeKeys tag_content.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
+     */
+    default void resolveTagIdPredicate(
+            final List<Predicate> predicate,
+            final Root<Entity> root,
+            final CriteriaBuilder builder,
+            final Object value,
+            final String createdBy,
+            final Collection<String> refContentTypeKeys
+    ) {
         final Join<?, TagContentEntity> tagContentJoin = root.join("tag", JoinType.INNER).join("list", JoinType.INNER);
-        addTagScopePredicate(predicate, tagContentJoin, builder, createdBy, contentType);
+        addTagScopePredicate(predicate, tagContentJoin, builder, createdBy, refContentTypeKeys);
         predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
     }
 
@@ -112,10 +128,21 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
             final String createdBy,
             final ContentType contentType
     ) {
+        resolveTagsPredicate(predicate, root, builder, value, createdBy, refContentTypeKeysOf(contentType));
+    }
+
+    default void resolveTagsPredicate(
+            final List<Predicate> predicate,
+            final Root<Entity> root,
+            final CriteriaBuilder builder,
+            final Object value,
+            final String createdBy,
+            final Collection<String> refContentTypeKeys
+    ) {
         if (!(value instanceof List<?> tagIdList) || CollectionUtils.isEmpty(tagIdList)) return;
 
         final Join<?, TagContentEntity> tagContentJoin = root.join("tag", JoinType.INNER).join("list", JoinType.INNER);
-        addTagScopePredicate(predicate, tagContentJoin, builder, createdBy, contentType);
+        addTagScopePredicate(predicate, tagContentJoin, builder, createdBy, refContentTypeKeys);
         predicate.add(tagContentJoin.get("tagId").in(tagIdList));
     }
 
@@ -127,6 +154,23 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
             final Object value,
             final String createdBy,
             final ContentType contentType
+    ) {
+        resolveTagIdsPredicate(predicate, root, query, builder, value, createdBy, refContentTypeKeysOf(contentType));
+    }
+
+    /**
+     * 멀티 태그 AND. {@code refContentTypeKeys} 로 tag_content 타입 스코프를 연다.
+     *
+     * @param refContentTypeKeys tag_content.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
+     */
+    default void resolveTagIdsPredicate(
+            final List<Predicate> predicate,
+            final Root<Entity> root,
+            final CriteriaQuery<?> query,
+            final CriteriaBuilder builder,
+            final Object value,
+            final String createdBy,
+            final Collection<String> refContentTypeKeys
     ) {
         if (!(value instanceof List<?> rawTagList) || CollectionUtils.isEmpty(rawTagList)) return;
 
@@ -141,9 +185,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         final Root<TagContentEntity> tagRoot = tagSubquery.from(TagContentEntity.class);
         final List<Predicate> subPredicates = new ArrayList<>();
         subPredicates.add(builder.equal(tagRoot.get("refId"), root.get("id")));
-        if (contentType != null) {
-            subPredicates.add(builder.equal(tagRoot.get("refContentType"), contentType.key));
-        }
+        addRefContentTypeInPredicate(subPredicates, builder, tagRoot.get("refContentType"), refContentTypeKeys);
         if (StringUtils.isNotBlank(createdBy)) {
             subPredicates.add(builder.equal(tagRoot.get("createdBy"), createdBy));
         }
@@ -165,6 +207,23 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
             final String createdBy,
             final ContentType contentType
     ) {
+        resolveStatesPredicate(predicate, root, query, builder, value, createdBy, refContentTypeKeysOf(contentType));
+    }
+
+    /**
+     * 상태 키 AND/IN. {@code refContentTypeKeys} 로 state 타입 스코프를 연다.
+     *
+     * @param refContentTypeKeys state.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
+     */
+    default void resolveStatesPredicate(
+            final List<Predicate> predicate,
+            final Root<Entity> root,
+            final CriteriaQuery<?> query,
+            final CriteriaBuilder builder,
+            final Object value,
+            final String createdBy,
+            final Collection<String> refContentTypeKeys
+    ) {
         if (!(value instanceof List<?> rawStateList) || CollectionUtils.isEmpty(rawStateList)) return;
 
         final List<String> states = rawStateList.stream()
@@ -178,9 +237,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         final Root<StateEntity> stateRoot = stateSubquery.from(StateEntity.class);
         final List<Predicate> subPredicates = new ArrayList<>();
         subPredicates.add(builder.equal(stateRoot.get("refId"), root.get("id")));
-        if (contentType != null) {
-            subPredicates.add(builder.equal(stateRoot.get("refContentType"), contentType.key));
-        }
+        addRefContentTypeInPredicate(subPredicates, builder, stateRoot.get("refContentType"), refContentTypeKeys);
         subPredicates.add(stateRoot.get("stateKey").in(states));
 
         stateSubquery.select(stateRoot.get("refId"));
@@ -197,13 +254,32 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
             final Join<?, TagContentEntity> tagContentJoin,
             final CriteriaBuilder builder,
             final String createdBy,
-            final ContentType contentType
+            final Collection<String> refContentTypeKeys
     ) {
         if (StringUtils.isNotBlank(createdBy)) {
             predicate.add(builder.equal(tagContentJoin.get("createdBy"), createdBy));
         }
-        if (contentType != null) {
-            predicate.add(builder.equal(tagContentJoin.get("refContentType"), contentType.key));
+        addRefContentTypeInPredicate(predicate, builder, tagContentJoin.get("refContentType"), refContentTypeKeys);
+    }
+
+    /**
+     * ref_content_type equal 또는 IN. 키가 하나면 equal, 여러 개면 in.
+     */
+    private void addRefContentTypeInPredicate(
+            final List<Predicate> predicate,
+            final CriteriaBuilder builder,
+            final Path<String> refContentTypePath,
+            final Collection<String> refContentTypeKeys
+    ) {
+        if (CollectionUtils.isEmpty(refContentTypeKeys)) return;
+        if (refContentTypeKeys.size() == 1) {
+            predicate.add(builder.equal(refContentTypePath, refContentTypeKeys.iterator().next()));
+            return;
         }
+        predicate.add(refContentTypePath.in(refContentTypeKeys));
+    }
+
+    private Collection<String> refContentTypeKeysOf(final ContentType contentType) {
+        return contentType == null ? null : List.of(contentType.key);
     }
 }

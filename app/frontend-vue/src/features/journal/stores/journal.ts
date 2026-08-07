@@ -5,6 +5,10 @@ import { formatLocalDateStr, resolveWeekStartDt } from "@/features/journal/utils
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import type { JournalDreamSectionDto } from "@/features/journal/utils/journalDream";
+import {
+  readReflectionDefaultCollapsedFromStorage,
+  writeReflectionDefaultCollapsedToStorage,
+} from "@/features/journal/utils/journalReflectionCollapseMode";
 
 // ---- 타입 정의 ----
 
@@ -89,28 +93,15 @@ export interface HistoryCmpstn {
   historyTriggeredAt?: string;
 }
 
-/** 해석 항목 */
-export interface InterpretationItem {
-  id: number;
-  contentType?: string;
-  refId?: number;
-  refContentType?: string;
-  journalDayId?: number;
-  title?: string;
-  content?: string;
-  markdownContent?: string;
-  sortOrder?: number;
-  stdrdDt?: string;
-  state?: StateCmpstn;
-  lifecycle?: LifecycleCmpstn;
-  history?: HistoryCmpstn;
-  comment?: CommentCmpstn;
-}
 
-/** 저널 엔트리 (일기 / 꿈 / 노트) */
+/** 저널 엔트리 (일기 / 꿈 / 노트 / 리플렉션) */
 export interface JournalEntryDto {
   id: number;
   contentType?: string;
+  /** target(해석 대상) 엔트리 ID — Reflection 만 사용, nullable */
+  refId?: number;
+  /** target 엔트리 콘텐츠 타입 — Reflection 만 사용, nullable */
+  refContentType?: string;
   title?: string;
   content?: string;
   markdownContent?: string;
@@ -136,11 +127,20 @@ export interface JournalEntryDto {
   relatedContentList?: RelatedContentItem[];
   /** 이 엔트리가 속한 스레드 목록. 소속이 없으면 빈 목록. */
   threadList?: JournalThreadEntryDto[];
-  journalInterpretationList?: InterpretationItem[];
+  /** target 이 이 엔트리인 Reflection 목록 (역참조 교차뷰) */
+  reflectionList?: JournalEntryDto[];
+  /** 현재 로그인 사용자 소유 여부 (백엔드 BaseAuditRegDto getIsCreatedBy 직렬화) */
+  isCreatedBy?: boolean;
   /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
   diaryResolvedYn?: string;
   /** 소속 일자 꿈 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
   dreamResolvedYn?: string;
+  /**
+   * 뷰 합성(relatedThreadIds) 응답에서 이 엔트리의 출처 스레드 ID.
+   * null이면 base 스레드 소속 엔트리. 값이 있으면 연관 스레드에서 빌려온 엔트리.
+   * 설계 정본: docs/migration/journal/thread-relation.md §4
+   */
+  sourceThreadId?: number | null;
 }
 
 /** 저널 Prefix — 백엔드 PrefixDto 직렬화 구조 */
@@ -361,6 +361,8 @@ export const useJournalStore = defineStore("journal", () => {
   // 필터 상태
   const showDiaries = ref<boolean>(true);
   const showDreams = ref<boolean>(true);
+  /** 리플렉션 기본 접힘 표시 모드. 조회 필터가 아니며 필터 초기화 대상이 아니다. localStorage 로 복원한다. */
+  const reflectionDefaultCollapsed = ref<boolean>(readReflectionDefaultCollapsedFromStorage());
   /** 레거시 기본: 태그 클라우드 표시 (aside TAGCLOUD 토글과 연동) */
   const showTagCloud = ref<boolean>(true);
   /** 일자 목록 정렬 — FILTER 헤더 SORT 버튼과 연동. 레거시 기본: DESC, localStorage("journal_day_sort") 로 복원 */
@@ -664,6 +666,14 @@ export const useJournalStore = defineStore("journal", () => {
   }
 
   /**
+   * 리플렉션 기본 접힘 표시 모드 토글. API 재조회 없이 localStorage 만 갱신한다.
+   */
+  function toggleReflectionDefaultCollapsed() {
+    reflectionDefaultCollapsed.value = !reflectionDefaultCollapsed.value;
+    writeReflectionDefaultCollapsedToStorage(reflectionDefaultCollapsed.value);
+  }
+
+  /**
    * FILTER 헤더 SORT 토글. 정렬 방향 변경 후 목록 재조회.
    */
   function toggleSort() {
@@ -683,6 +693,7 @@ export const useJournalStore = defineStore("journal", () => {
     error,
     showDiaries,
     showDreams,
+    reflectionDefaultCollapsed,
     showTagCloud,
     sortOrder,
     diaryKeyword,
@@ -705,6 +716,7 @@ export const useJournalStore = defineStore("journal", () => {
     gotoToday,
     gotoYyMnth,
     setViewType,
+    toggleReflectionDefaultCollapsed,
     toggleSort,
     tagCloud,
     tagCloudLoading,

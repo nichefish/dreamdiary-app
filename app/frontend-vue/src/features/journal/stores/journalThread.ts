@@ -4,7 +4,7 @@ import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
-import type { JournalEntryDto, LifecycleCmpstn } from "@/features/journal/stores/journal";
+import type { JournalEntryDto, LifecycleCmpstn, RelatedContentItem } from "@/features/journal/stores/journal";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import { usePersonalPrefixOptionsStore } from "@/features/attachable/stores/personalPrefixOptions";
 
@@ -183,10 +183,22 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   const detailLoading = ref(false);
   /** 상세 DTO */
   const detailModel = ref<JournalThreadDto | null>(null);
-  /** 상세의 소속 엔트리 목록 (일자순, 카드 표시용) */
+  /** 스레드 상세 소속 엔트리 목록 */
   const detailEntries = ref<JournalEntryDto[]>([]);
-  /** 소속 엔트리 로딩 여부 */
+  /** 엔트리 목록 로딩 여부 */
   const detailEntriesLoading = ref(false);
+  /** 뷰에 합성 중인 연관 스레드 ID 목록 — 행 단위 토글, 화면 임시 (기본 빈 목록) */
+  const detailIncludedRelatedThreadIds = ref<number[]>([]);
+  /** 직접 연관된 스레드 목록 */
+  const detailRelatedThreads = ref<RelatedContentItem[]>([]);
+  /** 연관 스레드 목록 로딩 여부 */
+  const detailRelatedThreadsLoading = ref(false);
+
+  // ---- 스레드 피커 모달 상태 ----
+  const pickerOpen = ref(false);
+  const pickerLoading = ref(false);
+  const pickerSearched = ref(false);
+  const pickerSearchResults = ref<JournalThreadDto[]>([]);
   /** 상세 전환 중 늦게 도착한 이전 응답을 폐기하기 위한 요청 토큰 */
   let detailRequestToken = 0;
 
@@ -646,6 +658,185 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
   }
 
   /**
+   * 스레드 상세 소속 엔트리를 조회한다.
+   * relatedThreadIds가 있으면 해당 연관 스레드 엔트리까지 합성하여 조회한다.
+   *
+   * @param id 스레드 ID
+   * @param requestToken 요청 토큰
+   * @param relatedThreadIds 뷰에 합성할 연관 스레드 ID 목록
+   */
+  async function fetchDetailEntries(id: number, requestToken: number, relatedThreadIds: number[] = []) {
+    detailEntriesLoading.value = true;
+    detailEntries.value = [];
+    try {
+      const params = new URLSearchParams();
+      for (const relatedThreadId of relatedThreadIds) {
+        params.append("relatedThreadIds", String(relatedThreadId));
+      }
+      const res = await axios.get(`/api/journal/threads/${id}/entries`, {
+        params: params.toString() ? params : undefined,
+      });
+      if (requestToken !== detailRequestToken || detailModel.value?.id !== id) {
+        console.info("[journalThread] fetchDetailEntries discarded stale response", {
+          id,
+          requestToken,
+          currentToken: detailRequestToken,
+          currentDetailId: detailModel.value?.id,
+        });
+        return;
+      }
+      detailEntries.value = (res.data?.rsltList ?? []) as JournalEntryDto[];
+    } catch (e: unknown) {
+      console.error("[journalThread] fetchDetailEntries failed", { id }, e);
+      if (requestToken === detailRequestToken) detailEntries.value = [];
+    } finally {
+      if (requestToken === detailRequestToken) detailEntriesLoading.value = false;
+    }
+  }
+
+  /**
+   * 현재 상세 스레드에 직접 연관된 스레드 목록을 조회한다.
+   * GET /api/related/JOURNAL_THREAD/{id}
+   * 설계 정본: docs/migration/journal/thread-relation.md §3
+   *
+   * @param id 스레드 ID
+   */
+  async function fetchRelatedThreads(id: number): Promise<void> {
+    detailRelatedThreadsLoading.value = true;
+    detailRelatedThreads.value = [];
+    try {
+      const res = await axios.get(`/api/related/JOURNAL_THREAD/${id}`);
+      detailRelatedThreads.value = (res.data?.rsltList ?? []) as RelatedContentItem[];
+      const aliveIds = new Set(
+        detailRelatedThreads.value.map((r) => r.targetId).filter((tid): tid is number => tid != null),
+      );
+      detailIncludedRelatedThreadIds.value = detailIncludedRelatedThreadIds.value.filter((tid) => aliveIds.has(tid));
+    } catch (e: unknown) {
+      console.error("[journalThread] fetchRelatedThreads failed", { id }, e);
+      detailRelatedThreads.value = [];
+    } finally {
+      detailRelatedThreadsLoading.value = false;
+    }
+  }
+
+  /**
+   * 연관 스레드를 추가한다. POST /api/related/JOURNAL_THREAD/{id}
+   * 성공 시 연관 목록과 엔트리 목록을 갱신한다.
+   *
+   * @param baseThreadId base 스레드 ID
+   * @param targetThreadId 연관시킬 스레드 ID
+   * @returns 처리 성공 여부
+   */
+  async function addRelatedThread(baseThreadId: number, targetThreadId: number): Promise<boolean> {
+    try {
+      const res = await axios.post(`/api/related/JOURNAL_THREAD/${baseThreadId}`, {
+        srcId: baseThreadId,
+        srcContentType: "JOURNAL_THREAD",
+        targetId: targetThreadId,
+        targetContentType: "JOURNAL_THREAD",
+        relationType: "REFERENCE",
+      });
+      if (res.data?.rslt !== true) {
+        void swalAjaxResult({ rslt: false, message: res.data?.message, failureFallback: t("common.result.failure") });
+        return false;
+      }
+      await fetchRelatedThreads(baseThreadId);
+      await fetchDetailEntries(baseThreadId, detailRequestToken, detailIncludedRelatedThreadIds.value);
+      return true;
+    } catch (e: unknown) {
+      void swalRequestError(e);
+      return false;
+    }
+  }
+
+  /**
+   * 연관 스레드를 삭제한다. DELETE /api/related/{relatedContentId}
+   * 성공 시 연관 목록과 엔트리 목록을 갱신한다.
+   *
+   * @param baseThreadId base 스레드 ID (목록 갱신용)
+   * @param relatedContentId related_content 행 ID
+   * @returns 처리 성공 여부
+   */
+  async function removeRelatedThread(baseThreadId: number, relatedContentId: number): Promise<boolean> {
+    try {
+      const res = await axios.delete(`/api/related/${relatedContentId}`);
+      const rslt = res.data?.rslt === true;
+      if (!rslt) {
+        void swalAjaxResult({ rslt: false, message: res.data?.message, failureFallback: t("common.result.failure") });
+        return false;
+      }
+      // fetchRelatedThreads가 살아 있는 targetId만 남기도록 합성 선택을 prune한다
+      await fetchRelatedThreads(baseThreadId);
+      await fetchDetailEntries(baseThreadId, detailRequestToken, detailIncludedRelatedThreadIds.value);
+      return rslt;
+    } catch (e: unknown) {
+      void swalRequestError(e);
+      return false;
+    }
+  }
+
+  /**
+   * 연관 스레드 행의 뷰 합성 토글을 전환하고 엔트리 목록을 다시 조회한다.
+   * 설계 정본: docs/migration/journal/thread-relation.md §2 결정 3 (토글 상태 = 화면 임시, 행 단위)
+   *
+   * @param relatedThreadId 토글 대상 연관 스레드 ID
+   */
+  async function toggleRelatedThreadInclude(relatedThreadId: number): Promise<void> {
+    const id = detailModel.value?.id;
+    if (!id || relatedThreadId == null) return;
+    const current = detailIncludedRelatedThreadIds.value;
+    if (current.includes(relatedThreadId)) {
+      detailIncludedRelatedThreadIds.value = current.filter((tid) => tid !== relatedThreadId);
+    } else {
+      detailIncludedRelatedThreadIds.value = [...current, relatedThreadId];
+    }
+    await fetchDetailEntries(id, detailRequestToken, detailIncludedRelatedThreadIds.value);
+  }
+
+  /** 스레드 피커 모달 열기. 인증 확인 후에만 연다. */
+  async function openPicker(): Promise<void> {
+    if (!await assertAuthenticatedBeforeModal()) return;
+    pickerOpen.value = true;
+    pickerSearched.value = false;
+    pickerSearchResults.value = [];
+  }
+
+  /** 스레드 피커 모달 닫기 */
+  function closePicker(): void {
+    pickerOpen.value = false;
+    pickerSearchResults.value = [];
+  }
+
+  /**
+   * 피커 모달용 스레드 목록 검색.
+   * GET /api/journal/threads — 키워드 검색.
+   *
+   * @param keyword - 검색어
+   */
+  async function searchThreadsForPicker(keyword: string): Promise<void> {
+    pickerLoading.value = true;
+    pickerSearched.value = true;
+    try {
+      const params = new URLSearchParams();
+      params.set("page", "0");
+      params.set("size", "50");
+      const trimmed = keyword.trim();
+      if (trimmed) {
+        params.set("searchType", "title");
+        params.set("searchKeyword", trimmed);
+      }
+      const res = await axios.get("/api/journal/threads", { params });
+      const pageResult = res.data?.rsltObj;
+      pickerSearchResults.value = (pageResult?.content ?? []) as JournalThreadDto[];
+    } catch (e: unknown) {
+      console.error("[journalThread] searchThreadsForPicker failed", { keyword }, e);
+      pickerSearchResults.value = [];
+    } finally {
+      pickerLoading.value = false;
+    }
+  }
+
+  /**
    * 스레드 상세의 단일 데이터를 지정한 표면으로 조회한다.
    * 모달과 독립 페이지는 같은 detailModel·detailEntries를 사용하며 렌더 표면만 구분한다.
    *
@@ -681,7 +872,9 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
         return false;
       }
       detailModel.value = loadedDetail;
-      void fetchDetailEntries(id, requestToken);
+      detailIncludedRelatedThreadIds.value = [];
+      void fetchDetailEntries(id, requestToken, detailIncludedRelatedThreadIds.value);
+      void fetchRelatedThreads(id);
       return true;
     } catch (e: unknown) {
       console.error("[journalThread] loadDetail failed", { id, surface }, e);
@@ -716,34 +909,6 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     detailModel.value = null;
     detailEntries.value = [];
     detailEntriesLoading.value = false;
-  }
-
-  /**
-   * 스레드 상세의 소속 엔트리를 조회한다. (GET /api/journal/threads/{id}/entries)
-   * 실패해도 상세 표면 자체는 유지한다 — 엔트리 섹션만 비운다.
-   * 상세 전환 뒤 늦게 도착한 이전 응답은 현재 페이지나 모달을 덮지 않도록 폐기한다.
-   */
-  async function fetchDetailEntries(id: number, requestToken: number) {
-    detailEntriesLoading.value = true;
-    detailEntries.value = [];
-    try {
-      const res = await axios.get(`/api/journal/threads/${id}/entries`);
-      if (requestToken !== detailRequestToken || detailModel.value?.id !== id) {
-        console.info("[journalThread] fetchDetailEntries discarded stale response", {
-          id,
-          requestToken,
-          currentToken: detailRequestToken,
-          currentDetailId: detailModel.value?.id,
-        });
-        return;
-      }
-      detailEntries.value = (res.data?.rsltList ?? []) as JournalEntryDto[];
-    } catch (e: unknown) {
-      console.error("[journalThread] fetchDetailEntries failed", { id }, e);
-      if (requestToken === detailRequestToken) detailEntries.value = [];
-    } finally {
-      if (requestToken === detailRequestToken) detailEntriesLoading.value = false;
-    }
   }
 
   /**
@@ -847,9 +1012,24 @@ export const useJournalThreadStore = defineStore("journalThread", () => {
     detailEntriesLoading,
     detailLoading,
     detailModel,
+    detailIncludedRelatedThreadIds,
+    detailRelatedThreads,
+    detailRelatedThreadsLoading,
     openDetail,
     openDetailPage,
     closeDetail,
     refreshOpenDetail,
+    fetchRelatedThreads,
+    addRelatedThread,
+    removeRelatedThread,
+    toggleRelatedThreadInclude,
+    // 스레드 피커 모달
+    pickerOpen,
+    pickerLoading,
+    pickerSearched,
+    pickerSearchResults,
+    openPicker,
+    closePicker,
+    searchThreadsForPicker,
   };
 });

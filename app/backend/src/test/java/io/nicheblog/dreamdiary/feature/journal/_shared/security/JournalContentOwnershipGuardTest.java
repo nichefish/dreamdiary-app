@@ -11,8 +11,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.repository.jpa.JournalInterpretationRepository;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -46,7 +45,6 @@ class JournalContentOwnershipGuardTest {
     private static final Integer FIXTURE_DAY_ID = 100;
     private static final Integer FIXTURE_CHAPTER_ID = 101;
     private static final Integer FIXTURE_ENTRY_ID = 102;
-    private static final Integer FIXTURE_INTERPRETATION_ID = 103;
     private static final Integer FIXTURE_THREAD_ID = 104;
 
     @Mock
@@ -56,7 +54,7 @@ class JournalContentOwnershipGuardTest {
     @Mock
     private JournalEntryRepository journalEntryRepository;
     @Mock
-    private JournalInterpretationRepository journalInterpretationRepository;
+    private JournalReflectionRepository journalReflectionRepository;
     @Mock
     private JournalThreadRepository journalThreadRepository;
 
@@ -71,7 +69,7 @@ class JournalContentOwnershipGuardTest {
                 journalDayRepository,
                 journalChapterRepository,
                 journalEntryRepository,
-                journalInterpretationRepository,
+                journalReflectionRepository,
                 journalThreadRepository
         );
     }
@@ -114,15 +112,9 @@ class JournalContentOwnershipGuardTest {
         assertDoesNotThrow(() -> guard.assertOwned(FIXTURE_ENTRY_ID, contentType));
     }
 
-    /** 해석과 스레드는 각각의 원본 작성자가 현재 사용자이면 허용한다. */
+    /** 스레드는 원본 작성자가 현재 사용자이면 허용한다. */
     @Test
-    void ownedInterpretationAndThreadAreAccepted() {
-        when(journalInterpretationRepository.findById(FIXTURE_INTERPRETATION_ID)).thenReturn(Optional.of(
-                JournalInterpretationEntity.builder()
-                        .id(FIXTURE_INTERPRETATION_ID)
-                        .createdBy(FIXTURE_OWNER)
-                        .build()
-        ));
+    void ownedThreadIsAccepted() {
         when(journalThreadRepository.findById(FIXTURE_THREAD_ID)).thenReturn(Optional.of(
                 JournalThreadEntity.builder()
                         .id(FIXTURE_THREAD_ID)
@@ -130,10 +122,6 @@ class JournalContentOwnershipGuardTest {
                         .build()
         ));
 
-        assertDoesNotThrow(() -> guard.assertOwned(
-                FIXTURE_INTERPRETATION_ID,
-                ContentType.JOURNAL_INTERPRETATION
-        ));
         assertDoesNotThrow(() -> guard.assertOwned(FIXTURE_THREAD_ID, ContentType.JOURNAL_THREAD));
     }
 
@@ -153,12 +141,6 @@ class JournalContentOwnershipGuardTest {
                         .journalChapter(chapter(ContentType.JOURNAL_DIARY))
                         .build()
         ));
-        when(journalInterpretationRepository.findById(FIXTURE_INTERPRETATION_ID)).thenReturn(Optional.of(
-                JournalInterpretationEntity.builder()
-                        .id(FIXTURE_INTERPRETATION_ID)
-                        .createdBy(FIXTURE_OTHER_OWNER)
-                        .build()
-        ));
         when(journalThreadRepository.findById(FIXTURE_THREAD_ID)).thenReturn(Optional.of(
                 JournalThreadEntity.builder()
                         .id(FIXTURE_THREAD_ID)
@@ -172,8 +154,6 @@ class JournalContentOwnershipGuardTest {
                 () -> guard.assertOwned(FIXTURE_CHAPTER_ID, ContentType.JOURNAL_CHAPTER));
         assertThrows(NotAuthorizedException.class,
                 () -> guard.assertOwned(FIXTURE_ENTRY_ID, ContentType.JOURNAL_DIARY));
-        assertThrows(NotAuthorizedException.class,
-                () -> guard.assertOwned(FIXTURE_INTERPRETATION_ID, ContentType.JOURNAL_INTERPRETATION));
         assertThrows(NotAuthorizedException.class,
                 () -> guard.assertOwned(FIXTURE_THREAD_ID, ContentType.JOURNAL_THREAD));
     }
@@ -212,7 +192,6 @@ class JournalContentOwnershipGuardTest {
                 journalDayRepository,
                 journalChapterRepository,
                 journalEntryRepository,
-                journalInterpretationRepository,
                 journalThreadRepository
         );
     }

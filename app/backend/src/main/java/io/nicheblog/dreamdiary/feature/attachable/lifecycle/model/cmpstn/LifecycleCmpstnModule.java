@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn;
 /**
  * 라이프사이클 조합 객체를 노출하는 DTO용 인터페이스.
  *
- * <p>journal entry와 interpretation이 이 인터페이스를 구현하면, view helper가 구체 DTO 타입을
+ * <p>journal entry(리플렉션 포함)가 이 인터페이스를 구현하면, view helper가 구체 DTO 타입을
  * 몰라도 라이프사이클을 주입할 수 있다.</p>
  */
 public interface LifecycleCmpstnModule {

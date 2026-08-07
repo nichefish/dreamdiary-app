@@ -1,12 +1,17 @@
 package io.nicheblog.dreamdiary.feature.journal.thread.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
+import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentService;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntrySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryReflectionEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
@@ -14,6 +19,8 @@ import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipStatsProjection;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipTagProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadPeriodSummaryProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadEntryRepository;
@@ -24,6 +31,7 @@ import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +42,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -62,7 +72,9 @@ public class JournalThreadEntryService {
     private final JournalThreadEntryRepository repository;
     private final JournalThreadRepository journalThreadRepository;
     private final JournalEntryService journalEntryService;
+    private final JournalEntryReflectionEnricher journalEntryReflectionEnricher;
     private final JournalEntryStateEnricher journalEntryStateEnricher;
+    private final RelatedContentService relatedContentService;
 
     /**
      * 엔트리를 스레드에 소속시킨다.
@@ -80,7 +92,8 @@ public class JournalThreadEntryService {
     public ServiceResponse regist(final Integer threadId, final Integer entryId, final Integer sortOrder) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
         this.requireOwnedThread(threadId, username);
-        this.requireOwnedEntry(entryId, username);
+        final JournalEntryEntity entry = this.requireOwnedEntry(entryId, username);
+        this.assertEligibleForThreadMembership(entry);
 
         final JournalThreadEntryEntity existing = repository.findAnyByPair(threadId, entryId, username).orElse(null);
         if (existing != null) {
@@ -135,30 +148,134 @@ public class JournalThreadEntryService {
     /**
      * 스레드의 소속 엔트리를 화면 카드용 full DTO 로 조회한다.
      * <p>
-     * 스레드 상세에서 소속 엔트리를 저널 일자와 동일한 카드로 보여주기 위한 계약이다.
-     * 소속 메타(JournalThreadEntryDto)가 아니라 실제 엔트리(JournalEntryDto)를 일자 오름차순으로 돌려준다.
-     * 정렬 근거: 스레드의 선후는 엔트리 일자와 원본 엔트리 인덱스에서 파생한다
-     * ({@link JournalEntryService#getListDtoByIds}).
-     * 같은 일자 안에서는 원본 엔트리 {@code sortOrder}를 우선하고, 값이 없거나 중복된 경우에만
-     * 엔트리 ID 오름차순을 tiebreak 로 써서 매 조회마다 순서가 뒤바뀌지 않게 고정한다.
+     * {@link #getEntriesByThread(Integer, Collection)} 의 기본값 오버로드. 합성 대상 없음.
      *
      * @param threadId 스레드 ID
      * @return 소속 엔트리 DTO 목록 (일자, 원본 엔트리 sortOrder, ID 오름차순)
      */
     @Transactional(readOnly = true)
     public List<JournalEntryDto> getEntriesByThread(final Integer threadId) throws Exception {
+        return this.getEntriesByThread(threadId, List.of());
+    }
+
+    /**
+     * 스레드의 소속 엔트리를 화면 카드용 full DTO 로 조회한다.
+     * <p>
+     * 스레드 상세에서 소속 엔트리를 저널 일자와 동일한 카드로 보여주기 위한 계약이다.
+     * Reflection 교차뷰({@code reflectionList})와 lifecycle 병합을 일자 조회와 같은 계약으로 채운다.
+     * 소속 메타(JournalThreadEntryDto)가 아니라 실제 엔트리(JournalEntryDto)를 일자 오름차순으로 돌려준다.
+     * 정렬 근거: 스레드의 선후는 엔트리 일자와 원본 엔트리 인덱스에서 파생한다
+     * ({@link JournalEntryService#getListDtoByIds}).
+     * 같은 일자 안에서는 원본 엔트리 {@code sortOrder}를 우선하고, 값이 없거나 중복된 경우에만
+     * 엔트리 ID 오름차순을 tiebreak 로 써서 매 조회마다 순서가 뒤바뀌지 않게 고정한다.
+     * <p>
+     * {@code relatedThreadIds} 가 비어 있지 않으면 요청된 연관 스레드 중 실제 1-hop 연관인 것만 합성한다.
+     * 합성 규칙(설계 정본: docs/migration/journal/thread-relation.md §2·§4):
+     * <ul>
+     *   <li>base·연관 양쪽 소속 엔트리는 한 번만, base 멤버로 표시 ({@code sourceThreadId=null})</li>
+     *   <li>연관 스레드에서만 속한 엔트리는 {@code sourceThreadId}에 연관 스레드 ID를 세팅</li>
+     *   <li>정렬은 base 단독 조회와 동일한 축(일자 → 챕터 sortOrder → 엔트리 sortOrder → ID)</li>
+     * </ul>
+     *
+     * @param threadId 스레드 ID
+     * @param relatedThreadIds 뷰에 합성할 연관 스레드 ID 목록 (화면 임시 선택). null/빈 목록이면 base만
+     * @return 소속 엔트리 DTO 목록 (일자, 원본 엔트리 sortOrder, ID 오름차순)
+     */
+    @Transactional(readOnly = true)
+    public List<JournalEntryDto> getEntriesByThread(final Integer threadId, final Collection<Integer> relatedThreadIds) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
         this.requireOwnedThread(threadId, username);
         final List<Integer> entryIds = repository.findAllByThread(threadId, username).stream()
                 .map(JournalThreadEntryEntity::getEntryId)
                 .collect(Collectors.toList());
         final List<JournalEntryDto> entries = journalEntryService.getListDtoByIds(entryIds);
-        // 저널 일자 화면과 동일한 순서(날짜 → 챕터 sortOrder → 원본 엔트리 sortOrder → ID)로 정렬한다.
-        // 챕터별로 1부터인 엔트리 sortOrder만 보면 같은 일자의 여러 챕터 #1들이 몰리므로, 챕터 순서를 함께 보는 공용 헬퍼를 쓴다.
         journalEntryService.sortByChapterAndEntryOrder(entries);
-        // 소속 엔트리에 lifecycle 을 병합해 스레드 상세에서도 완료(RESOLVED) 초록 표시가 나오게 한다. (state 는 병합하지 않음)
+        journalEntryReflectionEnricher.enrichMixed(entries);
         journalEntryStateEnricher.enrichLifecycleMixed(entries);
-        return entries;
+        final List<JournalEntryDto> nestedReflections = entries.stream()
+                .filter(entry -> entry != null && entry.getReflectionList() != null)
+                .flatMap(entry -> entry.getReflectionList().stream())
+                .filter(reflection -> reflection != null)
+                .toList();
+        if (!nestedReflections.isEmpty()) {
+            journalEntryStateEnricher.enrichLifecycleMixed(nestedReflections);
+        }
+
+        if (CollectionUtils.isEmpty(relatedThreadIds)) return entries;
+
+        // ----- 연관 스레드 엔트리 합성 -----
+        // base 소속 entryId 집합 (중복 제거 기준)
+        final Set<Integer> baseEntryIds = entries.stream()
+                .filter(e -> e != null && e.getId() != null)
+                .map(JournalEntryDto::getId)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // 요청 ID ∩ 실제 1-hop 연관 ID — 비연관 ID는 무시한다
+        final Set<Integer> allowedRelatedIds = new LinkedHashSet<>(this.resolveRelatedThreadIds(threadId, username));
+        final List<Integer> selectedRelatedIds = relatedThreadIds.stream()
+                .filter(id -> id != null && allowedRelatedIds.contains(id))
+                .distinct()
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(selectedRelatedIds)) return entries;
+
+        // 연관 스레드별 엔트리 합성
+        final List<JournalEntryDto> merged = new ArrayList<>(entries);
+        for (final Integer relatedThreadId : selectedRelatedIds) {
+            final List<Integer> relatedEntryIds = repository.findAllByThread(relatedThreadId, username).stream()
+                    .map(JournalThreadEntryEntity::getEntryId)
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(relatedEntryIds)) continue;
+
+            // base 소속과 중복된 엔트리는 건너뛴다 — base 멤버로 취급
+            final List<Integer> borrowedIds = relatedEntryIds.stream()
+                    .filter(id -> !baseEntryIds.contains(id))
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(borrowedIds)) continue;
+
+            final List<JournalEntryDto> borrowedEntries = journalEntryService.getListDtoByIds(borrowedIds);
+            journalEntryReflectionEnricher.enrichMixed(borrowedEntries);
+            journalEntryStateEnricher.enrichLifecycleMixed(borrowedEntries);
+            // provenance 세팅: 연관 스레드에서 빌려온 엔트리에 출처 스레드 ID를 표시
+            borrowedEntries.forEach(entry -> {
+                if (entry != null) entry.setSourceThreadId(relatedThreadId);
+            });
+            merged.addAll(borrowedEntries);
+            // baseEntryIds에 추가해 다음 연관 스레드와의 중복도 방지
+            borrowedEntries.stream()
+                    .filter(e -> e != null && e.getId() != null)
+                    .forEach(e -> baseEntryIds.add(e.getId()));
+        }
+
+        // 합성 후 전체를 동일 정렬축으로 재정렬
+        journalEntryService.sortByChapterAndEntryOrder(merged);
+        log.debug("[JournalThreadEntry.getEntriesByThread] 연관 합성. threadId={}, base={}, merged={}, relatedThreads={}",
+                threadId, entries.size(), merged.size(), selectedRelatedIds.size());
+        return merged;
+    }
+
+    /**
+     * base 스레드에 직접 연관된 스레드 ID 목록을 조회한다 (1-hop 대칭).
+     * <p>
+     * related_content 테이블에서 JOURNAL_THREAD 타입 연관 행을 읽어 상대방 스레드 ID를 추출한다.
+     * 소유권 검증은 {@link RelatedContentService#getListDtoByRef} 에서 수행한다.
+     *
+     * @param threadId base 스레드 ID
+     * @param username 로그인 사용자
+     * @return 연관 스레드 ID 목록 (없으면 빈 목록)
+     */
+    private List<Integer> resolveRelatedThreadIds(final Integer threadId, final String username) {
+        try {
+            return relatedContentService
+                    .getListDtoByRef(threadId, ContentType.JOURNAL_THREAD)
+                    .stream()
+                    .map(RelatedContentDto::getTargetId)
+                    .filter(id -> id != null)
+                    .collect(Collectors.toList());
+        } catch (final Exception e) {
+            log.warn("[JournalThreadEntry.resolveRelatedThreadIds] 연관 스레드 조회 실패 — 합성 건너뜀. threadId={}, username={}, error={}",
+                    threadId, username, e.getMessage());
+            return List.of();
+        }
     }
 
 
@@ -178,6 +295,37 @@ public class JournalThreadEntryService {
             grouped.computeIfAbsent(membership.getThreadId(), ignored -> new ArrayList<>()).add(membership.getEntryId());
         }
         return grouped;
+    }
+
+
+    /**
+     * 스레드 목록 enrich 용 소속 수·기간 집계.
+     *
+     * @param threadIds 스레드 ID 집합
+     * @return 스레드별 집계. 소속 없는 스레드는 결과에 없다.
+     */
+    @Transactional(readOnly = true)
+    public List<JournalThreadMembershipStatsProjection> getMembershipStatsByThreadIds(
+            final Collection<Integer> threadIds
+    ) throws Exception {
+        if (CollectionUtils.isEmpty(threadIds)) return List.of();
+        final String username = AuthUtils.requireLoginUsername();
+        return repository.findMembershipStatsByThreadIds(threadIds, username);
+    }
+
+    /**
+     * 스레드 목록 enrich 용 소속 엔트리 태그 원천 행.
+     *
+     * @param threadIds 스레드 ID 집합
+     * @return 스레드·태그 행 (tagId 중복 가능)
+     */
+    @Transactional(readOnly = true)
+    public List<JournalThreadMembershipTagProjection> getMembershipTagsByThreadIds(
+            final Collection<Integer> threadIds
+    ) throws Exception {
+        if (CollectionUtils.isEmpty(threadIds)) return List.of();
+        final String username = AuthUtils.requireLoginUsername();
+        return repository.findMembershipTagsByThreadIds(threadIds, username);
     }
 
     /**
@@ -330,7 +478,7 @@ public class JournalThreadEntryService {
      * @param entryId 엔트리 ID
      * @param username 사용자 계정명
      */
-    private void requireOwnedEntry(final Integer entryId, final String username) throws Exception {
+    private JournalEntryEntity requireOwnedEntry(final Integer entryId, final String username) throws Exception {
         final JournalEntryEntity entry;
         try {
             entry = journalEntryService.getDtlEntity(entryId);
@@ -343,6 +491,25 @@ public class JournalThreadEntryService {
                     entryId, username, entry.getCreatedBy());
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
+        return entry;
+    }
+
+    /**
+     * 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가 대상이 아니다.
+     * 정본: docs/spec/REFLECTION_ONE_TYPE.md §4
+     */
+    private void assertEligibleForThreadMembership(final JournalEntryEntity entry) {
+        if (entry == null || !ContentType.JOURNAL_REFLECTION.key.equals(entry.getContentType())) return;
+        if (entry.getRefId() == null) return;
+        final ContentType targetType = entry.getRefContentType();
+        if (targetType != ContentType.JOURNAL_DIARY
+                && targetType != ContentType.JOURNAL_DREAM
+                && targetType != ContentType.JOURNAL_NOTE) {
+            return;
+        }
+        log.warn("[JournalThreadEntry.regist] 원문 target Reflection 스레드 소속 차단. entryId={}, refId={}, refContentType={}",
+                entry.getId(), entry.getRefId(), targetType);
+        throw new BusinessException("journal.thread.entry.regist.reflection-target-forbidden");
     }
 
     /**

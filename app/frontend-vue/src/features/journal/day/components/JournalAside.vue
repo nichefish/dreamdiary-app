@@ -305,6 +305,18 @@
           </div>
         </div>
 
+        <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer mt-2"
+          :title="t('journal.aside.reflection-default-collapsed.tooltip')">
+          <input
+            id="toggleReflectionDefaultCollapsed"
+            class="form-check-input w-30px h-20px"
+            type="checkbox"
+            :checked="store.reflectionDefaultCollapsed"
+            @change="toggleReflectionDefaultCollapsed"
+          />
+          <span class="form-check-label text-muted fs-7">{{ t("journal.aside.reflection-default-collapsed") }}</span>
+        </label>
+
         <div class="text-gray-900 fs-6 fw-bold mt-1">{{ t("journal.aside.entry-filter") }}</div>
       </div>
       <!--end::ENTRY 필터-->
@@ -523,6 +535,10 @@ async function gotoToday(): Promise<void> {
     return;
   }
   await syncMonthlyRouteOrFetch(today.getFullYear(), today.getMonth() + 1);
+}
+
+function toggleReflectionDefaultCollapsed() {
+  store.toggleReflectionDefaultCollapsed();
 }
 
 function toggleDiaries() {

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.entry.entity;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbed;
@@ -74,6 +75,17 @@ public class JournalEntryEntity
 
     @Column(name = "else_dreamer_nm", length = 64)
     private String elseDreamerNm;
+
+    /** target(해석 대상) 엔티티 번호. nullable. Reflection이 가리키는 대상 Entry를 표시위치로만 참조한다. */
+    @Column(name = "ref_id")
+    @Comment("target 엔티티 번호")
+    private Integer refId;
+
+    /** target 엔티티의 컨텐츠 타입 {JOURNAL_DIARY, JOURNAL_DREAM, JOURNAL_REFLECTION}. nullable. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ref_content_type", length = 50)
+    @Comment("target 컨텐츠 타입")
+    private ContentType refContentType;
 
     @Embedded
     public FileEmbed file;

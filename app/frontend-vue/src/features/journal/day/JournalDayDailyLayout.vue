@@ -7,7 +7,7 @@
     <JournalDayRegistModal />
     <JournalDayDetailModal />
     <JournalChapterRegistModal />
-    <JournalInterpretationRegistModal />
+    <JournalReflectionRegistModal />
     <JournalEntryRegistModal />
     <JournalTodoRegistModal />
     <JournalDayMetaModal />
@@ -32,7 +32,7 @@ import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journa
 import JournalDayRegistModal from "./modals/JournalDayRegistModal.vue";
 import JournalDayDetailModal from "./modals/JournalDayDetailModal.vue";
 import JournalChapterRegistModal from "../chapter/modals/JournalChapterRegistModal.vue";
-import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
+import JournalReflectionRegistModal from "../reflection/modals/JournalReflectionRegistModal.vue";
 import JournalEntryRegistModal from "../entry/modals/JournalEntryRegistModal.vue";
 import JournalTodoRegistModal from "../todo/modals/JournalTodoRegistModal.vue";
 import JournalDayMetaModal from "./modals/JournalDayMetaModal.vue";

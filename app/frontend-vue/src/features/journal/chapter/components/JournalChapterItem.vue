@@ -2,9 +2,23 @@
   <!--begin::챕터-->
   <div
     class="journal-chapter-block"
-    :class="{ 'is-summary-chapter': isSummaryChapter, 'is-all-pending': allEntriesPending }"
+    :class="{
+      'is-summary-chapter': isSummaryChapter,
+      'is-all-pending': allEntriesPending,
+      'is-all-resolved': allEntriesResolved,
+    }"
     :id="'journal-chapter-' + chapter.id"
+    :data-collapsed="isCollapsed ? 'Y' : 'N'"
+    :data-agg-lifecycle="aggregateLifecycleKey ?? ''"
+    :data-local-ovr="localCollapsedOverride === null ? 'null' : String(localCollapsedOverride)"
+    :data-server-collapsed="serverCollapsed ? 'Y' : 'N'"
   >
+    <div
+      v-if="debugCollapse"
+      class="fs-9 text-danger px-2"
+    >
+      [C#{{ chapter.id }}] isCollapsed={{ isCollapsed }} | agg={{ aggregateLifecycleKey }} | localOvr={{ localCollapsedOverride }} | server={{ serverCollapsed }} | allResolved={{ allEntriesResolved }} | allPending={{ allEntriesPending }} | forceToEntries={{ localCollapsedOverride }}
+    </div>
     <!--begin::챕터 헤더-->
     <div class="d-flex align-items-center mt-2">
       <!--begin::챕터 타입·말머리 라벨 + 아이콘-->
@@ -260,7 +274,7 @@ watch(
   { immediate: true },
 );
 
-/** 본인 작성 챕터만 수정·삭제·엔트리 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
+/** 본인 작성 챕터만 수정·삭제·엔트리/리플렉션 등록·서버 상태 변경 가능 (백엔드 isCreatedBy) */
 const canManageChapter = computed(() => props.chapter.isCreatedBy === true);
 
 const dayResolvedAxis = useJournalDayResolved();
@@ -305,6 +319,10 @@ const typeLabel = computed(() => {
   return t("journal.chapter.type.diary");
 });
 
+/**
+ * 챕터 엔트리 목록(journal_entry 행: 일기·꿈·노트). Reflection 은 별도 Aggregate(journal_reflection)이라
+ * 이 목록에 1급 행으로 들어오지 않고, 대상 엔트리 아래 embed(reflectionList)로만 표시된다.
+ */
 const entryList = computed(() => props.chapter.journalEntryList ?? []);
 const tagList = computed(() => props.chapter.tag?.list ?? []);
 
@@ -348,6 +366,9 @@ const allEntriesResolved = computed(() => aggregateLifecycleKey.value === "RESOL
 
 /** 하위 엔트리가 1개 이상이고 전부 PENDING인지 여부 */
 const allEntriesPending = computed(() => aggregateLifecycleKey.value === "PENDING");
+
+/** localStorage("debug_collapse")=true 일 때 챕터 접힘/집계 메타정보를 표시한다. */
+const debugCollapse = computed(() => localStorage.getItem("debug_collapse") === "true");
 
 watch(
   aggregateLifecycleKey,
@@ -442,11 +463,32 @@ function openEntryNew() {
  * 전체 펼친다. 이후 클릭은 챕터와 하위 엔트리를 함께 접거나 펼친다.
  */
 function toggleChapter(): void {
+  const before = {
+    isCollapsed: isCollapsed.value,
+    localOverride: localCollapsedOverride.value,
+    aggregateLifecycleKey: aggregateLifecycleKey.value,
+    allEntriesResolved: allEntriesResolved.value,
+  };
   if (localCollapsedOverride.value === null && !isCollapsed.value && hasDataCollapsedEntry.value) {
     localCollapsedOverride.value = false;
+    if (debugCollapse.value) {
+      console.info("[JournalChapterItem] toggleChapter expand-entries-first", { chapterId: props.chapter.id, before, afterLocalOvr: false });
+    }
     return;
   }
   localCollapsedOverride.value = !isCollapsed.value;
+  if (debugCollapse.value) {
+    console.info("[JournalChapterItem] toggleChapter", {
+      chapterId: props.chapter.id,
+      before,
+      afterLocalOvr: localCollapsedOverride.value,
+      afterCollapsed: resolveChapterCollapsed({
+        localOverride: localCollapsedOverride.value,
+        aggregateLifecycleKey: aggregateLifecycleKey.value,
+        serverCollapsed: serverCollapsed.value,
+      }),
+    });
+  }
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */
@@ -490,6 +532,10 @@ function exportChapter(): void {
 async function deleteChapter(): Promise<void> {
   if (!guardChapterOwner(true)) return;
   if (!props.chapter.id) return;
+  if (entryList.value.length > 0) {
+    void swalAlert(t("journal.chapter.delete.blocked-by-entries"));
+    return;
+  }
   const stdrdDt = props.chapter.stdrdDt;
   if (!await swalConfirm(t("journal.chapter.delete.confirm"))) return;
   try {
@@ -514,7 +560,7 @@ async function deleteChapter(): Promise<void> {
 }
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
-/** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목\n#순번\n본문 */
+/** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목 → 각 엔트리 #순번·본문, 그 밑에 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
 async function copyChapter(): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
@@ -532,6 +578,14 @@ async function copyChapter(): Promise<void> {
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
     if (sortNum) lines.push(sortNum);
     if (raw) lines.push(raw);
+    /* 원문과 해석은 한 몸 — 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+    for (const reflection of entry.reflectionList ?? []) {
+      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+      if (reflRaw) {
+        lines.push("");
+        lines.push(reflRaw);
+      }
+    }
     lines.push("");
   }
   const text = lines.join("\n").trim();

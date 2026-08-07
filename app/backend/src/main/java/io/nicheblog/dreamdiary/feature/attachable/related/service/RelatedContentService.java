@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationOriginTyp
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationType;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -34,9 +35,14 @@ import java.util.Objects;
 @Service
 public class RelatedContentService {
 
+    /**
+     * 관련글 기능이 지원하는 콘텐츠 타입.
+     * JOURNAL_THREAD는 스레드 ↔ 스레드 연관(thread-relation) 설계(docs/migration/journal/thread-relation.md §3) 에 따라 포함한다.
+     */
     private static final EnumSet<ContentType> SUPPORTED_TYPES = EnumSet.of(
             ContentType.JOURNAL_DIARY,
-            ContentType.JOURNAL_DREAM
+            ContentType.JOURNAL_DREAM,
+            ContentType.JOURNAL_THREAD
     );
 
     @Getter
@@ -45,17 +51,20 @@ public class RelatedContentService {
     private final RelatedContentMapstruct mapstruct;
 
     private final JournalEntryService journalEntryService;
+    private final JournalThreadRepository journalThreadRepository;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     public RelatedContentService(
             final RelatedContentRepository repository,
             final RelatedContentMapstruct mapstruct,
             final @Lazy JournalEntryService journalEntryService,
+            final JournalThreadRepository journalThreadRepository,
             final JournalDayResolvedGuard journalDayResolvedGuard
     ) {
         this.repository = repository;
         this.mapstruct = mapstruct;
         this.journalEntryService = journalEntryService;
+        this.journalThreadRepository = journalThreadRepository;
         this.journalDayResolvedGuard = journalDayResolvedGuard;
     }
 
@@ -155,8 +164,24 @@ public class RelatedContentService {
         repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), createdBy);
     }
 
+    /**
+     * 엔트리 삭제 후처리용 관련글 정리.
+     * 관련글 도메인 밖 타입({@code JOURNAL_REFLECTION} 등)은 연결을 만들지 않으므로 no-op 한다.
+     * 공개 API {@link #deleteAllByRef(BaseAttachableKey)} 의 지원 타입 검증과 달리, 삭제 경로를 막지 않는다.
+     *
+     * @param refKey 삭제된 콘텐츠 키
+     * @param createdBy 등록자 아이디
+     */
     @Transactional
     public void deleteAllByRef(final BaseAttachableKey refKey, final String createdBy) {
+        if (refKey == null || refKey.getId() == null || StringUtils.isBlank(refKey.getContentType())) {
+            throw new IllegalArgumentException("related content key is required.");
+        }
+        final ContentType contentType = refKey.getContentTypeEnum();
+        if (!SUPPORTED_TYPES.contains(contentType)) {
+            return;
+        }
+
         this.validateReadableKey(refKey);
         journalDayResolvedGuard.assertWritableForRef(refKey.getId(), refKey.getContentType());
 
@@ -249,11 +274,35 @@ public class RelatedContentService {
         return createdBy;
     }
 
+    /**
+     * refKey contentType 에 따라 등록자 아이디를 해석한다.
+     * JOURNAL_THREAD는 스레드 엔티티에서, 그 외(JOURNAL_DIARY/JOURNAL_DREAM)는 저널 엔트리 서비스에 위임한다.
+     *
+     * @param refKey 복합 키
+     * @return 등록자 아이디
+     */
     private String resolveCreatedBy(final BaseAttachableKey refKey) {
+        if (ContentType.JOURNAL_THREAD.key.equals(refKey.getContentType())) {
+            return journalThreadRepository.findById(refKey.getId())
+                    .map(entity -> entity.getCreatedBy())
+                    .orElse(null);
+        }
         return journalEntryService.resolveCreatedBy(refKey);
     }
 
+    /**
+     * refKey contentType 에 따라 제목을 해석한다.
+     * JOURNAL_THREAD는 스레드 엔티티에서, 그 외(JOURNAL_DIARY/JOURNAL_DREAM)는 저널 엔트리 서비스에 위임한다.
+     *
+     * @param refKey 복합 키
+     * @return 제목
+     */
     private String resolveTitle(final BaseAttachableKey refKey) {
+        if (ContentType.JOURNAL_THREAD.key.equals(refKey.getContentType())) {
+            return journalThreadRepository.findById(refKey.getId())
+                    .map(entity -> entity.getTitle())
+                    .orElse(null);
+        }
         return journalEntryService.resolveTitle(refKey);
     }
 

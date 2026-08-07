@@ -25,26 +25,28 @@ class JournalEntryTypePolicyTest {
     }
 
     // =========================================================
-    // supportsInterpretation()
+    // canBeReflectionTarget()
     // =========================================================
 
     @Test
-    void supportsInterpretation_trueForDiaryAndDream() {
-        assertTrue(JournalEntryTypePolicy.DIARY.supportsInterpretation());
-        assertTrue(JournalEntryTypePolicy.DREAM.supportsInterpretation());
+    void canBeReflectionTarget_trueForDiaryDreamReflection() {
+        assertTrue(JournalEntryTypePolicy.DIARY.canBeReflectionTarget());
+        assertTrue(JournalEntryTypePolicy.DREAM.canBeReflectionTarget());
+        assertTrue(JournalEntryTypePolicy.REFLECTION.canBeReflectionTarget());
     }
 
     // =========================================================
-    // interpretableTypes()
+    // reflectionTargetTypes()
     // =========================================================
 
     @Test
-    void interpretableTypes_containsOnlyDiaryAndDream() {
-        final List<JournalEntryTypePolicy> types = JournalEntryTypePolicy.interpretableTypes();
+    void reflectionTargetTypes_containsDiaryDreamReflection() {
+        final List<JournalEntryTypePolicy> types = JournalEntryTypePolicy.reflectionTargetTypes();
 
-        assertEquals(2, types.size());
+        assertEquals(3, types.size());
         assertTrue(types.contains(JournalEntryTypePolicy.DIARY));
         assertTrue(types.contains(JournalEntryTypePolicy.DREAM));
+        assertTrue(types.contains(JournalEntryTypePolicy.REFLECTION));
     }
 
     // =========================================================

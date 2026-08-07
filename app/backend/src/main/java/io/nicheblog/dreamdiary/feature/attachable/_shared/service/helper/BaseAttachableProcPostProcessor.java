@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.attachable._shared.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.meta.model.cmpstn.MetaCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.meta.model.cmpstn.MetaCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.meta.service.MetaProcService;
@@ -63,6 +64,8 @@ public final class BaseAttachableProcPostProcessor {
      */
     public static void processTags(final BaseAttachableDto dto, final boolean isDeleteMethod) throws Exception {
         if (!(dto instanceof TagCmpstnModule tagCmpstnModule)) return;
+        // Reflection 은 태그를 두지 않는다(표시 DTO 가 TagCmpstnModule 이어도 처리하지 않는다).
+        if (ContentType.JOURNAL_REFLECTION.key.equals(dto.getContentType())) return;
 
         final BaseAttachableKey attachableKey = dto.getAttachableKey();
         if (attachableKey == null) return;
@@ -78,6 +81,8 @@ public final class BaseAttachableProcPostProcessor {
      */
     public static void processMetas(final BaseAttachableDto dto, final boolean isDeleteMethod) throws Exception {
         if (!(dto instanceof MetaCmpstnModule metaCmpstnModule)) return;
+        // Reflection 은 메타를 두지 않는다.
+        if (ContentType.JOURNAL_REFLECTION.key.equals(dto.getContentType())) return;
 
         final BaseAttachableKey attachableKey = dto.getAttachableKey();
         if (attachableKey == null) return;

@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryHolydayHelper;
-import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryInterpretationEnricher;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryReflectionEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryRelatedEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
@@ -24,7 +24,7 @@ import java.util.List;
 public class JournalEntryMyViewService {
 
     private final JournalEntryService journalEntryService;
-    private final JournalEntryInterpretationEnricher interpretationEnricher;
+    private final JournalEntryReflectionEnricher reflectionEnricher;
     private final JournalEntryRelatedEnricher relatedEnricher;
     private final JournalEntryStateEnricher stateEnricher;
     private final TagProfileService tagProfileService;
@@ -91,8 +91,8 @@ public class JournalEntryMyViewService {
             final boolean includeStates
     ) throws Exception {
         final JournalEntryTypePolicy policy = JournalEntryTypePolicy.from(contentType);
-        if (policy.supportsInterpretation()) {
-            interpretationEnricher.enrich(contentType, username, listDto);
+        if (policy.canBeReflectionTarget()) {
+            reflectionEnricher.enrich(contentType, username, listDto);
         }
         relatedEnricher.enrich(contentType, username, listDto);
         if (includeStates) {

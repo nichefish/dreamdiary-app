@@ -31,9 +31,9 @@ public class JournalChapterViewHelper {
         final List<JournalChapterDto> listDto,
         final Map<Integer, JournalState> chapterMap,
         final Map<Integer, JournalState> diaryMap,
-        final Map<Integer, JournalState> interpretationMap
+        final Map<Integer, JournalState> reflectionStateMap
     ) {
-        applyStates(listDto, chapterMap, diaryMap, Map.of(), interpretationMap, Map.of());
+        applyStates(listDto, chapterMap, diaryMap, Map.of(), reflectionStateMap, Map.of());
     }
 
     /**
@@ -43,16 +43,16 @@ public class JournalChapterViewHelper {
      * @param chapterMap entry id 기준 state 맵
      * @param diaryMap diary id 기준 state 맵
      * @param diaryLifecycleMap diary id 기준 lifecycle 맵
-     * @param interpretationMap interpretation id 기준 state 맵
-     * @param interpretationLifecycleMap interpretation id 기준 lifecycle 맵
+     * @param reflectionStateMap reflection id 기준 state 맵
+     * @param reflectionLifecycleMap reflection id 기준 lifecycle 맵
      */
     public static void applyStates(
         final List<JournalChapterDto> listDto,
         final Map<Integer, JournalState> chapterMap,
         final Map<Integer, JournalState> diaryMap,
         final Map<Integer, String> diaryLifecycleMap,
-        final Map<Integer, JournalState> interpretationMap,
-        final Map<Integer, String> interpretationLifecycleMap
+        final Map<Integer, JournalState> reflectionStateMap,
+        final Map<Integer, String> reflectionLifecycleMap
     ) {
 
         if (CollectionUtils.isEmpty(listDto)) return;
@@ -67,8 +67,17 @@ public class JournalChapterViewHelper {
                     JournalEntryViewProjectionHelper.getDiaryEntries(entry),
                     diaryMap,
                     diaryLifecycleMap,
-                    interpretationMap,
-                    interpretationLifecycleMap
+                    reflectionStateMap,
+                    reflectionLifecycleMap
+            );
+
+            // 1급 독립 리플렉션(target 없거나 다른 챕터 target) — 임베드가 아니라 챕터 직속 엔트리라 별도 적용
+            JournalEntryStateViewHelper.applyStates(
+                    JournalEntryViewProjectionHelper.getReflectionEntries(entry),
+                    reflectionStateMap,
+                    reflectionLifecycleMap,
+                    reflectionStateMap,
+                    reflectionLifecycleMap
             );
         }
     }

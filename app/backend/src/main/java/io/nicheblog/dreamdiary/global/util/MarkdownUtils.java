@@ -42,7 +42,8 @@ public class MarkdownUtils {
      * (예: {@code !!__밑줄__!!} → 빨간 span 안에 리터럴 {@code __밑줄__}).</p>
      * <p>AFTER: 중첩 가능 패턴은 매치 그룹에 동일 규칙 집합을 재귀 적용한 뒤 wrap한다.
      * 바깥/안쪽 마커 순서와 무관하게 중첩 HTML이 만들어진다.
-     * 동일 구분자 자기중첩(예: {@code !!a !!b!! c!!})의 non-greedy 한계는 그대로다.</p>
+     * 동일 구분자 자기중첩(예: {@code !!a !!b!! c!!})의 non-greedy 한계는 그대로다.
+     * {@code ((...))} 만 안쪽 단일 괄호 균형으로 닫아 {@code (((본문)))} 을 {@code ((}+{@code (본문)}+{@code ))} 로 취급한다.</p>
      */
     private static String procTextWithGeneratedPlaceholders(final String text, final int maxGroupLength) {
         final List<String> generatedHtmlList = new ArrayList<>();
@@ -92,10 +93,8 @@ public class MarkdownUtils {
             final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
             return "<span class='md-text-muted fw-bold border-end border-2 border-gray-400 pe-5 me-3'>" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
         });
-        part = replaceGeneratedPattern(part, Pattern.compile("\\(\\((.*?)\\)\\)"), maxGroupLength, generatedHtmlList, matcher -> {
-            final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
-            return "<span class='md-text-noti'>" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
-        });
+        // ((...)) 는 안쪽 단일 괄호 ( ) 균형을 보고 닫는다. (((본문))) = (( + (본문) + )).
+        part = replaceDoubleParenBalanced(part, maxGroupLength, generatedHtmlList, depth);
         part = replaceGeneratedPattern(part, Pattern.compile("<@>(.*?\\.)"), maxGroupLength, generatedHtmlList, matcher -> {
             final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);
             return "<span class='md-text-muted'>@" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
@@ -155,6 +154,63 @@ public class MarkdownUtils {
 
     private static String getGeneratedHtmlPlaceholder(final int idx) {
         return Character.toString((char) 0) + "MD_HTML_" + idx + Character.toString((char) 0);
+    }
+
+
+    /**
+     * {@code ((...))} 알림 강조를 치환한다.
+     * 안쪽 단일 괄호 {@code ( )} 가 균형을 이룰 때까지 닫는 {@code ))} 를 찾는다.
+     * 예: {@code (((본문)))} → 본문 {@code (본문)} 전체를 {@code md-text-noti} 로 감싼다.
+     */
+    private static String replaceDoubleParenBalanced(
+            final String source,
+            final int maxGroupLength,
+            final List<String> generatedHtmlList,
+            final int depth
+    ) {
+        if (source == null || source.isEmpty()) return source;
+
+        final StringBuilder buffer = new StringBuilder(source.length());
+        int i = 0;
+        while (i < source.length()) {
+            if (i + 1 < source.length() && source.charAt(i) == '(' && source.charAt(i + 1) == '(') {
+                final int contentStart = i + 2;
+                int j = contentStart;
+                int parenDepth = 0;
+                int closeAt = -1;
+                while (j < source.length()) {
+                    final char ch = source.charAt(j);
+                    if (parenDepth == 0 && ch == ')' && j + 1 < source.length() && source.charAt(j + 1) == ')') {
+                        closeAt = j;
+                        break;
+                    }
+                    if (ch == '(') {
+                        parenDepth++;
+                        j++;
+                        continue;
+                    }
+                    if (ch == ')') {
+                        if (parenDepth > 0) parenDepth--;
+                        j++;
+                        continue;
+                    }
+                    j++;
+                }
+                if (closeAt >= 0) {
+                    final String group = source.substring(contentStart, closeAt);
+                    if (group.length() <= maxGroupLength) {
+                        final String nested = processNestableInline(group, maxGroupLength, generatedHtmlList, depth + 1);
+                        final String replacement = "<span class='md-text-noti'>" + StringEscapeUtils.escapeHtml4(nested) + "</span>";
+                        buffer.append(putGeneratedHtml(generatedHtmlList, replacement));
+                        i = closeAt + 2;
+                        continue;
+                    }
+                }
+            }
+            buffer.append(source.charAt(i));
+            i++;
+        }
+        return buffer.toString();
     }
 
     private static String replaceGeneratedPattern(

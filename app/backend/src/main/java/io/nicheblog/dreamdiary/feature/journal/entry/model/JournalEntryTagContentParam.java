@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
@@ -23,4 +25,7 @@ public class JournalEntryTagContentParam
     private String weekStartDt;
     private String createdBy;
     private String contentType;
+    /** 일기 축 등 복수 contentType IN 집계용. */
+    private List<String> contentTypes;
 }
+

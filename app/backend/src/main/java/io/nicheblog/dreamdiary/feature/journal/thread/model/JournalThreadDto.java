@@ -52,7 +52,7 @@ public class JournalThreadDto
     /**
      * 활성 소속 엔트리 수.
      * <p>
-     * 목록 enrich({@code applyEntryTagSummaries}) 가 소속 entryId 목록 크기로 채운다.
+     * 목록 enrich({@code applyEntryTagSummaries}) 가 소속 집계 쿼리로 채운다.
      * 스레드 자체 필드가 아니라 표시용 파생 값이다.
      * </p>
      */

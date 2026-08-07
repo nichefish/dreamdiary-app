@@ -16,6 +16,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
+import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
@@ -103,6 +104,7 @@ public class AuthRestController {
     private final AuthPolicyQueryService authPolicyQueryService;
     private final AuthSessionPolicyService authSessionPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
+    private final ActiveProfile activeProfile;
 
     /**
      * 인증 정보를 조회한다.
@@ -124,7 +126,7 @@ public class AuthRestController {
             final Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
             final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
 
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo)));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo, activeProfile.getActive())));
         } catch (final JwtException | AuthenticationException e) {
             return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
@@ -295,7 +297,7 @@ public class AuthRestController {
             final Authentication auth = authenticationProvider.authenticate(token);
             final AuthInfo authInfo = (AuthInfo) auth.getPrincipal();
             this.handleJsonLoginSuccess(request, response, authInfo);
-            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo)));
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(AuthUserDto.from(authInfo, activeProfile.getActive())));
         } catch (final AccountNeedsPwResetException e) {
             final String errorMsg = this.getLoginFailureMsg(e);
             this.publishLoginFailureLog(body.getUsername(), e, errorMsg);

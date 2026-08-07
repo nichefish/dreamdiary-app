@@ -27,16 +27,13 @@ public final class AttachableContentStatePolicy {
                 StateKey.REFRNC
         );
         ALLOWED.put(ContentType.JOURNAL_DIARY, EnumSet.copyOf(diaryDreamKeys));
+        // Reflection 은 일기와 같은 표시 선호(접기·중요·참조). 꿈 전용 NHTMR/HALLUC 는 두지 않는다.
+        ALLOWED.put(ContentType.JOURNAL_REFLECTION, EnumSet.copyOf(diaryDreamKeys));
 
         final EnumSet<StateKey> dreamKeys = EnumSet.copyOf(diaryDreamKeys);
         dreamKeys.add(StateKey.NHTMR);
         dreamKeys.add(StateKey.HALLUC);
         ALLOWED.put(ContentType.JOURNAL_DREAM, dreamKeys);
-
-        ALLOWED.put(
-                ContentType.JOURNAL_INTERPRETATION,
-                EnumSet.of(StateKey.COLLAPSED, StateKey.IMPRTC)
-        );
 
         ALLOWED.put(
                 ContentType.JOURNAL_DAY,

@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.attachable.tag.handler;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayTagQuery;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryTagQuery;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTagAxis;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +36,10 @@ public class JournalTagCacheUpdtWorker {
 
         if (isJournalEntryType(resolvedType)) {
             evictJournalEntryCaches(username, yy, mnth, resolvedType);
+            /* Reflection 태그는 일기 축 집계에 합쳐지므로 DIARY 캐시도 비운다. */
+            if (JournalEntryTagAxis.evictsDiaryAxis(resolvedType)) {
+                evictJournalEntryCaches(username, yy, mnth, ContentType.JOURNAL_DIARY);
+            }
         }
     }
 
@@ -78,6 +83,7 @@ public class JournalTagCacheUpdtWorker {
 
     private boolean isJournalEntryType(final ContentType contentType) {
         return ContentType.JOURNAL_DIARY.equals(contentType)
-                || ContentType.JOURNAL_DREAM.equals(contentType);
+                || ContentType.JOURNAL_DREAM.equals(contentType)
+                || ContentType.JOURNAL_REFLECTION.equals(contentType);
     }
 }

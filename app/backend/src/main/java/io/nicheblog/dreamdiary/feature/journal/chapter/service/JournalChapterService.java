@@ -28,6 +28,8 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayReso
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayResolvedAxis;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -48,6 +50,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * JournalChapterService
@@ -90,6 +93,7 @@ public class JournalChapterService
     private final JournalDayService journalDayService;
     private final JournalEntryService journalEntryService;
     private final JournalEntryRepository journalEntryRepository;
+    private final JournalReflectionRepository journalReflectionRepository;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
     private final PrefixContentService prefixContentService;
 
@@ -437,7 +441,7 @@ public class JournalChapterService
             // sortOrder 변경 시에는 목표 위치로 삽입 재배치 후 정규화
             this.getSelf().insert(updatedDto.getJournalDayId(), updatedDto.getId(), postDto.getSortOrder());
         }
-        // DREAM 마지막 규칙을 포함한 최종 정규화
+        // 시스템 요약 맨 앞·DREAM 맨 뒤 규칙을 포함한 최종 정규화
         this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
 
         // 관련 캐시 삭제
@@ -445,7 +449,9 @@ public class JournalChapterService
     }
 
     /**
-     * 삭제 전처리. (override)
+     * 삭제 전처리. 작성자·일자 잠금·Reflection 참조 Block 을 검증한다.
+     * 챕터 내 엔트리를 대상으로 둔 Reflection 이 있으면 삭제를 거부한다(Reference→Block).
+     * Hibernate cascade 는 서비스 preDelete 를 우회하므로 여기서 막는다.
      *
      * @param deletedDto - 삭제된 객체
      */
@@ -455,6 +461,53 @@ public class JournalChapterService
             throw new NotAuthorizedException("common.result.not-owner");
         }
         journalDayResolvedGuard.assertWritableForChapter(deletedDto.getId());
+        assertNoChildEntries(deletedDto.getId());
+        assertNoAttachedReflections(deletedDto.getId());
+    }
+
+    /**
+     * 챕터에 하위 엔트리가 하나라도 있으면 삭제를 Block 한다.
+     *
+     * @param chapterId 삭제 대상 챕터 ID
+     */
+    private void assertNoChildEntries(final Integer chapterId) {
+        if (chapterId == null) return;
+        final List<JournalEntryEntity> entries = journalEntryRepository.findAllByJournalChapterId(chapterId);
+        if (!CollectionUtils.isEmpty(entries)) {
+            log.warn("[JournalChapter] 삭제 Block — 하위 엔트리 존재. chapterId={}, entryCount={}",
+                    chapterId, entries.size());
+            throw new BusinessException("journal.chapter.delete.blocked-by-entries");
+        }
+    }
+
+    /**
+     * 챕터 내 엔트리에 참조 Reflection 이 있으면 삭제를 Block 한다.
+     *
+     * @param chapterId 삭제 대상 챕터 ID
+     */
+    private void assertNoAttachedReflections(final Integer chapterId) {
+        if (chapterId == null) return;
+        final List<JournalEntryEntity> entries = journalEntryRepository.findAllByJournalChapterId(chapterId);
+        if (CollectionUtils.isEmpty(entries)) return;
+
+        final List<Integer> entryIds = entries.stream()
+                .map(JournalEntryEntity::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        final List<ContentType> contentTypes = entries.stream()
+                .map(JournalEntryEntity::getContentType)
+                .filter(StringUtils::isNotBlank)
+                .map(ContentType::get)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        if (entryIds.isEmpty() || contentTypes.isEmpty()) return;
+
+        if (journalReflectionRepository.existsByRefIdInAndRefContentTypeIn(entryIds, contentTypes)) {
+            log.warn("[JournalChapter] 삭제 Block — 챕터 내 엔트리에 참조 Reflection 존재. chapterId={}, entryCount={}",
+                    chapterId, entryIds.size());
+            throw new BusinessException("journal.chapter.delete.blocked-by-reflection");
+        }
     }
 
     /**
@@ -489,6 +542,11 @@ public class JournalChapterService
     
     /**
      * 해당 그룹 전체를 sortOrder = 1부터 다시 정렬한다.
+     * <p>
+     * 고정 배치: 시스템 요약({@code summaryYn=Y})은 항상 맨 앞, DREAM은 항상 맨 뒤.
+     * 일반 책터의 사용자 {@code #} 입력은 이 정규화 뒤 요약 다음 구간에 반영된다.
+     * 예: 요약이 있는 날 일반 책터를 {@code #1}로 저장하면 요약 바로 다음(전체 순번 2)이 된다.
+     * </p>
      *
      * @param journalDayId 정렬을 수행할 상위 키
      */
@@ -498,8 +556,7 @@ public class JournalChapterService
         if (CollectionUtils.isEmpty(list)) return;
 
         list.sort(Comparator
-                // DREAM 챕터는 sortOrder와 무관하게 항상 마지막으로 배치
-                .comparingInt((JournalChapterEntity e) -> e.getChapterType() == ChapterType.DREAM ? 1 : 0)
+                .comparingInt(JournalChapterService::chapterSortBucket)
                 .thenComparingInt((JournalChapterEntity e) -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
                 .thenComparing(JournalChapterEntity::getId));
 
@@ -511,13 +568,18 @@ public class JournalChapterService
     }
 
     /**
-     * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
+     * 책터 정렬 버킷. 0=시스템 요약(맨 앞), 1=일반, 2=DREAM(맨 뒤).
      *
-     * @param journalDayId 정렬을 수행할 상위 키
-     * @param id 게시물 PK
-     * @param targetSortOrder 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     * @param chapter 대상 책터
+     * @return 정렬 버킷
      */
-    @Transactional
+    static int chapterSortBucket(final JournalChapterEntity chapter) {
+        if (chapter == null) return 1;
+        if (StringUtils.equals(chapter.getSummaryYn(), SUMMARY_YN)) return 0;
+        if (chapter.getChapterType() == ChapterType.DREAM) return 2;
+        return 1;
+    }
+
     public void insert(final Integer journalDayId, final Integer id, Integer targetSortOrder) throws Exception {
         final List<JournalChapterDto> list = journalChapterMapper.findAllForReorder(journalDayId);
 
@@ -619,7 +681,7 @@ public class JournalChapterService
 
         // 구 일자 정규화
         this.getSelf().normalizeSortOrder(oldJournalDayId);
-        // 신 일자 정규화 (DREAM 마지막 규칙 포함)
+        // 신 일자 정규화 (시스템 요약 맨 앞·DREAM 맨 뒤 규칙 포함)
         this.getSelf().normalizeSortOrder(newJournalDayId);
 
         // 구 일자 캐시 무효화

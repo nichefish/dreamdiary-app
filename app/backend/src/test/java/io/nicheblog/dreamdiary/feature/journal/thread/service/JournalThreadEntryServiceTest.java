@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryReflectionEnricher;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryStateEnricher;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayViewType;
@@ -65,6 +66,8 @@ class JournalThreadEntryServiceTest {
     private JournalThreadRepository journalThreadRepository;
     @Mock
     private JournalEntryService journalEntryService;
+    @Mock
+    private JournalEntryReflectionEnricher journalEntryReflectionEnricher;
     @Mock
     private JournalEntryStateEnricher journalEntryStateEnricher;
 
@@ -180,7 +183,7 @@ class JournalThreadEntryServiceTest {
     }
 
     /** 상세 엔트리는 일자·원본 인덱스순이며, 인덱스가 같거나 없을 때 ID순으로 고정한다. */
-    /** 소속 엔트리 조회는 정렬을 공용 헬퍼에, lifecycle 병합을 enricher에 위임하고 결과를 반환한다. */
+    /** 소속 엔트리 조회는 정렬·Reflection 교차뷰·lifecycle 병합을 enricher에 위임하고 결과를 반환한다. */
     @Test
     void getEntriesByThreadDelegatesSortAndLifecycleEnrichment() throws Exception {
         when(repository.findAllByThread(FIXTURE_THREAD_ID, FIXTURE_USERNAME)).thenReturn(List.of(
@@ -198,6 +201,7 @@ class JournalThreadEntryServiceTest {
         // 실제 챕터 우선 정렬 검증은 JournalEntryServiceTest.sortByChapterAndEntryOrder* 로 이동했다.
         assertEquals(fetched, result);
         verify(journalEntryService).sortByChapterAndEntryOrder(fetched);
+        verify(journalEntryReflectionEnricher).enrichMixed(fetched);
         verify(journalEntryStateEnricher).enrichLifecycleMixed(fetched);
     }
 

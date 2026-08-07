@@ -12,7 +12,7 @@ public class JournalStateCacheRegistry {
             ContentType.JOURNAL_CHAPTER,
             ContentType.JOURNAL_DIARY,
             ContentType.JOURNAL_DREAM,
-            ContentType.JOURNAL_INTERPRETATION
+            ContentType.JOURNAL_REFLECTION
     );
 
     public static boolean supports(final ContentType contentType) {
@@ -28,7 +28,7 @@ public class JournalStateCacheRegistry {
             case JOURNAL_CHAPTER -> "journalChapterStateMapByUser";
             case JOURNAL_DIARY -> "journalDiaryStateMapByUser";
             case JOURNAL_DREAM -> "journalDreamStateMapByUser";
-            case JOURNAL_INTERPRETATION -> "journalInterpretationStateMapByUser";
+            case JOURNAL_REFLECTION -> "journalReflectionStateMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);
         };
     }
@@ -38,7 +38,7 @@ public class JournalStateCacheRegistry {
             case JOURNAL_CHAPTER -> "journalChapterWeeklyStateMapByUser";
             case JOURNAL_DIARY -> "journalDiaryWeeklyStateMapByUser";
             case JOURNAL_DREAM -> "journalDreamWeeklyStateMapByUser";
-            case JOURNAL_INTERPRETATION -> "journalInterpretationWeeklyStateMapByUser";
+            case JOURNAL_REFLECTION -> "journalReflectionWeeklyStateMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);
         };
     }

@@ -27,11 +27,11 @@ public interface JournalEntryTagRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT new io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
             "FROM JournalEntryTagContentEntity ct " +
-            "INNER JOIN JournalEntryEntity entry ON ct.refId = entry.id AND entry.contentType = :#{#param.contentType} " +
+            "INNER JOIN JournalEntryEntity entry ON ct.refId = entry.id AND entry.contentType IN :#{#param.contentTypes} " +
             "INNER JOIN JournalChapterEntity chapter ON entry.journalChapterId = chapter.id " +
             "INNER JOIN JournalDayEntity day ON chapter.journalDayId = day.id " +
             "WHERE ct.createdBy = :#{#param.createdBy} " +
-            " AND ct.refContentType = :#{#param.contentType} " +
+            " AND ct.refContentType IN :#{#param.contentTypes} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
             " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asLocalDate(#param.weekStartDt)}) " +

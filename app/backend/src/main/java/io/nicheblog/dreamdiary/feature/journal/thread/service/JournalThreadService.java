@@ -15,10 +15,11 @@ import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
-import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.mapstruct.JournalThreadMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateDto;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipStatsProjection;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadMembershipTagProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateProjection;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.Set;
@@ -62,7 +64,6 @@ public class JournalThreadService
     @Getter
     private final JournalThreadRepository repository;
     private final JournalThreadEntryService journalThreadEntryService;
-    private final JournalEntryService journalEntryService;
     private final LifecycleService lifecycleService;
     private final PrefixContentService prefixContentService;
     @Getter
@@ -144,13 +145,11 @@ public class JournalThreadService
 
 
     /**
-     * 페이징 목록 조회 후 소속 엔트리 태그 집계를 붙인다.
+     * 페이징 목록 조회 후 소속 집계·라이프사이클을 붙인다.
      * <p>
-     * 변경 전: 목록 DTO 의 {@code tag} 가 비어 목록 UI 의 태그 영역이 렌더되지 않았다.
-     * 상세({@link #viewDetailPage}) 만 {@link #applyEntryTagSummary} 를 호출했기 때문이다.
-     * 변경 후: 목록도 동일 계약(소속 엔트리 태그 합집합, tagId 중복 제거)을 일괄 적용하고,
-     * 활성 소속 수({@code membershipCount})와 소속 기간({@code firstEntryDate}/{@code lastEntryDate}),
-     * 라이프사이클({@code lifecycle})도 함께 채운다.
+     * 소속 엔트리 태그 합집합({@code tag}), 활성 소속 수({@code membershipCount}),
+     * 소속 기간({@code firstEntryDate}/{@code lastEntryDate})은 집계 쿼리로 채우고,
+     * 라이프사이클은 일괄 병합한다. 엔트리 풀 DTO 로드는 하지 않는다.
      * </p>
      *
      * @param searchParamMap 검색 조건
@@ -285,10 +284,10 @@ public class JournalThreadService
     }
 
     /**
-     * 여러 스레드에 소속 엔트리 태그 집계·활성 소속 수·소속 기간을 일괄 적용한다. (목록 N+1 방지)
+     * 여러 스레드에 소속 엔트리 태그 집계·활성 소속 수·소속 기간을 일괄 적용한다.
      * <p>
-     * 변경 후: 활성 소속 엔트리 {@code stdrdDt} 의 min/max 를 {@code firstEntryDate}/{@code lastEntryDate} 로 채운다.
-     * 추가 쿼리 없이 이미 일괄 조회한 엔트리 DTO 에서 계산한다.
+     * 목록·상세 공통이다. 엔트리 풀 DTO 로드 없이 소속 집계 쿼리 두 번으로
+     * {@code membershipCount}/{@code firstEntryDate}/{@code lastEntryDate}/태그 합집합을 채운다.
      * </p>
      *
      * @param dtoList 대상 스레드 DTO 목록
@@ -303,51 +302,63 @@ public class JournalThreadService
                 .collect(Collectors.toList());
         if (threadIds.isEmpty()) return;
 
-        final Map<Integer, List<Integer>> entryIdsByThread = journalThreadEntryService.getEntryIdsGroupedByThread(threadIds);
-        final Set<Integer> allEntryIds = new HashSet<>();
-        for (final List<Integer> entryIds : entryIdsByThread.values()) {
-            if (CollectionUtils.isEmpty(entryIds)) continue;
-            allEntryIds.addAll(entryIds);
+        final Map<Integer, JournalThreadMembershipStatsProjection> statsByThread = new LinkedHashMap<>();
+        for (final JournalThreadMembershipStatsProjection stats
+                : journalThreadEntryService.getMembershipStatsByThreadIds(threadIds)) {
+            if (stats == null || stats.getThreadId() == null) continue;
+            statsByThread.put(stats.getThreadId(), stats);
         }
 
-        final Map<Integer, JournalEntryDto> entryById = new LinkedHashMap<>();
-        if (!allEntryIds.isEmpty()) {
-            for (final JournalEntryDto entry : journalEntryService.getListDtoByIds(allEntryIds)) {
-                if (entry == null || entry.getId() == null) continue;
-                entryById.put(entry.getId(), entry);
-            }
+        final Map<Integer, Map<Integer, TagContentDto>> tagsByThread = new LinkedHashMap<>();
+        for (final JournalThreadMembershipTagProjection row
+                : journalThreadEntryService.getMembershipTagsByThreadIds(threadIds)) {
+            if (row == null || row.getThreadId() == null || row.getTagId() == null) continue;
+            final Map<Integer, TagContentDto> tagMap = tagsByThread.computeIfAbsent(
+                    row.getThreadId(), ignored -> new LinkedHashMap<>());
+            tagMap.putIfAbsent(row.getTagId(), TagContentDto.builder()
+                    .tagId(row.getTagId())
+                    .name(row.getName())
+                    .ctgr(row.getCtgr())
+                    .build());
         }
 
         for (final JournalThreadDto dto : dtoList) {
             if (dto == null || dto.getId() == null) continue;
-            final List<Integer> entryIds = entryIdsByThread.getOrDefault(dto.getId(), List.of());
-            // 소속 개수는 이미 일괄 조회한 entryId 목록 크기로 채운다 (추가 쿼리 없음).
-            dto.setMembershipCount((long) entryIds.size());
-            final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
-            final List<JournalEntryDto> membershipEntries = new ArrayList<>();
-            for (final Integer entryId : entryIds) {
-                final JournalEntryDto entry = entryById.get(entryId);
-                if (entry == null) continue;
-                membershipEntries.add(entry);
-                final TagCmpstn entryTag = entry.getTag();
-                final List<TagContentDto> tagList = (entryTag == null) ? null : entryTag.getList();
-                if (CollectionUtils.isEmpty(tagList)) continue;
-                for (final TagContentDto tag : tagList) {
-                    if (tag == null || tag.getTagId() == null) continue;
-                    tagMap.putIfAbsent(tag.getTagId(), tag);
-                }
+            final JournalThreadMembershipStatsProjection stats = statsByThread.get(dto.getId());
+            if (stats == null) {
+                dto.setMembershipCount(0L);
+                dto.setFirstEntryDate(null);
+                dto.setLastEntryDate(null);
+            } else {
+                final Number count = stats.getMembershipCount();
+                dto.setMembershipCount(count == null ? 0L : count.longValue());
+                applyMembershipPeriod(dto, stats.getFirstEntryDate(), stats.getLastEntryDate());
             }
             if (dto.getTag() == null) dto.setTag(new TagCmpstn());
+            final Map<Integer, TagContentDto> tagMap = tagsByThread.getOrDefault(dto.getId(), Map.of());
             dto.getTag().setList(new ArrayList<>(tagMap.values()));
-            applyMembershipPeriod(dto, membershipEntries);
         }
     }
 
     /**
-     * 소속 엔트리 기준일의 min/max 를 목록 표시용으로 채운다.
-     * <p>
-     * {@code YYYY-MM-DD} 접두만 비교한다. 유효 일자가 없으면 둘 다 {@code null}.
-     * </p>
+     * 소속 기준일 min/max 를 목록 표시용 문자열로 채운다.
+     *
+     * @param dto 대상 스레드
+     * @param first 최소 기준일
+     * @param last 최대 기준일
+     */
+    static void applyMembershipPeriod(
+            final JournalThreadDto dto,
+            final LocalDate first,
+            final LocalDate last
+    ) {
+        if (dto == null) return;
+        dto.setFirstEntryDate(first == null ? null : first.toString());
+        dto.setLastEntryDate(last == null ? null : last.toString());
+    }
+
+    /**
+     * 소속 엔트리 DTO 목록에서 기준일 min/max 를 계산한다. (단위 테스트용)
      *
      * @param dto 대상 스레드
      * @param membershipEntries 활성 소속 엔트리

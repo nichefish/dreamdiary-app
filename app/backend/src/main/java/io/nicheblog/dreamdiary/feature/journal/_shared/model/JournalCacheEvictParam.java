@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -161,23 +160,6 @@ public class JournalCacheEvictParam {
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
-                .build();
-    }
-
-    /**
-     * 해석 DTO 기준 캐시 무효화 파라미터 생성.
-     *
-     * @param dto {@link JournalInterpretationDto}
-     * @return {@link JournalCacheEvictParam}
-     */
-    public static JournalCacheEvictParam of(final JournalInterpretationDto dto) throws Exception {
-        return JournalCacheEvictParam.builder()
-                .createdBy(dto.getCreatedBy())
-                .id(dto.getId())
-                .journalDayId(dto.getJournalDayId())
-                .yy(dto.getYy())
-                .mnth(dto.getMnth())
-                .weekStartDt(dto.getStdrdDt() == null ? null : DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
 

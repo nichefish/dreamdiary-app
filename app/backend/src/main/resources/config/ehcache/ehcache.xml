@@ -97,9 +97,8 @@
     <cache alias="journalDreamWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- ?? ?? -->
-    <cache alias="journalInterpretationDetailDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalInterpretationStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalInterpretationWeeklyStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalReflectionStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalReflectionWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- ?? ?? -->
     <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />

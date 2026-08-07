@@ -66,14 +66,14 @@ public interface ApiUrl {
     String JOURNAL_ENTRIES = Prefix.API + "/journal/entries";
     String JOURNAL_ENTRY = Prefix.API + "/journal/entry/{id}";
     String JOURNAL_ENTRIES_EXPORT = Prefix.API + "/journal/entries/export";
+
+    /** 저널 Reflection(Commentary) 쓰기 — 별도 Aggregate(journal_reflection). 읽기는 대상 엔트리 embed 로 실린다. */
+    String JOURNAL_REFLECTIONS = Prefix.API + "/journal/reflections";
+    String JOURNAL_REFLECTION = Prefix.API + "/journal/reflection/{id}";
     /** 저널 엔트리 태그(통합) */
     String JOURNAL_ENTRY_TAGS = Prefix.API + "/journal/entry/tags";
     String JOURNAL_ENTRY_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/entry/tag/group-list";
     String JOURNAL_ENTRY_TAG_CATEGORIES = Prefix.API + "/journal/entry/tag/categories";
-    /** 저널 해석 */
-    String JOURNAL_INTERPRETATIONS = Prefix.API + "/journal/interpretations";
-    String JOURNAL_INTERPRETATION = Prefix.API + "/journal/interpretation/{id}";
-    String JOURNAL_INTERPRETATION_SET_COLLAPSE_AJAX = Prefix.API + "/journal/interpretation/set-collapse";
 
     /** 저널 할일 */
     String JOURNAL_TODOS = Prefix.API + "/journal/todos";

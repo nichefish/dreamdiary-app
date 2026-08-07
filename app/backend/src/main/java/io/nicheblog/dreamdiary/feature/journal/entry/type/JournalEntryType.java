@@ -20,7 +20,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public enum JournalEntryType {
     DIARY("JOURNAL_DIARY", "DIARY"),
-    DREAM("JOURNAL_DREAM", "DREAM");
+    DREAM("JOURNAL_DREAM", "DREAM"),
+    REFLECTION("JOURNAL_REFLECTION", "REFLECTION");
 
     private final String contentType;
     private final Set<String> aliases;

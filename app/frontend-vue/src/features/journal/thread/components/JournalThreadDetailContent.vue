@@ -82,6 +82,57 @@
     </div>
     <!--end::소속 엔트리 태그-->
 
+    <!--begin::연관 스레드 목록 — 설계 §3: 스레드 피커 + 연관 목록 표시-->
+    <div class="separator separator-dashed border-gray-200 my-6"></div>
+    <div class="d-flex align-items-center gap-2 mb-3 px-5">
+      <i class="bi bi-share text-gray-700"></i>
+      <span class="fs-6 fw-bold text-gray-800">{{ t("journal.thread.related.title") }}</span>
+      <span v-if="store.detailRelatedThreads.length > 0" class="badge badge-light-secondary">{{ store.detailRelatedThreads.length }}</span>
+      <!--begin::연관 스레드 추가 버튼-->
+      <button
+        v-if="store.detailModel?.id"
+        type="button"
+        class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary ms-auto"
+        :title="t('journal.thread.related.add.tooltip')"
+        @click="openRelatedThreadPicker"
+      >
+        <i class="bi bi-plus fs-7"></i>
+      </button>
+      <!--end::연관 스레드 추가 버튼-->
+    </div>
+    <div v-if="store.detailRelatedThreadsLoading" class="text-muted fs-7 px-5 py-2">{{ t("common.loading") }}</div>
+    <div v-else-if="store.detailRelatedThreads.length === 0" class="text-muted fs-7 px-5 py-2">{{ t("journal.thread.related.empty") }}</div>
+    <div v-else class="d-flex flex-column gap-1 px-3">
+      <div
+        v-for="rel in store.detailRelatedThreads"
+        :key="'thread-related-' + String(rel.id)"
+        class="d-flex align-items-center gap-2 py-1"
+      >
+        <i class="bi bi-diagram-3 fs-8 text-gray-500"></i>
+        <span class="fs-7 text-gray-800 flex-grow-1">{{ rel.targetTitle ?? String(rel.targetId) }}</span>
+        <button
+          v-if="rel.targetId != null"
+          type="button"
+          class="btn btn-xs btn-icon"
+          :class="isRelatedThreadIncluded(rel.targetId) ? 'btn-light-primary' : 'btn-light'"
+          :style="isRelatedThreadIncluded(rel.targetId) ? { color: accentForRelatedThread(rel.targetId), borderColor: accentForRelatedThread(rel.targetId) } : undefined"
+          :title="t('journal.thread.related.toggle.tooltip')"
+          @click="onToggleRelatedThreadInclude(rel.targetId)"
+        >
+          <i class="bi bi-intersect fs-8"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-xs btn-icon btn-light btn-active-color-danger"
+          :title="t('journal.thread.related.remove.tooltip')"
+          @click="onRemoveRelatedThread(rel)"
+        >
+          <i class="bi bi-x fs-8"></i>
+        </button>
+      </div>
+    </div>
+    <!--end::연관 스레드 목록-->
+
     <!--begin::소속 엔트리 목록-->
     <div class="separator separator-dashed border-gray-200 my-6"></div>
     <div class="d-flex align-items-center gap-2 mb-3 px-5">
@@ -102,13 +153,29 @@
           </div>
         </div>
         <!--end::일자 헤더-->
-        <JournalEntryItem
-          v-for="entry in group.entries"
-          :key="'thread-entry-' + entry.id"
-          :entry="entry"
-          :is-dream="entry.contentType === 'JOURNAL_DREAM'"
-          :disable-lifecycle-collapse="true"
-        />
+        <template v-for="entry in group.entries" :key="'thread-entry-' + entry.id">
+          <!--begin::출처 칩 — 빌려온 엔트리만 (설계 §2 결정 4)-->
+          <div class="thread-synth-entry">
+            <div v-if="entry.sourceThreadId != null" class="thread-synth-source px-1 mb-1">
+              <span
+                class="badge fs-8 fw-semibold thread-synth-source__chip"
+                :style="{
+                  backgroundColor: accentForRelatedThread(entry.sourceThreadId),
+                  borderColor: accentForRelatedThread(entry.sourceThreadId),
+                  color: '#fff',
+                }"
+              >
+                <i class="bi bi-link-45deg me-1"></i>{{ resolveRelatedThreadTitle(entry.sourceThreadId) }}
+              </span>
+            </div>
+            <JournalEntryItem
+              :entry="entry"
+              :is-dream="entry.contentType === 'JOURNAL_DREAM'"
+              :disable-lifecycle-collapse="true"
+            />
+          </div>
+          <!--end::출처 칩-->
+        </template>
       </template>
     </div>
     <!--end::소속 엔트리 목록-->
@@ -148,6 +215,9 @@
       ></div>
     </div>
     <!--end::댓글 영역-->
+    <!--begin::스레드 피커 모달-->
+    <JournalThreadPickerModal />
+    <!--end::스레드 피커 모달-->
   </div>
 </template>
 
@@ -155,12 +225,13 @@
 import { computed, watch } from "vue";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import JournalEntryItem from "@/features/journal/entry/components/JournalEntryItem.vue";
-import type { JournalEntryDto } from "@/features/journal/stores/journal";
+import type { JournalEntryDto, RelatedContentItem } from "@/features/journal/stores/journal";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { formatThreadMembershipPeriod } from "@/features/journal/utils/threadMembershipPeriod";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import JournalThreadPickerModal from "../modals/JournalThreadPickerModal.vue";
 
 const store = useJournalThreadStore();
 const attachableStore = useAttachableModalStore();
@@ -280,4 +351,85 @@ function openCommentList(): void {
   if (!id) return;
   void attachableStore.openCommentList(id, threadContentType.value);
 }
+
+/** 빌려온 엔트리 출처 칩 색 — 스레드 ID로 팔레트 고정 */
+const THREAD_SYNTH_ACCENTS = [
+  "#009ef7",
+  "#7239ea",
+  "#50cd89",
+  "#ffc700",
+  "#f1416c",
+  "#181c32",
+] as const;
+
+/**
+ * 연관 스레드 ID에 대응하는 합성 강조색을 반환한다.
+ *
+ * @param relatedThreadId 연관 스레드 ID
+ * @returns CSS 색상 문자열
+ */
+function accentForRelatedThread(relatedThreadId: number): string {
+  const idx = Math.abs(relatedThreadId) % THREAD_SYNTH_ACCENTS.length;
+  return THREAD_SYNTH_ACCENTS[idx];
+}
+
+/**
+ * 연관 스레드 제목을 detailRelatedThreads 목록에서 해석한다.
+ * 빌려온 엔트리의 출처 칩 표시에 사용한다.
+ *
+ * @param sourceThreadId 출처 스레드 ID
+ * @returns 스레드 제목. 목록에 없으면 ID 문자열 반환.
+ */
+function resolveRelatedThreadTitle(sourceThreadId: number): string {
+  const rel = store.detailRelatedThreads.find((r) => r.targetId === sourceThreadId);
+  return rel?.targetTitle ?? String(sourceThreadId);
+}
+
+/**
+ * 연관 스레드 추가 모달 열기.
+ */
+function openRelatedThreadPicker(): void {
+  store.openPicker();
+}
+
+/**
+ * 연관 스레드 행의 뷰 합성 토글.
+ *
+ * @param relatedThreadId 연관 스레드 ID
+ */
+function isRelatedThreadIncluded(relatedThreadId: number): boolean {
+  return store.detailIncludedRelatedThreadIds.includes(relatedThreadId);
+}
+
+/**
+ * 연관 스레드 행의 뷰 합성 토글을 전환한다.
+ *
+ * @param relatedThreadId 연관 스레드 ID
+ */
+async function onToggleRelatedThreadInclude(relatedThreadId: number): Promise<void> {
+  await store.toggleRelatedThreadInclude(relatedThreadId);
+}
+
+/**
+ * 연관 스레드 제거.
+ *
+ * @param rel 삭제할 연관 항목
+ */
+async function onRemoveRelatedThread(rel: { id?: number; targetTitle?: string; targetId?: number }): Promise<void> {
+  const baseThreadId = store.detailModel?.id;
+  if (!baseThreadId || !rel.id) return;
+  await store.removeRelatedThread(baseThreadId, rel.id);
+}
 </script>
+
+<style scoped>
+/* 빌려온(연관) 엔트리: 채워진 출처 칩만으로 base와 구분 */
+.thread-synth-entry {
+  margin-top: 0.25rem;
+}
+
+.thread-synth-source__chip {
+  border: 1px solid transparent;
+  letter-spacing: 0;
+}
+</style>

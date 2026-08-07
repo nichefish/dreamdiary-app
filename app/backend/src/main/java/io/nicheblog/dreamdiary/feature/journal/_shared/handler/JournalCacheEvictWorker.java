@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.feature.journal.annual.service.strategy.JournalAn
 import io.nicheblog.dreamdiary.feature.journal.chapter.service.strategy.JournalChapterCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.day.service.strategy.JournalDayCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.strategy.JournalEntryCacheEvictor;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.service.strategy.JournalInterpretationCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.todo.service.strategy.JournalTodoCacheEvictor;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ public class JournalCacheEvictWorker {
     private final JournalDayCacheEvictor journalDayCacheEvictor;
     private final JournalChapterCacheEvictor journalChapterCacheEvictor;
     private final JournalEntryCacheEvictor journalEntryCacheEvictor;
-    private final JournalInterpretationCacheEvictor journalInterpretationCacheEvictor;
     private final JournalTodoCacheEvictor journalTodoCacheEvictor;
     private final JournalAnnualCacheEvictor journalAnnualCacheEvictor;
     private final JournalAnnualReviewCacheEvictor journalAnnualReviewCacheEvictor;
@@ -50,7 +48,8 @@ public class JournalCacheEvictWorker {
         evictorMap.put(ContentType.JOURNAL_CHAPTER, journalChapterCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_DIARY, journalEntryCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_DREAM, journalEntryCacheEvictor);
-        evictorMap.put(ContentType.JOURNAL_INTERPRETATION, journalInterpretationCacheEvictor);
+        /* Reflection 도 Entry 이므로 동일 evictor 로 일자·챕터·태그 캐시를 비운다. */
+        evictorMap.put(ContentType.JOURNAL_REFLECTION, journalEntryCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_TODO, journalTodoCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_ANNUAL, journalAnnualCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_ANNUAL_REVIEW, journalAnnualReviewCacheEvictor);
@@ -66,7 +65,7 @@ public class JournalCacheEvictWorker {
                 ContentType.JOURNAL_CHAPTER,
                 ContentType.JOURNAL_DIARY,
                 ContentType.JOURNAL_DREAM,
-                ContentType.JOURNAL_INTERPRETATION,
+                ContentType.JOURNAL_REFLECTION,
                 ContentType.JOURNAL_TODO,
                 ContentType.JOURNAL_ANNUAL,
                 ContentType.JOURNAL_ANNUAL_REVIEW

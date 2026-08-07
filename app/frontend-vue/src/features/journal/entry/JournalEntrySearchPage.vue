@@ -252,7 +252,7 @@
       @prepare-success="onEntrySavePrepare"
       @success="onEntrySaveSuccess"
     />
-    <JournalInterpretationRegistModal />
+    <JournalReflectionRegistModal />
     <CommentRegistModal />
     <CommentListModal />
     <HistoryModal @success="onHistorySuccess" />
@@ -289,7 +289,7 @@ import {
 } from "@/features/journal/utils/entrySearchQuery";
 import JournalEntryItem from "./components/JournalEntryItem.vue";
 import JournalEntryRegistModal from "./modals/JournalEntryRegistModal.vue";
-import JournalInterpretationRegistModal from "../interpretation/modals/JournalInterpretationRegistModal.vue";
+import JournalReflectionRegistModal from "../reflection/modals/JournalReflectionRegistModal.vue";
 import CommentRegistModal from "../shared/modals/CommentRegistModal.vue";
 import CommentListModal from "@/features/attachable/CommentListModal.vue";
 import HistoryModal from "@/features/attachable/HistoryModal.vue";
@@ -836,9 +836,5 @@ onScopeDispose(unregisterSearchHost);
 
 .journal-entry-search-input {
   max-width: 28rem;
-}
-
-.journal-entry-search-page :deep(.journal-interpretation-item) {
-  margin-top: 0.35rem !important;
 }
 </style>

@@ -45,10 +45,14 @@ public class JournalChapterSpec
         final List<Order> order = new ArrayList<>();
         final Join<JournalChapterEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
         order.add(builder.desc(journalDayJoin.get("journalDate")));
-        // 동일 일자(또는 동일 조회 묶음) 내: DREAM은 마지막, 그 외는 sort_order 기준
+        // 동일 일자 내: 시스템 요약 맨 앞 → 일반 → DREAM 맨 뒤, 그 안에서는 sort_order
+        final Expression<Integer> summaryFirstRank = builder.<Integer>selectCase()
+                .when(builder.equal(root.get("summaryYn"), "Y"), builder.literal(0))
+                .otherwise(builder.literal(1));
         final Expression<Integer> dreamLastRank = builder.<Integer>selectCase()
                 .when(builder.equal(root.get("chapterType"), ChapterType.DREAM), builder.literal(1))
                 .otherwise(builder.literal(0));
+        order.add(builder.asc(summaryFirstRank));
         order.add(builder.asc(dreamLastRank));
         order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);

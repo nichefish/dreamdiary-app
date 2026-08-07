@@ -46,12 +46,12 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> chapterMap = getStateMap(cacheKey, ContentType.JOURNAL_CHAPTER, false);
         final Map<Integer, JournalState> diaryMap = getStateMap(cacheKey, ContentType.JOURNAL_DIARY, false);
         final Map<Integer, JournalState> dreamMap = getStateMap(cacheKey, ContentType.JOURNAL_DREAM, false);
-        final Map<Integer, JournalState> interpretationMap = getStateMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
+        final Map<Integer, JournalState> reflectionStateMap = getStateMap(cacheKey, ContentType.JOURNAL_REFLECTION, false);
         final Map<Integer, String> diaryLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DIARY, false);
         final Map<Integer, String> dreamLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DREAM, false);
-        final Map<Integer, String> interpretationLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
+        final Map<Integer, String> reflectionLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_REFLECTION, false);
 
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, diaryLifecycleMap, dreamLifecycleMap, interpretationLifecycleMap, searchParam);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, reflectionStateMap, diaryLifecycleMap, dreamLifecycleMap, reflectionLifecycleMap, searchParam);
     }
 
     /**
@@ -73,12 +73,12 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> chapterMap = getStateMap(cacheKey, ContentType.JOURNAL_CHAPTER, true);
         final Map<Integer, JournalState> diaryMap = getStateMap(cacheKey, ContentType.JOURNAL_DIARY, true);
         final Map<Integer, JournalState> dreamMap = getStateMap(cacheKey, ContentType.JOURNAL_DREAM, true);
-        final Map<Integer, JournalState> interpretationMap = getStateMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, true);
+        final Map<Integer, JournalState> reflectionStateMap = getStateMap(cacheKey, ContentType.JOURNAL_REFLECTION, true);
         final Map<Integer, String> diaryLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DIARY, true);
         final Map<Integer, String> dreamLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DREAM, true);
-        final Map<Integer, String> interpretationLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, true);
+        final Map<Integer, String> reflectionLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_REFLECTION, true);
 
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, diaryLifecycleMap, dreamLifecycleMap, interpretationLifecycleMap, searchParam);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, reflectionStateMap, diaryLifecycleMap, dreamLifecycleMap, reflectionLifecycleMap, searchParam);
     }
 
     /**
@@ -95,17 +95,17 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> chapterMap = getStateMap(cacheKey, ContentType.JOURNAL_CHAPTER, false);
         final Map<Integer, JournalState> diaryMap = getStateMap(cacheKey, ContentType.JOURNAL_DIARY, false);
         final Map<Integer, JournalState> dreamMap = getStateMap(cacheKey, ContentType.JOURNAL_DREAM, false);
-        final Map<Integer, JournalState> interpretationMap = getStateMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
+        final Map<Integer, JournalState> reflectionStateMap = getStateMap(cacheKey, ContentType.JOURNAL_REFLECTION, false);
         final Map<Integer, String> diaryLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DIARY, false);
         final Map<Integer, String> dreamLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_DREAM, false);
-        final Map<Integer, String> interpretationLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_INTERPRETATION, false);
+        final Map<Integer, String> reflectionLifecycleMap = getLifecycleMap(cacheKey, ContentType.JOURNAL_REFLECTION, false);
 
         final List<JournalDayDto> listDto = List.of(journalDay);
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, diaryLifecycleMap, dreamLifecycleMap, interpretationLifecycleMap);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, reflectionStateMap, diaryLifecycleMap, dreamLifecycleMap, reflectionLifecycleMap);
     }
 
     /**
-     * 캐시에 저장된 chapter/diary/dream/interpretation state와 lifecycle 값을 일자 트리에 반영한다.
+     * 캐시에 저장된 chapter/diary/dream/reflection state와 lifecycle 값을 일자 트리에 반영한다.
      *
      * @param listDto 일자 목록 DTO
      * @param chapterMap chapter id 기준 state 맵
@@ -116,14 +116,14 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> chapterMap,
         final Map<Integer, JournalState> diaryMap,
         final Map<Integer, JournalState> dreamMap,
-        final Map<Integer, JournalState> interpretationMap,
+        final Map<Integer, JournalState> reflectionStateMap,
         final Map<Integer, String> diaryLifecycleMap,
         final Map<Integer, String> dreamLifecycleMap,
-        final Map<Integer, String> interpretationLifecycleMap
+        final Map<Integer, String> reflectionLifecycleMap
     ) {
         for (JournalDayDto day : listDto) {
-            JournalChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
-            applyDreamStatesForDay(day, dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
+            JournalChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, reflectionStateMap, reflectionLifecycleMap);
+            applyDreamStatesForDay(day, dreamMap, dreamLifecycleMap, reflectionStateMap, reflectionLifecycleMap);
         }
     }
 
@@ -140,20 +140,20 @@ public final class JournalDayViewHelper {
         final Map<Integer, JournalState> chapterMap,
         final Map<Integer, JournalState> diaryMap,
         final Map<Integer, JournalState> dreamMap,
-        final Map<Integer, JournalState> interpretationMap,
+        final Map<Integer, JournalState> reflectionStateMap,
         final Map<Integer, String> diaryLifecycleMap,
         final Map<Integer, String> dreamLifecycleMap,
-        final Map<Integer, String> interpretationLifecycleMap,
+        final Map<Integer, String> reflectionLifecycleMap,
         final JournalDaySearchParam searchParam
     ) {
         for (JournalDayDto day : listDto) {
 
             if (searchParam.isShowDiaries()) {
-                JournalChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, interpretationMap, interpretationLifecycleMap);
+                JournalChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, diaryLifecycleMap, reflectionStateMap, reflectionLifecycleMap);
             }
 
             if (searchParam.isShowDreams()) {
-                applyDreamStatesForDay(day, dreamMap, dreamLifecycleMap, interpretationMap, interpretationLifecycleMap);
+                applyDreamStatesForDay(day, dreamMap, dreamLifecycleMap, reflectionStateMap, reflectionLifecycleMap);
             }
         }
     }
@@ -162,8 +162,8 @@ public final class JournalDayViewHelper {
             final JournalDayDto day,
             final Map<Integer, JournalState> dreamMap,
             final Map<Integer, String> dreamLifecycleMap,
-            final Map<Integer, JournalState> interpretationMap,
-            final Map<Integer, String> interpretationLifecycleMap
+            final Map<Integer, JournalState> reflectionStateMap,
+            final Map<Integer, String> reflectionLifecycleMap
     ) {
         if (day == null || CollectionUtils.isEmpty(day.getJournalDreamSectionList())) return;
         for (final JournalDreamSectionDto section : day.getJournalDreamSectionList()) {
@@ -172,14 +172,14 @@ public final class JournalDayViewHelper {
                     section.getEntries(),
                     dreamMap,
                     dreamLifecycleMap,
-                    interpretationMap,
-                    interpretationLifecycleMap
+                    reflectionStateMap,
+                    reflectionLifecycleMap
             );
         }
     }
 
     /**
-     * chapter가 접힌 상태일 때 하위 일기의 태그를 모아 chapter 요약 태그 목록에 주입한다.
+     * chapter가 접힌 상태일 때 하위 일기 축(DIARY + Reflection) 태그를 모아 chapter 요약 태그 목록에 주입한다.
      *
      * @param listDto 일자 목록 DTO
      */
@@ -191,12 +191,16 @@ public final class JournalDayViewHelper {
             if (CollectionUtils.isEmpty(day.getJournalChapterList())) continue;
 
             for (final JournalChapterDto chapter : day.getJournalChapterList()) {
-                final List<JournalEntryDto> diaryEntries = JournalEntryViewProjectionHelper.getDiaryEntries(chapter);
-                if (CollectionUtils.isEmpty(diaryEntries)) continue;
+                /* 일기 축: DIARY 엔트리 + 같은 챕터의 Reflection(독립 포함) 태그를 합친다. */
+                final List<JournalEntryDto> diaryAxisEntries = new ArrayList<>();
+                diaryAxisEntries.addAll(JournalEntryViewProjectionHelper.getDiaryEntries(chapter));
+                diaryAxisEntries.addAll(JournalEntryViewProjectionHelper.getEntriesByType(chapter, ContentType.JOURNAL_REFLECTION));
+                if (CollectionUtils.isEmpty(diaryAxisEntries)) continue;
 
                 final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
-                for (final JournalEntryDto diary : diaryEntries) {
-                    final List<TagContentDto> tagList = diary.getTag().getList();
+                for (final JournalEntryDto entry : diaryAxisEntries) {
+                    if (entry.getTag() == null) continue;
+                    final List<TagContentDto> tagList = entry.getTag().getList();
                     if (CollectionUtils.isEmpty(tagList)) continue;
 
                     for (final TagContentDto tag : tagList) {

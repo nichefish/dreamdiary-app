@@ -33,6 +33,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypeResolver;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.feature.journal.entry.spec.JournalEntrySpec;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityQueueService;
@@ -81,6 +82,7 @@ public class JournalEntryService
     private final JournalEntryEntityRefSyncService journalEntryEntityRefSyncService;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
     private final PrefixContentService prefixContentService;
+    private final JournalReflectionRepository journalReflectionRepository;
 
     /**
      * ref(id + contentType) 기반으로 엔트리를 안전 조회한다.
@@ -246,7 +248,8 @@ public class JournalEntryService
     }
 
     /**
-     * 챕터 타입 기반으로 엔트리를 등록한다.
+     * 엔트리를 등록한다.
+     * Reflection은 DTO contentType을 존중하고, DIARY/DREAM은 챕터 타입에서 역산한다.
      *
      * @param dto 저장 DTO
      * @param request 멀티파트 요청
@@ -255,7 +258,7 @@ public class JournalEntryService
      */
     @Transactional
     public ServiceResponse regist(final JournalEntryPostDto dto, final MultipartHttpServletRequest request) throws Exception {
-        final ContentType contentType = typeResolver.resolveByChapterId(dto.getJournalChapterId());
+        final ContentType contentType = typeResolver.resolveForRegist(dto.getJournalChapterId(), dto.getContentType());
         return this.regist(contentType, dto, request);
     }
 
@@ -410,7 +413,7 @@ public class JournalEntryService
     @Override
     public void preRegist(final JournalEntryPostDto registDto) {
         final JournalEntryTypePolicy policy = policyResolver.resolve(registDto);
-        assertChapterForEntry(policy, registDto.getJournalChapterId());
+        assertChapterForEntry(policy, registDto.getJournalChapterId(), registDto.getRefId());
         journalDayResolvedGuard.assertWritableForEntry(registDto.getJournalChapterId(), policy.contentType);
         JournalDreamerFieldHelper.applyDreamerFieldsFromPost(registDto, policy.contentType);
         registDto.setSortOrder(journalEntryOrderService.getNextSortOrder(registDto.getJournalChapterId(), policy.contentType));
@@ -455,7 +458,7 @@ public class JournalEntryService
         }
 
         final Integer journalChapterId = policy.resolveModifiedChapterId(modifyDto.getJournalChapterId(), modifyEntity.getJournalChapter().getId());
-        assertChapterForEntry(policy, journalChapterId);
+        assertChapterForEntry(policy, journalChapterId, null);
         journalDayResolvedGuard.assertWritableForEntry(journalChapterId, policy.contentType);
         modifyDto.setIsSortOrderChanged(isSortOrderChanged(modifyDto, modifyEntity));
         if (policy.supportsChapterChange()) {
@@ -468,7 +471,8 @@ public class JournalEntryService
     }
 
     /**
-     * 삭제 전 작성자 권한을 검증한다.
+     * 삭제 전 작성자 권한·일자 잠금·Reflection 참조 Block 을 검증한다.
+     * 이 엔트리를 대상으로 둔 Reflection 이 있으면 삭제를 거부한다(Reference→Block).
      *
      * @param deletedDto 삭제 대상 DTO
      */
@@ -479,6 +483,14 @@ public class JournalEntryService
         }
         final JournalEntryTypePolicy policy = policyResolver.resolve(deletedDto);
         journalDayResolvedGuard.assertWritableForEntry(deletedDto.getJournalChapterId(), policy.contentType);
+        if (journalReflectionRepository.existsByRefIdAndRefContentType(deletedDto.getKey(), policy.contentType)) {
+            log.warn(
+                    "[JournalEntry] 삭제 Block — 참조 Reflection 존재. id={}, contentType={}",
+                    deletedDto.getKey(),
+                    policy.contentType
+            );
+            throw new BusinessException("journal.entry.delete.blocked-by-reflection");
+        }
     }
 
     /**
@@ -684,9 +696,33 @@ public class JournalEntryService
      * @param policy 엔트리 정책
      * @param journalChapterId 챕터 ID
      */
-    private void assertChapterForEntry(final JournalEntryTypePolicy policy, final Integer journalChapterId) {
+    /**
+     * 엔트리 소속 챕터 유형을 검증한다.
+     * 독립 Reflection({@code refId} null)은 DIARY·NOTE 챕터만 허용한다(DREAM 제외).
+     * 딸린 Reflection은 target 교차뷰용으로 기존처럼 챕터 유형을 제한하지 않는다.
+     *
+     * @param policy 엔트리 타입 정책
+     * @param journalChapterId 소속 챕터 ID
+     * @param reflectionRefId Reflection target ID. 비-Reflection이면 무시. 독립이면 null
+     */
+    private void assertChapterForEntry(
+            final JournalEntryTypePolicy policy,
+            final Integer journalChapterId,
+            final Integer reflectionRefId
+    ) {
         final JournalChapterEntity chapter = journalChapterRepository.findById(journalChapterId)
                 .orElseThrow(() -> new BusinessException("journal.chapter.not-found"));
+        if (policy.contentType == ContentType.JOURNAL_REFLECTION) {
+            if (reflectionRefId == null) {
+                final ChapterType chapterType = chapter.getChapterType();
+                if (chapterType != ChapterType.DIARY && chapterType != ChapterType.NOTE) {
+                    log.warn("[JournalEntry.chapter] 독립 Reflection은 DIARY/NOTE 챕터만 허용. chapterId={}, chapterType={}",
+                            journalChapterId, chapterType);
+                    throw new BusinessException("journal.entry.invalid-chapter-type");
+                }
+            }
+            return;
+        }
         if (chapter.getChapterType() == ChapterType.NOTE
                 && policy.contentType == ContentType.JOURNAL_DIARY) {
             return;

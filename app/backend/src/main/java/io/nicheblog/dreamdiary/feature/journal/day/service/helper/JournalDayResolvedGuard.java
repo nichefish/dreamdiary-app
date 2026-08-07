@@ -9,8 +9,6 @@ import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepo
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDayResolvedAxis;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
-import io.nicheblog.dreamdiary.feature.journal.interpretation.repository.jpa.JournalInterpretationRepository;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,7 +34,6 @@ public class JournalDayResolvedGuard {
     private final JournalDayRepository journalDayRepository;
     private final JournalChapterRepository journalChapterRepository;
     private final JournalEntryRepository journalEntryRepository;
-    private final JournalInterpretationRepository journalInterpretationRepository;
 
     /**
      * 일자 ID + 축으로 쓰기 가능 여부를 검증한다.
@@ -83,6 +80,8 @@ public class JournalDayResolvedGuard {
      * @param contentType 엔트리 컨텐츠 타입
      */
     public void assertWritableForEntry(final Integer journalChapterId, final ContentType contentType) {
+        // Reflection 은 일자 완결축 밖이라 어느 축 잠금에도 걸리지 않는다. (규칙 11)
+        if (contentType == ContentType.JOURNAL_REFLECTION) return;
         if (contentType == ContentType.JOURNAL_DREAM) {
             if (journalChapterId == null) return;
             final Integer dayId = journalChapterRepository.findById(journalChapterId)
@@ -118,11 +117,8 @@ public class JournalDayResolvedGuard {
                 if (entry == null || entry.getJournalChapter() == null) return;
                 assertWritableForEntry(entry.getJournalChapter().getId(), refContentType);
             }
-            case JOURNAL_INTERPRETATION -> {
-                final JournalInterpretationEntity interpretation = journalInterpretationRepository.findById(refId).orElse(null);
-                if (interpretation == null) return;
-                assertWritableForRef(interpretation.getRefId(), interpretation.getRefContentType());
-            }
+            case JOURNAL_REFLECTION -> { /* Reflection 은 완결축 밖: 잠금 없음 (규칙 11) */ }
+            case JOURNAL_THREAD -> { /* 스레드는 일자 완결축 밖: 잠금 없음 (thread-relation 설계 §5) */ }
             default -> { /* 저널 외·일자 자체는 무시 */ }
         }
     }

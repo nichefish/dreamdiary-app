@@ -31,6 +31,26 @@ public interface JournalEntryRepository
     List<JournalEntryEntity> findAllByIdInAndContentTypeIn(Collection<Integer> idList, Collection<String> contentTypeList);
 
     /**
+     * 콘텐츠 타입과 target 참조 ID 집합으로 엔트리를 조회한다.
+     * Reflection 역참조 로드에 쓴다 (target 을 가리키는 REFLECTION 행 조회).
+     *
+     * @param contentType 콘텐츠 타입 (REFLECTION)
+     * @param refIdList target 엔트리 ID 목록
+     * @return 엔트리 목록
+     */
+    List<JournalEntryEntity> findAllByContentTypeAndRefIdIn(String contentType, Collection<Integer> refIdList);
+
+
+    /**
+     * 챕터에 속한 엔트리 목록을 조회한다.
+     * 챕터 삭제 Block(참조 Reflection 검사)에 쓴다.
+     *
+     * @param journalChapterId 챕터 ID
+     * @return 엔트리 목록
+     */
+    List<JournalEntryEntity> findAllByJournalChapterId(Integer journalChapterId);
+
+    /**
      * 챕터/콘텐츠 타입 기준으로 순번 오름차순 목록을 조회한다.
      *
      * @param journalChapterId 챕터 ID
@@ -47,4 +67,5 @@ public interface JournalEntryRepository
      * @return 조회 결과
      */
     Optional<JournalEntryEntity> findFirstByJournalChapterIdAndContentTypeOrderBySortOrderDesc(Integer journalChapterId, String contentType);
+
 }

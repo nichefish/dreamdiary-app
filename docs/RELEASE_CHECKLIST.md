@@ -1,0 +1,87 @@
+# 릴리스 체크리스트 (버전업 전)
+
+> DreamDiary 버전업(예: 0.25.0 → 0.26.0) 직전에 실행하는 재사용 체크리스트다.
+> 위→아래 순서 권장. 각 게이트는 통과할 때까지 다음으로 넘어가지 않는다.
+> SSOT·인코딩·수렴 원칙은 `AGENTS.md` 를 따른다. 릴리스별 특이사항은 맨 아래 "이번 릴리스" 섹션에 적는다.
+
+## 0. 진입 전제
+- [ ] 작업 브랜치가 릴리스 대상 브랜치인지 확인 (`git branch --show-current`)
+- [ ] 워킹트리 clean (`git status`)
+
+## 1. 히스토리·커밋 정리
+- [ ] detour/churn 커밋 스쿼시 — 중간에 방향 튼 과정(설계 선회, 반복 삽질)을 결론 커밋으로 수렴한다. 최종 트리 동일성 `git diff <old> <new>` = 0 으로 내용 무변경을 검증한다.
+- [ ] 커밋 메시지 한글 규칙(`AGENTS.md` §10) 준수 — 영문 subject·빈 메시지 reword. Conventional Commits 타입 접두사·스코프·식별자는 원문 유지.
+- [ ] (선택) 전용 version-bump 커밋 — 과거 리추얼: `chore: bump to X`.
+- [ ] 백업 브랜치는 전 게이트 통과 후 정리한다(그 전엔 남겨 둔다).
+
+## 2. 게이트 (기계적 — 반드시 통과)
+- [ ] 인코딩: `python scripts/check_encoding.py` (Windows: `py -3 ...`)
+- [ ] 에이전트 룰 동기화: `python scripts/check_agent_rules_sync.py` — `AGENTS.md` ≡ `CLAUDE.md` ≡ `.cursor/rules/cursor.mdc` (byte 동일). 다르면 `python scripts/sync_agent_rules.py`.
+- [ ] 프론트 빌드(type-check + vite): `./gradlew buildFrontend`
+- [ ] 백엔드 빌드/테스트: `./gradlew test` (또는 `build`)
+- [ ] generated source 최신 상태 확인 — MapStruct·QueryDSL 등 코드 생성기 사용 시, 엔티티/DTO 변경 후 재생성되었는지 확인. (해당 없으면 skip)
+- [ ] 의존성 lock 변경 의도 확인 — `package-lock.json` / `gradle.lockfile` diff 가 이번 릴리스에서 의도한 변경인지 확인. 의도하지 않은 변경이 섞여 있으면 원인 파악 후 정리.
+
+## 3. 기능 안정성 (QA)
+- [ ] 이번 릴리스 핵심 기능의 **컴포넌트 배선** 수동 QA — 순수 로직이 아니라 상태 배선·전파 위주(과거 버그가 여기서 났다).
+- [ ] 주요 CRUD 회귀 스모크 — 엔트리·챕터·리플렉션·스레드 등록/수정/삭제/검색.
+- [ ] dev 서버 콘솔 에러·경고 없음 확인.
+
+## 4. spec ↔ 소스 정합성 · 문서 보강
+- [ ] 화면: `docs/migration/journal/screen-spec.md`
+- [ ] 인터랙션: `docs/migration/journal/interaction-spec.md`
+- [ ] 공통 컴포넌트: `docs/migration/common/component-spec.md`
+- [ ] 저널 컴포넌트: `docs/migration/journal/component-spec.md`
+- [ ] 각 파일을 실제로 열어 현황표기(✓ / ⚠ / ❌ / MISSING)가 현실과 일치하는지 확인. 변경 후 spec 이 현실을 정확히 기술하면 "갱신 불필요", 아니면 갱신.
+- [ ] 주석 ↔ 코드 계약 일치 (현재 상태 서술 규칙). 동작 변경분은 주석·spec 을 변경 후 계약으로 갱신.
+- [ ] 새로 추가/이동한 문서의 내부 링크·경로 정합 확인 — 파일명 변경·이동 후 참조가 깨지는 경우 수정.
+- [ ] **문서 보강 (정합 확인을 넘어)** — 소스가 자란 영역에 spec 항목이 없거나 얇으면 이번 릴리스에서 채운다. 누락 기능은 먼저 spec에 기록한 뒤 반영(코드·주석·spec 동급 자산).
+
+## 5. 테스트
+- [ ] 신규/변경 기능에 테스트 추가 — 특히 커버 안 된 **이음새**(상태 배선·합성 로직).
+
+## 6. 스키마·데이터
+- [ ] **1.0 전까지 Flyway 증분 마이그레이션을 만들지 않는다.** 마스터 스키마만 도메인/엔티티와 일치하면 된다. 기존 마이그레이션 쿼리는 정리(삭제) 대상이며, 증분 마이그레이션은 **1.0부터** 누적한다.
+- [ ] 마스터 스키마 정합 확인 — `app/backend/src/main/resources/schema/full/mariadb/schema-*.sql` (도메인 변경 반영: 예 `schema-journal-mariadb.sql`).
+- [ ] 시드/필수 데이터 정합 — `app/backend/src/main/resources/schema/full/mariadb/data-required-*.sql`.
+
+## 7. 릴리스 메타
+- [ ] `docs/CHANGELOG.md` 항목 작성 — 직전 릴리스 이후 **최신 커밋까지** 빠짐없이(날짜·신규 기능·구조 정리). 커밋 로그를 근거로 대조한다.
+- [ ] 버전 일관성 확인 — 아래 세 곳의 버전 문자열이 모두 동일한지 대조:
+  - `app/frontend-vue/package.json` (`version` 필드)
+  - `build.gradle` (프로젝트 버전)
+  - `docs/CHANGELOG.md` (최신 헤딩)
+- [ ] git tag 예정 이름 확인 — 예: `v0.26.0`. 기존 태그와 중복·오타 없는지 `git tag -l` 로 대조.
+
+## 8. 코드 위생
+- [ ] TODO/FIXME/HACK/XXX grep — 릴리스 차단 항목(미완성 로직, 임시 우회) 없는지 확인. 남겨도 되는 건 의도적으로 남긴 것임을 판단 후 통과.
+- [ ] 디버그 코드 제거 확인 — `console.log`, `System.out.println`, `printStackTrace`, debug flag, 임시 버튼 등 프로덕션에 불필요한 코드 grep.
+- [ ] dead file 제거 확인 — 이번 릴리스 작업으로 더 이상 사용하지 않는 파일(`*_old.*`, 미참조 컴포넌트, 빈 유틸 등) 정리 여부 확인. `import`/`require` 역참조로 검증.
+
+## 9. 소스코드 고고학 훑어보기
+> 방법론: [CODE_ARCHAEOLOGY_CHECKLIST.md](references/CODE_ARCHAEOLOGY_CHECKLIST.md) 최소(30분) 패스면 충분. 원천: [source-archaeology.md](references/dreamdiary/source-archaeology.md) · 진단·처방: [system-issues.md](references/dreamdiary/system-issues.md).
+
+- [ ] `source-archaeology.md` 재훑기 — 이번 릴리스 변경이 만든 새 지층이 기존 통섭("세우고 접는 수렴")과 어긋나는지 확인.
+- [ ] 이번 릴리스가 남긴 부채 점검 — dead/zombie 코드, 책임 누수, **허브 축적**(허브 서비스·스토어의 LOC·fan-in 증가), 평행 표면, 스키마 baseline drift.
+- [ ] 정량 수치 반영 — 허브 파일(예: `JournalEntryService`·`journalModal.ts`) LOC/fan-in이 크게 변했으면 `source-archaeology.md` 구조 지형도 표 갱신.
+- [ ] 새 지층·처방이 있으면 `source-archaeology.md`(원천, §0 등급 부착)·`system-issues.md`(진단·처방)에 기록. 원천은 사실만, 처방은 진단 문서로 분리.
+
+## 10. 최종 저장소 점검
+> push 직전 `git diff` 한 패스로 아래를 모두 확인한다.
+
+- [ ] 한글 주석·헤더 보존 — 인코딩 게이트가 못 잡는 일괄 `?` 치환 유무 육안 확인.
+- [ ] 개인정보·실명 유출 없음 — 테스트·스펙·예시·fixture·커밋 메시지에 실명·호칭·대화 인용·저널 스니펫 없는지 저장소 grep. 원격에 올라가면 히스토리 정리 사고.
+- [ ] main 머지 / 태그 / PR.
+- [ ] 검증 완료 후 백업 브랜치 삭제.
+
+---
+
+## 이번 릴리스 (버전별 특이사항 기록)
+
+> 매 릴리스마다 이 섹션만 갱신한다. 위 항목 중 이번에 특별히 챙길 것·현재 상태를 적는다.
+
+### v0.26.0
+- 기능 배선 QA: 리플렉션 collapse(중첩 리플렉션 접고/펴기, aside 기본접힘 토글, 새 PENDING 접힘), thread-relation(related 추가/토글/뷰).
+- 테스트 이음새: collapse 컴포넌트 배선(`resolveReflectionCollapsed` 소비 경로), thread-relation 합성 로직(최근 버그픽스 있었음, 전용 테스트 부재).
+- CHANGELOG: 08-04자 항목이 이후 08-06/08-07 작업(collapse 확정·thread-relation·에이전트 룰 SSOT·삭제 가드 등)을 아직 미반영 → 보강 필요.
+- 스키마: `journal_interpretation` 수렴/제거는 마스터 스키마(`schema-journal-mariadb.sql`)에만 반영. Flyway 증분 없음(1.0 전 정책).

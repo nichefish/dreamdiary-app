@@ -26,6 +26,8 @@ public class JournalEntrySearchParam extends BaseSearchParam {
     private String weekStartDt;
     private Integer journalDayId;
     private String contentType;
+    /** Reflection 한정 서브 facet: target 유형(JOURNAL_DIARY/JOURNAL_DREAM) 또는 독립(INDEPENDENT). REFLECTION 검색에서만 적용. */
+    private String refContentType;
     private List<String> searchKeywords;
     private Integer tagId;
     private List<Integer> tagIds;

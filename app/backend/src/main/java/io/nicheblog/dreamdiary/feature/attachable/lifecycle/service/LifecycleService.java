@@ -14,6 +14,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.model.CacheContext;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.service.StateService;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalReflectionLifecycleCascade;
 import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -46,6 +47,7 @@ public class LifecycleService {
     private final List<LifecycleCacheUpdater> cacheUpdaters;
     private final JournalContentOwnershipGuard journalContentOwnershipGuard;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
+    private final JournalReflectionLifecycleCascade journalReflectionLifecycleCascade;
 
     /**
      * 컨텐츠 하나의 현재 라이프사이클 값을 설정한다.
@@ -122,6 +124,8 @@ public class LifecycleService {
                 lifecycleSet.getLifecycleKey(),
                 derivedCollapsedToggle
         );
+        // primary(일기·꿈·노트) RESOLVED 시 딸린 Reflection 도 RESOLVED 로 맞춘다. (REFLECTION_ONE_TYPE §5)
+        journalReflectionLifecycleCascade.cascadeResolvedToAttachedReflections(lifecycleSet);
 
         final Map<String, String> rsltObj = new LinkedHashMap<>();
         rsltObj.put("previousLifecycleKey", previousKey.key);

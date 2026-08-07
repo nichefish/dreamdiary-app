@@ -36,9 +36,11 @@ class AttachableContentStatePolicyTest {
     }
 
     @Test
-    void interpretationExcludesRefrnc() {
-        assertTrue(AttachableContentStatePolicy.isAllowed(ContentType.JOURNAL_INTERPRETATION, StateKey.IMPRTC));
-        assertFalse(AttachableContentStatePolicy.isAllowed(ContentType.JOURNAL_INTERPRETATION, StateKey.REFRNC));
+    void reflectionAllowsCollapsedImprtcRefrnc() {
+        assertTrue(AttachableContentStatePolicy.isAllowed(ContentType.JOURNAL_REFLECTION, StateKey.COLLAPSED));
+        assertTrue(AttachableContentStatePolicy.isAllowed(ContentType.JOURNAL_REFLECTION, StateKey.IMPRTC));
+        assertTrue(AttachableContentStatePolicy.isAllowed(ContentType.JOURNAL_REFLECTION, StateKey.REFRNC));
+        assertFalse(AttachableContentStatePolicy.isAllowed(ContentType.JOURNAL_REFLECTION, StateKey.NHTMR));
     }
 
     @Test

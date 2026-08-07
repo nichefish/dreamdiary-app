@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepo
 import io.nicheblog.dreamdiary.feature.attachable.state.service.StateService;
 import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
+import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalReflectionLifecycleCascade;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,8 @@ class LifecycleServiceTest {
     private JournalContentOwnershipGuard journalContentOwnershipGuard;
     @Mock
     private JournalDayResolvedGuard journalDayResolvedGuard;
+    @Mock
+    private JournalReflectionLifecycleCascade journalReflectionLifecycleCascade;
 
     private LifecycleService service;
 
@@ -66,7 +69,8 @@ class LifecycleServiceTest {
                 stateService,
                 List.of(),
                 journalContentOwnershipGuard,
-                journalDayResolvedGuard
+                journalDayResolvedGuard,
+                journalReflectionLifecycleCascade
         );
     }
 

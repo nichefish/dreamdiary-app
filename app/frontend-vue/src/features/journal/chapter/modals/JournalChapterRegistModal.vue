@@ -117,7 +117,7 @@
                   maxlength="100"
                 />
               </div>
-              <div v-if="isModify" class="col-1 d-flex ps-0">
+              <div v-if="isModify && !isSummaryChapter" class="col-1 d-flex ps-0">
                 <div class="d-flex-center p-2 fw-bold fs-5 text-gray-600">#</div>
                 <input
                   type="number"

@@ -24,6 +24,23 @@ public class JournalEntryTypeResolver {
     private final JournalEntryPolicyResolver policyResolver;
 
     /**
+     * 등록 요청의 엔트리 콘텐츠 타입을 결정한다.
+     * Reflection은 본질 타입이라 chapter가 타입을 지시하지 않으므로 요청 contentType을 존중하고,
+     * DIARY/DREAM은 챕터 타입에서 역산한다.
+     *
+     * @param journalChapterId 챕터 ID
+     * @param requestedContentType 요청 DTO의 contentType 문자열
+     * @return 엔트리 콘텐츠 타입
+     */
+    public ContentType resolveForRegist(final Integer journalChapterId, final String requestedContentType) {
+        final ContentType requested = ContentType.get(requestedContentType);
+        if (requested == ContentType.JOURNAL_REFLECTION) {
+            return ContentType.JOURNAL_REFLECTION;
+        }
+        return resolveByChapterId(journalChapterId);
+    }
+
+    /**
      * 챕터 ID에서 엔트리 콘텐츠 타입을 해석한다.
      *
      * @param journalChapterId 챕터 ID
