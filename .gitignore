@@ -73,5 +73,8 @@ lerna-debug.log*
 /app/frontend-react/node_modules
 /app/frontend-react/src/platform/metronic/
 
+#private submodule
+/daily
+
 /legacy
 /metronic_vue_v8.2.1_demo1/
