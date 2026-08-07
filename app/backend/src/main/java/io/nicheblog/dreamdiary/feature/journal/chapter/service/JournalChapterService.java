@@ -461,7 +461,23 @@ public class JournalChapterService
             throw new NotAuthorizedException("common.result.not-owner");
         }
         journalDayResolvedGuard.assertWritableForChapter(deletedDto.getId());
+        assertNoChildEntries(deletedDto.getId());
         assertNoAttachedReflections(deletedDto.getId());
+    }
+
+    /**
+     * 챕터에 하위 엔트리가 하나라도 있으면 삭제를 Block 한다.
+     *
+     * @param chapterId 삭제 대상 챕터 ID
+     */
+    private void assertNoChildEntries(final Integer chapterId) {
+        if (chapterId == null) return;
+        final List<JournalEntryEntity> entries = journalEntryRepository.findAllByJournalChapterId(chapterId);
+        if (!CollectionUtils.isEmpty(entries)) {
+            log.warn("[JournalChapter] 삭제 Block — 하위 엔트리 존재. chapterId={}, entryCount={}",
+                    chapterId, entries.size());
+            throw new BusinessException("journal.chapter.delete.blocked-by-entries");
+        }
     }
 
     /**

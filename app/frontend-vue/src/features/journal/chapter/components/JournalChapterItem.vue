@@ -532,6 +532,10 @@ function exportChapter(): void {
 async function deleteChapter(): Promise<void> {
   if (!guardChapterOwner(true)) return;
   if (!props.chapter.id) return;
+  if (entryList.value.length > 0) {
+    void swalAlert(t("journal.chapter.delete.blocked-by-entries"));
+    return;
+  }
   const stdrdDt = props.chapter.stdrdDt;
   if (!await swalConfirm(t("journal.chapter.delete.confirm"))) return;
   try {
