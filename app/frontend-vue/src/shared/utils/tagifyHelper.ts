@@ -86,6 +86,8 @@ export const baseTagifyOptions: Record<string, unknown> = {
   keepInvalidTags: false,
   skipInvalid: true,
   duplicates: false,
+  /* 개별 태그명 최대 30자 제한 (DB tag.name = varchar(64), 현재 최대 19자) */
+  pattern: /^.{1,30}$/,
   editTags: { clicks: 2, keepInvalid: false },
   transformTag(tagData: { value: string }) {
     tagData.value = tagData.value.replace(/\s+/g, "_");

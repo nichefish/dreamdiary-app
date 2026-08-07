@@ -24,7 +24,7 @@
           type="text"
           class="form-control form-control-sm form-control-solid text-noti w-100px"
           :placeholder="ctgrPlaceholder"
-          maxlength="500"
+          maxlength="30"
         />
       </div>
       <div :id="idPrefix + '_display_div'" style="display: none;">
@@ -42,7 +42,7 @@
           type="text"
           class="form-control form-control-sm form-control-solid w-200px"
           :placeholder="t('tagify.meta.value.placeholder')"
-          maxlength="500"
+          maxlength="100"
         />
       </div>
     </div>
