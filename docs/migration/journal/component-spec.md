@@ -375,7 +375,7 @@ interface TodoRow {
 | 고급 필터 | `asideStore.toggle()` — 사이드 필터 패널 표시/숨김 |
 | 우측 끝 aside 열기 | aside 숨김 시 `asideStore.show()` — 사이드 필터 패널 표시 |
 | 일정 등록 / 개인 일정 | 저널 날짜·엔트리 맥락을 전달하지 않는 교차 도메인 액션이므로 저널 툴바에서는 미제공. 일정 화면에서만 제공 |
-| 태그 카테고리 동기화 | `syncCategoryMaps()` — 4종 categoryMap 서버 재조회 |
+| 태그 카테고리 동기화 | `syncCategoryMaps()` (`journalCategoryMaps`) — 4종 categoryMap 서버 재조회 |
 
 **추가 구현 (2026-05-19, 현재 계약)**: 우측 영역에 일기·꿈 키워드 검색 input + 돋보기 버튼 추가. 툴바는 `localDiaryKw` / `localDreamKw` 로컬 ref를 사용해 새 탭 전체검색을 실행하며, `JournalAside`의 `store.diaryKeyword` / `store.dreamKeyword` 현재 목록 필터와 상태를 공유하지 않는다.
 

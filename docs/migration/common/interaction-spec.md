@@ -456,20 +456,20 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 
 **변경 전 (legacy/초기 SPA):** `TagifyEditor.vue`가 `onMounted` 시 HTTP로 ctgrMap을 직접 조회 → 모달 열릴 때마다 추가 round-trip 발생.
 
-**변경 후 (현행):** `journalModal` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `App.vue` 로그인·마운트 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensureCategoryMap`으로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그 저장 성공 시 `applyCategoryMapsFromTagSave`가 Tagify JSON을 `mergeTagifyListIntoCategoryMap`으로 **병합** — 무효화·추가 GET 없음.
+**변경 후 (현행):** `journalCategoryMaps` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `journalModal` 모달 openers는 이 스토어에 위임하고, 템플릿은 `modalStore.dayTagCategoryMap` 등 기존 facade를 그대로 쓴다. `App.vue`·로그인 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensure`로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그·메타 포함 저장 성공 시 `applyCategoryMapsFromSaveResponse`가 서버 `rsltMap`으로 세션 ref를 **교체** — 무효화·추가 GET 없음.
 
 ```
 앱 부트 (인증됨)
-  └─ preloadCategoryMaps() → ensureCategoryMap × 4 → 스토어 ref 적재
+  └─ preloadCategoryMaps() → journalCategoryMaps.ensure × 4 → 스토어 ref 적재
 
 모달 오픈
-  └─ openDayRegist / openEntryRegist / …
-       └─ ensureCategoryMap(url) — loaded 플래그 있으면 HTTP 생략
+  └─ openDayRegist / openEntryRegist / … (journalModal)
+       └─ categoryMaps.ensure(url) — loaded 플래그 있으면 HTTP 생략
             └─ <TagifyEditor :category-map="modalStore.dayTagCategoryMap | entryCategoryMap(computed)" />
 
 태그·메타 포함 저장 성공
   └─ save API 응답 rsltMap: dayTagCategoryMap / dayMetaCategoryMap / entryTagCategoryMap (서버 evict 후 DB 기준 전역 map, 추가 GET 없음)
-  └─ applyCategoryMapsFromSaveResponse(rsltMap) — 앱 세션 ref 교체(삭제 반영)
+  └─ applyCategoryMapsFromSaveResponse(rsltMap) — journalCategoryMaps 세션 ref 교체(삭제 반영)
        └─ TagifyEditor categoryMap watch → initTagify()
 ```
 
