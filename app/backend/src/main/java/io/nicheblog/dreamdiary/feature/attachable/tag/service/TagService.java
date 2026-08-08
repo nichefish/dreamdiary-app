@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.mapstruct.TagMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagCategoryRepository;
+import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagContentRepository;
 import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagRepository;
 import io.nicheblog.dreamdiary.feature.attachable.tag.spec.TagSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
@@ -18,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +47,7 @@ public class TagService
     private final TagMapstruct mapstruct = TagMapstruct.INSTANCE;
     private final TagCategoryRepository tagCategoryRepository;
     private final TagProfileService tagProfileService;
+    private final TagContentRepository tagContentRepository;
 
     public TagMapstruct getReadMapstruct() {
         return this.mapstruct;
@@ -240,6 +243,20 @@ public class TagService
     public void deleteNoRefTags() {
         final List<TagEntity> entity = repository.findAll(spec.getNoRefTags());
         repository.deleteAll(entity);
+    }
+
+    /**
+     * 주어진 태그 ID 목록 중 tag_content 참조가 0인 고아 태그만 삭제한다.
+     * 태그 제거 시점에 event-driven 으로 호출해 전체 스캔 없이 고아를 정리한다.
+     *
+     * @param tagIds 참조 해제된 태그 ID 목록
+     */
+    @Transactional
+    public void deleteOrphansByIds(final Collection<Integer> tagIds) {
+        if (tagIds == null || tagIds.isEmpty()) return;
+        final List<Integer> orphanIds = tagContentRepository.findOrphanTagIds(tagIds);
+        if (orphanIds.isEmpty()) return;
+        repository.deleteAllByIdInBatch(orphanIds);
     }
 
     /**

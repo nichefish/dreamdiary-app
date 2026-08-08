@@ -42,7 +42,7 @@ public class PrefixEmbed
             @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false)),
     })
     @Fetch(FetchMode.SELECT)
-    @BatchSize(size = 10)
+    @BatchSize(size = 50)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("말머리 연결")
     private List<PrefixContentEntity> list;

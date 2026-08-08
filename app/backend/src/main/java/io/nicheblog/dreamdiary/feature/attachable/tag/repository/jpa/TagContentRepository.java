@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * TagContentRepository
  * <pre>
@@ -40,5 +43,16 @@ public interface TagContentRepository
             "                      OR tc.name = :#{#param.ctgr} " +
             "                 ))")
     void deleteObsoleteTagContents(final @Param("param") TagContentParam param);
+
+    /**
+     * 주어진 tag ID 목록 중 tag_content 참조가 0인 고아 태그 ID를 반환한다.
+     *
+     * @param tagIds 확인할 태그 ID 목록
+     * @return 참조 카운트가 0인 태그 ID 목록
+     */
+    @Query("SELECT t.id FROM TagEntity t " +
+            "WHERE t.id IN :tagIds " +
+            "  AND NOT EXISTS (SELECT 1 FROM TagContentEntity tc WHERE tc.tagId = t.id)")
+    List<Integer> findOrphanTagIds(final @Param("tagIds") Collection<Integer> tagIds);
 }
 
