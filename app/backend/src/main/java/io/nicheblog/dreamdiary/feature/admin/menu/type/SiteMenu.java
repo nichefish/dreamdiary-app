@@ -4,7 +4,7 @@ package io.nicheblog.dreamdiary.feature.admin.menu.type;
  * SiteMenu
  * <pre>
  *  컨트롤러 ↔ 메뉴 매핑 키 정의 Enum.
- *  상수명이 곧 {@code menu.menu_label} 값이며, {@code MenuService.getMenuByLabel()} 이
+ *  상수명이 곧 {@code menu.menu_label} 값이며, {@code MenuSiteMenuService.getMenuByLabel()} 이
  *  {@code name()} 으로 해당 메뉴 행을 찾는다. 상수를 추가·개명하면 메뉴 시드
  *  (data-required-menu-mariadb.sql)의 menu_label 과 반드시 함께 맞춘다.
  *

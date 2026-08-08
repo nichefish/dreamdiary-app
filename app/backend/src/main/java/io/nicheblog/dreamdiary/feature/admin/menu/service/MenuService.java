@@ -1,20 +1,13 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.service;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuEntity;
-import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuI18nEntity;
-import io.nicheblog.dreamdiary.feature.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.feature.admin.menu.mapstruct.MenuMapstruct;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.*;
-import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuI18nRepository;
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuRepository;
-import io.nicheblog.dreamdiary.feature.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.feature.admin.menu.spec.MenuSpec;
-import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntity;
-import io.nicheblog.dreamdiary.feature.board.group.jpa.BoardRepository;
-import io.nicheblog.dreamdiary.feature.admin.menu.type.SubmenuExpandType;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.MenuType;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SubmenuExpandType;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
@@ -29,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -42,7 +33,8 @@ import java.util.*;
 /**
  * MenuService
  * <pre>
- *  메뉴 관리 서비스 모듈.
+ *  메뉴 관리 서비스 모듈. CRUD·정렬과 함께 사이트 조회({@link MenuSiteMenuService}),
+ *  i18n({@link MenuI18nService}), 트리 이동({@link MenuTreeService})을 위임하는 파사드다.
  * </pre>
  *
  * @author nichefish
@@ -69,13 +61,9 @@ public class MenuService
         return this.mapstruct;
     }
 
-    private final MenuMapper menuMapper;
-    private final MenuI18nRepository menuI18nRepository;
-    /** BOARD 확장 메뉴의 하위 항목(게시판) 구성용. 게시판은 menu 가 아니라 board 테이블이 소유한다. */
-    private final BoardRepository boardRepository;
-
-    /** 기준 로케일. 이 로케일의 메뉴명/설명은 menu.menu_name/menu_description 이 단일 원천이라 menu_i18n 에 저장하지 않는다. */
-    private static final String BASE_LOCALE = "ko";
+    private final MenuI18nService menuI18nService;
+    private final MenuSiteMenuService menuSiteMenuService;
+    private final MenuTreeService menuTreeService;
 
     private final ApplicationContext context;
     private MenuService getSelf() {
@@ -101,10 +89,8 @@ public class MenuService
 
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
         searchParamMap.put("menuType", MenuType.MAIN.name());
-        return this.localizeMenuTree(this.getSelf().getListDto(searchParamMap, sort));
+        return menuI18nService.localizeMenuTree(this.getSelf().getListDto(searchParamMap, sort));
     }
-
-    /* ----- */
 
     /**
      * 사이드바 메뉴 (사용자, useYn=Y) 조회
@@ -112,17 +98,8 @@ public class MenuService
      * @return {@link List} 사용 가능한 포털 사이드바 메뉴 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="userMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getUserMenuList() throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
-                .menuType(MenuType.MAIN.name())
-                .adminYn("N")
-                .useYn("Y")
-                .sidebarVisibleYn("Y")
-                .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
-
-        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)))));
+        return menuSiteMenuService.getUserMenuList();
     }
 
     /**
@@ -132,16 +109,8 @@ public class MenuService
      * @return {@link List} 사용자 메뉴 메타 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="userMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getUserMenuMetaList() throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
-                .menuType(MenuType.MAIN.name())
-                .adminYn("N")
-                .useYn("Y")
-                .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
-
-        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(this.getListDto(searchParamMap, sort))));
+        return menuSiteMenuService.getUserMenuMetaList();
     }
 
     /**
@@ -150,17 +119,8 @@ public class MenuService
      * @return {@link Page} 관리자 메인 메뉴 목록을 담고 있는 페이지 객체
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="mngrMenuList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getMngrMenuList() throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
-                .menuType(MenuType.MAIN.name())
-                .adminYn("Y")
-                .useYn("Y")
-                .sidebarVisibleYn("Y")
-                .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
-
-        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(this.filterSidebarVisible(this.getListDto(searchParamMap, sort)))));
+        return menuSiteMenuService.getMngrMenuList();
     }
 
     /**
@@ -170,207 +130,8 @@ public class MenuService
      * @return {@link List} 관리자 메뉴 메타 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value="mngrMenuMetaList", key="T(org.springframework.context.i18n.LocaleContextHolder).getLocale().getLanguage() + '::' + T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getPermissionCacheKey()")
     public List<MenuDto> getMngrMenuMetaList() throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
-                .menuType(MenuType.MAIN.name())
-                .adminYn("Y")
-                .useYn("Y")
-                .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
-
-        final List<MenuDto> menuList = this.getListDto(searchParamMap, sort);
-        this.addSharedHiddenUserMenuMeta(menuList);
-        return this.filterByRequiredPermission(this.localizeMenuTree(this.attachBoardSubMenus(menuList)));
-    }
-
-
-    /**
-     * Filter menu tree by required_perm_key against current user permissions.
-     * Blank required key passes. Folder nodes with no URL and no remaining children are dropped
-     * (except BOARD expand type which may still receive injected boards).
-     */
-    private List<MenuDto> filterByRequiredPermission(final List<MenuDto> menuList) {
-        if (CollectionUtils.isEmpty(menuList)) return menuList;
-        final List<MenuDto> filtered = new ArrayList<>();
-        for (final MenuDto menu : menuList) {
-            final MenuDto node = filterByRequiredPermission(menu);
-            if (node != null) filtered.add(node);
-        }
-        return filtered;
-    }
-
-    private MenuDto filterByRequiredPermission(final MenuDto menu) {
-        if (menu == null) return null;
-        final String required = menu.getRequiredPermKey();
-        if (StringUtils.isNotBlank(required) && !Boolean.TRUE.equals(AuthUtils.hasPermission(required))) {
-            return null;
-        }
-        if (CollectionUtils.isNotEmpty(menu.getSubMenuList())) {
-            menu.setSubMenuList(this.filterByRequiredPermission(menu.getSubMenuList()));
-        }
-        final boolean noUrl = StringUtils.isBlank(menu.getUrl());
-        final boolean noChildren = CollectionUtils.isEmpty(menu.getSubMenuList());
-        if (noUrl && noChildren && menu.getSubmenuExpandType() != null
-                && !"NO_SUB".equals(menu.getSubmenuExpandType())
-                && !"BOARD".equals(menu.getSubmenuExpandType())) {
-            return null;
-        }
-        return menu;
-    }
-    private List<MenuDto> filterSidebarVisible(final List<MenuDto> menuList) {
-        if (CollectionUtils.isEmpty(menuList)) return menuList;
-
-        final List<MenuDto> filtered = new ArrayList<>();
-        for (final MenuDto menu : menuList) {
-            final MenuDto filteredMenu = filterSidebarVisible(menu);
-            if (filteredMenu != null) filtered.add(filteredMenu);
-        }
-        return filtered;
-    }
-
-    private MenuDto filterSidebarVisible(final MenuDto menu) {
-        if (menu == null) return null;
-        if (!"Y".equals(menu.getSidebarVisibleYn())) return null;
-
-        final List<MenuDto> subMenuList = menu.getSubMenuList();
-        if (CollectionUtils.isNotEmpty(subMenuList)) {
-            menu.setSubMenuList(this.filterSidebarVisible(subMenuList));
-        }
-        return menu;
-    }
-
-    /**
-     * 요청 locale({@link LocaleContextHolder}) 기준으로 메뉴 트리의 menuName/menuDescription 을
-     * 번역값으로 덮는다. 번역이 없는 메뉴는 기본값(menu_name/menu_description)을 그대로 둔다.
-     * <p>
-     * 기준 로케일(ko)이면 번역 조회 없이 원본을 반환한다. 사이드바 조회 메서드가 locale 별로 캐시되므로
-     * (캐시 key = locale) 이 메서드는 캐시 미스 시에만 실행된다. locale 변경 시 프론트가 메뉴를 재조회해야
-     * 새 언어가 반영된다.
-     *
-     * @param menuList 지역화할 메뉴 트리 (제자리 수정)
-     * @return 지역화된 메뉴 트리 (입력과 동일 인스턴스)
-     */
-    private List<MenuDto> localizeMenuTree(final List<MenuDto> menuList) {
-        final String locale = LocaleContextHolder.getLocale().getLanguage();
-        if (BASE_LOCALE.equals(locale) || CollectionUtils.isEmpty(menuList)) return menuList;
-
-        final Map<Integer, MenuI18nEntity> i18nMap = new HashMap<>();
-        for (final MenuI18nEntity entity : menuI18nRepository.findByLocale(locale)) {
-            i18nMap.put(entity.getMenuId(), entity);
-        }
-        if (i18nMap.isEmpty()) return menuList;
-
-        this.applyMenuLocale(menuList, i18nMap);
-        return menuList;
-    }
-
-    /** 메뉴 트리를 재귀 순회하며 번역이 있는 노드의 menuName/menuDescription 을 덮는다. */
-    private void applyMenuLocale(final List<MenuDto> menuList, final Map<Integer, MenuI18nEntity> i18nMap) {
-        if (CollectionUtils.isEmpty(menuList)) return;
-        for (final MenuDto menu : menuList) {
-            if (menu == null) continue;
-            final MenuI18nEntity translated = i18nMap.get(menu.getId());
-            if (translated != null) {
-                if (StringUtils.isNotBlank(translated.getMenuName())) menu.setMenuName(translated.getMenuName());
-                if (StringUtils.isNotBlank(translated.getMenuDescription())) menu.setMenuDescription(translated.getMenuDescription());
-            }
-            this.applyMenuLocale(menu.getSubMenuList(), i18nMap);
-        }
-    }
-
-    /**
-     * BOARD 확장 메뉴({@code submenuExpandType=BOARD})에 사용중 게시판을 하위 항목으로 주입한다.
-     * <p>
-     * 게시판은 menu 테이블이 아니라 board 테이블이 소유하므로 메뉴 트리에 자식 행이 없다.
-     * 그래서 주입 전에는 BOARD 메뉴가 자식도 URL 도 없는 빈 메뉴여서, 게시판을 등록해도
-     * 사이드바에 아무것도 나타나지 않았다. 프론트는 {@code subMenuList} 가 있어야 아코디언으로 펼친다.
-     * <p>
-     * 각 게시판은 {@code /app/board/post/list.do?contentType=<boardKey>} URL 을 가진 메뉴로 변환한다.
-     * 이 URL 은 프론트 {@code urlMapping} 이 {@code /board/<boardKey>} 라우트로 흡수한다.
-     * 게시판 자체는 다국어 대상이 아니므로 {@code localizeMenuTree} 이후에 주입해도 무방하지만,
-     * 호출 순서에 의존하지 않도록 지역화 대상에서 제외되는 이름(board_name)을 그대로 쓴다.
-     *
-     * @param menuList 주입 대상 메뉴 트리 (제자리 수정)
-     * @return 입력과 동일 인스턴스
-     */
-    private List<MenuDto> attachBoardSubMenus(final List<MenuDto> menuList) {
-        if (CollectionUtils.isEmpty(menuList)) return menuList;
-        if (!this.hasBoardExpandMenu(menuList)) return menuList;
-
-        final List<MenuDto> boardMenus = new ArrayList<>();
-        for (final BoardEntity board : boardRepository.findByUseYnOrderBySortOrderAscIdAsc("Y")) {
-            if (board == null || StringUtils.isBlank(board.getBoardKey())) continue;
-            boardMenus.add(MenuDto.builder()
-                    .id(board.getId())
-                    .menuType(MenuType.SUB.name())
-                    .menuName(board.getBoardName())
-                    .url("/app/board/post/list.do?contentType=" + board.getBoardKey())
-                    .submenuExpandType(SubmenuExpandType.NO_SUB.name())
-                    .sortOrder(board.getSortOrder())
-                    .useYn("Y")
-                    .sidebarVisibleYn("Y")
-                    .build());
-        }
-        this.applyBoardSubMenus(menuList, boardMenus);
-        return menuList;
-    }
-
-    /** 트리에 BOARD 확장 메뉴가 하나라도 있는지 (없으면 게시판 조회 자체를 건너뛴다) */
-    private boolean hasBoardExpandMenu(final List<MenuDto> menuList) {
-        if (CollectionUtils.isEmpty(menuList)) return false;
-        for (final MenuDto menu : menuList) {
-            if (menu == null) continue;
-            if (SubmenuExpandType.BOARD.name().equals(menu.getSubmenuExpandType())) return true;
-            if (this.hasBoardExpandMenu(menu.getSubMenuList())) return true;
-        }
-        return false;
-    }
-
-    /** 트리를 재귀 순회하며 BOARD 확장 메뉴의 subMenuList 를 게시판 목록으로 채운다. */
-    private void applyBoardSubMenus(final List<MenuDto> menuList, final List<MenuDto> boardMenus) {
-        if (CollectionUtils.isEmpty(menuList)) return;
-        for (final MenuDto menu : menuList) {
-            if (menu == null) continue;
-            if (SubmenuExpandType.BOARD.name().equals(menu.getSubmenuExpandType())) {
-                menu.setSubMenuList(new ArrayList<>(boardMenus));
-                continue;
-            }
-            this.applyBoardSubMenus(menu.getSubMenuList(), boardMenus);
-        }
-    }
-
-    /**
-     * 메뉴 다국어 저장. 기존 번역을 전부 삭제하고 전달된 목록으로 교체한다.
-     * ko 는 menu.menu_name/menu_description 이 기준이라 저장에서 제외한다.
-     * 번역명이 비어 있는 행은 건너뛴다(menu_name 이 NOT NULL 이라 고아 행을 만들지 않기 위함).
-     *
-     * @param menuId 저장 대상 메뉴 ID
-     * @param i18nList 번역 목록 (없으면 전체 삭제만 수행)
-     */
-    private void saveMenuI18n(final Integer menuId, final List<MenuI18nDto> i18nList) {
-        if (menuId == null) return;
-        menuI18nRepository.deleteByMenuId(menuId);
-        if (CollectionUtils.isEmpty(i18nList)) return;
-
-        for (final MenuI18nDto dto : i18nList) {
-            if (dto == null) continue;
-            final String locale = StringUtils.trimToNull(dto.getLocale());
-            final String menuName = StringUtils.trimToNull(dto.getMenuName());
-            if (locale == null || menuName == null) continue;
-            if (BASE_LOCALE.equals(locale)) {
-                log.warn("[saveMenuI18n] ko 는 menu.menu_name 이 기준이라 i18n 저장에서 제외. menuId={}", menuId);
-                continue;
-            }
-            menuI18nRepository.save(
-                    MenuI18nEntity.builder()
-                            .menuId(menuId)
-                            .locale(locale)
-                            .menuName(menuName)
-                            .menuDescription(StringUtils.trimToNull(dto.getMenuDescription()))
-                            .build()
-            );
-        }
+        return menuSiteMenuService.getMngrMenuMetaList();
     }
 
     /**
@@ -382,32 +143,7 @@ public class MenuService
      */
     @Transactional(readOnly = true)
     public List<MenuI18nDto> getMenuI18nList(final Integer menuId) {
-        final List<MenuI18nDto> result = new ArrayList<>();
-        if (menuId == null) return result;
-        for (final MenuI18nEntity entity : menuI18nRepository.findByMenuId(menuId)) {
-            result.add(MenuI18nDto.builder()
-                    .locale(entity.getLocale())
-                    .menuName(entity.getMenuName())
-                    .menuDescription(entity.getMenuDescription())
-                    .build());
-        }
-        return result;
-    }
-
-    /**
-     * 관리자 메뉴 모드에서도 공통 계정 화면 breadcrumb 메타를 사용할 수 있도록 숨김 사용자 메뉴를 메타 목록에 포함한다.
-     *
-     * @param menuList 관리자 메뉴 메타 목록
-     */
-    private void addSharedHiddenUserMenuMeta(final List<MenuDto> menuList) throws Exception {
-        if (menuList == null) return;
-        final MenuDto userMyMenu = this.getSelf().getMenuByLabel(SiteMenu.USER_MY);
-        if (userMyMenu == null) return;
-        if (!"Y".equals(userMyMenu.getProtectedYn()) || !"N".equals(userMyMenu.getSidebarVisibleYn())) {
-            log.warn("Shared user menu meta is not protected hidden. menuLabel={}, protectedYn={}, sidebarVisibleYn={}",
-                    userMyMenu.getMenuLabel(), userMyMenu.getProtectedYn(), userMyMenu.getSidebarVisibleYn());
-        }
-        menuList.add(userMyMenu);
+        return menuI18nService.getMenuI18nList(menuId);
     }
 
     /**
@@ -416,14 +152,8 @@ public class MenuService
      * @param label 메뉴 라벨 (컨트롤러에 대정)
      * @return MenuDto
      */
-    @Cacheable(value="menuByLabel", key="#label.name()")
     public MenuDto getMenuByLabel(final SiteMenu label) throws Exception {
-        final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("menuLabel", label.name());
-        final List<MenuDto> rsMenuList = this.getSelf().getListDto(searchParamMap);
-        if (CollectionUtils.isEmpty(rsMenuList)) throw new MenuNotExistsException(MessageUtils.getExceptionMsg("MenuNotExistsException"));
-
-        return rsMenuList.get(0);
+        return menuSiteMenuService.getMenuByLabel(label);
     }
 
     /**
@@ -432,9 +162,8 @@ public class MenuService
      * @param id 메뉴 번호
      * @return Boolean 관리자 메뉴인 경우 true, 그렇지 않은 경우 false
      */
-    @Cacheable(value="isMngrMenu", key="#id.toString()")
     public Boolean getIsMngrMenu(final Integer id) {
-        return "Y".equals(menuMapper.getAdminYn(id));
+        return menuSiteMenuService.getIsMngrMenu(id);
     }
 
     /**
@@ -443,7 +172,7 @@ public class MenuService
      * @return SiteAcsInfo
      */
     public SiteAcsInfo getSiteAceInfoFromMenu(final MenuDto menu) {
-        return mapstruct.toSiteAcsInfo(menu);
+        return menuSiteMenuService.getSiteAceInfoFromMenu(menu);
     }
 
     /**
@@ -462,7 +191,7 @@ public class MenuService
     public ServiceResponse regist(final MenuPostDto registDto) throws Exception {
         final ServiceResponse response = BaseDtoWritableService.super.regist(registDto);
         if (response.getRsltObj() instanceof MenuDto saved && saved.getId() != null) {
-            this.saveMenuI18n(saved.getId(), registDto.getI18nList());
+            menuI18nService.saveMenuI18n(saved.getId(), registDto.getI18nList());
         }
         return response;
     }
@@ -589,7 +318,7 @@ public class MenuService
     @Override
     public void postModify(final MenuPostDto postDto, final MenuDto updatedDto) throws Exception {
         // 폼 값(i18nList)을 가진 postDto 로 저장한다. updatedDto 는 엔티티 기반이라 i18n 이 비어 있다.
-        this.saveMenuI18n(updatedDto.getId(), postDto.getI18nList());
+        menuI18nService.saveMenuI18n(updatedDto.getId(), postDto.getI18nList());
         EhCacheUtils.clearCache("userMenuList");
         EhCacheUtils.clearCache("mngrMenuList");
         EhCacheUtils.clearCache("userMenuMetaList");
@@ -622,7 +351,7 @@ public class MenuService
 
         return this.getSelf().setUse(id, patchDto.getUseYn());
     }
-    
+
     /**
      * 변경 후처리. (override)
      *
@@ -630,7 +359,7 @@ public class MenuService
      */
     @Override
     public void postSetUse(final MenuEntity updateEntity) {
-        if (this.getIsMngrMenu(updateEntity.getId())) {
+        if (menuSiteMenuService.getIsMngrMenu(updateEntity.getId())) {
             EhCacheUtils.clearCache("mngrMenuList");
             EhCacheUtils.clearCache("mngrMenuMetaList");
         } else {
@@ -660,132 +389,7 @@ public class MenuService
      */
     @Transactional
     public ServiceResponse moveTree(final MenuTreeMoveParam moveParam) throws Exception {
-        if (moveParam == null || moveParam.getMovedId() == null) {
-            throw new BusinessException("Moved menu is required.");
-        }
-
-        final MenuEntity movedMenu = this.getDtlEntity(moveParam.getMovedId());
-        if (movedMenu == null) {
-            throw new MenuNotExistsException(MessageUtils.getExceptionMsg("MenuNotExistsException"));
-        }
-        if (!MenuType.SUB.name().equals(movedMenu.getMenuType())) {
-            throw new BusinessException("Only sub menus can be moved.");
-        }
-        if ("Y".equals(movedMenu.getProtectedYn())) {
-            throw new BusinessException(MessageUtils.getMessage("exception.menu-protected"));
-        }
-        if (!Objects.equals(movedMenu.getParentMenuId(), moveParam.getSourceParentMenuId())) {
-            throw new BusinessException("Menu tree is stale. Reload and try again.");
-        }
-
-        final Integer targetParentMenuId = moveParam.getTargetParentMenuId();
-        if (targetParentMenuId == null) {
-            throw new BusinessException("Target parent menu is required.");
-        }
-
-        final MenuEntity targetParent = this.getDtlEntity(targetParentMenuId);
-        if (targetParent == null) {
-            throw new BusinessException("Target parent menu does not exist.");
-        }
-        if (!MenuType.MAIN.name().equals(targetParent.getMenuType()) && !MenuType.SUB.name().equals(targetParent.getMenuType())) {
-            throw new BusinessException("Target parent type is not movable.");
-        }
-        if (SubmenuExpandType.NO_SUB.name().equals(targetParent.getSubmenuExpandType())
-                || SubmenuExpandType.BOARD.name().equals(targetParent.getSubmenuExpandType())) {
-            throw new BusinessException("Target parent does not allow sub menus.");
-        }
-        if (Objects.equals(movedMenu.getId(), targetParentMenuId) || this.isDescendantOf(targetParentMenuId, movedMenu.getId())) {
-            throw new BusinessException("A menu cannot be moved into its own descendant.");
-        }
-
-        final LinkedHashMap<Integer, MenuTreeMoveGroupDto> groupMap = this.normalizeMoveGroups(moveParam);
-        final MenuTreeMoveGroupDto targetGroup = groupMap.get(targetParentMenuId);
-        if (targetGroup == null || targetGroup.getItems() == null || targetGroup.getItems().stream().noneMatch(item -> Objects.equals(item.getId(), movedMenu.getId()))) {
-            throw new BusinessException("Moved menu is missing from the target group.");
-        }
-
-        for (final MenuTreeMoveGroupDto group : groupMap.values()) {
-            final Integer parentMenuId = group.getParentMenuId();
-            final List<MenuTreeMoveItemDto> items = group.getItems();
-            if (parentMenuId == null || items == null) continue;
-
-            for (final MenuTreeMoveItemDto item : items) {
-                if (item == null || item.getId() == null) continue;
-
-                final MenuEntity menu = this.getDtlEntity(item.getId());
-                if (menu == null) {
-                    throw new BusinessException("Menu item does not exist.");
-                }
-                if (!MenuType.SUB.name().equals(menu.getMenuType())) {
-                    throw new BusinessException("Only sub menus can be included in tree move groups.");
-                }
-
-                menu.setParentMenuId(parentMenuId);
-                menu.setSortOrder(item.getSortOrder());
-                this.updt(menu);
-            }
-        }
-
-        EhCacheUtils.clearCache("mngrMenuList");
-        EhCacheUtils.clearCache("userMenuList");
-        EhCacheUtils.clearCache("mngrMenuMetaList");
-        EhCacheUtils.clearCache("userMenuMetaList");
-        EhCacheUtils.clearCache("isMngrMenu");
-        log.info("Menu tree moved. movedId={}, sourceParentMenuId={}, targetParentMenuId={}",
-                moveParam.getMovedId(), moveParam.getSourceParentMenuId(), moveParam.getTargetParentMenuId());
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
-    }
-
-    /**
-     * 메뉴 트리 이동 요청의 그룹 데이터를 정규화한다.
-     * - null / invalid group 제거
-     * - source 그룹이 누락된 경우 보정하여 추가
-     *
-     * @param moveParam 이동 요청 파라미터
-     * @return parentMenuId 기준으로 정렬된 그룹 맵
-     */
-    private LinkedHashMap<Integer, MenuTreeMoveGroupDto> normalizeMoveGroups(final MenuTreeMoveParam moveParam) {
-        final LinkedHashMap<Integer, MenuTreeMoveGroupDto> groupMap = new LinkedHashMap<>();
-        if (moveParam.getGroups() != null) {
-            for (final MenuTreeMoveGroupDto group : moveParam.getGroups()) {
-                if (group == null || group.getParentMenuId() == null) continue;
-                groupMap.put(group.getParentMenuId(), group);
-            }
-        }
-        if (moveParam.getSourceParentMenuId() != null && !groupMap.containsKey(moveParam.getSourceParentMenuId())) {
-            final MenuTreeMoveGroupDto sourceGroup = new MenuTreeMoveGroupDto();
-            sourceGroup.setParentMenuId(moveParam.getSourceParentMenuId());
-            groupMap.put(sourceGroup.getParentMenuId(), sourceGroup);
-        }
-
-        return groupMap;
-    }
-
-    /**
-     * 특정 메뉴가 주어진 조상 메뉴의 하위인지 여부를 검사한다.
-     * (트리 순환 방지용)
-     *
-     * @param id 검사 대상 메뉴
-     * @param ancestorMenuId 조상 후보 메뉴
-     * @return true: 하위 노드 / false: 아님
-     */
-    private boolean isDescendantOf(final Integer id, final Integer ancestorMenuId) throws Exception {
-        Integer currentMenuId = id;
-        while (currentMenuId != null) {
-            if (Objects.equals(currentMenuId, ancestorMenuId)) {
-                return true;
-            }
-
-            final MenuEntity currentMenu = this.getDtlEntity(currentMenuId);
-            if (currentMenu == null) {
-                return false;
-            }
-            currentMenuId = currentMenu.getParentMenuId();
-        }
-        return false;
+        return menuTreeService.moveTree(moveParam);
     }
 
     /**

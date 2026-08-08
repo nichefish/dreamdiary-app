@@ -390,7 +390,7 @@ public class BoardService
     /**
      * 사이드바 메뉴 캐시를 무효화한다.
      * <p>
-     * 게시판은 {@code MenuService.attachBoardSubMenus} 가 BOARD 확장 메뉴의 하위 항목으로 주입하므로,
+     * 게시판은 {@code MenuSiteMenuService.attachBoardSubMenus} 가 BOARD 확장 메뉴의 하위 항목으로 주입하므로,
      * 주입 결과가 사이드바 메뉴 캐시에 함께 담긴다. 게시판이 바뀌면 이 캐시도 비워야
      * 사용자 화면에 반영된다. (locale 별 key 로 나뉘어 있어 리전 전체를 비운다)
      */
