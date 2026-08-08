@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.chat.model;
+package io.nicheblog.dreamdiary.feature.ai.model;
 
 import lombok.Builder;
 import lombok.Value;

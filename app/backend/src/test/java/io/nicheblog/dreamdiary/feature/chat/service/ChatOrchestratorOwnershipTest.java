@@ -6,14 +6,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-class ChatAIServiceOwnershipTest {
+class ChatOrchestratorOwnershipTest {
 
     @Test
     void validatesSessionOwnershipBeforeCancellingChat() {
         final ChatSessionService chatSessionService = mock(ChatSessionService.class);
-        final ChatAIService service = new ChatAIService(
+        final ChatOrchestrator service = new ChatOrchestrator(
                 null,
                 chatSessionService,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -29,9 +35,15 @@ class ChatAIServiceOwnershipTest {
     @Test
     void ignoresCancelRequestWithoutSessionId() {
         final ChatSessionService chatSessionService = mock(ChatSessionService.class);
-        final ChatAIService service = new ChatAIService(
+        final ChatOrchestrator service = new ChatOrchestrator(
                 null,
                 chatSessionService,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 null,
                 null,
                 null,

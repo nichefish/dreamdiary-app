@@ -1,6 +1,5 @@
-package io.nicheblog.dreamdiary.feature.chat.service;
+package io.nicheblog.dreamdiary.feature.ai.rag;
 
-import io.nicheblog.dreamdiary.feature.chat.model.RagIntent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

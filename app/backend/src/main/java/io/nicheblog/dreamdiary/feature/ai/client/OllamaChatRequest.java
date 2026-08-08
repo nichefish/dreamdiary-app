@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.chat.client;
+package io.nicheblog.dreamdiary.feature.ai.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class OllamaChatRequest {
     /**
      * Ollama 생성 옵션 ({@code temperature}, {@code num_predict} 등).
      *
-     * <p>{@link io.nicheblog.dreamdiary.feature.chat.config.OllamaProperties}에서 주입합니다.</p>
+     * <p>{@link io.nicheblog.dreamdiary.feature.ai.config.OllamaProperties}에서 주입합니다.</p>
      */
     private Map<String, Object> options;
 

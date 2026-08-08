@@ -113,7 +113,7 @@ public class ChatSettingService {
     }
 
     /**
-     * 관리자 전역 RAG 기본값을 반환한다. ChatAIService가 매 요청 조회한다.
+     * 관리자 전역 RAG 기본값을 반환한다. ChatOrchestrator가 매 요청 조회한다.
      *
      * @return RAG enabled / intent별 topK·minScore 스냅샷
      */

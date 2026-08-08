@@ -1,7 +1,17 @@
 package io.nicheblog.dreamdiary.feature.chat.service;
 
-import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
-import io.nicheblog.dreamdiary.feature.chat.model.RagIntent;
+import io.nicheblog.dreamdiary.feature.ai.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.ai.rag.RagContext;
+import io.nicheblog.dreamdiary.feature.ai.rag.RagContextService;
+import io.nicheblog.dreamdiary.feature.ai.rag.RagContextTextBuilder;
+import io.nicheblog.dreamdiary.feature.ai.rag.RagIntent;
+import io.nicheblog.dreamdiary.feature.ai.person.PersonFocusResolver;
+import io.nicheblog.dreamdiary.feature.ai.guard.ResponseGuardService;
+import io.nicheblog.dreamdiary.feature.ai.prompt.IntentPromptResolver;
+import io.nicheblog.dreamdiary.feature.ai.prompt.SystemPromptBuilder;
+import io.nicheblog.dreamdiary.feature.ai.person.PersonSnapshotService;
+import io.nicheblog.dreamdiary.feature.ai.person.PersonSynthesisHybridService;
+import io.nicheblog.dreamdiary.feature.ai.rag.RagSearchFacade;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.RagSearchResult;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntityFocusService;
@@ -28,9 +38,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * ChatAIService 프롬프트 계약 테스트.
+ * ChatOrchestrator 프롬프트 계약 테스트.
  */
-class ChatAIServiceTest {
+class ChatOrchestratorTest {
 
     /** 테스트 전용 가상 인물 A (태도/의미 질문 기본 픽스처). */
     private static final String FIXTURE_PERSON_A = "민수";
@@ -42,6 +52,64 @@ class ChatAIServiceTest {
     private static final String FIXTURE_PERSON_B_CANONICAL = "박지연";
     private static final String FIXTURE_PERSON_B_FALSE_POSITIVE_TAG = "[유명인]#문지연";
 
+
+
+    /**
+     * 테스트용 ChatOrchestrator. RAG 의도·병합은 {@link RagSearchFacade}에 위임하므로 facade를 항상 주입한다.
+     */
+    private static ChatOrchestrator newService() {
+        return newService(null);
+    }
+
+    /**
+     * @param ollama LLM 2차 의도 분류 등에서 쓸 클라이언트 (null 허용)
+     */
+    private static PersonSynthesisHybridService newHybridService() {
+        final RagSearchFacade ragSearchFacade = new RagSearchFacade(null, null);
+        final PersonFocusResolver personFocusResolver = new PersonFocusResolver(null, null, ragSearchFacade);
+        final PersonSnapshotService personSnapshotService = new PersonSnapshotService(personFocusResolver);
+        return new PersonSynthesisHybridService(null, personSnapshotService, personFocusResolver);
+    }
+
+    private static ChatOrchestrator newService(final OllamaClient ollama) {
+        final RagSearchFacade ragSearchFacade = new RagSearchFacade(null, ollama);
+        final PersonFocusResolver personFocusResolver = new PersonFocusResolver(null, null, ragSearchFacade);
+        final PersonSnapshotService personSnapshotService = new PersonSnapshotService(personFocusResolver);
+        final PersonSynthesisHybridService personSynthesisHybridService = new PersonSynthesisHybridService(
+                ollama,
+                personSnapshotService,
+                personFocusResolver
+        );
+        final ResponseGuardService responseGuardService = new ResponseGuardService(personSnapshotService);
+        final IntentPromptResolver intentPromptResolver = new IntentPromptResolver();
+        final SystemPromptBuilder systemPromptBuilder = new SystemPromptBuilder(intentPromptResolver);
+        final RagContextTextBuilder ragContextTextBuilder = new RagContextTextBuilder(
+                personFocusResolver,
+                personSnapshotService
+        );
+        final RagContextService ragContextService = new RagContextService(
+                ragSearchFacade,
+                null,
+                null,
+                personFocusResolver,
+                ragContextTextBuilder
+        );
+        return new ChatOrchestrator(
+                null,
+                null,
+                null,
+                ollama,
+                ragSearchFacade,
+                ragContextService,
+                personFocusResolver,
+                personSnapshotService,
+                personSynthesisHybridService,
+                responseGuardService,
+                systemPromptBuilder,
+                intentPromptResolver,
+                null
+        );
+    }
 
     @BeforeAll
     static void bindMessageSourceForChatCatalog() throws Exception {
@@ -62,8 +130,8 @@ class ChatAIServiceTest {
      */
     @Test
     void buildIntentPrompt_shouldConstrainPersonRoleInferenceForSynthesis() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildIntentPrompt",
                 RagIntent.class,
                 String.class
@@ -83,8 +151,8 @@ class ChatAIServiceTest {
      */
     @Test
     void formatPersonRoleAxis_shouldUseKoreanAxisLabel() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "formatPersonRoleAxis",
                 JournalEntityRoleType.class,
                 int.class
@@ -102,8 +170,8 @@ class ChatAIServiceTest {
      */
     @Test
     void extractPersonFocusTokens_shouldKeepNamedPersonToken() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("extractPersonFocusTokens", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("extractPersonFocusTokens", String.class);
         method.setAccessible(true);
 
         @SuppressWarnings("unchecked")
@@ -120,8 +188,8 @@ class ChatAIServiceTest {
      */
     @Test
     void extractPersonFocusTokens_shouldStripHonorificSuffix() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("extractPersonFocusTokens", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("extractPersonFocusTokens", String.class);
         method.setAccessible(true);
 
         @SuppressWarnings("unchecked")
@@ -140,8 +208,8 @@ class ChatAIServiceTest {
      */
     @Test
     void mergePersonFocusTokens_shouldIncludeCanonicalLabelAndSurfaceForms() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "mergePersonFocusTokens",
                 List.class,
                 JournalEntityFocusService.PersonEntityFocusSummary.class
@@ -179,11 +247,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isHollowPersonMeaningResponse_shouldDetectGenericBuckets() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -207,11 +275,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isHollowPersonMeaningResponse_shouldRejectScaffoldLeak() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -235,11 +303,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isHollowPersonMeaningResponse_shouldRejectDreamdiaryNoiseTag() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -262,11 +330,11 @@ class ChatAIServiceTest {
      */
     @Test
     void filterPersonMeaningTags_shouldKeepOnlyPersonRelevantTags() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "filterPersonMeaningTags",
                 List.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         method.setAccessible(true);
 
@@ -289,11 +357,11 @@ class ChatAIServiceTest {
      */
     @Test
     void sanitizePersonMeaningSnippet_shouldStripMetadataAndHtml() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "sanitizePersonMeaningSnippet",
                 RagSearchResult.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         method.setAccessible(true);
 
@@ -321,8 +389,8 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonMeaningInterpretiveLead_shouldComposeLeadSentence() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final PersonSynthesisHybridService service = newHybridService();
+        final Method method = PersonSynthesisHybridService.class.getDeclaredMethod(
                 "buildPersonMeaningInterpretiveLead",
                 String.class,
                 Map.class,
@@ -355,8 +423,8 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonStanceInterpretiveLead_shouldAvoidThirdPersonSubject() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final PersonSynthesisHybridService service = newHybridService();
+        final Method method = PersonSynthesisHybridService.class.getDeclaredMethod(
                 "buildPersonStanceInterpretiveLead",
                 String.class,
                 Map.class,
@@ -390,11 +458,11 @@ class ChatAIServiceTest {
      */
     @Test
     void filterPersonMeaningLinkedContextTags_shouldExcludePersonFocusTags() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "filterPersonMeaningLinkedContextTags",
                 List.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         method.setAccessible(true);
 
@@ -419,11 +487,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isHollowPersonMeaningResponse_shouldAcceptLinkedContextTagCitation() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isHollowPersonMeaningResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -448,8 +516,8 @@ class ChatAIServiceTest {
      */
     @Test
     void citesPersonMeaningTagEvidence_shouldAcceptHashStem() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "citesPersonMeaningTagEvidence",
                 String.class,
                 Map.class
@@ -470,10 +538,10 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonMeaningDeterministicFallback_shouldIncludeLinkedContextAndChapter() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildPersonMeaningDeterministicFallback",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                RagContext.class
         );
         method.setAccessible(true);
 
@@ -492,11 +560,11 @@ class ChatAIServiceTest {
      */
     @Test
     void resolvePersonFocusMatchPriority_shouldPreferTagOverEntity() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "resolvePersonFocusMatchPriority",
                 RagSearchResult.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         method.setAccessible(true);
 
@@ -519,11 +587,11 @@ class ChatAIServiceTest {
      */
     @Test
     void resolvePersonFocusedResults_shouldNotFallbackToBodyMentionWithoutPersonTag() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "resolvePersonFocusedResults",
                 List.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         method.setAccessible(true);
 
@@ -553,8 +621,8 @@ class ChatAIServiceTest {
      */
     @Test
     void citesPersonMeaningSnippetEvidence_shouldDetectSnippetOverlap() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "citesPersonMeaningSnippetEvidence",
                 String.class,
                 List.class
@@ -579,7 +647,7 @@ class ChatAIServiceTest {
     }
 
     private static Object buildTestPersonFocus(final String target) throws Exception {
-        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus");
+        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus");
         final var personFocusCtor = personFocusClass.getDeclaredConstructor(
                 String.class,
                 List.class,
@@ -591,8 +659,8 @@ class ChatAIServiceTest {
     }
 
     private static Object buildTestRagContext(final String target) throws Exception {
-        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus");
-        final Class<?> ragContextClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus");
+        final Class<?> ragContextClass = RagContext.class;
 
         final var personFocusCtor = personFocusClass.getDeclaredConstructor(
                 String.class,
@@ -614,8 +682,8 @@ class ChatAIServiceTest {
     }
 
     private static Object buildTestRagContextWithTaggedResults(final String target) throws Exception {
-        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus");
-        final Class<?> ragContextClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus");
+        final Class<?> ragContextClass = RagContext.class;
 
         final var personFocusCtor = personFocusClass.getDeclaredConstructor(
                 String.class,
@@ -653,8 +721,8 @@ class ChatAIServiceTest {
     }
 
     private static Object buildTestRagContextWithManyTaggedResults(final String target, final int count) throws Exception {
-        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus");
-        final Class<?> ragContextClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+        final Class<?> personFocusClass = Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus");
+        final Class<?> ragContextClass = RagContext.class;
 
         final var personFocusCtor = personFocusClass.getDeclaredConstructor(
                 String.class,
@@ -698,8 +766,8 @@ class ChatAIServiceTest {
      */
     @Test
     void detectRagIntent_shouldTreatAttitudeQuestionAsSynthesis() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("detectRagIntent", String.class);
         method.setAccessible(true);
 
         final RagIntent intent = (RagIntent) method.invoke(
@@ -715,8 +783,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonMeaningQuery_shouldRecognizeHowYouThinkQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
         method.setAccessible(true);
 
         final boolean personMeaning = (boolean) method.invoke(
@@ -735,8 +803,8 @@ class ChatAIServiceTest {
      */
     @Test
     void detectRagIntent_shouldTreatFeelVerbAttitudeAsSynthesis() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("detectRagIntent", String.class);
         method.setAccessible(true);
 
         final RagIntent intent = (RagIntent) method.invoke(
@@ -755,8 +823,8 @@ class ChatAIServiceTest {
      */
     @Test
     void resolveRagTopK_shouldUseStanceBudgetForAttitudeQuery() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "resolveRagTopK",
                 RagIntent.class,
                 String.class
@@ -775,8 +843,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonMeaningQuery_shouldRecognizeFeelVerbAttitude() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
         method.setAccessible(true);
 
         final boolean personMeaning = (boolean) method.invoke(
@@ -792,8 +860,8 @@ class ChatAIServiceTest {
      */
     @Test
     void buildIntentPrompt_shouldConstrainLookupPersonQueries() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildIntentPrompt",
                 RagIntent.class,
                 String.class
@@ -815,8 +883,8 @@ class ChatAIServiceTest {
      */
     @Test
     void stripInternalRecordCitations_shouldRemoveBracketIndexes() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("stripInternalRecordCitations", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("stripInternalRecordCitations", String.class);
         method.setAccessible(true);
 
         final String cleaned = (String) method.invoke(
@@ -833,20 +901,20 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldFlagLookupGenericBucketAnswer() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
 
         final Class<?> ragContextClass = Class.forName(
-                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"
+                RagContext.class.getName()
         );
         final Class<?> personFocusClass = Class.forName(
-                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus"
+                "io.nicheblog.dreamdiary.feature.ai.person.PersonFocus"
         );
         final var lookupCtor = ragContextClass.getDeclaredConstructor(
                 RagIntent.class,
@@ -872,8 +940,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonAttitudeQuery_shouldRecognizeHowYouThinkQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("isPersonAttitudeQuery", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("isPersonAttitudeQuery", String.class);
         method.setAccessible(true);
 
         final boolean attitude = (boolean) method.invoke(
@@ -889,8 +957,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonAttitudeQuery_shouldNotMatchSymbolicMeaningQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("isPersonAttitudeQuery", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("isPersonAttitudeQuery", String.class);
         method.setAccessible(true);
 
         final boolean attitude = (boolean) method.invoke(
@@ -906,9 +974,9 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonAttitudeQuery_shouldNotMatchDialogueAppearanceQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method attitudeMethod = ChatAIService.class.getDeclaredMethod("isPersonAttitudeQuery", String.class);
-        final Method appearanceMethod = ChatAIService.class.getDeclaredMethod("isPersonAppearanceQuery", String.class);
+        final ChatOrchestrator service = newService();
+        final Method attitudeMethod = ChatOrchestrator.class.getDeclaredMethod("isPersonAttitudeQuery", String.class);
+        final Method appearanceMethod = ChatOrchestrator.class.getDeclaredMethod("isPersonAppearanceQuery", String.class);
         attitudeMethod.setAccessible(true);
         appearanceMethod.setAccessible(true);
 
@@ -925,8 +993,8 @@ class ChatAIServiceTest {
      */
     @Test
     void buildIntentPrompt_shouldUseAppearanceBranchForDialogueQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildIntentPrompt",
                 RagIntent.class,
                 String.class
@@ -950,11 +1018,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldFlagTraitQuoteParadeForAppearanceQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -982,8 +1050,8 @@ class ChatAIServiceTest {
      */
     @Test
     void buildIntentPrompt_shouldUseRichTrustProseForAttitudeQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildIntentPrompt",
                 RagIntent.class,
                 String.class
@@ -1008,11 +1076,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldFlagHrProfileForAttitudeQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1035,11 +1103,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldAcceptEpisodeNarrationInRichMode() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1066,11 +1134,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldAcceptAxisGroundedStanceAnswer() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1099,11 +1167,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldAcceptAdvisoryStyleWhenTagGroundedInRichMode() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1131,10 +1199,10 @@ class ChatAIServiceTest {
      */
     @Test
     void shouldUseRulePrimaryPersonSynthesisResponse_shouldBeTrueForAttitudeQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "shouldUseRulePrimaryPersonSynthesisResponse",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1154,20 +1222,20 @@ class ChatAIServiceTest {
      */
     @Test
     void shouldUseRulePrimaryPersonSynthesisResponse_shouldBeFalseWithoutPersonFocus() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "shouldUseRulePrimaryPersonSynthesisResponse",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
 
-        final Class<?> ragContextClass = Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+        final Class<?> ragContextClass = RagContext.class;
         final var ragContextCtor = ragContextClass.getDeclaredConstructor(
                 RagIntent.class,
                 List.class,
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         ragContextCtor.setAccessible(true);
         final Object ragContext = ragContextCtor.newInstance(RagIntent.SYNTHESIS, List.of(), "ctx", null);
@@ -1186,8 +1254,8 @@ class ChatAIServiceTest {
      */
     @Test
     void formatDisplayTag_shouldStripMetaPrefix() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("formatDisplayTag", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("formatDisplayTag", String.class);
         method.setAccessible(true);
 
         final String display = (String) method.invoke(service, "[엔서클]#조직역동");
@@ -1200,10 +1268,10 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonAppearanceDeterministicFallback_shouldUseFourSectionShape() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildPersonAppearanceDeterministicFallback",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                RagContext.class
         );
         method.setAccessible(true);
 
@@ -1222,8 +1290,8 @@ class ChatAIServiceTest {
      */
     @Test
     void extractPersonFocusTokens_shouldPreferPersonNameOverDialogueScopeWord() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method extractMethod = ChatAIService.class.getDeclaredMethod("extractPersonFocusTokens", String.class);
+        final ChatOrchestrator service = newService();
+        final Method extractMethod = ChatOrchestrator.class.getDeclaredMethod("extractPersonFocusTokens", String.class);
         extractMethod.setAccessible(true);
 
         @SuppressWarnings("unchecked")
@@ -1241,8 +1309,8 @@ class ChatAIServiceTest {
      */
     @Test
     void selectPrimaryPersonTokenFromQuery_shouldPreferHonorificPersonToken() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "selectPrimaryPersonTokenFromQuery",
                 String.class,
                 List.class
@@ -1263,11 +1331,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonRelevantTag_shouldUseDominantStemForShortPersonToken() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isPersonRelevantTag",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus"),
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus"),
                 String.class
         );
         method.setAccessible(true);
@@ -1295,8 +1363,8 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonMeaningInterpretiveLead_shouldUseDisplayTagFormat() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final PersonSynthesisHybridService service = newHybridService();
+        final Method method = PersonSynthesisHybridService.class.getDeclaredMethod(
                 "buildPersonMeaningInterpretiveLead",
                 String.class,
                 Map.class,
@@ -1326,10 +1394,10 @@ class ChatAIServiceTest {
      */
     @Test
     void resolvePersonFocusTarget_shouldPreferEntitySummaryCanonicalLabel() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "resolvePersonFocusTarget",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         method.setAccessible(true);
 
@@ -1349,7 +1417,7 @@ class ChatAIServiceTest {
                         List.of()
                 );
         final Class<?> personFocusClass = Class.forName(
-                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus"
+                "io.nicheblog.dreamdiary.feature.ai.person.PersonFocus"
         );
         final var personFocusCtor = personFocusClass.getDeclaredConstructor(
                 String.class,
@@ -1375,8 +1443,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isTagOnlyPersonMeaningResults_shouldBeTrueForTagMatchesOnly() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isTagOnlyPersonMeaningResults",
                 List.class
         );
@@ -1403,10 +1471,10 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonSynthesisHybridSystemPrompt_shouldIncludeSnapshotWithDisplayTags() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildPersonSynthesisHybridSystemPrompt",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1432,11 +1500,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldAcceptTagGroundedNarrativeInRichMode() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1464,11 +1532,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldAcceptStructuredStanceMirror() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1495,11 +1563,11 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonResponse_shouldAcceptOrgPhraseWhenTagGrounded() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonResponse",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1528,8 +1596,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonMeaningQuery_shouldRecognizePersonAboutQuestion() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method meaningMethod = ChatAIService.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
+        final ChatOrchestrator service = newService();
+        final Method meaningMethod = ChatOrchestrator.class.getDeclaredMethod("isPersonMeaningQuery", String.class);
         meaningMethod.setAccessible(true);
 
         final boolean personMeaning = (boolean) meaningMethod.invoke(
@@ -1545,8 +1613,8 @@ class ChatAIServiceTest {
      */
     @Test
     void detectRagIntent_shouldTreatPersonAboutQuestionAsSynthesis() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("detectRagIntent", String.class);
         method.setAccessible(true);
 
         final RagIntent intent = (RagIntent) method.invoke(
@@ -1561,8 +1629,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isPersonAboutLookupQuery_shouldRecognizeFixedLookupHints() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("isPersonAboutLookupQuery", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("isPersonAboutLookupQuery", String.class);
         method.setAccessible(true);
 
         assertTrue((boolean) method.invoke(service, "민수님에 대해 무엇을 말해줄 수 있니?"));
@@ -1574,10 +1642,10 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonMeaningRetryPrompt_shouldIncludeGuardDetailHint() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildPersonMeaningRetryPrompt",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class,
                 String.class
         );
@@ -1608,8 +1676,8 @@ class ChatAIServiceTest {
      */
     @Test
     void appendRulePrimaryEvidenceSection_shouldIncludeUpToThreeSnippets() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "appendRulePrimaryEvidenceSection",
                 StringBuilder.class,
                 List.class
@@ -1632,8 +1700,8 @@ class ChatAIServiceTest {
      */
     @Test
     void compactRulePrimaryEvidenceSnippet_shouldStripDialogueQuotes() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "compactRulePrimaryEvidenceSnippet",
                 String.class
         );
@@ -1653,10 +1721,10 @@ class ChatAIServiceTest {
      */
     @Test
     void buildRagMetadataJson_shouldIncludeRetryGuardDetail() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildRagMetadataJson",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class,
                 String.class,
                 String.class
@@ -1685,10 +1753,10 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonStanceDeterministicFallback_shouldWriteGroundedSecondPersonProse() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildPersonStanceDeterministicFallback",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1714,10 +1782,10 @@ class ChatAIServiceTest {
      */
     @Test
     void buildPersonMeaningSnapshot_stanceQuery_shouldSpreadRichEvidence() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildPersonMeaningSnapshot",
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext"),
+                RagContext.class,
                 String.class
         );
         method.setAccessible(true);
@@ -1743,15 +1811,15 @@ class ChatAIServiceTest {
      */
     @Test
     void appendRulePrimaryEvidenceSection_stanceOptions_shouldIncludeUpToTwentySnippets() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
+        final PersonSynthesisHybridService service = newHybridService();
         final Class<?> optionsClass = Class.forName(
-                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonMeaningSnapshotOptions"
+                "io.nicheblog.dreamdiary.feature.ai.person.PersonSnapshotService$PersonMeaningSnapshotOptions"
         );
         final Method stanceRich = optionsClass.getDeclaredMethod("personStanceRich");
         stanceRich.setAccessible(true);
         final Object stanceOptions = stanceRich.invoke(null);
 
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final Method method = PersonSynthesisHybridService.class.getDeclaredMethod(
                 "appendRulePrimaryEvidenceSection",
                 StringBuilder.class,
                 List.class,
@@ -1783,8 +1851,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonStanceRichResponse_shouldRejectGenericBucket() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonStanceRichResponse",
                 String.class
         );
@@ -1803,8 +1871,8 @@ class ChatAIServiceTest {
      */
     @Test
     void isDegradedPersonStanceRichResponse_shouldAcceptGroundedProse() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "isDegradedPersonStanceRichResponse",
                 String.class
         );
@@ -1824,8 +1892,8 @@ class ChatAIServiceTest {
      */
     @Test
     void describePersonStanceRichGuardFailure_shouldReturnGenericBucketCode() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "describePersonStanceRichGuardFailure",
                 String.class
         );
@@ -1845,8 +1913,8 @@ class ChatAIServiceTest {
     @Test
     void languageRetryPrompt_shouldLoadKoreanCatalog() throws Exception {
         LocaleContextHolder.setLocale(Locale.KOREAN);
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("languageRetryPrompt");
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("languageRetryPrompt");
         method.setAccessible(true);
 
         final String prompt = (String) method.invoke(service);
@@ -1864,8 +1932,8 @@ class ChatAIServiceTest {
     void languageRetryPrompt_shouldLoadEnglishCatalog() throws Exception {
         LocaleContextHolder.setLocale(Locale.ENGLISH);
         try {
-            final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-            final Method method = ChatAIService.class.getDeclaredMethod("languageRetryPrompt");
+            final ChatOrchestrator service = newService();
+            final Method method = ChatOrchestrator.class.getDeclaredMethod("languageRetryPrompt");
             method.setAccessible(true);
 
             final String prompt = (String) method.invoke(service);
@@ -1884,8 +1952,8 @@ class ChatAIServiceTest {
     @Test
     void containsDisallowedHanScript_shouldRejectTwoOrMoreHanCharacters() throws Exception {
         LocaleContextHolder.setLocale(Locale.KOREAN);
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("containsDisallowedHanScript", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("containsDisallowedHanScript", String.class);
         method.setAccessible(true);
 
         assertFalse((Boolean) method.invoke(service, "기록에 나온 내용이에요."));
@@ -1901,19 +1969,19 @@ class ChatAIServiceTest {
     @Test
     void buildLanguageFallback_shouldPickCatalogByIntent() throws Exception {
         LocaleContextHolder.setLocale(Locale.KOREAN);
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod(
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod(
                 "buildLanguageFallback",
                 String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext")
+                RagContext.class
         );
         method.setAccessible(true);
 
         final Class<?> ragContextClass = Class.forName(
-                "io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$RagContext");
+                RagContext.class.getName());
         final var emptyCtor = ragContextClass.getDeclaredConstructor(
                 RagIntent.class, List.class, String.class,
-                Class.forName("io.nicheblog.dreamdiary.feature.chat.service.ChatAIService$PersonFocus")
+                Class.forName("io.nicheblog.dreamdiary.feature.ai.person.PersonFocus")
         );
         emptyCtor.setAccessible(true);
 
@@ -1937,8 +2005,8 @@ class ChatAIServiceTest {
     void detectRagIntent_shouldPreferLlmWhenAmbiguous() throws Exception {
         final OllamaClient ollama = Mockito.mock(OllamaClient.class);
         when(ollama.chat(anyString(), anyString())).thenReturn("SUMMARY");
-        final ChatAIService service = new ChatAIService(null, null, null, ollama, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        final ChatOrchestrator service = newService(ollama);
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("detectRagIntent", String.class);
         method.setAccessible(true);
 
         final RagIntent intent = (RagIntent) method.invoke(service, "의미를 정리해줘");
@@ -1953,8 +2021,8 @@ class ChatAIServiceTest {
     void detectRagIntent_shouldFallbackToHeuristicWhenLlmFails() throws Exception {
         final OllamaClient ollama = Mockito.mock(OllamaClient.class);
         when(ollama.chat(anyString(), anyString())).thenThrow(new IllegalStateException("ollama down"));
-        final ChatAIService service = new ChatAIService(null, null, null, ollama, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("detectRagIntent", String.class);
+        final ChatOrchestrator service = newService(ollama);
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("detectRagIntent", String.class);
         method.setAccessible(true);
 
         final RagIntent intent = (RagIntent) method.invoke(service, "의미를 정리해줘");
@@ -1967,8 +2035,8 @@ class ChatAIServiceTest {
      */
     @Test
     void parseRagIntentLabel_shouldExtractFirstKnownLabel() throws Exception {
-        final ChatAIService service = new ChatAIService(null, null, null, null, null, null, null);
-        final Method method = ChatAIService.class.getDeclaredMethod("parseRagIntentLabel", String.class);
+        final ChatOrchestrator service = newService();
+        final Method method = ChatOrchestrator.class.getDeclaredMethod("parseRagIntentLabel", String.class);
         method.setAccessible(true);
 
         assertEquals(RagIntent.LOOKUP, method.invoke(service, "LOOKUP"));

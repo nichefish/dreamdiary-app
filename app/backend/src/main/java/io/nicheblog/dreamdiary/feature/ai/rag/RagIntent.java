@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.chat.model;
+package io.nicheblog.dreamdiary.feature.ai.rag;
 
 /**
  * 사용자 질문에 대한 RAG 검색/응답 의도.

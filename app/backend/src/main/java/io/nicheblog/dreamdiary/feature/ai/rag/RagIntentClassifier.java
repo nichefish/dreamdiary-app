@@ -1,19 +1,18 @@
-package io.nicheblog.dreamdiary.feature.chat.service;
+package io.nicheblog.dreamdiary.feature.ai.rag;
 
-import io.nicheblog.dreamdiary.feature.chat.model.RagIntent;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * 사용자 질문의 RAG 의도({@link RagIntent}) 휴리스틱 분류기.
  *
- * <p>{@link ChatAIService#detectRagIntent(String)} 대신 순수 규칙으로 LOOKUP/SUMMARY/SYNTHESIS를 결정한다.
- * 인물 about 판정({@code isPersonAboutLookupQuery})은 서비스에 남겨 플래그로 넘긴다.</p>
+ * <p>순수 규칙으로 LOOKUP/SUMMARY/SYNTHESIS를 결정한다.
+ * 인물 about 판정({@code isPersonAboutLookupQuery})은 호출자({@link io.nicheblog.dreamdiary.feature.chat.service.ChatOrchestrator})가 플래그로 넘긴다.</p>
  *
  * <p>변경 전: {@code 최근} 단독으로 SUMMARY, {@code 패턴}/최근+찾기 동시 등으로 오분류가 쉽았다.
  * 변경 후: 명시적 검색 단서는 LOOKUP 우선, {@code 최근}은 요약 단서와 같이 쓸 때만 SUMMARY.</p>
  *
  * <p>{@link #needsLlmSecondPass(String)}은 SUMMARY·SYNTHESIS 단서가 동시에 잡힐 때만 true다.
- * {@link ChatAIService}가 그때 Ollama 2차 분류를 호출한다.</p>
+ * {@link RagSearchFacade#detectIntent}가 그때 Ollama 2차 분류를 호출한다.</p>
  */
 public final class RagIntentClassifier {
 
@@ -50,7 +49,7 @@ public final class RagIntentClassifier {
      * 질문 문장으로 RAG 의도를 분류한다.
      *
      * @param queryText 사용자 질문
-     * @param personAboutLookup 인물 토큰 + about 힌트가 있으면 true ({@link ChatAIService} 판정)
+     * @param personAboutLookup 인물 토큰 + about 힌트가 있으면 true (호출자 판정)
      * @return LOOKUP / SUMMARY / SYNTHESIS
      */
     public static RagIntent classify(final String queryText, final boolean personAboutLookup) {

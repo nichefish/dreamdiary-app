@@ -8,6 +8,8 @@ It must help the user continue thinking with their own journal data, but it must
 
 ## Current Architecture
 
+LLM 클라이언트·설정·RAG intent/검색 병합·person focus/snapshot·Path C hybrid·언어/person 가드(`ResponseGuardService`)는 `feature/ai`에 두고, 세션 오케스트레이션·시스템/의도 프롬프트·세션 컨텍스트 로딩은 `feature/chat`에 둔다. 목표 분리는 [AI_DOMAIN_SEPARATION.md](AI_DOMAIN_SEPARATION.md)를 본다.
+
 ### Client
 
 | Area | File | Responsibility |
@@ -22,17 +24,31 @@ It must help the user continue thinking with their own journal data, but it must
 | Area | File | Responsibility |
 | --- | --- | --- |
 | WebSocket endpoint | `ChatController` | STOMP send/cancel handling |
-| Chat orchestration | `ChatAIService` | Save user message, build context, call LLM, save/broadcast assistant message |
+| Chat orchestration | `ChatOrchestrator` | Save user message, delegate RAG to `RagContextService`, detect Path C, load session messages, inject `ResponseGuardService`, call LLM/hybrid, save/broadcast assistant message |
+| RAG context | `RagContextService` / `RagContextTextBuilder` | Intent, merged/tag-only retrieval, context text, tag/timeline summaries |
 | Session management | `ChatSessionService` | Session ownership, default prompt, last-message timestamp/title, manual title rename (`PATCH /chat/sessions/{id}`) |
 | Message history | `ChatMessageService` | Recent context messages |
-| LLM client | `OllamaClient` | Ollama chat and embedding API calls |
-| Ollama settings | `OllamaProperties` | `app.ollama.*` base URL and model names (`application.yml`, profile overrides) |
+| LLM client | `feature/ai/client/OllamaClient` | Ollama chat and embedding API calls (`AiChatMessage` role/content) |
+| Ollama settings | `feature/ai/config/OllamaProperties` | `app.ollama.*` base URL and model names (`application.yml`, profile overrides) |
+| LLM message (internal) | `feature/ai/model/AiChatMessage` | role/content only; chat maps from `ChatMessageDto` |
+| Ollama health | `feature/ai/model/OllamaHealthDto` | Admin/eval Ollama readiness |
+| System prompt | `feature/ai/prompt/SystemPromptBuilder` | Session base + response-guard + RAG journal block |
+| Intent prompt | `feature/ai/prompt/IntentPromptResolver` | LOOKUP/SUMMARY/SYNTHESIS/stance/appearance intent appendices + intent-classify |
 | Memory search | `JournalEntryEmbeddingSearchService` | In-memory keyword + vector search over journal embeddings |
 | Entity focus summary | `JournalEntityFocusService` | Resolve entity-catalog-backed person summaries for synthesis questions |
 | Entity sync queue | `JournalEntryEntityQueueService` / `JournalEntryEntityWorker` | Queue and asynchronously refresh entity refs and mention roles after journal entry writes |
 | Entity queue admin API | `JournalEntryEntityAdminRestController` | Expose queue stats, full requeue sync, and failed-row requeue for operators |
 | RAG search result | `RagSearchResult` | Internal retrieval DTO carrying entity, match type, score, matched tokens, and snippet |
-| RAG intent | `RagIntent` | Classifies retrieval mode as `LOOKUP`, `SUMMARY`, or `SYNTHESIS` |
+| RAG intent | `feature/ai/rag/RagIntent` | Classifies retrieval mode as `LOOKUP`, `SUMMARY`, or `SYNTHESIS` |
+| RAG intent rules | `feature/ai/rag/RagIntentClassifier` | Heuristic LOOKUP/SUMMARY/SYNTHESIS (person-about flag from chat) |
+| RAG search facade | `feature/ai/rag/RagSearchFacade` | Intent detect (heuristic+LLM), keyword/vector merge, topK/minScore, tag-first merge |
+| Person focus DTO | `feature/ai/person/PersonFocus` | Person-meaning focus tokens, match count, entity catalog summary |
+| Person query rules | `feature/ai/person/PersonQueryClassifier` | Person-meaning/attitude/appearance/about-lookup heuristics and focus token extraction |
+| Person focus resolver | `feature/ai/person/PersonFocusResolver` | Resolve focus, person-tag merge, source priority, tag filtering |
+| Person snapshot | `feature/ai/person/PersonSnapshotService` | Person-meaning/stance SNAPSHOT aggregation and evidence budgets |
+| Person Path C hybrid | `feature/ai/person/PersonSynthesisHybridService` | SYNTHESIS person hybrid prompt/LLM/retry/rule-primary; guards via `PersonSynthesisGuardPort` |
+| Response guard | `feature/ai/guard/ResponseGuardService` | Language/person hollow·stance guards; implements `PersonSynthesisGuardPort` for Path C and chat LLM path |
+| Person synthesis result | `feature/ai/person/PersonSynthesisResult` | Path C content/responseMode/guardDetail mapping target for chat |
 
 ### Ollama Configuration
 
@@ -74,7 +90,7 @@ Health check compares installed Ollama tags against the **configured** chat and 
 ```text
 User message
   -> WebSocket /app/chat/session/{sessionId}/send
-  -> ChatAIService.processChat()
+  -> ChatOrchestrator.processChat()
   -> save USER chat_message
   -> broadcast USER message
   -> broadcast PROGRESS phase=SEARCHING
@@ -126,7 +142,7 @@ Clients accumulate `delta` into a temporary assistant bubble (`streamingContent`
 
 ## i18n (server chat responses)
 
-User-visible rule-primary / guard / clarification strings in `ChatAIService` use `MessageUtils` + `chat.ai.*` keys in `messages_ko.properties` / `messages_en.properties`.
+User-visible rule-primary / guard / clarification strings in `ChatOrchestrator` use `MessageUtils` + `chat.ai.*` keys in `messages_ko.properties` / `messages_en.properties`.
 
 | Key prefix | Purpose |
 | --- | --- |
@@ -288,7 +304,7 @@ Fields:
 - `tags`: tags extracted from the source payload
 - `snippet`: short debug/source preview text
 
-This keeps retrieval evidence available after search. `ChatAIService` uses it for merging, context construction, logs, and persisted message metadata.
+This keeps retrieval evidence available after search. `ChatOrchestrator` uses it for merging, context construction, logs, and persisted message metadata.
 
 ### Message Metadata
 
@@ -372,7 +388,7 @@ It still does not expose raw `ragSources`/`personFocus` JSON as a separate struc
 
 ### RAG Intent
 
-`ChatAIService` classifies user questions before retrieval.
+`ChatOrchestrator` classifies user questions before retrieval.
 
 Modes:
 
@@ -382,7 +398,7 @@ Modes:
 | `SUMMARY` | Summarize a set of records | wider top-K, compact source lines |
 | `SYNTHESIS` | Interpret patterns, meanings, symbols, emotional arcs, whole context | widest top-K, lower vector threshold, compact source lines |
 
-First-pass intent detection lives in `RagIntentClassifier` (pure rules; `ChatAIService#detectRagIntent` only supplies the person-about flag). Priority order:
+First-pass intent detection lives in `RagIntentClassifier` (pure rules; `ChatOrchestrator#detectRagIntent` supplies the person-about flag and delegates to `RagSearchFacade#detectIntent`). Priority order:
 
 1. Person-about lookup (`isPersonAboutLookupQuery`) → `SYNTHESIS`
 2. Explicit search cues (`찾아줘`, `검색해`, `어디에 있`, …) → `LOOKUP` (beats synthesis/summary keywords)
@@ -391,7 +407,7 @@ First-pass intent detection lives in `RagIntentClassifier` (pure rules; `ChatAIS
 5. `최근` alone is **not** `SUMMARY`; `최근` + a summary companion (`요약`/`정리`/`흐름`/`패턴`/…) → `SUMMARY`
 6. Else → `LOOKUP`
 
-When the first-pass heuristic sees **both** SUMMARY and SYNTHESIS cues (and no LOOKUP-force cue), `ChatAIService#detectRagIntent` runs an **ambiguity-gated LLM second pass**: one non-streaming Ollama call with `chat.ai.prompt.intent-classify` that must answer `LOOKUP` / `SUMMARY` / `SYNTHESIS` only. Parse failure or Ollama error falls back to the heuristic label. Person-about and LOOKUP-force paths never call the second pass.
+When the first-pass heuristic sees **both** SUMMARY and SYNTHESIS cues (and no LOOKUP-force cue), `RagSearchFacade#detectIntent` runs an **ambiguity-gated LLM second pass**: one non-streaming Ollama call with `chat.ai.prompt.intent-classify` that must answer `LOOKUP` / `SUMMARY` / `SYNTHESIS` only. Parse failure or Ollama error falls back to the heuristic label. Person-about and LOOKUP-force paths never call the second pass.
 
 Person-meaning hint detection (`isPersonMeaningQuery`) also treats `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, and `어떤 느낌` as person-centric synthesis signals. Example: `나는 민수님을 어떻게 생각하고 있니?` must route to `SYNTHESIS` + person-meaning tag-only retrieval, not `LOOKUP`.
 
@@ -427,7 +443,7 @@ This path reuses person-meaning tag-only retrieval but runs a **rich-trust** pro
 
 When `shouldUseRulePrimaryPersonSynthesisResponse` is true — `SYNTHESIS` intent, resolved `personFocus`, and `isPersonMeaningQuery` — the server runs **Path C**:
 
-1. Build `PersonMeaningSnapshot` from tag-only (or focused) RAG sources (same material as rule-primary). Default snapshot includes up to **3** evidence snippets (`PERSON_MEANING_SNAPSHOT_EVIDENCE_LIMIT`), each ~100 chars. **Person-stance (attitude) questions** use a richer budget: RAG up to **50** entries (`PERSON_STANCE_RAG_TOP_K`) — applied in **both** the tag-only retrieval and the merged fallback retrieval (`buildMergedRagContext` passes `queryText` to `resolveRagTopK`; F3 alignment) — snapshot evidence up to **20** snippets (`PERSON_STANCE_SNAPSHOT_EVIDENCE_LIMIT`), ~400 chars each, **8000** total char budget, sampled across tagged sources (not only the first rows).
+1. Build `PersonMeaningSnapshot` from tag-only (or focused) RAG sources (same material as rule-primary). Default snapshot includes up to **3** evidence snippets (`PERSON_MEANING_SNAPSHOT_EVIDENCE_LIMIT`), each ~100 chars. **Person-stance (attitude) questions** use a richer budget: RAG up to **50** entries (`PERSON_STANCE_RAG_TOP_K`) — applied in **both** the tag-only retrieval and the merged fallback retrieval (`RagContextService` merged path passes `queryText` to `resolveTopK`; F3 alignment) — snapshot evidence up to **20** snippets (`PERSON_STANCE_SNAPSHOT_EVIDENCE_LIMIT`), ~400 chars each, **8000** total char budget, sampled across tagged sources (not only the first rows).
 2. Call Ollama **once** with `PERSON_SYNTHESIS_HYBRID` system prompt containing only the snapshot block (no full journal dump). **Recent session messages (up to 5)** may be included as follow-up context; full history is not injected. **Attitude questions use the rich-trust prompt**: free-form prose (no forced sections), 2nd-person framing, read many evidence scenes, do not assert facts/roles absent from the records. Local `app.ollama.num-predict` may be raised (e.g. 2048) so deep answers are not truncated.
 3. Apply the Korean language guard, then the person degradation gate (`isDegradedPersonResponse`). **Attitude answers use the minimal `isDegradedPersonStanceRichResponse` gate** (blank/short/scaffold-leak/generic-bucket only); meaning/appearance keep the fuller hollow guards. On failure, **one** retry with `PERSON_MEANING_RETRY` / `PERSON_STANCE_RETRY` appendix that includes the first `guardDetail` reason. Stance retries include the richer evidence list.
 4. If the LLM answer passes guards → `responseMode=PERSON_SYNTHESIS_HYBRID`.
@@ -465,11 +481,11 @@ For person meaning questions, the assistant must not infer real-world roles such
 - emotional or desire function in the user's flow
 - what cannot be confirmed from the retrieved records
 
-When a `SYNTHESIS` question is also a person-meaning question, `ChatAIService` uses **tag-only retrieval** via `buildPersonMeaningTagOnlyRagContext(...)`. Only journal entries whose embedding payload tags contain a person focus token (substring match: `민수` within `#김민수`) become RAG sources.
+When a `SYNTHESIS` question is also a person-meaning question, `RagContextService` uses **tag-only retrieval** (person-tag search first). Only journal entries whose embedding payload tags contain a person focus token (substring match: `민수` within `#김민수`) become RAG sources.
 
 Person-meaning retrieval tries **tag-only search first** via `searchByPersonTagsWithScore(...)`. Person tokens are normalized with the same honorific/particle stripping as keyword search (`민수님` -> `민수`) so tags such as `#김민수` match.
 
-When tag-only retrieval returns zero rows, `ChatAIService` falls back to merged synthesis retrieval (keyword + vector + person-tag merge + entity boost). It must not tell the user to attach tags when tagged/body records already exist in the merged fallback results.
+When tag-only retrieval returns zero rows, `RagContextService` falls back to merged synthesis retrieval (keyword + vector + person-tag merge + entity boost). It must not tell the user to attach tags when tagged/body records already exist in the merged fallback results.
 
 When tag-only retrieval finds zero matches, the RAG context states that no tagged records exist and deterministic fallback tells the user to attach the person tag first. Body-only mentions are not used as a substitute.
 
@@ -580,7 +596,7 @@ Current behavior:
 
 This prevents a bad stored assistant message from contaminating later responses in the same session.
 
-Retry prompt text comes from locale catalog key `chat.ai.guard.language-retry` via `languageRetryPrompt()`. Deterministic fallbacks use `chat.ai.language-fallback.*` via `buildLanguageFallback(...)`. Regression coverage: `ChatAIServiceTest` language-guard methods.
+Retry prompt text comes from locale catalog key `chat.ai.guard.language-retry` via `languageRetryPrompt()`. Deterministic fallbacks use `chat.ai.language-fallback.*` via `buildLanguageFallback(...)`. Regression coverage: `ChatOrchestratorTest` language-guard methods.
 
 ## Bad Response Guardrail
 
@@ -659,4 +675,4 @@ The vector cache may contain many users' records, but `JournalEntryEmbeddingSear
 
 1. _(shipped)_ SUMMARY/SYNTHESIS/STANCE-specific top-K and synthesis min-score are admin-configurable (`rag_summary_top_k`, `rag_synthesis_top_k`, `rag_stance_top_k`, `rag_synthesis_min_score`).
 2. _(shipped)_ Ambiguity-gated LLM second-pass when SUMMARY+SYNTHESIS cues overlap (`RagIntentClassifier#needsLlmSecondPass` + `chat.ai.prompt.intent-classify`); heuristic fallback on failure.
-3. _(shipped)_ Korean-only guard prompt construction covered by `ChatAIServiceTest` (`languageRetryPrompt_*`, `containsDisallowedHanScript_*`, `buildLanguageFallback_*`).
+3. _(shipped)_ Korean-only guard prompt construction covered by `ChatOrchestratorTest` (`languageRetryPrompt_*`, `containsDisallowedHanScript_*`, `buildLanguageFallback_*`).

@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.chat.config;
+package io.nicheblog.dreamdiary.feature.ai.config;
 
 import lombok.Getter;
 import lombok.Setter;

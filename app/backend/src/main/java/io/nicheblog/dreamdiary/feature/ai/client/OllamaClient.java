@@ -1,10 +1,10 @@
-package io.nicheblog.dreamdiary.feature.chat.client;
+package io.nicheblog.dreamdiary.feature.ai.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nicheblog.dreamdiary.feature.chat.config.OllamaProperties;
-import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
-import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
+import io.nicheblog.dreamdiary.feature.ai.config.OllamaProperties;
+import io.nicheblog.dreamdiary.feature.ai.model.AiChatMessage;
+import io.nicheblog.dreamdiary.feature.ai.model.OllamaHealthDto;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -65,7 +65,7 @@ public class OllamaClient {
      * @return Ollama가 생성한 assistant 응답 본문
      */
     public String chat(final String systemPrompt, final String userMessage) {
-        return this.chat(systemPrompt, List.of(ChatMessageDto.builder()
+        return this.chat(systemPrompt, List.of(AiChatMessage.builder()
                 .role("USER")
                 .content(userMessage)
                 .build()));
@@ -79,7 +79,7 @@ public class OllamaClient {
      * @return Ollama가 생성한 assistant 응답 본문
      * @throws IllegalStateException Ollama 응답 본문이 비어 있을 때
      */
-    public String chat(final String systemPrompt, final List<ChatMessageDto> contextMessages) {
+    public String chat(final String systemPrompt, final List<AiChatMessage> contextMessages) {
 
         final long start = System.currentTimeMillis();
         final OllamaChatRequest request = buildChatRequest(systemPrompt, contextMessages, false);
@@ -129,7 +129,7 @@ public class OllamaClient {
      */
     public String chatStream(
             final String systemPrompt,
-            final List<ChatMessageDto> contextMessages,
+            final List<AiChatMessage> contextMessages,
             final Consumer<String> onDelta,
             final AtomicBoolean cancelFlag
     ) {
@@ -392,7 +392,7 @@ public class OllamaClient {
      */
     private OllamaChatRequest buildChatRequest(
             final String systemPrompt,
-            final List<ChatMessageDto> contextMessages,
+            final List<AiChatMessage> contextMessages,
             final boolean stream
     ) {
         final OllamaChatRequest request = new OllamaChatRequest();
