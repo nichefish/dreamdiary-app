@@ -179,6 +179,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
   const dreamEntries = ref<AnnualEntryDto[]>([]);
   /** 엔트리 목록 로딩 여부 */
   const entriesLoading = ref(false);
+  /** 엔트리 목록 조회 실패 메시지 */
+  const entriesError = ref<string | null>(null);
 
   // ---- 결산 리뷰 등록/수정 모달 ----
 
@@ -430,6 +432,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
    */
   async function fetchEntries(yy: number, section: AnnualSection) {
     entriesLoading.value = true;
+    entriesError.value = null;
     try {
       const path = section === "DIARY"
         ? `/api/journal/annual/${yy}/diaries`
@@ -443,9 +446,9 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       });
       if (section === "DIARY") diaryEntries.value = res.data?.rsltList ?? [];
       else dreamEntries.value = res.data?.rsltList ?? [];
-    } catch {
-      if (section === "DIARY") diaryEntries.value = [];
-      else dreamEntries.value = [];
+    } catch (e: unknown) {
+      console.error("[journalAnnual] fetchEntries failed", { yy, section }, e);
+      entriesError.value = t("journal.annual.entries.load.failure");
     } finally {
       entriesLoading.value = false;
     }
@@ -680,6 +683,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     diaryEntries,
     dreamEntries,
     entriesLoading,
+    entriesError,
     fetchDetail,
     setSection,
     fetchEntries,

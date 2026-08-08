@@ -155,6 +155,10 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       /* 태그 필터는 공통 BaseAttachableSearchParam.tags(List<Integer>) 로 전달한다 (스레드와 동일) */
       if (filterTagId.value != null) params.tags = [filterTagId.value];
       const res = await axios.get("/api/board/posts", { params });
+      if (!res.data?.rslt) {
+        error.value = res.data?.message ?? t("board.post.list.load.failure");
+        return;
+      }
       /* Spring Page<T> → { content, totalElements, totalPages, number, size } */
       const pageResult = res.data?.rsltObj;
       postList.value = pageResult?.content ?? [];
@@ -163,7 +167,6 @@ export const useBoardPostStore = defineStore("boardPost", () => {
       currentPage.value = pageResult?.number ?? 0;
     } catch {
       error.value = t("board.post.list.load.failure");
-      postList.value = [];
     } finally {
       loading.value = false;
     }

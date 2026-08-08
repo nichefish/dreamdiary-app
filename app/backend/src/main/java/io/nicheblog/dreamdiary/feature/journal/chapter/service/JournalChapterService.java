@@ -72,6 +72,8 @@ public class JournalChapterService
     private static final String SUMMARY_YN = "Y";
     /** 일반 챕터 */
     private static final String NON_SUMMARY_YN = "N";
+    /** 순번 밖 챕터(시스템 요약·DREAM)의 sort_order. 표시 위치는 정렬 버킷이 고정하므로 순번(1..N)에서 제외한다. */
+    private static final int NON_NUMBERED_SORT_ORDER = 0;
 
     @Getter
     private final JournalChapterRepository repository;
@@ -176,37 +178,33 @@ public class JournalChapterService
         registDto.setChapterType(ChapterType.DREAM);
         registDto.setSummaryYn(NON_SUMMARY_YN);
         registDto.setPrefixId(null);
-        applyNewChapterSortOrder(registDto);
+        // DREAM 은 정렬 버킷으로 맨 뒤 고정이라 순번(1..N) 밖(0)이다.
+        registDto.setSortOrder(NON_NUMBERED_SORT_ORDER);
     }
 
     /**
      * 새 챕터의 정렬값을 계산하고, 첫 일반(non-DREAM) 챕터에는 시스템 요약 역할을 부여한다.
      * <p>
-     * 변경 전: {@code sortOrder == 1} 을 기준으로 SUMMARY 를 부여했다. 그러나 sortOrder 는
-     * DREAM 챕터까지 포함해 계산되므로, 꿈 챕터가 먼저 있던 날에 첫 일반 챕터를 등록하면
-     * sortOrder 가 2 이상이 되어 SUMMARY 가 누락됐다.
-     * 변경 후: DREAM 은 항상 마지막에 배치되는 개념 챕터이므로 판정에서 제외하고,
-     * "기존 non-DREAM 챕터가 없을 때"를 첫 일반 챕터로 보아 {@code summaryYn=Y}를 부여한다.
-     * sortOrder 계산 자체는 그대로 두어 배치/순서에는 영향을 주지 않는다.
-     * <p>
-     * 시스템 요약 동작은 {@code summaryYn}이 담당한다. 첫 일반 챕터는 클라이언트가 보낸
-     * Prefix와 무관하게 시스템 요약으로 확정하며 Prefix 선택을 제거한다.
+     * 시스템 요약 동작은 {@code summaryYn}이 담당하고 표시 위치는 정렬 버킷(요약 맨 앞·DREAM 맨 뒤)이 고정한다.
+     * 따라서 요약·DREAM 은 순번(1..N) 밖({@code sort_order=0})이며, 사용자에게 보이는 순번은 일반 챕터끼리 1부터다.
+     * "기존 non-DREAM 챕터가 없을 때"를 첫 일반 챕터로 보아 {@code summaryYn=Y}·{@code sort_order=0} 을 부여하고,
+     * 이후 일반 챕터는 {@link #applyNewNormalChapterSortOrder}로 1부터 순번을 잇는다.
+     * 첫 일반 챕터는 클라이언트가 보낸 Prefix와 무관하게 시스템 요약으로 확정하며 Prefix 선택을 제거한다.
      * </p>
      *
      * @param registDto 등록할 챕터 DTO
      */
     private void applyNewChapterSortOrderAndSummaryRole(final JournalChapterDto registDto) throws Exception {
-        applyNewChapterSortOrder(registDto);
         final boolean hasNonDreamChapter = repository.existsByJournalDayIdAndChapterTypeNot(registDto.getJournalDayId(), ChapterType.DREAM);
         if (!hasNonDreamChapter) {
             if (registDto.getPrefixId() != null) {
                 log.warn("[JournalChapter.summary] 첫 일반 챕터의 사용자 Prefix를 무시하고 시스템 요약으로 확정. journalDayId={}, requestedPrefixId={}",
                         registDto.getJournalDayId(), registDto.getPrefixId());
             }
+            registDto.setSortOrder(NON_NUMBERED_SORT_ORDER);
             registDto.setSummaryYn(SUMMARY_YN);
             registDto.setPrefixId(null);
-            log.debug("[JournalChapter.summary] 첫 일반 챕터 → 시스템 요약 부여. journalDayId={}, sortOrder={}",
-                    registDto.getJournalDayId(), registDto.getSortOrder());
+            log.debug("[JournalChapter.summary] 첫 일반 챕터 → 시스템 요약 부여(순번 밖). journalDayId={}", registDto.getJournalDayId());
             return;
         }
         if (StringUtils.equals(registDto.getSummaryYn(), SUMMARY_YN)) {
@@ -215,16 +213,17 @@ public class JournalChapterService
             throw new BusinessException("journal.chapter.summary-auto-only");
         }
         registDto.setSummaryYn(NON_SUMMARY_YN);
+        applyNewNormalChapterSortOrder(registDto);
     }
 
     /**
-     * 같은 일자 안에서 새 챕터가 들어갈 다음 정렬값을 계산한다.
+     * 일반 챕터의 다음 순번을 계산한다. 요약·DREAM(순번 밖, {@code sort_order=0})을 제외하고 1부터 잇는다.
      *
      * @param registDto 등록할 챕터 DTO
      */
-    private void applyNewChapterSortOrder(final JournalChapterDto registDto) throws Exception {
-        final int lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDayId()).orElse(0);
-        registDto.setSortOrder(lastSortOrder + 1);
+    private void applyNewNormalChapterSortOrder(final JournalChapterDto registDto) {
+        final int lastNormal = repository.findLastNormalIndexByJournalDay(registDto.getJournalDayId(), ChapterType.DREAM).orElse(0);
+        registDto.setSortOrder(lastNormal + 1);
     }
 
     /**
@@ -560,9 +559,10 @@ public class JournalChapterService
                 .thenComparingInt((JournalChapterEntity e) -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
                 .thenComparing(JournalChapterEntity::getId));
 
-        int sortOrder = 1;
+        int normalOrder = 1;
         for (final JournalChapterEntity e : list) {
-            e.setSortOrder(sortOrder++);
+            // 일반 챕터만 1..N 순번을 잇는다. 요약·DREAM 은 버킷으로 위치가 고정되므로 순번 밖(0)이다.
+            e.setSortOrder(chapterSortBucket(e) == 1 ? normalOrder++ : NON_NUMBERED_SORT_ORDER);
         }
         repository.saveAllAndFlush(list);
     }

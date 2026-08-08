@@ -17,7 +17,10 @@
       </div>
     </div>
     <div id="journal_todo_list_div">
-      <template v-if="store.todoList.length > 0">
+      <div v-if="store.todoError" class="journal-day d-flex-center text-danger fs-7">
+        {{ store.todoError }}
+      </div>
+      <template v-else-if="store.todoList.length > 0">
         <div
           v-for="item in store.todoList"
           :key="'todo-' + item.id"

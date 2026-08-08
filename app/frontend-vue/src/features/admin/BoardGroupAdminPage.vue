@@ -71,7 +71,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="!store.rows.length">
+              <tr v-if="!store.error && !store.rows.length">
                 <td colspan="6" class="text-center text-muted py-8">{{ t('board.group.empty') }}</td>
               </tr>
               <tr v-for="(row, index) in store.rows" :key="row.id">

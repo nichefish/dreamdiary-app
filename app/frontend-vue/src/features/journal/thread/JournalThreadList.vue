@@ -129,7 +129,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="!store.threadList.length">
+            <tr v-if="store.error">
+              <td colspan="4" class="text-center text-danger py-6 fs-7">{{ store.error }}</td>
+            </tr>
+            <tr v-else-if="!store.threadList.length">
               <td colspan="4" class="text-center text-muted py-6 fs-7">{{ t("journal.thread.empty") }}</td>
             </tr>
             <tr

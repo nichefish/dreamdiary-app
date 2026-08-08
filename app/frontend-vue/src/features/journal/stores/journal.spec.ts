@@ -99,8 +99,12 @@ describe("fetchTagCloud 요청 경합 가드", () => {
     expect(store.tagCloud.dayTagList).toEqual([makeTag(2, "바다")]);
   });
 
-  it("최신 요청이 실패하면 해당 섹션만 빈 배열로 초기화한다", async () => {
+  it("최신 요청이 실패하면 해당 섹션 목록을 비우지 않고 오류를 기록한다", async () => {
     const store = useJournalStore();
+    mockedGet.mockResolvedValueOnce({ data: { rsltList: [makeTag(1, "숲")] } });
+    await store.fetchTagCloud({ sections: ["day"] });
+    expect(store.tagCloud.dayTagList).toEqual([makeTag(1, "숲")]);
+
     const dayReq = deferred();
     const diaryReq = deferred();
     mockedGet.mockReturnValueOnce(dayReq.promise).mockReturnValueOnce(diaryReq.promise);
@@ -110,8 +114,10 @@ describe("fetchTagCloud 요청 경합 가드", () => {
     diaryReq.resolve({ data: { rsltList: [makeTag(3, "여행")] } });
     await p;
 
-    expect(store.tagCloud.dayTagList).toEqual([]);
+    expect(store.tagCloud.dayTagList).toEqual([makeTag(1, "숲")]);
+    expect(store.tagCloudSectionError.day).toBe("journal.tag-cloud.load.failure");
     expect(store.tagCloud.diaryTagList).toEqual([makeTag(3, "여행")]);
+    expect(store.tagCloudSectionError.diary).toBeUndefined();
   });
 
   it("겹친 요청이 모두 끝나야 tagCloudLoading 이 해제된다", async () => {

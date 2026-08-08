@@ -46,6 +46,12 @@
           </div>
           <!--end::검색 중-->
 
+          <!--begin::검색 실패-->
+          <div v-else-if="searchError" class="text-center py-5 text-danger fs-7">
+            {{ searchError }}
+          </div>
+          <!--end::검색 실패-->
+
           <!--begin::검색 결과 목록-->
           <div v-else-if="threadList.length > 0" class="d-flex flex-column gap-2 max-h-350px overflow-y-auto px-1">
             <div
@@ -141,6 +147,7 @@ const { closeArmed, requestSafeClose, resetSafeClose } = useSafeModalClose(() =>
 const loading = computed(() => threadStore.pickerLoading);
 const searched = computed(() => threadStore.pickerSearched);
 const threadList = computed(() => threadStore.pickerSearchResults);
+const searchError = computed(() => threadStore.pickerSearchError);
 const baseThreadId = computed(() => threadStore.detailModel?.id);
 
 function isSelf(id?: number): boolean {

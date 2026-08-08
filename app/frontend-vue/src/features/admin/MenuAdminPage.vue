@@ -20,7 +20,7 @@
           {{ t('common.loading') }}
         </div>
         <ol v-else class="menu-admin-tree">
-          <li v-if="!userMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.user.empty') }}</li>
+          <li v-if="!store.error && !userMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.user.empty') }}</li>
           <MenuAdminTreeNode
             v-for="(row, index) in userMenuRows"
             :key="row.id"
@@ -58,7 +58,7 @@
           {{ t('common.loading') }}
         </div>
         <ol v-else class="menu-admin-tree">
-          <li v-if="!adminMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.admin.empty') }}</li>
+          <li v-if="!store.error && !adminMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.admin.empty') }}</li>
           <MenuAdminTreeNode
             v-for="(row, index) in adminMenuRows"
             :key="row.id"
@@ -96,7 +96,7 @@
           {{ t('common.loading') }}
         </div>
         <ol v-else class="menu-admin-tree">
-          <li v-if="!hiddenMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.hidden.empty') }}</li>
+          <li v-if="!store.error && !hiddenMenuRows.length" class="menu-admin-empty">{{ t('menu.tab.hidden.empty') }}</li>
           <MenuAdminTreeNode
             v-for="(row, index) in hiddenMenuRows"
             :key="row.id"

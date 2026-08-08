@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.validation.constraints.Positive;
@@ -59,6 +60,19 @@ public class TagContentDto
     /* ----- */
 
     /**
+     * 표시용 태그 이름을 해석한다. flat {@code name} 우선, nested {@code tag.name} fallback.
+     *
+     * @return 표시 이름. 없으면 null
+     */
+    public String resolveDisplayName() {
+        if (StringUtils.isNotBlank(this.name)) return this.name;
+        if (this.tag != null && StringUtils.isNotBlank(this.tag.getName())) {
+            return this.tag.getName();
+        }
+        return null;
+    }
+
+    /**
      * 태그이름 오름차순 정렬
      *
      * @param compare - 비교할 객체
@@ -67,7 +81,9 @@ public class TagContentDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull TagContentDto compare) {
-        return this.getName().compareTo(compare.getName());
+        final String thisName = StringUtils.defaultString(this.resolveDisplayName());
+        final String otherName = StringUtils.defaultString(compare.resolveDisplayName());
+        return thisName.compareTo(otherName);
     }
 
     @Override

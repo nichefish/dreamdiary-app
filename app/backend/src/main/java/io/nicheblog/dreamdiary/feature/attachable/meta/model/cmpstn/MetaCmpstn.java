@@ -13,6 +13,7 @@ import org.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,8 +96,11 @@ public class MetaCmpstn
     /* ----- */
 
     /**
-     * Getter :: 메타 목록을 문자열로 반환
-     * @return String - 콤마로 구분된 메타 이름 문자열, 리스트가 비어 있을 경우 null 반환
+     * Getter :: 메타 목록을 Tagify JSON 문자열로 반환.
+     * <p>
+     * 이름은 flat {@code MetaContentDto.name} 을 우선하고, 없으면 nested {@code meta.name} 으로 읽는다.
+     * </p>
+     * @return String - JSON 형식의 메타 문자열, 리스트가 비어 있을 경우 null 반환
      */
     public String getMetaListStr() {
         if (CollectionUtils.isEmpty(this.list)) return null;
@@ -105,8 +109,10 @@ public class MetaCmpstn
                 .sorted()
                 .map(meta -> {
                     try {
-                        final BaseTagifyDataDto data = BaseTagifyDataDto.builder().ctgr(meta.getCtgr()).value(meta.getValue() + meta.getUnit()).build();
-                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(meta.getName(), data);
+                        final String valuePart = StringUtils.defaultString(meta.getValue());
+                        final String unitPart = StringUtils.defaultString(meta.getUnit());
+                        final BaseTagifyDataDto data = BaseTagifyDataDto.builder().ctgr(meta.getCtgr()).value(valuePart + unitPart).build();
+                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(resolveMetaName(meta), data);
                         return mapper.writeValueAsString(tagifyDto);
                     } catch (final JsonProcessingException e) {
                         throw new RuntimeException("Error processing JSON", e);
@@ -117,13 +123,29 @@ public class MetaCmpstn
 
     /**
      * Getter :: 메타 목록을 리스트로 반환.
+     * <p>
+     * 이름은 flat {@code MetaContentDto.name} 을 우선하고, 없으면 nested {@code meta.name} 으로 읽는다.
+     * Jackson 직렬화와 lightweight {@code MetaContentDto}(nested meta 미설정) 경로에서 NPE 가 나지 않게 한다.
+     * </p>
      * @return 메타 이름의 리스트, 리스트가 비어 있을 경우 null 반환
      */
     public List<String> getMetaStrList() {
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(meta -> meta.getMeta().getName())
+                .map(MetaCmpstn::resolveMetaName)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 표시용 메타 이름을 해석한다. flat {@code name} 우선, nested {@code meta.name} fallback.
+     *
+     * @param metaContent 메타-컨텐츠 DTO
+     * @return 표시 이름. 없으면 null
+     */
+    private static String resolveMetaName(final MetaContentDto metaContent) {
+        if (metaContent == null) return null;
+        return metaContent.resolveDisplayName();
     }
 }

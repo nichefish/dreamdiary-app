@@ -122,9 +122,6 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
       }
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("admin.log.list.load.failure");
-      rows.value = [];
-      totalElements.value = 0;
-      totalPages.value = 0;
     } finally {
       loading.value = false;
     }
@@ -157,8 +154,6 @@ export const useLogAdminStore = defineStore("logAdmin", () => {
       statsAnonymousRows.value = Array.isArray(statsObj.anonymousList) ? statsObj.anonymousList : [];
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("admin.log.list.load.failure");
-      statsUserRows.value = [];
-      statsAnonymousRows.value = [];
     } finally {
       loading.value = false;
     }

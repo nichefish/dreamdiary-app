@@ -1,6 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.reflection.controller;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalEntryReflectionEnricher;
 import io.nicheblog.dreamdiary.feature.journal.reflection.model.JournalReflectionPostDto;
 import io.nicheblog.dreamdiary.feature.journal.reflection.service.JournalReflectionService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -19,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Reflection(Commentary) 쓰기 REST 컨트롤러.
@@ -28,6 +34,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequiredArgsConstructor
+@lombok.extern.log4j.Log4j2
 public class JournalReflectionRestController
         extends BaseControllerImpl {
 
@@ -37,6 +44,8 @@ public class JournalReflectionRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;
 
     private final JournalReflectionService journalReflectionService;
+    private final JournalEntryReflectionEnricher reflectionEnricher;
+    private final LifecycleService lifecycleService;
 
     /**
      * Reflection 단건 상세를 조회한다(수정 모달 로드용).
@@ -80,10 +89,46 @@ public class JournalReflectionRestController
                 ? journalReflectionService.modify(reflection, request)
                 : journalReflectionService.regist(reflection, request);
         final boolean isSuccess = Boolean.TRUE.equals(result.getRslt());
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(
+        final AjaxResponse ajax = AjaxResponse.fromResponseWithObj(
                 result,
                 isSuccess ? MessageUtils.getMessage("common.result.success") : MessageUtils.getMessage("common.result.failure")
-        ));
+        );
+        // 등록/수정 성공 시 target entry 의 갱신된 reflectionList + lifecycle 을 함께 내려준다.
+        // FE 가 fetchDays() 전체 재호출 없이 in-place 교체할 수 있게 한다.
+        if (isSuccess && reflection.getRefId() != null && reflection.getRefContentType() != null) {
+            try {
+                final Map<String, Object> extra = new HashMap<>();
+                final Map<String, List<JournalEntryDto>> refMap =
+                        reflectionEnricher.getReflectionMapByTargetIds(List.of(reflection.getRefId()));
+                final String refKey = reflection.getRefContentType().key + ":" + reflection.getRefId();
+                final List<JournalEntryDto> reflectionList = refMap.getOrDefault(refKey, List.of());
+                // 각 리플렉션 DTO에 lifecycle 값을 심는다 (mapstruct toDto에서 매핑 안 됨).
+                if (!reflectionList.isEmpty()) {
+                    final List<Integer> reflectionIds = reflectionList.stream()
+                            .map(JournalEntryDto::getId)
+                            .filter(java.util.Objects::nonNull)
+                            .toList();
+                    final Map<Integer, String> reflLcMap =
+                            lifecycleService.getLifecycleMap(ContentType.JOURNAL_REFLECTION, reflectionIds);
+                    for (final JournalEntryDto refl : reflectionList) {
+                        if (refl.getId() != null) {
+                            final String lcKey = reflLcMap.getOrDefault(refl.getId(), "OPEN");
+                            refl.setLifecycle(new io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn(lcKey, null));
+                        }
+                    }
+                }
+                extra.put("targetReflectionList", reflectionList);
+                // target entry lifecycle
+                final Map<Integer, String> lifecycleMap =
+                        lifecycleService.getLifecycleMap(reflection.getRefContentType(), List.of(reflection.getRefId()));
+                extra.put("targetLifecycleKey", lifecycleMap.getOrDefault(reflection.getRefId(), "OPEN"));
+                ajax.setRsltMap(new HashMap<>(extra));
+            } catch (final Exception e) {
+                // enrichment 실패해도 등록 자체는 성공이므로 경고만 남긴다.
+                log.warn("Reflection enrichment for response failed: {}", e.getMessage());
+            }
+        }
+        return ResponseEntity.ok(ajax);
     }
 
     /**

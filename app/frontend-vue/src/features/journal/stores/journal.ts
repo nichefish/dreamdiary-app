@@ -387,19 +387,28 @@ export const useJournalStore = defineStore("journal", () => {
   /** 태그 클라우드 결과 */
   /** aside TODO 카드 목록 (레거시 journal_todo yyMnthListAjax 등가 — 현재 년/월 기준) */
   const todoList = ref<JournalTodoItem[]>([]);
+  /** aside TODO 목록 조회 실패 메시지 */
+  const todoError = ref<string | null>(null);
 
   /** aside TODO 목록 조회 — 등록/삭제 후에도 호출해 카드를 갱신한다. */
   async function fetchTodos() {
+    todoError.value = null;
     try {
       const res = await axios.get("/api/journal/todos", { params: { yy: yy.value, mnth: mnth.value } });
+      if (!res.data?.rslt) {
+        todoError.value = res.data?.message ?? t("journal.todo.list.load.failure");
+        return;
+      }
       todoList.value = (res.data?.rsltList ?? []) as JournalTodoItem[];
     } catch (e: unknown) {
       console.error("[journal] fetchTodos failed", { yy: yy.value, mnth: mnth.value }, e);
-      todoList.value = [];
+      todoError.value = t("journal.todo.list.load.failure");
     }
   }
 
   const tagCloud = ref<JournalTagCloud>({ dayTagList: [], diaryTagList: [], dreamTagList: [] });
+  /** 태그 클라우드 섹션별 조회 실패 메시지 */
+  const tagCloudSectionError = ref<Partial<Record<TagCloudSection, string>>>({});
   /** 태그 클라우드 로딩 상태 */
   const tagCloudLoading = ref<boolean>(false);
   const tagCloudRequestSeq: Record<TagCloudSection, number> = { day: 0, diary: 0, dream: 0 };
@@ -455,6 +464,11 @@ export const useJournalStore = defineStore("journal", () => {
         sort: params?.sort ?? sortOrder.value,
       };
       const res = await axios.get("/api/journal/days", { params: query });
+      if (!res.data?.rslt) {
+        console.error("[journal] fetchDays soft-fail", { viewType: resolvedViewType, message: res.data?.message });
+        error.value = res.data?.message ?? t("journal.day.list.load.failure");
+        return;
+      }
       if (resolvedViewType === "CAL") {
         // CAL 은 FullCalendar 이벤트(BaseCalDto) 응답 — dayList 와 형태가 달라 별도 상태에 담고 정렬 반전도 하지 않는다.
         calEventList.value = (res.data?.rsltList ?? []) as JournalCalEvent[];
@@ -468,11 +482,6 @@ export const useJournalStore = defineStore("journal", () => {
       const vt = params?.viewType ?? viewType.value;
       console.error("[journal] fetchDays failed", { viewType: vt, weekStartDt: weekStartDt.value }, e);
       error.value = t("journal.day.list.load.failure");
-      if ((params?.viewType ?? viewType.value) === "CAL") {
-        calEventList.value = [];
-      } else {
-        dayList.value = [];
-      }
     } finally {
       loading.value = false;
       void reinitMetronicAfterDom();
@@ -530,6 +539,11 @@ export const useJournalStore = defineStore("journal", () => {
     ) as Record<TagCloudSection, number>;
     tagCloudLoadingCount += 1;
     tagCloudLoading.value = true;
+    for (const section of sections) {
+      const next = { ...tagCloudSectionError.value };
+      delete next[section];
+      tagCloudSectionError.value = next;
+    }
     try {
       const periodParams = getTagPeriodParams();
       await Promise.all(sections.map(async (section) => {
@@ -561,13 +575,10 @@ export const useJournalStore = defineStore("journal", () => {
         } catch (e: unknown) {
           console.error("[journal] fetchTagCloud failed", { section }, e);
           if (sectionSeq[section] !== tagCloudRequestSeq[section]) return;
-          if (section === "day") {
-            tagCloud.value = { ...tagCloud.value, dayTagList: [] };
-          } else if (section === "diary") {
-            tagCloud.value = { ...tagCloud.value, diaryTagList: [] };
-          } else {
-            tagCloud.value = { ...tagCloud.value, dreamTagList: [] };
-          }
+          tagCloudSectionError.value = {
+            ...tagCloudSectionError.value,
+            [section]: t("journal.tag-cloud.load.failure"),
+          };
         }
       }));
     } finally {
@@ -682,6 +693,40 @@ export const useJournalStore = defineStore("journal", () => {
     void fetchDays();
   }
 
+  /**
+   * dayList 트리 내에서 특정 entry 의 reflectionList 와 lifecycle 을 in-place 교체한다.
+   * 리플렉션 등록/수정 응답으로 fetchDays() 전체 재호출 없이 부분 갱신할 때 사용한다.
+   *
+   * @param targetId 대상 entry ID
+   * @param targetContentType 대상 entry contentType
+   * @param reflectionList 갱신된 reflectionList
+   * @param lifecycleKey 갱신된 lifecycle 키
+   */
+  function patchEntryReflections(
+    targetId: number,
+    targetContentType: string,
+    reflectionList: JournalEntryDto[],
+    lifecycleKey?: string,
+  ): void {
+    for (const day of dayList.value) {
+      if (!day.journalChapterList) continue;
+      for (const chapter of day.journalChapterList) {
+        if (!chapter.journalEntryList) continue;
+        for (const entry of chapter.journalEntryList) {
+          if (entry.id === targetId && entry.contentType === targetContentType) {
+            entry.reflectionList = reflectionList;
+            if (lifecycleKey && entry.lifecycle) {
+              entry.lifecycle.lifecycleKey = lifecycleKey;
+            } else if (lifecycleKey) {
+              entry.lifecycle = { lifecycleKey };
+            }
+            return;
+          }
+        }
+      }
+    }
+  }
+
   return {
     viewType,
     yy,
@@ -719,9 +764,12 @@ export const useJournalStore = defineStore("journal", () => {
     toggleReflectionDefaultCollapsed,
     toggleSort,
     tagCloud,
+    tagCloudSectionError,
     tagCloudLoading,
     fetchTagCloud,
     todoList,
+    todoError,
     fetchTodos,
+    patchEntryReflections,
   };
 });

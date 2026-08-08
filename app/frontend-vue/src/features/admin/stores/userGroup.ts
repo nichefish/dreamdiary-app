@@ -81,14 +81,15 @@ export const useUserGroupStore = defineStore("userGroup", () => {
       };
       if (keyword.value.trim()) params.searchKeyword = keyword.value.trim();
       const { data } = await axios.get("/api/user/groups", { params });
+      if (!data?.rslt) throw new Error(data?.message ?? t("common.result.failure"));
       const pageObj = data?.rsltObj;
       rows.value = Array.isArray(pageObj?.content) ? pageObj.content : [];
       totalElements.value = Number(pageObj?.totalElements ?? 0);
       totalPages.value = Number(pageObj?.totalPages ?? 0);
       currentPage.value = Number(pageObj?.number ?? targetPage);
     } catch (e: unknown) {
+      console.error("[userGroup] fetchList failed", e);
       error.value = t("common.result.failure");
-      rows.value = [];
     } finally {
       loading.value = false;
     }

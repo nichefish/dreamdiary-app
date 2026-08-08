@@ -82,7 +82,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="!store.postList.length">
+            <tr v-if="store.error">
+              <td colspan="4" class="text-center text-danger py-6 fs-7">{{ store.error }}</td>
+            </tr>
+            <tr v-else-if="!store.postList.length">
               <td colspan="4" class="text-center text-muted py-6 fs-7">{{ t('board.post.list.empty') }}</td>
             </tr>
             <tr

@@ -252,7 +252,10 @@
         <template v-else>
           <!--begin::DIARY 목록-->
           <div v-if="store.activeSection === 'DIARY'" id="journal_annual_diary_list_div">
-            <div v-if="!store.diaryEntries.length" class="text-center text-muted py-6 fs-7">
+            <div v-if="store.entriesError" class="text-center text-danger py-6 fs-7">
+              {{ store.entriesError }}
+            </div>
+            <div v-else-if="!store.diaryEntries.length" class="text-center text-muted py-6 fs-7">
               {{ t('journal.annual.diary.empty') }}
             </div>
             <template v-for="group in diaryEntryGroups" :key="'diary-group-' + group.stdrdDt">
@@ -318,7 +321,10 @@
 
           <!--begin::DREAM 목록-->
           <div v-else id="journal_annual_imprtc_dream_list_div">
-            <div v-if="!store.dreamEntries.length" class="text-center text-muted py-6 fs-7">
+            <div v-if="store.entriesError" class="text-center text-danger py-6 fs-7">
+              {{ store.entriesError }}
+            </div>
+            <div v-else-if="!store.dreamEntries.length" class="text-center text-muted py-6 fs-7">
               {{ t('journal.annual.dream.empty') }}
             </div>
             <template v-for="group in dreamEntryGroups" :key="'dream-group-' + group.stdrdDt">

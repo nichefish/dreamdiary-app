@@ -176,6 +176,28 @@ function close() {
   modalStore.closeReflectionRegist();
 }
 
+function parseSavedReflectionId(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  const raw = String(value).trim();
+  return /^\d+$/.test(raw) ? raw : null;
+}
+
+/** 등록 응답에서 신규 Reflection ID를 해석한다. */
+function resolveSavedReflectionId(responseData: Record<string, unknown>): string | undefined {
+  const rsltObj = responseData.rsltObj as Record<string, unknown> | undefined;
+  const list = (responseData.rsltMap as { targetReflectionList?: { id?: number }[] } | undefined)
+    ?.targetReflectionList;
+  const fromList = Array.isArray(list)
+    ? list.map((row) => row?.id).filter((id): id is number => id != null).sort((a, b) => b - a)[0]
+    : undefined;
+  const candidates = [responseData.id, responseData.rsltId, rsltObj?.id, fromList];
+  for (const value of candidates) {
+    const id = parseSavedReflectionId(value);
+    if (id) return id;
+  }
+  return undefined;
+}
+
 /** 등록/수정 처리. Reflection 은 Entry 이므로 entry 등록/수정 API(POST)를 쓴다. */
 async function submit() {
   if (!model.value) return;
@@ -204,9 +226,21 @@ async function submit() {
 
     if (res.data?.rslt) {
       const createdChapterId = !isModify.value ? model.value.journalChapterId : null;
+      // 일회성 접힘 ID는 챕터 펼침·부분 패치(마운트)보다 먼저 심어 expand signal 경합을 막는다.
+      if (!isModify.value) {
+        const createdReflectionId = resolveSavedReflectionId(res.data as Record<string, unknown>);
+        if (createdReflectionId) {
+          modalStore.requestReflectionCreatedCollapse(createdReflectionId);
+        } else {
+          console.warn("[JournalReflectionRegistModal] 등록 응답에서 Reflection ID를 해석하지 못함");
+        }
+      }
       if (createdChapterId != null) {
         modalStore.requestEntryCreatedChapterExpand(createdChapterId);
       }
+      // close() 전에 부분 갱신에 필요한 target 정보를 캡처한다.
+      const refId = model.value.refId;
+      const refContentType = model.value.refContentType;
       modalStore.applyCategoryMapsFromSaveResponse(res.data?.rsltMap, "JOURNAL_DIARY");
       close();
       await swalAjaxResult({
@@ -214,8 +248,19 @@ async function submit() {
         message: res.data?.message,
         successFallback: isModify.value ? t("common.result.modified") : t("common.result.registered"),
       });
-      void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
-      void journalStore.fetchTagCloud({ sections: ["diary"] });
+      // 부분 갱신: 응답에 target reflectionList 가 있으면 dayList in-place 교체로 fetchDays() 생략
+      const rsltMap = res.data?.rsltMap;
+      if (rsltMap?.targetReflectionList && refId && refContentType) {
+        journalStore.patchEntryReflections(
+          refId,
+          refContentType,
+          rsltMap.targetReflectionList,
+          rsltMap.targetLifecycleKey,
+        );
+      } else {
+        // enrichment 실패 fallback: 전체 재조회
+        void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
+      }
     } else {
       void swalAjaxResult({
         rslt: false,

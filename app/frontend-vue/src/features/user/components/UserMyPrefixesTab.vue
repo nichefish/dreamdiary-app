@@ -91,7 +91,7 @@
               <div v-if="store.loading" class="user-prefix-loading">
                 <span class="spinner-border spinner-border-sm me-2"></span>{{ t("common.loading") }}
               </div>
-              <div v-else-if="!store.prefixes.length" class="text-muted text-center py-8">
+              <div v-else-if="!errorMessage && !store.prefixes.length" class="text-muted text-center py-8">
                 {{ t("user.my.prefixes.empty") }}
               </div>
               <div v-for="prefix in store.prefixes" v-else :key="prefix.id" class="d-flex align-items-center border-bottom py-3">

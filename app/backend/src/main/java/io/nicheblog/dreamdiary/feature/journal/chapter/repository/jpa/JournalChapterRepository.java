@@ -42,6 +42,15 @@ public interface JournalChapterRepository
             "WHERE entry.journalDayId = :journalDayId")
     Optional<Integer> findLastIndexByJournalDay(final @Param("journalDayId") Integer journalDayId);
 
+    /** 동일 일자의 일반(비요약·non-DREAM) 챕터 최대 sort_order. 요약·DREAM(순번 밖)은 제외한다. */
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    @Query("SELECT MAX(entry.sortOrder) " +
+            "FROM JournalChapterEntity entry " +
+            "WHERE entry.journalDayId = :journalDayId " +
+            "AND entry.summaryYn = 'N' " +
+            "AND entry.chapterType <> :dreamType")
+    Optional<Integer> findLastNormalIndexByJournalDay(final @Param("journalDayId") Integer journalDayId, final @Param("dreamType") ChapterType dreamType);
+
     /** 동일 일자의 꿈(DREAM) 챕터 1건 (없으면 empty) */
     Optional<JournalChapterEntity> findFirstByJournalDayIdAndChapterType(Integer journalDayId, ChapterType chapterType);
 

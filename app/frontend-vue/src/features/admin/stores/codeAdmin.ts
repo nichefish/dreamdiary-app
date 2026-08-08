@@ -203,9 +203,6 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       pageSize.value = Number(pageResult.size ?? pageSize.value);
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("admin.code.group.list.load.failure");
-      rows.value = [];
-      totalElements.value = 0;
-      totalPages.value = 0;
     } finally {
       loading.value = false;
     }

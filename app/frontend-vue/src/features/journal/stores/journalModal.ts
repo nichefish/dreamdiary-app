@@ -206,6 +206,12 @@ export const useJournalModalStore = defineStore("journalModal", () => {
    */
   const entryCreatedExpandChapterId = ref<number | string | null>(null);
 
+  /**
+   * 신규 Reflection 등록 직후 접힐 Reflection ID.
+   * 챕터 일회성 펼침·부모 expand signal 보다 우선해 해당 임베드만 로컬 접힘으로 시작한다. 수정 저장에는 쓰지 않는다.
+   */
+  const reflectionCreatedCollapseId = ref<number | string | null>(null);
+
   /** 신규 엔트리가 들어간 챕터를 현재 화면에서 펼침 대상으로 표시한다. */
   function requestEntryCreatedChapterExpand(chapterId: number | string): void {
     entryCreatedExpandChapterId.value = chapterId;
@@ -215,6 +221,18 @@ export const useJournalModalStore = defineStore("journalModal", () => {
   function clearEntryCreatedChapterExpand(chapterId: number | string): void {
     if (String(entryCreatedExpandChapterId.value) === String(chapterId)) {
       entryCreatedExpandChapterId.value = null;
+    }
+  }
+
+  /** 신규 Reflection 등록 직후 접힘 대상으로 표시한다. */
+  function requestReflectionCreatedCollapse(reflectionId: number | string): void {
+    reflectionCreatedCollapseId.value = reflectionId;
+  }
+
+  /** 같은 저장 요청이 표시한 Reflection만 해제하여 뒤이은 요청을 지우지 않는다. */
+  function clearReflectionCreatedCollapse(reflectionId: number | string): void {
+    if (String(reflectionCreatedCollapseId.value) === String(reflectionId)) {
+      reflectionCreatedCollapseId.value = null;
     }
   }
 
@@ -1141,6 +1159,7 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     entryPrefixLoadFailedFor,
     prefetchEntryPrefixes,
     entryCreatedExpandChapterId,
+    reflectionCreatedCollapseId,
     dayTagCategoryMap,
     dayMetaCategoryMap,
     entryCategoryMap,
@@ -1151,6 +1170,8 @@ export const useJournalModalStore = defineStore("journalModal", () => {
     closeEntryRegist,
     requestEntryCreatedChapterExpand,
     clearEntryCreatedChapterExpand,
+    requestReflectionCreatedCollapse,
+    clearReflectionCreatedCollapse,
     // 엔트리 읽기 전용
     entryViewOpen,
     entryViewLoading,
