@@ -30,11 +30,5 @@ public class StateToggleDto {
     /** 캐시 파라미터 */
     private CacheContext cacheContext;
 
-    public Integer getId() {
-        return this.id;
-    }
 
-    public void setId(final Integer id) {
-        this.id = id;
-    }
 }

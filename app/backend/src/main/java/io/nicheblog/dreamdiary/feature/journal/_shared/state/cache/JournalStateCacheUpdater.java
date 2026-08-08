@@ -1,12 +1,12 @@
-package io.nicheblog.dreamdiary.feature.attachable.state.adapter.impl;
+package io.nicheblog.dreamdiary.feature.journal._shared.state.cache;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.attachable.state.adapter.JournalStateApplier;
 import io.nicheblog.dreamdiary.feature.attachable.state.adapter.StateCacheUpdater;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.CacheContext;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
+import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateApplier;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateCacheRegistry;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import org.apache.commons.lang3.StringUtils;

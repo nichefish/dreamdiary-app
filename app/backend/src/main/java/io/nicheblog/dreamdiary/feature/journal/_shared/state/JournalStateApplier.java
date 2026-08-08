@@ -1,7 +1,6 @@
-package io.nicheblog.dreamdiary.feature.attachable.state.adapter;
+package io.nicheblog.dreamdiary.feature.journal._shared.state;
 
 import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
-import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 
 /**
  * JournalStateApplier
