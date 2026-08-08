@@ -27,7 +27,7 @@
   - 커밋 메시지 한글 규약을 도입했다.
   - 릴리스 체크리스트 문서를 정비했다.
 - 스키마
-  - `journal_entry` STI·Reflection target 축을 마스터 스키마(`schema-journal-mariadb.sql`)에 반영한다. **1.0 전까지 Flyway 증분 마이그레이션 없이 마스터 스키마만 SSOT** 로 유지한다(기존 증분 마이그레이션 쿼리 정리, 1.0부터 누적).
+  - **1.0 전까지 Flyway 증분 없이** 선언 SSOT는 `schema/full/mariadb/schema-*.sql`이다. `schema-journal-mariadb.sql`은 Primary `journal_entry`·Reflection `journal_reflection` CREATE로 런타임 entity와 맞춘다.
 
 ### 2026-08-03 | v0.25.0
 - 신규 기능

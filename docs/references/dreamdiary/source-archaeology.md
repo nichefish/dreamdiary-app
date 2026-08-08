@@ -183,9 +183,9 @@ co-change `[확정]`: `journal.ts` ↔ journal specs(screen/interaction/componen
 
 - `interpretation`을 `reflection`으로 재정의, `journal_reflection` 전용 엔티티·리포지토리로 영속. 검색·상태·쓰기 축을 전용 테이블 기준으로 구성 `[확정]`.
 
-### 스키마 베이스라인 지체 `[확정]`
+### 스키마 베이스라인 `[확정]`
 
-- `schema/full/mariadb/schema-journal-mariadb.sql`에 분리 테이블(diary/note/dream/interpretation) CREATE는 있고 **`journal_entry` CREATE는 없음**. 런타임 STI가 베이스라인 DDL을 앞선다 = "빈 환경의 진실"이 사람 머리에 의존. 인지된 지층 어긋남으로만 기록(처방은 system-issues).
+- `schema/full/mariadb/schema-journal-mariadb.sql`은 Primary `journal_entry`·Reflection `journal_reflection` CREATE로 런타임 entity와 맞춘다. 1.0 전 Flyway 증분 트리는 비어 있으며 선언 SSOT는 full schema다.
 
 ### 마이그레이션 정책 `[확정]`
 
@@ -201,7 +201,6 @@ co-change `[확정]`: `journal.ts` ↔ journal specs(screen/interaction/componen
 
 - 2025-06~07 침묵의 원인(개인/환경).
 - React 평행 축의 현재 제품 지위(폐기·보류·모바일만).
-- full schema를 `journal_entry` STI로 언제 수렴할지(1.0 마스터 스키마 정합 시점).
 
 ---
 
@@ -215,7 +214,7 @@ co-change `[확정]`: `journal.ts` ↔ journal specs(screen/interaction/componen
 | WHY | STI 단일 테이블 수렴 + 후속 도메인 흡수 `[강한추정]` |
 | WHO | 저널 aggregate 전체와 결합; 저자=nichefish solo `[확정]` |
 | BUS_FACTOR | 이탈자 0; 병행 SAVEPOINT·자기 이력 의존 `[확정]` |
-| SOURCE OF TRUTH | 런타임 entity; full schema·migration은 후행(migration은 정책상 비움) `[확정]` |
+| SOURCE OF TRUTH | 런타임 entity와 full schema(`schema-journal-mariadb.sql`) 정합; migration은 1.0 전 정책상 비움 `[확정]` |
 | POLICY | Reflection target nullify·day-axis 제외 등 entry 정책에 퇴적 `[확정]` |
 | EXCEPTIONS | 고객사 하드코딩형 미검출(solo·비상용) `[미확인]` |
 | FAILURES | revert 0; encoding 복원·collapse Boolean 캐스팅 씨름이 절차/설계 흔적 `[확정]` |

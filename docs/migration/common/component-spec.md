@@ -50,9 +50,9 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 화면 위치/제목/설명 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title 또는 메뉴 설명을 별도로 렌더링하지 않고, 필요한 액션 버튼만 둔다.
 
-`useAttachableModalStore` (`features/attachable/stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openRelatedFlow`, `openTagList`, `openTagProfile`, `openFileList`.
-`RelatedContentAddModal.vue`의 제목·필드·옵션·검색 상태·검증·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 연결 대상 검색은 선택 유형을 `DIARY|DREAM`으로 변환해 통합 `GET /api/journal/entries`를 호출하고 제목 또는 본문 일치 결과를 최신순 최대 8건 표시한다. 요청 실패는 오류 메시지로 표시해 정상 0건과 구분한다. `openRelatedFlow` 진입에서는 관계 유형을 `FLOW`로 고정하고 무방향·날짜순·동일 쌍 기존 유형 교체 계약을 저장 전에 안내한다.
-현재 `RelatedContentAddModal.vue`와 `/api/related` API는 일기·꿈 사이의 직접 관련글 1단계 연결과 FLOW 연결을 구현했다. 엔트리 관련글 행의 직접 관계 해제와 FLOW 분리 가능성 확인도 **구현 완료(✓)**다. `JournalEntryFlowModal.vue`는 앵커 엔트리 기준 연결 컴포넌트를 서버 정렬 순서 그대로 종단 표시하고, 직접 간선 관리와 전체 평문 복사·TXT 다운로드를 제공한다. 두 흐름 병합 결과 안내만 **미구현(❌)**이다. FLOW는 기존 `left/right` 쌍 정규화를 유지하는 무방향 관계이며 일반 관련글 조회와 달리 FLOW 간선만 전이적으로 탐색한다.
+`useAttachableModalStore` (`features/attachable/stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
+`RelatedContentAddModal.vue`의 제목·필드·옵션·검색 상태·검증·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 연결 대상 검색은 선택 유형을 `DIARY|DREAM`으로 변환해 통합 `GET /api/journal/entries`를 호출하고 제목 또는 본문 일치 결과를 최신순 최대 8건 표시한다. 요청 실패는 오류 메시지로 표시해 정상 0건과 구분한다. `openRelated`는 일반 관련글(RELATED) 전용이다.
+현재 `RelatedContentAddModal.vue`와 `/api/related` API는 일기·꿈 사이의 직접 관련글 1단계 연결을 구현한다. 엔트리 관련글 행의 직접 관계 해제도 **구현 완료(✓)**다. FLOW 축은 저널 스레드 소속으로 수렴 완료되어 attachable 관련글·종단 보기 경로에 두지 않는다(`docs/migration/journal/interaction-spec.md`, `docs/migration/journal/component-spec.md`).
 `JournalTagProfileModal.vue`의 제목·필드·선택지·버튼·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장·삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 크기 최대(`forceMax`)는 태그클라우드에서 `ts-9`로 고정하며 엔트리 본문 태그줄에는 적용하지 않는다.
 `JournalTagListModal.vue`의 제목·빈 상태·분류·버튼·태그별 일자 목록 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
 `CommentRegistModal.vue`의 제목·필드·버튼·검증·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 등록·수정 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
@@ -808,8 +808,8 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | 댓글 등록/수정 | `useAttachableModalStore.openCommentRegist/openCommentModify` + `CommentRegistModal.vue` |
 | 댓글 목록 | `openCommentList` + `CommentListModal.vue` |
 | 이력 | `openHistory` + `HistoryModal.vue`. 각 이력 카드에 텍스트 복사 버튼 구현 완료 |
-| 관련글 추가 | `openRelated` / `openRelatedFlow` + `RelatedContentAddModal.vue` — 직접 연결·FLOW 연결 ✓, 병합 결과 안내 ❌ |
-| FLOW 종단 보기 | `useJournalFlowStore.openFlow` + `JournalEntryFlowModal.vue` — 서버 시간순 연결 컴포넌트 표시·직접 간선 관리·전체 복사/TXT 다운로드 ✓ |
+| 관련글 추가 | `openRelated` + `RelatedContentAddModal.vue` — RELATED 직접 연결 ✓ |
+| FLOW 종단 보기 | 제거 — 저널 스레드 소속으로 수렴 (`docs/migration/journal/component-spec.md`) |
 | 태그 목록 | `openTagList` + `JournalTagListModal.vue` |
 | 태그 프로필 | `openTagProfile` + `JournalTagProfileModal.vue` |
 | 파일 그룹 | `FileGroup` 계열 컴포넌트로 흡수한다. FTLH가 owner인 상태를 최종 상태로 보지 않는다. |

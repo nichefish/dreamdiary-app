@@ -130,8 +130,9 @@ gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬
 
 ### 저장소: 저널 엔트리 하드컷
 
-- 영속화는 **`journal_entry` 단일 테이블**로 수렴. 다형은 `content_type`(예: `JOURNAL_DIARY` 등)으로 구분.
-- 스키마·수리 스크립트는 `src/main/resources/schema/` 등 저장소 내 마이그레이션 SQL 을 본다.
+- Primary 영속화는 **`journal_entry`**. 다형은 `content_type`(예: `JOURNAL_DIARY`/`JOURNAL_DREAM`)으로 구분. NOTE도 동일 테이블에 두며 영속 `content_type`은 `JOURNAL_DIARY` 계약을 유지한다.
+- Reflection(Commentary) 영속화는 **`journal_reflection`**(About-A `ref_id`/`ref_content_type` 필수).
+- 선언 스키마 SSOT는 `app/backend/src/main/resources/schema/full/mariadb/schema-*.sql`이다(1.0 전 Flyway 증분 없음). `schema-journal-mariadb.sql`은 `journal_entry`·`journal_reflection` CREATE로 entity와 맞춘다.
 
 ### 결산(Annual) — Vue·ESM (A-6 정리)
 

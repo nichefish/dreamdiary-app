@@ -84,4 +84,4 @@
 - 기능 배선 QA: 리플렉션 collapse(중첩 리플렉션 접고/펴기, aside 기본접힘 토글, 새 PENDING 접힘), thread-relation(related 추가/토글/뷰).
 - 테스트 이음새: collapse 컴포넌트 배선(`resolveReflectionCollapsed` 소비 경로), thread-relation 합성 로직(최근 버그픽스 있었음, 전용 테스트 부재).
 - CHANGELOG: 08-04자 항목이 이후 08-06/08-07 작업(collapse 확정·thread-relation·에이전트 룰 SSOT·삭제 가드 등)을 아직 미반영 → 보강 필요.
-- 스키마: `journal_interpretation` 수렴/제거는 마스터 스키마(`schema-journal-mariadb.sql`)에만 반영. Flyway 증분 없음(1.0 전 정책).
+- 스키마: Flyway 증분 없음(1.0 전). 마스터 `schema-journal-mariadb.sql`에 `journal_entry` + `journal_reflection` CREATE 정합 확인(빈 DB bootstrap).

@@ -15,10 +15,9 @@
 
 | # | 문제 | 무게중심 | 근거(고고학) | 비고 |
 |---|---|:---:|---|---|
-| 1 | full schema 베이스라인이 `journal_entry` STI를 반영하지 않음 | **Ⅱ~Ⅲ** | `schema-journal-mariadb.sql`에 diary/note/dream/interpretation CREATE만 있고 `journal_entry` CREATE 없음; migration `0.26.x`는 선행 | 문서에도 "선행 갭"으로 이미 인지. 신규 환경 bootstrap과 런타임 SSOT가 갈라짐 |
-| 2 | Entry 서비스가 chapter/thread/interpretation과 진화적으로 한 모듈 | **Ⅲ** | `JournalEntryService` co-change·fan-in; LOC 563→740 | 길이가 아니라 **경계**. 패키지 분할과 git이 말하는 모듈이 어긋남 |
-| 3 | UI·클라이언트 평행 축의 지위 불명 (`react-init` / react-screen-overview) | **Ⅱ** | `aae6585c5` 이후 overview 문서 잔존; Vue가 주 수렴 경로 | 유령 문명인지 의도적 보류인지 git만으로 미확정 — 확인 전까지 새 작업 진입점 금지 권고 |
-| 4 | 인코딩·문서 손상 재발 가능성 (절차) | **Ⅱ** | 2026-07-25 encoding 복원 커밋 연속; AGENTS UTF-8 계약 | 게이트(`check_encoding.py`)는 있으나 Windows 기본 인코딩 편집 경로가 남아 있으면 재발 조건은 구조적으로 존재 |
+| 1 | Entry 서비스가 chapter/thread/reflection과 진화적으로 한 모듈 | **Ⅲ** | `JournalEntryService` co-change·fan-in; LOC 563→740 | 길이가 아니라 **경계**. 패키지 분할과 git이 말하는 모듈이 어긋남 |
+| 2 | UI·클라이언트 평행 축의 지위 불명 (`react-init` / react-screen-overview) | **Ⅱ** | `aae6585c5` 이후 overview 문서 잔존; Vue가 주 수렴 경로 | 유령 문명인지 의도적 보류인지 git만으로 미확정 — 확인 전까지 새 작업 진입점 금지 권고 |
+| 3 | 인코딩·문서 손상 재발 가능성 (절차) | **Ⅱ** | 2026-07-25 encoding 복원 커밋 연속; AGENTS UTF-8 계약 | 게이트(`check_encoding.py`)는 있으나 Windows 기본 인코딩 편집 경로가 남아 있으면 재발 조건은 구조적으로 존재 |
 
 Ⅰ(런타임 오작동)로 확정된 신규 장애는 본 조사에서 이슈키 맵을 만들지 않았다 — 없음이 아니라 **미측정**.
 
@@ -28,11 +27,11 @@
 
 ### Ⅰ 동작의 문제
 
-- 본 세션에서는 Entry hub·스키마 갭·문서 병행 지연만 다룸. 무한루프·권한 우회 같은 표층 버그 목록은 작성하지 않음.
+- 본 세션에서는 Entry hub·문서 병행 지연만 다룸. 무한루프·권한 우회 같은 표층 버그 목록은 작성하지 않음.
 
 ### Ⅱ 구조·절차의 문제
 
-- **스키마 full vs migration**: 전달 채널이 이원화(flyway off · 수동 migration · full schema 후행)되어 있으면, "어느 파일이 빈 DB의 진실인가"가 사람 머리에 의존한다. 고고학이 측정한 부재(`journal_entry` DDL)가 그 증상.
+- **스키마 full**: 1.0 전 Flyway 증분은 두지 않고 full schema를 선언 SSOT로 둔다. `schema-journal-mariadb.sql`은 `journal_entry`/`journal_reflection` CREATE로 런타임 entity와 맞춘다.
 - **멀티 에이전트 SAVEPOINT**: 규율(AGENTS)은 단일 진행을 전제한다. 병행 시 요약 문서 지연은 정상이지만, **정본 파일(`reflection-absorption.md`)과 as-built spec의 갱신 주체**가 흐려지면 Ⅱ로 악화된다. 지금은 정본이 앞서 있고 요약만 늦은 상태라 허용 범위.
 - **react 축**: Vue 수렴 규칙과 문서가 공존하면 신규 기여자가 잘못된 진입점을 고를 수 있다.
 
@@ -81,7 +80,7 @@
 ### rename 보정 (Ⅱ)
 
 Day/Interpretation을 "최고 churn 몬스터"로 처방 우선순위에 올리면 안 된다. 치환 전 lockstep 시대의 나이테다.  
-실질 주시 대상은 **STI 이후 Entry · Vue journalModal · full schema 갭 · (정책 결정 대기) React 축**.
+실질 주시 대상은 **STI 이후 Entry · Vue journalModal · (정책 결정 대기) React 축**.
 
 ---
 

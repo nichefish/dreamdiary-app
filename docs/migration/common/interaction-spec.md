@@ -127,7 +127,7 @@ cF.ajax.request(url, options, callback, continueBlock?)
 - 사용자 체감 로그인 유지 시간은 `auth_policy.session_timeout_minutes` 단일 정책으로 관리한다. 서버는 이 값을 Spring Session max inactive interval, JWT access token `exp`, JWT 쿠키 max-age에 적용하고, JWT 검증 시에도 `issuedAt + policyTimeout`을 넘으면 만료로 처리한다. 정책값이 없거나 조회 실패 시 기존 `server.servlet.session.timeout` 설정을 fallback으로 사용한다.
 - Vue 저널의 submit/delete/state catch는 `swalRequestError(e)`를 호출한다. 이 공통 함수가 `AuthExpiredError`를 즉시 무시하고, 그 외 오류는 콘솔에 기록한 뒤 서버 `message` 또는 현재 locale의 `common.error.processing` 공통 실패 문구를 `swalFire({ icon: "error", text })`로 표시한다.
 - Ajax `rslt` 분기 후속 안내는 `shared/utils/swal.ts`의 `swalAjaxResult({ rslt, message, successFallback?, failureFallback? })`를 사용한다. 내부에서 `swalFire({ text, icon })`로 success/error 아이콘을 주입한다. 옵션 직접 주입이 필요하면 `swalFire(options)`를 쓴다. 검증·중립 안내는 아이콘 없는 `swalAlert(text)`를 유지한다.
-- Vue 저널의 검색·목록 조회가 실패해도 직전 성공 데이터를 빈 목록이나 `0건`으로 덮지 않는다. 상세·수정용 조회 실패는 오류를 표시하고 해당 모달을 열지 않는다.
+- Vue 저널의 검색·목록 조회가 실패해도 직전 성공 데이터를 빈 목록이나 `0건`으로 덮지 않는다. 상세·수정용 조회 실패는 오류를 표시하고 해당 모달을 열지 않는다. 동일 계약은 aside TODO·태그 클라우드 섹션·스레드 상세 소속/연관/피커·결산 상세 엔트리·계정 신청 승인 목록에도 적용한다(실패 UI ≠ 정상 빈 결과).
 - 저장·삭제·복원처럼 결과값으로 후속 알림을 분기하는 store action은 `AuthExpiredError`를 `{ rslt: false }` 또는 `false`로 변환하지 않고 재throw한다. 호출부는 인증 만료일 때 전역 401 안내만 남기고, 실제 처리 실패일 때만 실패 알림을 표시한다.
 - 인증이 필요한 Vue SPA 모달은 `shared/auth/sessionPing.ts`의 `assertAuthenticatedBeforeModal()`을 먼저 호출한 뒤 모달 open 플래그 또는 Bootstrap `show()`를 실행한다. 이 핑은 `/api/session/ping`을 호출하며, 로그인 세션이 풀려 있으면 전역 401 인터셉터가 즉시 세션 만료 안내를 표시하고 모달은 열지 않는다. 로그인 화면의 비밀번호 변경 모달처럼 비로그인 상태에서 열려야 하는 auth 모달은 선행 핑 대상에서 제외한다.
 - 취소 시 navbar 세션 만료 메시지 표시(legacy `.blink.text-danger`)는 Vue SPA 에서 미구현.

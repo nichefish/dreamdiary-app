@@ -61,74 +61,25 @@ CREATE TABLE IF NOT EXISTS journal_chapter (
     INDEX (journal_day_id)
 ) COMMENT = '저널 챕터';
 
--- 저널 일기 (journal_diary)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS journal_diary (
+-- 저널 엔트리 (journal_entry)
+-- Primary Content(일기·꿈·노트). 다형은 content_type.
+-- @extends: BaseAttachableEntity
+-- @uses: FileEmbed, CommentEmbed, TagEmbed, StateEmbed, HistoryEmbed, PrefixEmbed
+CREATE TABLE IF NOT EXISTS journal_entry (
     -- ATTACHABLE
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 ID',
-    content_type VARCHAR(32) DEFAULT 'JOURNAL_DIARY' COMMENT '컨텐츠 타입',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 엔트리 ID',
+    content_type VARCHAR(32) NOT NULL COMMENT 'JOURNAL_DIARY | JOURNAL_DREAM (NOTE 영속도 JOURNAL_DIARY)',
     --
     journal_chapter_id INT COMMENT '저널 챕터 번호',
     --
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    sort_order INT DEFAULT 1 COMMENT '저널 일기 인덱스',
-    -- FILE_GROUP
-    file_group_id INT COMMENT '첨부파일 번호',
-    -- history
-    history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
-    history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
-    -- AUDIT
-    created_by VARCHAR(20) COMMENT '등록자 ID',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    updated_by VARCHAR(20) COMMENT '수정자 ID',
-    updated_at DATETIME COMMENT '수정일시',
-    deleted_at DATETIME COMMENT '삭제일시',
-    -- CONSTRAINT
-    INDEX (journal_chapter_id)
-) COMMENT = '저널 일기';
-
--- 저널 노트 (journal_note)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS journal_note (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 노트 ID',
-    content_type VARCHAR(32) DEFAULT 'JOURNAL_NOTE' COMMENT '컨텐츠 타입',
-    journal_chapter_id INT COMMENT '저널 챕터 번호',
-    title VARCHAR(200) COMMENT '제목',
-    content LONGTEXT COMMENT '내용',
-    sort_order INT DEFAULT 1 COMMENT '저널 노트 인덱스',
-    file_group_id INT COMMENT '첨부파일 번호',
-    history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
-    history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
-    created_by VARCHAR(20) COMMENT '등록자 ID',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    updated_by VARCHAR(20) COMMENT '수정자 ID',
-    updated_at DATETIME COMMENT '수정일시',
-    deleted_at DATETIME COMMENT '삭제일시',
-    INDEX (journal_chapter_id)
-) COMMENT = '저널 노트';
-
--- 저널 꿈 (journal_dream)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS journal_dream (
-    -- ATTACHABLE
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 꿈 ID',
-    content_type VARCHAR(32) DEFAULT 'JOURNAL_DREAM' COMMENT '컨텐츠 타입',
-    --
-    journal_chapter_id INT COMMENT '저널 챕터 번호',
-    --
-    title VARCHAR(200) COMMENT '제목',
-    content LONGTEXT COMMENT '내용',
-    sort_order INT DEFAULT 1 COMMENT '저널 꿈 인덱스',
-    halluc_yn CHAR(1) DEFAULT  'N' COMMENT '입면환각 여부 (Y/N)',
-    nhtmr_yn CHAR(1) DEFAULT  'N' COMMENT '악몽 여부 (Y/N)',
+    sort_order INT DEFAULT 1 COMMENT '챕터 내 정렬',
     else_dream_yn CHAR(1) DEFAULT 'N' COMMENT '타인 꿈 여부 (Y/N)',
     else_dreamer_nm VARCHAR(64) COMMENT '꿈꾼이 이름',
-    resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
-    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
+    -- target 컬럼(nullable). Commentary Reflection 본 테이블은 journal_reflection.
+    ref_id INT COMMENT 'target 엔티티 번호',
+    ref_content_type VARCHAR(50) COMMENT 'target 컨텐츠 타입',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- history
@@ -141,8 +92,40 @@ CREATE TABLE IF NOT EXISTS journal_dream (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    INDEX (journal_chapter_id)
-) COMMENT = '저널 꿈';
+    INDEX (journal_chapter_id),
+    INDEX (content_type),
+    INDEX (ref_id, ref_content_type)
+) COMMENT = '저널 엔트리 (일기·꿈·노트)';
+
+-- 저널 Reflection (journal_reflection)
+-- Commentary Aggregate Root. About-A(ref_id/ref_content_type) 필수.
+-- @extends: BaseAttachableEntity
+-- @uses: FileEmbed, CommentEmbed, StateEmbed, HistoryEmbed
+CREATE TABLE IF NOT EXISTS journal_reflection (
+    -- ATTACHABLE
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Reflection ID',
+    content_type VARCHAR(50) DEFAULT 'JOURNAL_REFLECTION' COMMENT '항상 JOURNAL_REFLECTION',
+    --
+    title VARCHAR(200) COMMENT '제목',
+    content LONGTEXT COMMENT 'Reflection 본문',
+    -- About-A
+    ref_id INT NOT NULL COMMENT '대상(About-A) 엔티티 번호',
+    ref_content_type VARCHAR(50) NOT NULL COMMENT '대상 컨텐츠 타입',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
+    -- history
+    history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
+    history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
+    -- AUDIT
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    -- CONSTRAINT
+    INDEX idx_journal_reflection_target (ref_id, ref_content_type),
+    INDEX idx_journal_reflection_created_by (created_by)
+) COMMENT = '저널 Reflection (Commentary)';
 
 -- 저널 할일 (journal_todo)
 -- @extends: BasePostEntity
@@ -393,3 +376,23 @@ CREATE TABLE IF NOT EXISTS journal_entry_entity_job (
     INDEX idx_journal_entry_entity_job_updated_at (updated_at),
     INDEX idx_journal_entry_entity_job_deleted_at (deleted_at)
 ) COMMENT = 'Queue rows for asynchronous journal entity ref and role sync';
+
+
+-- -----------------------
+-- journal_setting
+-- 저널 도메인 설정. ADMIN/GLOBAL 1행으로 전역 정책을 관리한다.
+-- -----------------------
+CREATE TABLE IF NOT EXISTS journal_setting (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '저널 설정 ID',
+    scope VARCHAR(20) NOT NULL DEFAULT 'ADMIN' COMMENT '설정 범위 (ADMIN/USER)',
+    scope_key VARCHAR(100) DEFAULT 'GLOBAL' COMMENT '범위 키 (ADMIN=GLOBAL, USER=username)',
+    embedding_enabled TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'AI 임베딩 활성화 여부 (1=ON, 0=OFF)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    INDEX idx_journal_setting_scope (scope, scope_key)
+) COMMENT = '저널 도메인 설정';
+
+INSERT INTO journal_setting (scope, scope_key, embedding_enabled, created_by)
+VALUES ('ADMIN', 'GLOBAL', 1, 'system');
