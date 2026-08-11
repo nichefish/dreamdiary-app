@@ -14,6 +14,13 @@ export const CATEGORY_MAP_URL_DAY_META = "/api/journal/day/meta/categories";
 export const CATEGORY_MAP_URL_ENTRY_DIARY = "/api/journal/entry/tag/categories?type=DIARY";
 export const CATEGORY_MAP_URL_ENTRY_DREAM = "/api/journal/entry/tag/categories?type=DREAM";
 
+const CATEGORY_MAP_URLS = [
+  CATEGORY_MAP_URL_DAY_TAG,
+  CATEGORY_MAP_URL_DAY_META,
+  CATEGORY_MAP_URL_ENTRY_DIARY,
+  CATEGORY_MAP_URL_ENTRY_DREAM,
+] as const;
+
 function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
   const out: Record<string, string[]> = {};
@@ -81,6 +88,11 @@ export const useJournalCategoryMapStore = defineStore("journalCategoryMaps", () 
   const entryDreamCategoryMap = ref<Record<string, string[]>>({});
   const entryDreamCategoryMapLoaded = ref(false);
 
+  /** URL별 무효화 이후 늦게 도착한 응답을 폐기하기 위한 버전. */
+  const categoryMapVersions = new Map<string, number>();
+  /** 같은 URL의 동시 조회를 하나의 HTTP 요청으로 합친다. */
+  const requests = new Map<string, Promise<Record<string, string[]>>>();
+
   function categoryMapRefForUrl(url: string) {
     switch (url) {
       case CATEGORY_MAP_URL_DAY_TAG: return dayTagCategoryMap;
@@ -101,15 +113,47 @@ export const useJournalCategoryMapStore = defineStore("journalCategoryMaps", () 
     }
   }
 
-  /** URL 별 map 이 아직 적재되지 않았을 때만 서버에서 1회 조회 */
+  /**
+   * URL별 map이 아직 적재되지 않았을 때 서버에서 조회한다.
+   * 같은 URL의 동시 호출은 진행 중 Promise를 공유하며, 무효화 전 응답은 현재 map을 덮지 않는다.
+   */
   async function ensure(url: string): Promise<Record<string, string[]>> {
     const mapRef = categoryMapRefForUrl(url);
     const loadedRef = categoryMapLoadedRefForUrl(url);
-    if (!mapRef || !loadedRef) return {};
+    if (!mapRef || !loadedRef) {
+      console.error("[journalCategoryMaps] 지원하지 않는 categoryMap URL:", url);
+      return {};
+    }
     if (loadedRef.value) return mapRef.value;
-    mapRef.value = await fetchCategoryMap(url);
-    loadedRef.value = true;
-    return mapRef.value;
+
+    const inFlight = requests.get(url);
+    if (inFlight) {
+      console.info("[journalCategoryMaps] 진행 중 categoryMap 조회 공유:", url);
+      return inFlight;
+    }
+
+    const requestVersion = categoryMapVersions.get(url) ?? 0;
+    let request!: Promise<Record<string, string[]>>;
+    request = fetchCategoryMap(url)
+      .then((categoryMap) => {
+        const activeVersion = categoryMapVersions.get(url) ?? 0;
+        if (requestVersion !== activeVersion) {
+          console.info("[journalCategoryMaps] 무효화된 categoryMap 응답 폐기:", {
+            url,
+            requestVersion,
+            activeVersion,
+          });
+          return mapRef.value;
+        }
+        mapRef.value = categoryMap;
+        loadedRef.value = true;
+        return mapRef.value;
+      })
+      .finally(() => {
+        if (requests.get(url) === request) requests.delete(url);
+      });
+    requests.set(url, request);
+    return request;
   }
 
   async function preloadAll(): Promise<void> {
@@ -132,6 +176,10 @@ export const useJournalCategoryMapStore = defineStore("journalCategoryMaps", () 
 
   /** 로그아웃·세션 만료 시 앱 categoryMap 을 비운다 (다음 사용자 preload 용). */
   function reset(): void {
+    for (const url of CATEGORY_MAP_URLS) {
+      categoryMapVersions.set(url, (categoryMapVersions.get(url) ?? 0) + 1);
+      requests.delete(url);
+    }
     dayTagCategoryMap.value = {};
     dayTagCategoryMapLoaded.value = false;
     dayMetaCategoryMap.value = {};
@@ -140,6 +188,7 @@ export const useJournalCategoryMapStore = defineStore("journalCategoryMaps", () 
     entryDiaryCategoryMapLoaded.value = false;
     entryDreamCategoryMap.value = {};
     entryDreamCategoryMapLoaded.value = false;
+    console.info("[journalCategoryMaps] 앱 세션 categoryMap 초기화");
   }
 
   /**
@@ -153,10 +202,12 @@ export const useJournalCategoryMapStore = defineStore("journalCategoryMaps", () 
     if (!rsltMap || typeof rsltMap !== "object" || Array.isArray(rsltMap)) return;
     const maps = rsltMap as Record<string, unknown>;
     if (maps.dayTagCategoryMap != null) {
+      invalidate(CATEGORY_MAP_URL_DAY_TAG);
       dayTagCategoryMap.value = normalizeCategoryMap(maps.dayTagCategoryMap);
       dayTagCategoryMapLoaded.value = true;
     }
     if (maps.dayMetaCategoryMap != null) {
+      invalidate(CATEGORY_MAP_URL_DAY_META);
       dayMetaCategoryMap.value = normalizeCategoryMap(maps.dayMetaCategoryMap);
       dayMetaCategoryMapLoaded.value = true;
     }
@@ -166,10 +217,17 @@ export const useJournalCategoryMapStore = defineStore("journalCategoryMaps", () 
       const mapRef = categoryMapRefForUrl(entryUrl);
       const loadedRef = categoryMapLoadedRefForUrl(entryUrl);
       if (mapRef) {
+        invalidate(entryUrl);
         mapRef.value = normalizeCategoryMap(maps.entryTagCategoryMap);
         if (loadedRef) loadedRef.value = true;
       }
     }
+  }
+
+  /** URL 하나의 진행 중 응답을 무효화한다. */
+  function invalidate(url: string): void {
+    categoryMapVersions.set(url, (categoryMapVersions.get(url) ?? 0) + 1);
+    requests.delete(url);
   }
 
   /**

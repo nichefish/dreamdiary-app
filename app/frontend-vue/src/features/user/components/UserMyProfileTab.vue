@@ -174,7 +174,7 @@ async function save() {
       lunarYn: form.lunarYn,
       proflCn: form.proflCn.trim() || null,
     });
-    await authStore.verifyAuth();
+    await authStore.verifyAuth({ force: true });
     resetForm();
     editing.value = false;
     void swalAlert(t("user.my.profile.update.success"));

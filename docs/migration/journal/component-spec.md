@@ -52,8 +52,9 @@
 |------|------|
 | `store.tagCloud` | `useJournalStore` — `JournalTagCloud { dayTagList, diaryTagList, dreamTagList }` |
 | `store.tagCloudLoading` | `useJournalStore` |
-| `store.fetchTagCloud()` | 전체 갱신: `GET /api/journal/day/tags`, `GET /api/journal/entry/tags?type=DIARY`, `GET /api/journal/entry/tags?type=DREAM` |
-| `store.fetchTagCloud({ sections })` | 부분 갱신: `sections: ["day" \| "diary" \| "dream"]` 에 포함된 태그클라우드 섹션만 조회·반영 |
+| `store.fetchTagCloud()` | 전체 갱신: `GET /api/journal/day/tags`, `GET /api/journal/entry/tags?type=DIARY`, `GET /api/journal/entry/tags?type=DREAM`. 같은 섹션·기간의 진행 중 조회는 Promise를 공유해 HTTP 1회로 합친다. |
+| `store.fetchTagCloud({ sections })` | 부분 갱신: `sections: ["day" \| "diary" \| "dream"]` 에 포함된 태그클라우드 섹션만 조회·반영. 기간이 다른 요청은 각각 실행하고 섹션별 마지막 시작 요청만 반영하며, 실패한 진행 중 요청은 제거해 다음 호출에서 재시도한다. |
+| `store.resetTagCloudState()` | 로그아웃·세션 만료 시 목록·오류·로딩·진행 중 요청을 초기화하고 요청 세대를 올린다. 이전 사용자 세대의 늦은 성공·실패 응답과 로딩 완료 처리는 새 세션 상태에 반영하지 않는다. |
 | `TagCloudItem` | `{ id: number|string, name: string, ctgr?: string, contentSize: number, tagClass?: string, textClass?: string }` |
 
 **태그 크기 클래스**: `.ts-1` ~ `.ts-9` (`src/styles/components/tag.scss`) — `tagClass` 필드로 전달. 빈도 비율로 base를 구한 뒤 프로필 `forceMax`이면 `ts-9`로 고정한다(`TagProfileService.applyVisualSemantic` / `TagCloudSizeSupport`). 색은 `textClass`(시각 의미)로 별도.
@@ -375,7 +376,7 @@ interface TodoRow {
 | 고급 필터 | `asideStore.toggle()` — 사이드 필터 패널 표시/숨김 |
 | 우측 끝 aside 열기 | aside 숨김 시 `asideStore.show()` — 사이드 필터 패널 표시 |
 | 일정 등록 / 개인 일정 | 저널 날짜·엔트리 맥락을 전달하지 않는 교차 도메인 액션이므로 저널 툴바에서는 미제공. 일정 화면에서만 제공 |
-| 태그 카테고리 동기화 | `syncCategoryMaps()` (`journalCategoryMaps`) — 4종 categoryMap 서버 재조회 |
+| 태그 카테고리 동기화 | `syncCategoryMaps()` (`journalCategoryMaps`) — 4종 categoryMap 서버 재조회. 앱 세션의 URL별 최초 조회는 진행 중 Promise를 공유해 동시 호출을 HTTP 1회로 합치며, 초기화·동기화·저장 응답 적용 전에 시작된 구 응답은 URL별 버전 검증으로 폐기한다. |
 
 **추가 구현 (2026-05-19, 현재 계약)**: 우측 영역에 일기·꿈 키워드 검색 input + 돋보기 버튼 추가. 툴바는 `localDiaryKw` / `localDreamKw` 로컬 ref를 사용해 새 탭 전체검색을 실행하며, `JournalAside`의 `store.diaryKeyword` / `store.dreamKeyword` 현재 목록 필터와 상태를 공유하지 않는다.
 

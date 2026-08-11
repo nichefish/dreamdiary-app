@@ -50,7 +50,7 @@
 
 ### 라우팅·메뉴
 
-- `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`).
+- `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`). 정상 서버 인증 결과는 메모리에서 15초간 재사용하며, 신선도 만료·새로고침·강제 검증 시 `/api/auth/get-auth-account`를 다시 호출한다. 동시 검증은 진행 중 Promise를 공유한다.
 - 사이드바: `toVuePath(menu.url)` (`utils/urlMapping.ts`).
 
 ---
@@ -123,6 +123,7 @@ cF.ajax.request(url, options, callback, continueBlock?)
 
 - 인터셉터에서 401 처리 후 `AuthExpiredError` sentinel(`utils/authError.ts`)을 throw 해 각 catch 블록의 일반 오류 alert 가 중복으로 뜨지 않도록 억제한다.
 - 라우터 가드(`router/index.ts`)가 `verifyAuth()` 이후 미인증 상태를 감지한 경우에도 같은 `confirmSessionExpired()`를 거친다. 일반 보호 라우트는 확인 시 `buildSessionExpiredSignInRoute(to.fullPath)`로 이동하고, 팝업 보호 라우트는 alert 후 `next(false)`로 로그인 화면 렌더를 막는다.
+- `auth.purgeAuth()`는 로그아웃·세션 만료 시 categoryMap·개인 Prefix·메뉴와 함께 저널 태그 클라우드의 목록·오류·로딩·진행 중 요청 세대를 초기화한다. 이전 사용자 세대의 늦은 태그 클라우드 응답은 다음 사용자 상태에 반영하지 않는다.
 - `confirmSessionExpired()`의 일반 화면·팝업 제목, 설명, 확인·취소 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. locale은 안내 문구만 변경하며 HTTP 상태 판정, 중복 다이얼로그 방지, 팝업 닫기, 로그인 이동·취소 분기를 변경하지 않는다.
 - 사용자 체감 로그인 유지 시간은 `auth_policy.session_timeout_minutes` 단일 정책으로 관리한다. 서버는 이 값을 Spring Session max inactive interval, JWT access token `exp`, JWT 쿠키 max-age에 적용하고, JWT 검증 시에도 `issuedAt + policyTimeout`을 넘으면 만료로 처리한다. 정책값이 없거나 조회 실패 시 기존 `server.servlet.session.timeout` 설정을 fallback으로 사용한다.
 - Vue 저널의 submit/delete/state catch는 `swalRequestError(e)`를 호출한다. 이 공통 함수가 `AuthExpiredError`를 즉시 무시하고, 그 외 오류는 콘솔에 기록한 뒤 서버 `message` 또는 현재 locale의 `common.error.processing` 공통 실패 문구를 `swalFire({ icon: "error", text })`로 표시한다.

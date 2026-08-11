@@ -30,7 +30,7 @@
 **기능**:
 - ID/PW 폼 로그인 → `POST /api/auth/login`
 - POST /api/auth/login internal server errors return HTTP 500 with a login-scoped error message and must not be classified as login-required/session-expired.
-- Vue auth verification treats only HTTP 401 from `/api/auth/get-auth-account` as unauthenticated/session-expired; HTTP 403, HTTP 500, and network failures surface as auth verification/runtime errors and must not purge auth state as a login-required diagnosis.
+- Vue auth verification treats only HTTP 401 from `/api/auth/get-auth-account` as unauthenticated/session-expired; HTTP 403, HTTP 500, and network failures surface as auth verification/runtime errors and must not purge auth state as a login-required diagnosis. 정상 인증 결과는 새로고침 시 초기화되는 메모리에 15초간 신선한 상태로 보존하고, 같은 구간의 라우트 이동은 서버 조회를 생략한다. 로그인·프로필 변경·팝업 사전 확인은 `force` 검증을 사용한다.
 - Google OAuth2 소셜 로그인 → `/oauth2/authorization/google` (팝업)
 - Naver OAuth2 소셜 로그인 → `/oauth2/authorization/naver` (팝업)
 - 로그인 실패 메시지 표시

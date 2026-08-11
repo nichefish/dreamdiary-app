@@ -76,7 +76,7 @@ async function uploadProfileImage(event: Event) {
   }
   try {
     await store.uploadProfileImage(file);
-    await Promise.all([reload(), authStore.verifyAuth()]);
+    await Promise.all([reload(), authStore.verifyAuth({ force: true })]);
     void swalAlert(t("user.my.profile-image.change.success"));
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : t("user.my.profile-image.change.failure"));
@@ -86,7 +86,7 @@ async function removeProfileImage() {
   if (!await swalConfirm(t("user.my.profile-image.delete.confirm"))) return;
   try {
     await store.removeProfileImage();
-    await Promise.all([reload(), authStore.verifyAuth()]);
+    await Promise.all([reload(), authStore.verifyAuth({ force: true })]);
     void swalAlert(t("user.my.profile-image.delete.success"));
   } catch (error) {
     void swalAlert(error instanceof Error ? error.message : t("user.my.profile-image.delete.failure"));

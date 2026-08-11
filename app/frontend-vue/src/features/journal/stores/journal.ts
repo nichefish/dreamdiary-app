@@ -412,6 +412,10 @@ export const useJournalStore = defineStore("journal", () => {
   /** 태그 클라우드 로딩 상태 */
   const tagCloudLoading = ref<boolean>(false);
   const tagCloudRequestSeq: Record<TagCloudSection, number> = { day: 0, diary: 0, dream: 0 };
+  /** 같은 섹션·기간의 동시 조회를 하나의 HTTP 요청으로 합친다. */
+  const tagCloudRequests = new Map<string, Promise<void>>();
+  /** 로그아웃·세션 만료 전 요청의 상태 반영과 로딩 변경을 차단하는 세대. */
+  let tagCloudGeneration = 0;
   let tagCloudLoadingCount = 0;
 
   /** 현재 "년-월" 표시 라벨 */
@@ -529,62 +533,135 @@ export const useJournalStore = defineStore("journal", () => {
 
   /**
    * 태그 클라우드 조회.
+   * 같은 섹션·기간의 진행 중 요청은 공유하고, 기간이 다른 요청은 섹션별 최신 응답만 반영한다.
    */
   async function fetchTagCloud(options: { sections?: TagCloudSection[] } = {}) {
     const sections: TagCloudSection[] = options.sections?.length
       ? options.sections
       : ["day", "diary", "dream"];
-    const sectionSeq = Object.fromEntries(
-      sections.map((section) => [section, ++tagCloudRequestSeq[section]])
-    ) as Record<TagCloudSection, number>;
+    const periodParams = getTagPeriodParams();
+    const requestGeneration = tagCloudGeneration;
     tagCloudLoadingCount += 1;
     tagCloudLoading.value = true;
-    for (const section of sections) {
-      const next = { ...tagCloudSectionError.value };
-      delete next[section];
-      tagCloudSectionError.value = next;
-    }
     try {
-      const periodParams = getTagPeriodParams();
-      await Promise.all(sections.map(async (section) => {
-        try {
-          if (section === "day") {
-            const res = await axios.get("/api/journal/day/tags", { params: periodParams });
-            if (sectionSeq.day === tagCloudRequestSeq.day) {
-              tagCloud.value = {
-                ...tagCloud.value,
-                dayTagList: normalizeTagCloudList(res.data?.rsltList),
-              };
-            }
-            return;
-          }
-          const type = section === "diary" ? "DIARY" : "DREAM";
-          const res = await axios.get("/api/journal/entry/tags", { params: { ...periodParams, type } });
-          if (section === "diary" && sectionSeq.diary === tagCloudRequestSeq.diary) {
-            tagCloud.value = {
-              ...tagCloud.value,
-              diaryTagList: normalizeTagCloudList(res.data?.rsltList),
-            };
-          }
-          if (section === "dream" && sectionSeq.dream === tagCloudRequestSeq.dream) {
-            tagCloud.value = {
-              ...tagCloud.value,
-              dreamTagList: normalizeTagCloudList(res.data?.rsltList),
-            };
-          }
-        } catch (e: unknown) {
-          console.error("[journal] fetchTagCloud failed", { section }, e);
-          if (sectionSeq[section] !== tagCloudRequestSeq[section]) return;
-          tagCloudSectionError.value = {
-            ...tagCloudSectionError.value,
-            [section]: t("journal.tag-cloud.load.failure"),
-          };
-        }
-      }));
+      await Promise.all(
+        sections.map((section) => fetchTagCloudSection(section, periodParams, requestGeneration))
+      );
     } finally {
+      if (requestGeneration !== tagCloudGeneration) return;
       tagCloudLoadingCount = Math.max(0, tagCloudLoadingCount - 1);
       tagCloudLoading.value = tagCloudLoadingCount > 0;
     }
+  }
+
+  /** 섹션·기간별 진행 중 태그 클라우드 조회를 공유한다. */
+  function fetchTagCloudSection(
+    section: TagCloudSection,
+    periodParams: Record<string, string | number>,
+    requestGeneration: number,
+  ): Promise<void> {
+    const requestKey = getTagCloudRequestKey(section, periodParams);
+    const inFlight = tagCloudRequests.get(requestKey);
+    if (inFlight) {
+      console.info("[journal] 진행 중 태그 클라우드 조회 공유", { section, periodParams });
+      return inFlight;
+    }
+
+    const requestSeq = ++tagCloudRequestSeq[section];
+    const nextError = { ...tagCloudSectionError.value };
+    delete nextError[section];
+    tagCloudSectionError.value = nextError;
+
+    let request!: Promise<void>;
+    request = requestTagCloudSection(section, periodParams, requestSeq, requestGeneration)
+      .finally(() => {
+        if (tagCloudRequests.get(requestKey) === request) tagCloudRequests.delete(requestKey);
+      });
+    tagCloudRequests.set(requestKey, request);
+    return request;
+  }
+
+  /** 태그 클라우드 섹션 하나를 조회하고 현재 기간 요청일 때만 상태에 반영한다. */
+  async function requestTagCloudSection(
+    section: TagCloudSection,
+    periodParams: Record<string, string | number>,
+    requestSeq: number,
+    requestGeneration: number,
+  ): Promise<void> {
+    try {
+      const res = section === "day"
+        ? await axios.get("/api/journal/day/tags", { params: periodParams })
+        : await axios.get("/api/journal/entry/tags", {
+          params: { ...periodParams, type: section === "diary" ? "DIARY" : "DREAM" },
+        });
+      if (
+        requestGeneration !== tagCloudGeneration
+        || requestSeq !== tagCloudRequestSeq[section]
+      ) {
+        console.info("[journal] 무효화된 태그 클라우드 응답 폐기", {
+          section,
+          periodParams,
+          requestGeneration,
+          activeGeneration: tagCloudGeneration,
+          requestSeq,
+          activeRequestSeq: tagCloudRequestSeq[section],
+        });
+        return;
+      }
+
+      const tagList = normalizeTagCloudList(res.data?.rsltList);
+      if (section === "day") {
+        tagCloud.value = { ...tagCloud.value, dayTagList: tagList };
+        return;
+      }
+      if (section === "diary") {
+        tagCloud.value = { ...tagCloud.value, diaryTagList: tagList };
+        return;
+      }
+      tagCloud.value = { ...tagCloud.value, dreamTagList: tagList };
+    } catch (e: unknown) {
+      console.error("[journal] fetchTagCloud failed", { section, periodParams }, e);
+      if (
+        requestGeneration !== tagCloudGeneration
+        || requestSeq !== tagCloudRequestSeq[section]
+      ) {
+        console.info("[journal] 무효화된 태그 클라우드 실패 응답 폐기", {
+          section,
+          periodParams,
+          requestGeneration,
+          activeGeneration: tagCloudGeneration,
+          requestSeq,
+          activeRequestSeq: tagCloudRequestSeq[section],
+        });
+        return;
+      }
+      tagCloudSectionError.value = {
+        ...tagCloudSectionError.value,
+        [section]: t("journal.tag-cloud.load.failure"),
+      };
+    }
+  }
+
+  /** 섹션과 월간·주간 기간을 진행 중 요청 식별자로 직렬화한다. */
+  function getTagCloudRequestKey(
+    section: TagCloudSection,
+    periodParams: Record<string, string | number>,
+  ): string {
+    if (periodParams.weekStartDt != null) {
+      return `${section}|weekStartDt=${String(periodParams.weekStartDt)}`;
+    }
+    return `${section}|yy=${String(periodParams.yy)}&mnth=${String(periodParams.mnth)}`;
+  }
+
+  /** 로그아웃·세션 만료 시 태그 클라우드 상태와 이전 세대의 진행 중 요청을 초기화한다. */
+  function resetTagCloudState(): void {
+    tagCloudGeneration += 1;
+    tagCloudRequests.clear();
+    tagCloud.value = { dayTagList: [], diaryTagList: [], dreamTagList: [] };
+    tagCloudSectionError.value = {};
+    tagCloudLoadingCount = 0;
+    tagCloudLoading.value = false;
+    console.info("[journal] 사용자 세션 태그 클라우드 초기화", { tagCloudGeneration });
   }
 
   function getTagPeriodParams(): Record<string, string | number> {
@@ -767,6 +844,7 @@ export const useJournalStore = defineStore("journal", () => {
     tagCloudSectionError,
     tagCloudLoading,
     fetchTagCloud,
+    resetTagCloudState,
     todoList,
     todoError,
     fetchTodos,

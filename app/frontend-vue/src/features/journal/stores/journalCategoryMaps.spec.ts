@@ -10,6 +10,7 @@ vi.mock("axios", () => ({ default: { get: vi.fn() } }));
 
 import {
   CATEGORY_MAP_URL_DAY_TAG,
+  CATEGORY_MAP_URL_DAY_META,
   CATEGORY_MAP_URL_ENTRY_DIARY,
   useJournalCategoryMapStore,
 } from "./journalCategoryMaps";
@@ -38,6 +39,24 @@ describe("journalCategoryMaps", () => {
     expect(mockedGet).toHaveBeenCalledTimes(1);
     expect(mockedGet).toHaveBeenCalledWith(CATEGORY_MAP_URL_DAY_TAG);
     expect(store.dayTagCategoryMap).toEqual({ alpha: ["A"] });
+  });
+
+  it("같은 URL의 동시 ensure 는 진행 중 HTTP 요청을 공유한다", async () => {
+    let resolveRequest!: (value: { data: { rslt: boolean; rsltMap: Record<string, string[]> } }) => void;
+    mockedGet.mockReturnValue(new Promise((resolve) => {
+      resolveRequest = resolve;
+    }));
+    const store = useJournalCategoryMapStore();
+
+    const first = store.ensure(CATEGORY_MAP_URL_DAY_TAG);
+    const second = store.ensure(CATEGORY_MAP_URL_DAY_TAG);
+    resolveRequest({ data: { rslt: true, rsltMap: { shared: ["A"] } } });
+
+    await expect(Promise.all([first, second])).resolves.toEqual([
+      { shared: ["A"] },
+      { shared: ["A"] },
+    ]);
+    expect(mockedGet).toHaveBeenCalledTimes(1);
   });
 
   it("preloadAll 은 4종 URL 을 조회한다", async () => {
@@ -87,6 +106,42 @@ describe("journalCategoryMaps", () => {
     await store.ensure(CATEGORY_MAP_URL_ENTRY_DIARY);
 
     expect(mockedGet).toHaveBeenCalledTimes(2);
+  });
+
+  it("reset 전에 시작한 응답은 새 세션 map 을 덮지 않는다", async () => {
+    let resolveOldRequest!: (value: { data: { rslt: boolean; rsltMap: Record<string, string[]> } }) => void;
+    mockedGet
+      .mockReturnValueOnce(new Promise((resolve) => {
+        resolveOldRequest = resolve;
+      }))
+      .mockResolvedValueOnce({ data: { rslt: true, rsltMap: { current: ["B"] } } });
+    const store = useJournalCategoryMapStore();
+
+    const oldRequest = store.ensure(CATEGORY_MAP_URL_DAY_META);
+    store.reset();
+    await store.ensure(CATEGORY_MAP_URL_DAY_META);
+    resolveOldRequest({ data: { rslt: true, rsltMap: { stale: ["A"] } } });
+    await oldRequest;
+
+    expect(mockedGet).toHaveBeenCalledTimes(2);
+    expect(store.dayMetaCategoryMap).toEqual({ current: ["B"] });
+  });
+
+  it("저장 응답으로 교체한 map 은 진행 중 조회의 늦은 응답이 덮지 않는다", async () => {
+    let resolveRequest!: (value: { data: { rslt: boolean; rsltMap: Record<string, string[]> } }) => void;
+    mockedGet.mockReturnValue(new Promise((resolve) => {
+      resolveRequest = resolve;
+    }));
+    const store = useJournalCategoryMapStore();
+
+    const request = store.ensure(CATEGORY_MAP_URL_DAY_TAG);
+    store.applyFromSaveResponse({ dayTagCategoryMap: { saved: ["B"] } });
+    resolveRequest({ data: { rslt: true, rsltMap: { stale: ["A"] } } });
+    await request;
+
+    expect(store.dayTagCategoryMap).toEqual({ saved: ["B"] });
+    await store.ensure(CATEGORY_MAP_URL_DAY_TAG);
+    expect(mockedGet).toHaveBeenCalledTimes(1);
   });
 
   it("mapForEntryContentType 은 DIARY/DREAM 만 반환하고 NOTE 는 null", async () => {
