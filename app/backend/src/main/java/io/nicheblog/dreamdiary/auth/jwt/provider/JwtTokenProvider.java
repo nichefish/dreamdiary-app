@@ -224,6 +224,7 @@ public class JwtTokenProvider {
 
             return !tokenExpiresAt.before(now) && !policyExpiresAt.before(now);
         } catch (final Exception e) {
+            log.debug("JWT validateToken failed. reason={}", e.getClass().getSimpleName());
             return false;
         }
     }

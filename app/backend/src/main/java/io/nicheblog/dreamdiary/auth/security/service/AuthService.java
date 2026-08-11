@@ -140,7 +140,8 @@ public class AuthService
             if (authPolicy != null && authPolicy.getLoginAttemptWindowMinutes() != null) {
                 loginAttemptWindowMinutes = authPolicy.getLoginAttemptWindowMinutes();
             }
-        } catch (final Exception ignore) {
+        } catch (final Exception e) {
+            log.warn("Failed to read login attempt window from auth_policy. username={} fallback={}min", username, loginAttemptWindowMinutes, e);
             // 정책 조회 실패시 기본값 사용
         }
         final LocalDateTime now = LocalDateTime.now();
@@ -179,7 +180,8 @@ public class AuthService
             if (authPolicy != null && authPolicy.getAccountLockDurationMinutes() != null) {
                 accountLockDurationMinutes = authPolicy.getAccountLockDurationMinutes();
             }
-        } catch (final Exception ignore) {
+        } catch (final Exception e) {
+            log.warn("Failed to read account lock duration from auth_policy. username={} fallback={}min", username, accountLockDurationMinutes, e);
             // 정책 조회 실패시 기본값 사용
         }
         final LocalDateTime now = LocalDateTime.now();

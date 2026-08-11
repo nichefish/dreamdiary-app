@@ -135,6 +135,7 @@ public class JournalDayResolvedGuard {
         try {
             type = ContentType.valueOf(refContentTypeKey);
         } catch (final IllegalArgumentException e) {
+            log.warn("[JournalDayResolvedGuard] unknown contentType, write guard skipped. refId={}, contentType={}", refId, refContentTypeKey);
             return;
         }
         assertWritableForRef(refId, type);
