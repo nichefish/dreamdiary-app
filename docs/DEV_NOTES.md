@@ -51,6 +51,12 @@ gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬
 - Spring Boot/외부 라이브러리 공식 namespace(`spring.*`, `server.*`, `springdoc.*`)는 공식 설정 계약을 유지한다. 앱 코드가 소수 값을 직접 참조해야 하는 경우에도 별도 `app.*` 래핑을 기본값으로 만들지 않는다.
 - JWT 직접 발급 설정은 `app.auth.jwt.*`, refresh token 유지 시간은 `app.auth.refresh-token.*`에 둔다. 사용자 체감 세션 유지 시간처럼 재기동 없이 바뀌어야 하는 정책은 yml/env가 아니라 `auth_policy`를 SSOT로 둔다.
 
+## Spring Cache 저장소 선택
+
+- 일반 `@Cacheable` 메소드는 Ehcache 메모리 저장소를 사용한다. 캐시 namespace는 `config/ehcache/ehcache.xml`에 등록되어 있어야 하며, 누락 시 no-op 캐시로 감추지 않고 오류로 처리한다.
+- Redis 공유 캐시는 메소드 또는 대상 클래스에 `@CacheableConfig(cacheTarget = SHARED|MEMORY_AND_SHARED)`가 명시된 경우에만 사용한다. `MEMORY_AND_SHARED`는 Redis 장애 시 사용 가능한 Ehcache를 유지하며, `SHARED` 단독 설정은 Redis 장애 시 명시적으로 실패한다.
+- Redis 기반 refresh token·인증 코드 저장은 Spring Cache resolver와 별도 계약이다. 일반 `@Cacheable` 조회는 Redis 연결 확인을 수행하지 않는다.
+
 ---
 
 ## 패키지 구조

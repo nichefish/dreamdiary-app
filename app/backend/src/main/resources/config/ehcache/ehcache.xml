@@ -100,6 +100,14 @@
     <cache alias="journalReflectionStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalReflectionWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
+    <!-- 저널 라이프사이클 보조 맵 -->
+    <cache alias="journalDiaryLifecycleMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDiaryWeeklyLifecycleMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDreamLifecycleMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDreamWeeklyLifecycleMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalReflectionLifecycleMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalReflectionWeeklyLifecycleMapByUser" uses-template="defaultTemplate" />
+
     <!-- ?? ?? -->
     <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />
     <cache alias="journalTodoDetailDtoByUser" uses-template="defaultTemplate" />

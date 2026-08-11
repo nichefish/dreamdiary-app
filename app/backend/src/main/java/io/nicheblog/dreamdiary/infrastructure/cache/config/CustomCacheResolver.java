@@ -3,16 +3,16 @@ package io.nicheblog.dreamdiary.infrastructure.cache.config;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.RedisConnChecker;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.AbstractCacheResolver;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.concurrent.Callable;
 
 /**
  * CustomCacheResolver
@@ -52,85 +52,96 @@ public class CustomCacheResolver extends AbstractCacheResolver {
      */
     @Override
     public @NotNull Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> context) {
-        Collection<Cache> caches = new ArrayList<>();
+        final Collection<Cache> caches = new ArrayList<>();
+        final CacheableConfig.CacheTarget cacheTarget = this.resolveCacheTarget(context);
 
-        CacheableConfig cacheableConfig = context.getMethod().getAnnotation(CacheableConfig.class);
+        final boolean hasMemory = cacheTarget == CacheableConfig.CacheTarget.MEMORY
+                || cacheTarget == CacheableConfig.CacheTarget.MEMORY_AND_SHARED;
 
-        boolean hasMemory = cacheableConfig == null
-                || cacheableConfig.cacheTarget() == CacheableConfig.CacheTarget.MEMORY
-                || cacheableConfig.cacheTarget() == CacheableConfig.CacheTarget.MEMORY_AND_SHARED;
-
-        boolean hasShared = cacheableConfig == null
-                || cacheableConfig.cacheTarget() == CacheableConfig.CacheTarget.SHARED
-                || cacheableConfig.cacheTarget() == CacheableConfig.CacheTarget.MEMORY_AND_SHARED;
+        final boolean hasShared = cacheTarget == CacheableConfig.CacheTarget.SHARED
+                || cacheTarget == CacheableConfig.CacheTarget.MEMORY_AND_SHARED;
 
         // Redis 연결 상태를 매번 체크하지 않고, 이미 캐시된 상태를 사용합니다.
-        redisConnChecker.checkRedisConnection(); // Redis 연결 상태를 주기적으로 확인만 함
-        boolean isRedisAvailable = redisConnChecker.isAvailable();
-
-        Collection<String> cacheNames = getCacheNames(context);
-        if (cacheNames == null) return caches;
-        for (String cacheName: cacheNames) {
-            if (hasMemory) {
-                Optional.ofNullable(memoryCacheManager.getCache(cacheName))
-                        .filter(cache -> cache.get(cacheName) != null) // 캐시가 null이 아니면만 추가
-                        .ifPresent(caches::add);
+        final boolean isRedisAvailable;
+        if (hasShared) {
+            redisConnChecker.checkRedisConnection(); // Redis 연결 상태를 주기적으로 확인만 함
+            isRedisAvailable = redisConnChecker.isAvailable();
+            if (!isRedisAvailable) {
+                log.warn("Shared cache is unavailable. cacheTarget={}, method={}", cacheTarget, context.getMethod());
             }
-            if (hasShared) {
-                if (!isRedisAvailable) {
-                    log.warn("Redis is not available, using memory cache only.");
-                    return Collections.singletonList(new Cache() {
-                        @Override
-                        public String getName() {
-                            return "DummyCache";  // 캐시 이름
-                        }
+        } else {
+            isRedisAvailable = false;
+        }
 
-                        @Override
-                        public Object getNativeCache() {
-                            return null;  // 실제 캐시 객체를 반환하지 않음
-                        }
-
-                        @Override
-                        public ValueWrapper get(Object key) {
-                            return null;  // 값이 없으면 null 반환
-                        }
-
-                        @Override
-                        public <T> T get(Object key, Class<T> type) {
-                            return null;
-                        }
-
-                        @Override
-                        public <T> T get(Object key, Callable<T> valueLoader) {
-                            return null;
-                        }
-
-                        @Override
-                        public void put(Object key, Object value) {
-                            // 캐시에 아무것도 저장하지 않음
-                        }
-
-                        @Override
-                        public void evict(Object key) {
-                            // 캐시에서 제거할 것도 없음
-                        }
-
-                        @Override
-                        public void clear() {
-                            // 캐시 초기화 없음
-                        }
-                    });
-                }
-                Optional.ofNullable(remoteCacheManager.getCache(cacheName))
-                        .filter(cache -> cache.get(cacheName) != null) // 캐시가 null이 아니면만 추가
-                        .ifPresent(caches::add);
+        final Collection<String> cacheNames = getCacheNames(context);
+        if (cacheNames == null || cacheNames.isEmpty()) {
+            final String message = "At least one cache name is required: " + context.getMethod();
+            log.error(message);
+            throw new IllegalStateException(message);
+        }
+        for (final String cacheName: cacheNames) {
+            if (hasMemory) {
+                this.addConfiguredCache(caches, memoryCacheManager, cacheName, CacheableConfig.CacheTarget.MEMORY, context);
+            }
+            if (hasShared && isRedisAvailable) {
+                this.addConfiguredCache(caches, remoteCacheManager, cacheName, CacheableConfig.CacheTarget.SHARED, context);
             }
         }
 
-        log.info("Cache resolved count: {}" , caches.size());
-        log.info("Cache configuration: MEMORY = {}, SHARED = {}" , hasMemory, hasShared);
-        if (caches.isEmpty()) return Collections.emptyList();
+        if (caches.isEmpty()) {
+            final String message = "No cache could be resolved. cacheTarget=" + cacheTarget + ", method=" + context.getMethod();
+            log.error(message);
+            throw new IllegalStateException(message);
+        }
+        log.debug("Cache resolved. count={}, target={}, method={}", caches.size(), cacheTarget, context.getMethod());
         return caches;
+    }
+
+    /**
+     * 호출 메소드 또는 대상 클래스의 캐시 저장소 설정을 반환한다.
+     * 명시 설정이 없는 일반 {@code @Cacheable} 호출은 로컬 메모리 캐시를 사용한다.
+     *
+     * @param context 캐시 호출 맥락
+     * @return 적용할 캐시 저장소
+     */
+    private CacheableConfig.CacheTarget resolveCacheTarget(final CacheOperationInvocationContext<?> context) {
+        final Class<?> targetClass = context.getTarget() == null
+                ? context.getMethod().getDeclaringClass()
+                : ClassUtils.getUserClass(context.getTarget());
+        final CacheableConfig methodConfig = AnnotatedElementUtils.findMergedAnnotation(
+                AopUtils.getMostSpecificMethod(context.getMethod(), targetClass),
+                CacheableConfig.class
+        );
+        if (methodConfig != null) return methodConfig.cacheTarget();
+
+        final CacheableConfig classConfig = AnnotatedElementUtils.findMergedAnnotation(targetClass, CacheableConfig.class);
+        return classConfig == null ? CacheableConfig.CacheTarget.MEMORY : classConfig.cacheTarget();
+    }
+
+    /**
+     * CacheManager에 등록된 캐시 namespace를 resolver 결과에 추가한다.
+     * 등록되지 않은 namespace는 설정 결함이므로 오류 로그를 남기며 최종 빈 결과 검증에서 실패한다.
+     *
+     * @param caches resolver 결과 캐시 목록
+     * @param cacheManager 조회할 CacheManager
+     * @param cacheName 캐시 namespace
+     * @param cacheTarget 조회 대상 저장소
+     * @param context 캐시 호출 맥락
+     */
+    private void addConfiguredCache(
+            final Collection<Cache> caches,
+            final CacheManager cacheManager,
+            final String cacheName,
+            final CacheableConfig.CacheTarget cacheTarget,
+            final CacheOperationInvocationContext<?> context
+    ) {
+        final Cache cache = cacheManager.getCache(cacheName);
+        if (cache == null) {
+            log.error("Cache namespace is not configured. cacheName={}, cacheTarget={}, method={}",
+                    cacheName, cacheTarget, context.getMethod());
+            return;
+        }
+        caches.add(cache);
     }
 
     /**

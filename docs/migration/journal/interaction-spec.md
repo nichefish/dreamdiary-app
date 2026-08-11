@@ -425,7 +425,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
   - 구분선
   - 삭제 → `DELETE /api/journal/entry/{id}` → 성공 알림 OK 이후 현재 route 기준 목록 재조회 + `#journal-day-{stdrdDt}` 스크롤
 
-**상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤. 라이프사이클의 `OPEN`은 기본 상태라 `lifecycle` row와 보조 캐시 맵 항목을 제거하고, `PENDING`·`RESOLVED`만 명시적으로 저장한다. 조회 DTO와 필터는 row/맵 항목 부재를 `OPEN`으로 해석한다.
+**상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤. 라이프사이클의 `OPEN`은 기본 상태라 `lifecycle` row와 보조 캐시 맵 항목을 제거하고, `PENDING`·`RESOLVED`만 명시적으로 저장한다. 조회 DTO와 필터는 row/맵 항목 부재를 `OPEN`으로 해석한다. 일기·꿈·Reflection의 월간/주간 보조 맵은 Ehcache namespace에 등록되며, 일기·꿈 lifecycle 변경은 실제 연간 엔트리 목록 캐시 `journalEntryYyAnnualStatedListByUser`를 무효화한다.
 
 **상태·라이프사이클 소유권 계약**: `POST /api/states`와 `PUT /api/lifecycles`는 저장 전에 요청 `contentType + id`의 원본 저널 콘텐츠가 존재하고 현재 로그인 사용자가 작성자인지 검증한다. 일자·챕터는 각 원본 행, 일기·노트·꿈은 원본 엔트리, 해석은 해석 원본, 스레드는 스레드 원본의 `created_by`를 사용한다. 요청 콘텐츠 타입과 실제 엔트리의 챕터 유형도 일치해야 한다. 원본이 없거나 다른 사용자 소유이면 대상 존재 여부를 구분해 노출하지 않고 403 권한 오류로 거부하며 state/lifecycle 행과 캐시를 변경하지 않는다. `MNGR` 역할도 다른 사용자의 개인 저널을 대신 변경하지 않는다.
 
