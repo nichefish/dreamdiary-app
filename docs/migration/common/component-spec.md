@@ -26,8 +26,8 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 | 구분 | Vue 경로 | 레거시 매크로 대응 | 비고 |
 |------|----------|-------------------|------|
-| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. 모달 안 code/link 등 `.tox-tinymce-aux`는 `TINYMCE_AUX_Z`(6190)로 Bootstrap 모달 위에 표시한다. |
-| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. 자동완성 dropdown은 `document.body`에 append 하고 Bootstrap 모달보다 높은 z-index로 표시한다. |
+| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. TinyMCE 런타임·플러그인·스킨은 `RichEditor` 최초 렌더 시 단일 공유 Promise로 로드하고 준비 중에는 spinner를 표시하며, 로드 실패는 앱 런타임 상태와 콘솔에 기록한다. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. 모달 안 code/link 등 `.tox-tinymce-aux`는 `TINYMCE_AUX_Z`(6190)로 Bootstrap 모달 위에 표시한다. |
+| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. Tagify 런타임과 기본 스타일은 `TagifyEditor` 최초 렌더 시 단일 공유 Promise로 로드하고 준비 중에는 spinner를 표시하며, 로드 실패는 앱 런타임 상태와 콘솔에 기록한다. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. 자동완성 dropdown은 `document.body`에 append 하고 Bootstrap 모달보다 높은 z-index로 표시한다. |
 | 댓글 목록/등록 | `features/attachable/CommentListModal.vue` 등 | `list_comment`, `CommentList.modal` | `useAttachableModalStore.openCommentList` |
 | 파일 그룹 | `FileGroupListModal.vue`, `FileGroupDetail.vue`, `FileGroupSection.vue` | `list_file_group` | `openFileList`. 다운로드 레이블과 파일 크기 단위는 현재 locale의 클라이언트 카탈로그를 사용하며 다운로드 URL·클릭 흐름은 유지한다. |
 | 이력 | `HistoryModal.vue` | — | `openHistory`. 각 이력 카드에 텍스트 복사 버튼(`bi bi-copy`) 구현 완료 |
@@ -800,6 +800,8 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | font 파일 | Spring Boot 정적 리소스의 `/font/**` 경로를 그대로 사용한다. |
 | 개발 서버 | `vite.config.ts`에서 `/css`, `/font`를 backend로 proxy한다. |
 | 기본 폰트 검수 | legacy `font.css`의 `NotoSans`, `Pretendard`, `Poppins` face가 브라우저 Network/Computed 탭에서 실제 로드되는지 확인한다. |
+| Vue 해시 자산 캐시 | `/vue-app/assets/**`는 내용 해시 파일명을 사용하며 `Cache-Control: public, max-age=31536000, immutable`을 적용한다. SPA 진입점과 fallback `index.html`은 장기 캐시 대상에서 제외한다. |
+| 서버 응답 압축 | 1KB 이상의 JS·CSS·JSON·HTML·XML·SVG·일반 텍스트 응답을 압축한다. 자체 압축된 이미지·폰트 바이너리는 압축 대상에 포함하지 않는다. |
 
 ### attachable 흡수 기준
 

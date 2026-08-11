@@ -178,6 +178,8 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from "vue";
 import axios from "axios";
+import Apexchart from "vue3-apexcharts";
+import "apexcharts/dist/apexcharts.css";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useMetaContextMenuStore } from "@/features/journal/stores/metaContextMenu";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";

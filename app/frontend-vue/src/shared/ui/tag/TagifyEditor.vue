@@ -1,6 +1,9 @@
 <template>
   <!--begin::태그 입력 컴포넌트 (Tagify)-->
-  <div ref="wrapperRef" class="tagify-editor-wrapper">
+  <div v-if="runtimeLoading" class="d-flex justify-content-center py-5" aria-live="polite">
+    <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+  </div>
+  <div v-else-if="runtimeReady" ref="wrapperRef" class="tagify-editor-wrapper">
     <input
       ref="inputRef"
       type="text"
@@ -52,9 +55,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
-import Tagify from "@yaireo/tagify";
-import "@yaireo/tagify/dist/tagify.css";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import {
+  loadTagifyRuntime,
+  type TagifyRuntimeConstructor,
+} from "@/shared/ui/tag/tagifyRuntimeLoader";
 import {
   baseTagifyOptions,
   tagTemplate,
@@ -94,6 +99,8 @@ const { t } = localeStore;
 
 const wrapperRef = ref<HTMLElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
+const runtimeLoading = ref(true);
+const runtimeReady = ref(false);
 
 /** DOM id 접두사 (레거시 tag_* / meta_* 구분) */
 const idPrefix = computed(() => (props.metaMode ? "meta" : "tag"));
@@ -103,7 +110,9 @@ const ctgrPlaceholder = computed(() =>
 );
 
 let tagifyInst: TagifyInstance | null = null;
+let tagifyConstructor: TagifyRuntimeConstructor | null = null;
 let suppressChange = false;
+let mounted = true;
 
 function loadOriginalValues(value: string): void {
   if (!tagifyInst) return;
@@ -161,13 +170,13 @@ function destroyTagify(): void {
 }
 
 function initTagify(): void {
-  if (!inputRef.value) return;
+  if (!inputRef.value || !tagifyConstructor) return;
   destroyTagify();
 
   const categoryMapData = props.categoryMap ?? {};
   const useCategoryMap = props.categoryMap != null;
 
-  tagifyInst = new Tagify(inputRef.value, {
+  tagifyInst = new tagifyConstructor(inputRef.value, {
     ...baseTagifyOptions,
     templates: {
       tag: (tagData: Parameters<typeof metaTemplate>[0]) =>
@@ -229,11 +238,21 @@ function cancelDraft(): void {
 defineExpose({ commitPendingDraft, hasPendingDraft, cancelDraft });
 
 onMounted(async () => {
-  await nextTick();
-  initTagify();
+  try {
+    tagifyConstructor = await loadTagifyRuntime();
+    if (!mounted) return;
+    runtimeReady.value = true;
+    runtimeLoading.value = false;
+    await nextTick();
+    if (mounted) initTagify();
+  } catch {
+    // 공유 loader가 전역 런타임 상태와 콘솔에 실패 원인을 기록한다.
+    if (mounted) runtimeLoading.value = false;
+  }
 });
 
 onBeforeUnmount(() => {
+  mounted = false;
   destroyTagify();
 });
 

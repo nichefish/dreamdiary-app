@@ -244,6 +244,8 @@ gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬
 ### Vue 정적 리소스
 
 - `static/vue/feature` 중심으로 경로 통일(예: admin/chat → `feature/admin`, `feature/chat`). 템플릿 스크립트 URL `/vue/feature/...` 정합.
+- Vue 프로덕션 빌드의 `/vue-app/assets/**`는 내용 해시 파일명을 사용하며 `public, max-age=31536000, immutable` 브라우저 캐시를 적용한다. SPA 진입점과 fallback `index.html`은 이 장기 캐시 경계에 포함하지 않는다.
+- 서버는 1KB 이상의 JS·CSS·JSON·HTML·XML·SVG·일반 텍스트 응답을 압축한다. 이미지·폰트처럼 자체 압축된 바이너리는 서버 압축 대상에 포함하지 않는다.
 
 ### i18n 카탈로그
 
