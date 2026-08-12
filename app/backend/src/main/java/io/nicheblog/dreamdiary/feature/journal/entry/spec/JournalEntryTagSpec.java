@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Component
 public class JournalEntryTagSpec
-        implements BaseSpec<JournalEntryTagEntity> {
+        extends BaseSpec<JournalEntryTagEntity> {
 
     /**
      * 태그 조회의 후처리 조건(distinct)을 설정한다.

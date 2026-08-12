@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FileGroupSpec
-        implements BaseSpec<FileGroupEntity> {
+        extends BaseSpec<FileGroupEntity> {
     //
 }

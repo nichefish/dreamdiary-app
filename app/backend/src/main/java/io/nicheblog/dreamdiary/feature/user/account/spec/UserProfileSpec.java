@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Log4j2
-public class UserProfileSpec implements BaseSpec<UserProfileEntity> {
+public class UserProfileSpec extends BaseSpec<UserProfileEntity> {
 
     public Specification<UserProfileEntity> searchWith(final String searchMode, final String yyStr) {
         return (root, query, builder) -> {
@@ -27,7 +25,7 @@ public class UserProfileSpec implements BaseSpec<UserProfileEntity> {
                 final List<Order> order = getOrderByTitleAndEcnyDt(root, builder);
                 query.orderBy(order);
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.warn("Failed to build search predicate.", e);
             }
             return builder.and(predicate.toArray(new Predicate[0]));
         };

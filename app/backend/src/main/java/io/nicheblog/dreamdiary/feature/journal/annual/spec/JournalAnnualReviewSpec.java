@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.feature.journal.annual.spec;
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.feature.journal.annual.entity.JournalAnnualReviewEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
@@ -21,9 +20,8 @@ import java.util.Map;
  * @author nichefish
  */
 @Component
-@Log4j2
 public class JournalAnnualReviewSpec
-        implements BaseAttachableSpec<JournalAnnualReviewEntity> {
+        extends BaseAttachableSpec<JournalAnnualReviewEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

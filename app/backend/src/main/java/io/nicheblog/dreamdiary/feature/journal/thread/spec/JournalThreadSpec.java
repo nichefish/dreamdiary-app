@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntryEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -30,9 +29,8 @@ import java.util.Objects;
  * @author nichefish
  */
 @Component
-@Log4j2
 public class JournalThreadSpec
-        implements BaseAttachableSpec<JournalThreadEntity> {
+        extends BaseAttachableSpec<JournalThreadEntity> {
 
     /** 소속 엔트리 태그가 실릴 수 있는 contentType 키. */
     private static final List<String> MEMBER_ENTRY_TAG_CONTENT_TYPES = List.of(

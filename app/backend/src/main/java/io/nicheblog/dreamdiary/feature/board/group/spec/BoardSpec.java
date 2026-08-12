@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BoardSpec implements BaseAuditSpec<BoardEntity> {
+public class BoardSpec extends BaseAuditSpec<BoardEntity> {
 
     @Override
     public void postQuery(

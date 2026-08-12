@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FileRecordSpec
-        implements BaseSpec<FileRecordEntity> {
+        extends BaseSpec<FileRecordEntity> {
     //
 }

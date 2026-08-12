@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.attachable.tag.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagProfileEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,9 +21,8 @@ import java.util.Map;
  * @author nichefish
  */
 @Component
-@Log4j2
 public class TagProfileSpec
-        implements BaseSpec<TagProfileEntity> {
+        extends BaseSpec<TagProfileEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

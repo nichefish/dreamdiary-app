@@ -11,12 +11,12 @@ import java.util.Map;
 /**
  * BaseCrudSpec
  * <pre>
- *  (공통/상속) AUDIT 요소에 대한 검색인자 세팅 Specification 인터페이스.
+ *  (공통/상속) AUDIT 요소에 대한 검색인자 세팅 Specification 추상 클래스.
  * </pre>
  *
  * @author nichefish
  */
-public interface BaseCrudSpec<Entity extends BaseCrudEntity>
+public abstract class BaseCrudSpec<Entity extends BaseCrudEntity>
         extends BaseSpec<Entity> {
 
     /**
@@ -26,7 +26,7 @@ public interface BaseCrudSpec<Entity extends BaseCrudEntity>
      * @return {@link Specification} -- 검색 조건에 맞는 Specification 객체
      */
     @Override
-    default Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
+    public Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
         // filter
         searchParamMap.remove("backToList");
         searchParamMap.remove("actvtyCtgr");
@@ -37,7 +37,7 @@ public interface BaseCrudSpec<Entity extends BaseCrudEntity>
                 // basePredicte 먼저 처리 후 나머지에 대해 처리
                 predicate = getPredicateWithParams(searchParamMap, root, query, builder);
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.warn("Failed to build search predicate.", e);
             }
             this.postQuery(root, query, builder, searchParamMap);
             return builder.and(predicate.toArray(new Predicate[0]));

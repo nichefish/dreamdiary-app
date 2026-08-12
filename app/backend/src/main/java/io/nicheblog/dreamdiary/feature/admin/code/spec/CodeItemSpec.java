@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CodeItemSpec
-        implements BaseSpec<CodeItemEntity> {
+        extends BaseSpec<CodeItemEntity> {
     //
 }

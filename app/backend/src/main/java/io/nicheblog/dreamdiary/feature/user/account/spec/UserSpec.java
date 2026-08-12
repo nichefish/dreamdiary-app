@@ -10,7 +10,6 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -31,9 +30,8 @@ import java.util.Map;
  * @author nichefish
  */
 @Component
-@Log4j2
 public class UserSpec
-        implements BaseAuditSpec<UserEntity> {
+        extends BaseAuditSpec<UserEntity> {
 
     /**
      * 인자별로 preset된 특정 검색 조건 목록을 반환한다. (override)
@@ -55,7 +53,7 @@ public class UserSpec
                 basePredicate = getBasePredicate(searchParamMap, root, query, builder);
                 predicate = getPredicateWithParams(searchParamMap, root, query, builder);
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.warn("Failed to build search predicate.", e);
             }
             predicate.addAll(basePredicate);
             // "시스템관리자"를 조회 목록에서 제외한다.
@@ -81,7 +79,7 @@ public class UserSpec
                 final List<Order> order = getOrderByTitleAndEcnyDt(root, builder);
                 query.orderBy(order);
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.warn("Failed to build search predicate.", e);
             }
 
             return builder.and(predicate.toArray(new Predicate[0]));
@@ -103,7 +101,7 @@ public class UserSpec
                 final List<Order> order = getOrderByTitleAndEcnyDt(root, builder);
                 query.orderBy(order);
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.warn("Failed to build search predicate.", e);
             }
 
             return builder.and(predicate.toArray(new Predicate[0]));
