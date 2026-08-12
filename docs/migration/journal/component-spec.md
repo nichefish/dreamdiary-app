@@ -490,7 +490,7 @@ interface TodoRow {
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/reflection/modals/JournalReflectionRegistModal.vue`
 
-**데이터·동작**: `useJournalModalStore` reflection 등록 모델의 제목·본문을 편집한다. 제목은 선택값이다. Reflection 은 대상 필수(About-A)라 모달은 제목·본문만 두고 태그·챕터 선택 UI 는 없다(Standalone 폐기). 대상(`refId`/`refContentType`)은 「해석 등록」 진입 시 payload 로 정해진다. 영속 `content_type`/`ref_content_type`은 `JOURNAL_REFLECTION`이다. 일기 태그 클라우드·결산 DIARY 집계·챕터 접힘 태그 요약은 `JOURNAL_DIARY`∪`JOURNAL_REFLECTION`을 같은 축으로 집계한다(`JournalEntryTagAxis.expandKeys`). 반면 일기 검색(`type=DIARY`)의 결과 행은 Primary(일기)만이고 태그·state 스코프는 요청 타입 단독이다(`JournalEntryTagAxis.searchScopeKeys`). 딸린 Reflection은 본문 키워드만 대상 일기를 매칭시킨다(원문·해석 한 몸 EXISTS, `REFLECTION_ONE_TYPE.md` §5.4). Reflection 은 별도 Aggregate(`journal_reflection`)라 전용 엔드포인트로 쓴다. 신규는 `POST /api/journal/reflections`, 수정은 `POST /api/journal/reflection/{id}`, 삭제는 `DELETE /api/journal/reflection/{id}`, 수정 로드는 `GET /api/journal/reflection/{id}` 로 처리한다(multipart form data). 서버 쓰기는 `JournalReflectionService`가 담당하며 대상 필수(About-A: `refId`/`refContentType`)를 검증한다. 신규 저장 성공 시 응답 Reflection ID로 `requestReflectionCreatedCollapse`를 먼저 심고, `requestEntryCreatedChapterExpand(journalChapterId)`로 소속 챕터를 현재 화면에서 일회성 펼친 뒤, 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalEntryHostForRoute()`와 diary `fetchTagCloud`로 갱신한다.
+**데이터·동작**: `useJournalModalStore` reflection 등록 모델의 제목·본문을 편집한다. 제목은 선택값이다. Reflection 은 대상 필수(About-A)라 모달은 제목·본문만 두고 태그·챕터 선택 UI 는 없다. 대상(`refId`/`refContentType`)은 「해석 등록」 진입 시 payload 로 정해진다. 영속 `content_type`은 `JOURNAL_REFLECTION`이고 `ref_content_type`은 대상 타입이다. 일기 태그클라우드·결산 DIARY 집계·챕터 접힘 태그 요약과 검색 태그·state 스코프는 `JOURNAL_DIARY` 단일 축을 사용한다. Reflection 본문 키워드는 대상 일기를 매칭시킨다(원문·해석 한 몸 EXISTS, `REFLECTION_ONE_TYPE.md` §4). Reflection 은 별도 Aggregate(`journal_reflection`)라 전용 엔드포인트로 쓴다. 신규는 `POST /api/journal/reflections`, 수정은 `POST /api/journal/reflection/{id}`, 삭제는 `DELETE /api/journal/reflection/{id}`, 수정 로드는 `GET /api/journal/reflection/{id}` 로 처리한다(multipart form data). 서버 쓰기는 `JournalReflectionService`가 담당하며 대상 필수(About-A: `refId`/`refContentType`)를 검증한다. 저장 성공 시 응답의 `targetReflectionList`와 `targetLifecycleKey`로 대상 엔트리의 Reflection 목록·라이프사이클을 부분 교체하고, 응답에 갱신 데이터가 없을 때 호스트를 다시 조회한다.
 
 **i18n**: 모달 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그(`journal.reflection.*`)를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
 
@@ -540,7 +540,7 @@ interface TodoRow {
 - 디버그: `localStorage("debug_collapse")==="true"`이면 루트에 접힘·집계 메타 스트립을 표시하고 `toggleChapter` 콘솔 로그를 남긴다(엔트리·리플렉션과 동일 키).
 - 접힘 요약: 챕터가 접히면 태그와 함께 하위 엔트리의 `threadList`를 `threadId`로 중복 제거한 스레드 버튼을 `.journal-chapter-content` 바깥에 표시한다. 스레드 순서는 엔트리·소속 목록의 최초 등장 순서를 보존하고, 버튼 클릭은 기존 엔트리 스레드 칩과 동일하게 현재 저널 화면 위에 전역 상세 모달을 직접 연다.
 
-**챕터 태그 표시 규칙**: 챕터 태그는 하위 엔트리 태그를 집계한 요약이므로 **챕터가 접힌 상태일 때만 표시**. 챕터는 **자체 태그를 소유하지 않는다** — 엔티티 `TagEmbed` 를 제거했고(tag_content 0행, vestigial), 화면 태그는 100% `JournalDayViewHelper.applyChapterTagSummary` 가 소속 일기 축(DIARY + Reflection) 엔트리 태그를 집계해 `JournalChapterDto.tag` 에 채운 것이다. 저장 경로는 태그를 영구화하지 않는다.
+**챕터 태그 표시 규칙**: 챕터 태그는 하위 엔트리 태그를 집계한 요약이므로 **챕터가 접힌 상태일 때만 표시**. 챕터는 **자체 태그를 소유하지 않는다** — 엔티티 `TagEmbed` 를 제거했고(tag_content 0행, vestigial), 화면 태그는 100% `JournalDayViewHelper.applyChapterTagSummary` 가 소속 `JOURNAL_DIARY` 엔트리 태그를 집계해 `JournalChapterDto.tag` 에 채운 것이다. 저장 경로는 태그를 영구화하지 않는다.
 - `v-if="tagList.length > 0 && isCollapsed"` — 접힌 상태에서만 DOM에 마운트
 - CSS `d-flex` 와 충돌하므로 CSS 규칙 단독 의존 불가; `v-if` 조건으로 직접 제어
 

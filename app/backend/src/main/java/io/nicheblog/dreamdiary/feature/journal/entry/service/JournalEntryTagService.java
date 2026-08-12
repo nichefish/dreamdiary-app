@@ -31,6 +31,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+/**
+ * 사용자별 저널 엔트리 태그 목록·카테고리·사용 빈도를 조회하는 서비스.
+ * <p>
+ * DIARY/DREAM 단일 태그 축을 기준으로 목록과 집계 결과를 캐시하며, 카테고리맵의 cache miss는
+ * 전용 projection 쿼리로 복원한다. 태그 빈도와 프로필 의미를 결합해 태그클라우드 표시 DTO도 구성한다.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -116,6 +123,10 @@ public class JournalEntryTagService
 
     /**
      * 태그명별 카테고리 리스트 맵을 만든다.
+     * <p>
+     * 저장 직후 캐시가 무효화된 요청에서도 엔티티 연관 그래프를 적재하지 않고
+     * 태그 ID·이름·카테고리 projection 행만 조회해 캐시 값을 재구성한다.
+     * </p>
      *
      * @param username 사용자 아이디
      * @param contentType 콘텐츠 타입
@@ -124,10 +135,13 @@ public class JournalEntryTagService
      */
     @Cacheable(value = "journalEntryTagCategoryMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #contentType)")
     public Map<String, List<String>> getTagCategoryMapByUser(final String username, final ContentType contentType) throws Exception {
-        final List<JournalEntryTagEntity> tagList = this.getSelf().getListEntity(toTagListParamMap(username, contentType));
+        final String requiredUsername = AuthUtils.requireUsername(username);
+        final List<String> contentTypes = JournalEntryTagAxis.expandKeys(contentType);
+        if (contentTypes.isEmpty()) return Map.of();
+        final List<TagDto> tagList = repository.findCategoryRowsByUserAndContentTypes(requiredUsername, contentTypes);
         return tagList.stream()
                 .collect(Collectors.groupingBy(
-                        JournalEntryTagEntity::getName,
+                        TagDto::getName,
                         Collectors.mapping(tag -> StringUtils.defaultString(tag.getCtgr()), Collectors.toList())
                 ));
     }

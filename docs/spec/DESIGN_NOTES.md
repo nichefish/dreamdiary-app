@@ -66,15 +66,13 @@
 
 ### 저널 리플렉션(journal-reflection)
 
-- Entry 종류 **Reflection**(`JOURNAL_REFLECTION`). 독립 aggregate `journal_interpretation` 은 흡수·제거됐다.
-- 등록: `POST /api/journal/entries` 에 `contentType=JOURNAL_REFLECTION`을 실으면 `resolveForRegist`가 챕터 역산을 우회해 Reflection으로 영속한다. DIARY/DREAM 등록은 계속 챕터 타입에서 역산한다.
-- 태그: **독립** Reflection만 `tag_content`(ref_content_type=`JOURNAL_REFLECTION`)를 가진다. 딸린 Reflection은 태그를 두지 않는다. 독립 태그는 일기 축 집계(클라우드·결산 DIARY·챕터 접힘 요약)에서 `JOURNAL_DIARY`와 합친다(`REFLECTION_ONE_TYPE.md` §5.2). 저장·수정·삭제 후 캐시 무효화는 `JOURNAL_REFLECTION`→`JournalEntryCacheEvictor` 매핑으로 일자·챕터·엔트리·태그 캐시를 비운다.
-- 표시: same-chapter에서는 1급 행을 dedup하고, reflection을 target 엔트리 본문과 태그 사이에 슬림 임베드(헤더·제목 없이 본문만, 옅은 1px 좌측선, 우측 댓글·복사·⋯는 엔트리 액션과 같은 오른쪽 열에 정렬)로 보인다. 엔트리 접힘 시 함께 숨는다. 엔트리 액션도 본문 옆 head-row로 옮겨 두 액션 열을 맞췄다. same-chapter dedup 경로에서는 수정·삭제·이력·라이프사이클·상태(중요/참조)를 임베드 ⋯ 메뉴가 담당한다(접기 메뉴 없음). 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가를 제공하지 않는다(`REFLECTION_ONE_TYPE.md`).
-- target(refId/refContentType)·이관·phase 정본: `docs/migration/journal/reflection-absorption.md` (상태: Phase 1~4 착지).
-- 단일 타입·optional target·형제/독립(§3.1)·스레드 소속·lifecycle/state·primary↔딸린 연쇄·독립만 태그: `docs/spec/REFLECTION_ONE_TYPE.md`.
+- **Reflection**(`JOURNAL_REFLECTION`)은 `journal_reflection` 별도 Aggregate다. `refId`/`refContentType` 대상은 필수이며 챕터·정렬·태그를 소유하지 않는다.
+- 등록·수정·삭제·상세는 `/api/journal/reflection(s)` 전용 API와 `JournalReflectionService`가 담당한다.
+- 표시는 대상 엔트리 아래 `JournalReflectionItem` 임베드로 제공하며, 대상 엔트리 접힘 상태와 일자 aside 기본 접힘 모드를 따른다.
+- 태그클라우드·결산·챕터 접힘 요약과 검색 태그·state는 DIARY/DREAM 요청 타입 단일 축을 사용한다. Reflection 저장은 태그 캐시를 무효화하지 않는다.
+- Reflection은 스레드 소속 대상이 아니며, 대상 본문과 함께 읽히는 하위 사유로 유지한다.
+- 대상·라이프사이클·검색 계약 정본: `docs/spec/REFLECTION_ONE_TYPE.md`.
 - as-built: `docs/migration/journal/{screen,interaction,component}-spec.md` 의 Reflection 항목.
-- 스레드 상세 소속 엔트리도 일자와 같이 `enrichMixed`로 `reflectionList`를 채운다.
-- 스레드 소속: 일기·꿈·노트를 target으로 둔 Reflection은 소속 **추가** 대상이 아니다. 독립 Reflection은 허용. 독립 Reflection 소속 챕터는 DIARY·NOTE만(DREAM 제외), 같은 일자 안에서 챕터 이동 가능. 일기 검색(`type=DIARY`) 결과 행에 독립 Reflection 포함·딸린은 원문 키워드 EXISTS. Reflection→Reflection은 개념상 비권장·UI 숨김(§3.1); 레거시 행·API는 유지. 정본: `REFLECTION_ONE_TYPE.md` §3.1·§4.
 
 ### 저널 스레드(journal-thread)
 

@@ -241,7 +241,6 @@ async function submit() {
       // close() 전에 부분 갱신에 필요한 target 정보를 캡처한다.
       const refId = model.value.refId;
       const refContentType = model.value.refContentType;
-      modalStore.applyCategoryMapsFromSaveResponse(res.data?.rsltMap, "JOURNAL_DIARY");
       close();
       await swalAjaxResult({
         rslt: true,

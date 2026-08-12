@@ -7,20 +7,20 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * 저널 엔트리 태그의 집계·검색 축 계약을 검증한다.
+ * DIARY/DREAM은 요청 타입 단독 축을 사용하고 Reflection은 태그 축을 갖지 않는 현재 구조를 고정한다.
+ */
 class JournalEntryTagAxisTest {
 
     @Test
-    @DisplayName("DIARY tag query expands to DIARY + REFLECTION")
-    void expandKeys_diaryIncludesReflection() {
+    @DisplayName("DIARY 태그 집계 축은 DIARY 단독이다")
+    void expandKeys_diaryAlone() {
         final List<String> keys = JournalEntryTagAxis.expandKeys(ContentType.JOURNAL_DIARY);
 
-        assertEquals(
-                List.of(ContentType.JOURNAL_DIARY.key, ContentType.JOURNAL_REFLECTION.key),
-                keys
-        );
+        assertEquals(List.of(ContentType.JOURNAL_DIARY.key), keys);
     }
 
     @Test
@@ -51,9 +51,9 @@ class JournalEntryTagAxisTest {
     }
 
     @Test
-    @DisplayName("REFLECTION tag change evicts diary axis caches")
-    void evictsDiaryAxis_reflectionOnly() {
-        assertTrue(JournalEntryTagAxis.evictsDiaryAxis(ContentType.JOURNAL_REFLECTION));
-        assertFalse(JournalEntryTagAxis.evictsDiaryAxis(ContentType.JOURNAL_DIARY));
+    @DisplayName("REFLECTION은 태그 집계·검색 축을 갖지 않는다")
+    void reflectionHasNoTagScope() {
+        assertTrue(JournalEntryTagAxis.expandKeys(ContentType.JOURNAL_REFLECTION).isEmpty());
+        assertTrue(JournalEntryTagAxis.searchScopeKeys(ContentType.JOURNAL_REFLECTION).isEmpty());
     }
 }
