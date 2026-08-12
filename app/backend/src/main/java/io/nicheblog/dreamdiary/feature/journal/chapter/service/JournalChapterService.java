@@ -460,8 +460,8 @@ public class JournalChapterService
             throw new NotAuthorizedException("common.result.not-owner");
         }
         journalDayResolvedGuard.assertWritableForChapter(deletedDto.getId());
-        assertNoChildEntries(deletedDto.getId());
         assertNoAttachedReflections(deletedDto.getId());
+        assertNoChildEntries(deletedDto.getId());
     }
 
     /**

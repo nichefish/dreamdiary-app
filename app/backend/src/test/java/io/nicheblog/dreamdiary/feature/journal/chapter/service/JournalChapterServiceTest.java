@@ -79,7 +79,6 @@ class JournalChapterServiceTest {
      */
     @Test
     void preRegistAssignsSystemSummaryToFirstGeneralChapter() throws Exception {
-        when(repository.findLastIndexByJournalDay(FIXTURE_DAY_ID)).thenReturn(Optional.empty());
         when(repository.existsByJournalDayIdAndChapterTypeNot(FIXTURE_DAY_ID, ChapterType.DREAM))
                 .thenReturn(false);
         final JournalChapterDto dto = JournalChapterDto.builder()
@@ -92,7 +91,7 @@ class JournalChapterServiceTest {
 
         assertEquals("Y", dto.getSummaryYn());
         assertNull(dto.getPrefixId());
-        assertEquals(1, dto.getSortOrder());
+        assertEquals(0, dto.getSortOrder());
     }
 
     /**
@@ -100,7 +99,7 @@ class JournalChapterServiceTest {
      */
     @Test
     void preRegistKeepsLaterChapterNonSummary() throws Exception {
-        when(repository.findLastIndexByJournalDay(FIXTURE_DAY_ID)).thenReturn(Optional.of(2));
+        when(repository.findLastNormalIndexByJournalDay(FIXTURE_DAY_ID, ChapterType.DREAM)).thenReturn(Optional.of(2));
         when(repository.existsByJournalDayIdAndChapterTypeNot(FIXTURE_DAY_ID, ChapterType.DREAM))
                 .thenReturn(true);
         final JournalChapterDto dto = JournalChapterDto.builder()
@@ -121,7 +120,6 @@ class JournalChapterServiceTest {
      */
     @Test
     void preRegistRejectsManualSummarySelection() throws Exception {
-        when(repository.findLastIndexByJournalDay(FIXTURE_DAY_ID)).thenReturn(Optional.of(1));
         when(repository.existsByJournalDayIdAndChapterTypeNot(FIXTURE_DAY_ID, ChapterType.DREAM))
                 .thenReturn(true);
         final JournalChapterDto dto = JournalChapterDto.builder()
@@ -167,9 +165,9 @@ class JournalChapterServiceTest {
 
         service.normalizeSortOrder(FIXTURE_DAY_ID);
 
-        assertEquals(1, summary.getSortOrder());
-        assertEquals(2, normal.getSortOrder());
-        assertEquals(3, dream.getSortOrder());
+        assertEquals(0, summary.getSortOrder());
+        assertEquals(1, normal.getSortOrder());
+        assertEquals(0, dream.getSortOrder());
     }
 
     @Test

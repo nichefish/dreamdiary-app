@@ -301,12 +301,12 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **트리거**: 챕터 신규 등록 (`JournalChapterService.preRegist` — 수동 등록 및 `JournalDayBootstrapService` 자동 등록 공통)
 
 **동작**:
-1. 새 챕터의 `sortOrder` 는 같은 일자의 마지막 순번+1로 계산한다. 이 계산에는 DREAM 챕터도 포함된다.
+1. 새 일반 챕터의 `sortOrder` 는 같은 일자의 기존 일반 챕터만 대상으로 마지막 순번+1을 계산한다. 시스템 요약·DREAM은 순번 밖(`sortOrder=0`)이며 일반 챕터만 1..N 순번을 사용한다.
 2. 시스템 요약 역할 판정은 **"기존 non-DREAM 챕터가 없는가"** 기준이다. DREAM 은 항상 마지막에 배치되는 개념 챕터이므로 판정에서 제외한다.
 3. 첫 non-DREAM 챕터는 제출된 `prefixId`·`summaryYn`과 무관하게 `summaryYn=Y`가 되고 Prefix 선택은 제거된다.
 4. 이후 일반 챕터는 `summaryYn=N`이며 사용자가 `summaryYn=Y`를 직접 제출할 수 없다. 시스템 요약은 사용자가 고르는 말머리 옵션이 아니다.
 5. 결과적으로 꿈 챕터가 먼저 있는 날에 첫 일기·노트 챕터를 등록해도 시스템 요약 역할이 정상 부여된다.
-6. 시스템 요약 자동 등록 뒤 빈 DIARY 생성 여부도 `summaryYn=Y`로 판정한다. DREAM이 먼저 존재해 등록 당시 순번이 2 이상이어도 빈 DIARY가 누락되지 않는다.
+6. 시스템 요약 자동 등록 뒤 빈 DIARY 생성 여부도 `summaryYn=Y`로 판정한다. DREAM이 먼저 존재해도 첫 non-DREAM 챕터는 `summaryYn=Y`·`sortOrder=0`으로 등록되어 빈 DIARY가 누락되지 않는다.
 
 시스템 요약 의미의 SSOT는 `summaryYn`이며 정렬 순번과 사용자 Prefix 선택에서 분리된다. 같은 일자 `normalizeSortOrder`·조회 Spec은 **시스템 요약 맨 앞 → 일반 → DREAM 맨 뒤**다. 일반 챕터 수정 화면의 `#`(=`sortOrder`)는 정규화 후 요약 다음 구간에 반영된다 — 요약이 있는 날 `#1`로 저장하면 요약 바로 다음(전체 순번 2)이 된다. 일반 챕터의 사용자 말머리는 챕터 유형별 PERSONAL Scope와 `prefix_content` 연결을 사용한다.
 

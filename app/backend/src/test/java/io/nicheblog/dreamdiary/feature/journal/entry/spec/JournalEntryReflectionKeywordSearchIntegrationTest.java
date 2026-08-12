@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
 import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
+import io.nicheblog.dreamdiary.global.TestConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -73,7 +74,8 @@ class JournalEntryReflectionKeywordSearchIntegrationTest {
 
         final List<JournalEntryEntity> found = journalEntryRepository.findAll(spec.searchWith(Map.of(
                 "contentType", ContentType.JOURNAL_DIARY,
-                "searchKeywords", List.of(FIXTURE_REFLECTION_KEYWORD)
+                "searchKeywords", List.of(FIXTURE_REFLECTION_KEYWORD),
+                "createdBy", TestConstant.TEST_AUDITOR
         )));
 
         assertEquals(1, found.size());
@@ -92,7 +94,8 @@ class JournalEntryReflectionKeywordSearchIntegrationTest {
 
         final List<JournalEntryEntity> found = journalEntryRepository.findAll(spec.searchWith(Map.of(
                 "contentType", ContentType.JOURNAL_DIARY,
-                "searchKeywords", List.of(FIXTURE_ABSENT_KEYWORD)
+                "searchKeywords", List.of(FIXTURE_ABSENT_KEYWORD),
+                "createdBy", TestConstant.TEST_AUDITOR
         )));
 
         assertTrue(found.isEmpty());
