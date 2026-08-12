@@ -2,6 +2,32 @@
 
 > 작성 및 커밋 이력 수렴 기준: [커밋 Squash와 CHANGELOG 작성 방법론](COMMIT_SQUASH_CHANGELOG_GUIDE.md)
 
+### 2026-08-13 | v0.27.0
+- 신규 기능
+  - **저널 일간 뷰**를 첫 번째 정식 탭과 기본 진입 경로(`/journal/daily`)로 도입했다.
+    - 선택 일자의 일자·일기·꿈 태그 클라우드와 aside 미니 캘린더를 제공하고, 헤더·사이드바가 없는 팝업 모드도 유지한다.
+  - 관리자 AI 설정에 **저널 임베딩 ON/OFF 토글**을 추가했다.
+    - 설정은 재시작 없이 즉시 적용되며 기본값은 ON이다. OFF에서는 엔트리 등록·수정 시 embedding/entity queue 적재를 건너뛴다.
+- 성능 · 사용성
+  - 저널 태그·임베딩·일자 조회를 배치화하고, 저장 시 태그 카테고리맵을 전용 projection으로 조회해 반복 쿼리와 불필요한 캐시 무효화를 줄였다.
+  - 카테고리맵·태그 클라우드의 동시 요청을 병합하고 라우트 인증 확인 결과를 단기간 재사용해 중복 API 호출을 줄였다.
+  - Tagify·TinyMCE 런타임을 최초 사용 시점에 로드하고 ApexCharts를 메타 라우트로 분리했으며, 초기 번들에서 미사용 `element-plus`·`yup` 의존성을 제거했다.
+  - 해시된 Vue 정적 자산에 immutable cache를 적용하고 `/api` GET 응답에 ETag 조건부 요청을 적용해 미변경 응답을 `304 Not Modified`로 처리한다.
+  - 관리자·게시판·사용자 목록에서 유효한 빈 결과와 API 실패를 구분하고, 실패 시 직전 성공 목록을 보존한다.
+  - 저널 메타 컨텍스트 메뉴에서 「그래프로 보기」와 「검색」을 우선 배치하고 정상 인증 경로의 디버그 콘솔 로그를 정리했다.
+- 버그 수정 · 정합성
+  - 저널 라이프사이클 캐시 갱신과 메모리 우선 cache resolver를 복구해 수정 결과와 조회 상태가 일치하도록 했다.
+  - `journalModal`의 `categoryMap`을 반응형 참조로 유지해 세션 중 갱신된 Tagify 자동완성이 계속 반영되도록 했다.
+  - 요약·꿈 챕터의 정렬값을 `0`으로 고정하고 일반 챕터를 `1..N`으로 유지한다. 챕터 삭제 시 리플렉션 참조를 하위 엔트리보다 먼저 검사해 구체적인 차단 사유를 반환한다.
+  - 저널 조회·태그·챕터·attachable 상태 경로의 회귀와 빈 목록 처리 계약을 현재 spec에 맞게 정리했다.
+- 구조 · 운영
+  - AI 공통 능력(client·RAG·person·prompt·guard)과 채팅 세션 오케스트레이션을 분리하고, 저널 임베딩 저장·검색은 저널 도메인의 SSOT로 유지했다.
+  - `MenuService`, 저널 entry composable·thread store, `attachable.state`, `journalModal`을 책임별 모듈과 조립 facade로 분리했다.
+  - 공통 Spec 계층을 Template Method 기반 추상 클래스로 수렴하고 하위 Spec의 로거를 상속 필드로 통일했다.
+  - 보안·무결성 예외의 침묵 경로와 서비스·Spec 계층의 `printStackTrace`를 구조화 로그로 전환했다.
+  - local/dev 프로파일에서 Ehcache hit/miss와 Actuator cache 지표를 확인할 수 있도록 계측을 추가했다.
+  - full schema와 migration spec의 drift를 정리하고, MILESTONE squash·트리 검증·CHANGELOG 작성 방법론을 문서화했다.
+
 ### 2026-08-07 | v0.26.0
 - 신규 기능
   - 저널 "해석(interpretation)"을 독립 Entry 종류 **Reflection**(`JOURNAL_REFLECTION`)으로 승격했다.

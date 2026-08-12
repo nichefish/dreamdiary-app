@@ -51,11 +51,14 @@
 ## 7. 릴리스 메타
 - [ ] `docs/CHANGELOG.md` 항목 작성 — MILESTONE squash 완료 후 직전 릴리스 이후 **최신 커밋까지** 빠짐없이 검토한다. 커밋 메시지를 색인으로 삼고 최종 diff·spec·테스트·실측 결과를 대조한다.
 - [ ] CHANGELOG는 개발 과정을 나열하지 않고 사용자·운영 관점의 확정 결과로 작성하며, 릴리스 문서용 마지막 독립 커밋으로 분리한다.
-- [ ] 버전 일관성 확인 — 아래 세 곳의 버전 문자열이 모두 동일한지 대조:
+- [ ] 버전 일관성 확인 — 아래 위치의 버전 문자열이 모두 동일한지 대조:
   - `app/frontend-vue/package.json` (`version` 필드)
+  - `app/frontend-vue/package-lock.json` (루트 `version`과 `packages[""]`의 `version`)
   - `build.gradle` (프로젝트 버전)
+  - `config/application.yml` (`spring.flyway.target`)
   - `docs/CHANGELOG.md` (최신 헤딩)
-- [ ] git tag 예정 이름 확인 — 예: `v0.26.0`. 기존 태그와 중복·오타 없는지 `git tag -l` 로 대조.
+- [ ] `config/application.yml`의 `spring.flyway.release-date`와 CHANGELOG 최신 헤딩 날짜가 일치하는지 대조.
+- [ ] git tag 예정 이름 확인 — 예: `v0.27.0`. 기존 태그와 중복·오타 없는지 `git tag -l` 로 대조.
 
 ## 8. 코드 위생
 - [ ] TODO/FIXME/HACK/XXX grep — 릴리스 차단 항목(미완성 로직, 임시 우회) 없는지 확인. 남겨도 되는 건 의도적으로 남긴 것임을 판단 후 통과.
@@ -84,8 +87,10 @@
 
 > 매 릴리스마다 이 섹션만 갱신한다. 위 항목 중 이번에 특별히 챙길 것·현재 상태를 적는다.
 
-### v0.26.0
-- 기능 배선 QA: 리플렉션 collapse(중첩 리플렉션 접고/펴기, aside 기본접힘 토글, 새 PENDING 접힘), thread-relation(related 추가/토글/뷰).
-- 테스트 이음새: collapse 컴포넌트 배선(`resolveReflectionCollapsed` 소비 경로), thread-relation 합성 로직(최근 버그픽스 있었음, 전용 테스트 부재).
-- CHANGELOG: 08-04자 항목이 이후 08-06/08-07 작업(collapse 확정·thread-relation·에이전트 룰 SSOT·삭제 가드 등)을 아직 미반영 → 보강 필요.
-- 스키마: Flyway 증분 없음(1.0 전). 마스터 `schema-journal-mariadb.sql`에 `journal_entry` + `journal_reflection` CREATE 정합 확인(빈 DB bootstrap).
+### v0.27.0
+- 기능 배선 QA: 기본 진입 `/journal/daily`, 일간 뷰 탭·미니 캘린더·일자 태그 클라우드, 팝업 모드 유지 여부를 확인한다.
+- AI 설정 QA: 관리자 AI 탭의 저널 임베딩 ON/OFF 저장·실패 복원과, OFF 상태에서 엔트리 등록·수정 시 embedding/entity queue를 건너뛰는지 확인한다.
+- 성능·캐시 QA: 에디터·태그·차트 지연 로딩, 정적 자산 immutable cache, API GET ETag/304, 인증 조회 재사용이 사용자 상태를 오염시키지 않는지 확인한다.
+- 의존성 lock: `element-plus`·`yup` 제거에 따른 `package-lock.json` 축소는 의도된 번들 정리다.
+- 스키마: Flyway 증분 없음(1.0 전). 마스터 스키마와 런타임 entity 정합을 확인한다.
+- 태그: `v0.27.0`은 dev 브랜치가 아니라 main 머지 커밋에 생성한다. 과거 릴리스 태그 백필은 각 main 머지 커밋 대조 후 별도로 수행한다.
