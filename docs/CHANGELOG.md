@@ -1,5 +1,7 @@
 # CHANGELOG
 
+> 작성 및 커밋 이력 수렴 기준: [커밋 Squash와 CHANGELOG 작성 방법론](COMMIT_SQUASH_CHANGELOG_GUIDE.md)
+
 ### 2026-08-07 | v0.26.0
 - 신규 기능
   - 저널 "해석(interpretation)"을 독립 Entry 종류 **Reflection**(`JOURNAL_REFLECTION`)으로 승격했다.

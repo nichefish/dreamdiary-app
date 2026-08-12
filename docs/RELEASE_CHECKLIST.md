@@ -9,7 +9,10 @@
 - [ ] 워킹트리 clean (`git status`)
 
 ## 1. 히스토리·커밋 정리
-- [ ] detour/churn 커밋 스쿼시 — 중간에 방향 튼 과정(설계 선회, 반복 삽질)을 결론 커밋으로 수렴한다. 최종 트리 동일성 `git diff <old> <new>` = 0 으로 내용 무변경을 검증한다.
+- [ ] [커밋 Squash와 CHANGELOG 작성 방법론](COMMIT_SQUASH_CHANGELOG_GUIDE.md)에 따라 SAVEPOINT를 개념적으로 완결된 MILESTONE으로 수렴한다.
+- [ ] detour/churn 커밋 스쿼시 — 같은 문제를 해결한 설계 선회·반복 수정·임시 계측을 결론 커밋으로 압축하고, 독립적으로 되돌릴 변화는 별도 MILESTONE으로 남긴다.
+- [ ] squash 전 복구 참조와 tree object ID를 기록하고, squash 후 tree object ID 동일성과 `git diff <backup-ref> HEAD` = 0으로 내용 무변경을 검증한다.
+- [ ] MILESTONE 커밋 메시지에 최종 결과·사용자 효과·핵심 계약·유효한 실측값을 보존한다.
 - [ ] 커밋 메시지 한글 규칙(`AGENTS.md` §10) 준수 — 영문 subject·빈 메시지 reword. Conventional Commits 타입 접두사·스코프·식별자는 원문 유지.
 - [ ] (선택) 전용 version-bump 커밋 — 과거 리추얼: `chore: bump to X`.
 - [ ] 백업 브랜치는 전 게이트 통과 후 정리한다(그 전엔 남겨 둔다).
@@ -46,7 +49,8 @@
 - [ ] 시드/필수 데이터 정합 — `app/backend/src/main/resources/schema/full/mariadb/data-required-*.sql`.
 
 ## 7. 릴리스 메타
-- [ ] `docs/CHANGELOG.md` 항목 작성 — 직전 릴리스 이후 **최신 커밋까지** 빠짐없이(날짜·신규 기능·구조 정리). 커밋 로그를 근거로 대조한다.
+- [ ] `docs/CHANGELOG.md` 항목 작성 — MILESTONE squash 완료 후 직전 릴리스 이후 **최신 커밋까지** 빠짐없이 검토한다. 커밋 메시지를 색인으로 삼고 최종 diff·spec·테스트·실측 결과를 대조한다.
+- [ ] CHANGELOG는 개발 과정을 나열하지 않고 사용자·운영 관점의 확정 결과로 작성하며, 릴리스 문서용 마지막 독립 커밋으로 분리한다.
 - [ ] 버전 일관성 확인 — 아래 세 곳의 버전 문자열이 모두 동일한지 대조:
   - `app/frontend-vue/package.json` (`version` 필드)
   - `build.gradle` (프로젝트 버전)
