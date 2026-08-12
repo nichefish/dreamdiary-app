@@ -74,3 +74,10 @@ app:
         chat-model: qwen2.5:14b
         chat-temperature: 0.28
         num-predict: 2048
+
+# Actuator: 캐시 통계 계측용 노출 (local/dev 한정, prod 제외)
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,caches,metrics
