@@ -152,6 +152,10 @@ public class JournalDayTagService
         if (query.yy() != null) builder.yy(query.yy());
         if (query.mnth() != null) builder.mnth(query.mnth());
         if (query.hasWeekStartDt()) builder.weekStartDt(query.weekStartDt());
+        if (query.hasStdrdDt()) {
+            builder.searchStartDt(query.stdrdDt());
+            builder.searchEndDt(query.stdrdDt());
+        }
 
         final JournalDaySearchParam searchParam = builder.build();
         searchParam.setCreatedBy(AuthUtils.requireUsername(username));
@@ -163,6 +167,7 @@ public class JournalDayTagService
                 .yy(query.yy())
                 .mnth(query.mnth())
                 .weekStartDt(query.weekStartDt())
+                .stdrdDt(query.stdrdDt())
                 .createdBy(AuthUtils.requireUsername(username))
                 .build();
     }

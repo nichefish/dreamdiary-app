@@ -69,6 +69,7 @@ public interface JournalEntryTagRepository
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
             " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asLocalDate(#param.weekStartDt)}) " +
+            " AND (:#{#param.stdrdDt} IS NULL OR day.journalDate = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asLocalDate(#param.stdrdDt)}) " +
             "GROUP BY ct.tagId")
     List<TagContentCntDto> countSizeMap(final @Param("param") JournalEntryTagContentParam param);
 }

@@ -39,6 +39,9 @@ public class JournalDayTagContentParam {
     /** 주 시작일 */
     private String weekStartDt;
 
+    /** 기준일자 */
+    private String stdrdDt;
+
     /** 등록자 ID */
     private String createdBy;
 

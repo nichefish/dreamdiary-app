@@ -28,17 +28,18 @@
 | 챕터 말머리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY`(일기 챕터) 개인 Prefix 체크박스, `store.chapterPrefixIds` → `fetchDays` | ✓ |
 | 일기/꿈 라이프사이클 필터 | `JournalAside.vue` — `store.diaryLifecycleKey` / `store.dreamLifecycleKey` → `fetchDays` 후 일기/꿈 각각 후처리 필터 | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
-| 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
+| 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ✓ |
+| 일간 날짜 네비게이션 | 탭(`journal-daily-tab`)은 aside의 `JournalAsideMiniCalendar.vue`만 사용하며 중복 본문 네비게이션 행을 표시하지 않는다. 팝업(`journal-daily`)은 aside가 없으므로 본문 이전/날짜/다음 행을 유지한다. 두 경로 모두 날짜 선택 시 `router.replace({ query: { stdrdDt } })`로 이동한다. 미니 달력은 토/일·공휴일을 빨간색으로 표시하고 공휴일은 `GET /api/schedule/holidays`로 조회한다. | ✓ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
 | 툴바 floating·aside 열기 | `JournalDayViewToolbar` 전체와 열린 저널 일자 aside의 상단선이 고정 앱 헤더 아래에서 sticky로 일치하고, 툴바는 별도 그림자 없이 하단 경계만 사용. aside 숨김 시 우측 끝 버튼이 `asideStore.show()` 호출. 모바일은 본문 우상단 전용 버튼 유지 | ✓ |
 | 어사이드 목록 키워드 필터 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` → `fetchDays()` (목록 축소) | ✓ — 툴바 `openSearchTab` 전체검색과 분리 (`vue-screen-overview.md` 필터·검색 정책) |
-| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView. 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback. 신규 엔트리 등록 후에는 완료 자동 접힘·서버 COLLAPSED 여부와 무관하게 대상 챕터를 현재 화면에서 일회성으로 펼치며, 신규 Reflection 등록은 같은 저장 응답의 Reflection ID에 `requestReflectionCreatedCollapse`로 일회성 로컬 접힘을 심어 챕터 펼침·부모 expand signal보다 우선한다, 수정 저장에는 적용하지 않고 서버 접힘 상태도 변경하지 않는다. | ✓ |
-| 상태/라이프사이클 변경 후 갱신 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalEntryHostForRoute`가 `detailOpen`을 전경 판단 기준으로 사용한다. 스레드 상세가 열려 있으면 상세·집계 태그·소속 엔트리를 다시 조회하고, 배경이 주간/월간/일간이면 `refreshJournalDaysForRoute`도 실행하되 배경 스크롤은 하지 않는다. 배경이 검색 팝업(`journal-entry-search`)이면 등록된 `loadEntries`로 로컬 결과(스레드 칩 포함)를 함께 재조회한다. 상세가 닫힌 주간/월간/일간 route는 기존 목록 갱신 → `#journal-day-{stdrdDt}` scrollIntoView를 유지한다. **일간(`journal-daily`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
+| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView(일간 일자 저장은 sticky 툴바·날짜 네비 유지를 위해 스크롤 생략·`stdrdDt` query 동기화). 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback. 신규 엔트리 등록 후에는 완료 자동 접힘·서버 COLLAPSED 여부와 무관하게 대상 챕터를 현재 화면에서 일회성으로 펼치며, 신규 Reflection 등록은 같은 저장 응답의 Reflection ID에 `requestReflectionCreatedCollapse`로 일회성 로컬 접힘을 심어 챕터 펼침·부모 expand signal보다 우선한다, 수정 저장에는 적용하지 않고 서버 접힘 상태도 변경하지 않는다. | ✓ |
+| 상태/라이프사이클 변경 후 갱신 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalEntryHostForRoute`가 `detailOpen`을 전경 판단 기준으로 사용한다. 스레드 상세가 열려 있으면 상세·집계 태그·소속 엔트리를 다시 조회하고, 배경이 주간/월간/일간(탭·팝업 모두)이면 `refreshJournalDaysForRoute`도 실행하되 배경 스크롤은 하지 않는다. 배경이 검색 팝업(`journal-entry-search`)이면 등록된 `loadEntries`로 로컬 결과(스레드 칩 포함)를 함께 재조회한다. 상세가 닫힌 주간/월간/일간 route는 기존 목록 갱신 → `#journal-day-{stdrdDt}` scrollIntoView를 유지한다. **일간(`journal-daily`/`journal-daily-tab`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, 현재 locale 확인창 사용, `POST /api/journal/chapter/{id}/move` 호출. 응답 `message`를 우선 표시하고 없으면 현재 locale fallback을 사용한 뒤 `fetchDays` + 신 일자 scrollIntoView | ✓ |
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 클라이언트 차단 경고는 현재 locale 카탈로그 사용, 수정/삭제/이동 API 거부 시 서버 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. Vue `allEntriesResolved` → 루트 `.is-all-resolved`(PENDING의 `.is-all-pending`과 동형). 접힘·펼침 초록 inset/배경은 이 클래스 기준으로 표시한다. 중요·참조 상태선은 하위 DOM `:has`로 조합한다. 접힘 바: 완료 1px 초록·중요 2px 빨강·참조 4px 노랑(엔트리 `$journal-paired-states` 와 동일). 단독 우선 중요>참조>완료; 중요+완료·중요+참조·삼중 조합 다중선. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | Reflection 전체 (( )) | `JournalReflectionItem` ⋯ 메뉴 「전체 (( ))」(`wrapEntireNoti`). 저장 원문 `content`의 각 `<p>`/`<li>`에 Markdown `((...))`를 멱등 적용하고, 변경 시에만 `POST /api/journal/reflection/{id}`(multipart)로 저장한 뒤 `refreshJournalEntryHostForRoute`로 갱신한다. 이미 적용된 본문·빈 본문은 API 없이 안내만 표시한다 | ✓ |
-| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러 | ✓ |
+| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러. 일간에서는 URL `stdrdDt` 하루를 태그 기간 축으로 사용하며 날짜 이동 시 일자·일기·꿈 태그클라우드를 함께 갱신한다. | ✓ |
 
 **일자 필터 모달 i18n**: 제목·결과 건수·연도/전체 연도·연월 구분선·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·모든 필터 제거 시 빈 결과·연도 변경 시 필터 유지 계약을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 
@@ -224,6 +225,17 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 > 다만 `id="yy"`, `id="mnth"` 가 없어 레거시 jQuery 코드와 호환이 안 된다.
 > 완전 수렴 후 레거시 jQuery는 제거 대상이므로 id 호환보다 Vue 방식 유지가 맞다.
 
+**DAILY viewType 미니 달력**:
+- `store.viewType === 'DAILY'` 일 때 월 그리드(1~12월) 대신 `JournalAsideMiniCalendar` 컴포넌트를 렌더한다.
+- 요일 헤더(일~토) + 해당 월 날짜 셀을 7열 CSS grid로 표시한다.
+- 선택된 날짜(`route.query.stdrdDt`)는 `is-selected`(파란 배경), 오늘은 `is-today`(파란 테두리)로 구분한다.
+- 토요일·일요일은 `is-weekend`(빨간색 텍스트)로 표시한다. 요일 헤더의 일/토도 동일.
+- 공휴일은 `is-holiday`(빨간색 텍스트)로 표시한다. `GET /api/schedule/holidays?yy=&mnth=` 로 해당 월의 공휴일 날짜 목록을 조회하며, `store.yy`/`store.mnth` 변경 시 재조회한다. 서버는 캐시된 전체 공휴일 엔티티에서 year/month 필터링하여 반환한다.
+- 선택된 날짜가 주말·공휴일이어도 `is-selected` 흰색 텍스트가 우선한다.
+- 날짜 클릭 → `router.replace({ query: { stdrdDt: 'YYYY-MM-DD' } })` → `JournalDayDaily`의 `stdrdDt` watch가 재조회.
+- 월 이동 chevron은 aside `store.yy`/`store.mnth`만 변경하고, `fetchDays`를 호출하지 않는다(달력 표시 월만 전환).
+- TODAY 버튼은 오늘 날짜로 `store.yy`/`mnth` + `router.replace({ query: { stdrdDt } })`를 함께 수행한다.
+
 ---
 
 ### 키워드 검색 / 필터 (Keyword Search & Filter)
@@ -254,7 +266,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 2. 모달 닫기
 3. 성공 알림 표시
 4. 사용자가 OK를 누른 뒤 `refreshCurrentDayView(savedDate)` 호출
-5. `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
+5. **일간(`journal-daily` / `journal-daily-tab`)**: sticky 뷰 툴바 아래로 날짜 네비(이전/날짜/다음)가 스크롤되어 사라지지 않도록 `scrollIntoView`를 호출하지 않는다. `savedDate`가 `route.query.stdrdDt`와 다르면 `router.replace({ query: { stdrdDt: savedDate } })`로 URL을 맞추고 `JournalDayDaily`의 `stdrdDt` watch가 재조회한다. 같으면 `refreshJournalDaysForRoute`만 호출한다.
+6. **주간/월간 등**: `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
 
 **카드 id SSOT**: `JournalDayCard.vue` `:id="'journal-day-' + day.stdrdDt"`
 
@@ -373,9 +386,9 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **메뉴 구조**:
 - 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간·캘린더·메타 등 전용; route `journal-weekly` 에서는 `v-if` 로 메뉴 미표시)
-- 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
+- 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily-popup?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
 - JournalDayDaily.vue 로드·route.query.stdrdDt watch: buildDailyFetchParams(stdrdDt) → fetchDays({ viewType: DAILY, stdrdDt, yy, mnth }) (@/utils/journalDayRefresh.ts)
-- 일간 팝업(journal-daily)에서 저장·삭제·상태 변경·이력 복원 후 목록 갱신: refreshJournalDaysForRoute(store, route, fallbackStdrdDt?) — 주간/월간과 동일하게 route name 분기, 일간은 URL·fallback 기준일 유지
+- 일간 팝업(`journal-daily`)과 일간 탭(`journal-daily-tab`)에서 저장·삭제·상태 변경·이력 복원 후 목록 갱신: refreshJournalDaysForRoute(store, route, fallbackStdrdDt?) — 주간/월간과 동일하게 route name 분기, 일간은 URL·fallback 기준일 유지
 - 날짜 이동(이전/다음)은 로컬 Date 생성자로 파싱 — `new Date(stdrdDt)`는 UTC로 파싱되어 Korea(UTC+9) 환경에서 날짜가 1일 밀리는 버그 발생
 - 중앙 날짜 표시: `<input type=date>` 클릭 시 브라우저 달력 피커 오픈, 선택 날짜로 `router.replace`하여 이동
 - 이전/다음 버튼·날짜 선택 tooltip·빈 상태와 목록 조회 실패 fallback은 현재 locale 카탈로그를 사용한다. locale 변경은 `stdrdDt` query와 일간 조회 조건을 변경하지 않는다.

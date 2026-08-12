@@ -341,7 +341,7 @@ function gotoWeekly(): void {
 function openDayView(): void {
   const w = Math.min(1600, window.screen.availWidth);
   const h = Math.min(1080, window.screen.availHeight);
-  window.open(joinAppBasePath(`/journal/daily?stdrdDt=${props.day.stdrdDt}`), "_blank", `width=${w},height=${h}`);
+  window.open(joinAppBasePath(`/journal/daily-popup?stdrdDt=${props.day.stdrdDt}`), "_blank", `width=${w},height=${h}`);
 }
 
 /** fetchDays 완료 후 해당 일자로 스크롤 */

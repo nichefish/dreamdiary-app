@@ -11,7 +11,7 @@
 
 **Vue 구현 완료**: `app/frontend-vue/src/features/journal/day/components/JournalTagCloudHeader.vue`
 
-**사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). `JournalDayDaily.vue` 에는 미포함 (일간 뷰는 태그클라우드 없음)
+**사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue`, `JournalDayCalendar.vue`, `JournalDayDaily.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). 일간 탭과 팝업은 동일한 `JournalDayDaily.vue`에서 선택 날짜 하루의 태그클라우드를 표시한다.
 
 **레거시 HTML 구조**:
 ```html
@@ -52,7 +52,7 @@
 |------|------|
 | `store.tagCloud` | `useJournalStore` — `JournalTagCloud { dayTagList, diaryTagList, dreamTagList }` |
 | `store.tagCloudLoading` | `useJournalStore` |
-| `store.fetchTagCloud()` | 전체 갱신: `GET /api/journal/day/tags`, `GET /api/journal/entry/tags?type=DIARY`, `GET /api/journal/entry/tags?type=DREAM`. 같은 섹션·기간의 진행 중 조회는 Promise를 공유해 HTTP 1회로 합친다. |
+| `store.fetchTagCloud()` | 전체 갱신: `GET /api/journal/day/tags`, `GET /api/journal/entry/tags?type=DIARY`, `GET /api/journal/entry/tags?type=DREAM`. 일간은 `stdrdDt`, 주간은 `weekStartDt`, 월간·달력은 `yy`/`mnth`를 기간 조건으로 사용한다. 같은 섹션·기간의 진행 중 조회는 Promise를 공유해 HTTP 1회로 합친다. |
 | `store.fetchTagCloud({ sections })` | 부분 갱신: `sections: ["day" \| "diary" \| "dream"]` 에 포함된 태그클라우드 섹션만 조회·반영. 기간이 다른 요청은 각각 실행하고 섹션별 마지막 시작 요청만 반영하며, 실패한 진행 중 요청은 제거해 다음 호출에서 재시도한다. |
 | `store.resetTagCloudState()` | 로그아웃·세션 만료 시 목록·오류·로딩·진행 중 요청을 초기화하고 요청 세대를 올린다. 이전 사용자 세대의 늦은 성공·실패 응답과 로딩 완료 처리는 새 세션 상태에 반영하지 않는다. |
 | `TagCloudItem` | `{ id: number|string, name: string, ctgr?: string, contentSize: number, tagClass?: string, textClass?: string }` |
@@ -62,9 +62,9 @@
 **가로 정렬 계약**: 일자/일기/꿈 태그 3행의 태그 목록 시작 x좌표는 동일해야 한다. `꿈 태그` 라벨이 한 글자 짧다는 이유로 태그 목록이 왼쪽으로 들어오면 실패다. Vue 구현은 라벨 컬럼에 `.journal-tag-header__label { width: 6.25rem; justify-content: center; }`를 적용해 3행 모두 같은 라벨 폭을 사용한다.
 
 **초기화 타이밍**:
-- 월간/주간 parent view가 `store.viewType`과 기간 상태를 먼저 설정한 뒤 `store.fetchTagCloud()` 호출
+- 월간/주간/달력/일간 parent view가 `store.viewType`과 기간 상태를 먼저 설정한 뒤 `store.fetchTagCloud()` 호출
 - `JournalTagCloudHeader`는 mounted 선조회를 하지 않는다. 자식 mounted가 부모 초기화보다 먼저 실행되어 직전 월간 상태로 조회되는 것을 방지한다.
-- `[store.yy, store.mnth, store.weekStartDt, store.viewType]` watch → 기간/뷰 변경 시 재호출
+- `[store.yy, store.mnth, store.weekStartDt, store.dailyStdrdDt, store.viewType]` watch → 기간/뷰 변경 시 재호출
 - store는 태그클라우드 요청 순서를 섹션별로 추적해, 이전 기간/섹션 요청이 늦게 완료되어도 최신 요청 결과만 반영한다. 부분 갱신 응답은 해당 섹션만 교체하고 다른 섹션의 현재 값을 덮어쓰지 않는다.
 
 **저장 후 부분 갱신 계약**:
@@ -361,7 +361,7 @@ interface TodoRow {
 
 **DOM 구조**:
 - sticky flex 행 (`journal-day-view-toolbar`, `justify-content-between`): 좌측 `nav-tabs` (router-link 4개) + 우측 액션 영역 (`d-none d-md-flex pe-5 mt-3`)
-- 탭 라벨: `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW`
+- 탭 라벨: `일간 VIEW` / `주간 VIEW` / `월간 VIEW` / `달력 VIEW` / `메타 VIEW`
 - 등록 버튼: `btn btn-sm btn-light-primary btn-outlined`, 아이콘 `bi-calendar-plus`, 라벨 「저널 일자 등록」
 - aside 숨김 시 액션 영역 맨 오른쪽: 구분자 + `bi-layout-sidebar-inset-reverse` 열기 버튼. 일정 툴바와 같은 순서이며 aside가 보이면 렌더하지 않는다.
 - 탭·검색 placeholder/tooltip·등록 버튼 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
@@ -370,7 +370,7 @@ interface TodoRow {
 | 액션 | Vue |
 |------|-----|
 | 저널 일자 등록 클릭 | `useJournalModalStore().openDayRegist()` → `JournalDayRegistModal` (`JournalLayout` 마운트) |
-| 탭 전환 | `router-link` — `journal-weekly` / `journal-monthly` / `journal-calendar` / `journal-meta` |
+| 탭 전환 | `router-link` — `journal-daily-tab` / `journal-weekly` / `journal-monthly` / `journal-calendar` / `journal-meta` |
 | 일기 키워드 검색 | `v-model="localDiaryKw"`, Enter/버튼 클릭 → 일기 전체검색 새 탭 오픈 |
 | 꿈 키워드 검색 | `v-model="localDreamKw"`, Enter/버튼 클릭 → 꿈 전체검색 새 탭 오픈 |
 | 고급 필터 | `asideStore.toggle()` — 사이드 필터 패널 표시/숨김 |
@@ -520,7 +520,7 @@ interface TodoRow {
 
 **액션 결과 i18n**: 일자 삭제 확인·성공·실패와 꿈 섹션 클립보드 복사 성공·실패 fallback 및 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용한다. 삭제 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하고, 성공 알림 확인 후 현재 route 기준 목록 재조회와 일자 스크롤을 유지한다.
 
-**일간 뷰 새 창 열기**: ✓ 구현 완료 — 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` 새 창 강제 (features 지정)
+**일간 뷰 새 창 열기**: ✓ 구현 완료 — 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)" → `window.open(BASE_URL + /journal/daily-popup?stdrdDt=..., "_blank", "width=...,height=...")` 새 창 강제 (features 지정)
 
 **사용자 휴가 표시**: ✓ 구현 완료 — `JournalDayVacationIndicator.vue`가 서버 확정 `vacationDayStatus`와 `vacationReasonList`를 월간·주간·일간 카드, 일자 상세, 메타 일자 목록에 동일하게 표시한다. `FULL_DAY`는 공휴일·주말과 같은 날짜 빨강 + 휴가 배지, `AM_HALF`·`PM_HALF`는 날짜 색 유지 + 구분 배지, `UNKNOWN`은 경고 배지다. 프론트는 제목이나 사유로 휴가 상태를 추정하지 않는다.
 
@@ -740,7 +740,7 @@ interface TodoRow {
 - 엔트리 수정 저장 성공 시 `JournalEntryRegistModal` `prepare-success` 이벤트로 현재 검색 목록/수정 대상 DOM을 먼저 준비하고, `success` 이벤트로 저장 위치 스크롤만 수행
 - 검색 결과에 포함된 리플렉션의 수정 액션은 같은 창에서 `JournalReflectionRegistModal`을 열어야 한다. 검색 팝업이 이 모달을 직접 마운트하며, 수정 모드는 `GET /api/journal/reflection/{id}` 상세 조회로 제목/본문을 채운 뒤 모달을 열어야 한다. 저장·스레드 소속·상태 등 엔트리 액션 성공 후 `refreshJournalEntryHostForRoute`가 `registerJournalEntrySearchHost`로 등록된 `loadEntries`를 호출해 검색 목록(스레드 칩 포함)을 재조회한다.
 - `JournalReflectionRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 리플렉션 등록/수정이 가능해야 한다.
-- 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 서버 `isHolyday` 가 true 이면 날짜·요일을 `text-danger` 로 표시하고 `holydayNm` 이 있으면 공휴일명을 붙인다(일자 카드와 동일 축; 프론트 재계산 없음). 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
+- 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 서버 `isHolyday` 가 true 이면 날짜·요일을 `text-danger` 로 표시하고 `holydayNm` 이 있으면 공휴일명을 붙인다(일자 카드와 동일 축; 프론트 재계산 없음). 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily-popup?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
 
 **표시 문구 i18n**: 컨트롤 바·고급 필터·유형/키워드/태그 입력·카테고리 선택·로딩/빈 결과·일자 새 창 tooltip과 결과 건수·연월 구분선·요일은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
 

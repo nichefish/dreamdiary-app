@@ -70,7 +70,7 @@ export async function refreshJournalDaysForRoute(
     return;
   }
 
-  if (name === "journal-daily") {
+  if (name === "journal-daily" || name === "journal-daily-tab") {
     const stdrdDt = resolveDailyStdrdDt(route, fallbackStdrdDt);
     store.setViewType("DAILY");
     if (stdrdDt) {

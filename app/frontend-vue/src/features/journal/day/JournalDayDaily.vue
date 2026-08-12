@@ -1,9 +1,21 @@
 <template>
-  <!--begin::저널 일간 페이지 (새 창 전용)-->
-  <div class="journal-day-daily-page p-5">
+  <!--begin::저널 일간 페이지 (탭 + 새 창 공용)-->
+  <div :class="['journal-day-daily-page', { 'p-5': route.name !== 'journal-daily-tab' }]">
+    <JournalDayViewToolbar v-if="route.name === 'journal-daily-tab'" />
+
+    <!--begin::선택 일자 태그 클라우드-->
+    <div v-if="store.showTagCloud" class="card post mt-5 mb-4">
+      <div class="card-header">
+        <JournalTagCloudHeader />
+      </div>
+    </div>
+    <!--end::선택 일자 태그 클라우드-->
 
     <!--begin::일 이동 네비게이션-->
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div
+      v-if="route.name === 'journal-daily'"
+      class="d-flex align-items-center justify-content-between mt-5 mb-4"
+    >
       <button type="button" class="btn btn-sm btn-light-primary" @click="movePrev">
         <i class="bi bi-chevron-left"></i> {{ t("journal.day.daily.previous") }}
       </button>
@@ -64,6 +76,8 @@ import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { buildDailyFetchParams } from "@/features/journal/utils/journalDayRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalDayCard from "./components/JournalDayCard.vue";
+import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
+import JournalTagCloudHeader from "./components/JournalTagCloudHeader.vue";
 
 const store = useJournalStore();
 const modalStore = useJournalModalStore();
@@ -81,6 +95,9 @@ function load(stdrdDt?: string): void {
     void store.fetchDays(buildDailyFetchParams(stdrdDt));
   } else {
     void store.fetchDays({ viewType: "DAILY" });
+  }
+  if (store.showTagCloud) {
+    void store.fetchTagCloud();
   }
 }
 
@@ -112,15 +129,34 @@ function moveNext(): void {
 }
 
 onMounted(() => {
-  load(currentDt.value || undefined);
+  // stdrdDt query 없이 진입 시 오늘 날짜로 초기화 (탭 진입 등)
+  if (!currentDt.value) {
+    const today = new Date();
+    const yy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    void router.replace({ query: { stdrdDt: `${yy}-${mm}-${dd}` } });
+    return; // replace 후 watch 가 load 를 호출
+  }
+  load(currentDt.value);
   void modalStore.prefetchChapterPrefixes();
 });
 
 watch(
   () => route.query.stdrdDt,
   (dt) => {
-    if (route.name === "journal-daily") {
+    if (route.name === "journal-daily" || route.name === "journal-daily-tab") {
+      if (!dt || !(dt as string).trim()) {
+        // stdrdDt query가 유실되면 오늘 날짜로 복원
+        const today = new Date();
+        const yy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, "0");
+        const dd = String(today.getDate()).padStart(2, "0");
+        void router.replace({ query: { stdrdDt: `${yy}-${mm}-${dd}` } });
+        return;
+      }
       load(dt as string | undefined);
+      void modalStore.prefetchChapterPrefixes();
     }
   }
 );

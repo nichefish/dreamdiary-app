@@ -2,12 +2,14 @@ package io.nicheblog.dreamdiary.feature.calendar.schedule.controller;
 
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleSearchParam;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleCalService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
@@ -53,8 +55,42 @@ public class ScheduleCalRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.SCHEDULE;      // 작업 카테고리 (로그 적재용)
 
     private final ScheduleCalService scheduleCalService;
+    private final ScheduleService scheduleService;
     private final CodeLookupService codeLookupService;
     private final UserService userService;
+
+    /**
+     * 월별 공휴일 날짜 목록 조회 (미니 달력용 경량 API).
+     * 캐시된 전체 공휴일 엔티티에서 해당 년/월에 속하는 날짜만 필터링하여 반환한다.
+     *
+     * @param yy 연도
+     * @param mnth 월 (1-based)
+     * @return {@link ResponseEntity} -- 'YYYY-MM-DD' 형식의 공휴일 날짜 리스트
+     */
+    @GetMapping(Url.SCHEDULE_HOLIDAYS)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> holidayListByMonth(
+            @RequestParam final int yy,
+            @RequestParam final int mnth
+    ) throws Exception {
+
+        final List<String> holidayDates = scheduleService.getHolydayEntityList().stream()
+                .filter(entity -> entity.getBgnDt() != null
+                        && entity.getBgnDt().getYear() == yy
+                        && entity.getBgnDt().getMonthValue() == mnth)
+                .map(entity -> {
+                    try {
+                        return DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .distinct()
+                .toList();
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withObj(holidayDates));
+    }
 
     @GetMapping(Url.SCHEDULE_BOOTSTRAP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

@@ -75,7 +75,7 @@ const rows = computed(() => [
   },
 ]);
 
-watch([() => store.yy, () => store.mnth, () => store.weekStartDt, () => store.viewType], () => {
+watch([() => store.yy, () => store.mnth, () => store.weekStartDt, () => store.dailyStdrdDt, () => store.viewType], () => {
   void store.fetchTagCloud();
 });
 

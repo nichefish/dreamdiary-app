@@ -32,6 +32,9 @@ public class TagSearchParam
     @Positive
     private Integer mnth;
 
+    /** 기준일자 */
+    private String stdrdDt;
+
     private String weekStartDt;
 
     /** 관리 컨텐츠 타입 */
@@ -54,6 +57,20 @@ public class TagSearchParam
         return hasYy && hasMnth;
     }
 
+    /**
+     * 기준일자 존재 여부를 반환한다.
+     *
+     * @return 기준일자 존재 여부
+     */
+    public Boolean hasStdrdDt() {
+        return this.stdrdDt != null && !this.stdrdDt.isBlank();
+    }
+
+    /**
+     * 주 시작일 존재 여부를 반환한다.
+     *
+     * @return 주 시작일 존재 여부
+     */
     public Boolean hasWeekStartDt() {
         return this.weekStartDt != null && !this.weekStartDt.isBlank();
     }

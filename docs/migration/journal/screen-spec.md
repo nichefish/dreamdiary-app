@@ -26,10 +26,11 @@
 
 | 화면 | 레거시 URL (대표) | Vue route | Vue view | 구현 |
 |------|-------------------|-----------|----------|------|
-| 저널 기본 진입 | — | `/journal` → `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
+| 저널 기본 진입 | — | `/journal` → `/journal/daily` | `JournalDayDaily.vue` | ✓ 오늘 일자 |
 | 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalDayMonthly.vue` | ✓ |
 | 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
-| 저널 일간 | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
+| 저널 일간 (탭) | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 정식 탭(맨앞), JournalDayLayout, aside 포함, 이전/다음 네비 |
+| 저널 일간 (팝업) | — | `/journal/daily-popup` | `JournalDayDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
 | 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalDayCalendar.vue` | ✓ |
 | 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalDayMeta.vue` | ✓ 컨텍스트 메뉴·단일 비교 차트(최대 2시리즈)·연도 전체 |
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
@@ -78,15 +79,15 @@
 
 ### 저널 일간 화면 (journal-daily) 스펙
 
-- **용도**: 단일 날짜를 새 창으로 열어 집중 편집
-- **레이아웃**: `SystemLayout` > `JournalDayDailyLayout` — 헤더/사이드바 없음, 태그클라우드 없음
-- **네비게이션**: 상단 이전/다음 버튼으로 날짜 이동 (`router.replace` + `stdrdDt` query)
+- **용도**: 단일 날짜를 집중 편집. 탭 모드(메인 레이아웃 내)와 팝업 모드(새 창) 두 경로로 진입 가능.
+- **탭 모드 (`journal-daily-tab`)**: `JournalDayLayout` 하위 자식 라우트. aside 포함(년월 네비·태그클라우드·필터 등 기존 aside 기능 모두 사용). 툴바 탭 목록 맨앞에 「일간 VIEW」로 표시. URL: `/journal/daily?stdrdDt=YYYY-MM-DD`. `stdrdDt` 없이 진입 시 오늘 날짜로 `router.replace`.
+- **팝업 모드 (`journal-daily`)**: `SystemLayout` > `JournalDayDailyLayout` — 헤더/사이드바 없이 선택 일자 태그클라우드와 날짜 카드를 표시한다. URL: `/journal/daily-popup?stdrdDt=YYYY-MM-DD`. 진입: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼, 엔트리 검색 페이지 일자 링크. `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제.
+- **공유 컴포넌트**: 두 모드 모두 `JournalDayDaily.vue` 를 렌더. route name 분기(`journal-daily` | `journal-daily-tab`)로 watch·갱신 경로를 공유.
+- **태그클라우드**: 탭·팝업 모두 `JournalTagCloudHeader`를 렌더하고 URL `stdrdDt` 하루에 속한 일자·일기·꿈 태그를 각각 집계한다. 이전/다음·날짜 선택으로 기준일이 바뀌면 세 섹션을 새 날짜로 조회하며, 진행 중인 이전 날짜 응답은 store 기간 키와 요청 순서 검증으로 폐기한다. 탭 모드의 `TAGCLOUD` 토글은 표시와 조회 여부를 제어하고 팝업 모드는 기본 표시 상태를 사용한다.
+- **네비게이션**: 탭 모드는 aside 미니 달력으로 날짜를 선택하고, 중복되는 본문 이전/날짜/다음 행은 표시하지 않는다. aside가 없는 팝업 모드는 본문 상단 이전/날짜/다음 행으로 날짜를 이동한다(`router.replace` + `stdrdDt` query). 일자 등록/수정 저장 후 일간에서는 sticky 툴바·날짜 선택 문맥을 유지하도록 카드 `scrollIntoView`를 생략하며, 저장 날짜가 URL `stdrdDt`와 다르면 query를 새 날짜로 동기화한다.
 - **i18n**: 이전/다음 버튼, 날짜 선택 tooltip, 빈 상태, 목록 조회 실패 fallback은 현재 locale 카탈로그를 사용한다. locale 변경은 선택 날짜·`stdrdDt` query·조회 조건을 변경하지 않는다.
-- **모달**: `JournalDayDailyLayout`에 전체 편집 모달 포함 (일자 수정, 챕터, 엔트리, 태그, 메타 등)
+- **모달**: 팝업 모드는 `JournalDayDailyLayout`에 전체 편집 모달 포함. 탭 모드는 `JournalDayLayout`의 모달 컨테이너를 공유.
 - **챕터 모달 i18n**: `JournalChapterRegistModal.vue`의 표시 문구·기준 날짜 요일·확인창·결과 fallback은 현재 locale 카탈로그를 사용하며, 등록·수정·일자 이동 API의 서버 `message`가 있으면 우선 표시
-- **진입점**: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼
-- **URL**: `/journal/daily?stdrdDt=YYYY-MM-DD`
-- **새 창 오픈**: `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제
 
 
 ### 저널 메타 VIEW (Journal Meta)
@@ -146,7 +147,7 @@
 ## 저널 일자 월간 목록 (Journal Day Monthly)
 
 - **Route (레거시)**: `/journal/day/monthly` · **Vue SPA**: `/journal/monthly` (`journal-monthly`)
-- `/` 및 `/journal` 기본 진입은 주간 뷰(`/journal/weekly`)로 redirect한다.
+- `/` 및 `/journal` 기본 진입은 일간 뷰(`/journal/daily`)로 redirect한다. `stdrdDt`가 없으면 오늘 날짜로 URL query를 맞춘다.
 - **Legacy file**: `legacy/templates/view/feature/journal/day/journal_day_monthly.ftlh`
 
 ### Layout Structure

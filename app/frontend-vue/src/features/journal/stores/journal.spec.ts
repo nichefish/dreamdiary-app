@@ -83,6 +83,53 @@ describe("fetchTagCloud 요청 경합 가드", () => {
     expect(store.tagCloud.dayTagList).toEqual([makeTag(2, "바다")]);
   });
 
+  it("일간 조회 기준일은 태그클라우드 세 섹션의 stdrdDt 기간 조건이 된다", async () => {
+    const store = useJournalStore();
+    mockedGet.mockResolvedValue({ data: { rslt: true, rsltList: [] } });
+
+    store.setViewType("DAILY");
+    await store.fetchDays({
+      viewType: "DAILY",
+      stdrdDt: "2026-01-15",
+      yy: 2026,
+      mnth: 1,
+    });
+    mockedGet.mockClear();
+
+    await store.fetchTagCloud();
+
+    expect(mockedGet).toHaveBeenCalledTimes(3);
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/day/tags", {
+      params: { stdrdDt: "2026-01-15" },
+    });
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/entry/tags", {
+      params: { stdrdDt: "2026-01-15", type: "DIARY" },
+    });
+    expect(mockedGet).toHaveBeenCalledWith("/api/journal/entry/tags", {
+      params: { stdrdDt: "2026-01-15", type: "DREAM" },
+    });
+  });
+
+  it("일간 날짜 이동 전의 늦은 응답은 이동한 날짜의 태그를 덮어쓰지 않는다", async () => {
+    const store = useJournalStore();
+    const first = deferred();
+    const second = deferred();
+    store.setViewType("DAILY");
+    store.dailyStdrdDt = "2026-01-15";
+    mockedGet.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+
+    const previousDateFetch = store.fetchTagCloud({ sections: ["day"] });
+    store.dailyStdrdDt = "2026-01-16";
+    const currentDateFetch = store.fetchTagCloud({ sections: ["day"] });
+
+    second.resolve({ data: { rsltList: [makeTag(2, "바다")] } });
+    await currentDateFetch;
+    first.resolve({ data: { rsltList: [makeTag(1, "숲")] } });
+    await previousDateFetch;
+
+    expect(store.tagCloud.dayTagList).toEqual([makeTag(2, "바다")]);
+  });
+
   it("기간이 다른 이전 요청의 실패도 최신 결과를 지우지 않는다", async () => {
     const store = useJournalStore();
     const first = deferred();

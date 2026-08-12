@@ -12,7 +12,7 @@ import { normalizeRoutePath, stripVueAppPrefix } from "@/shared/utils/appPath";
 const URL_MAP: Record<string, string> = {
   // 저널
   "/app/journal/day/monthly.do": "/journal/monthly",
-  "/app/journal/day/daily.do": "/journal/daily",
+  "/app/journal/day/daily.do": "/journal/daily-popup",
   "/app/journal/day/weekly.do": "/journal/weekly",
   "/app/journal/day/cal.do": "/journal/calendar",
   "/app/journal/day/meta.do": "/journal/meta",

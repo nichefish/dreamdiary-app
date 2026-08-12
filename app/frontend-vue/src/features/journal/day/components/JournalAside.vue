@@ -42,8 +42,34 @@
       </select>
       <!--end::연도 선택-->
 
-      <!--begin::월 내비게이션 (MONTHLY)-->
-      <template v-if="store.viewType !== 'WEEKLY'">
+      <!--begin::일간 미니 달력 (DAILY)-->
+      <template v-if="store.viewType === 'DAILY'">
+        <!--begin::월 이동 컨트롤-->
+        <div class="d-flex align-items-center justify-content-between">
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="fw-bold fs-6">{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(1)">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <!--end::월 이동 컨트롤-->
+
+        <!--begin::미니 달력 그리드-->
+        <JournalAsideMiniCalendar
+          :year="store.yy"
+          :month="store.mnth"
+          :selected-date="dailySelectedDate"
+          :holidays="miniCalHolidays"
+          @select="onMiniCalendarSelect"
+        />
+        <!--end::미니 달력 그리드-->
+      </template>
+      <!--end::일간 미니 달력-->
+
+      <!--begin::월 내비게이션 (MONTHLY/CAL/LIST)-->
+      <template v-else-if="store.viewType !== 'WEEKLY'">
         <!--begin::월 이동 컨트롤-->
         <div class="d-flex align-items-center justify-content-between">
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
@@ -345,13 +371,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted } from "vue";
+import { ref, computed, nextTick, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import axios from "axios";
 import { formatLocalDateStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import type { JournalPrefixDto } from "@/features/journal/stores/journal";
 import { useJournalAsideStore } from "@/features/journal/stores/journalAside";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
+import JournalAsideMiniCalendar from "@/features/journal/day/components/JournalAsideMiniCalendar.vue";
 import JournalAsideTodoCard from "@/features/journal/day/components/JournalAsideTodoCard.vue";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
@@ -364,6 +392,46 @@ const router = useRouter();
 
 const currentYear = new Date().getFullYear();
 const yyOptions = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);
+
+/** 일간(DAILY) view에서 route query.stdrdDt → 미니 달력 선택 날짜 */
+const dailySelectedDate = computed(() => (route.query.stdrdDt as string) || "");
+
+/** 미니 달력에 표시할 공휴일 날짜 목록 */
+const miniCalHolidays = ref<string[]>([]);
+
+/** 해당 년/월의 공휴일 목록을 서버에서 조회한다. */
+async function fetchMiniCalHolidays(yy: number, mnth: number): Promise<void> {
+  try {
+    const res = await axios.get("/api/schedule/holidays", { params: { yy, mnth } });
+    miniCalHolidays.value = res.data?.rsltObj ?? [];
+  } catch {
+    miniCalHolidays.value = [];
+  }
+}
+
+// DAILY viewType일 때 store.yy/mnth 변경을 감지해 공휴일을 재조회한다.
+watch(
+  () => [store.yy, store.mnth, store.viewType] as const,
+  ([yy, mnth, viewType]) => {
+    if (viewType === "DAILY") {
+      void fetchMiniCalHolidays(yy, mnth);
+    }
+  },
+  { immediate: true },
+);
+
+/** 미니 달력 날짜 클릭 → 해당 날짜의 일간 view로 이동 */
+function onMiniCalendarSelect(dateStr: string): void {
+  // 선택된 날짜의 년/월이 현재 aside 년/월과 다르면 aside도 동기화
+  const [yStr, mStr] = dateStr.split("-");
+  const yy = Number(yStr);
+  const mnth = Number(mStr);
+  if (yy !== store.yy || mnth !== store.mnth) {
+    store.yy = yy;
+    store.mnth = mnth;
+  }
+  void router.replace({ query: { stdrdDt: dateStr } });
+}
 
 const sortIconClass = computed(() =>
   store.sortOrder === "DESC"
@@ -488,6 +556,9 @@ async function syncMonthlyRouteOrFetch(yy: number, mnth: number): Promise<boolea
   }
   store.yy = yy;
   store.mnth = mnth;
+  // DAILY view에서는 aside 월 이동이 미니 달력 표시 월만 변경한다.
+  // 데이터 재조회는 날짜 클릭(route query.stdrdDt 변경) 시에만 발생한다.
+  if (store.viewType === "DAILY") return true;
   await store.fetchDays();
   return true;
 }
@@ -532,6 +603,13 @@ async function gotoToday(): Promise<void> {
     const weekStartDt = getWeekStartDateStr(formatLocalDateStr(today));
     const synced = await syncWeeklyRouteOrFetch(weekStartDt);
     if (synced) selectedDt.value = formatLocalDateStr(today);
+    return;
+  }
+  if (store.viewType === "DAILY") {
+    const todayStr = formatLocalDateStr(today);
+    store.yy = today.getFullYear();
+    store.mnth = today.getMonth() + 1;
+    void router.replace({ query: { stdrdDt: todayStr } });
     return;
   }
   await syncMonthlyRouteOrFetch(today.getFullYear(), today.getMonth() + 1);

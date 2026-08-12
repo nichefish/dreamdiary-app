@@ -346,6 +346,9 @@ export const useJournalStore = defineStore("journal", () => {
   /** 주간 뷰 기준 주 시작일 (YYYY-MM-DD) */
   const weekStartDt = ref<string>("");
 
+  /** 일간 뷰 태그 집계 기준일 (YYYY-MM-DD) */
+  const dailyStdrdDt = ref<string>("");
+
   /** 조회된 일자 목록 */
   const dayList = ref<JournalDayDto[]>([]);
 
@@ -434,6 +437,10 @@ export const useJournalStore = defineStore("journal", () => {
       const resolvedViewType = params?.viewType ?? viewType.value;
       const resolvedYy = params?.yy ?? yy.value;
       const resolvedMnth = params?.mnth ?? mnth.value;
+
+      if (resolvedViewType === "DAILY" && params?.stdrdDt?.trim()) {
+        dailyStdrdDt.value = params.stdrdDt.trim();
+      }
 
       if (resolvedViewType === "WEEKLY") {
         const resolvedWeekStart =
@@ -642,11 +649,14 @@ export const useJournalStore = defineStore("journal", () => {
     }
   }
 
-  /** 섹션과 월간·주간 기간을 진행 중 요청 식별자로 직렬화한다. */
+  /** 섹션과 일간·주간·월간 기간을 진행 중 요청 식별자로 직렬화한다. */
   function getTagCloudRequestKey(
     section: TagCloudSection,
     periodParams: Record<string, string | number>,
   ): string {
+    if (periodParams.stdrdDt != null) {
+      return `${section}|stdrdDt=${String(periodParams.stdrdDt)}`;
+    }
     if (periodParams.weekStartDt != null) {
       return `${section}|weekStartDt=${String(periodParams.weekStartDt)}`;
     }
@@ -664,7 +674,11 @@ export const useJournalStore = defineStore("journal", () => {
     console.info("[journal] 사용자 세션 태그 클라우드 초기화", { tagCloudGeneration });
   }
 
+  /** 현재 화면 단위에 맞는 일간·주간·월간 태그 집계 파라미터를 반환한다. */
   function getTagPeriodParams(): Record<string, string | number> {
+    if (viewType.value === "DAILY" && dailyStdrdDt.value) {
+      return { stdrdDt: dailyStdrdDt.value };
+    }
     if (viewType.value === "WEEKLY" && weekStartDt.value) {
       return { weekStartDt: weekStartDt.value };
     }
@@ -809,6 +823,7 @@ export const useJournalStore = defineStore("journal", () => {
     yy,
     mnth,
     weekStartDt,
+    dailyStdrdDt,
     dayList,
     calEventList,
     loading,

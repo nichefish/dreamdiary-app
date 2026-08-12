@@ -224,7 +224,7 @@ import type { Instance as FlatpickrInstance } from "flatpickr/dist/types/instanc
 import TagifyEditor from "@/shared/ui/tag/TagifyEditor.vue";
 import { Modal } from "bootstrap";
 import axios from "axios";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { bindSingleDatePicker, destroySingleDatePicker } from "@/shared/utils/flatpickrSingleDate";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useJournalStore } from "@/features/journal/stores/journal";
@@ -235,6 +235,7 @@ const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
 const { t } = useLocaleStore();
 const route = useRoute();
+const router = useRouter();
 
 const modalEl = ref<HTMLElement | null>(null);
 const journalDateInputRef = ref<HTMLInputElement | null>(null);
@@ -352,7 +353,7 @@ function close() {
   modalStore.closeDayRegist();
 }
 
-/** 등록/수정 후 해당 일자 카드(#journal-day-{stdrdDt})로 스크롤한다. */
+/** 주간/월간 등에서 등록/수정 후 해당 일자 카드(#journal-day-{stdrdDt})로 스크롤한다. 일간은 sticky 툴바에 날짜 네비가 가려지므로 refreshCurrentDayView 가 호출하지 않는다. */
 function scrollToDay(stdrdDt: string): void {
   if (modalEl.value?.classList.contains("show")) {
     /* 모달 닫기 애니메이션(Bootstrap ~300ms) 중에는 body.overflow:hidden 이므로
@@ -366,12 +367,37 @@ function scrollToDay(stdrdDt: string): void {
   });
 }
 
+/** 일간 탭·팝업 route 여부. sticky 툴바 + 단일 일자 조회 계약이 적용되는 경로다. */
+function isDailyRoute(): boolean {
+  return route.name === "journal-daily" || route.name === "journal-daily-tab";
+}
+
+/**
+ * 등록/수정 후 현재 화면을 갱신한다.
+ * 일간: 날짜 네비가 sticky 툴바 아래로 스크롤되어 사라지지 않도록 scrollIntoView 를 생략한다.
+ * 저장 날짜가 URL stdrdDt 와 다르면 query 를 새 날짜로 맞추고 JournalDayDaily watch 가 재조회한다.
+ * 주간/월간 등: 기존처럼 목록 재조회 후 해당 일자 카드로 스크롤한다.
+ */
 function refreshCurrentDayView(targetDate?: string): void {
   /** 태그 변경이 반영되도록 showTagCloud 상태와 무관하게 클라우드도 함께 갱신한다. */
   void journalStore.fetchTagCloud({ sections: ["day"] });
 
-  const afterFetch = () => { if (targetDate) scrollToDay(targetDate); };
+  if (isDailyRoute()) {
+    const nextDt = targetDate?.trim() ?? "";
+    if (nextDt) {
+      const currentDt = typeof route.query.stdrdDt === "string" ? route.query.stdrdDt.trim() : "";
+      if (currentDt !== nextDt) {
+        console.log("[JournalDayRegistModal] daily stdrdDt sync", { currentDt, nextDt, routeName: route.name });
+        void router.replace({ query: { stdrdDt: nextDt } });
+        return;
+      }
+    }
+    console.log("[JournalDayRegistModal] daily refresh without scroll", { targetDate, routeName: route.name });
+    void refreshJournalDaysForRoute(journalStore, route, targetDate);
+    return;
+  }
 
+  const afterFetch = () => { if (targetDate) scrollToDay(targetDate); };
   void refreshJournalDaysForRoute(journalStore, route, targetDate).then(afterFetch);
 }
 

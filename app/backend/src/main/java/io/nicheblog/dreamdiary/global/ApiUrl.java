@@ -231,6 +231,8 @@ public interface ApiUrl {
 
     /* ---------- */
 
+    /** 월별 공휴일 날짜 목록 (미니 달력용 경량 API) */
+    String SCHEDULE_HOLIDAYS = Prefix.API + "/schedule/holidays";
     String SCHEDULE_CAL_LIST_AJAX = Prefix.API + "/schedule/cal-list";
     /** 일정 목록 VIEW (달력과 동일 필터·기간) */
     String SCHEDULE_LIST_AJAX = Prefix.API + "/schedule/list";

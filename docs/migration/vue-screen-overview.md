@@ -10,13 +10,14 @@
 
 | Vue route | route name | Vue view | Layout | 구현 |
 |-----------|-----------|----------|--------|------|
-| `/` | — | redirect → `/journal/weekly` | DefaultLayout | — |
-| `/journal` | — | redirect → `/journal/weekly` | JournalLayout | — |
+| `/` | — | redirect → `/journal/daily` | DefaultLayout | — |
+| `/journal` | — | redirect → `/journal/daily` | JournalLayout | — |
+| `/journal/daily` | `journal-daily-tab` | `JournalDayDaily.vue` | Journal | ✓ 기본 진입·오늘 일자 |
 | `/journal/weekly` | `journal-weekly` | `JournalDayWeekly.vue` | Journal | ✓ |
 | `/journal/monthly` | `journal-monthly` | `JournalDayMonthly.vue` | Journal | ✓ |
 | `/journal/calendar` | `journal-calendar` | `JournalDayCalendar.vue` | Journal | ✓ FullCalendar 일자/일기/꿈+공휴일 |
 | `/journal/meta` | `journal-meta` | `JournalDayMeta.vue` | Journal | ✓ 메타 컨텍스트 메뉴·단일 차트 2시리즈 비교 |
-| `/journal/daily` | `journal-daily` | `JournalDayDaily.vue` | JournalDayDailyLayout | ✓ 새 창 전용 |
+| `/journal/daily-popup` | `journal-daily` | `JournalDayDaily.vue` | JournalDayDailyLayout | ✓ 새 창 전용 |
 | `/annual` | `annual-list` | `JournalAnnualList.vue` | AnnualLayout | ✓ |
 | `/annual/:yy` | `annual-detail` | `JournalAnnualDetail.vue` | AnnualLayout | ✓ |
 | `/thread` | `thread-list` | `JournalThreadList.vue` | ThreadLayout | ✓ |

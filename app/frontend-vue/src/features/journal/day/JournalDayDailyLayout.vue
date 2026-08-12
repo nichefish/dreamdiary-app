@@ -1,5 +1,5 @@
 <template>
-  <!--begin::저널 일간 레이아웃 (새 창 전용 — aside/태그클라우드 없이 날짜 카드만)-->
+  <!--begin::저널 일간 레이아웃 (새 창 전용 — aside 없이 선택 일자 태그클라우드와 날짜 카드 표시)-->
   <div class="journal-daily-layout">
     <router-view />
 
