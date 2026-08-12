@@ -7,10 +7,6 @@
       :style="{ left: store.x + 'px', top: store.y + 'px' }"
       @click.stop
     >
-      <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--search" @click="onSearch">
-        <i class="bi bi-search"></i>
-        <span>{{ t("common.search") }}</span>
-      </button>
       <button
         type="button"
         class="journal-tag-ctx-btn journal-tag-ctx-btn--graph"
@@ -19,6 +15,10 @@
       >
         <i class="bi bi-graph-up"></i>
         <span>{{ alreadyOnGraph ? t("journal.meta.graph.displaying") : t("journal.meta.graph.view") }}</span>
+      </button>
+      <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--search" @click="onSearch">
+        <i class="bi bi-search"></i>
+        <span>{{ t("common.search") }}</span>
       </button>
       <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--configure" @click="onSettings">
         <i class="bi bi-gear"></i>

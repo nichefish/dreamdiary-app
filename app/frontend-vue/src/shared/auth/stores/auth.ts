@@ -172,15 +172,10 @@ export const useAuthStore = defineStore("auth", () => {
       && ageMs >= 0
       && ageMs < AUTH_VERIFICATION_FRESHNESS_MS;
     if (!options.force && isFresh) {
-      console.info("[auth] 최근 인증 확인 결과 재사용", {
-        ageMs,
-        freshnessMs: AUTH_VERIFICATION_FRESHNESS_MS,
-      });
       return;
     }
 
     if (authVerificationRequest) {
-      console.info("[auth] 진행 중 인증 확인 요청 공유");
       return authVerificationRequest;
     }
 

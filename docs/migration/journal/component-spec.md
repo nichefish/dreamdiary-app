@@ -672,8 +672,8 @@ interface TodoRow {
 
 | 액션 | 동작 |
 |------|------|
-| 검색 | `journalModalStore.openDayFilterModal({ type: "meta", ... })` → `JournalDayMetaModal` |
 | 그래프로 보기 | `journalStore.addMetaToGraph` (최대 2, 중복 시 비활성, 꽉 차면 alert) |
+| 검색 | `journalModalStore.openDayFilterModal({ type: "meta", ... })` → `JournalDayMetaModal` |
 | 메타 설정 | `journalModalStore.openMetaProfile` → `JournalMetaProfileModal` |
 
 메뉴 액션·그래프 표시 상태·최대 2개 제한 경고는 현재 locale의 클라이언트 카탈로그를 사용한다.
