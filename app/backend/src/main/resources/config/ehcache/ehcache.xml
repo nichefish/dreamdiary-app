@@ -29,16 +29,16 @@
         </resources>
     </cache>
 
-    <!-- ?? -->
+    <!-- 인증/보안 -->
 
-    <!-- ??? ?? -->
+    <!-- 감사 정보 -->
     <cache alias="auditorInfo" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? ?? -->
+    <!-- 인증 정책 -->
     <cache alias="authPolicy" uses-template="defaultTemplate" />
     <cache alias="authPolicyEntity" uses-template="defaultTemplate" />
 
-    <!-- 硫붾돱 -->
+    <!-- 메뉴 -->
     <cache alias="userMenuList" uses-template="defaultTemplate" />
     <cache alias="mngrMenuList" uses-template="defaultTemplate" />
     <cache alias="userMenuMetaList" uses-template="defaultTemplate" />
@@ -46,26 +46,26 @@
     <cache alias="menuByLabel" uses-template="defaultTemplate" />
     <cache alias="isMngrMenu" uses-template="defaultTemplate" />
 
-    <!-- ??? -->
+    <!-- 게시판 -->
     <cache alias="boardMenuList" uses-template="defaultTemplate" />
     <cache alias="boardMenu" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 공통 코드 -->
     <cache alias="codeItemCodeName" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 공휴일 -->
     <cache alias="holydayEntityList" uses-template="defaultTemplate" />
     <cache alias="holydayMap" uses-template="defaultTemplate" />
     <cache alias="isHolyday" uses-template="defaultTemplate" />
     <cache alias="isHolydayOrWeekend" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 저널 -->
 
-    <!-- ?? ?? -->
+    <!-- 저널 일자 -->
     <cache alias="journalDayYyMnthListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayWeeklyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayDtlDtoByUser" uses-template="defaultTemplate" />
-    <!-- ?? ??: ?? -->
+    <!-- 저널 일자: 태그/메타 -->
     <cache alias="journalDayPeriodTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayTagYyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayTagCategoryMapByUser" uses-template="defaultTemplate" />
@@ -73,12 +73,12 @@
     <cache alias="journalDayMetaYyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayTagCountMapByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 저널 챕터 -->
     <cache alias="journalChapterDetailDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalChapterStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalChapterWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 저널 엔트리/일기 -->
     <cache alias="journalEntryDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalEntryYyAnnualStatedListByUser" uses-template="defaultTemplate" />
     <cache alias="journalEntryTagListByUser" uses-template="defaultTemplate" />
@@ -88,15 +88,15 @@
     <cache alias="journalDiaryStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 저널 노트 -->
     <cache alias="journalNoteStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalNoteWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? ? -->
+    <!-- 저널 꿈 -->
     <cache alias="journalDreamStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 저널 리플렉션 -->
     <cache alias="journalReflectionStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalReflectionWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
@@ -108,21 +108,21 @@
     <cache alias="journalReflectionLifecycleMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalReflectionWeeklyLifecycleMapByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 저널 할일 -->
     <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />
     <cache alias="journalTodoDetailDtoByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? ?? -->
+    <!-- 저널 결산 -->
     <cache alias="journalAnnualTotalListByUser" uses-template="defaultTemplate" />
     <cache alias="journalAnnualListByUser" uses-template="defaultTemplate" />
     <cache alias="journalAnnualDetailDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalAnnualYyDetailDtoByUser" uses-template="defaultTemplate" />
 
-    <!-- ?? -->
+    <!-- 태그 -->
     <cache alias="tagContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="tagSmpDtlEntity" uses-template="defaultTemplate" />
 
-    <!-- ?? -->
+    <!-- 메타 -->
     <cache alias="metaContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="metaSmpDtlEntity" uses-template="defaultTemplate" />
 </config>
