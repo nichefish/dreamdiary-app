@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -41,7 +42,7 @@ public interface BaseSortableService<SortOrderDto extends Identifiable<Key> & So
                 e.setSortOrder(dto.getSortOrder());
                 this.updt(e);
             } catch (final Exception ex) {
-                ex.printStackTrace();
+                LogManager.getLogger(getClass()).warn("sortOrder 항목 처리 실패. key={}", dto.getKey(), ex);
                 // 로그 기록, 예외 처리 등
                 throw new RuntimeException(ex);
             }

@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global.intrfc.service;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
@@ -119,7 +120,7 @@ public interface BaseEntityWritableService<Key extends Serializable, Entity exte
         try {
             getRepository().refresh(updatedEntity);
         } catch (final EntityNotFoundException ex) {
-            ex.printStackTrace();
+            LogManager.getLogger(getClass()).warn("Entity refresh after save failed; proceeding with unrefreshed entity.", ex);
         }
 
         // optional: 수정 후처리 (entity)
@@ -230,6 +231,11 @@ public interface BaseEntityWritableService<Key extends Serializable, Entity exte
      * @param deletedEntityList 삭제된 엔티티 리스트
      */
     @SuppressWarnings("unused")
+    /**
+     * default: 전체 삭제 후처리 (entity level)
+     *
+     * @param deletedEntityList 삭제된 Entity 목록
+     */
     default void postDeleteAll(final List<Entity> deletedEntityList) {
         // 기본 공백, 필요시 각 함수에서 Override
     }
