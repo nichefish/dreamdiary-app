@@ -786,9 +786,9 @@ function openReflectionRegist() {
  * 변경 전에는 모든 라우트에서 fetchDays 완료 후 일자 DOM을 찾았으나, 스레드 상세에서는
  * 열린 스레드의 원본 엔트리·집계 태그를 다시 조회하고 모달 내부 읽기 위치를 유지한다.
  */
-function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
+function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): Promise<void> {
   const dt = stdrdDt;
-  void refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
+  return refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
     /* 검색·스레드 상세는 배경 일자 스크롤 대상이 아니다. */
     if (scope === "thread-detail" || scope === "journal-entry-search" || !dt) return;
     void nextTick(() => {

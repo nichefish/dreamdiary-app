@@ -821,6 +821,40 @@ export const useJournalStore = defineStore("journal", () => {
     }
   }
 
+  /**
+   * dayList 트리에서 특정 엔트리/리플렉션의 lifecycle 을 in-place 로 교체한다.
+   * 라이프사이클 변경 성공 직후, 서버 재조회의 캐시 staleness(간헐적으로 옛 값 반환)와 무관하게
+   * 화면 접힘/펼침을 즉시·확정 반영하기 위한 낙관적 갱신이다. cascade(리플렉션·챕터 집계)는 재조회가 정합화한다.
+   *
+   * @param targetId 대상 엔트리/리플렉션 ID
+   * @param targetContentType 대상 contentType (JOURNAL_DIARY/DREAM/NOTE/REFLECTION)
+   * @param lifecycleKey 새 lifecycle 키
+   */
+  function patchEntryLifecycle(
+    targetId: number,
+    targetContentType: string,
+    lifecycleKey: string,
+  ): void {
+    const applyTo = (entry: JournalEntryDto): boolean => {
+      if (entry.id !== targetId || entry.contentType !== targetContentType) return false;
+      if (entry.lifecycle) entry.lifecycle.lifecycleKey = lifecycleKey;
+      else entry.lifecycle = { lifecycleKey };
+      return true;
+    };
+    for (const day of dayList.value) {
+      if (!day.journalChapterList) continue;
+      for (const chapter of day.journalChapterList) {
+        if (!chapter.journalEntryList) continue;
+        for (const entry of chapter.journalEntryList) {
+          if (applyTo(entry)) return;
+          for (const refl of entry.reflectionList ?? []) {
+            if (applyTo(refl)) return;
+          }
+        }
+      }
+    }
+  }
+
   return {
     viewType,
     yy,
@@ -867,5 +901,6 @@ export const useJournalStore = defineStore("journal", () => {
     todoError,
     fetchTodos,
     patchEntryReflections,
+    patchEntryLifecycle,
   };
 });

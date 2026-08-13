@@ -21,8 +21,8 @@ export interface UseJournalAttachableActionsOptions {
   contentType: ComputedRef<string>;
   /** 쓰기 guard. false 반환 시 동작 중단. */
   guardWrite: () => boolean;
-  /** 액션 성공 후 화면 재조회 트리거 */
-  onSuccess: () => void;
+  /** 액션 성공 후 화면 재조회 트리거. 재조회 promise 를 반환하면 setLifecycle 이 이를 await 한 뒤 낙관적 갱신을 얹는다. */
+  onSuccess: () => void | Promise<unknown>;
   /** i18n t 함수 */
   t: (key: string) => string;
   /**
@@ -105,16 +105,19 @@ export function useJournalAttachableActions(options: UseJournalAttachableActions
   /** 라이프사이클 설정 (PUT /api/lifecycles) */
   async function setLifecycle(lifecycleKey: string): Promise<void> {
     if (!guardWrite()) return;
-    if (!entry.value.id) return;
+    const entryId = entry.value.id;
+    if (!entryId) return;
     try {
       const res = await axios.put("/api/lifecycles", {
-        id: entry.value.id,
+        id: entryId,
         contentType: contentType.value,
         lifecycleKey,
         cacheContext: resolveJournalCacheContext(),
       });
       if (res.data?.rslt) {
-        onSuccess();
+        await onSuccess();
+        /* 낙관적 갱신: 재조회가 캐시 staleness 로 옛 lifecycle 을 돌려줘도, 방금 지정한 값으로 dayList 를 덮어써 즉시 반영한다. */
+        journalStore.patchEntryLifecycle(entryId, contentType.value, lifecycleKey);
       } else {
         void swalFire({ icon: "error", text: res.data?.message ?? t("common.result.failure") });
       }
@@ -135,7 +138,7 @@ export function useJournalAttachableActions(options: UseJournalAttachableActions
         cacheContext: resolveJournalCacheContext(),
       });
       if (res.data?.rslt) {
-        onSuccess();
+        void onSuccess();
       } else {
         void swalFire({ icon: "error", text: res.data?.message ?? t("common.result.failure") });
       }

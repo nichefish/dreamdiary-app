@@ -460,9 +460,9 @@ const {
   t,
 });
 
-/** 액션 성공 후 현재 표시 호스트를 재조회한다. */
-function refreshHost(stdrdDt = props.reflection.stdrdDt): void {
-  void refreshJournalEntryHostForRoute(journalStore, threadStore, route, stdrdDt);
+/** 액션 성공 후 현재 표시 호스트를 재조회한다. 호출자가 await 할 수 있도록 재조회 promise 를 반환한다. */
+function refreshHost(stdrdDt = props.reflection.stdrdDt): Promise<unknown> {
+  return refreshJournalEntryHostForRoute(journalStore, threadStore, route, stdrdDt);
 }
 
 /** 임베드에서 Reflection 수정 모달을 연다. 목록에 실린 target 을 함께 넘겨 상세 누락 시에도 태그 UI를 숨긴다. */
