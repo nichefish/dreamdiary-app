@@ -20,6 +20,7 @@
           v-if="cell.day > 0"
           type="button"
           :class="['mini-cal-cell mini-cal-day', {
+            'is-in-week': isInWeek(cell.dateStr),
             'is-selected': cell.dateStr === selectedDate,
             'is-today': cell.dateStr === todayStr,
             'is-weekend': cell.isWeekend,
@@ -48,6 +49,7 @@
  * @prop year - 표시할 연도
  * @prop month - 표시할 월 (1-based)
  * @prop selectedDate - 현재 선택된 날짜 문자열 ('YYYY-MM-DD'), 하이라이트용
+ * @prop weekStart - 주간 모드에서 하이라이트할 주의 시작일('YYYY-MM-DD', 월요일). 지정 시 [weekStart … +6일] 셀을 주 범위(band)로 칠한다. 일요일 시작 그리드라 월~토는 한 줄, 일요일은 다음 줄 첫 칸에 칠해진다.
  */
 import { computed } from "vue";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -56,6 +58,8 @@ const props = defineProps<{
   year: number;
   month: number;
   selectedDate: string;
+  /** 주간 모드에서 하이라이트할 주의 시작일('YYYY-MM-DD', 월요일). 미지정 시 주 범위 하이라이트 없음. */
+  weekStart?: string;
   /** 공휴일 날짜 문자열 배열 ('YYYY-MM-DD'). 해당 날짜를 빨간색으로 표시한다. */
   holidays?: string[];
 }>();
@@ -74,6 +78,26 @@ const todayStr = (() => {
   const dd = String(d.getDate()).padStart(2, "0");
   return `${yy}-${mm}-${dd}`;
 })();
+
+/** 주간 하이라이트 종료일('YYYY-MM-DD', weekStart + 6일). weekStart 미지정 시 빈 문자열. */
+const weekEndStr = computed(() => {
+  if (!props.weekStart) return "";
+  const d = new Date(props.weekStart + "T12:00:00");
+  d.setDate(d.getDate() + 6);
+  const yy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+});
+
+/**
+ * 해당 날짜가 현재 주 범위([weekStart … weekEnd]) 안에 드는지 여부.
+ * ISO 'YYYY-MM-DD' 문자열 비교로 판정한다(사전순 == 날짜순).
+ */
+function isInWeek(dateStr: string): boolean {
+  if (!props.weekStart || !dateStr) return false;
+  return dateStr >= props.weekStart && dateStr <= weekEndStr.value;
+}
 
 /** 요일 헤더 레이블 (일~토 순서) */
 const weekdayLabels = computed(() => [
@@ -195,6 +219,10 @@ const calendarCells = computed<CalendarCell[]>(() => {
 
 .mini-cal-day:hover {
   background-color: var(--bs-gray-200);
+}
+
+.mini-cal-day.is-in-week {
+  background-color: rgba(27, 132, 255, 0.15);
 }
 
 .mini-cal-day.is-today {

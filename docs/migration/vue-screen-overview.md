@@ -83,7 +83,7 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | FILTER 헤더 + 정렬 토글 (`ASC`/`DESC`) | ✓ |
 | 연도 `<select>` (현재 연도 → 2010 역순) | ✓ |
 | 월 그리드 + 이전/다음 화살표 | ✓ |
-| 주간 요일 버튼 7개 (`hasDay`/`isActive`) | ✓ |
+| 주간 미니 달력 주 범위 band (`week-start` → `is-in-week`) | ✓ |
 | 이전/다음 주 화살표 | ✓ |
 | TODAY 버튼 | ✓ |
 | Pinpoint (핀 고정 / 표시 / 돌아가기) | ✓ |

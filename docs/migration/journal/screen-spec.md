@@ -757,7 +757,7 @@
                 <i class="bi bi-caret-left fs-2"></i>
             </div>
             <!-- JournalDayAsideWeekNavigatorApp 가 이 div 내부에 요일 셀을 렌더 -->
-            <!-- Vue SPA: 직접 v-for로 요일 셀 렌더 -->
+            <!-- Vue SPA: 요일 셀 스트립 대신 JournalAsideMiniCalendar(주 범위 band, week-start prop)로 렌더 -->
             <div id="journalAsideWeekDays" class="journal-aside-week-days flex-grow-1"
                  aria-label="Weekly navigation">
                 <!-- WeekDayItem { label: "월~일", dateStr: "YYYY-MM-DD", hasDay: boolean, isActive: boolean } -->
@@ -1108,7 +1108,7 @@ type TodoRow = {
 | 2. 년월 | 이전/다음 월 화살표 | ✓ 구현 |
 | 2. 년월 | TODAY 버튼 | ✓ 구현 |
 | 2. 주간 | Week 범위 표시 | ✓ `weekRangeLabel` computed (`JournalAside.vue`) |
-| 2. 주간 | 주간 요일 셀 내비게이터 | ✓ `weekDays` computed + `journal-aside-week-days` |
+| 2. 주간 | 주간 미니 달력 내비게이터 (주 범위 band) | ✓ `JournalAsideMiniCalendar` + `week-start` prop (`is-in-week`) |
 | 2. 주간 | 이전/다음 주 화살표 | ✓ `store.navigateWeek(-1/1)` |
 | 2. 주간 | 주간 TODAY 버튼 | ✓ 공통 TODAY 버튼 (`store.gotoToday()`) |
 | 2. Pinpoint | 핀 고정 버튼 | ✓ `pinpoint()` → `asideStore.setPinpoint` |

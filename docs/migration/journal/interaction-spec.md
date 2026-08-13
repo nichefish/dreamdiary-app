@@ -27,7 +27,7 @@
 | Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
 | 챕터 말머리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY`(일기 챕터) 개인 Prefix 체크박스, `store.chapterPrefixIds` → `fetchDays` | ✓ |
 | 일기/꿈 라이프사이클 필터 | `JournalAside.vue` — `store.diaryLifecycleKey` / `store.dreamLifecycleKey` → `fetchDays` 후 일기/꿈 각각 후처리 필터 | ✓ |
-| 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
+| 주간 네비게이터 | `JournalAside.vue` — 미니 달력(`JournalAsideMiniCalendar`, 일요일 시작) 주 범위 하이라이트(월~토 한 줄 + 다음 줄 일요일), 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ✓ |
 | 일간 날짜 네비게이션 | 탭(`journal-daily-tab`)은 aside의 `JournalAsideMiniCalendar.vue`만 사용하며 중복 본문 네비게이션 행을 표시하지 않는다. 팝업(`journal-daily`)은 aside가 없으므로 본문 이전/날짜/다음 행을 유지한다. 두 경로 모두 날짜 선택 시 `router.replace({ query: { stdrdDt } })`로 이동한다. 미니 달력은 토/일·공휴일을 빨간색으로 표시하고 공휴일은 `GET /api/schedule/holidays`로 조회한다. | ✓ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
@@ -199,10 +199,10 @@ const weekRangeLabel = computed(() => {
 - 목록 렌더 완료 후 선택한 날짜(`val`)에 해당하는 `#journal-day-{val}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
 - 구현: 숨긴 `<input type="date">` (opacity:0, pointer-events:none) + `showPicker()` 호출.
 
-**요일 버튼 클릭 → 해당 일자 카드 스크롤** (`selectWeekDay`):
-- 현재 주 내 요일 버튼 클릭 시 `selectedDt`(활성 표시) 갱신.
-- `await nextTick()` 후 `#journal-day-{dateStr}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
-- `hasDay`가 false인 버튼(데이터 없는 날짜)은 비활성화(disabled).
+**주간 미니 달력 날짜 클릭 → 해당 주 이동 + 일자 카드 스크롤** (`onWeekMiniCalendarSelect`):
+- `JournalAsideMiniCalendar`(일요일 시작)에서 날짜 클릭 시 `getWeekStartDateStr(dateStr)`로 그 날이 속한 주(월요일 시작)를 구해 `syncWeeklyRouteOrFetch`로 이동한다. 다른 주를 클릭하면 주 범위 band 가 그 주로 이동한다.
+- 이동 성공 후 `selectedDt`(클릭한 날 강조) 갱신, `await nextTick()` 후 `#journal-day-{dateStr}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
+- 선택된 주는 `week-start` prop 으로 전달되어 `[weekStart … +6일]` 셀이 `is-in-week`(옅은 파란 band)로 칠해진다. 일요일 시작 그리드라 월~토는 한 줄, 그 주의 일요일은 다음 줄 첫 칸에 칠해진다. 클릭한 날은 `is-selected`(진한 파랑).
 
 ---
 
@@ -225,12 +225,13 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 > 다만 `id="yy"`, `id="mnth"` 가 없어 레거시 jQuery 코드와 호환이 안 된다.
 > 완전 수렴 후 레거시 jQuery는 제거 대상이므로 id 호환보다 Vue 방식 유지가 맞다.
 
-**DAILY viewType 미니 달력**:
+**DAILY/WEEKLY viewType 미니 달력**:
 - `store.viewType === 'DAILY'` 일 때 월 그리드(1~12월) 대신 `JournalAsideMiniCalendar` 컴포넌트를 렌더한다.
 - 요일 헤더(일~토) + 해당 월 날짜 셀을 7열 CSS grid로 표시한다.
 - 선택된 날짜(`route.query.stdrdDt`)는 `is-selected`(파란 배경), 오늘은 `is-today`(파란 테두리)로 구분한다.
 - 토요일·일요일은 `is-weekend`(빨간색 텍스트)로 표시한다. 요일 헤더의 일/토도 동일.
-- 공휴일은 `is-holiday`(빨간색 텍스트)로 표시한다. `GET /api/schedule/holidays?yy=&mnth=` 로 해당 월의 공휴일 날짜 목록을 조회하며, `store.yy`/`store.mnth` 변경 시 재조회한다. 서버는 캐시된 전체 공휴일 엔티티에서 year/month 필터링하여 반환한다.
+- 공휴일은 `is-holiday`(빨간색 텍스트)로 표시한다. `GET /api/schedule/holidays?yy=&mnth=` 로 해당 월의 공휴일 날짜 목록을 조회하며, `store.yy`/`store.mnth` 변경 시 재조회한다(DAILY·WEEKLY 공통). 서버는 캐시된 전체 공휴일 엔티티에서 year/month 필터링하여 반환한다.
+- `store.viewType === 'WEEKLY'` 도 같은 미니 달력을 재사용하되, 단일 날 대신 `week-start` prop 으로 주 범위를 전달해 `[weekStart … +6일]` 셀을 `is-in-week` band 로 칠한다(위 「주간 미니 달력 날짜 클릭」 참조). 주간은 월 그리드 대신 주 범위 라벨·이전/다음 주 화살표와 함께 표시한다.
 - 선택된 날짜가 주말·공휴일이어도 `is-selected` 흰색 텍스트가 우선한다.
 - 날짜 클릭 → `router.replace({ query: { stdrdDt: 'YYYY-MM-DD' } })` → `JournalDayDaily`의 `stdrdDt` watch가 재조회.
 - 월 이동 chevron은 aside `store.yy`/`store.mnth`만 변경하고, `fetchDays`를 호출하지 않는다(달력 표시 월만 전환).

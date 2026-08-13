@@ -178,7 +178,7 @@ HTML 요소:
 - 고정 표시: pinnedYy/pinnedMnth 반응형 표시 — null이면 `----`, `--`
 - 돌아가기 버튼: `<i class="bi bi-reply-all">` — turnback() 호출; pinnedYy null이면 disabled
 
-**요일 버튼 색상 수정**: `isActive`는 `dateStr === selectedDt` (선택된 날짜만 파란색). `hasDay=false`이면 `:disabled` → CSS가 회색 처리. 기존 `is-active: day.hasDay` 버그 수정됨.
+**주간 미니 달력 주 범위 하이라이트**: WEEKLY aside 는 `JournalAsideMiniCalendar`(일요일 시작)를 재사용하고 `week-start` prop 으로 선택된 주를 전달한다. `[weekStart … +6일]` 셀이 `is-in-week`(옅은 파란 band)로 칠해지며(월~토 한 줄 + 다음 줄 일요일), 클릭한 날은 `is-selected`(진한 파랑). 날짜 클릭 시 `getWeekStartDateStr`로 그 날이 속한 주로 이동한다.
 
 **표시 문구 i18n**: 월 숫자 뒤 단위, 날짜 선택·Pinpoint 저장·복귀 tooltip과 월~일 요일 축약명은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 연월·선택 일자·Pinpoint 저장값·route query를 변경하지 않는다.
 
