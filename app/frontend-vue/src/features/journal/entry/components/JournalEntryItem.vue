@@ -110,6 +110,16 @@
             <i class="bi bi-clipboard fs-8"></i>
           </button>
           <!--end::해석 제외 복사-->
+          <!--begin::링크 복사 (외부에서 클릭 시 해당 일자 일간뷰로 이동해 이 엔트리로 스크롤)-->
+          <button
+            type="button"
+            class="btn btn-xs btn-icon journal-entry-action-btn"
+            :title="t('journal.entry.copy-link')"
+            @click="copyEntryLink"
+          >
+            <i class="bi bi-link-45deg fs-8"></i>
+          </button>
+          <!--end::링크 복사-->
 
           <!--begin::컨텍스트 메뉴-->
           <div class="me-0">
@@ -519,6 +529,7 @@
 
 <script setup lang="ts">
 import { swalAlert, swalFire } from "@/shared/utils/swal";
+import { joinAppBasePath } from "@/shared/utils/appPath";
 import { computed, watch, nextTick, provide } from "vue";
 import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
@@ -729,6 +740,25 @@ async function copyEntry(includeReflection = true): Promise<void> {
     void swalFire({ icon: "success", text: t("common.copy.success") });
   } catch (error: unknown) {
     console.error("[journal-entry] clipboard copy failed", error);
+    void swalFire({ icon: "error", text: t("common.copy.failure") });
+  }
+}
+
+/**
+ * 이 엔트리로 가는 링크를 클립보드에 복사한다.
+ * 외부(메신저·메모 등)에서 클릭하면 앱의 해당 일자 일간뷰(journal-daily-tab)로 진입하고,
+ * entryId 로 이 엔트리(#journal-entry-{id})까지 스크롤한다. 절대 URL(origin + BASE_URL) 을 만든다.
+ */
+async function copyEntryLink(): Promise<void> {
+  const stdrdDt = props.entry.stdrdDt;
+  if (!stdrdDt || props.entry.id == null) return;
+  const path = joinAppBasePath(`/journal/daily?stdrdDt=${encodeURIComponent(stdrdDt)}&entryId=${props.entry.id}`);
+  const url = `${window.location.origin}${path}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    void swalFire({ icon: "success", text: t("common.copy.success") });
+  } catch (error: unknown) {
+    console.error("[journal-entry] link copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }

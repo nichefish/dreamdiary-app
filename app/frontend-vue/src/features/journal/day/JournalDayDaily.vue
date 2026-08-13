@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
@@ -86,6 +86,28 @@ const route = useRoute();
 const router = useRouter();
 
 const currentDt = computed(() => (route.query.stdrdDt as string | undefined) ?? "");
+
+/** 딥링크(entryId)로 진입 시 로드 후 스크롤할 대상 엔트리 id. 한 번 스크롤하면 비운다. */
+const pendingScrollEntryId = ref<string | null>(null);
+
+/** route.query.entryId 를 스크롤 대기값으로 캡처한다(있을 때만). */
+function captureScrollTarget(): void {
+  const raw = route.query.entryId;
+  pendingScrollEntryId.value = typeof raw === "string" && raw.trim() ? raw.trim() : null;
+}
+
+/** 목록(store.dayList) 갱신(로드 완료) 후, 대기 중인 entryId 가 있으면 그 엔트리로 스크롤한다. */
+watch(() => store.dayList, () => {
+  const id = pendingScrollEntryId.value;
+  if (!id) return;
+  pendingScrollEntryId.value = null;
+  void nextTick(() => {
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`journal-entry-${id}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+});
 
 function load(stdrdDt?: string): void {
   store.setViewType("DAILY");
@@ -138,6 +160,7 @@ onMounted(() => {
     void router.replace({ query: { stdrdDt: `${yy}-${mm}-${dd}` } });
     return; // replace 후 watch 가 load 를 호출
   }
+  captureScrollTarget();
   load(currentDt.value);
   void modalStore.prefetchChapterPrefixes();
 });
@@ -155,6 +178,7 @@ watch(
         void router.replace({ query: { stdrdDt: `${yy}-${mm}-${dd}` } });
         return;
       }
+      captureScrollTarget();
       load(dt as string | undefined);
       void modalStore.prefetchChapterPrefixes();
     }
