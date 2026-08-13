@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.feature.calendar.holiday.model.HolydayKasiApiItem
 import io.nicheblog.dreamdiary.feature.calendar.holiday.model.HolydayKasiApiRespDto;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -84,7 +83,7 @@ public class HolydayKasiApiService {
             HolydayKasiApiRespDto respDto = restTemplate.getForObject(requestURI, HolydayKasiApiRespDto.class);
             if (respDto != null) rsItems = respDto.getBody().getItems();
         } catch (final Exception e) {
-            MessageUtils.getExceptionMsg(e);
+            log.warn("KASI holiday API call/parse failed. year={}, returning empty list.", yyStr, e);
         }
         return rsItems;
     }

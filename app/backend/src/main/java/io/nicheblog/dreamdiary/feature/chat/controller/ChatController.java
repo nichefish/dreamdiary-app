@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatSettingDto;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatSessionDto;
-import io.nicheblog.dreamdiary.feature.chat.service.ChatAIService;
+import io.nicheblog.dreamdiary.feature.chat.service.ChatOrchestrator;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatMessageService;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatSettingService;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatSessionService;
@@ -40,7 +40,7 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatSessionService chatSessionService;
     private final ChatSettingService chatSettingService;
-    private final ChatAIService chatAIService;
+    private final ChatOrchestrator chatOrchestrator;
 
     /**
      * 내 채팅 설정을 조회한다.
@@ -212,7 +212,7 @@ public class ChatController {
         final Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
         AuthUtils.setAuthentication(authentication);
 
-        chatAIService.processChat(sessionId, message);
+        chatOrchestrator.processChat(sessionId, message);
     }
 
     /**
@@ -229,6 +229,6 @@ public class ChatController {
         final Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
         AuthUtils.setAuthentication(authentication);
 
-        chatAIService.cancelChat(sessionId);
+        chatOrchestrator.cancelChat(sessionId);
     }
 }

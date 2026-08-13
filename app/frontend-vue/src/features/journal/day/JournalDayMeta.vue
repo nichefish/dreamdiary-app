@@ -18,7 +18,10 @@
               <span v-if="store.metaLoading" class="spinner-border spinner-border-sm text-primary" role="status"></span>
               <!--end::로딩-->
               <div v-else class="journal-day-meta-header-list-vue d-flex flex-wrap align-items-center">
-                <template v-if="store.metaList.length > 0">
+                <template v-if="store.metaError">
+                  <span class="text-danger fs-7">{{ store.metaError }}</span>
+                </template>
+                <template v-else-if="store.metaList.length > 0">
                   <span
                     v-for="item in store.metaList"
                     :key="'meta-h-' + item.id"
@@ -175,6 +178,8 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from "vue";
 import axios from "axios";
+import Apexchart from "vue3-apexcharts";
+import "apexcharts/dist/apexcharts.css";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useMetaContextMenuStore } from "@/features/journal/stores/metaContextMenu";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";

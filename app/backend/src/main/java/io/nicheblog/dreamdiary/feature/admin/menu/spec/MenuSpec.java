@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Component
 public class MenuSpec
-        implements BaseAuditSpec<MenuEntity> {
+        extends BaseAuditSpec<MenuEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

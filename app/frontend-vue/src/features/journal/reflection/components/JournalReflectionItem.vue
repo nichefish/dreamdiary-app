@@ -2,12 +2,13 @@
   <!--begin::Reflection 슬림 임베드 (target 엔트리 본문 아래·태그 위)-->
   <div
     class="journal-reflection-embed"
+    :class="{ 'align-items-stretch': isCollapsed }"
     :data-id="reflection.id"
     :data-resolved="isResolved ? 'Y' : 'N'"
     :data-lifecycle="lcKey || 'OPEN'"
   >
-    <!--begin::본문 (헤더·제목 없이 본문만 흐른다 — target 엔트리와 이어지는 글처럼)-->
-    <div class="journal-reflection-content flex-grow-1">
+    <!--begin::본문 (헤더·제목 없이 본문만 흐른다 — target 엔트리와 이어지는 글처럼; 접힘 시 flex-column+세로 중앙으로 (collapsed)를 임베드 세로 중앙에 둔다) -->
+    <div class="journal-reflection-content flex-grow-1" :class="{ 'd-flex flex-column justify-content-center': isCollapsed }">
       <div v-if="debugCollapse" class="fs-9 text-danger px-2">
         [R#{{reflection.id}}] isCollapsed={{isCollapsed}} | lcKey={{lcKey}} | signal={{props.forceCollapsedSignal}} | localOvr={{localCollapsedOverride}}
       </div>
@@ -295,7 +296,7 @@ import { ref, computed, onBeforeUnmount, watch } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
-import { getWeekDayStr, getWeekStartDateStr } from "@/features/journal/utils/journalDate";
+import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
@@ -309,6 +310,7 @@ import {
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
+import { useJournalAttachableActions } from "@/features/journal/shared/composables/useJournalAttachableActions";
 import {
   resolveReflectionCollapsed,
   useJournalReflectionDefaultCollapsed,
@@ -346,12 +348,6 @@ const threadStore = useJournalThreadStore();
 const journalStore = useJournalStore();
 const route = useRoute();
 
-interface JournalCacheContext {
-  yy?: number;
-  mnth?: number;
-  weekStartDt?: string;
-}
-
 const contentType = computed(() => props.reflection.contentType ?? "JOURNAL_REFLECTION");
 /** 본인 작성 Reflection 만 쓰기 가능. isCreatedBy 미전달 시 잠그지 않는다. */
 const canWrite = computed(() => props.reflection.isCreatedBy !== false);
@@ -370,8 +366,15 @@ const reflectionDefaultCollapsed = useJournalReflectionDefaultCollapsed();
  * 부모 엔트리의 forceCollapsed 가 바뀌면 리플렉션의 로컬 오버라이드를 초기화한다.
  * 부모를 접었다 펼쳤을 때, 이전에 리플렉션을 직접 토글한 상태가 남아 있으면
  * 부모 신호를 무시하는 문제를 방지한다.
+ * 신규 등록 일회성 접힘 ID가 이 인스턴스를 가리키면 챕터 펼침→expand signal 로 덮지 않는다.
  */
 watch(() => props.forceCollapsedSignal, () => {
+  if (
+    modalStore.reflectionCreatedCollapseId != null
+    && String(modalStore.reflectionCreatedCollapseId) === String(props.reflection.id)
+  ) {
+    return;
+  }
   localCollapsedOverride.value = null;
 });
 /**
@@ -381,9 +384,25 @@ watch(reflectionDefaultCollapsed, () => {
   localCollapsedOverride.value = null;
 });
 /**
+ * 신규 Reflection 등록 직후: 로컬 접힘을 심어 부모 expand signal·챕터 일회성 펼침보다 우선한다.
+ * 서버 lifecycle(PENDING)과 별도로, 등록 직후 화면에서만 일회성으로 적용한다. 수정 저장에는 쓰지 않는다.
+ */
+watch(
+  () => modalStore.reflectionCreatedCollapseId,
+  (reflectionId) => {
+    if (reflectionId == null || props.reflection.id == null) return;
+    if (String(reflectionId) !== String(props.reflection.id)) return;
+    localCollapsedOverride.value = true;
+    console.info("[JournalReflectionItem] 신규 등록 Reflection을 접힘", { reflectionId });
+    modalStore.clearReflectionCreatedCollapse(reflectionId);
+  },
+  { immediate: true },
+);
+/**
  * 접힘 우선순위: 로컬 토글 > 엔트리 signal > lifecycle(RESOLVED/PENDING) 자동
  * > 기본 접힘 모드(일자 aside) > 서버 COLLAPSED.
  * signal="expand" 이면 lifecycle·모드 기본 접힘도 무시한다.
+ * 신규 등록 일회성 접힘은 로컬 토글(true)로 적용되어 signal보다 앞선다.
  */
 const isCollapsed = computed(() => resolveReflectionCollapsed({
   localOverride: localCollapsedOverride.value,
@@ -428,34 +447,18 @@ function guardWrite(): boolean {
   return false;
 }
 
-function parseCacheNumber(value: unknown): number | undefined {
-  const parsed = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
-}
-
-function resolveJournalCacheContext(): JournalCacheContext {
-  const cacheContext: JournalCacheContext = {};
-  const stdrdDt = props.reflection.stdrdDt?.trim();
-  const yy = stdrdDt && stdrdDt.length >= 4
-    ? parseCacheNumber(stdrdDt.slice(0, 4))
-    : parseCacheNumber(journalStore.yy);
-  const mnth = stdrdDt && stdrdDt.length >= 7
-    ? parseCacheNumber(stdrdDt.slice(5, 7))
-    : parseCacheNumber(journalStore.mnth);
-  const weekStartDt = journalStore.weekStartDt?.trim()
-    || (stdrdDt ? getWeekStartDateStr(stdrdDt) : undefined);
-  if (yy != null) cacheContext.yy = yy;
-  if (mnth != null) cacheContext.mnth = mnth;
-  if (weekStartDt) cacheContext.weekStartDt = weekStartDt;
-  if (Object.keys(cacheContext).length === 0) {
-    console.warn("[journal-reflection] missing cache context for state update", {
-      id: props.reflection.id,
-      contentType: contentType.value,
-      stdrdDt: props.reflection.stdrdDt,
-    });
-  }
-  return cacheContext;
-}
+/** 공유 composable: setLifecycle, toggleState, cacheContext */
+const reflectionRef = computed(() => props.reflection);
+const {
+  setLifecycle,
+  toggleState,
+} = useJournalAttachableActions({
+  entry: reflectionRef,
+  contentType,
+  guardWrite,
+  onSuccess: () => refreshHost(),
+  t,
+});
 
 /** 액션 성공 후 현재 표시 호스트를 재조회한다. */
 function refreshHost(stdrdDt = props.reflection.stdrdDt): void {
@@ -616,46 +619,6 @@ function escapeHtmlAttr(value: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-}
-
-async function setLifecycle(lifecycleKey: string): Promise<void> {
-  if (!guardWrite()) return;
-  if (!props.reflection.id) return;
-  try {
-    const res = await axios.put("/api/lifecycles", {
-      id: props.reflection.id,
-      contentType: contentType.value,
-      lifecycleKey,
-      cacheContext: resolveJournalCacheContext(),
-    });
-    if (res.data?.rslt) {
-      refreshHost();
-    } else {
-      void swalFire({ icon: "error", text: res.data?.message ?? t("common.result.failure") });
-    }
-  } catch (e: unknown) {
-    void swalRequestError(e);
-  }
-}
-
-async function toggleState(stateKey: string): Promise<void> {
-  if (!guardWrite()) return;
-  if (!props.reflection.id) return;
-  try {
-    const res = await axios.post("/api/states", {
-      id: props.reflection.id,
-      contentType: contentType.value,
-      stateKey,
-      cacheContext: resolveJournalCacheContext(),
-    });
-    if (res.data?.rslt) {
-      refreshHost();
-    } else {
-      void swalFire({ icon: "error", text: res.data?.message ?? t("common.result.failure") });
-    }
-  } catch (e: unknown) {
-    void swalRequestError(e);
-  }
 }
 
 /** Reflection 삭제 (DELETE /api/journal/reflection/{id}) */

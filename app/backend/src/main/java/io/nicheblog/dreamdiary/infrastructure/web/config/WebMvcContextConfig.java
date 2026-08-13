@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.interceptor.LogInterceptor;
 import io.nicheblog.dreamdiary.infrastructure.web.handler.UTF8DecodeResourceResolver;
 import io.nicheblog.dreamdiary.infrastructure.web.interceptor.CookieInterceptor;
+import io.nicheblog.dreamdiary.infrastructure.web.interceptor.VueAssetCacheControlInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
@@ -34,6 +35,7 @@ public class WebMvcContextConfig
     private final CookieInterceptor cookieInterceptor;
     private final CsrfInterceptor csrfInterceptor;
     private final LogInterceptor logActvtyInterceptor;
+    private final VueAssetCacheControlInterceptor vueAssetCacheControlInterceptor;
 
     private static final List<String> STATIC_RESOURCES_URL_PATTERN = List.of(Constant.STATIC_PATHS);
 
@@ -76,6 +78,13 @@ public class WebMvcContextConfig
                 .addResourceLocations(reactResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
+        // vue-app 해시 자산 경로 = 파일명 변경으로 배포 버전을 구분하므로 장기 브라우저 캐시 허용
+        final String vueAppAssetsContextPath = "/vue-app/assets/**";
+        final String vueAppAssetsResourcePath = "file:static/vue-app/assets/";
+        registry.addResourceHandler(vueAppAssetsContextPath)
+                .addResourceLocations(vueAppAssetsResourcePath)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
         // vue-app 경로 = Vue SPA (index.html SPA 폴백 포함)
         final String vueAppContextPath = "/vue-app/**";
         final String vueAppResourcePath = "file:static/vue-app/";
@@ -123,6 +132,10 @@ public class WebMvcContextConfig
      */
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
+        // Vue 빌드 해시 자산은 URL이 콘텐츠 버전을 나타내므로 장기 브라우저 캐시 계약을 적용한다.
+        registry.addInterceptor(vueAssetCacheControlInterceptor)
+                .addPathPatterns("/vue-app/assets/**");
+
         // 변경 전: freemarker interceptor 를 페이지 경로에 등록 (뷰 렌더 모델 주입).
         // 변경 후: 화면 뷰가 전부 Vue SPA 로 이관되어 FreeMarker MVC 렌더 경로 제거 — 인터셉터 등록 삭제.
 

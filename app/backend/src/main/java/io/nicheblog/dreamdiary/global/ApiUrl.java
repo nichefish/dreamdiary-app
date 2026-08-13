@@ -213,6 +213,9 @@ public interface ApiUrl {
     String ADMIN_JOURNAL_ENTRY_ENTITY_SYNC = Prefix.API + "/admin/journal-entry-entities/sync";
     String ADMIN_JOURNAL_ENTRY_ENTITY_REQUEUE_FAILED = Prefix.API + "/admin/journal-entry-entities/requeue-failed";
 
+    /** 저널 도메인 설정 */
+    String JOURNAL_SETTINGS = Prefix.API + "/journal/settings";
+
     /** (공통) 파일 */
     String FILE_DOWNLOAD_CHK_AJAX = Prefix.API + "/file/file-download-chk";
     String FILE_INFO_LIST_AJAX = Prefix.API + "/file/file-account-list";
@@ -228,6 +231,8 @@ public interface ApiUrl {
 
     /* ---------- */
 
+    /** 월별 공휴일 날짜 목록 (미니 달력용 경량 API) */
+    String SCHEDULE_HOLIDAYS = Prefix.API + "/schedule/holidays";
     String SCHEDULE_CAL_LIST_AJAX = Prefix.API + "/schedule/cal-list";
     /** 일정 목록 VIEW (달력과 동일 필터·기간) */
     String SCHEDULE_LIST_AJAX = Prefix.API + "/schedule/list";

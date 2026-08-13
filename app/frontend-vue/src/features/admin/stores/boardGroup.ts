@@ -94,9 +94,6 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
       pageSize.value = Number(pageResult.size ?? pageSize.value);
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("board.group.list.load.failure");
-      rows.value = [];
-      totalElements.value = 0;
-      totalPages.value = 0;
     } finally {
       loading.value = false;
     }

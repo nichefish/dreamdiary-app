@@ -5,8 +5,12 @@ import axios, { type AxiosError } from "axios";
 import { AuthVerificationError, isAuthVerificationError } from "@/shared/utils/authError";
 import { resolveProfileImageUrl } from "@/shared/utils/profileImage";
 import { preloadCategoryMaps, useJournalModalStore } from "@/features/journal/stores/journalModal";
+import { useJournalStore } from "@/features/journal/stores/journal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { useMenuStore } from "@/shared/menu/stores/menu";
+
+/** 라우트 이동이 서버 인증 확인 결과를 재사용하는 메모리 신선도 구간. */
+export const AUTH_VERIFICATION_FRESHNESS_MS = 15_000;
 
 /**
  * Vue SPA 인증 사용자 정보.
@@ -52,6 +56,12 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthenticated = ref(false);
   const errors = ref<string[]>([]);
   const loginAction = ref<LoginActionState | null>(null);
+  /** 로그아웃·세션 만료 전 인증 확인 응답을 폐기하기 위한 세대. */
+  let authVerificationGeneration = 0;
+  /** 마지막 정상 인증 확인 시각. 새로고침 시 초기화되는 메모리 상태다. */
+  let lastAuthVerifiedAt = 0;
+  /** 동시 인증 확인을 하나의 서버 요청으로 합친다. */
+  let authVerificationRequest: Promise<void> | null = null;
   /** local 프로필에서만 true. 개발용 UI 게이팅에 쓴다. */
   const isLocalProfile = computed(() => user.value?.activeProfile === "local");
 
@@ -69,7 +79,11 @@ export const useAuthStore = defineStore("auth", () => {
 
   /** 인증 상태 초기화 */
   function purgeAuth() {
+    authVerificationGeneration += 1;
+    lastAuthVerifiedAt = 0;
+    authVerificationRequest = null;
     useJournalModalStore().resetCategoryMaps();
+    useJournalStore().resetTagCloudState();
     useMenuStore().resetMenu();
     isAuthenticated.value = false;
     user.value = null;
@@ -104,7 +118,7 @@ export const useAuthStore = defineStore("auth", () => {
    * 로그인.
    * POST /api/auth/login → DreamdiaryAuthenticationProvider가 인증 + JWT 쿠키 발급.
    * 실패 시 서버가 HTTP 401을 반환하므로 Axios AxiosError로 잡아 message 추출.
-   * 성공 후 verifyAuth()로 사용자 정보 로드.
+   * 성공 후 강제 verifyAuth()로 사용자 정보 로드.
    */
   async function login(credentials: { username: string; password: string }) {
     errors.value = [];
@@ -112,7 +126,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const { data } = await ApiService.post("/api/auth/login", credentials);
       if (data.rslt) {
-        await verifyAuth();
+        await verifyAuth({ force: true });
       } else {
         errors.value = [data.message ?? t("auth.login.failure")];
         setLoginAction(data.rsltMap);
@@ -147,18 +161,59 @@ export const useAuthStore = defineStore("auth", () => {
 
   /**
    * 현재 JWT 쿠키로 인증 상태를 검증하고 사용자 정보를 로드한다.
-   * 라우터 beforeEach에서 매 페이지 진입 전 호출.
+   * 라우터 beforeEach는 정상 결과를 짧게 재사용하고, force 호출은 신선도와 무관하게 서버를 확인한다.
    * 서버 응답: AjaxResponse.withObj() → JSON 필드명 rsltObj (ServiceResponse 기준)
+   *
+   * @param options force=true이면 메모리 신선도 결과를 사용하지 않고 서버를 확인한다.
    */
-  async function verifyAuth() {
+  async function verifyAuth(options: { force?: boolean } = {}) {
+    const ageMs = Date.now() - lastAuthVerifiedAt;
+    const isFresh = isAuthenticated.value
+      && ageMs >= 0
+      && ageMs < AUTH_VERIFICATION_FRESHNESS_MS;
+    if (!options.force && isFresh) {
+      return;
+    }
+
+    if (authVerificationRequest) {
+      return authVerificationRequest;
+    }
+
+    const requestGeneration = authVerificationGeneration;
+    let request!: Promise<void>;
+    request = verifyAuthFromServer(requestGeneration)
+      .finally(() => {
+        if (authVerificationRequest === request) authVerificationRequest = null;
+      });
+    authVerificationRequest = request;
+    return request;
+  }
+
+  /** 서버 인증 정보를 조회하고 현재 세대의 응답만 store에 반영한다. */
+  async function verifyAuthFromServer(requestGeneration: number): Promise<void> {
     try {
       const { data } = await ApiService.get("/api/auth/get-auth-account");
+      if (requestGeneration !== authVerificationGeneration) {
+        console.info("[auth] 무효화된 인증 확인 응답 폐기", {
+          requestGeneration,
+          activeGeneration: authVerificationGeneration,
+        });
+        return;
+      }
       if (data.rslt && data.rsltObj) {
         setAuth(data.rsltObj as AuthUser);
+        lastAuthVerifiedAt = Date.now();
       } else {
         purgeAuth();
       }
     } catch (e) {
+      if (requestGeneration !== authVerificationGeneration) {
+        console.info("[auth] 무효화된 인증 확인 실패 응답 폐기", {
+          requestGeneration,
+          activeGeneration: authVerificationGeneration,
+        });
+        return;
+      }
       if (axios.isAxiosError<{ message?: string }>(e)) {
         const status = e.response?.status;
         if (status === 401) {

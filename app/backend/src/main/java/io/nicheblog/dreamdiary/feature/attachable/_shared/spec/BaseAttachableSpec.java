@@ -15,12 +15,12 @@ import java.util.*;
 /**
  * BaseAttachableSpec
  * <pre>
- *  (공통/상속) 검색인자 세팅 Specification 인터페이스.
+ *  (공통/상속) 검색인자 세팅 Specification 추상 클래스.
  * </pre>
  *
  * @author nichefish
  */
-public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
+public abstract class BaseAttachableSpec<Entity extends BaseAttachableEntity>
         extends BaseAuditSpec<Entity> {
 
     /**
@@ -30,7 +30,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
      * @return {@link Specification} -- 검색 조건에 따른 Specification 객체
      */
     @Override
-    default Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
+    public Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
         final Map<String, Object> effectiveSearchParamMap = new HashMap<>(searchParamMap);
         effectiveSearchParamMap.remove("backToList");
         effectiveSearchParamMap.remove("actvtyCtgr");
@@ -48,7 +48,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
                 attachablePredicate = getAttachablePredicate(attachableSearchParamMap, root, query, builder);
                 predicate = getPredicateWithParams(customSearchParamMap, root, query, builder);
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.warn("Failed to build search predicate.", e);
             }
             predicate.addAll(basePredicate);
             predicate.addAll(attachablePredicate);
@@ -66,7 +66,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
      * @param builder CriteriaBuilder 객체
      * @return {@link List} -- 생성된 검색 조건의 리스트
      */
-    default List<Predicate> getAttachablePredicate(
+    public List<Predicate> getAttachablePredicate(
             final Map<String, Object> searchParamMap,
             final Root<Entity> root,
             final CriteriaQuery<?> query,
@@ -91,7 +91,12 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         return predicate;
     }
 
-    default void resolveTagIdPredicate(
+    /**
+     * 태그 ID 단일 조건. {@code contentType} 으로 tag_content 타입 스코프를 연다.
+     *
+     * @param contentType tag_content.ref_content_type 스코프 타입. null이면 타입 스코프 없음
+     */
+    public void resolveTagIdPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaBuilder builder,
@@ -107,7 +112,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
      *
      * @param refContentTypeKeys tag_content.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
      */
-    default void resolveTagIdPredicate(
+    public void resolveTagIdPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaBuilder builder,
@@ -120,7 +125,12 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
     }
 
-    default void resolveTagsPredicate(
+    /**
+     * 멀티 태그 IN(하나라도 매칭). {@code contentType} 으로 tag_content 타입 스코프를 연다.
+     *
+     * @param contentType tag_content.ref_content_type 스코프 타입. null이면 타입 스코프 없음
+     */
+    public void resolveTagsPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaBuilder builder,
@@ -131,7 +141,12 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         resolveTagsPredicate(predicate, root, builder, value, createdBy, refContentTypeKeysOf(contentType));
     }
 
-    default void resolveTagsPredicate(
+    /**
+     * 멀티 태그 IN(하나라도 매칭). {@code refContentTypeKeys} 로 tag_content 타입 스코프를 연다.
+     *
+     * @param refContentTypeKeys tag_content.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
+     */
+    public void resolveTagsPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaBuilder builder,
@@ -146,7 +161,12 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         predicate.add(tagContentJoin.get("tagId").in(tagIdList));
     }
 
-    default void resolveTagIdsPredicate(
+    /**
+     * 멀티 태그 AND(모두 매칭). {@code contentType} 으로 tag_content 타입 스코프를 연다.
+     *
+     * @param contentType tag_content.ref_content_type 스코프 타입. null이면 타입 스코프 없음
+     */
+    public void resolveTagIdsPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaQuery<?> query,
@@ -163,7 +183,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
      *
      * @param refContentTypeKeys tag_content.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
      */
-    default void resolveTagIdsPredicate(
+    public void resolveTagIdsPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaQuery<?> query,
@@ -198,7 +218,12 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         predicate.add(builder.exists(tagSubquery));
     }
 
-    default void resolveStatesPredicate(
+    /**
+     * 상태 키 AND/IN. {@code contentType} 으로 state 타입 스코프를 연다.
+     *
+     * @param contentType state.ref_content_type 스코프 타입. null이면 타입 스코프 없음
+     */
+    public void resolveStatesPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaQuery<?> query,
@@ -215,7 +240,7 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
      *
      * @param refContentTypeKeys state.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
      */
-    default void resolveStatesPredicate(
+    public void resolveStatesPredicate(
             final List<Predicate> predicate,
             final Root<Entity> root,
             final CriteriaQuery<?> query,
@@ -249,6 +274,12 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         predicate.add(builder.exists(stateSubquery));
     }
 
+    /**
+     * 태그 조인에 작성자·타입 스코프 조건을 추가한다.
+     *
+     * @param createdBy 작성자. 공백이 아니면 tag_content.created_by 일치 조건 추가
+     * @param refContentTypeKeys tag_content.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
+     */
     private void addTagScopePredicate(
             final List<Predicate> predicate,
             final Join<?, TagContentEntity> tagContentJoin,
@@ -279,6 +310,12 @@ public interface BaseAttachableSpec<Entity extends BaseAttachableEntity>
         predicate.add(refContentTypePath.in(refContentTypeKeys));
     }
 
+    /**
+     * {@link ContentType} 를 tag_content/state 스코프 키 목록으로 변환한다.
+     *
+     * @param contentType 대상 타입. null이면 {@code null}(타입 스코프 없음) 반환
+     * @return {@link Collection} -- 단일 키 목록 또는 null
+     */
     private Collection<String> refContentTypeKeysOf(final ContentType contentType) {
         return contentType == null ? null : List.of(contentType.key);
     }

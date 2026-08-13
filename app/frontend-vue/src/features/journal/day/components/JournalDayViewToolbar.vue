@@ -5,6 +5,16 @@
     <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5 mb-0 flex-grow-1">
       <li class="nav-item">
         <router-link
+          :to="dailyRoute"
+          class="nav-link px-6 cursor-pointer"
+          exact-active-class="active"
+        >
+          <span class="nav-icon"><i class="bi bi-calendar-day"></i></span>
+          <span class="nav-text">{{ t('journal.day.toolbar.view.daily') }}</span>
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link
           :to="weeklyRoute"
           class="nav-link px-6 cursor-pointer"
           exact-active-class="active"
@@ -182,6 +192,7 @@ const weeklyRoute = computed(() => ({ name: "journal-weekly", query: weeklyQuery
 const monthlyRoute = computed(() => ({ name: "journal-monthly", query: monthlyQuery.value }));
 const calendarRoute = computed(() => ({ name: "journal-calendar", query: monthlyQuery.value }));
 const metaRoute = computed(() => ({ name: "journal-meta", query: monthlyQuery.value }));
+const dailyRoute = computed(() => ({ name: "journal-daily-tab" }));
 
 /** 전체검색: 새 창으로 /vue-app/journal/entry/search 열기 (base = import.meta.env.BASE_URL) */
 async function openSearchTab(type: "DIARY" | "DREAM", keyword: string): Promise<void> {

@@ -17,6 +17,11 @@
           {{ t("journal.day.calendar.loading") }}
         </div>
         <!--end::로딩-->
+        <!--begin::에러 — 주간/월간과 동일하게 조회 실패를 빈 달력과 구분. DOM 유지용으로 캘린더는 남긴다.-->
+        <div v-if="!store.loading && store.error" class="text-danger text-center py-3 fs-7">
+          {{ store.error }}
+        </div>
+        <!--end::에러-->
         <FullCalendar ref="calendarRef" :options="calendarOptions" />
       </div>
     </div>

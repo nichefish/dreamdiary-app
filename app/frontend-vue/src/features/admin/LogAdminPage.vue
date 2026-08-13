@@ -17,6 +17,7 @@
       <div class="alert alert-secondary mb-0">
         {{ t('log.user-stats.notice') }}
       </div>
+      <div v-if="store.error" class="alert alert-warning py-2 mt-3">{{ store.error }}</div>
       <div class="card post">
         <div class="card-body">
           <div class="table-responsive">
@@ -32,7 +33,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-if="!store.statsRows.length">
+                <tr v-if="!store.error && !store.statsRows.length">
                   <td colspan="6" class="text-center text-muted py-8">{{ t('log.user-stats.empty') }}</td>
                 </tr>
                 <tr v-for="(row, index) in store.statsRows" :key="`${row.username ?? 'anonymous'}-${index}`">
@@ -153,7 +154,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="!store.rows.length">
+                  <tr v-if="!store.error && !store.rows.length">
                     <td colspan="7" class="text-center text-muted py-8">{{ t('log.list.empty') }}</td>
                   </tr>
                   <tr

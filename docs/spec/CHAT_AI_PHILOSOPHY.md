@@ -1,6 +1,6 @@
 # Dreamdiary AI Chat Philosophy
 
-동작 기준과 구현 상태는 [AI Chat Spec](CHAT_AI_SPEC.md)을 따른다.
+동작 기준과 구현 상태는 [AI Chat Spec](CHAT_AI_SPEC.md)을 따른다. AI 능력과 채팅 채널의 패키지 분리는 [AI_DOMAIN_SEPARATION.md](AI_DOMAIN_SEPARATION.md)를 본다.
 
 ## 핵심 관점
 

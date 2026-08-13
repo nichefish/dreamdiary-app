@@ -7,15 +7,9 @@ import java.util.List;
 /**
  * 엔트리 태그·검색 축(일기/꿈)과 contentType 키 집합을 해석한다.
  * <p>
- * 일기 축 태그 <b>집계</b>(클라우드·결산·챕터 요약)는 {@code JOURNAL_DIARY} 와
- * {@code JOURNAL_REFLECTION} 을 같은 축으로 본다({@link #expandKeys}). Reflection 태그는
- * {@code tag_content.ref_content_type = JOURNAL_REFLECTION} 으로 저장되고 일기 축 집계 시 합쳐진다.
- * </p>
- * <p>
- * 반면 엔트리 목록 <b>검색</b>의 태그·state 스코프는 요청 타입 단독을 쓴다({@link #searchScopeKeys}).
- * Reflection 은 별도 Aggregate(journal_reflection)이고 대상 필수(About-A)라 검색 결과 행이 되지 않으며,
- * Reflection 본문 키워드만 대상 Primary 를 매칭시킨다(원문·해석 한 몸, {@code JournalEntrySpec} EXISTS).
- * 태그·state 는 대상을 매칭시키지 않는다.
+ * 태그를 소유하는 엔트리 타입은 {@code JOURNAL_DIARY}, {@code JOURNAL_DREAM} 이며 집계와 검색은
+ * 요청 타입 단독 축을 사용한다. Reflection 은 별도 Aggregate({@code journal_reflection})이고 태그를
+ * 소유하지 않으므로 태그 축에 참여하지 않는다.
  * </p>
  */
 public final class JournalEntryTagAxis {
@@ -24,53 +18,37 @@ public final class JournalEntryTagAxis {
     }
 
     /**
-     * 일기 축에 속하는 contentType 키 목록을 반환한다.
-     *
-     * @return {@code JOURNAL_DIARY}, {@code JOURNAL_REFLECTION}
-     */
-    public static List<String> diaryAxisKeys() {
-        return List.of(ContentType.JOURNAL_DIARY.key, ContentType.JOURNAL_REFLECTION.key);
-    }
-
-    /**
-     * 태그 <b>집계</b> 요청 contentType 을 실제 IN 조건용 키 목록으로 펼친다.
-     * 일기({@code JOURNAL_DIARY}) 요청은 일기 축 전체(일기∪Reflection)를, 그 외는 요청 타입 단독을 쓴다.
-     * 검색 스코프에는 {@link #searchScopeKeys} 를 쓴다(Reflection 미포함).
+     * 태그 집계 요청 contentType 을 실제 IN 조건용 키 목록으로 변환한다.
+     * 태그 지원 타입은 요청 타입 단독을 반환하고, 미지원 타입은 빈 목록을 반환한다.
      *
      * @param contentType 집계 요청 타입
      * @return IN 조건용 contentType 키 목록
      */
     public static List<String> expandKeys(final ContentType contentType) {
-        if (contentType == ContentType.JOURNAL_DIARY) {
-            return diaryAxisKeys();
-        }
-        if (contentType == null || contentType == ContentType.DEFAULT) {
-            return List.of();
-        }
+        if (!supportsTags(contentType)) return List.of();
         return List.of(contentType.key);
     }
 
     /**
-     * 엔트리 목록 <b>검색</b>의 태그·state 스코프용 contentType 키 목록을 반환한다.
-     * 검색 결과 행은 요청 타입의 Primary 엔트리만이므로 Reflection 을 축에 합치지 않고 요청 타입 단독을 쓴다.
+     * 엔트리 목록 검색의 태그·state 스코프용 contentType 키 목록을 반환한다.
+     * 태그 지원 타입은 요청 타입 단독을 반환하고, 미지원 타입은 빈 목록을 반환한다.
      *
      * @param contentType 검색 요청 타입
      * @return IN 조건용 contentType 키 목록 (요청 타입 단독)
      */
     public static List<String> searchScopeKeys(final ContentType contentType) {
-        if (contentType == null || contentType == ContentType.DEFAULT) {
-            return List.of();
-        }
+        if (!supportsTags(contentType)) return List.of();
         return List.of(contentType.key);
     }
 
     /**
-     * Reflection 태그 변경 시 일기 축 캐시도 같이 비울지 여부.
+     * 엔트리 타입이 태그를 지원하는지 확인한다.
      *
-     * @param contentType 저장·삭제된 콘텐츠 타입
-     * @return 일기 축 캐시 동반 무효화 여부
+     * @param contentType 콘텐츠 타입
+     * @return 일기·꿈이면 {@code true}
      */
-    public static boolean evictsDiaryAxis(final ContentType contentType) {
-        return contentType == ContentType.JOURNAL_REFLECTION;
+    public static boolean supportsTags(final ContentType contentType) {
+        return contentType == ContentType.JOURNAL_DIARY
+                || contentType == ContentType.JOURNAL_DREAM;
     }
 }

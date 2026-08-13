@@ -183,7 +183,6 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
       rows.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("admin.menu.list.load.failure");
-      rows.value = [];
     } finally {
       loading.value = false;
     }

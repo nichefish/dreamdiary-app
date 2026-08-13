@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 
-import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
-import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
+import io.nicheblog.dreamdiary.feature.ai.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.ai.model.OllamaHealthDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingQualityEvalCaseDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingQualityEvalReportDto;

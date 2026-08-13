@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RoleSpec
-        implements BaseSpec<RoleEntity> {
+        extends BaseSpec<RoleEntity> {
     //
 }

@@ -13,6 +13,7 @@ import org.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -83,26 +84,35 @@ public class TagCmpstn
     /* ----- */
 
     /**
-     * Getter :: 태그 목록을 문자열로 반환
+     * Getter :: 태그 목록을 문자열로 반환.
+     * <p>
+     * 이름은 flat {@code TagContentDto.name} 을 우선하고, 없으면 nested {@code tag.name} 으로 읽는다.
+     * </p>
      * @return String - 콤마로 구분된 태그 이름 문자열, 리스트가 비어 있을 경우 null 반환
      */
     public String getTagListStr() {
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(tag -> tag.getTag().getName())
+                .map(TagCmpstn::resolveTagName)
+                .filter(Objects::nonNull)
                 .collect(Collectors.joining(","));
     }
 
     /**
-     * Getter :: 태그 목록을 문자열로 반환
-     * @return String - 콤마로 구분된 태그 이름 문자열, 리스트가 비어 있을 경우 null 반환
+     * Getter :: 태그 목록을 해시태그 문자열로 반환.
+     * <p>
+     * 이름은 flat {@code TagContentDto.name} 을 우선하고, 없으면 nested {@code tag.name} 으로 읽는다.
+     * </p>
+     * @return String - 공백으로 구분된 #이름 문자열, 리스트가 비어 있을 경우 null 반환
      */
     public String getHashTagStr() {
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(tag -> "#" + tag.getTag().getName())  // 각 태그 앞에 #을 붙임
+                .map(TagCmpstn::resolveTagName)
+                .filter(Objects::nonNull)
+                .map(name -> "#" + name)  // 각 태그 앞에 #을 붙임
                 .collect(Collectors.joining(" "));  // 태그들 사이에 띄어쓰기 추가
     }
 
@@ -118,7 +128,7 @@ public class TagCmpstn
                 .map(tag -> {
                     try {
                         final BaseTagifyDataDto data = BaseTagifyDataDto.builder().ctgr(tag.getCtgr()).build();
-                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(tag.getName(), data);
+                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(resolveTagName(tag), data);
                         return mapper.writeValueAsString(tagifyDto);
                     } catch (final JsonProcessingException e) {
                         throw new RuntimeException("Error processing JSON", e);
@@ -129,13 +139,29 @@ public class TagCmpstn
 
     /**
      * Getter :: 태그 목록을 리스트로 반환.
+     * <p>
+     * 이름은 flat {@code TagContentDto.name} 을 우선하고, 없으면 nested {@code tag.name} 으로 읽는다.
+     * Jackson 직렬화와 lightweight {@code TagContentDto}(nested tag 미설정) 경로에서 NPE 가 나지 않게 한다.
+     * </p>
      * @return 태그 이름의 리스트, 리스트가 비어 있을 경우 null 반환
      */
     public List<String> getTagStrList() {
         if (CollectionUtils.isEmpty(this.list)) return null;
         return this.list.stream()
                 .sorted()
-                .map(tag -> tag.getTag().getName())
+                .map(TagCmpstn::resolveTagName)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 표시용 태그 이름을 해석한다. flat {@code name} 우선, nested {@code tag.name} fallback.
+     *
+     * @param tagContent 태그-컨텐츠 DTO
+     * @return 표시 이름. 없으면 null
+     */
+    private static String resolveTagName(final TagContentDto tagContent) {
+        if (tagContent == null) return null;
+        return tagContent.resolveDisplayName();
     }
 }

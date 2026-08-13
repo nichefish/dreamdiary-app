@@ -66,7 +66,6 @@ onErrorCaptured((error) => {
 
 <style lang="scss">
 @import "bootstrap-icons/font/bootstrap-icons.css";
-@import "apexcharts/dist/apexcharts.css";
 @import "quill/dist/quill.snow.css";
 @import "animate.css";
 @import "sweetalert2/dist/sweetalert2.css";
@@ -77,13 +76,11 @@ onErrorCaptured((error) => {
 @import "dropzone/dist/dropzone.css";
 @import "@vueform/multiselect/themes/default.css";
 @import "prism-themes/themes/prism-shades-of-purple.css";
-@import "element-plus/dist/index.css";
 
 // Main demo style scss
 @import "@metronic/assets/keenicons/duotone/style.css";
 @import "@metronic/assets/keenicons/outline/style.css";
 @import "@metronic/assets/keenicons/solid/style.css";
-@import "@metronic/assets/sass/element-ui.dark";
 @import "@metronic/assets/sass/plugins";
 @import "@metronic/assets/sass/style";
 

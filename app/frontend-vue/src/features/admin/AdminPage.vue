@@ -102,6 +102,32 @@
 
       <section v-if="activeTab === 'ai'" class="card post">
         <div class="card-body">
+          <!--begin::저널 임베딩 ON/OFF 토글-->
+          <div class="admin-tool-row mb-5">
+            <div>
+              <div class="fw-bold">{{ t('admin.page.journal-embedding.title') }}</div>
+              <div class="text-muted fs-8">{{ t('admin.page.journal-embedding.desc') }}</div>
+            </div>
+            <div class="admin-tool-actions">
+              <label class="form-check form-switch">
+                <input
+                  v-model="store.journalSettingEmbeddingEnabled"
+                  class="form-check-input"
+                  type="checkbox"
+                  :disabled="store.journalSettingLoading || store.journalSettingSaving"
+                  @change="saveJournalEmbeddingSetting"
+                />
+                <span class="form-check-label">{{ store.journalSettingEmbeddingEnabled ? 'ON' : 'OFF' }}</span>
+              </label>
+            </div>
+          </div>
+          <div v-if="store.journalSettingError" class="alert alert-warning py-2 mb-4">
+            {{ store.journalSettingError }}
+          </div>
+          <!--end::저널 임베딩 ON/OFF 토글-->
+
+          <div class="separator my-5"></div>
+
           <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
             <div>
               <h3 class="admin-section-title mb-1">AI Embedding Backfill</h3>
@@ -715,6 +741,7 @@ async function reload() {
       store.fetchEntityQueueStats(),
       store.fetchOllamaHealth(),
       store.fetchChatRagSettings(),
+      store.fetchJournalSetting(),
     ]);
     return;
   }
@@ -802,6 +829,15 @@ async function saveRagSettings() {
     await swalAlert(msg);
   } catch (error) {
     await swalAlert(error instanceof Error ? error.message : t("admin.page.rag.save.failure"));
+  }
+}
+
+async function saveJournalEmbeddingSetting() {
+  try {
+    await store.saveJournalSetting();
+  } catch {
+    // 실패 시 토글을 원래 값으로 복원
+    store.journalSettingEmbeddingEnabled = !store.journalSettingEmbeddingEnabled;
   }
 }
 

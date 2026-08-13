@@ -28,6 +28,8 @@ export const useUserSignupStore = defineStore("userSignup", () => {
   /** 최근 신청 목록 */
   const recentList = ref<SignupRequestRow[]>([]);
   const loading = ref(false);
+  /** 승인관리 목록 조회 실패 메시지 */
+  const listError = ref<string | null>(null);
   /** 신청 폼 제출 진행 상태 */
   const submitting = ref(false);
 
@@ -36,6 +38,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
    */
   async function fetchApprovalList(): Promise<void> {
     loading.value = true;
+    listError.value = null;
     try {
       const res = await axios.get("/api/user/signup-requests");
       const obj = res.data?.rsltObj as
@@ -45,6 +48,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
       recentList.value = obj?.recentList ?? [];
     } catch (e) {
       console.error("[userSignup] fetchApprovalList 실패", e);
+      listError.value = t("user.signup.approval.list.load.failure");
     } finally {
       loading.value = false;
     }
@@ -126,6 +130,7 @@ export const useUserSignupStore = defineStore("userSignup", () => {
     pendingList,
     recentList,
     loading,
+    listError,
     submitting,
     fetchApprovalList,
     approve,

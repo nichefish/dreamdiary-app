@@ -11,7 +11,7 @@ export async function assertAuthenticatedBeforePopup(
   route: RouteLocationNormalizedLoaded
 ): Promise<boolean> {
   const authStore = useAuthStore();
-  await authStore.verifyAuth();
+  await authStore.verifyAuth({ force: true });
   if (authStore.isAuthenticated) return true;
 
   console.warn("[auth] popup open blocked because session is expired", {

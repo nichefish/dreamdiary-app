@@ -12,12 +12,12 @@ import java.util.Map;
 /**
  * BaseCrudSpec
  * <pre>
- *  (공통/상속) AUDIT 요소에 대한 검색인자 세팅 Specification 인터페이스.
+ *  (공통/상속) AUDIT 요소에 대한 검색인자 세팅 Specification 추상 클래스.
  * </pre>
  *
  * @author nichefish
  */
-public interface BaseAuditSpec<Entity extends BaseCrudEntity>
+public abstract class BaseAuditSpec<Entity extends BaseCrudEntity>
         extends BaseCrudSpec<Entity> {
 
     /**
@@ -29,7 +29,7 @@ public interface BaseAuditSpec<Entity extends BaseCrudEntity>
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
      */
-    default List<Predicate> getBasePredicate(
+    public List<Predicate> getBasePredicate(
             final Map<String, Object> searchParamMap,
             final Root<Entity> root,
             final CriteriaQuery<?> query,
@@ -58,7 +58,14 @@ public interface BaseAuditSpec<Entity extends BaseCrudEntity>
         return predicate;
     }
 
-    default String resolveCreatedBy(final Map<String, Object> searchParamMap) {
+    /**
+     * 검색 파라미터에서 필수 값 {@code createdBy} 를 추출한다.
+     *
+     * @param searchParamMap 검색 파라미터 맵
+     * @return {@link String} -- 공백이 아닌 createdBy 값
+     * @throws IllegalArgumentException createdBy 가 없거나 공백인 경우
+     */
+    public String resolveCreatedBy(final Map<String, Object> searchParamMap) {
         final Object createdBy = searchParamMap.get("createdBy");
         if (createdBy != null) {
             final String createdByStr = createdBy.toString();

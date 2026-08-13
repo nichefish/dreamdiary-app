@@ -22,23 +22,24 @@
 | 꿈 복사 버튼 | `JournalDayCard.vue` — `copyDreams()`, 날짜(요일) 헤더 + 꿈 엔트리 전체 클립보드 복사 | ✓ |
 | 엔트리 복사 버튼 | `JournalEntryItem.vue` — `copyEntry()`, 날짜(요일)·본문 텍스트 클립보드 복사 (레거시 동일 포맷) | ✓ |
 | 헤더 검색 드롭다운 | `Search.vue` — 일기/꿈 유형 선택 + debounce 검색 + 결과 링크 (`journal-entry-search`) | ✓ |
-| 메타 VIEW · 메타 컨텍스트 메뉴 | `metaContextMenu.ts` + `JournalMetaContextMenu.vue` — 헤더 `#메타` 클릭 시 팝업(태그 메뉴와 동일 UI); 현재 locale 메뉴로 「검색」→ `openDayFilterModal`(`JournalDayMetaModal`), 「그래프로 보기」→ `addMetaToGraph`(최대 2·이미 있으면 비활성, 제한 경고도 현재 locale), 「메타 설정」→ `openMetaProfile`(`JournalMetaProfileModal`, `GET /api/journal/day/metas/{id}`) | ✓코드 |
+| 메타 VIEW · 메타 컨텍스트 메뉴 | `metaContextMenu.ts` + `JournalMetaContextMenu.vue` — 헤더 `#메타` 클릭 시 팝업(태그 메뉴와 동일 UI); 현재 locale 메뉴로 「그래프로 보기」→ `addMetaToGraph`(최대 2·이미 있으면 비활성, 제한 경고도 현재 locale), 「검색」→ `openDayFilterModal`(`JournalDayMetaModal`), 「메타 설정」→ `openMetaProfile`(`JournalMetaProfileModal`, `GET /api/journal/day/metas/{id}`) | ✓코드 |
 | 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
 | Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
 | 챕터 말머리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY`(일기 챕터) 개인 Prefix 체크박스, `store.chapterPrefixIds` → `fetchDays` | ✓ |
 | 일기/꿈 라이프사이클 필터 | `JournalAside.vue` — `store.diaryLifecycleKey` / `store.dreamLifecycleKey` → `fetchDays` 후 일기/꿈 각각 후처리 필터 | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 요일 버튼 7개, 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
-| 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ⚠ |
+| 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ✓ |
+| 일간 날짜 네비게이션 | 탭(`journal-daily-tab`)은 aside의 `JournalAsideMiniCalendar.vue`만 사용하며 중복 본문 네비게이션 행을 표시하지 않는다. 팝업(`journal-daily`)은 aside가 없으므로 본문 이전/날짜/다음 행을 유지한다. 두 경로 모두 날짜 선택 시 `router.replace({ query: { stdrdDt } })`로 이동한다. 미니 달력은 토/일·공휴일을 빨간색으로 표시하고 공휴일은 `GET /api/schedule/holidays`로 조회한다. | ✓ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
 | 툴바 floating·aside 열기 | `JournalDayViewToolbar` 전체와 열린 저널 일자 aside의 상단선이 고정 앱 헤더 아래에서 sticky로 일치하고, 툴바는 별도 그림자 없이 하단 경계만 사용. aside 숨김 시 우측 끝 버튼이 `asideStore.show()` 호출. 모바일은 본문 우상단 전용 버튼 유지 | ✓ |
 | 어사이드 목록 키워드 필터 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` → `fetchDays()` (목록 축소) | ✓ — 툴바 `openSearchTab` 전체검색과 분리 (`vue-screen-overview.md` 필터·검색 정책) |
-| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView. 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback. 신규 엔트리 등록 후에는 완료 자동 접힘·서버 COLLAPSED 여부와 무관하게 대상 챕터를 현재 화면에서 일회성으로 펼치며, 수정 저장에는 적용하지 않고 서버 접힘 상태도 변경하지 않는다. | ✓ |
-| 상태/라이프사이클 변경 후 갱신 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalEntryHostForRoute`가 `detailOpen`을 전경 판단 기준으로 사용한다. 스레드 상세가 열려 있으면 상세·집계 태그·소속 엔트리를 다시 조회하고, 배경이 주간/월간/일간이면 `refreshJournalDaysForRoute`도 실행하되 배경 스크롤은 하지 않는다. 배경이 검색 팝업(`journal-entry-search`)이면 등록된 `loadEntries`로 로컬 결과(스레드 칩 포함)를 함께 재조회한다. 상세가 닫힌 주간/월간/일간 route는 기존 목록 갱신 → `#journal-day-{stdrdDt}` scrollIntoView를 유지한다. **일간(`journal-daily`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
+| 등록/수정 후 확인·스크롤 | 일자/챕터/엔트리 등 submit 성공 → 성공 알림 OK 이후 저장 위치 scrollIntoView(일간 일자 저장은 sticky 툴바·날짜 네비 유지를 위해 스크롤 생략·`stdrdDt` query 동기화). 엔트리는 성공 알림 전 목록/상세 DOM을 먼저 준비하고, OK 이후에는 스크롤만 수행한다. 월간/주간 화면은 재조회 중 기존 목록 DOM을 유지한다. 챕터는 저장된 챕터 DOM(`#journal-chapter-{id}`)을 우선 탐색하고 없으면 일자 카드로 fallback. 신규 엔트리 등록 후에는 완료 자동 접힘·서버 COLLAPSED 여부와 무관하게 대상 챕터를 현재 화면에서 일회성으로 펼치며, 신규 Reflection 등록은 같은 저장 응답의 Reflection ID에 `requestReflectionCreatedCollapse`로 일회성 로컬 접힘을 심어 챕터 펼침·부모 expand signal보다 우선한다, 수정 저장에는 적용하지 않고 서버 접힘 상태도 변경하지 않는다. | ✓ |
+| 상태/라이프사이클 변경 후 갱신 | 상태 토글·라이프사이클 설정 서버 반영 후 `refreshJournalEntryHostForRoute`가 `detailOpen`을 전경 판단 기준으로 사용한다. 스레드 상세가 열려 있으면 상세·집계 태그·소속 엔트리를 다시 조회하고, 배경이 주간/월간/일간(탭·팝업 모두)이면 `refreshJournalDaysForRoute`도 실행하되 배경 스크롤은 하지 않는다. 배경이 검색 팝업(`journal-entry-search`)이면 등록된 `loadEntries`로 로컬 결과(스레드 칩 포함)를 함께 재조회한다. 상세가 닫힌 주간/월간/일간 route는 기존 목록 갱신 → `#journal-day-{stdrdDt}` scrollIntoView를 유지한다. **일간(`journal-daily`/`journal-daily-tab`)** 은 `route.query.stdrdDt`(없으면 항목 `stdrdDt`)로 `viewType=DAILY`·`yy`/`mnth` 파생 조회 — 무파라미터 `fetchDays()`는 스토어 기본 월(오늘)로 재조회되어 날짜가 어긋남 | ✓ |
 | 챕터 일자 변경 | `JournalChapterRegistModal.vue` — 수정 모드+비DREAM 한정, 날짜 picker + 챕터 일자 변경 버튼, 현재 locale 확인창 사용, `POST /api/journal/chapter/{id}/move` 호출. 응답 `message`를 우선 표시하고 없으면 현재 locale fallback을 사용한 뒤 `fetchDays` + 신 일자 scrollIntoView | ✓ |
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 클라이언트 차단 경고는 현재 locale 카탈로그 사용, 수정/삭제/이동 API 거부 시 서버 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. Vue `allEntriesResolved` → 루트 `.is-all-resolved`(PENDING의 `.is-all-pending`과 동형). 접힘·펼침 초록 inset/배경은 이 클래스 기준으로 표시한다. 중요·참조 상태선은 하위 DOM `:has`로 조합한다. 접힘 바: 완료 1px 초록·중요 2px 빨강·참조 4px 노랑(엔트리 `$journal-paired-states` 와 동일). 단독 우선 중요>참조>완료; 중요+완료·중요+참조·삼중 조합 다중선. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | Reflection 전체 (( )) | `JournalReflectionItem` ⋯ 메뉴 「전체 (( ))」(`wrapEntireNoti`). 저장 원문 `content`의 각 `<p>`/`<li>`에 Markdown `((...))`를 멱등 적용하고, 변경 시에만 `POST /api/journal/reflection/{id}`(multipart)로 저장한 뒤 `refreshJournalEntryHostForRoute`로 갱신한다. 이미 적용된 본문·빈 본문은 API 없이 안내만 표시한다 | ✓ |
-| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러 | ✓ |
+| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러. 일간에서는 URL `stdrdDt` 하루를 태그 기간 축으로 사용하며 날짜 이동 시 일자·일기·꿈 태그클라우드를 함께 갱신한다. | ✓ |
 
 **일자 필터 모달 i18n**: 제목·결과 건수·연도/전체 연도·연월 구분선·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·모든 필터 제거 시 빈 결과·연도 변경 시 필터 유지 계약을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 
@@ -224,6 +225,17 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 > 다만 `id="yy"`, `id="mnth"` 가 없어 레거시 jQuery 코드와 호환이 안 된다.
 > 완전 수렴 후 레거시 jQuery는 제거 대상이므로 id 호환보다 Vue 방식 유지가 맞다.
 
+**DAILY viewType 미니 달력**:
+- `store.viewType === 'DAILY'` 일 때 월 그리드(1~12월) 대신 `JournalAsideMiniCalendar` 컴포넌트를 렌더한다.
+- 요일 헤더(일~토) + 해당 월 날짜 셀을 7열 CSS grid로 표시한다.
+- 선택된 날짜(`route.query.stdrdDt`)는 `is-selected`(파란 배경), 오늘은 `is-today`(파란 테두리)로 구분한다.
+- 토요일·일요일은 `is-weekend`(빨간색 텍스트)로 표시한다. 요일 헤더의 일/토도 동일.
+- 공휴일은 `is-holiday`(빨간색 텍스트)로 표시한다. `GET /api/schedule/holidays?yy=&mnth=` 로 해당 월의 공휴일 날짜 목록을 조회하며, `store.yy`/`store.mnth` 변경 시 재조회한다. 서버는 캐시된 전체 공휴일 엔티티에서 year/month 필터링하여 반환한다.
+- 선택된 날짜가 주말·공휴일이어도 `is-selected` 흰색 텍스트가 우선한다.
+- 날짜 클릭 → `router.replace({ query: { stdrdDt: 'YYYY-MM-DD' } })` → `JournalDayDaily`의 `stdrdDt` watch가 재조회.
+- 월 이동 chevron은 aside `store.yy`/`store.mnth`만 변경하고, `fetchDays`를 호출하지 않는다(달력 표시 월만 전환).
+- TODAY 버튼은 오늘 날짜로 `store.yy`/`mnth` + `router.replace({ query: { stdrdDt } })`를 함께 수행한다.
+
 ---
 
 ### 키워드 검색 / 필터 (Keyword Search & Filter)
@@ -254,7 +266,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 2. 모달 닫기
 3. 성공 알림 표시
 4. 사용자가 OK를 누른 뒤 `refreshCurrentDayView(savedDate)` 호출
-5. `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
+5. **일간(`journal-daily` / `journal-daily-tab`)**: sticky 뷰 툴바 아래로 날짜 네비(이전/날짜/다음)가 스크롤되어 사라지지 않도록 `scrollIntoView`를 호출하지 않는다. `savedDate`가 `route.query.stdrdDt`와 다르면 `router.replace({ query: { stdrdDt: savedDate } })`로 URL을 맞추고 `JournalDayDaily`의 `stdrdDt` watch가 재조회한다. 같으면 `refreshJournalDaysForRoute`만 호출한다.
+6. **주간/월간 등**: `fetchDays()` 완료(`.then`) → `nextTick` → `document.getElementById('journal-day-{savedDate}')` → `scrollIntoView({ behavior: "smooth", block: "start" })`
 
 **카드 id SSOT**: `JournalDayCard.vue` `:id="'journal-day-' + day.stdrdDt"`
 
@@ -288,12 +301,12 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 **트리거**: 챕터 신규 등록 (`JournalChapterService.preRegist` — 수동 등록 및 `JournalDayBootstrapService` 자동 등록 공통)
 
 **동작**:
-1. 새 챕터의 `sortOrder` 는 같은 일자의 마지막 순번+1로 계산한다. 이 계산에는 DREAM 챕터도 포함된다.
+1. 새 일반 챕터의 `sortOrder` 는 같은 일자의 기존 일반 챕터만 대상으로 마지막 순번+1을 계산한다. 시스템 요약·DREAM은 순번 밖(`sortOrder=0`)이며 일반 챕터만 1..N 순번을 사용한다.
 2. 시스템 요약 역할 판정은 **"기존 non-DREAM 챕터가 없는가"** 기준이다. DREAM 은 항상 마지막에 배치되는 개념 챕터이므로 판정에서 제외한다.
 3. 첫 non-DREAM 챕터는 제출된 `prefixId`·`summaryYn`과 무관하게 `summaryYn=Y`가 되고 Prefix 선택은 제거된다.
 4. 이후 일반 챕터는 `summaryYn=N`이며 사용자가 `summaryYn=Y`를 직접 제출할 수 없다. 시스템 요약은 사용자가 고르는 말머리 옵션이 아니다.
 5. 결과적으로 꿈 챕터가 먼저 있는 날에 첫 일기·노트 챕터를 등록해도 시스템 요약 역할이 정상 부여된다.
-6. 시스템 요약 자동 등록 뒤 빈 DIARY 생성 여부도 `summaryYn=Y`로 판정한다. DREAM이 먼저 존재해 등록 당시 순번이 2 이상이어도 빈 DIARY가 누락되지 않는다.
+6. 시스템 요약 자동 등록 뒤 빈 DIARY 생성 여부도 `summaryYn=Y`로 판정한다. DREAM이 먼저 존재해도 첫 non-DREAM 챕터는 `summaryYn=Y`·`sortOrder=0`으로 등록되어 빈 DIARY가 누락되지 않는다.
 
 시스템 요약 의미의 SSOT는 `summaryYn`이며 정렬 순번과 사용자 Prefix 선택에서 분리된다. 같은 일자 `normalizeSortOrder`·조회 Spec은 **시스템 요약 맨 앞 → 일반 → DREAM 맨 뒤**다. 일반 챕터 수정 화면의 `#`(=`sortOrder`)는 정규화 후 요약 다음 구간에 반영된다 — 요약이 있는 날 `#1`로 저장하면 요약 바로 다음(전체 순번 2)이 된다. 일반 챕터의 사용자 말머리는 챕터 유형별 PERSONAL Scope와 `prefix_content` 연결을 사용한다.
 
@@ -373,9 +386,9 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **메뉴 구조**:
 - 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간·캘린더·메타 등 전용; route `journal-weekly` 에서는 `v-if` 로 메뉴 미표시)
-- 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
+- 새 창으로 열기 (일자 뷰) → `window.open(BASE_URL + /journal/daily-popup?stdrdDt=..., "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 새 창 강제
 - JournalDayDaily.vue 로드·route.query.stdrdDt watch: buildDailyFetchParams(stdrdDt) → fetchDays({ viewType: DAILY, stdrdDt, yy, mnth }) (@/utils/journalDayRefresh.ts)
-- 일간 팝업(journal-daily)에서 저장·삭제·상태 변경·이력 복원 후 목록 갱신: refreshJournalDaysForRoute(store, route, fallbackStdrdDt?) — 주간/월간과 동일하게 route name 분기, 일간은 URL·fallback 기준일 유지
+- 일간 팝업(`journal-daily`)과 일간 탭(`journal-daily-tab`)에서 저장·삭제·상태 변경·이력 복원 후 목록 갱신: refreshJournalDaysForRoute(store, route, fallbackStdrdDt?) — 주간/월간과 동일하게 route name 분기, 일간은 URL·fallback 기준일 유지
 - 날짜 이동(이전/다음)은 로컬 Date 생성자로 파싱 — `new Date(stdrdDt)`는 UTC로 파싱되어 Korea(UTC+9) 환경에서 날짜가 1일 밀리는 버그 발생
 - 중앙 날짜 표시: `<input type=date>` 클릭 시 브라우저 달력 피커 오픈, 선택 날짜로 `router.replace`하여 이동
 - 이전/다음 버튼·날짜 선택 tooltip·빈 상태와 목록 조회 실패 fallback은 현재 locale 카탈로그를 사용한다. locale 변경은 `stdrdDt` query와 일간 조회 조건을 변경하지 않는다.
@@ -425,7 +438,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
   - 구분선
   - 삭제 → `DELETE /api/journal/entry/{id}` → 성공 알림 OK 이후 현재 route 기준 목록 재조회 + `#journal-day-{stdrdDt}` 스크롤
 
-**상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤. 라이프사이클의 `OPEN`은 기본 상태라 `lifecycle` row와 보조 캐시 맵 항목을 제거하고, `PENDING`·`RESOLVED`만 명시적으로 저장한다. 조회 DTO와 필터는 row/맵 항목 부재를 `OPEN`으로 해석한다.
+**상태/라이프사이클 변경 후**: `fetchDays().then(() => nextTick(() => scrollIntoView(#journal-day-{stdrdDt})))` — 목록 갱신 + 해당 일자로 스크롤. 라이프사이클의 `OPEN`은 기본 상태라 `lifecycle` row와 보조 캐시 맵 항목을 제거하고, `PENDING`·`RESOLVED`만 명시적으로 저장한다. 조회 DTO와 필터는 row/맵 항목 부재를 `OPEN`으로 해석한다. 일기·꿈·Reflection의 월간/주간 보조 맵은 Ehcache namespace에 등록되며, 일기·꿈 lifecycle 변경은 실제 연간 엔트리 목록 캐시 `journalEntryYyAnnualStatedListByUser`를 무효화한다.
 
 **상태·라이프사이클 소유권 계약**: `POST /api/states`와 `PUT /api/lifecycles`는 저장 전에 요청 `contentType + id`의 원본 저널 콘텐츠가 존재하고 현재 로그인 사용자가 작성자인지 검증한다. 일자·챕터는 각 원본 행, 일기·노트·꿈은 원본 엔트리, 해석은 해석 원본, 스레드는 스레드 원본의 `created_by`를 사용한다. 요청 콘텐츠 타입과 실제 엔트리의 챕터 유형도 일치해야 한다. 원본이 없거나 다른 사용자 소유이면 대상 존재 여부를 구분해 노출하지 않고 403 권한 오류로 거부하며 state/lifecycle 행과 캐시를 변경하지 않는다. `MNGR` 역할도 다른 사용자의 개인 저널을 대신 변경하지 않는다.
 
@@ -445,11 +458,11 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **검색 팝업의 엔트리 액션**: `JournalEntrySearchPage.vue`는 `JournalEntryRegistModal`을 직접 마운트하고, 모달의 `prepare-success` 이벤트에서 현재 검색 목록 또는 수정 대상 article DOM을 성공 알림 전에 준비한다. 모달의 `success` 이벤트는 성공 알림 OK 이후 저장한 엔트리 article 스크롤만 담당한다. 삭제는 `DELETE /api/journal/entry/{id}` 후 검색 목록에서 해당 항목을 제거한다. 검색 결과 내부의 리플렉션 수정 액션은 `JournalReflectionRegistModal`을 같은 페이지에 직접 마운트해 열며, 수정 모드는 `GET /api/journal/reflection/{id}` 상세 조회가 성공한 뒤 제목/본문을 채운 폼을 표시한다. 리플렉션 제목은 선택값이므로 제목이 비어 있어도 저장 확인 후 등록/수정을 진행한다. 저장 후 `refreshJournalEntryHostForRoute` / 검색 호스트 재조회로 목록을 갱신한다.
 
-**Reflection 등록**: Reflection 은 대상 필수(About-A)라 대상 엔트리(`JournalEntryItem`) ⋯ 메뉴의 「해석 등록」에서만 등록한다 → `openReflectionRegist({ refId, refContentType, journalDayId, journalChapterId, stdrdDt })`. 챕터 헤더의 독립(대상 없는) 등록 진입점은 없다(Standalone 폐기). 저장은 전용 API `POST /api/journal/reflections` 로 `refId`/`refContentType` 을 싣고, 성공 후 호스트 재조회는 엔트리 신규와 같다.
+**Reflection 등록**: Reflection 은 대상 필수(About-A)라 대상 엔트리(`JournalEntryItem`) ⋯ 메뉴의 「해석 등록」에서만 등록한다 → `openReflectionRegist({ refId, refContentType, journalDayId, journalChapterId, stdrdDt })`. 챕터 헤더의 독립(대상 없는) 등록 진입점은 없다(Standalone 폐기). 저장은 전용 API `POST /api/journal/reflections` 로 `refId`/`refContentType` 을 싣고, 성공 응답의 `rsltMap.targetReflectionList`/`rsltMap.targetLifecycleKey`로 dayList 내 target entry의 reflectionList·lifecycle을 in-place 교체한다(fetchDays 전체 재호출 없음). enrichment 응답이 없으면 fallback으로 호스트 재조회(`refreshJournalEntryHostForRoute`)를 수행한다.
 
-**Reflection 태그**: Reflection 은 태그를 두지 않는다(모달에 태그 UI 없음, 서버 쓰기 DTO 에 tag 필드 없음). 저장 `content_type`/`ref_content_type`은 `JOURNAL_REFLECTION`이다. 결산·엔트리 태그클라우드·챕터 접힘 요약의 DIARY 집계는 `JOURNAL_DIARY`와 `JOURNAL_REFLECTION`을 합친다(과거 reflection 태그 잔재 집계 축은 유지하되 신규 reflection 태그는 없다). 원문 뷰(`JournalEntryViewModal`)의 「수정」은 `JournalReflectionRegistModal`로 열어 태그 입력을 포함하며, 일기용 `JournalEntryRegistModal`로 보내지 않는다. 백엔드 `JournalCacheEvictWorker`는 `JOURNAL_REFLECTION`을 `JournalEntryCacheEvictor`에 매핑해 저장 후 일자·챕터·태그 캐시를 무효화한다. 엔트리 삭제 후처리의 관련글 정리(`RelatedContentService.deleteAllByRef(key, createdBy)`)는 관련글 지원 타입(일기·꿈)만 수행하고, Reflection 등 미지원 타입은 no-op 한다. 스레드 소속: 일기·꿈·노트를 target으로 둔 Reflection은 UI·`JournalThreadEntryService.regist` 모두 추가를 거절한다. 정본 `docs/spec/REFLECTION_ONE_TYPE.md` §4. 라이프사이클·상태: Reflection은 OPEN/PENDING/RESOLVED와 COLLAPSED/IMPRTC/REFRNC를 허용한다(§5). Reflection은 대상 엔트리 아래 임베드로만 표시되며 접힘/펼침 토글과 일자 aside 기본 접힘 모드를 따른다. primary(일기·꿈·노트) `RESOLVED` 시 딸린 Reflection도 `RESOLVED`로 맞추고, `RESOLVED` primary에 Reflection 신규 등록 시 primary를 `OPEN`(+`COLLAPSED` 해제)으로 재개한다(§5.1).
+**Reflection 태그**: Reflection 은 태그를 두지 않는다(모달에 태그 UI 없음, 서버 쓰기 DTO 에 tag 필드 없음). 저장 `content_type`은 `JOURNAL_REFLECTION`이고 `ref_content_type`은 대상 타입이다. 결산·엔트리 태그클라우드·챕터 접힘 요약의 DIARY 집계는 `JOURNAL_DIARY` 단일 축을 사용한다. 원문 뷰(`JournalEntryViewModal`)의 「수정」은 `JournalReflectionRegistModal`로 연다(태그 UI 없음). 일기용 `JournalEntryRegistModal`로 보내지 않는다. 백엔드 `JournalCacheEvictWorker`는 Reflection 저장 후 대상 일자·챕터·라이프사이클 캐시를 무효화하며 태그 캐시는 유지한다. 엔트리 삭제 후처리의 관련글 정리(`RelatedContentService.deleteAllByRef(key, createdBy)`)는 관련글 지원 타입(일기·꿈)만 수행하고, Reflection 등 미지원 타입은 no-op 한다. Reflection 은 스레드 소속 대상이 아니다. 라이프사이클·상태: Reflection은 OPEN/PENDING/RESOLVED와 COLLAPSED/IMPRTC/REFRNC를 허용한다. Reflection은 대상 엔트리 아래 임베드로만 표시되며 접힘/펼침 토글과 일자 aside 기본 접힘 모드를 따른다. primary(일기·꿈·노트) `RESOLVED` 시 딸린 Reflection도 `RESOLVED`로 맞추고, `RESOLVED` primary에 Reflection 신규 등록 시 primary를 `OPEN`(+`COLLAPSED` 해제)으로 재개한다.
 
-**임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. ⋯에서 수정·이력·관련글·라이프사이클·중요/참조·삭제. Reflection→Reflection 중첩 등록 메뉴는 숨긴다(형제·독립이 기본, `REFLECTION_ONE_TYPE.md` §3.1). 일기·꿈·노트를 target으로 둔 Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
+**임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. ⋯에서 수정·이력·관련글·라이프사이클·중요/참조·삭제. Reflection→Reflection 중첩 등록 메뉴는 숨기고, 신규 등록은 primary 엔트리의 「해석 등록」 경로를 사용한다. Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
 
 **Reflection 등록 기본 라이프사이클**: 등록 시 서버(`postRegist`)가 즉시 lifecycle을 `PENDING`으로 설정한다. 프론트에서 PENDING은 자동 접힘이므로 리플렉션은 기본 접힌 상태로 시작한다. 사용자가 수동으로 OPEN 또는 RESOLVED로 변경할 수 있다.
 
@@ -603,7 +616,7 @@ async function copyChapter(): Promise<void> {
 
 **검색 API**: `GET /api/journal/entries?type=DIARY|DREAM&sort=asc|desc&searchKeywords=...&tagIds=...`
 - 응답: `AjaxResponse.rsltList`
-- `type=DIARY`: 결과 행 = 일기(Primary)만. Reflection 은 별도 Aggregate(journal_reflection)이고 대상 필수(About-A, Standalone 폐기)라 검색 결과 행이 되지 않는다. 대상 일기를 가리키는 Reflection 본문에 키워드가 있으면 대상 일기가 매칭된다(원문·해석 한 몸, `JournalEntrySpec#targetReflectionKeywordSubquery` 가 journal_reflection 을 EXISTS 로 조회). 태그·state 검색 스코프는 요청 타입 단독이며(`JournalEntryTagAxis.searchScopeKeys`) Reflection 태그·state 는 대상을 매칭시키지 않는다. 태그 클릭 팝업도 동일(`type=DIARY`). 태그 클라우드·결산·챕터 요약의 DIARY∪REFLECTION 집계(`JournalEntryTagAxis.expandKeys`)는 검색과 별개다.
+- `type=DIARY`: 결과 행 = 일기(Primary)만. Reflection 은 별도 Aggregate(journal_reflection)이고 대상 필수(About-A)라 검색 결과 행이 되지 않는다. 대상 일기를 가리키는 Reflection 본문에 키워드가 있으면 대상 일기가 매칭된다(원문·해석 한 몸, `JournalEntrySpec#targetReflectionKeywordSubquery` 가 journal_reflection 을 EXISTS 로 조회). 태그·state 검색과 태그 클릭 팝업은 `JOURNAL_DIARY` 단일 축을 사용한다. 태그클라우드·결산·챕터 요약도 동일한 DIARY 단일 태그 축을 사용한다.
 
 **결과 클릭**: `RouterLink :to="{ name: 'journal-entry-search', query: { type, searchKeywords } }"`
 - 검색 팝업에서 직접 수정/삭제하지 않고 검색 페이지(`JournalEntrySearchPage`)로 이동
@@ -698,11 +711,11 @@ assistant 메시지는 서버가 저장한 평문 `content`(마크다운 기호 
 
 ### AI 챗 응답 스트리밍 (`AppChat.vue`, `chat.ts`)
 
-`ChatAIService` 본경로(LLM) 생성은 `OllamaClient.chatStream`으로 NDJSON을 읽으며 같은 `/topic/chat/session/{id}`에 `rsltObj.type=DELTA` (`delta` 청크)를 브로드캐스트한다. 클라이언트는 `streamingContent`에 누적해 임시 assistant 버블(평문)로 보이고, 메시지 목록에는 넣지 않는다. 완성 ASSISTANT 메시지·취소·세션 전환 시 `streamingContent`를 비운다. hybrid/retry·language-guard 재시도는 비스트림이며 DELTA를 보내지 않는다. 스트림 중 버블은 마크다운 HTML이 아니라 평문이며, 완성 메시지만 `markdownContent` `v-html`을 쓰는다.
+`ChatOrchestrator` 본경로(LLM) 생성은 `OllamaClient.chatStream`으로 NDJSON을 읽으며 같은 `/topic/chat/session/{id}`에 `rsltObj.type=DELTA` (`delta` 청크)를 브로드캐스트한다. 클라이언트는 `streamingContent`에 누적해 임시 assistant 버블(평문)로 보이고, 메시지 목록에는 넣지 않는다. 완성 ASSISTANT 메시지·취소·세션 전환 시 `streamingContent`를 비운다. hybrid/retry·language-guard 재시도는 비스트림이며 DELTA를 보내지 않는다. 스트림 중 버블은 마크다운 HTML이 아니라 평문이며, 완성 메시지만 `markdownContent` `v-html`을 쓰는다.
 
 ### AI 챗 응답 대기 단계 (`AppChat.vue`, `chat.ts`)
 
-`ChatAIService.processChat`은 USER 메시지 broadcast 이후 같은 `/topic/chat/session/{id}`로 `rsltObj.type=PROGRESS` 이벤트를 보낸다 (`phase=SEARCHING` → RAG, `phase=GENERATING` → LLM/하이브리드). 클라이언트는 메시지 목록에 넣지 않고 `responsePhase`만 갱신하며, typing 인디케이터 옆에 `chat.waiting.searching` / `chat.waiting.generating`을 표시한다. ASSISTANT 메시지 수신·취소·세션 전환·연결 오류 시 phase를 비운다.
+`ChatOrchestrator.processChat`은 USER 메시지 broadcast 이후 같은 `/topic/chat/session/{id}`로 `rsltObj.type=PROGRESS` 이벤트를 보낸다 (`phase=SEARCHING` → RAG, `phase=GENERATING` → LLM/하이브리드). 클라이언트는 메시지 목록에 넣지 않고 `responsePhase`만 갱신하며, typing 인디케이터 옆에 `chat.waiting.searching` / `chat.waiting.generating`을 표시한다. ASSISTANT 메시지 수신·취소·세션 전환·연결 오류 시 phase를 비운다.
 
 ### AI 챗 RAG 근거 → 원문 열기 (`AppChat.vue`)
 
@@ -747,7 +760,7 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 **저널 스레드 상세 lifecycle 표시·접힘 정책**: 소속 엔트리는 `JournalThreadEntryService.getEntriesByThread`가 `JournalEntryStateEnricher.enrichLifecycleMixed`로 lifecycle을 병합해 내려준다. 완료(`RESOLVED`) 엔트리의 `#순번`은 저널 일자와 같은 초록(꿈은 보라), 보류(`PENDING`) 엔트리는 같은 회색 상태 표현을 사용한다. 스레드 상세는 `JournalEntryItem`에 `disableLifecycleCollapse`를 넘겨 lifecycle 자동 접힘을 억제하고 본문을 펼친 상태로 표시한다. 수동 접기와 서버 `COLLAPSED`는 유지하며 state는 병합하지 않는다.
 
-**저널 스레드 목록 검색 카드**: 화면 진입 시 목록과 함께 콘텐츠 타입별 공통 캐시의 `GET /api/my/prefixes/options` 말머리 선택지를 조회한다. 내 설정 변경으로 `JOURNAL_THREAD`가 무효화된 상태면 이전 선택지를 재사용하지 않고 최신 목록을 받는다. 말머리·제목 검색과 초기화는 모두 `fetchList(0)`으로 첫 페이지부터 조회한다. 제목은 `searchType=title`·`searchKeyword`, 말머리는 단일 `prefixId`를 전송한다. 등록·수정·삭제 성공 후 목록을 갱신하고, 보조 데이터 조회 실패는 빈 상태로 가장하지 않고 오류 로그와 현재 locale 안내를 표시한다. 등록은 `JournalThreadViewToolbar`에 두며 ASIDE는 없다. 목록 행에는 Prefix 배지 하나, 소속 엔트리 태그 합집합(`thread.tag.list`), 활성 소속 수와 기간을 표시한다. 이 값들은 `JournalThreadService.getPageDto` enrich 가 소속 집계 쿼리로 채우며 엔트리 풀 DTO 로드는 하지 않는다. 멀티 태그 필터는 기존 `tagIds` AND 계약을 유지한다.
+**저널 스레드 목록 검색 카드**: 화면 진입 시 목록과 함께 콘텐츠 타입별 공통 캐시의 `GET /api/my/prefixes/options` 말머리 선택지를 조회한다. 내 설정 변경으로 `JOURNAL_THREAD`가 무효화된 상태면 이전 선택지를 재사용하지 않고 최신 목록을 받는다. 말머리·제목 검색과 초기화는 모두 `fetchList(0)`으로 첫 페이지부터 조회한다. 제목은 `searchType=title`·`searchKeyword`, 말머리는 단일 `prefixId`를 전송한다. 등록·수정·삭제 성공 후 목록을 갱신하고, 보조 데이터 조회 실패는 빈 상태로 가장하지 않고 오류 로그와 현재 locale 안내를 표시한다. 목록 API(`GET /api/journal/threads`) 실패는 `journal.thread.list.load.failure`를 테이블에 표시하며 `journal.thread.empty`(정상 0건)와 구분한다. 등록은 `JournalThreadViewToolbar`에 두며 ASIDE는 없다. 목록 행에는 Prefix 배지 하나, 소속 엔트리 태그 합집합(`thread.tag.list`), 활성 소속 수와 기간을 표시한다. 이 값들은 `JournalThreadService.getPageDto` enrich 가 소속 집계 쿼리로 채우며 엔트리 풀 DTO 로드는 하지 않는다. 멀티 태그 필터는 기존 `tagIds` AND 계약을 유지한다.
 
 **저널 스레드 목록 행 액션**: 관리 열은 수정·삭제 개별 버튼 대신 ⋯ 컨텍스트 메뉴를 제공한다. 수정은 기존 수정 route로 이동하고 삭제는 기존 확인·삭제 store 액션을 유지한다. **변경 후**: 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu`(+목록 렌더 후 `reinitMetronicAfterDom`)를 쓴다. KTMenu 는 `document.body` 위임 클릭으로 열리므로 트리거에 `@click.stop`을 두면 메뉴가 열리지 않는다 — 행 상세 이동은 `isMetronicMenuEventTarget` 가드로 막는다. Bootstrap `strategy:fixed` 땜빵은 제거했다.
 
@@ -763,3 +776,15 @@ if (confirmed && !isAuthPopupRoute(route.name)) {
   await router.push(buildSessionExpiredSignInRoute(route.fullPath));
 }
 ```
+
+
+---
+
+### 저널 설정 (Journal Setting)
+
+**API**: `GET /api/journal/settings` — 전역 저널 설정 조회, `PUT /api/journal/settings` — 전역 저널 설정 갱신 (MNGR 권한).
+
+**설정 항목**:
+- `embeddingEnabled` (Boolean) — AI 임베딩 활성화 여부. ON이면 엔트리 등록/수정 시 embedding queue + entity queue에 적재, OFF면 건너뜀.
+
+**동작**: `JournalEntryService.postRegist`/`postModify`에서 `JournalSettingService.isEmbeddingEnabled()` 확인 후 queue 적재를 조건부 실행. Reflection은 임베딩 대상이 아니라 적용되지 않음. 설정 변경은 즉시 반영(재시작 불필요). 기본값 ON.

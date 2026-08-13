@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.controller;
 
-import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.ai.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingStatsDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncJobStatusDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQualityEvalService;

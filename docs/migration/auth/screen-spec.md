@@ -30,7 +30,7 @@
 **기능**:
 - ID/PW 폼 로그인 → `POST /api/auth/login`
 - POST /api/auth/login internal server errors return HTTP 500 with a login-scoped error message and must not be classified as login-required/session-expired.
-- Vue auth verification treats only HTTP 401 from `/api/auth/get-auth-account` as unauthenticated/session-expired; HTTP 403, HTTP 500, and network failures surface as auth verification/runtime errors and must not purge auth state as a login-required diagnosis.
+- Vue auth verification treats only HTTP 401 from `/api/auth/get-auth-account` as unauthenticated/session-expired; HTTP 403, HTTP 500, and network failures surface as auth verification/runtime errors and must not purge auth state as a login-required diagnosis. 정상 인증 결과는 새로고침 시 초기화되는 메모리에 15초간 신선한 상태로 보존하고, 같은 구간의 라우트 이동은 서버 조회를 생략한다. 로그인·프로필 변경·팝업 사전 확인은 `force` 검증을 사용한다.
 - Google OAuth2 소셜 로그인 → `/oauth2/authorization/google` (팝업)
 - Naver OAuth2 소셜 로그인 → `/oauth2/authorization/naver` (팝업)
 - 로그인 실패 메시지 표시
@@ -39,7 +39,7 @@
 - 로그인 실패 응답이 `isCredentialExpired` 또는 `needsPasswordReset`이면 로그인 비밀번호 변경 모달 오픈
 - 로그인 비밀번호 변경 모달 저장 → `POST /api/auth/login-pw-chg`
 - 로그인 비밀번호 변경은 `auth_policy.password_history_count` 기준으로 현재 비밀번호와 최근 이력 재사용을 막는다. 정책값 기본은 `2`이며, `0`이면 재사용 검사를 수행하지 않는다.
-- 로그인 성공 → `/journal/weekly` 리다이렉트
+- 별도 `redirect`가 없는 로그인 성공 → `/journal/daily` 일간 뷰로 이동
 
 ---
 

@@ -719,6 +719,6 @@ function openDailyView(stdrdDt: string | undefined): void {
   if (!stdrdDt) return;
   const w = Math.min(1600, window.screen.availWidth);
   const h = Math.min(1080, window.screen.availHeight);
-  window.open(joinAppBasePath(`/journal/daily?stdrdDt=${stdrdDt}`), "_blank", `width=${w},height=${h}`);
+  window.open(joinAppBasePath(`/journal/daily-popup?stdrdDt=${stdrdDt}`), "_blank", `width=${w},height=${h}`);
 }
 </script>

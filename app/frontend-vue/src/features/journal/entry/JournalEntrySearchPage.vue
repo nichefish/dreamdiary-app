@@ -186,7 +186,7 @@
       </button>
     </div>
     <div v-else-if="loading && entries.length === 0" class="text-muted fs-7 py-10">{{ t("journal.entry.search.loading") }}</div>
-    <div v-else-if="!loading && searchAttempted && entries.length === 0" class="text-muted fs-7 py-10">
+    <div v-else-if="!loading && !searchErrorMessage && searchAttempted && entries.length === 0" class="text-muted fs-7 py-10">
       <div class="mb-3">{{ t("common.search.rslt.empty") }}</div>
       <button type="button" class="btn btn-sm btn-light-primary" @click="openConditionEditor">
         {{ t("journal.entry.search.refine-condition") }}
@@ -423,6 +423,12 @@ async function loadEntries(): Promise<void> {
     });
 
     const res = await axios.get("/api/journal/entries", { params });
+    if (!res.data?.rslt) {
+      console.error("[JournalEntrySearchPage] entry search soft-fail", { message: res.data?.message });
+      searchErrorMessage.value = (res.data?.message as string | undefined)
+        ?? t("journal.entry.search.load.failure.keep-previous").replace("{0}", String(entries.value.length));
+      return;
+    }
     entries.value = res.data?.rsltList ?? [];
     conditionChangedMessage.value = "";
     hydrateTagNamesFromEntries(entries.value);
@@ -703,7 +709,7 @@ function openDailyView(stdrdDt: string | undefined): void {
   if (!stdrdDt) return;
   const w = Math.min(1600, window.screen.availWidth);
   const h = Math.min(1080, window.screen.availHeight);
-  window.open(joinAppBasePath(`/journal/daily?stdrdDt=${stdrdDt}`), "_blank", `width=${w},height=${h}`);
+  window.open(joinAppBasePath(`/journal/daily-popup?stdrdDt=${stdrdDt}`), "_blank", `width=${w},height=${h}`);
 }
 
 /**

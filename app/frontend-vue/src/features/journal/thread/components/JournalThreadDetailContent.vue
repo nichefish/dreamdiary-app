@@ -101,6 +101,7 @@
       <!--end::연관 스레드 추가 버튼-->
     </div>
     <div v-if="store.detailRelatedThreadsLoading" class="text-muted fs-7 px-5 py-2">{{ t("common.loading") }}</div>
+    <div v-else-if="store.detailRelatedError" class="text-danger fs-7 px-5 py-2">{{ store.detailRelatedError }}</div>
     <div v-else-if="store.detailRelatedThreads.length === 0" class="text-muted fs-7 px-5 py-2">{{ t("journal.thread.related.empty") }}</div>
     <div v-else class="d-flex flex-column gap-1 px-3">
       <div
@@ -141,6 +142,7 @@
       <span v-if="store.detailEntries.length > 0" class="badge badge-light-primary">{{ store.detailEntries.length }}</span>
     </div>
     <div v-if="store.detailEntriesLoading" class="text-muted fs-7 px-5 py-2">{{ t("common.loading") }}</div>
+    <div v-else-if="store.detailEntriesError" class="text-danger fs-7 px-5 py-2">{{ store.detailEntriesError }}</div>
     <div v-else-if="store.detailEntries.length === 0" class="text-muted fs-7 px-5 py-2">{{ t("journal.thread.entries.empty") }}</div>
     <div v-else class="px-3">
       <template v-for="group in entryGroups" :key="'thread-entry-group-' + (group.stdrdDt || 'nodate')">

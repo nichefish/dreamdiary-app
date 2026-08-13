@@ -25,6 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 로그인 사용자의 엔트리 태그 목록·카테고리·기간별 태그클라우드를 제공한다.
+ */
 @RestController
 @RequiredArgsConstructor
 public class JournalEntryTagRestController
@@ -114,7 +117,7 @@ public class JournalEntryTagRestController
             final TagSearchParam searchParam,
             final ContentType contentType
     ) throws Exception {
-        final List<TagDto> tagList = searchParam.hasWeekStartDt() || searchParam.hasYyMnth()
+        final List<TagDto> tagList = searchParam.hasStdrdDt() || searchParam.hasWeekStartDt() || searchParam.hasYyMnth()
                 ? journalEntryMyTagService.getMySizedTagList(toTagQuery(searchParam, contentType))
                 : journalEntryMyTagService.getMyTagList(contentType);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.getMessage("common.result.success")).withList(tagList));
@@ -144,6 +147,9 @@ public class JournalEntryTagRestController
      * @return 태그 질의 객체
      */
     private JournalEntryTagQuery toTagQuery(final TagSearchParam searchParam, final ContentType contentType) {
+        if (searchParam.hasStdrdDt()) {
+            return JournalEntryTagQuery.daily(contentType, searchParam.getStdrdDt());
+        }
         if (searchParam.hasWeekStartDt()) {
             return JournalEntryTagQuery.weekly(contentType, searchParam.getWeekStartDt());
         }

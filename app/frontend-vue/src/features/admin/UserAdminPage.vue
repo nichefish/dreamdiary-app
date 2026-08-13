@@ -93,7 +93,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="!store.rows.length">
+              <tr v-if="!store.error && !store.rows.length">
                 <td colspan="8" class="text-center text-muted py-8">{{ t('user.admin.list.empty') }}</td>
               </tr>
               <tr v-for="row in store.rows" :key="row.id" class="cursor-pointer" :class="{ 'bg-light': row.isMe }" @click="onUserRowClick($event, row.id)">

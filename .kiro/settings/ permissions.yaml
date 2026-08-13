@@ -1,0 +1,18 @@
+rules:
+  # 파일 읽기: 전체 허용
+  - capability: fs_read
+    effect: allow
+
+  # 파일 쓰기: 프로젝트 소스 경로 허용
+  - capability: fs_write
+    match: [ "app/**", "docs/**", "scripts/**", "src/**", "config/**", "templates/**", "static/**" ]
+    effect: allow
+
+  # Shell 명령: 빌드/git/스크립트 허용
+  - capability: shell
+    match: [ "git *", "cmd.exe *", "gradlew*", "./gradlew*", "python *", "py *", "npm *", "npx *" ]
+    effect: allow
+
+  # MCP 도구: 전체 허용
+  - capability: mcp
+    effect: allow

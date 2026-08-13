@@ -48,7 +48,7 @@
             <div v-if="store.loading" class="board-prefix-loading">
               <span class="spinner-border spinner-border-sm me-2"></span>{{ t("common.loading") }}
             </div>
-            <div v-else-if="!store.prefixes.length" class="text-muted text-center py-8">
+            <div v-else-if="!store.error && !store.prefixes.length" class="text-muted text-center py-8">
               {{ t("board.group.prefix.empty") }}
             </div>
             <div

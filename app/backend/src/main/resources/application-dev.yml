@@ -56,3 +56,10 @@ app:
                   id: ${JANDI_TOPIC_SCHEDULE}
                 - name: TEST
                   id: ${TEST}
+
+# Actuator: 캐시 통계 계측용 노출 (local/dev 한정, prod 제외)
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,caches,metrics

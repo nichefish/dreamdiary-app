@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflecti
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTagAxis;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypePolicy;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,8 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@Log4j2
-public class JournalEntrySpec implements BaseAttachableSpec<JournalEntryEntity> {
+public class JournalEntrySpec extends BaseAttachableSpec<JournalEntryEntity> {
 
     /**
      * 조회 후 정렬 조건과 distinct 설정을 적용한다.

@@ -63,6 +63,7 @@ class JournalReflectionServiceIntegrationTest {
 
     /** 대상을 지정한 Reflection 등록은 journal_reflection 에 영속된다. */
     @Test
+    @WithMockUser(username = TestConstant.TEST_AUDITOR)
     void registPersistsReflectionToOwnTable() throws Exception {
         final Integer diaryId = saveDiaryTarget();
 

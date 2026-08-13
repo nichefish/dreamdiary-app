@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpe
 import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixContentEntity;
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +22,7 @@ import java.util.Map;
  * @author nichefish
  */
 @Component
-@Log4j2
-public class BoardPostSpec implements BaseAttachableSpec<BoardPostEntity> {
+public class BoardPostSpec extends BaseAttachableSpec<BoardPostEntity> {
 
     /**
      * 인자별로 구체적인 검색 조건을 세팅한다. (override)

@@ -9,6 +9,7 @@
     <!--end::로딩-->
 
     <template v-else>
+      <div v-if="store.listError" class="alert alert-danger mb-5 py-3 fs-7">{{ store.listError }}</div>
       <!--begin::승인 대기 목록-->
       <div class="card post mb-5">
         <div class="card-header">
@@ -26,7 +27,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="!store.pendingList.length">
+              <tr v-if="!store.listError && !store.pendingList.length">
                 <td colspan="5" class="text-center text-muted py-6 fs-7">{{ t('user.signup.approval.pending.empty') }}</td>
               </tr>
               <tr v-for="req in store.pendingList" :key="'p-' + req.id">
@@ -62,7 +63,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="!store.recentList.length">
+              <tr v-if="!store.listError && !store.recentList.length">
                 <td colspan="5" class="text-center text-muted py-6 fs-7">{{ t('user.signup.approval.recent.empty') }}</td>
               </tr>
               <tr v-for="req in store.recentList" :key="'r-' + req.id">

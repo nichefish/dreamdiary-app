@@ -150,7 +150,17 @@ public class JournalDayTagRestController
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(journalDayList));
     }
 
+    /**
+     * 일간·주간·월간 검색 파라미터를 태그 기간 질의로 변환한다.
+     * 더 좁은 기준일자 조건을 주간·연월 조건보다 우선한다.
+     *
+     * @param searchParam 태그 검색 조건
+     * @return 태그 기간 질의
+     */
     private JournalDayTagQuery toTagQuery(final TagSearchParam searchParam) {
+        if (searchParam.hasStdrdDt()) {
+            return JournalDayTagQuery.daily(searchParam.getStdrdDt());
+        }
         if (searchParam.hasWeekStartDt()) {
             return JournalDayTagQuery.weekly(searchParam.getWeekStartDt());
         }

@@ -4,7 +4,7 @@
 > 전체 라우트 목록: `docs/migration/vue-screen-overview.md`
 > 모든 관리자 화면은 `DefaultLayout` 하위, `MNGR` 권한 필요.
 > 관리자 화면 본문 상단은 breadcrumb와 중복되는 화면 제목·설명문을 렌더링하지 않는다. 화면 설명은 `menu.menu_description`을 SSOT로 삼아 공통 breadcrumb 하단에 표시하고, 본문 상단에는 필요한 액션 버튼만 표시한다.
-> 관리자 화면의 API 결과 메시지는 서버 `message`를 우선 표시하고, 서버 메시지가 없을 때는 현재 locale의 클라이언트 카탈로그 메시지를 fallback으로 표시한다. 메뉴 확장 방식 선택지도 현재 locale 변경에 반응해 갱신한다.
+> 관리자 화면의 API 결과 메시지는 서버 `message`를 우선 표시하고, 서버 메시지가 없을 때는 현재 locale의 클라이언트 카탈로그 메시지를 fallback으로 표시한다. 메뉴 확장 방식 선택지도 현재 locale 변경에 반응해 갱신한다. 계정·코드·메뉴·게시판 그룹·사용자 그룹·로그 목록 조회 실패는 `store.error`로 표시하며 정상 빈 목록과 구분하고, 실패 시 직전 성공 목록을 유지한다.
 
 ## 라우트·화면 매핑
 
@@ -153,7 +153,7 @@
 - 메뉴 등록/수정 모달은 사용 여부와 사이드바 표시 여부 토글, 상위 메뉴 읽기 전용 필드를 입력 높이 기준으로 세로 정렬한다. `sidebarVisibleYn=N`은 메뉴 테이블과 breadcrumb/권한/화면 메타 원천에는 남기되 사이드바 트리 렌더링에서 제외한다. `메뉴명`과 필수 `메뉴 라벨`은 기본 정보 row 안에서 병렬 입력으로 배치한다. `URL`은 `submenuExpandType=NO_SUB`일 때만 표시하고 필수로 받으며, 그 외 확장형 메뉴는 저장 시 URL을 빈 값으로 정규화한다. `미열람 카운트`는 스위치와 조건부 입력을 한 줄로 배치하며, 스위치 ON이면 카운트 이름 입력을 필수로 받는다.
 - 메뉴 등록/수정 모달은 선택 메뉴의 `menuDescription`을 `메뉴 설명` textarea로 관리한다. 저장된 설명은 sidebar 메뉴 API 응답에 포함되고, 현재 route에 매칭된 메뉴의 설명이 공통 breadcrumb 하단에 표시된다. 설명이 비어 있으면 breadcrumb 하단 설명 영역은 렌더링하지 않는다.
 - `protectedYn=Y`는 메뉴 자체의 수정·사용여부 변경·삭제와 자기 자신 드래그 이동을 막는 시스템 보호 의미다. 보호 메뉴는 drag source와 sibling drop target이 되지 않지만, 보호 메뉴 아래에도 하위 메뉴를 추가하거나 다른 하위 메뉴를 이동할 수 있다.
-- **BOARD 확장 메뉴의 사이드바 하위 항목**: `submenuExpandType=BOARD` 메뉴(`일반게시판`)는 하위 메뉴를 menu 테이블에 두지 않는다. 게시판은 `board` 테이블이 소유하므로, 서버가 사이드바 조회 시 사용중(`useYn=Y`) 게시판을 `sortOrder` 순으로 `subMenuList` 에 주입한다(`MenuService.attachBoardSubMenus`). 각 게시판은 `/app/board/post/list.do?contentType=<boardKey>` URL 을 가진 `NO_SUB` 메뉴로 변환하며, 프론트 `urlMapping` 이 이를 `/board/<boardKey>` 라우트로 흡수한다. 변경 전에는 주입이 없어 BOARD 메뉴가 자식도 URL 도 없는 빈 메뉴였고, 게시판을 등록해도 사용자 화면에 나타나지 않았다(프론트는 `subMenuList` 가 있어야 아코디언으로 펼친다). BOARD 메뉴 자체는 링크 없이 아코디언 역할만 한다.
+- **BOARD 확장 메뉴의 사이드바 하위 항목**: `submenuExpandType=BOARD` 메뉴(`일반게시판`)는 하위 메뉴를 menu 테이블에 두지 않는다. 게시판은 `board` 테이블이 소유하므로, 서버가 사이드바 조회 시 사용중(`useYn=Y`) 게시판을 `sortOrder` 순으로 `subMenuList` 에 주입한다(`MenuSiteMenuService.attachBoardSubMenus`). 각 게시판은 `/app/board/post/list.do?contentType=<boardKey>` URL 을 가진 `NO_SUB` 메뉴로 변환하며, 프론트 `urlMapping` 이 이를 `/board/<boardKey>` 라우트로 흡수한다. 변경 전에는 주입이 없어 BOARD 메뉴가 자식도 URL 도 없는 빈 메뉴였고, 게시판을 등록해도 사용자 화면에 나타나지 않았다(프론트는 `subMenuList` 가 있어야 아코디언으로 펼친다). BOARD 메뉴 자체는 링크 없이 아코디언 역할만 한다.
   - 캐시: 사이드바 메뉴 캐시(`userMenuList`/`userMenuMetaList`/`mngrMenuList`/`mngrMenuMetaList`)에 주입 결과가 함께 담긴다. 게시판 등록·수정·삭제·사용여부·정렬 변경 시 `BoardService` 후처리에서 이 캐시들도 무효화해야 새 게시판이 반영된다.
 - `managementType=BOARD`는 게시판 관리가 내용을 소유하는 메뉴다. `MenuDto.getManagementType()`이 `submenuExpandType=BOARD` 여부로 파생하는 값이며 DB 컬럼이 아니다. 메뉴 관리에서는 행 우측 액션 영역에 넓은 `게시판 관리로 이동` 링크를 표시하고, **`...` 컨텍스트 메뉴도 함께 표시**한다(변경 전: 컨텍스트 메뉴를 숨기고 링크만 표시). BOARD 메뉴도 수정·사용여부 전환·삭제가 가능하며, 하위 메뉴 추가만 노출하지 않는다(백엔드 `MenuService`가 BOARD 부모 아래 하위 메뉴 등록을 거부). BOARD 메뉴 자체는 drag source가 될 수 있지만 하위 메뉴 생성 대상이나 sibling drop target은 되지 않는다.
 - 메뉴 트리 행의 액션은 `...` 컨텍스트 메뉴로 제공한다. 메뉴 항목은 하위 메뉴 추가, 수정, 사용/미사용 전환, 삭제이며 각 항목은 시스템 보호 상태에 따라 비활성화한다.
@@ -201,7 +201,7 @@
 - 본문 상단 목록/통계 전환 버튼 표시. 화면 설명은 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 운영 로그 목록/검색/상세 모달
 - `/admin/log` → 전체 로그 관측 뷰 (`isStatsView = false`)
-- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**(레거시 `log_stats_user_list` 기본 노출 동일). 통계 뷰 진입 시 조회
+- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**(레거시 `log_stats_user_list` 기본 노출 동일). 통계 뷰 진입 시 조회. 통계 조회 실패(`store.error`)는 정상 빈 통계와 구분하며 직전 성공 통계를 유지한다
 - 로그 목록·검색·상세의 URL·URI·Trace·IP·Referer와 응답시간 `ms` 단위는 현재 locale의 공통 기술 카탈로그를 사용하며 기술 표기 자체는 한·영에서 동일하게 유지한다.
 - API: `GET /api/logs`, `GET /api/logs/{id}`, `GET /api/logs/stats-user` (`LogStatsUserQueryService` — 레거시 서비스를 현행 flat 패키지로 복원, 응답 `rsltObj = { userList, anonymousList }`)
 
@@ -224,5 +224,6 @@
 - 승인 대기 신청 목록 조회
 - 최근 신청 내역 (최근 30건)
 - 승인 대기·최근 신청 표의 ID·이메일 열 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다.
+- 승인관리 목록 조회 실패(`store.listError` / `user.signup.approval.list.load.failure`)는 정상 빈 목록과 구분하며, 실패 시 직전 성공 목록을 유지한다.
 - 신청 승인 → `POST /api/user/signup-requests/{id}/approval`
 - 신청 반려 → `POST /api/user/signup-requests/{id}/rejection`

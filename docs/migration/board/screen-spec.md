@@ -16,7 +16,7 @@
 - **Legacy file**: `legacy/templates/view/feature/board/post/board_post_list.ftlh`
 - **스토어**: `features/board/stores/boardPost.ts`
 - **레이아웃**: `BoardPostLayout` > `BoardPostViewToolbar` + `BoardPostList.vue`
-- **i18n**: 목록 조회 오류는 현재 locale의 클라이언트 카탈로그 메시지를 표시한다. 등록·수정·삭제 결과는 서버 `message`를 우선 사용하고, 서버 메시지가 없을 때 현재 locale의 클라이언트 카탈로그 메시지를 표시한다.
+- **i18n**: 목록 조회 오류는 현재 locale의 클라이언트 카탈로그 메시지를 표시한다. 목록 API 실패(`board.post.list.load.failure`)는 테이블에 표시하며 정상 빈 목록(`board.post.list.empty`)과 구분한다. 실패·`rslt` soft-fail 시 직전 성공 목록을 유지한다. 등록·수정·삭제 결과는 서버 `message`를 우선 사용하고, 서버 메시지가 없을 때 현재 locale의 클라이언트 카탈로그 메시지를 표시한다.
 
 ### Layout Structure
 

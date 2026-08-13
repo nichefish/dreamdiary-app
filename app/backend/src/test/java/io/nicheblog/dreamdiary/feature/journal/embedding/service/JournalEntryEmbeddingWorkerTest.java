@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 
-import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.ai.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -26,8 +26,8 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 | 구분 | Vue 경로 | 레거시 매크로 대응 | 비고 |
 |------|----------|-------------------|------|
-| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. 모달 안 code/link 등 `.tox-tinymce-aux`는 `TINYMCE_AUX_Z`(6190)로 Bootstrap 모달 위에 표시한다. |
-| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. 자동완성 dropdown은 `document.body`에 append 하고 Bootstrap 모달보다 높은 z-index로 표시한다. |
+| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. TinyMCE 런타임·플러그인·스킨은 `RichEditor` 최초 렌더 시 단일 공유 Promise로 로드하고 준비 중에는 spinner를 표시하며, 로드 실패는 앱 런타임 상태와 콘솔에 기록한다. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. 모달 안 code/link 등 `.tox-tinymce-aux`는 `TINYMCE_AUX_Z`(6190)로 Bootstrap 모달 위에 표시한다. |
+| 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. Tagify 런타임과 기본 스타일은 `TagifyEditor` 최초 렌더 시 단일 공유 Promise로 로드하고 준비 중에는 spinner를 표시하며, 로드 실패는 앱 런타임 상태와 콘솔에 기록한다. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. 자동완성 dropdown은 `document.body`에 append 하고 Bootstrap 모달보다 높은 z-index로 표시한다. |
 | 댓글 목록/등록 | `features/attachable/CommentListModal.vue` 등 | `list_comment`, `CommentList.modal` | `useAttachableModalStore.openCommentList` |
 | 파일 그룹 | `FileGroupListModal.vue`, `FileGroupDetail.vue`, `FileGroupSection.vue` | `list_file_group` | `openFileList`. 다운로드 레이블과 파일 크기 단위는 현재 locale의 클라이언트 카탈로그를 사용하며 다운로드 URL·클릭 흐름은 유지한다. |
 | 이력 | `HistoryModal.vue` | — | `openHistory`. 각 이력 카드에 텍스트 복사 버튼(`bi bi-copy`) 구현 완료 |
@@ -50,9 +50,9 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 화면 위치/제목/설명 표시는 breadcrumb가 담당한다. 각 화면 본문 상단에는 breadcrumb와 중복되는 page title 또는 메뉴 설명을 별도로 렌더링하지 않고, 필요한 액션 버튼만 둔다.
 
-`useAttachableModalStore` (`features/attachable/stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openRelatedFlow`, `openTagList`, `openTagProfile`, `openFileList`.
-`RelatedContentAddModal.vue`의 제목·필드·옵션·검색 상태·검증·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 연결 대상 검색은 선택 유형을 `DIARY|DREAM`으로 변환해 통합 `GET /api/journal/entries`를 호출하고 제목 또는 본문 일치 결과를 최신순 최대 8건 표시한다. 요청 실패는 오류 메시지로 표시해 정상 0건과 구분한다. `openRelatedFlow` 진입에서는 관계 유형을 `FLOW`로 고정하고 무방향·날짜순·동일 쌍 기존 유형 교체 계약을 저장 전에 안내한다.
-현재 `RelatedContentAddModal.vue`와 `/api/related` API는 일기·꿈 사이의 직접 관련글 1단계 연결과 FLOW 연결을 구현했다. 엔트리 관련글 행의 직접 관계 해제와 FLOW 분리 가능성 확인도 **구현 완료(✓)**다. `JournalEntryFlowModal.vue`는 앵커 엔트리 기준 연결 컴포넌트를 서버 정렬 순서 그대로 종단 표시하고, 직접 간선 관리와 전체 평문 복사·TXT 다운로드를 제공한다. 두 흐름 병합 결과 안내만 **미구현(❌)**이다. FLOW는 기존 `left/right` 쌍 정규화를 유지하는 무방향 관계이며 일반 관련글 조회와 달리 FLOW 간선만 전이적으로 탐색한다.
+`useAttachableModalStore` (`features/attachable/stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
+`RelatedContentAddModal.vue`의 제목·필드·옵션·검색 상태·검증·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 연결 대상 검색은 선택 유형을 `DIARY|DREAM`으로 변환해 통합 `GET /api/journal/entries`를 호출하고 제목 또는 본문 일치 결과를 최신순 최대 8건 표시한다. 요청 실패는 오류 메시지로 표시해 정상 0건과 구분한다. `openRelated`는 일반 관련글(RELATED) 전용이다.
+현재 `RelatedContentAddModal.vue`와 `/api/related` API는 일기·꿈 사이의 직접 관련글 1단계 연결을 구현한다. 엔트리 관련글 행의 직접 관계 해제도 **구현 완료(✓)**다. FLOW 축은 저널 스레드 소속으로 수렴 완료되어 attachable 관련글·종단 보기 경로에 두지 않는다(`docs/migration/journal/interaction-spec.md`, `docs/migration/journal/component-spec.md`).
 `JournalTagProfileModal.vue`의 제목·필드·선택지·버튼·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장·삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 크기 최대(`forceMax`)는 태그클라우드에서 `ts-9`로 고정하며 엔트리 본문 태그줄에는 적용하지 않는다.
 `JournalTagListModal.vue`의 제목·빈 상태·분류·버튼·태그별 일자 목록 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
 `CommentRegistModal.vue`의 제목·필드·버튼·검증·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 등록·수정 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
@@ -773,7 +773,7 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | 기본 레이아웃 | `app/frontend-vue/src/app/layouts/default/DefaultLayout.vue` | 패키지명은 `layouts/default`로 둔다. `default-layout`처럼 의미가 중복되는 경로명은 쓰지 않는다. |
 | 사이드바 메뉴 | `layouts/default/components/sidebar/SidebarMenu.vue`, `SidebarMenuItem.vue` | 첫 진입 화면에서도 사용자가 이동할 수 있는 메뉴가 보여야 한다. 메뉴 accordion은 항상 펼쳐진 상태로 표시하고, `menuLabel`은 최상위 섹션 라벨에만 사용한다. |
 | 동적 메뉴 | `app/frontend-vue/src/shared/menu/stores/menu.ts` | `GET /api/menus?mode=USER|MNGR` 결과는 `sidebarVisibleYn=Y`인 사이드바 메뉴만 렌더링 대상으로 보존한다. 서버는 각 메뉴의 `required_perm_key`를 현재 사용자 유효 permission(롤∪그룹 합집합)으로 필터하며, 메뉴 캐시 키는 locale + permission 지문을 사용한다. `admin_yn`은 USER/MNGR 모드 트리 분리에 유지하고, 세부 노출은 permission 단일 경로로 판정한다. `GET /api/menus?mode=USER|MNGR&includeHidden=true` 결과는 `sidebarVisibleYn=N`인 숨김/시스템 메뉴까지 포함한 breadcrumb·화면 설명 메타 원천으로 보존한다. 하드코딩된 1차원 메뉴는 fallback으로만 허용한다. |
-| 사용자/관리자 전환 | `Navbar.vue` + `useMenuStore.setMenuMode()` | 관리자 메뉴 모드 진입 기준은 `menu.view.admin` permission(`canUseMngrMenuMode`, 서버 `AuthUtils.hasPermission`)이다. `isMngr`는 fallback. 모드 전환 시 메뉴 캐시를 무효화하고 다시 조회한다. |
+| 사용자/관리자 전환 | `Navbar.vue` + `useMenuStore.setMenuMode()` | 관리자 메뉴 모드 진입 기준은 `menu.view.admin` permission(`canUseMngrMenuMode`, 서버 `AuthUtils.hasPermission`)이다. `isMngr`는 fallback. 모드 전환 시 메뉴 캐시를 무효화하고 다시 조회하며, 사용자 모드는 기본 저널 일간 화면(`/journal/daily`), 관리자 모드는 `/admin`으로 이동한다. |
 | 경로별 메뉴 모드 복구 | `app/router/index.ts` + `useMenuStore.setMenuMode()` | 세션 만료 후 재로그인 redirect, 직접 URL 진입, 새로고침으로 관리자 경로(`/admin/**`)에 들어오면 관리자 권한 계정에 한해 사이드바 메뉴 모드를 `MNGR`로 복구한다. 사용자 경로(`/journal/**`, `/annual/**`, `/thread/**`, `/schedule`, `/board/**`)에 들어오면 사이드바 메뉴 모드를 `USER`로 복구한다. `/my`는 현재 사용자/관리자 메뉴 모드를 유지하는 계정 화면이며, 모드 전환 트리거로 쓰지 않는다. |
 | legacy URL 매핑 | `app/frontend-vue/src/shared/utils/urlMapping.ts` | `.do`/FTL 진입 URL은 Vue route로 흡수한다. 서버 redirect와 클라이언트 라우터가 같은 목적지를 가리켜야 한다. |
 | Bootstrap tooltip | `app/frontend-vue/src/main.ts` 전역 `v-tooltip` directive | Vue 렌더링 생명주기에 맞춰 Bootstrap Tooltip 인스턴스를 mount/update/unmount에서 생성·정리한다. Vue 템플릿에서는 `data-bs-toggle="tooltip"`을 직접 반복하지 않고 `v-tooltip` + `title`로 활성화한다. |
@@ -800,6 +800,8 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | font 파일 | Spring Boot 정적 리소스의 `/font/**` 경로를 그대로 사용한다. |
 | 개발 서버 | `vite.config.ts`에서 `/css`, `/font`를 backend로 proxy한다. |
 | 기본 폰트 검수 | legacy `font.css`의 `NotoSans`, `Pretendard`, `Poppins` face가 브라우저 Network/Computed 탭에서 실제 로드되는지 확인한다. |
+| Vue 해시 자산 캐시 | `/vue-app/assets/**`는 내용 해시 파일명을 사용하며 `Cache-Control: public, max-age=31536000, immutable`을 적용한다. SPA 진입점과 fallback `index.html`은 장기 캐시 대상에서 제외한다. |
+| 서버 응답 압축 | 1KB 이상의 JS·CSS·JSON·HTML·XML·SVG·일반 텍스트 응답을 압축한다. 자체 압축된 이미지·폰트 바이너리는 압축 대상에 포함하지 않는다. |
 
 ### attachable 흡수 기준
 
@@ -808,8 +810,8 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | 댓글 등록/수정 | `useAttachableModalStore.openCommentRegist/openCommentModify` + `CommentRegistModal.vue` |
 | 댓글 목록 | `openCommentList` + `CommentListModal.vue` |
 | 이력 | `openHistory` + `HistoryModal.vue`. 각 이력 카드에 텍스트 복사 버튼 구현 완료 |
-| 관련글 추가 | `openRelated` / `openRelatedFlow` + `RelatedContentAddModal.vue` — 직접 연결·FLOW 연결 ✓, 병합 결과 안내 ❌ |
-| FLOW 종단 보기 | `useJournalFlowStore.openFlow` + `JournalEntryFlowModal.vue` — 서버 시간순 연결 컴포넌트 표시·직접 간선 관리·전체 복사/TXT 다운로드 ✓ |
+| 관련글 추가 | `openRelated` + `RelatedContentAddModal.vue` — RELATED 직접 연결 ✓ |
+| FLOW 종단 보기 | 제거 — 저널 스레드 소속으로 수렴 (`docs/migration/journal/component-spec.md`) |
 | 태그 목록 | `openTagList` + `JournalTagListModal.vue` |
 | 태그 프로필 | `openTagProfile` + `JournalTagProfileModal.vue` |
 | 파일 그룹 | `FileGroup` 계열 컴포넌트로 흡수한다. FTLH가 owner인 상태를 최종 상태로 보지 않는다. |

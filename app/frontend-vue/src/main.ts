@@ -41,15 +41,11 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-import ElementPlus from "element-plus";
 import i18n from "@metronic/core/plugins/i18n";
 
 //imports for app initialization
 import ApiService, { applyLocaleHeader } from "@metronic/core/services/ApiService";
 import LayoutService from "@metronic/core/services/LayoutService";
-import { initApexCharts } from "@metronic/core/plugins/apexcharts";
-import { initInlineSvg } from "@metronic/core/plugins/inline-svg";
-import { initVeeValidate } from "@metronic/core/plugins/vee-validate";
 import {
   initKtIcon,
   initializeComponents,
@@ -68,14 +64,10 @@ app.config.errorHandler = (error) => {
 
 app.use(pinia);
 app.use(router);
-app.use(ElementPlus);
 
 ApiService.init(app);
 applyLocaleHeader();
-initApexCharts(app);
 initKtIcon(app);
-initInlineSvg(app);
-initVeeValidate();
 
 app.use(i18n);
 

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.embedding.model;
 
-import io.nicheblog.dreamdiary.feature.chat.model.OllamaHealthDto;
+import io.nicheblog.dreamdiary.feature.ai.model.OllamaHealthDto;
 import lombok.Builder;
 import lombok.Value;
 

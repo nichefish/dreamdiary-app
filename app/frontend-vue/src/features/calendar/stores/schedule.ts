@@ -161,6 +161,10 @@ export const useScheduleStore = defineStore("schedule", () => {
   const filter = ref<ScheduleFilter>(readFilter());
   const loading = ref(false);
   const listLoading = ref(false);
+  /** 달력 이벤트 조회 실패 메시지 */
+  const eventsError = ref<string | null>(null);
+  /** 목록 VIEW 조회 실패 메시지 */
+  const listError = ref<string | null>(null);
 
   const codeOptions = computed(() => bootstrap.value.codeOptions ?? []);
   const vcatnCodeOptions = computed(() => bootstrap.value.vcatnCodeOptions ?? []);
@@ -189,11 +193,20 @@ export const useScheduleStore = defineStore("schedule", () => {
 
   async function fetchEvents(range: ScheduleQueryRange, searchKeyword = "") {
     loading.value = true;
+    eventsError.value = null;
     try {
       const res = await axios.get("/api/schedule/cal-list", {
         params: buildQueryParams(range, searchKeyword),
       });
-      events.value = res.data?.rslt ? res.data?.rsltList ?? [] : [];
+      if (!res.data?.rslt) {
+        console.error("[schedule] fetchEvents soft-fail", { range, message: res.data?.message });
+        eventsError.value = res.data?.message ?? t("schedule.list.load.failure");
+        return;
+      }
+      events.value = res.data?.rsltList ?? [];
+    } catch (e: unknown) {
+      console.error("[schedule] fetchEvents failed", { range }, e);
+      eventsError.value = e instanceof Error ? e.message : t("schedule.list.load.failure");
     } finally {
       loading.value = false;
     }
@@ -204,6 +217,7 @@ export const useScheduleStore = defineStore("schedule", () => {
    */
   async function fetchList(range: ScheduleQueryRange, searchKeyword = "", page?: number) {
     listLoading.value = true;
+    listError.value = null;
     const targetPage = page ?? listCurrentPage.value;
     try {
       const res = await axios.get("/api/schedule/list", {
@@ -221,9 +235,7 @@ export const useScheduleStore = defineStore("schedule", () => {
       listCurrentPage.value = Number(pageResult.number ?? targetPage);
       listPageSize.value = Number(pageResult.size ?? listPageSize.value);
     } catch (error) {
-      listRows.value = [];
-      listTotalElements.value = 0;
-      listTotalPages.value = 0;
+      listError.value = error instanceof Error ? error.message : t("schedule.list.load.failure");
       throw error;
     } finally {
       listLoading.value = false;
@@ -296,6 +308,8 @@ export const useScheduleStore = defineStore("schedule", () => {
     filter,
     loading,
     listLoading,
+    eventsError,
+    listError,
     codeOptions,
     vcatnCodeOptions,
     userOptions,

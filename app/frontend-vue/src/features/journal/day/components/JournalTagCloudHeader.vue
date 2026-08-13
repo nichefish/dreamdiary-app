@@ -7,6 +7,7 @@
         </div>
         <div class="col flex-grow-1">
           <span v-if="store.tagCloudLoading" class="text-muted fs-7">{{ t("common.loading") }}...</span>
+          <span v-else-if="store.tagCloudSectionError[row.section]" class="text-danger fs-7">{{ store.tagCloudSectionError[row.section] }}</span>
           <span v-else-if="row.tags.length === 0" class="text-muted fs-7">-</span>
           <span v-else class="d-flex flex-wrap align-items-center">
             <button
@@ -47,6 +48,7 @@ const { t } = useLocaleStore();
 const rows = computed(() => [
   {
     id: "journal_day_tag_header",
+    section: "day" as const,
     label: t("journal.tag-cloud.day"),
     tags: store.tagCloud.dayTagList,
     tooltip: t("journal.tag-cloud.menu.tooltip"),
@@ -55,6 +57,7 @@ const rows = computed(() => [
   },
   {
     id: "journal_diary_tag_header",
+    section: "diary" as const,
     label: t("journal.tag-cloud.diary"),
     tags: store.tagCloud.diaryTagList,
     tooltip: t("journal.tag-cloud.menu.tooltip"),
@@ -63,6 +66,7 @@ const rows = computed(() => [
   },
   {
     id: "journal_dream_tag_header",
+    section: "dream" as const,
     label: t("journal.tag-cloud.dream"),
     tags: store.tagCloud.dreamTagList,
     tooltip: t("journal.tag-cloud.menu.tooltip"),
@@ -71,7 +75,7 @@ const rows = computed(() => [
   },
 ]);
 
-watch([() => store.yy, () => store.mnth, () => store.weekStartDt, () => store.viewType], () => {
+watch([() => store.yy, () => store.mnth, () => store.weekStartDt, () => store.dailyStdrdDt, () => store.viewType], () => {
   void store.fetchTagCloud();
 });
 

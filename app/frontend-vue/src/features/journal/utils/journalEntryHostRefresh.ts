@@ -41,7 +41,7 @@ export function registerJournalEntrySearchHost(refresh: JournalEntrySearchHostRe
 
 /** 스레드 상세 아래에 계속 표시되는 저널 일자 route인지 판별한다. */
 function isJournalDayRoute(routeName: unknown): boolean {
-  return ["journal-weekly", "journal-monthly", "journal-daily"].includes(String(routeName));
+  return ["journal-weekly", "journal-monthly", "journal-daily", "journal-daily-tab"].includes(String(routeName));
 }
 
 /** 엔트리 검색 팝업 route인지 판별한다. */

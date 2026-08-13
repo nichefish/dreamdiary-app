@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableK
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.handler.JournalTagCacheUpdtWorker;
+import io.nicheblog.dreamdiary.feature.attachable.tag.handler.TagContentRemovedEvent;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
@@ -12,6 +13,7 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,7 @@ public class TagProcService {
     private final TagService tagService;
     private final TagContentService tagContentService;
     private final JournalTagCacheUpdtWorker journalTagCacheUpdtWorker;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 태그 처리.
@@ -62,9 +65,6 @@ public class TagProcService {
         if (!isJournal) {
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", attachableKey.getId() + "_" + attachableKey.getContentType());
         }
-
-        // 고아 태그 정리
-        tagService.deleteNoRefTags();
     }
 
     /**
@@ -84,6 +84,16 @@ public class TagProcService {
 
         final List<TagContentEntity> entityList = tagContentService.getListEntity(searchParamMap);
         tagContentService.deleteAll(entityList);
+
+        // 제거된 태그 중 참조가 0인 고아 마스터 태그를 비동기로 정리한다.
+        if (!entityList.isEmpty()) {
+            final List<Integer> removedTagIds = entityList.stream()
+                    .map(TagContentEntity::getTagId)
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .toList();
+            eventPublisher.publishEvent(new TagContentRemovedEvent(removedTagIds));
+        }
 
         if (yy != null && mnth != null) {
             final Map<Integer, Integer> tagCntChangeMap = entityList.stream()
@@ -127,6 +137,12 @@ public class TagProcService {
             for (final TagDto tag : obsoleteTagSet) {
                 tagCntChangeMap.put(tag.getId(), -1);
             }
+            // 제거된 태그 중 참조가 0인 고아 마스터 태그를 비동기로 정리한다.
+            final List<Integer> removedTagIds = obsoleteTagSet.stream()
+                    .map(TagDto::getId)
+                    .filter(java.util.Objects::nonNull)
+                    .toList();
+            eventPublisher.publishEvent(new TagContentRemovedEvent(removedTagIds));
         }
 
         // 3. 새 tag-content 추가

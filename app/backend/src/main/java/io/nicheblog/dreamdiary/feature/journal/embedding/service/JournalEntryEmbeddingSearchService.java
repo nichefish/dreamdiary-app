@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.chat.client.OllamaClient;
+import io.nicheblog.dreamdiary.feature.ai.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.RagSearchResult;

@@ -77,7 +77,7 @@ public class JournalLifecycleCacheRegistry {
      */
     public static String annualLifecycleListCacheName(final ContentType contentType) {
         return switch (contentType) {
-            case JOURNAL_DIARY, JOURNAL_DREAM -> "journalEntryYyAnnualLifecycledListByUser";
+            case JOURNAL_DIARY, JOURNAL_DREAM -> "journalEntryYyAnnualStatedListByUser";
             default -> null;
         };
     }

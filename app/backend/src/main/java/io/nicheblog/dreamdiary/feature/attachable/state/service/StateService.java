@@ -12,11 +12,9 @@ import io.nicheblog.dreamdiary.feature.attachable.state.spec.StateSpec;
 import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -62,7 +60,8 @@ public class StateService
         final Set<ContentType> requiredTypes = EnumSet.of(
                 ContentType.JOURNAL_CHAPTER,
                 ContentType.JOURNAL_DIARY,
-                ContentType.JOURNAL_DREAM
+                ContentType.JOURNAL_DREAM,
+                ContentType.JOURNAL_REFLECTION
         );
 
         for (final ContentType requiredType : requiredTypes) {

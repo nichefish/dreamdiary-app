@@ -27,7 +27,7 @@ public interface JournalDayTagRepository
         extends BaseStreamRepository<JournalDayTagEntity, Integer> {
 
     /**
-     * 년도/월별 저널 일자 태그 개수 맵 조회
+     * 일간·주간·연월별 저널 일자 태그 개수 맵 조회
      *
      * @param param - 삭제할 대상의 파라미터 (게시글 번호, 컨텐츠 타입, 태그 이름, 카테고리 포함)
      * @return Integer - 태그 ID와 컨텐츠 타입에 해당하는 태그 개수
@@ -41,6 +41,7 @@ public interface JournalDayTagRepository
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
             " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asLocalDate(#param.weekStartDt)}) " +
+            " AND (:#{#param.stdrdDt} IS NULL OR day.journalDate = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asLocalDate(#param.stdrdDt)}) " +
             "GROUP BY ct.tagId")
     List<TagContentCntDto> countDaySizeMap(final @Param("param") JournalDayTagContentParam param);
 
@@ -61,5 +62,3 @@ public interface JournalDayTagRepository
             "ORDER BY day.yy DESC")
     List<Integer> findDistinctYysByTagIdAndCreatedBy(final @Param("tagId") Integer tagId, final @Param("createdBy") String createdBy);
 }
-
-

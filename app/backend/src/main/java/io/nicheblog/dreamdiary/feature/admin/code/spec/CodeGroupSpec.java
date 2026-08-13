@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.admin.code.spec;
 
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeGroupEntity;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,9 +16,8 @@ import java.util.Map;
  * CodeGroupSpec
  */
 @Component
-@Log4j2
 public class CodeGroupSpec
-        implements BaseSpec<CodeGroupEntity> {
+        extends BaseSpec<CodeGroupEntity> {
 
     public List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,

@@ -81,15 +81,23 @@ class JournalChapterReflectionBlockIntegrationTest {
         assertTrue(journalEntryRepository.findById(fixture.diaryId).isPresent());
     }
 
-    /** Reflection 이 없으면 챕터 삭제가 성공한다. */
+    /** Reflection 이 없으면 챕터 삭제가 성공한다. 이 성공 계약은 하위 엔트리도 없는 빈 챕터에 적용된다. */
     @Test
-    void deleteChapterWithoutReflectionSucceeds() throws Exception {
-        final ChapterFixture fixture = saveDiaryChapterWithEntry();
+    void deleteEmptyChapterWithoutReflectionSucceeds() throws Exception {
+        final Integer chapterId = saveEmptyDiaryChapter();
         entityManager.clear();
 
-        final ServiceResponse response = journalChapterService.delete(fixture.chapterId);
+        final ServiceResponse response = journalChapterService.delete(chapterId);
         assertTrue(Boolean.TRUE.equals(response.getRslt()));
-        assertTrue(journalChapterRepository.findById(fixture.chapterId).isEmpty());
+        assertTrue(journalChapterRepository.findById(chapterId).isEmpty());
+    }
+
+    /** 하위 엔트리와 Reflection 이 없는 빈 챕터 픽스처를 저장한다. */
+    private Integer saveEmptyDiaryChapter() {
+        final Integer dayId = journalDayRepository.saveAndFlush(JournalDayEntity.builder()
+                .journalDate(LocalDate.of(2026, 8, 5)).yy(2026).mnth(8).build()).getId();
+        return journalChapterRepository.saveAndFlush(JournalChapterEntity.builder()
+                .chapterType(ChapterType.DIARY).journalDayId(dayId).summaryYn("N").sortOrder(1).build()).getId();
     }
 
     private ChapterFixture saveDiaryChapterWithEntry() {

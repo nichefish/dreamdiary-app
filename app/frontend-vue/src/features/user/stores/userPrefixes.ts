@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { usePersonalPrefixOptionsStore } from "@/features/attachable/stores/personalPrefixOptions";
+import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export interface UserPrefix {
   id?: number;
@@ -16,6 +17,7 @@ export interface UserPrefix {
  * 평면 Prefix 목록의 서버 응답을 화면 SSOT로 사용한다.
  */
 export const useUserPrefixesStore = defineStore("userPrefixes", () => {
+  const { t } = useLocaleStore();
   const personalPrefixOptionsStore = usePersonalPrefixOptionsStore();
   const prefixes = ref<UserPrefix[]>([]);
   const loading = ref(false);
@@ -34,7 +36,6 @@ export const useUserPrefixesStore = defineStore("userPrefixes", () => {
 
   async function fetchPrefixes(contentType: string) {
     const requestSequence = ++fetchSequence;
-    prefixes.value = [];
     loading.value = true;
     try {
       const response = await axios.get("/api/my/prefixes", { params: { contentType } });
@@ -45,6 +46,9 @@ export const useUserPrefixesStore = defineStore("userPrefixes", () => {
           activeRequestSequence: fetchSequence,
         });
         return;
+      }
+      if (!response.data?.rslt) {
+        throw new Error(response.data?.message ?? t("common.result.failure"));
       }
       prefixes.value = response.data?.rsltList ?? [];
     } catch (error) {

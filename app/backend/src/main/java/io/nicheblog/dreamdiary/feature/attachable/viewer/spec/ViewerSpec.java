@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ViewerSpec
-        implements BaseAuditSpec<ViewerEntity> {
+        extends BaseAuditSpec<ViewerEntity> {
     //
 }

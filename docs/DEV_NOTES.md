@@ -51,6 +51,12 @@ gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬
 - Spring Boot/외부 라이브러리 공식 namespace(`spring.*`, `server.*`, `springdoc.*`)는 공식 설정 계약을 유지한다. 앱 코드가 소수 값을 직접 참조해야 하는 경우에도 별도 `app.*` 래핑을 기본값으로 만들지 않는다.
 - JWT 직접 발급 설정은 `app.auth.jwt.*`, refresh token 유지 시간은 `app.auth.refresh-token.*`에 둔다. 사용자 체감 세션 유지 시간처럼 재기동 없이 바뀌어야 하는 정책은 yml/env가 아니라 `auth_policy`를 SSOT로 둔다.
 
+## Spring Cache 저장소 선택
+
+- 일반 `@Cacheable` 메소드는 Ehcache 메모리 저장소를 사용한다. 캐시 namespace는 `config/ehcache/ehcache.xml`에 등록되어 있어야 하며, 누락 시 no-op 캐시로 감추지 않고 오류로 처리한다.
+- Redis 공유 캐시는 메소드 또는 대상 클래스에 `@CacheableConfig(cacheTarget = SHARED|MEMORY_AND_SHARED)`가 명시된 경우에만 사용한다. `MEMORY_AND_SHARED`는 Redis 장애 시 사용 가능한 Ehcache를 유지하며, `SHARED` 단독 설정은 Redis 장애 시 명시적으로 실패한다.
+- Redis 기반 refresh token·인증 코드 저장은 Spring Cache resolver와 별도 계약이다. 일반 `@Cacheable` 조회는 Redis 연결 확인을 수행하지 않는다.
+
 ---
 
 ## 패키지 구조
@@ -130,8 +136,9 @@ gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬
 
 ### 저장소: 저널 엔트리 하드컷
 
-- 영속화는 **`journal_entry` 단일 테이블**로 수렴. 다형은 `content_type`(예: `JOURNAL_DIARY` 등)으로 구분.
-- 스키마·수리 스크립트는 `src/main/resources/schema/` 등 저장소 내 마이그레이션 SQL 을 본다.
+- Primary 영속화는 **`journal_entry`**. 다형은 `content_type`(예: `JOURNAL_DIARY`/`JOURNAL_DREAM`)으로 구분. NOTE도 동일 테이블에 두며 영속 `content_type`은 `JOURNAL_DIARY` 계약을 유지한다.
+- Reflection(Commentary) 영속화는 **`journal_reflection`**(About-A `ref_id`/`ref_content_type` 필수).
+- 선언 스키마 SSOT는 `app/backend/src/main/resources/schema/full/mariadb/schema-*.sql`이다(1.0 전 Flyway 증분 없음). `schema-journal-mariadb.sql`은 `journal_entry`·`journal_reflection` CREATE로 entity와 맞춘다.
 
 ### 결산(Annual) — Vue·ESM (A-6 정리)
 
@@ -237,6 +244,8 @@ gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬
 ### Vue 정적 리소스
 
 - `static/vue/feature` 중심으로 경로 통일(예: admin/chat → `feature/admin`, `feature/chat`). 템플릿 스크립트 URL `/vue/feature/...` 정합.
+- Vue 프로덕션 빌드의 `/vue-app/assets/**`는 내용 해시 파일명을 사용하며 `public, max-age=31536000, immutable` 브라우저 캐시를 적용한다. SPA 진입점과 fallback `index.html`은 이 장기 캐시 경계에 포함하지 않는다.
+- 서버는 1KB 이상의 JS·CSS·JSON·HTML·XML·SVG·일반 텍스트 응답을 압축한다. 이미지·폰트처럼 자체 압축된 바이너리는 서버 압축 대상에 포함하지 않는다.
 
 ### i18n 카탈로그
 

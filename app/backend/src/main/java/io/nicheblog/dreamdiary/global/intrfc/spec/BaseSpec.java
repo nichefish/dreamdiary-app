@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,13 +19,16 @@ import java.util.Map;
 /**
  * BaseSpec
  * <pre>
- *  (공통/상속) 검색인자 세팅 Specification 인터페이스.
+ *  (공통/상속) 검색인자 세팅 Specification 추상 클래스.
  * </pre>
  *
  * @author nichefish
  * @see BaseCrudSpec
  */
-public interface BaseSpec<Entity> {
+public abstract class BaseSpec<Entity> {
+
+    /** 구현 클래스 기준 로거. 하위 Spec이 상속하여 공유한다. */
+    protected final Logger log = LogManager.getLogger(getClass());
 
     /**
      * default: 인자별로 구체적인 검색 조건을 설정하여 목록을 반환한다.
@@ -31,7 +36,7 @@ public interface BaseSpec<Entity> {
      * @param searchParam 검색 파라미터
      * @return {@link Specification} -- 검색 조건에 맞는 Specification 객체
      */
-    default Specification<Entity> searchWith(final BaseSearchParam searchParam) throws Exception {
+    public Specification<Entity> searchWith(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
         return this.searchWith(searchParamMap);
     }
@@ -42,7 +47,7 @@ public interface BaseSpec<Entity> {
      * @param searchParamMap 검색 파라미터 맵
      * @return {@link Specification} -- 검색 조건에 맞는 Specification 객체
      */
-    default Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
+    public Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
         final Map<String, Object> effectiveSearchParamMap = new HashMap<>(searchParamMap);
         // exclude filter
         effectiveSearchParamMap.remove("backToList");
@@ -53,7 +58,7 @@ public interface BaseSpec<Entity> {
             try {
                 predicate = getPredicateWithParams(effectiveSearchParamMap, root, query, builder);
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.warn("Failed to build search predicate.", e);
             }
             this.postQuery(root, query, builder, effectiveSearchParamMap);
             return builder.and(predicate.toArray(new Predicate[0]));
@@ -69,7 +74,7 @@ public interface BaseSpec<Entity> {
      * @param builder        검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
      */
-    default List<Predicate> getPredicateWithParams(
+    public List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,
             final Root<Entity> root,
             final CriteriaQuery<?> query,
@@ -83,7 +88,7 @@ public interface BaseSpec<Entity> {
             try {
                 predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
             } catch (final Exception e) {
-                e.printStackTrace();
+                log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                 // log.account("unable to locate attribute '{}' while trying root.get(key).", key);
             }
         }
@@ -98,7 +103,7 @@ public interface BaseSpec<Entity> {
      * @param builder        CriteriaBuilder 객체, 조회 조건을 설정하는 데 사용
      * @param searchParamMap 검색 조건을 담은 파라미터 맵
      */
-    default void postQuery(
+    public void postQuery(
             final Root<Entity> root,
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder,
@@ -115,7 +120,7 @@ public interface BaseSpec<Entity> {
      * @param query   CriteriaQuery 객체로, 조회 결과를 정의하는 데 사용됩니다.
      * @param builder CriteriaBuilder 객체로, 쿼리 조건을 설정하는 데 사용됩니다.
      */
-    default void postQuery(
+    public void postQuery(
             final Root<Entity> root,
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder

@@ -40,7 +40,7 @@ public class StateEmbed
             @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false)),
     })
     @Fetch(FetchMode.SELECT)
-    @BatchSize(size = 10)
+    @BatchSize(size = 50)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("상태 목록")
     private List<StateEntity> list;

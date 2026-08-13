@@ -67,7 +67,7 @@
 
 14. 단일 테이블 상속: target 컬럼을 `journal_entry` 에 nullable 로 얹는다(기존 `elseDreamYn`/`elseDreamerNm` 와 동일한 트레이드오프). 순수성(제네릭 Node)보다 기존 패턴과의 일관성을 택한다. full schema SSOT(`schema/full/mariadb/schema-journal-mariadb.sql`)도 런타임과 맞춰 `journal_entry`(+ target 컬럼)를 정본으로 두고 `journal_interpretation` DROP 을 반영한다.
 
-> **스키마 전달 현실 (Phase 1 조사):** 런타임 DB 의 `journal_entry` DDL 은 `schema/migration/mariadb/<ver>/V*__...-mariadb.sql` 로 전달하고 **수동 반영**한다(flyway `enabled:false`, ddl-auto `none`; 1.0 전까지 자동반영 미사용). Phase 1 의 target 컬럼은 `0.26.x/V0.26.0__journal-entry-reflection-target-mariadb.sql` 로 추가한다. full schema 베이스라인은 현재 `journal_diary`/`journal_note`/`journal_dream` 분리 상태로 `journal_entry` 수렴이 미반영된 **선행 갭**이며, 이 베이스라인 수렴은 본 마이그레이션과 별개 작업으로 남긴다.
+> **스키마 현황:** Primary는 `journal_entry`, Commentary Reflection은 `journal_reflection`이다(흡수 이후 별도 AR 영속). 1.0 전 Flyway 증분 트리는 두지 않으며 선언 SSOT `schema/full/mariadb/schema-journal-mariadb.sql`도 동일 CREATE로 맞춘다.
 
 ---
 

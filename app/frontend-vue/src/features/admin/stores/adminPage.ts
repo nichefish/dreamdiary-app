@@ -93,6 +93,12 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   const entityQueueSyncResult = ref<EntityQueueSyncResult | null>(null);
   const entityQueueRequeueRunning = ref(false);
 
+  /** 저널 설정 (임베딩 ON/OFF) */
+  const journalSettingEmbeddingEnabled = ref(true);
+  const journalSettingLoading = ref(false);
+  const journalSettingSaving = ref(false);
+  const journalSettingError = ref("");
+
   const cacheMap = ref<CacheMap>({});
   const cacheDetail = ref<CacheDetail>(null);
   const cacheLoading = ref(false);
@@ -401,6 +407,37 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     }
   }
 
+  async function fetchJournalSetting() {
+    journalSettingLoading.value = true;
+    journalSettingError.value = "";
+    try {
+      const res = await axios.get("/api/journal/settings");
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to load journal settings");
+      journalSettingEmbeddingEnabled.value = res.data.rsltObj?.embeddingEnabled !== false;
+    } catch (error) {
+      journalSettingError.value = error instanceof Error ? error.message : "Failed to load journal settings";
+    } finally {
+      journalSettingLoading.value = false;
+    }
+  }
+
+  async function saveJournalSetting() {
+    journalSettingSaving.value = true;
+    journalSettingError.value = "";
+    try {
+      const res = await axios.put("/api/journal/settings", {
+        embeddingEnabled: journalSettingEmbeddingEnabled.value,
+      });
+      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to save journal settings");
+      journalSettingEmbeddingEnabled.value = res.data.rsltObj?.embeddingEnabled !== false;
+    } catch (error) {
+      journalSettingError.value = error instanceof Error ? error.message : "Failed to save journal settings";
+      throw error;
+    } finally {
+      journalSettingSaving.value = false;
+    }
+  }
+
   return {
     meta,
     roles,
@@ -427,11 +464,17 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     entityQueueSyncResult,
     entityQueueRequeueRunning,
     backfillWorkActive,
+    journalSettingEmbeddingEnabled,
+    journalSettingLoading,
+    journalSettingSaving,
+    journalSettingError,
     cacheMap,
     cacheDetail,
     cacheLoading,
     yearOptions,
     fetchBootstrap,
+    fetchJournalSetting,
+    saveJournalSetting,
     fetchEmbeddingStats,
     fetchOllamaHealth,
     fetchChatRagSettings,

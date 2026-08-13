@@ -50,7 +50,7 @@
 
 ### 라우팅·메뉴
 
-- `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`).
+- `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`). 정상 서버 인증 결과는 메모리에서 15초간 재사용하며, 신선도 만료·새로고침·강제 검증 시 `/api/auth/get-auth-account`를 다시 호출한다. 동시 검증은 진행 중 Promise를 공유한다.
 - 사이드바: `toVuePath(menu.url)` (`utils/urlMapping.ts`).
 
 ---
@@ -123,11 +123,12 @@ cF.ajax.request(url, options, callback, continueBlock?)
 
 - 인터셉터에서 401 처리 후 `AuthExpiredError` sentinel(`utils/authError.ts`)을 throw 해 각 catch 블록의 일반 오류 alert 가 중복으로 뜨지 않도록 억제한다.
 - 라우터 가드(`router/index.ts`)가 `verifyAuth()` 이후 미인증 상태를 감지한 경우에도 같은 `confirmSessionExpired()`를 거친다. 일반 보호 라우트는 확인 시 `buildSessionExpiredSignInRoute(to.fullPath)`로 이동하고, 팝업 보호 라우트는 alert 후 `next(false)`로 로그인 화면 렌더를 막는다.
+- `auth.purgeAuth()`는 로그아웃·세션 만료 시 categoryMap·개인 Prefix·메뉴와 함께 저널 태그 클라우드의 목록·오류·로딩·진행 중 요청 세대를 초기화한다. 이전 사용자 세대의 늦은 태그 클라우드 응답은 다음 사용자 상태에 반영하지 않는다.
 - `confirmSessionExpired()`의 일반 화면·팝업 제목, 설명, 확인·취소 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. locale은 안내 문구만 변경하며 HTTP 상태 판정, 중복 다이얼로그 방지, 팝업 닫기, 로그인 이동·취소 분기를 변경하지 않는다.
 - 사용자 체감 로그인 유지 시간은 `auth_policy.session_timeout_minutes` 단일 정책으로 관리한다. 서버는 이 값을 Spring Session max inactive interval, JWT access token `exp`, JWT 쿠키 max-age에 적용하고, JWT 검증 시에도 `issuedAt + policyTimeout`을 넘으면 만료로 처리한다. 정책값이 없거나 조회 실패 시 기존 `server.servlet.session.timeout` 설정을 fallback으로 사용한다.
 - Vue 저널의 submit/delete/state catch는 `swalRequestError(e)`를 호출한다. 이 공통 함수가 `AuthExpiredError`를 즉시 무시하고, 그 외 오류는 콘솔에 기록한 뒤 서버 `message` 또는 현재 locale의 `common.error.processing` 공통 실패 문구를 `swalFire({ icon: "error", text })`로 표시한다.
 - Ajax `rslt` 분기 후속 안내는 `shared/utils/swal.ts`의 `swalAjaxResult({ rslt, message, successFallback?, failureFallback? })`를 사용한다. 내부에서 `swalFire({ text, icon })`로 success/error 아이콘을 주입한다. 옵션 직접 주입이 필요하면 `swalFire(options)`를 쓴다. 검증·중립 안내는 아이콘 없는 `swalAlert(text)`를 유지한다.
-- Vue 저널의 검색·목록 조회가 실패해도 직전 성공 데이터를 빈 목록이나 `0건`으로 덮지 않는다. 상세·수정용 조회 실패는 오류를 표시하고 해당 모달을 열지 않는다.
+- Vue 저널의 검색·목록 조회가 실패해도 직전 성공 데이터를 빈 목록이나 `0건`으로 덮지 않는다. 상세·수정용 조회 실패는 오류를 표시하고 해당 모달을 열지 않는다. 동일 계약은 aside TODO·태그 클라우드 섹션·스레드 상세 소속/연관/피커·결산 상세 엔트리·계정 신청 승인 목록에도 적용한다(실패 UI ≠ 정상 빈 결과).
 - 저장·삭제·복원처럼 결과값으로 후속 알림을 분기하는 store action은 `AuthExpiredError`를 `{ rslt: false }` 또는 `false`로 변환하지 않고 재throw한다. 호출부는 인증 만료일 때 전역 401 안내만 남기고, 실제 처리 실패일 때만 실패 알림을 표시한다.
 - 인증이 필요한 Vue SPA 모달은 `shared/auth/sessionPing.ts`의 `assertAuthenticatedBeforeModal()`을 먼저 호출한 뒤 모달 open 플래그 또는 Bootstrap `show()`를 실행한다. 이 핑은 `/api/session/ping`을 호출하며, 로그인 세션이 풀려 있으면 전역 401 인터셉터가 즉시 세션 만료 안내를 표시하고 모달은 열지 않는다. 로그인 화면의 비밀번호 변경 모달처럼 비로그인 상태에서 열려야 하는 auth 모달은 선행 핑 대상에서 제외한다.
 - 취소 시 navbar 세션 만료 메시지 표시(legacy `.blink.text-danger`)는 Vue SPA 에서 미구현.
@@ -456,20 +457,20 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 
 **변경 전 (legacy/초기 SPA):** `TagifyEditor.vue`가 `onMounted` 시 HTTP로 ctgrMap을 직접 조회 → 모달 열릴 때마다 추가 round-trip 발생.
 
-**변경 후 (현행):** `journalModal` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `App.vue` 로그인·마운트 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensureCategoryMap`으로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그 저장 성공 시 `applyCategoryMapsFromTagSave`가 Tagify JSON을 `mergeTagifyListIntoCategoryMap`으로 **병합** — 무효화·추가 GET 없음.
+**변경 후 (현행):** `journalCategoryMaps` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `journalModal` 모달 openers는 이 스토어에 위임하고, 템플릿은 `modalStore.dayTagCategoryMap` 등 기존 facade를 그대로 쓴다. `App.vue`·로그인 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensure`로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그·메타 포함 저장 성공 시 `applyCategoryMapsFromSaveResponse`가 서버 `rsltMap`으로 세션 ref를 **교체** — 무효화·추가 GET 없음.
 
 ```
 앱 부트 (인증됨)
-  └─ preloadCategoryMaps() → ensureCategoryMap × 4 → 스토어 ref 적재
+  └─ preloadCategoryMaps() → journalCategoryMaps.ensure × 4 → 스토어 ref 적재
 
 모달 오픈
-  └─ openDayRegist / openEntryRegist / …
-       └─ ensureCategoryMap(url) — loaded 플래그 있으면 HTTP 생략
+  └─ openDayRegist / openEntryRegist / … (journalModal)
+       └─ categoryMaps.ensure(url) — loaded 플래그 있으면 HTTP 생략
             └─ <TagifyEditor :category-map="modalStore.dayTagCategoryMap | entryCategoryMap(computed)" />
 
 태그·메타 포함 저장 성공
   └─ save API 응답 rsltMap: dayTagCategoryMap / dayMetaCategoryMap / entryTagCategoryMap (서버 evict 후 DB 기준 전역 map, 추가 GET 없음)
-  └─ applyCategoryMapsFromSaveResponse(rsltMap) — 앱 세션 ref 교체(삭제 반영)
+  └─ applyCategoryMapsFromSaveResponse(rsltMap) — journalCategoryMaps 세션 ref 교체(삭제 반영)
        └─ TagifyEditor categoryMap watch → initTagify()
 ```
 
@@ -713,7 +714,7 @@ window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
 - 조회 URL은 `/api/menus?mode=USER|MNGR`이며, 응답의 `subMenuList` depth를 유지한다.
 - 서버 메뉴 조회 실패 시에만 fallback 메뉴를 사용한다. fallback은 운영 메뉴 관리 기능의 대체물이 아니다.
 - 사용자/관리자 전환은 `useMenuStore.setMenuMode()`로 처리하고, 전환 시 menu cache를 비운 뒤 다시 조회한다.
-- 로그아웃 또는 인증 검증 실패로 `useAuthStore.purgeAuth()`가 실행되면 `useMenuStore.resetMenu()`로 사이드바 메뉴와 저장된 모드를 `USER` 기본 상태로 초기화한다. 다시 로그인한 뒤 기본 진입 화면(`/journal/weekly`)과 사이드바 모드가 어긋나지 않아야 한다.
+- 로그아웃 또는 인증 검증 실패로 `useAuthStore.purgeAuth()`가 실행되면 `useMenuStore.resetMenu()`로 사이드바 메뉴와 저장된 모드를 `USER` 기본 상태로 초기화한다. 다시 로그인한 뒤 기본 진입 화면(`/journal/daily`)과 사이드바 모드가 어긋나지 않아야 한다.
 
 ### 정적 리소스와 폰트
 

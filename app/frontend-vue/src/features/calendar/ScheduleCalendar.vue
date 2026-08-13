@@ -103,6 +103,7 @@
 
         <div class="card post schedule-calendar-card" style="margin-top: 0 !important;">
           <div v-show="viewMode === 'calendar'" class="card-body position-relative">
+            <div v-if="scheduleStore.eventsError" class="alert alert-warning py-2 mb-3">{{ scheduleStore.eventsError }}</div>
             <div v-if="scheduleStore.loading" class="schedule-loading">
               <span class="spinner-border spinner-border-sm me-2"></span>
               {{ t('common.loading') }}
@@ -110,6 +111,7 @@
             <FullCalendar ref="calendarRef" :options="calendarOptions" />
           </div>
           <div v-show="viewMode === 'list'" class="card-body">
+            <div v-if="scheduleStore.listError" class="alert alert-warning py-2 mb-3">{{ scheduleStore.listError }}</div>
             <div v-if="scheduleStore.listLoading" class="schedule-list-loading">
               <span class="spinner-border spinner-border-sm me-2"></span>
               {{ t('common.loading') }}
@@ -126,7 +128,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="scheduleStore.listRows.length === 0">
+                  <tr v-if="!scheduleStore.listError && scheduleStore.listRows.length === 0">
                     <td colspan="5" class="text-center text-muted py-10">{{ t('schedule.list.empty') }}</td>
                   </tr>
                   <tr

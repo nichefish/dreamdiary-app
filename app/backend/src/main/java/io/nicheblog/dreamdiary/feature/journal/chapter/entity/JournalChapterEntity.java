@@ -88,6 +88,7 @@ public class JournalChapterEntity
     private Integer sortOrder;
 
     @OneToMany(mappedBy = "journalChapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
     @OrderBy("sortOrder ASC")
     @Comment("journal entry list")
     private List<JournalEntryEntity> journalEntryList;
