@@ -197,6 +197,11 @@ public interface ApiUrl {
     String CODE_ITEM_USE = Prefix.API + "/code/item/use";
     String CODE_ITEM_UNUSE = Prefix.API + "/code/item/unuse";
 
+    /** 템플릿 관리 */
+    String TMPLATS = Prefix.API + "/tmplats";
+    String TMPLAT = Prefix.API + "/tmplat/{id}";
+    String TMPLATS_ACTIVE = Prefix.API + "/tmplats/active";
+
     /** 로그 조회 */
     String LOGS = Prefix.API + "/logs";
     String LOG_STATS_USER = Prefix.API + "/logs/stats-user";

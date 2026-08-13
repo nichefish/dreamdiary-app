@@ -12,6 +12,7 @@ INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use
 INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use_yn, created_by) VALUES ('menu.admin.user_group', '사용자 그룹 메뉴', '사용자 그룹/권한 관리 메뉴 노출', 50, 'Y', 'system');
 INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use_yn, created_by) VALUES ('menu.admin.menu', '메뉴 관리 메뉴', '메뉴 관리 화면 노출', 60, 'Y', 'system');
 INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use_yn, created_by) VALUES ('menu.admin.code', '코드 관리 메뉴', '코드 관리 화면 노출', 70, 'Y', 'system');
+INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use_yn, created_by) VALUES ('menu.admin.tmplat', '템플릿 관리 메뉴', '템플릿 관리 화면 노출', 75, 'Y', 'system');
 INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use_yn, created_by) VALUES ('menu.admin.page', '사이트 관리 메뉴', '사이트 관리 화면 노출', 80, 'Y', 'system');
 INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use_yn, created_by) VALUES ('menu.admin.board', '게시판 관리 메뉴', '게시판 그룹 관리 화면 노출', 90, 'Y', 'system');
 INSERT IGNORE INTO permission (perm_key, perm_name, description, sort_order, use_yn, created_by) VALUES ('menu.admin.log', '로그 목록 메뉴', '운영 로그 목록 화면 노출', 100, 'Y', 'system');
@@ -40,6 +41,7 @@ UPDATE menu SET required_perm_key = 'menu.admin.auth_policy' WHERE menu_label = 
 UPDATE menu SET required_perm_key = 'menu.admin.user_group' WHERE menu_label = 'USER_GROUP' AND deleted_at IS NULL;
 UPDATE menu SET required_perm_key = 'menu.admin.menu' WHERE menu_label = 'MENU_ADMIN' AND deleted_at IS NULL;
 UPDATE menu SET required_perm_key = 'menu.admin.code' WHERE menu_label = 'CODE_ADMIN' AND deleted_at IS NULL;
+UPDATE menu SET required_perm_key = 'menu.admin.tmplat' WHERE menu_label = 'TMPLAT_ADMIN' AND deleted_at IS NULL;
 UPDATE menu SET required_perm_key = 'menu.admin.page' WHERE menu_label = 'ADMIN_PAGE' AND deleted_at IS NULL;
 UPDATE menu SET required_perm_key = 'menu.admin.board' WHERE menu_label = 'BOARD_ADMIN' AND deleted_at IS NULL;
 UPDATE menu SET required_perm_key = 'menu.admin.log' WHERE menu_label = 'LOG_LIST' AND deleted_at IS NULL;

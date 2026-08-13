@@ -81,6 +81,7 @@ public interface AppUrl {
 
     /** 코드 관리 */
     String CODE_ADMIN_PAGE = Prefix.APP + "/admin/code/page.do";
+    String TMPLAT_ADMIN_PAGE = Prefix.APP + "/admin/tmplat/page.do";
 
     /** 로그 조회 */
     String LOG_LIST = Prefix.APP + "/log/list.do";

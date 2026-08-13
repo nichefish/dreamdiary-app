@@ -175,3 +175,18 @@ CREATE TABLE IF NOT EXISTS popup (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '팝업';
+
+-- 템플릿 (TmplatEntity)
+-- @extends: BaseAuditEntity
+CREATE TABLE IF NOT EXISTS tmplat (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '템플릿 ID',
+    title VARCHAR(1000) NULL COMMENT '제목',
+    content TEXT NULL COMMENT '내용',
+    sort_order INT DEFAULT 0 COMMENT '정렬 순서',
+    use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
+) COMMENT = '템플릿';

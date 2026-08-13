@@ -92,6 +92,7 @@ const FALLBACK_MNGR_MENU_LIST: MenuDto[] = [
     menuItem(-205, "\uc778\uc99d \uc815\ucc45", "/admin/auth-policy", "bi-shield-lock"),
     menuItem(-206, "\uac8c\uc2dc\ud310 \uadf8\ub8f9", "/admin/board-group", "bi-layout-text-window"),
     menuItem(-207, "\ucf54\ub4dc \uad00\ub9ac", "/admin/code", "bi-braces"),
+    menuItem(-210, "\ud15c\ud50c\ub9bf \uad00\ub9ac", "/admin/tmplat", "bi-file-earmark-text"),
     menuItem(-208, "\ub85c\uadf8", "/admin/log", "bi-card-list"),
     menuItem(-209, "\uc0ac\uc6a9\uc790 \ud1b5\uacc4", "/admin/log/stats-user", "bi-graph-up"),
   ]),

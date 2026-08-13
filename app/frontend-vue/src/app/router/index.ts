@@ -148,6 +148,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { pageTitleKey: "route.title.code-admin" },
       },
       {
+        path: "/admin/tmplat",
+        name: "tmplat-admin",
+        component: () => import("@/features/admin/TmplatAdminPage.vue"),
+        meta: { pageTitleKey: "route.title.tmplat-admin" },
+      },
+      {
         path: "/admin/menu",
         name: "menu-admin",
         component: () => import("@/features/admin/MenuAdminPage.vue"),
