@@ -57,16 +57,27 @@
           {{ entryRegistLabel }}
         </button>
         <!--end::엔트리 등록 TEXT 버튼-->
-        <!--begin::복사 버튼-->
+        <!--begin::복사 버튼 (해석 포함)-->
         <button
           type="button"
           class="btn btn-sm btn-light-primary btn-outlined ms-2 px-3 cursor-pointer"
-          :title="t('common.copy')"
-          @click="copyChapter"
+          :title="chapterHasReflections ? t('journal.copy.include-reflection') : t('common.copy')"
+          @click="copyChapter(true)"
         >
           <i class="bi bi-copy p-0"></i>
         </button>
         <!--end::복사 버튼-->
+        <!--begin::해석 제외 복사 (하위 엔트리에 리플렉션 있을 때만)-->
+        <button
+          v-if="chapterHasReflections"
+          type="button"
+          class="btn btn-sm btn-light-primary btn-outlined px-3 cursor-pointer"
+          :title="t('journal.copy.exclude-reflection')"
+          @click="copyChapter(false)"
+        >
+          <i class="bi bi-clipboard p-0"></i>
+        </button>
+        <!--end::해석 제외 복사-->
         <!--begin::TXT보내기 버튼-->
         <button
           type="button"
@@ -333,6 +344,9 @@ const tagList = computed(() => props.chapter.tag?.list ?? []);
  */
 const isSummaryChapter = computed(() => props.chapter.summaryYn === "Y");
 
+/** 하위 엔트리에 리플렉션(해석)이 하나라도 있는지 — "해석 제외 복사" 버튼 노출 조건. */
+const chapterHasReflections = computed(() => entryList.value.some((e) => (e.reflectionList?.length ?? 0) > 0));
+
 /** 요약 강조 대상 엔트리 id — 시스템 요약 챕터의 첫 non-empty 엔트리(그날 전체 요약). 그 외엔 undefined. */
 const summaryEntryId = computed(() =>
   isSummaryChapter.value ? findFirstNonEmptyEntry(entryList.value)?.id : undefined,
@@ -561,7 +575,7 @@ async function deleteChapter(): Promise<void> {
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
 /** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목 → 각 엔트리 #순번·본문, 그 밑에 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyChapter(): Promise<void> {
+async function copyChapter(includeReflection = true): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
   if (props.chapter.stdrdDt) {
@@ -578,12 +592,14 @@ async function copyChapter(): Promise<void> {
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
     if (sortNum) lines.push(sortNum);
     if (raw) lines.push(raw);
-    /* 원문과 해석은 한 몸 — 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-    for (const reflection of entry.reflectionList ?? []) {
-      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-      if (reflRaw) {
-        lines.push("");
-        lines.push(reflRaw);
+    /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+    if (includeReflection) {
+      for (const reflection of entry.reflectionList ?? []) {
+        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+        if (reflRaw) {
+          lines.push("");
+          lines.push(reflRaw);
+        }
       }
     }
     lines.push("");

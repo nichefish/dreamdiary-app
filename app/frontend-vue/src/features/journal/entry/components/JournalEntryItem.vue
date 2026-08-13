@@ -89,16 +89,27 @@
           </button>
           <!--end::댓글 등록 버튼-->
 
-          <!--begin::복사 버튼-->
+          <!--begin::복사 버튼 (해석 포함)-->
           <button
             type="button"
             class="btn btn-xs btn-icon journal-entry-action-btn"
-            :title="authStore.isLocalProfile ? t('common.copy') + ' (id ' + entry.id + ')' : t('common.copy')"
-            @click="copyEntry"
+            :title="copyIncludeTitle"
+            @click="copyEntry(true)"
           >
             <i class="bi bi-copy fs-8"></i>
           </button>
           <!--end::복사 버튼-->
+          <!--begin::해석 제외 복사 (리플렉션 있을 때만 노출 — 없으면 포함=제외)-->
+          <button
+            v-if="reflectionList.length > 0"
+            type="button"
+            class="btn btn-xs btn-icon journal-entry-action-btn"
+            :title="t('journal.copy.exclude-reflection')"
+            @click="copyEntry(false)"
+          >
+            <i class="bi bi-clipboard fs-8"></i>
+          </button>
+          <!--end::해석 제외 복사-->
 
           <!--begin::컨텍스트 메뉴-->
           <div class="me-0">
@@ -652,6 +663,12 @@ const {
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const reflectionList = computed(() => props.entry.reflectionList ?? []);
 
+/** 복사(해석 포함) 버튼 tooltip. 리플렉션이 있으면 "해석 포함"을 명시하고, 로컬 프로필은 id 를 덧붙인다. */
+const copyIncludeTitle = computed(() => {
+  const base = reflectionList.value.length > 0 ? t("journal.copy.include-reflection") : t("common.copy");
+  return authStore.isLocalProfile ? `${base} (id ${props.entry.id})` : base;
+});
+
 /**
  * 엔트리 접힘 시 임베드 Reflection 은 v-if 로 DOM 에서 제거된다.
  * 다시 펼치면 KTMenu(⋯) DOM 이 새로 마운트되므로 Metronic 핸들러를 재바인딩한다.
@@ -691,7 +708,7 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 }
 
 /** 엔트리 내용을 클립보드에 복사한다. 형식: 날짜(요일) → 본문 → 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyEntry(): Promise<void> {
+async function copyEntry(includeReflection = true): Promise<void> {
   const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
   const dateLine = weekDay
     ? `${props.entry.stdrdDt} (${weekDay})`
@@ -699,10 +716,12 @@ async function copyEntry(): Promise<void> {
   /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
   const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
   const parts = [dateLine, raw].filter(Boolean);
-  /* 원문과 해석은 한 몸 — 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-  for (const reflection of reflectionList.value) {
-    const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-    if (reflRaw) parts.push("", reflRaw);
+  /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+  if (includeReflection) {
+    for (const reflection of reflectionList.value) {
+      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+      if (reflRaw) parts.push("", reflRaw);
+    }
   }
   const text = parts.join("\n");
   try {

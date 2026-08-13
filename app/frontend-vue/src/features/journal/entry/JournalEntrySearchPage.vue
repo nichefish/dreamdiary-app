@@ -50,11 +50,16 @@
       <!--begin::구분선-->
       <div class="border-start border-gray-300 h-25px ms-1"></div>
       <!--end::구분선-->
-      <!--begin::전체 복사-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.tooltip')" @click="copyAll">
+      <!--begin::전체 복사 (해석 포함)-->
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.include.tooltip')" @click="copyAll(true)">
         <i class="bi bi-copy"></i>
       </button>
-      <!--end::전체 복사-->
+      <!--end::전체 복사 (해석 포함)-->
+      <!--begin::전체 복사 (해석 제외)-->
+      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.exclude.tooltip')" @click="copyAll(false)">
+        <i class="bi bi-clipboard"></i>
+      </button>
+      <!--end::전체 복사 (해석 제외)-->
       <!--begin::TXT 내보내기-->
       <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canExportResults" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt">
         <i class="fas fa-download"></i>
@@ -829,7 +834,7 @@ function onTagProfileSuccess(): void {
  * 레거시 JournalEntrySearch.copy() 와 동일 포맷:
  *   날짜(요일)\n#순번\n본문 — 날짜가 바뀔 때만 날짜 헤더 삽입, 엔트리 간 빈 줄.
  */
-async function copyAll(): Promise<void> {
+async function copyAll(includeReflection: boolean): Promise<void> {
   if (isActionLocked.value) return;
   actionInProgress.value = true;
   try {
@@ -855,6 +860,15 @@ async function copyAll(): Promise<void> {
         prevDate = dateLabel;
       }
       block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
+      /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+      if (includeReflection) {
+        for (const reflection of entry.reflectionList ?? []) {
+          const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+          if (reflRaw) block += `
+
+${reflRaw}`;
+        }
+      }
       return block;
     });
     const text = blocks.join("\r\n\r\n").trim();

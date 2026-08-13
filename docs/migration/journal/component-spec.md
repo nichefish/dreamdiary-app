@@ -559,7 +559,7 @@ interface TodoRow {
 
 **헤더 액션 버튼** (우측 `col-3` 영역, `canManageChapter` 일 때만, 레거시 `JournalChapterItem.ts` 동형):
 - 엔트리 등록 TEXT 버튼: 타입별 `저널 일기 등록` / `저널 꿈 등록` / `저널 노트 등록` + `bi-book` / `bi-moon-stars` — `openEntryNew()`
-- 복사 버튼 (`bi-copy`): `copyChapter()` — 날짜·카테고리·제목 + 하위 엔트리 전체를 줄바꿈 연결 텍스트로 클립보드 복사. 각 엔트리 본문 밑에 그 엔트리를 문(target) 리플렉션 본문을 빈 줄로 이어 붙인다(원문·해석은 한 몸, 마커 없음)
+- 복사 버튼 (해석 포함/제외 2버튼): `copyChapter(true)`(`bi-copy`) — 날짜·카테고리·제목 + 하위 엔트리 전체를 줄바꿈 연결 텍스트로 클립보드 복사. 각 엔트리 본문 밑에 그 엔트리를 문(target) 리플렉션 본문을 빈 줄로 이어 붙인다(원문·해석은 한 몸, 마커 없음). 하위 엔트리에 리플렉션이 하나라도 있으면(`chapterHasReflections`) `copyChapter(false)`(`bi-clipboard`, 해석 제외) 버튼을 추가로 노출한다
 - TXT보내기 버튼 (`fas fa-download`, `btn-outline btn-light-primary`): `exportChapter()` — `GET /api/journal/chapter/{id}/export`
 - ⋯ 컨텍스트 메뉴: 수정(`openChapterModify`) / 상태(접힘 서버 토글 `toggleCollapsedState`) / 삭제 — **시스템 요약 챕터(`isSummaryChapter`)에서는 숨긴다**(사용자 편집 대상이 아님). 엔트리 등록·복사·TXT 버튼은 요약에도 유지한다.
 - 접힘 화살표 버튼 (`toggle-chapter-btn`): `toggleChapter()` — 클라이언트만 접힘(`localCollapsedOverride`), 서버 POST 없음
@@ -591,7 +591,7 @@ interface TodoRow {
 
 **축별 완결 잠금(엔트리 DTO)**: 일자 provide 가 없는 검색·뷰 모달 등에서는 `JournalEntryDto.diaryResolvedYn`/`dreamResolvedYn`(백엔드 day projection)이 SSOT 이다. `JournalEntryItem` 은 `mergeDayResolvedAxis` 로 parent provide 와 병합해 `axisWritable`·관련글 해제·이력 `writeLocked` 를 결정한다. 교차뷰 `JournalReflectionItem` 은 Reflection이 완결축 밖이므로 소유권(`isCreatedBy`)으로 쓰기 가드를 둔다. `HistoryModal` 은 `historyWriteLocked` 시 복원·삭제 UI만 숨기고 복사·상세는 허용한다.
 
-**우측 액션 영역**: `JournalEntryItem`은 Primary 엔트리(일기·꿈·노트)만 렌더한다. 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry()`) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/스레드에 추가/라이프사이클/상태/삭제) — 「FLOW 연결」·「FLOW 보기」는 제거되고 스레드 소속 「스레드에 추가」로 수렴했다(나-2b·나-2c). 수정은 `openEntryModify(id)`를 쓴다. 「해석 등록」은 이 Primary 를 target 으로 한 Reflection 을 다는 진입점이다(`openReflectionRegist`, target=이 엔트리). Reflection 자체의 수정·라이프사이클·상태·삭제 액션은 embed(`JournalReflectionItem`)가 담당한다(§23-3). primary `RESOLVED`→딸린 Reflection `RESOLVED`, `RESOLVED` primary에 Reflection 신규→primary `OPEN`(+접기 해제) 연쇄는 §5.1. 이 액션 묶음은 본문과 같은 flex head-row 오른쪽(min-width 80px; 펼침 시 head-row `align-items:flex-start`로 본문·액션 상단 고정, 접힘 시 head-row `align-items:stretch`+head-main 세로 중앙으로 제목만 중앙·액션은 자체 `align-items:flex-start`로 상단 유지)에 두어, 아래 임베드된 Reflection 의 복사·수정 액션과 같은 오른쪽 열에 정렬한다
+**우측 액션 영역**: `JournalEntryItem`은 Primary 엔트리(일기·꿈·노트)만 렌더한다. 댓글 버튼(단독) + 복사 버튼(`bi-copy`, `copyEntry(true)` 해석 포함; 리플렉션이 있으면 `bi-clipboard` `copyEntry(false)` 해석 제외 버튼을 추가 노출) + ⋯ 컨텍스트 메뉴 (수정/이력/관련글/스레드에 추가/라이프사이클/상태/삭제) — 「FLOW 연결」·「FLOW 보기」는 제거되고 스레드 소속 「스레드에 추가」로 수렴했다(나-2b·나-2c). 수정은 `openEntryModify(id)`를 쓴다. 「해석 등록」은 이 Primary 를 target 으로 한 Reflection 을 다는 진입점이다(`openReflectionRegist`, target=이 엔트리). Reflection 자체의 수정·라이프사이클·상태·삭제 액션은 embed(`JournalReflectionItem`)가 담당한다(§23-3). primary `RESOLVED`→딸린 Reflection `RESOLVED`, `RESOLVED` primary에 Reflection 신규→primary `OPEN`(+접기 해제) 연쇄는 §5.1. 이 액션 묶음은 본문과 같은 flex head-row 오른쪽(min-width 80px; 펼침 시 head-row `align-items:flex-start`로 본문·액션 상단 고정, 접힘 시 head-row `align-items:stretch`+head-main 세로 중앙으로 제목만 중앙·액션은 자체 `align-items:flex-start`로 상단 유지)에 두어, 아래 임베드된 Reflection 의 복사·수정 액션과 같은 오른쪽 열에 정렬한다
 
 **스레드·FLOW 액션 경계 (수렴 완료)**: FLOW 를 저널 스레드 소속으로 수렴 완료했다(근거·단계는 `docs/spec/DESIGN_NOTES.md`). **변경 후 현황** — 「흐름 보기」 종단 보기(타임라인 모달 `JournalEntryFlowModal`)와 본문 FLOW 요약 행은 **제거(❌)**됐다. 「흐름 연결」(`openRelatedFlow`, `RelatedContentAddModal` FLOW 고정 모드)도 **제거(❌)**됐다(나-2b). `RelatedContentAddModal` 은 이제 일반 관련 글(RELATED) 전용이다 — 모드 분기·FLOW 안내·FLOW 관계 유형 옵션이 사라졌다. 백엔드 `flowSummary` 계산·`RelationType.FLOW` enum·`related_content` FLOW 행도 모두 **제거(❌)**됐다(다-2). 새 축인 스레드 소속은 `JournalEntryDto.threadList` 로 엔트리에 실리고, 소속 지정 UI 도 **구현 완료(✓)**다(나-2c) — ⋯ 메뉴의 「스레드에 추가」 hover 서브메뉴(소속 토글 + 「새 스레드로 시작」(말머리·제목))와 본문 소속 스레드 칩(클릭 시 현재 저널 화면 위에 상세 모달 열기). 서브메뉴도 전용 후보 API로 **전환 완료(✓)**했다. 280px 서브메뉴 안에서 제목 검색(250ms debounce)·분류 선택·「완료 포함」토글(`includeResolved`)을 제공하고, 후보 행에 `PENDING`/`RESOLVED` 라이프사이클 라벨을 표시한다. 엔트리별 후보 재조회·요청 경합 폐기·소속 변경 후 재조회·오류/정상 빈 결과 분리를 `journalThreadMembership.ts`가 담당한다.
 
@@ -605,7 +605,7 @@ interface TodoRow {
 
 **액션 결과 i18n**: 클립보드 복사 성공·실패와 복사 날짜 헤더의 요일, 라이프사이클·상태 변경 실패, 관련 관계 연결·해제와 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. 관계 해제·변경·삭제 성공 후 스레드 상세가 열려 있으면 상세 본문·집계 태그·소속 엔트리와 주간·월간·일간 배경 목록을 함께 재조회하되 배경 스크롤은 하지 않는다. 상세가 닫힌 화면에서는 기존 목록 재조회와 일자 스크롤을 유지한다.
 
-**엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + 공통 `htmlToPlainText(content)` (TinyMCE HTML을 브라우저 HTML 파서로 이름·10진수·16진수 엔티티 디코딩 후 평문 변환, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음.) 원문·해석은 한 몸 — 엔트리 본문 뒤에 그 엔트리를 문(target) 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). 챕터 복사도 같은 규칙.
+**엔트리 복사 형식**: 날짜(`stdrdDt (요일)`) + 공통 `htmlToPlainText(content)` (TinyMCE HTML을 브라우저 HTML 파서로 이름·10진수·16진수 엔티티 디코딩 후 평문 변환, 마크다운 재처리 이전 원문 기준). `content` 없을 때 `markdownContent` 폴백. (`#sortOrder` 없음.) 원문·해석은 한 몸 — 해석 포함 복사(`copyEntry(true)`)는 엔트리 본문 뒤에 그 엔트리를 문(target) 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). 해석 제외 복사(`copyEntry(false)`)는 리플렉션을 붙이지 않는다(엔트리에 리플렉션이 있을 때만 제외 버튼을 노출). 챕터 복사·검색 전체 복사도 같은 포함/제외 규칙.
 
 **본문 색상·목록 간격 계약**: `journal.scss` 는 `journal-diary-content` / `journal-dream-content` / `journal-reflection-content` 의 `.journal-content`에 본문 색상을 지정하고, `v-html` 내부 `p`와 `li`는 해당 색상을 상속한다. 목록(`<ul>/<ol>/<li>`) 본문이 브라우저 기본 검정색으로 튀거나, 목록 위쪽은 붙고 아래쪽만 기본 margin이 남아 비대칭으로 보이면 실패다.
 
@@ -733,7 +733,7 @@ interface TodoRow {
 - `GET /api/journal/entries` 조회 — 응답 `threadList` 포함(일자 목록과 동일 enrich). 결과 카드는 `JournalEntryItem`으로 소속 스레드 칩을 표시한다
 - 결과 목록, 태그 목록, 키워드 검색/초기화, 정렬 전환
 - 고급 필터 토글 영역에서 유형(일기/꿈) 선택과 키워드 추가
-- 결과 전체 복사 버튼 — 레거시 `JournalEntrySearch.copy()` 포맷으로 클립보드 복사
+- 결과 전체 복사 버튼 (해석 포함/제외 2버튼) — `copyAll(true)`(`bi-copy`)는 각 결과 엔트리 본문 뒤에 그 엔트리 target 리플렉션 본문을 이어 붙이고, `copyAll(false)`(`bi-clipboard`)는 붙이지 않는다(레거시 `JournalEntrySearch.copy()` 포맷=제외에 해당)
 - 개별 결과 복사 버튼 — `JournalEntryItem.copyEntry()` 사용
 - TXT export 버튼 — `GET /api/journal/entries/export`
 - 결과별 수정/삭제 버튼
