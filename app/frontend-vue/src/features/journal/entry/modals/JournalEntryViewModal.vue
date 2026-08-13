@@ -87,18 +87,34 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" @click="close">
-            {{ t('common.close') }}
-          </button>
-                    <button
-            v-if="canEdit"
-            type="button"
-            class="btn btn-primary"
-            :disabled="!entry?.id || modalStore.entryViewLoading"
-            @click="openModify"
-          >
-            {{ t('common.edit') }}
-          </button>
+          <div class="d-flex justify-content-between w-100">
+            <!--begin::해당 글로 이동 (왼쪽) — 엔트리가 속한 일자의 일간 뷰로 이동-->
+            <button
+              type="button"
+              class="btn btn-light-primary"
+              :disabled="!entry?.stdrdDt"
+              @click="goToEntry"
+            >
+              <i class="bi bi-box-arrow-up-right me-1"></i>{{ t('journal.entry.view.go-to') }}
+            </button>
+            <!--end::해당 글로 이동-->
+            <!--begin::닫기·편집 (오른쪽)-->
+            <div class="d-flex gap-2">
+              <button
+                v-if="canEdit"
+                type="button"
+                class="btn btn-primary"
+                :disabled="!entry?.id || modalStore.entryViewLoading"
+                @click="openModify"
+              >
+                {{ t('common.edit') }}
+              </button>
+              <button type="button" class="btn btn-light" @click="close">
+                {{ t('common.close') }}
+              </button>
+            </div>
+            <!--end::닫기·편집-->
+          </div>
         </div>
       </div>
     </div>
@@ -113,6 +129,7 @@
  * 본문은 목록과 동일하게 markdownContent HTML(`journal-content`)을 렌더한다.
  */
 import { computed, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { Modal } from "bootstrap";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -122,6 +139,7 @@ import { swalAlert } from "@/shared/utils/swal";
 
 const modalStore = useJournalModalStore();
 const { t } = useLocaleStore();
+const router = useRouter();
 const modalEl = ref<HTMLElement | null>(null);
 let bsModal: InstanceType<typeof Modal> | null = null;
 
@@ -192,6 +210,17 @@ watch(
 
 function close() {
   modalStore.closeEntryView();
+}
+
+/**
+ * 해당 엔트리가 속한 일자의 일간 뷰(journal-daily-tab)로 이동하고 모달을 닫는다.
+ * 읽기 전용 뷰(관련글·챗 RAG 딥링크 등)에서 원문 위치로 이동하는 경로다.
+ */
+function goToEntry() {
+  const stdrdDt = entry.value?.stdrdDt;
+  if (!stdrdDt) return;
+  close();
+  void router.push({ name: "journal-daily-tab", query: { stdrdDt } });
 }
 
 function openModify() {

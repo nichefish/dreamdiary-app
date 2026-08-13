@@ -448,7 +448,7 @@ interface TodoRow {
 
 **Vue**: `JournalEntryViewModal.vue` → `journal_entry_view_modal`
 
-채팅 RAG 출처 딥링크용 읽기 전용 모달이다. `GET /api/journal/entry/{id}`로 조회한 `markdownContent`를 목록과 동일한 `journal-content` HTML로 표시하고, 날짜·제목·태그·꿈꾼(해당 시)만 보여 준다. 저장 폼은 없다. footer 편집은 `openEntryModifyFromView`로 전환하며 `JOURNAL_REFLECTION`이면 `JournalReflectionRegistModal`, 그 외는 `JournalEntryRegistModal`을 연다. 비팝업 라우트에서는 `App.vue`가 전역 마운트한다.
+채팅 RAG 출처 딥링크용 읽기 전용 모달이다. `GET /api/journal/entry/{id}`로 조회한 `markdownContent`를 목록과 동일한 `journal-content` HTML로 표시하고, 날짜·제목·태그·꿈꾼(해당 시)만 보여 준다. 저장 폼은 없다. footer 는 왼쪽에 「해당 글로 이동」(`goToEntry` — `router.push({ name: "journal-daily-tab", query: { stdrdDt } })` 로 엔트리 일자의 일간 뷰로 이동 후 모달 닫기; `stdrdDt` 없으면 비활성)을, 오른쪽에 편집·닫기를 둔다(`justify-content-between`). footer 편집은 `openEntryModifyFromView`로 전환하며 `JOURNAL_REFLECTION`이면 `JournalReflectionRegistModal`, 그 외는 `JournalEntryRegistModal`을 연다. 비팝업 라우트에서는 `App.vue`가 전역 마운트한다.
 
 ### 22-4. `JournalEntryRegistModal` 등록/수정 폼 여백
 
