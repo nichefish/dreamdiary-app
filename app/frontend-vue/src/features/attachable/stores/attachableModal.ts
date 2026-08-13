@@ -96,6 +96,9 @@ export interface AttachableActionResult {
   rsltObj?: unknown;
 }
 
+/** 태그클라우드 크기 고정 상태. AUTO=빈도 산출, MIN=ts-1 고정, MAX=ts-9 고정. */
+export type CloudSizeLock = "AUTO" | "MIN" | "MAX";
+
 /** 태그 프로필 폼 모델 */
 export interface TagProfileModel {
   id: string;
@@ -108,8 +111,8 @@ export interface TagProfileModel {
   name: string;
   categoryTextClassCd: string;
   textClassCd: string;
-  /** 클라우드 크기 최대 고정 (ts-9). */
-  forceMax: boolean;
+  /** 클라우드 크기 고정 상태 (AUTO/MIN/MAX). */
+  cloudSizeLock: CloudSizeLock;
   content: string;
 }
 
@@ -648,7 +651,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
   const tagProfileModel = ref<TagProfileModel>({
     id: "", categoryProfileId: "", tagId: "", tagCategoryId: "",
     contentType: "", contentTypeLabel: "", ctgr: "", name: "",
-    categoryTextClassCd: "", textClassCd: "", forceMax: false, content: "",
+    categoryTextClassCd: "", textClassCd: "", cloudSizeLock: "AUTO", content: "",
   });
 
   /**
@@ -668,7 +671,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       name: String(payload.name ?? ""),
       categoryTextClassCd: String(payload.categoryTextClassCd ?? ""),
       textClassCd: String(payload.textClassCd ?? ""),
-      forceMax: payload.forceMax === true,
+      cloudSizeLock: payload.cloudSizeLock === "MIN" || payload.cloudSizeLock === "MAX" ? payload.cloudSizeLock : "AUTO",
       content: String(payload.content ?? ""),
     };
     tagProfileOpen.value = true;
@@ -714,7 +717,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
       fd.append("contentType", m.contentType);
       fd.append("categoryTextClassCd", m.categoryTextClassCd);
       fd.append("textClassCd", m.textClassCd);
-      fd.append("forceMax", m.forceMax ? "true" : "false");
+      fd.append("cloudSizeLock", m.cloudSizeLock);
       fd.append("content", m.content);
       const res = await axios.post(`/api/tags/${m.tagId}/profile`, fd, {
         headers: { "Content-Type": "multipart/form-data" },

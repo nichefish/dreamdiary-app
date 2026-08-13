@@ -15,6 +15,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagReposito
 import io.nicheblog.dreamdiary.feature.attachable.tag.spec.TagProfileSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.type.CloudSizeLock;
 import io.nicheblog.dreamdiary.global.type.TextClass;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -94,9 +95,9 @@ public class TagProfileService
     }
 
     /**
-     * 태그 목록에 사용자별 시각 의미(색)·클라우드 최대 크기(forceMax)를 병합한다.
+     * 태그 목록에 사용자별 시각 의미(색)·클라우드 크기 고정(cloudSizeLock)을 병합한다.
      * <p>변경 전: textClass(색)만 병합했다. sizeBoost·emphasized 는 폐기했다.</p>
-     * <p>변경 후: 프로필 {@code forceMax}이면 {@code tagClass}를 {@code ts-9}로 고정한다.
+     * <p>변경 후: 프로필 크기 고정({@code cloudSizeLock})이 {@code MAX}면 {@code tagClass}를 {@code ts-9}로, {@code MIN}이면 {@code ts-1}로 고정한다.
      * 엔트리 본문 태그줄에는 적용하지 않으며, sized 태그클라우드 경로에서만 호출된다.</p>
      *
      * @param tagList 태그 목록
@@ -156,10 +157,10 @@ public class TagProfileService
                         (left, right) -> left
                 ));
 
-        final Map<Integer, Boolean> forceMaxMap = profiles.stream()
+        final Map<Integer, CloudSizeLock> sizeLockMap = profiles.stream()
                 .collect(Collectors.toMap(
                         TagProfileEntity::getTagId,
-                        profile -> Boolean.TRUE.equals(profile.getForceMax()),
+                        profile -> CloudSizeLock.getOrDefault(profile.getCloudSizeLock()),
                         (left, right) -> left
                 ));
 
@@ -173,10 +174,10 @@ public class TagProfileService
             tag.setTextSemantic(semantic);
             tag.setTextClassCd(semantic.getKey());
             tag.setTextClass(toCssTextClass(tag.getTextClassCd()));
-            /* forceMax 이면 빈도 산출을 덮어 ts-9. 클라우드 전용. */
-            tag.setTagClass(TagCloudSizeSupport.applyForceMax(
+            /* 크기 고정(MIN/MAX)이면 빈도 산출을 덮어 ts-1/ts-9. 클라우드 전용. */
+            tag.setTagClass(TagCloudSizeSupport.applyCloudSizeLock(
                     tag.getTagClass(),
-                    forceMaxMap.getOrDefault(tag.getId(), false)
+                    sizeLockMap.getOrDefault(tag.getId(), CloudSizeLock.AUTO)
             ));
         });
     }
@@ -223,7 +224,7 @@ public class TagProfileService
         this.populateTagCategoryInfo(tagProfile);
         this.normalizeTagTextForUpsert(tagProfile);
         this.normalizeCategoryTextSemantic(tagProfile);
-        this.normalizeForceMaxForUpsert(tagProfile);
+        this.normalizeCloudSizeLockForUpsert(tagProfile);
 
         if (tagProfile.getId() == null) {
             this.getDtoByTagIdAndContentType(tagProfile.getTagId(), tagProfile.getContentType())
@@ -272,11 +273,11 @@ public class TagProfileService
     }
 
     /**
-     * 저장용: forceMax 를 boolean 으로 정규화. null 은 false.
+     * 저장용: cloudSizeLock 을 정규화. null 은 AUTO.
      */
-    private void normalizeForceMaxForUpsert(final TagProfileDto tagProfile) {
+    private void normalizeCloudSizeLockForUpsert(final TagProfileDto tagProfile) {
         if (tagProfile == null) return;
-        tagProfile.setForceMax(Boolean.TRUE.equals(tagProfile.getForceMax()));
+        tagProfile.setCloudSizeLock(CloudSizeLock.getOrDefault(tagProfile.getCloudSizeLock()));
     }
 
 
@@ -285,7 +286,7 @@ public class TagProfileService
      */
     private TagProfileDto normalizeTagTextForRead(final TagProfileDto tagProfile) {
         if (tagProfile == null) return null;
-        tagProfile.setForceMax(Boolean.TRUE.equals(tagProfile.getForceMax()));
+        tagProfile.setCloudSizeLock(CloudSizeLock.getOrDefault(tagProfile.getCloudSizeLock()));
         if (tagProfile.getTextClass() == null) {
             tagProfile.setTextClass(null);
             tagProfile.setTextClassCd(null);

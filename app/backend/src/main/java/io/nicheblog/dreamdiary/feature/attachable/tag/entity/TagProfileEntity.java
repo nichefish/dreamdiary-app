@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.attachable.tag.entity;
 
 import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditRegEntity;
+import io.nicheblog.dreamdiary.global.type.CloudSizeLock;
 import io.nicheblog.dreamdiary.global.type.TextClass;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -66,12 +67,13 @@ public class TagProfileEntity
     private TextClass textClass;
 
     /**
-     * 태그클라우드 크기 최대 고정. {@code true}이면 빈도 산출과 무관하게 {@code ts-9}.
+     * 태그클라우드 크기 고정 상태. {@code MAX}=ts-9, {@code MIN}=ts-1 로 고정하고 {@code AUTO}는 빈도 산출을 따른다.
      * 엔트리 본문 태그줄에는 적용하지 않는다.
      */
     @Builder.Default
-    @Column(name = "force_max", nullable = false)
-    @Comment("클라우드 크기 최대 고정 (ts-9)")
-    private Boolean forceMax = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cloud_size_lock", length = 10, nullable = false)
+    @Comment("클라우드 크기 고정 (AUTO/MIN/MAX)")
+    private CloudSizeLock cloudSizeLock = CloudSizeLock.AUTO;
 
 }

@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.attachable.tag.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.type.CloudSizeLock;
 import io.nicheblog.dreamdiary.global.type.TextClass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -44,11 +45,11 @@ public class TagProfileDto
     private String textClassCd;
 
     /**
-     * 태그클라우드 크기 최대 고정. {@code true}이면 {@code ts-9}.
+     * 태그클라우드 크기 고정 상태. {@code MAX}=ts-9, {@code MIN}=ts-1, {@code AUTO}=빈도 산출.
      * 엔트리 본문 태그줄에는 적용하지 않는다.
      */
     @Builder.Default
-    private Boolean forceMax = false;
+    private CloudSizeLock cloudSizeLock = CloudSizeLock.AUTO;
 
 
     /** 카테고리 프로필 ID */
