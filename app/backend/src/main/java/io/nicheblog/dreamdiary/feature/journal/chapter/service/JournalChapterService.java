@@ -602,10 +602,15 @@ public class JournalChapterService
         pos = Math.min(pos, list.size());
         list.add(pos, target);
 
-        // sortOrder 재정렬
+        // sortOrder 재정렬 — 일반 챕터만 1..N. 요약·DREAM 은 순번 밖(0)으로 고정한다.
+        // normalizeSortOrder 와 동일한 버킷 규칙. insert 에서 요약·DREAM 에 순번을 부여하면
+        // 이후 normalizeSortOrder(JPA saveAll)와 이 메서드(MyBatis batchUpdateIdx)의 영속성 컨텍스트
+        // staleness 로 그 값이 DB 에 남아 요약이 sort_order=0 을 벗어날 수 있다.
         int sortOrder = 1;
         for (final JournalChapterDto e : list) {
-            e.setSortOrder(sortOrder++);
+            final boolean numbered = !StringUtils.equals(e.getSummaryYn(), SUMMARY_YN)
+                    && e.getChapterType() != ChapterType.DREAM;
+            e.setSortOrder(numbered ? sortOrder++ : NON_NUMBERED_SORT_ORDER);
         }
 
         journalChapterMapper.batchUpdateIdx(list);

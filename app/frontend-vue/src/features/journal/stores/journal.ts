@@ -811,6 +811,9 @@ export const useJournalStore = defineStore("journal", () => {
             } else if (lifecycleKey) {
               entry.lifecycle = { lifecycleKey };
             }
+            /* 부분 갱신으로 새로 렌더된 리플렉션 임베드의 ⋯(KTMenu)를 재바인딩한다.
+               fetchDays 경로와 달리 여기서 호출하지 않으면 신규 등록 리플렉션의 컨텍스트 메뉴가 바인딩되지 않는다. */
+            void reinitMetronicAfterDom();
             return;
           }
         }
