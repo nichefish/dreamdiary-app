@@ -77,8 +77,8 @@
           <i class="fas fa-download"></i>
         </button>
         <!--end::TXT보내기 버튼-->
-        <!--begin::컨텍스트 메뉴 (⋯)-->
-        <div class="me-0 d-flex align-items-center">
+        <!--begin::컨텍스트 메뉴 (⋯) — 시스템 요약 챕터는 사용자 편집 대상이 아니므로 숨긴다(엔트리 등록·복사·TXT 는 유지). -->
+        <div v-if="!isSummaryChapter" class="me-0 d-flex align-items-center">
           <button
             class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
             data-kt-menu-trigger="click"
