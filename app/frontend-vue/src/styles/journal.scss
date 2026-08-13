@@ -1022,6 +1022,17 @@ $journal-dream-paired-states: (
         }
     }
 
+    &--search-add {
+        background: #f5faff;
+        color: #0b63ce;
+        font-weight: 600;
+        margin-top: 4px;
+
+        &:hover {
+            background: #dbeafe;
+        }
+    }
+
     &--graph {
         background: #ecfdf5;
         color: #047857;

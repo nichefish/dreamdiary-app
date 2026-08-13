@@ -11,6 +11,15 @@
         <i class="bi bi-search"></i>
         <span>{{ t("common.search") }}</span>
       </button>
+      <button
+        v-if="isInSearchPopup"
+        type="button"
+        class="journal-tag-ctx-btn journal-tag-ctx-btn--search-add"
+        @click="onSearchAdd"
+      >
+        <i class="bi bi-plus-lg"></i>
+        <span>{{ t("journal.tag.search-add") }}</span>
+      </button>
       <button type="button" class="journal-tag-ctx-btn journal-tag-ctx-btn--configure" @click="onConfigure">
         <i class="bi bi-sliders2"></i>
         <span>{{ t("journal.tag.settings") }}</span>
@@ -20,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { useTagContextMenuStore, type TagContextMenuPayload } from "@/features/journal/stores/tagContextMenu";
@@ -39,6 +48,10 @@ const router = useRouter();
 
 const menuEl = ref<HTMLElement | null>(null);
 
+/** 엔트리 검색 팝업 안인지 여부 — "검색에 추가"(다중) 버튼 노출 조건. 밖에서는 단일 "검색"이 곧 새 검색이라 노출하지 않는다. */
+const isInSearchPopup = computed(() => route.name === "journal-entry-search");
+
+/** 검색(단일): 검색 팝업 안이면 tagIds 를 이 태그 하나로 교체, 밖이면 이 태그로 새 팝업을 연다. */
 async function onSearch(): Promise<void> {
   const payload = { ...store.payload };
   store.close();
@@ -48,19 +61,38 @@ async function onSearch(): Promise<void> {
     return;
   }
 
-  await openEntrySearchPopup(payload);
+  await openEntrySearchPopup(payload, "single");
 }
 
-async function openEntrySearchPopup(payload: TagContextMenuPayload): Promise<void> {
+/** 검색에 추가(다중): 검색 팝업 안에서 기존 tagIds 에 이 태그를 더한다(AND, 중복 무시). */
+async function onSearchAdd(): Promise<void> {
+  const payload = { ...store.payload };
+  store.close();
+  await openEntrySearchPopup(payload, "add");
+}
+
+async function openEntrySearchPopup(
+  payload: TagContextMenuPayload,
+  mode: "single" | "add",
+): Promise<void> {
   const newType = payload.contentType === "JOURNAL_DREAM" ? "DREAM" : "DIARY";
   const newTagId = String(payload.tagId);
 
   if (route.name === "journal-entry-search") {
     /*
-     * 팝업 내부: 기존 tagIds 에 추가 (AND 검색). 중복 무시.
+     * 팝업 내부: mode 에 따라 tagIds 를 구성한다. type·sort·키워드 등 다른 검색 축은 유지한다.
+     * - "single": tagIds 를 이 태그 하나로 교체(새 단일태그 검색).
+     * - "add": 기존 tagIds 에 이 태그를 더한다(AND). 이미 있으면 무시.
      */
     const existingIds = normalizeList(route.query.tagIds);
-    if (existingIds.includes(newTagId)) return;
+    let tagIds: string[];
+    if (mode === "add") {
+      if (existingIds.includes(newTagId)) return;
+      tagIds = [...existingIds, newTagId];
+    } else {
+      if (existingIds.length === 1 && existingIds[0] === newTagId) return;
+      tagIds = [newTagId];
+    }
     const nextQuery: Record<string, string | string[]> = {
       type: String(route.query.type ?? newType).toUpperCase(),
     };
@@ -72,7 +104,7 @@ async function openEntrySearchPopup(payload: TagContextMenuPayload): Promise<voi
       name: "journal-entry-search",
       query: {
         ...nextQuery,
-        tagIds: [...existingIds, newTagId],
+        tagIds,
       },
     });
     return;

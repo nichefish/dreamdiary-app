@@ -641,6 +641,8 @@ interface TodoRow {
 
 메뉴 액션과 태그 프로필의 콘텐츠 유형 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다.
 
+**검색 팝업 안 단일/다중 분기**: 위 표의 `검색`은 팝업 밖(저널 뷰·결산) 기준이며, **엔트리 검색 팝업 안**(`route.name === "journal-entry-search"`)에서는 태그 컨텍스트 메뉴가 두 검색 액션을 함께 제공한다. `검색`(단일)은 `tagIds`를 클릭한 태그 하나로 **교체**해 새 단일태그 검색을 하고, `검색에 추가`(다중)는 기존 `tagIds`에 **추가**한다(AND, 중복 무시). 두 경우 모두 `type`·`sort`·`searchKeywords` 등 다른 검색 축은 유지한다. `검색에 추가` 버튼은 검색 팝업 안에서만 노출한다(밖에서는 `검색`이 곧 새 팝업이라 무의미). 라벨 i18n 은 `common.search` / `journal.tag.search-add`.
+
 **태그 프로필·일자 필터 모달 마운트 계약**: `JournalTagContextMenu` 의 `프로필`은 `attachableStore.openTagProfile()` 로, `JOURNAL_DAY` `검색`은 `journalModalStore.openDayFilterModal(...)` 로 **상태만** 켠다. 따라서 그 상태를 구독해 실제로 렌더하는 `JournalTagProfileModal`·`JournalDayMetaModal` 이 **같은 화면에 함께 마운트돼 있어야** 화면이 열린다. 컨텍스트 메뉴를 마운트하는 화면은 짝 모달도 반드시 마운트한다 — `JournalDayLayout`·`JournalDayDailyLayout`은 둘 다, `JournalEntrySearchPage`는 프로필만(일자 태그 검색 없음), `JournalAnnualLayout`은 둘 다. 결산에서 프로필·일자 태그 검색이 무반응처럼 보이던 원인은 각각 짝 모달 미마운트였다.
 
 **태그 프로필 cloudSizeLock**: 모달 세그먼트 컨트롤에서 MAX 선택 시 sized 태그클라우드 크기를 `ts-9`, MIN이면 `ts-1`로 고정한다(AUTO는 빈도 산출). 저장·삭제 후 클라우드 재조회로 반영. 엔트리 본문 태그줄에는 적용하지 않는다.
