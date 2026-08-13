@@ -9,8 +9,12 @@
 export interface EntrySearchCondition {
   type: string;
   sort: string;
+  /** 정렬 기준 축. "date"(기본) | "title". sort(방향)와 조합한다. */
+  sortField: string;
   tagIds: string[];
   searchKeywords: string[];
+  /** 제목 전용 검색어(제목만 매칭). 키워드(제목+본문)와 구분한다. */
+  title: string;
 }
 
 /** route query 값(단일값/배열/콤마 구분 문자열 혼재)을 trim 된 문자열 배열로 정규화한다. */
@@ -30,8 +34,10 @@ export function parseEntrySearchQuery(query: Record<string, unknown>): EntrySear
   return {
     type: String(query.type ?? "DIARY").toUpperCase(),
     sort: String(query.sort ?? "desc").toLowerCase() === "asc" ? "asc" : "desc",
+    sortField: String(query.sortField ?? "date").toLowerCase() === "title" ? "title" : "date",
     tagIds: normalizeQueryList(query.tagIds),
     searchKeywords: normalizeQueryList(query.searchKeywords),
+    title: String(query.title ?? "").trim(),
   };
 }
 
@@ -43,6 +49,8 @@ export function buildEntrySearchParams(cond: EntrySearchCondition): URLSearchPar
   const params = new URLSearchParams();
   params.set("type", cond.type);
   params.set("sort", cond.sort);
+  if (cond.sortField === "title") params.set("sortField", "TITLE");
+  if (cond.title) params.set("title", cond.title);
   cond.tagIds.forEach((tagId) => params.append("tagIds", tagId));
   cond.searchKeywords.forEach((kw) => params.append("searchKeywords", kw));
   return params;
@@ -55,6 +63,8 @@ export function buildEntrySearchParams(cond: EntrySearchCondition): URLSearchPar
 export function buildEntrySearchRouteQuery(cond: EntrySearchCondition): Record<string, string | string[]> {
   const query: Record<string, string | string[]> = { type: cond.type };
   if (cond.sort === "asc") query.sort = "asc";
+  if (cond.sortField === "title") query.sortField = "title";
+  if (cond.title) query.title = cond.title;
   if (cond.tagIds.length > 0) query.tagIds = cond.tagIds;
   if (cond.searchKeywords.length > 0) query.searchKeywords = cond.searchKeywords;
   return query;

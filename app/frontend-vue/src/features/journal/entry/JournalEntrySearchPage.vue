@@ -21,6 +21,22 @@
         {{ t("common.reset") }}
       </button>
       <!--end::초기화-->
+      <!--begin::정렬 기준 (날짜/제목)-->
+      <div class="btn-group btn-group-sm" role="group" :aria-label="t('journal.entry.search.sort-field.label')">
+        <button
+          type="button"
+          :class="['btn', sortField === 'date' ? 'btn-primary' : 'btn-light']"
+          :disabled="isActionLocked"
+          @click="setSortField('date')"
+        >{{ t('journal.entry.search.sort-field.date') }}</button>
+        <button
+          type="button"
+          :class="['btn', sortField === 'title' ? 'btn-primary' : 'btn-light']"
+          :disabled="isActionLocked"
+          @click="setSortField('title')"
+        >{{ t('journal.entry.search.sort-field.title') }}</button>
+      </div>
+      <!--end::정렬 기준-->
       <!--begin::정렬 토글-->
       <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="isActionLocked" :title="t('journal.entry.search.sort.tooltip')" @click="toggleSort">
         <i class="bi" :class="sort === 'asc' ? 'bi-sort-down-alt' : 'bi-sort-up'"></i>
@@ -58,6 +74,18 @@
         </span>
       </div>
       <!--end::키워드 배지 목록-->
+      <!--begin::제목 조건 배지 (제목만 매칭)-->
+      <div v-if="title" class="d-flex align-items-center ms-1">
+        <span
+          class="badge badge-light-info fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-info cursor-pointer"
+          :title="t('journal.entry.search.title.remove.tooltip')"
+          @click="removeTitle"
+        >
+          {{ t('journal.entry.search.title.badge-prefix') }} {{ title }}
+          <i class="bi bi-x"></i>
+        </span>
+      </div>
+      <!--end::제목 조건 배지-->
       <!--begin::태그 배지 목록 (파란색 — #태그명)-->
       <div v-if="tagIds.length > 0" class="d-flex flex-wrap gap-2 border-start border-gray-300 ps-3">
         <span
@@ -126,6 +154,22 @@
         {{ t("journal.entry.search.input.enter-to-add") }}
       </div>
       <!--end::키워드 입력-->
+      <!--begin::제목 검색 입력 (제목만 매칭 — 키워드는 제목+본문)-->
+      <div class="d-flex align-items-center gap-2 mt-3">
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t('journal.entry.search.title.label') }}</span>
+        <input
+          v-model="titleInput"
+          type="text"
+          class="form-control form-control-sm journal-entry-search-input"
+          :placeholder="t('journal.entry.search.title.placeholder')"
+          maxlength="100"
+          @keydown.enter.prevent="doSearch"
+        />
+        <button type="button" class="btn btn-sm btn-light-primary w-100px" @click="doSearch">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+      <!--end::제목 검색 입력-->
       <!--begin::태그 입력-->
       <div class="d-flex align-items-center gap-2 mt-3">
         <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("common.tag") }}</span>
@@ -336,15 +380,20 @@ const showAdvanced = ref(false);
 
 const type = ref("DIARY");
 const sort = ref("desc");
+/** 정렬 기준 축: "date"(기본) | "title" */
+const sortField = ref("date");
 const tagIds = ref<string[]>([]);
 const searchKeywords = ref<string[]>([]);
+/** 제목 전용 검색 — 적용된 조건(URL SSOT)과 입력 박스를 분리한다(키워드 패턴과 동일). */
+const title = ref("");
+const titleInput = ref("");
 const searchAttempted = ref(false);
 const searchErrorMessage = ref("");
 
 /** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
 const tagLabelMap = ref<Record<string, string>>({});
 
-const hasSearchConditions = computed(() => searchKeywords.value.length > 0 || tagIds.value.length > 0);
+const hasSearchConditions = computed(() => searchKeywords.value.length > 0 || tagIds.value.length > 0 || title.value.trim().length > 0);
 const hasPendingSearchInputs = computed(() => keywordInput.value.trim().length > 0 || tagInput.value.trim().length > 0);
 const isTagCategoryChoicePending = computed(() => tagCategoryChoices.value.length > 0);
 const isActionLocked = computed(() => loading.value || actionInProgress.value);
@@ -388,8 +437,11 @@ function syncFromRoute(): void {
   const cond = parseEntrySearchQuery(route.query);
   type.value = cond.type;
   sort.value = cond.sort;
+  sortField.value = cond.sortField;
   tagIds.value = cond.tagIds;
   searchKeywords.value = cond.searchKeywords;
+  title.value = cond.title;
+  titleInput.value = cond.title;
   keywordInput.value = "";
   tagInput.value = "";
   cancelTagCategoryChoice();
@@ -418,8 +470,10 @@ async function loadEntries(): Promise<void> {
     const params = buildEntrySearchParams({
       type: type.value,
       sort: sort.value,
+      sortField: sortField.value,
       tagIds: tagIds.value,
       searchKeywords: searchKeywords.value,
+      title: title.value,
     });
 
     const res = await axios.get("/api/journal/entries", { params });
@@ -590,13 +644,15 @@ async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
 }
 
 /** 현재 로컬 ref 상태를 URL query 로 replace한다. */
-async function pushQuery(overrides: Partial<{ type: string; sort: string; tagIds: string[]; searchKeywords: string[] }> = {}, statusMessage = ""): Promise<void> {
+async function pushQuery(overrides: Partial<{ type: string; sort: string; sortField: string; tagIds: string[]; searchKeywords: string[]; title: string }> = {}, statusMessage = ""): Promise<void> {
   conditionChangedMessage.value = statusMessage;
   const t = overrides.type ?? type.value;
   const s = overrides.sort ?? sort.value;
+  const sf = overrides.sortField ?? sortField.value;
   const ids = overrides.tagIds ?? tagIds.value;
   const kws = overrides.searchKeywords ?? searchKeywords.value;
-  const query = buildEntrySearchRouteQuery({ type: t, sort: s, tagIds: ids, searchKeywords: kws });
+  const ttl = overrides.title ?? title.value;
+  const query = buildEntrySearchRouteQuery({ type: t, sort: s, sortField: sf, tagIds: ids, searchKeywords: kws, title: ttl });
   await router.replace({ name: "journal-entry-search", query });
 }
 
@@ -651,6 +707,9 @@ async function doSearch(): Promise<void> {
 async function finalizePendingSearchInputs(): Promise<boolean> {
   if (keywordInput.value.trim() && !await addKeyword()) return false;
   if (tagInput.value.trim() && !await addTagFromInput()) return false;
+  if (titleInput.value.trim() !== title.value) {
+    await pushQuery({ title: titleInput.value.trim() });
+  }
   return true;
 }
 
@@ -663,6 +722,18 @@ async function openConditionEditor(): Promise<void> {
 /** 정렬 토글 */
 function toggleSort(): void {
   pushQuery({ sort: sort.value === "desc" ? "asc" : "desc" }, t("journal.entry.search.condition.sort-changed"));
+}
+
+/** 정렬 기준 변경 (날짜/제목) */
+function setSortField(field: string): void {
+  if (sortField.value === field) return;
+  pushQuery({ sortField: field }, t("journal.entry.search.condition.sort-changed"));
+}
+
+/** 제목 조건 제거 → 재검색 */
+function removeTitle(): void {
+  titleInput.value = "";
+  void pushQuery({ title: "" }, t("journal.entry.search.condition.title-changed"));
 }
 
 /** 유형 변경 (키워드·태그 유지) */
@@ -695,8 +766,10 @@ async function exportTxt(): Promise<void> {
     const params = buildEntrySearchParams({
       type: type.value,
       sort: sort.value,
+      sortField: sortField.value,
       tagIds: tagIds.value,
       searchKeywords: searchKeywords.value,
+      title: title.value,
     });
     window.location.href = `/api/journal/entries/export?${params.toString()}`;
   } finally {

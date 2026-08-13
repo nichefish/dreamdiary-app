@@ -39,8 +39,23 @@ public class JournalEntrySpec extends BaseAttachableSpec<JournalEntryEntity> {
         final Join<JournalEntryEntity, JournalChapterSmpEntity> chapterJoin = root.join("journalChapter", JoinType.INNER);
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
         final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
+        final String sortField = String.valueOf(searchParamMap.getOrDefault("sortField", "DATE")).toUpperCase();
+        final boolean asc = "asc".equals(sort);
         final Expression<LocalDate> dateExp = journalDayJoin.get("journalDate");
-        order.add("desc".equals(sort) ? builder.desc(dateExp) : builder.asc(dateExp));
+        if ("TITLE".equals(sortField)) {
+            /* 제목 정렬: 빈 제목(null/'')은 방향과 무관하게 항상 맨 뒤로 민다. 그다음 제목 asc/desc,
+               동일 제목은 일자·챕터·엔트리 순번으로 안정화한다. */
+            final Expression<String> titleExp = root.get("title");
+            final Expression<Integer> emptyTitleLast = builder.<Integer>selectCase()
+                    .when(builder.or(builder.isNull(titleExp), builder.equal(titleExp, "")), 1)
+                    .otherwise(0);
+            final Expression<String> titleLowerExp = builder.lower(titleExp);
+            order.add(builder.asc(emptyTitleLast));
+            order.add(asc ? builder.asc(titleLowerExp) : builder.desc(titleLowerExp));
+            order.add(builder.desc(dateExp));
+        } else {
+            order.add(asc ? builder.asc(dateExp) : builder.desc(dateExp));
+        }
         order.add(builder.asc(chapterJoin.get("sortOrder")));
         order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
@@ -75,7 +90,7 @@ public class JournalEntrySpec extends BaseAttachableSpec<JournalEntryEntity> {
 
         for (final String key : searchParamMap.keySet()) {
             /* contentType 은 buildListContentTypePredicate 로 이미 스코프했다. default equal 에 들어가면 일기 축 OR 가 깨진다. */
-            if ("sort".equals(key) || "contentType".equals(key)) continue;
+            if ("sort".equals(key) || "sortField".equals(key) || "contentType".equals(key)) continue;
 
             final Object value = searchParamMap.get(key);
             switch (key) {
@@ -106,6 +121,13 @@ public class JournalEntrySpec extends BaseAttachableSpec<JournalEntryEntity> {
                     final String refCtValue = value.toString().trim();
                     if (refCtValue.isEmpty()) continue;
                     predicate.add(builder.equal(root.get("refContentType"), ContentType.get(refCtValue)));
+                    continue;
+                case "title":
+                    /* 제목 전용 검색: 키워드(제목+본문)와 달리 제목만 LIKE 매칭한다. */
+                    if (value == null) continue;
+                    final String titleKeyword = value.toString().trim().toLowerCase();
+                    if (StringUtils.isEmpty(titleKeyword)) continue;
+                    predicate.add(builder.like(builder.lower(root.get("title")), "%" + titleKeyword + "%"));
                     continue;
                 case "searchKeywords":
                     if (!(value instanceof List<?> rawKeywordList) || CollectionUtils.isEmpty(rawKeywordList)) continue;

@@ -37,8 +37,10 @@ describe("parseEntrySearchQuery", () => {
     expect(parseEntrySearchQuery({})).toEqual({
       type: "DIARY",
       sort: "desc",
+      sortField: "date",
       tagIds: [],
       searchKeywords: [],
+      title: "",
     });
   });
 
@@ -65,8 +67,10 @@ describe("buildEntrySearchParams", () => {
     const params = buildEntrySearchParams({
       type: "DIARY",
       sort: "desc",
+      sortField: "date",
       tagIds: ["1", "2"],
       searchKeywords: ["sea"],
+      title: "",
     });
     expect(params.toString()).toBe("type=DIARY&sort=desc&tagIds=1&tagIds=2&searchKeywords=sea");
   });
@@ -75,8 +79,10 @@ describe("buildEntrySearchParams", () => {
     const params = buildEntrySearchParams({
       type: "DREAM",
       sort: "asc",
+      sortField: "date",
       tagIds: [],
       searchKeywords: ["바다"],
+      title: "",
     });
     expect(params.getAll("searchKeywords")).toEqual(["바다"]);
     expect(params.getAll("tagIds")).toEqual([]);
@@ -88,8 +94,10 @@ describe("buildEntrySearchRouteQuery", () => {
     expect(buildEntrySearchRouteQuery({
       type: "DIARY",
       sort: "desc",
+      sortField: "date",
       tagIds: [],
       searchKeywords: [],
+      title: "",
     })).toEqual({ type: "DIARY" });
   });
 
@@ -97,8 +105,10 @@ describe("buildEntrySearchRouteQuery", () => {
     expect(buildEntrySearchRouteQuery({
       type: "DREAM",
       sort: "asc",
+      sortField: "date",
       tagIds: ["1"],
       searchKeywords: ["바다", "여행"],
+      title: "",
     })).toEqual({
       type: "DREAM",
       sort: "asc",
@@ -108,7 +118,31 @@ describe("buildEntrySearchRouteQuery", () => {
   });
 
   it("조립한 query 를 다시 파싱하면 같은 조건이 된다 (round-trip 불변식)", () => {
-    const cond = { type: "DREAM", sort: "asc", tagIds: ["1", "2"], searchKeywords: ["여행"] };
+    const cond = { type: "DREAM", sort: "asc", sortField: "date", tagIds: ["1", "2"], searchKeywords: ["여행"], title: "" };
     expect(parseEntrySearchQuery(buildEntrySearchRouteQuery(cond))).toEqual(cond);
+  });
+});
+
+describe("sortField·title (제목 정렬·제목 검색)", () => {
+  it("sortField 는 title(대소문자 무관)만 인정하고 그 외는 date", () => {
+    expect(parseEntrySearchQuery({ sortField: "title" }).sortField).toBe("title");
+    expect(parseEntrySearchQuery({ sortField: "TITLE" }).sortField).toBe("title");
+    expect(parseEntrySearchQuery({ sortField: "date" }).sortField).toBe("date");
+    expect(parseEntrySearchQuery({}).sortField).toBe("date");
+  });
+
+  it("title 은 trim 하고, 파라미터·query 에는 값이 있을 때만 포함한다", () => {
+    expect(parseEntrySearchQuery({ title: "  약속  " }).title).toBe("약속");
+    const p = buildEntrySearchParams({
+      type: "DIARY", sort: "desc", sortField: "title",
+      tagIds: [], searchKeywords: [], title: "약속",
+    });
+    expect(p.get("sortField")).toBe("TITLE");
+    expect(p.get("title")).toBe("약속");
+    const q = buildEntrySearchRouteQuery({
+      type: "DIARY", sort: "desc", sortField: "title",
+      tagIds: [], searchKeywords: [], title: "약속",
+    });
+    expect(q).toEqual({ type: "DIARY", sortField: "title", title: "약속" });
   });
 });

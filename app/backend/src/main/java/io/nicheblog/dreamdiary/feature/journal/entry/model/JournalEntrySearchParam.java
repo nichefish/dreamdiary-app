@@ -35,6 +35,12 @@ public class JournalEntrySearchParam extends BaseSearchParam {
     @Builder.Default
     private String sort = "DESC";
 
+    /** 정렬 기준 축. DATE(기본)=일자, TITLE=제목. sort(방향)와 조합한다. */
+    private String sortField;
+
+    /** 제목 전용 검색어(제목 LIKE). 키워드(제목+본문)와 구분되는 제목만 매칭 필터. */
+    private String title;
+
     private List<String> states;
 
     /**
@@ -48,8 +54,9 @@ public class JournalEntrySearchParam extends BaseSearchParam {
         final boolean hasDate = yy != null || mnth != null || weekStartDt != null || journalDayId != null;
         final boolean hasTag = tagId != null;
         final boolean hasState = CollectionUtils.isNotEmpty(states) && states.stream().anyMatch(StringUtils::isNotEmpty);
+        final boolean hasTitle = StringUtils.isNotBlank(title);
 
-        return !(hasKeyword || hasTagIds || hasDate || hasTag || hasState);
+        return !(hasKeyword || hasTagIds || hasDate || hasTag || hasState || hasTitle);
     }
 
     /**
@@ -84,6 +91,7 @@ public class JournalEntrySearchParam extends BaseSearchParam {
                         .sorted()
                         .collect(Collectors.joining(","))
                 : "";
-        return keyYy + "_" + stateKey + "_" + keywordKey + "_" + tagIdKey + "_" + tagIdsKey;
+        final String titleKey = StringUtils.isNotBlank(title) ? title.trim() : "";
+        return keyYy + "_" + stateKey + "_" + keywordKey + "_" + tagIdKey + "_" + tagIdsKey + "_" + titleKey;
     }
 }

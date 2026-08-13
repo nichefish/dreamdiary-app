@@ -1142,13 +1142,16 @@ type TodoRow = {
 | `type=DIARY` | 일기 검색 축 — Primary(일기)만 결과 행. 딸린 Reflection 본문 키워드가 대상 일기를 매칭(원문·해석 한 몸 EXISTS) |
 | `type=DREAM` | 꿈 검색 |
 | `tagIds=N` | 태그 ID 기반 검색. 검색 팝업의 태그 직접 입력은 기존 태그 자동완성/카테고리 선택으로 특정 태그 ID를 확정한 뒤 이 파라미터에 추가한다. |
-| `searchKeywords=...` | 키워드 검색 |
+| `searchKeywords=...` | 키워드 검색(제목+본문 OR, 복수는 AND) |
+| `title=...` | 제목 전용 검색(제목만 LIKE). 키워드와 달리 본문은 매칭하지 않는다. |
+| `sortField=title` | 정렬 기준을 제목으로 전환(기본 생략=`date`=일자). `sort`(asc/desc 방향)와 조합하며, 제목 정렬 시 빈 제목(null/'')은 방향과 무관하게 항상 맨 뒤로 민다. |
 
 ### Data Contract
 
 - 목록 API: `GET /api/journal/entries`
-- 파라미터: `type`, `tagIds`, `searchKeywords`
-- 고급 필터: 유형 토글, 키워드 입력, 태그 입력. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다.
+- 파라미터: `type`, `tagIds`, `searchKeywords`, `title`, `sortField`
+- 정렬: 컨트롤 바의 기준 선택(날짜/제목, `setSortField`)과 방향 토글(asc/desc, `toggleSort`)을 조합한다. 백엔드 `JournalEntrySpec.postQuery`가 `sortField=TITLE`이면 제목 정렬(빈 제목 맨 뒤·2차 일자/순번), 그 외 일자 정렬.
+- 고급 필터: 유형 토글, 키워드 입력, **제목 검색 입력**(제목만 매칭), 태그 입력. 제목 조건은 컨트롤 바에 배지로 표시하고 X로 제거한다. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다.
 - 응답: `AjaxResponse.rsltList` (`JournalEntryDto[]`)
 - 소속 스레드: 목록 enrich 시 `JournalEntryDto.threadList` 를 채운다(`JournalEntryRelatedEnricher` → `getMapByEntryIds`, 일자 목록과 동일 계약). 검색 결과 행은 `JournalEntryItem`으로 소속 스레드 칩을 표시하며, 칩 클릭은 현재 검색 화면 위에 전역 스레드 상세 모달을 연다.
 - 공휴일·주말 표시: 목록 enrich 시 `JournalEntryDto.isHolyday` / `holydayNm` 을 채운다(`ScheduleService.getHolydayMap` + `JournalEntryHolydayHelper`, 일자 목록과 동일 계약). `isHolyday` 는 공휴일 또는 주말, `holydayNm` 은 공휴일명만(주말 단독이면 비움).
