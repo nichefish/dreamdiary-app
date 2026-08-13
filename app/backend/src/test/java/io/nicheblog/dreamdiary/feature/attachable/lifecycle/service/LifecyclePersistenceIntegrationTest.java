@@ -10,6 +10,8 @@ import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
+import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
+import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,11 +41,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LifecyclePersistenceIntegrationTest {
 
     private static final ContentType FIXTURE_CONTENT_TYPE = ContentType.JOURNAL_DIARY;
+    private static final String FIXTURE_REFLECTION_CONTENT = "가상 리플렉션 본문";
     private static final Integer FIXTURE_PENDING_REF_ID = -926101;
     private static final Integer FIXTURE_OPEN_REF_ID = -926102;
     private static final Integer FIXTURE_RESOLVED_REF_ID = -926103;
     private static final Integer FIXTURE_PENDING_AFTER_RESOLVED_REF_ID = -926104;
     private static final Integer FIXTURE_REPEATED_RESOLVED_REF_ID = -926105;
+    private static final Integer FIXTURE_RECONCILIATION_PARENT_ID = -926106;
 
     @Resource
     private LifecycleService lifecycleService;
@@ -51,6 +55,8 @@ class LifecyclePersistenceIntegrationTest {
     private LifecycleRepository lifecycleRepository;
     @Resource
     private StateRepository stateRepository;
+    @Resource
+    private JournalReflectionRepository journalReflectionRepository;
     /** 이 테스트는 lifecycle/state 영속 전이에 집중하고 원본 소유권 계약은 전용 가드 테스트에 위임한다. */
     @MockBean
     private JournalContentOwnershipGuard journalContentOwnershipGuard;
@@ -143,17 +149,79 @@ class LifecyclePersistenceIntegrationTest {
         assertEquals(LifecycleKey.RESOLVED.key, requireLifecycle(FIXTURE_REPEATED_RESOLVED_REF_ID).getLifecycleKey());
     }
 
+    /** 완료된 primary의 RESOLVED 재요청은 미완료 Reflection을 다시 RESOLVED로 수렴시킨다. */
+    @Test
+    void repeatedPrimaryResolvedReconcilesUnresolvedReflection() throws Exception {
+        final List<JournalReflectionEntity> reflections = journalReflectionRepository.saveAll(List.of(
+                reflection(FIXTURE_RECONCILIATION_PARENT_ID),
+                reflection(FIXTURE_RECONCILIATION_PARENT_ID)
+        ));
+        entityManager.flush();
+
+        lifecycleService.set(request(FIXTURE_RECONCILIATION_PARENT_ID, LifecycleKey.RESOLVED));
+        entityManager.flush();
+
+        final Integer unresolvedReflectionId = reflections.get(0).getId();
+        final Integer resolvedReflectionId = reflections.get(1).getId();
+        final Integer resolvedLifecycleId = requireLifecycle(
+                resolvedReflectionId,
+                ContentType.JOURNAL_REFLECTION
+        ).getId();
+
+        lifecycleService.set(request(
+                unresolvedReflectionId,
+                ContentType.JOURNAL_REFLECTION,
+                LifecycleKey.PENDING
+        ));
+        entityManager.flush();
+
+        lifecycleService.set(request(FIXTURE_RECONCILIATION_PARENT_ID, LifecycleKey.RESOLVED));
+        entityManager.flush();
+        entityManager.clear();
+
+        assertEquals(
+                LifecycleKey.RESOLVED.key,
+                requireLifecycle(unresolvedReflectionId, ContentType.JOURNAL_REFLECTION).getLifecycleKey()
+        );
+        final LifecycleEntity unchangedResolved = requireLifecycle(
+                resolvedReflectionId,
+                ContentType.JOURNAL_REFLECTION
+        );
+        assertEquals(LifecycleKey.RESOLVED.key, unchangedResolved.getLifecycleKey());
+        assertEquals(resolvedLifecycleId, unchangedResolved.getId());
+    }
+
     private LifecycleSetDto request(final Integer refId, final LifecycleKey lifecycleKey) {
+        return request(refId, FIXTURE_CONTENT_TYPE, lifecycleKey);
+    }
+
+    private LifecycleSetDto request(
+            final Integer refId,
+            final ContentType contentType,
+            final LifecycleKey lifecycleKey
+    ) {
         return LifecycleSetDto.builder()
                 .id(refId)
-                .contentType(FIXTURE_CONTENT_TYPE)
+                .contentType(contentType)
                 .lifecycleKey(lifecycleKey)
                 .build();
     }
 
     private LifecycleEntity requireLifecycle(final Integer refId) {
-        return lifecycleRepository.findByRefIdAndRefContentType(refId, FIXTURE_CONTENT_TYPE.key)
+        return requireLifecycle(refId, FIXTURE_CONTENT_TYPE);
+    }
+
+    private LifecycleEntity requireLifecycle(final Integer refId, final ContentType contentType) {
+        return lifecycleRepository.findByRefIdAndRefContentType(refId, contentType.key)
                 .orElseThrow();
+    }
+
+    private JournalReflectionEntity reflection(final Integer targetId) {
+        return JournalReflectionEntity.builder()
+                .content(FIXTURE_REFLECTION_CONTENT)
+                .refId(targetId)
+                .refContentType(FIXTURE_CONTENT_TYPE)
+                .build();
     }
 
     private StateEntity requireCollapsedState(final Integer refId) {

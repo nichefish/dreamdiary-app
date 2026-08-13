@@ -162,6 +162,25 @@ class LifecycleServiceTest {
         verify(stateRepository, never()).save(any());
     }
 
+    /** 동일한 RESOLVED 요청은 부모 후처리를 반복하지 않고 Reflection 완료 연쇄만 다시 검사한다. */
+    @Test
+    void repeatedResolvedSkipsParentSideEffectsAndRechecksReflectionCascade() throws Exception {
+        final LifecycleEntity lifecycle = stored(LifecycleKey.RESOLVED);
+        when(repository.findByRefIdAndRefContentType(FIXTURE_CONTENT_ID, FIXTURE_CONTENT_TYPE.key))
+                .thenReturn(Optional.of(lifecycle));
+        final LifecycleSetDto request = request(LifecycleKey.RESOLVED);
+
+        final ServiceResponse result = service.set(request);
+
+        assertTrue(result.getRslt());
+        assertLifecycleResult(result, "RESOLVED", "RESOLVED");
+        assertEquals(LifecycleKey.RESOLVED.key, lifecycle.getLifecycleKey());
+        verify(repository, never()).save(any());
+        verify(repository, never()).deleteCurrentByRef(any(), any());
+        verifyNoInteractions(stateRepository, stateService);
+        verify(journalReflectionLifecycleCascade).cascadeResolvedToAttachedReflections(request);
+    }
+
     /** PENDING 전환은 기존 COLLAPSED 상태를 생성하거나 해제하지 않는다. */
     @Test
     void setPendingDoesNotMutateCollapsedState() throws Exception {

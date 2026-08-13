@@ -54,8 +54,9 @@ public class LifecycleService {
      *
      * <p>{@code PENDING}/{@code RESOLVED}는 {@code contentType + id} 기준 row 하나로 저장하고,
      * 기본 상태인 {@code OPEN}은 row를 제거해 표현한다. 새 값이 {@code RESOLVED}이면
-     * {@code COLLAPSED} state를 함께 켠다. 저장 전에는 현재 로그인 사용자가 원본 저널
-     * 콘텐츠의 작성자인지 검증한다.</p>
+     * {@code COLLAPSED} state를 함께 켠다. primary 엔트리의 동일한 {@code RESOLVED} 요청은 부모
+     * 저장·파생 상태·캐시 후처리를 반복하지 않고, 미완료 Reflection 을 수렴시키는 완료 연쇄만 다시
+     * 검사한다. 저장 전에는 현재 로그인 사용자가 원본 저널 콘텐츠의 작성자인지 검증한다.</p>
      *
      * @param lifecycleSet 라이프사이클 설정 요청 및 캐시 컨텍스트
      * @return 이전 라이프사이클과 현재 라이프사이클을 담은 처리 결과
@@ -92,9 +93,14 @@ public class LifecycleService {
         final LifecycleKey previousKey = lifecycle == null
                 ? LifecycleKey.OPEN
                 : normalize(lifecycle.getLifecycleKey());
+        final boolean repeatedResolved = LifecycleKey.RESOLVED.equals(previousKey)
+                && LifecycleKey.RESOLVED.equals(lifecycleSet.getLifecycleKey())
+                && JournalReflectionLifecycleCascade.isPrimaryTargetType(lifecycleSet.getContentType());
         final String persistenceAction;
 
-        if (LifecycleKey.OPEN.equals(lifecycleSet.getLifecycleKey())) {
+        if (repeatedResolved) {
+            persistenceAction = "NOOP_SAME_VALUE";
+        } else if (LifecycleKey.OPEN.equals(lifecycleSet.getLifecycleKey())) {
             final int deletedCount = repository.deleteCurrentByRef(
                     lifecycleSet.getId(),
                     lifecycleSet.getContentType().key
@@ -117,13 +123,21 @@ public class LifecycleService {
                 persistenceAction
         );
 
-        final StateToggleDto derivedCollapsedToggle = this.applyDerivedStates(lifecycleSet);
-        this.scheduleCacheUpdateAfterCommit(
-                lifecycleSet,
-                previousKey,
-                lifecycleSet.getLifecycleKey(),
-                derivedCollapsedToggle
-        );
+        if (repeatedResolved) {
+            log.info(
+                    "[Lifecycle.set] repeated RESOLVED keeps parent side effects unchanged and rechecks cascade. contentType={}, id={}",
+                    lifecycleSet.getContentType(),
+                    lifecycleSet.getId()
+            );
+        } else {
+            final StateToggleDto derivedCollapsedToggle = this.applyDerivedStates(lifecycleSet);
+            this.scheduleCacheUpdateAfterCommit(
+                    lifecycleSet,
+                    previousKey,
+                    lifecycleSet.getLifecycleKey(),
+                    derivedCollapsedToggle
+            );
+        }
         // primary(일기·꿈·노트) RESOLVED 시 딸린 Reflection 도 RESOLVED 로 맞춘다. (REFLECTION_ONE_TYPE §5)
         journalReflectionLifecycleCascade.cascadeResolvedToAttachedReflections(lifecycleSet);
 

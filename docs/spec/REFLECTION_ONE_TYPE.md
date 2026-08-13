@@ -37,7 +37,7 @@ Reflection은 `OPEN`/`PENDING`/`RESOLVED` lifecycle과 `COLLAPSED`/`IMPRTC`/`REF
 
 | 규칙 | 동작 |
 |------|------|
-| primary → `RESOLVED` | 해당 primary를 대상으로 둔 Reflection도 `RESOLVED` |
+| primary → `RESOLVED` | 최초 전환과 동일값 재요청 모두 해당 primary를 대상으로 둔 미완료 Reflection만 `RESOLVED`로 수렴. 이미 `RESOLVED`인 Reflection의 저장·파생 상태·캐시 후처리는 유지 |
 | Reflection → `RESOLVED` | 대상 primary lifecycle 유지 |
 | `RESOLVED` primary에 Reflection 등록 | primary를 `OPEN`으로 재개하고 파생 `COLLAPSED` 해제 |
 | 일자 축 잠금 | Reflection 등록 허용, primary 재개는 잠금 상태 유지 |
