@@ -13,7 +13,13 @@ Java 빌드 계약 (2026-07-19): Gradle wrapper를 실행한 IDE·셸 JBR과 무
 | npm install | `./gradlew npmInstall` |
 | 기타 package.json 스크립트 | `./gradlew npm_run_<script>` (`type-check` → `npm_run_type_check`) |
 
-gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬 loopback 연결 실패(`Unable to establish loopback connection`)로 아예 동작하지 않는다 — IntelliJ·일반 터미널에서는 정상이므로 셸 환경 한정 문제다. 이때는 Gradle 이 받아둔 `.gradle/nodejs/node-v<버전>-win-x64` 를 PATH 에 추가하고 `app/frontend-vue` 에서 `npm run build` / `npm run test` 를 직접 실행한다 — `buildFrontend` 와 동일 Node 버전·동일 스크립트라 게이트 등가. Java 작업은 폴백 대상이 아니며, JDK 17을 설치해 Gradle Daemon JVM 기준을 충족해야 한다.
+gradlew 폴백 (2026-07-10): 일부 agent shell 에서는 `./gradlew` 가 데몬 loopback 연결 실패(`Unable to establish loopback connection`)로 아예 동작하지 않는다 — IntelliJ·일반 터미널에서는 정상이므로 셸 환경 한정 문제다. 이때는 Gradle 이 받아둔 `.gradle/nodejs/node-v<버전>-win-x64` 를 PATH 에 추가하고 `app/frontend-vue` 에서 `npm run build` / `npm run test` 를 직접 실행한다 — `buildFrontend` 와 동일 Node 버전·동일 스크립트라 게이트 등가.
+
+Java 컴파일 검증 폴백 (2026-08-14 실증): 이 셸에서는 `./gradlew compileJava` 도 (`--no-daemon`·샌드박스 해제 포함) 동일 loopback 으로 막힌다. 그래도 gradle 없이 `javac` 로 등가 검증이 가능하다:
+- classpath = `build/classes/java/main`(직전 성공 빌드 산출) + `~/.gradle/caches/modules-2` 하위 전 `*.jar` (경로 `/c/`→`C:/`, `;` 로 join)
+- `-processorpath` = 캐시의 `lombok-<버전>.jar`, 옵션 `-proc:full -encoding UTF-8`
+- 소스셋 = 신규/편집 `.java` + 그들이 참조하는 편집 소스(예: `Url`/`ApiUrl`/`AppUrl` 를 함께 넣는다). jar 수가 많아 명령행 한계를 넘으므로 **반드시 `javac @argfile`** 로 넘긴다. Windows `javac` 이므로 `-d /tmp/..` 는 `C:\tmp\..` 로 나간다(git-bash `/tmp` 아님). exit 0 + `.class` 생성으로 확인하며, Lombok `@SuperBuilder` 도 컴파일된 부모(`.class`) 경계를 넘어 정상 동작한다.
+- 전제: `build/classes/java/main` 이 없으면(클린 트리) 이 폴백은 못 쓴다 — 이때만 사용자 머신 `./gradlew build` 로 넘긴다. 어느 경우든 JDK 17 은 설치되어 있어야 Gradle Daemon JVM 기준을 충족한다.
 
 
 백엔드 테스트·배포 게이트 (`gradle/testconfig.gradle`, `Dockerfile`, 2026-07-05):
