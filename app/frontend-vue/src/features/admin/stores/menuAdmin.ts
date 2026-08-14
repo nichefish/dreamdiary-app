@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiPost, apiPatch, apiDelete, apiPut, getList, getObj, unwrapOk } from "@/shared/api/client";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { BASE_LOCALE, SUPPORTED_LOCALES, useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
@@ -178,9 +178,7 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     loading.value = true;
     error.value = "";
     try {
-      const res = await axios.get("/api/menu/menu-main-list");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.list.load.failure"));
-      rows.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+      rows.value = await getList<MenuNode>("/api/menu/menu-main-list", { failureMessage: t("admin.menu.list.load.failure") });
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("admin.menu.list.load.failure");
     } finally {
@@ -201,9 +199,8 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
   async function openEdit(id: number) {
     if (!await assertAuthenticatedBeforeModal()) return;
     saving.value = false;
-    const res = await axios.get(`/api/menu/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.detail.load.failure"));
-    form.value = cloneForm(res.data?.rsltObj ?? {});
+    const dto = await getObj<MenuNode>(`/api/menu/${id}`, { failureMessage: t("admin.menu.detail.load.failure") });
+    form.value = cloneForm(dto ?? {});
     modalOpen.value = true;
   }
 
@@ -238,12 +235,11 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
     try {
       const id = form.value.id;
       const url = id != null ? `/api/menu/${id}` : "/api/menus";
-      const res = await axios.post(url, toFormData(form.value), {
+      const res = await apiPost(url, toFormData(form.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.save.failure"));
+      const message = unwrapOk(res, t("admin.menu.save.failure")) || t("common.result.saved");
       closeModal();
-      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchTree();
       return message;
@@ -254,10 +250,10 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
 
   async function toggleUse(row: MenuNode) {
     const nextUseYn = yn(row.useYn) === "Y" ? "N" : "Y";
-    const res = await axios.patch(`/api/menu/${row.id}`, { useYn: nextUseYn });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.status.change.failure"));
+    const res = await apiPatch(`/api/menu/${row.id}`, { useYn: nextUseYn });
+    const message = unwrapOk(res, t("admin.menu.status.change.failure")) || t("common.result.changed");
     await fetchTree();
-    return res.data?.message ?? t("common.result.changed");
+    return message;
   }
 
   /**
@@ -266,9 +262,8 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
    * 변경 후에는 성공 알림 OK 이후 트리를 갱신한다.
    */
   async function deleteMenu(id: number) {
-    const res = await axios.delete(`/api/menu/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.delete.failure"));
-    const message = res.data?.message ?? t("common.result.deleted");
+    const res = await apiDelete(`/api/menu/${id}`);
+    const message = unwrapOk(res, t("admin.menu.delete.failure")) || t("common.result.deleted");
     await swalAlert(message);
     await fetchTree();
     return message;
@@ -297,10 +292,10 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
         parentMenuId: row.parentMenuId ?? null,
         sortOrder: idx,
       }));
-      const res = await axios.put("/api/menus/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.main-order.failure"));
+      const res = await apiPut("/api/menus/sort-orders", { sortOrders });
+      const message = unwrapOk(res, t("admin.menu.main-order.failure")) || t("common.result.sort-order-saved");
       await fetchTree();
-      return res.data?.message ?? t("common.result.sort-order-saved");
+      return message;
     } finally {
       sortSaving.value = false;
     }
@@ -326,10 +321,10 @@ export const useMenuAdminStore = defineStore("menuAdmin", () => {
         parentMenuId: row.parentMenuId ?? null,
         sortOrder: idx,
       }));
-      const res = await axios.put("/api/menus/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.menu.submenu-order.failure"));
+      const res = await apiPut("/api/menus/sort-orders", { sortOrders });
+      const message = unwrapOk(res, t("admin.menu.submenu-order.failure")) || t("common.result.sort-order-saved");
       await fetchTree();
-      return res.data?.message ?? t("common.result.sort-order-saved");
+      return message;
     } finally {
       sortSaving.value = false;
     }

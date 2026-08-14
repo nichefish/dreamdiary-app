@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiGet, apiPost, apiPut, assertOk } from "@/shared/api/client";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 export interface UserMyRole {
@@ -88,10 +88,10 @@ export const useUserMyStore = defineStore("userMy", () => {
   async function fetchMyInfo() {
     loading.value = true;
     try {
-      const res = await axios.get("/api/user/my");
+      const res = await apiGet<Partial<typeof EMPTY_USER>>("/api/user/my");
       user.value = {
         ...EMPTY_USER,
-        ...(res.data?.rsltObj ?? {}),
+        ...(res.rsltObj ?? {}),
       };
     } finally {
       loading.value = false;
@@ -105,10 +105,8 @@ export const useUserMyStore = defineStore("userMy", () => {
   async function updateMyInfo(payload: UserMyUpdatePayload) {
     saving.value = true;
     try {
-      const res = await axios.put("/api/user/my", payload);
-      if (!res.data?.rslt) {
-        throw new Error(res.data?.message ?? t("user.my.profile.update.failure"));
-      }
+      const res = await apiPut("/api/user/my", payload);
+      assertOk(res, t("user.my.profile.update.failure"));
       await fetchMyInfo();
     } finally {
       saving.value = false;
@@ -118,15 +116,15 @@ export const useUserMyStore = defineStore("userMy", () => {
   async function uploadProfileImage(file: File) {
     const fd = new FormData();
     fd.append("fileGroup0", file);
-    const res = await axios.post("/api/user/my/upload-profl-img", fd, {
+    const res = await apiPost("/api/user/my/upload-profl-img", fd, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.my.profile-image.change.failure"));
+    assertOk(res, t("user.my.profile-image.change.failure"));
   }
 
   async function removeProfileImage() {
-    const res = await axios.post("/api/user/my/remove-profl-img");
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.my.profile-image.delete.failure"));
+    const res = await apiPost("/api/user/my/remove-profl-img");
+    assertOk(res, t("user.my.profile-image.delete.failure"));
   }
 
   async function changePassword(payload: PasswordChangePayload) {
@@ -134,8 +132,8 @@ export const useUserMyStore = defineStore("userMy", () => {
     fd.append("username", payload.username);
     fd.append("currPw", payload.currPw);
     fd.append("newPw", payload.newPw);
-    const res = await axios.post("/api/user/my/pw-chg", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.my.pw-change.failure"));
+    const res = await apiPost("/api/user/my/pw-chg", fd);
+    assertOk(res, t("user.my.pw-change.failure"));
   }
 
   return {

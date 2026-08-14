@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiPost, apiDelete, getList, getObj, unwrapOk } from "@/shared/api/client";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
@@ -76,9 +76,7 @@ export const useTmplatAdminStore = defineStore("tmplatAdmin", () => {
     loading.value = true;
     error.value = "";
     try {
-      const res = await axios.get("/api/tmplats");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("tmplat.list.load.failure"));
-      rows.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+      rows.value = await getList<TmplatRow>("/api/tmplats", { failureMessage: t("tmplat.list.load.failure") });
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("tmplat.list.load.failure");
     } finally {
@@ -96,9 +94,8 @@ export const useTmplatAdminStore = defineStore("tmplatAdmin", () => {
   /** 수정 모달 열기 (상세 조회 후 폼 채움). */
   async function openEdit(id: number) {
     if (!await assertAuthenticatedBeforeModal()) return;
-    const res = await axios.get(`/api/tmplat/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("tmplat.load.failure"));
-    form.value = normalizeForm(res.data?.rsltObj ?? {});
+    const dto = await getObj<TmplatRow>(`/api/tmplat/${id}`, { failureMessage: t("tmplat.load.failure") });
+    form.value = normalizeForm(dto ?? {});
     modalOpen.value = true;
   }
 
@@ -116,12 +113,11 @@ export const useTmplatAdminStore = defineStore("tmplatAdmin", () => {
     try {
       const id = form.value.id;
       const url = id != null ? `/api/tmplat/${id}` : "/api/tmplats";
-      const res = await axios.post(url, toFormData(form.value), {
+      const res = await apiPost(url, toFormData(form.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("tmplat.save.failure"));
+      const message = unwrapOk(res, t("tmplat.save.failure")) || t("common.result.saved");
       closeModal();
-      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchList();
       return message;
@@ -135,9 +131,8 @@ export const useTmplatAdminStore = defineStore("tmplatAdmin", () => {
    * 성공 알림 OK 이후 목록을 갱신한다.
    */
   async function remove(id: number) {
-    const res = await axios.delete(`/api/tmplat/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("tmplat.delete.failure"));
-    const message = res.data?.message ?? t("common.result.deleted");
+    const res = await apiDelete(`/api/tmplat/${id}`);
+    const message = unwrapOk(res, t("tmplat.delete.failure")) || t("common.result.deleted");
     await swalAlert(message);
     await fetchList();
     return message;

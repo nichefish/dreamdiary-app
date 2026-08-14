@@ -1,7 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { apiGet, apiPost, getObj, getPage, unwrapOk } from "@/shared/api/client";
 
 export interface ScheduleCodeOption {
   code: string;
@@ -172,8 +172,8 @@ export const useScheduleStore = defineStore("schedule", () => {
   const holyDayCode = computed(() => bootstrap.value.holyDayCode ?? "HOLYDAY");
 
   async function fetchBootstrap() {
-    const res = await axios.get("/api/schedule/bootstrap");
-    bootstrap.value = res.data?.rsltObj ?? {};
+    const res = await apiGet<ScheduleBootstrap>("/api/schedule/bootstrap");
+    bootstrap.value = res.rsltObj ?? {};
   }
 
   function buildQueryParams(range: ScheduleQueryRange, searchKeyword = "") {
@@ -195,15 +195,15 @@ export const useScheduleStore = defineStore("schedule", () => {
     loading.value = true;
     eventsError.value = null;
     try {
-      const res = await axios.get("/api/schedule/cal-list", {
+      const res = await apiGet<ScheduleCalendarEvent>("/api/schedule/cal-list", {
         params: buildQueryParams(range, searchKeyword),
       });
-      if (!res.data?.rslt) {
-        console.error("[schedule] fetchEvents soft-fail", { range, message: res.data?.message });
-        eventsError.value = res.data?.message ?? t("schedule.list.load.failure");
+      if (!res.rslt) {
+        console.error("[schedule] fetchEvents soft-fail", { range, message: res.message });
+        eventsError.value = res.message ?? t("schedule.list.load.failure");
         return;
       }
-      events.value = res.data?.rsltList ?? [];
+      events.value = res.rsltList ?? [];
     } catch (e: unknown) {
       console.error("[schedule] fetchEvents failed", { range }, e);
       eventsError.value = e instanceof Error ? e.message : t("schedule.list.load.failure");
@@ -220,20 +220,21 @@ export const useScheduleStore = defineStore("schedule", () => {
     listError.value = null;
     const targetPage = page ?? listCurrentPage.value;
     try {
-      const res = await axios.get("/api/schedule/list", {
-        params: {
-          ...buildQueryParams(range, searchKeyword),
-          page: targetPage,
-          size: listPageSize.value,
+      const pageResult = await getPage<ScheduleListRow>("/api/schedule/list", {
+        config: {
+          params: {
+            ...buildQueryParams(range, searchKeyword),
+            page: targetPage,
+            size: listPageSize.value,
+          },
         },
+        failureMessage: t("schedule.list.load.failure"),
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.list.load.failure"));
-      const pageResult = res.data?.rsltObj ?? {};
-      listRows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
-      listTotalElements.value = Number(pageResult.totalElements ?? 0);
-      listTotalPages.value = Number(pageResult.totalPages ?? 0);
-      listCurrentPage.value = Number(pageResult.number ?? targetPage);
-      listPageSize.value = Number(pageResult.size ?? listPageSize.value);
+      listRows.value = pageResult.content;
+      listTotalElements.value = pageResult.totalElements;
+      listTotalPages.value = pageResult.totalPages;
+      listCurrentPage.value = pageResult.number;
+      listPageSize.value = pageResult.size;
     } catch (error) {
       listError.value = error instanceof Error ? error.message : t("schedule.list.load.failure");
       throw error;
@@ -253,9 +254,7 @@ export const useScheduleStore = defineStore("schedule", () => {
   }
 
   async function fetchDetail(id: string | number): Promise<ScheduleDetail> {
-    const res = await axios.get("/api/schedule/cal-dtl", { params: { id } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.detail.load.failure"));
-    return res.data.rsltObj;
+    return await getObj<ScheduleDetail>("/api/schedule/cal-dtl", { config: { params: { id } }, failureMessage: t("schedule.detail.load.failure") });
   }
 
   /**
@@ -277,11 +276,10 @@ export const useScheduleStore = defineStore("schedule", () => {
       fd.append(`prtcpntList[${index}].username`, participant.username);
     });
 
-    const res = await axios.post("/api/schedule/cal-reg", fd, {
+    const res = await apiPost("/api/schedule/cal-reg", fd, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.save.failure"));
-    return res.data?.message ?? t("schedule.save.success");
+    return unwrapOk(res, t("schedule.save.failure")) || t("schedule.save.success");
   }
 
   /**
@@ -292,9 +290,8 @@ export const useScheduleStore = defineStore("schedule", () => {
   async function deleteSchedule(id: string | number) {
     const fd = new FormData();
     fd.append("id", String(id));
-    const res = await axios.post("/api/schedule/cal-del", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("schedule.delete.failure"));
-    return res.data?.message ?? t("schedule.delete.success");
+    const res = await apiPost("/api/schedule/cal-del", fd);
+    return unwrapOk(res, t("schedule.delete.failure")) || t("schedule.delete.success");
   }
 
   return {

@@ -192,6 +192,7 @@ Java 컴파일 검증 폴백 (2026-08-14 실증): 이 셸에서는 `./gradlew co
 - `src/shared/` — auth·config·theme·menu store, `ui/editor|tag`, 범용 `utils/`, `components/system/`.
 - `src/features/{admin,journal,chat,board,calendar,user,attachable,auth}/` — 화면 + feature store(+ types) co-location. 백엔드 `feature/*` 축과 맞춘다.
 - feature store는 Pinia 상태·API 조립까지만 담당한다. store가 Vue 컴포넌트나 DOM을 import하면 구조 위반이다.
+- 스토어 HTTP는 `@/shared/api/client` 로 수렴한다. 백엔드 `AjaxResponse` 계약(`rslt`·`message`·`rsltObj`·`rsltList`)을 `AjaxResponse<T>`/`PageResult<T>` 로 타입화하고, 저수준 `api{Get,Post,Put,Patch,Delete}`(throw 안 함 — soft-fail·raw 소비용) + 언랩 `unwrap{Obj,List,Ok,Page}`/`assertOk`(!rslt면 서버 메시지 우선 throw) + 편의 `get{Obj,List,Page}` 를 제공한다. 새 스토어·기존 스토어 수정 시 직접 `axios` 대신 이 계층을 쓴다. client가 undefined config 를 생략해 자연스러운 axios 호출을 유지하므로 기존 계약·테스트는 불변이다. (admin·calendar·user CRUD 스토어 이관 완료; 나머지는 touch 시 기회적 채택.)
 - `src/styles/` 는 앱 전역 스타일 경계다.
 - `src/platform/metronic/` 는 UI 플랫폼 킷(Metronic) 경계다. npm vendor·제품 도메인이 아닌 **UI platform 층**으로 분류한다. `frontend-vue`·`frontend-react` 공통 SSOT.
 - `src` top-level 책임: `app/`(shell), `shared/`(횡단 플랫폼), `features/`(제품), `platform/`(UI 킷), `styles/`(앱 스타일).

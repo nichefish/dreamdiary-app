@@ -1,9 +1,9 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { BASE_LOCALE, SUPPORTED_LOCALES, useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
+import { apiPost, apiPatch, apiPut, apiDelete, getList, getObj, getPage, unwrapOk, assertOk } from "@/shared/api/client";
 
 /**
  * 코드 다국어 입력에서 고를 수 있는 로케일.
@@ -193,14 +193,12 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       };
       if (keyword.value.trim()) params.searchKeyword = keyword.value.trim();
 
-      const res = await axios.get("/api/code/groups", { params });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.list.load.failure"));
-      const pageResult = res.data?.rsltObj ?? {};
-      rows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
-      totalElements.value = Number(pageResult.totalElements ?? 0);
-      totalPages.value = Number(pageResult.totalPages ?? 0);
-      currentPage.value = Number(pageResult.number ?? targetPage);
-      pageSize.value = Number(pageResult.size ?? pageSize.value);
+      const pageResult = await getPage<CodeGroupRow>("/api/code/groups", { config: { params }, failureMessage: t("admin.code.group.list.load.failure") });
+      rows.value = pageResult.content;
+      totalElements.value = pageResult.totalElements;
+      totalPages.value = pageResult.totalPages;
+      currentPage.value = pageResult.number;
+      pageSize.value = pageResult.size;
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("admin.code.group.list.load.failure");
     } finally {
@@ -222,9 +220,8 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
   async function openGroupEdit(id: number) {
     if (!await assertAuthenticatedBeforeModal()) return;
     groupSaving.value = false;
-    const res = await axios.get(`/api/code/group/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.load.failure"));
-    groupForm.value = normalizeGroupForm(res.data?.rsltObj ?? {});
+    const dto = await getObj<CodeGroupRow>(`/api/code/group/${id}`, { failureMessage: t("admin.code.group.load.failure") });
+    groupForm.value = normalizeGroupForm(dto ?? {});
     groupModalOpen.value = true;
   }
 
@@ -244,12 +241,11 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       const wasCreate = groupForm.value.id == null;
       const id = groupForm.value.id;
       const url = id != null ? `/api/code/group/${id}` : "/api/code/groups";
-      const res = await axios.post(url, toGroupFormData(groupForm.value), {
+      const res = await apiPost(url, toGroupFormData(groupForm.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.save.failure"));
+      const message = unwrapOk(res, t("admin.code.group.save.failure")) || t("common.result.saved");
       closeGroupModal();
-      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchGroups(wasCreate ? 0 : currentPage.value);
       if (detail.value?.id === id) await openDetail(id);
@@ -261,11 +257,11 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
 
   async function toggleGroupUse(row: CodeGroupRow) {
     const nextUseYn = yn(row.useYn) === "Y" ? "N" : "Y";
-    const res = await axios.patch(`/api/code/group/${row.id}`, { useYn: nextUseYn });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.use-yn.change.failure"));
+    const res = await apiPatch(`/api/code/group/${row.id}`, { useYn: nextUseYn });
+    const message = unwrapOk(res, t("admin.code.group.use-yn.change.failure")) || t("common.result.changed");
     await fetchGroups(currentPage.value);
     if (detail.value?.id === row.id) await openDetail(row.id);
-    return res.data?.message ?? t("common.result.changed");
+    return message;
   }
 
   /**
@@ -274,11 +270,11 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
    * 변경 후에는 성공 알림 OK 이후 목록을 갱신한다.
    */
   async function deleteGroup(id: number) {
-    const res = await axios.delete(`/api/code/group/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.delete.failure"));
+    const res = await apiDelete(`/api/code/group/${id}`);
+    assertOk(res, t("admin.code.group.delete.failure"));
     if (detail.value?.id === id) closeDetail();
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
-    const message = res.data?.message ?? t("common.result.deleted");
+    const message = res.message ?? t("common.result.deleted");
     await swalAlert(message);
     await fetchGroups(nextPage);
     return message;
@@ -289,9 +285,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
     detailOpen.value = true;
     detailLoading.value = true;
     try {
-      const res = await axios.get(`/api/code/group/${id}`);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.group.detail.load.failure"));
-      const group = (res.data?.rsltObj ?? {}) as CodeGroupRow;
+      const group = (await getObj<CodeGroupRow>(`/api/code/group/${id}`, { failureMessage: t("admin.code.group.detail.load.failure") })) ?? ({} as CodeGroupRow);
       detail.value = group;
       if (Array.isArray(group.codeItems)) {
         items.value = group.codeItems;
@@ -317,9 +311,7 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
       items.value = [];
       return;
     }
-    const res = await axios.get("/api/code/items", { params: { groupCode: targetGroupCode } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.list.load.failure"));
-    items.value = Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
+    items.value = await getList<CodeItemRow>("/api/code/items", { config: { params: { groupCode: targetGroupCode } }, failureMessage: t("admin.code.item.list.load.failure") });
   }
 
   async function openItemCreate() {
@@ -330,9 +322,8 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
 
   async function openItemEdit(id: number) {
     if (!await assertAuthenticatedBeforeModal()) return;
-    const res = await axios.get("/api/code/item", { params: { id } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.detail.load.failure"));
-    itemForm.value = normalizeItemForm(res.data?.rsltObj ?? {}, detail.value?.groupCode ?? "");
+    const dto = await getObj<CodeItemRow>("/api/code/item", { config: { params: { id } }, failureMessage: t("admin.code.item.detail.load.failure") });
+    itemForm.value = normalizeItemForm(dto ?? {}, detail.value?.groupCode ?? "");
     itemModalOpen.value = true;
   }
 
@@ -367,14 +358,14 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
     try {
       const wasCreate = itemForm.value.id == null;
       const url = wasCreate ? "/api/code/items" : "/api/code/item";
-      const res = await axios.post(url, toItemFormData(itemForm.value), {
+      const res = await apiPost(url, toItemFormData(itemForm.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.save.failure"));
+      assertOk(res, t("admin.code.item.save.failure"));
       const groupId = detail.value?.id;
       const groupCode = itemForm.value.groupCode;
       closeItemModal();
-      const message = res.data?.message ?? t("common.result.saved");
+      const message = res.message ?? t("common.result.saved");
       await swalAlert(message);
       if (groupId) await openDetail(groupId);
       else await fetchItems(groupCode);
@@ -391,9 +382,8 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
    * 변경 후에는 성공 알림 OK 이후 그룹 상세와 목록을 갱신한다.
    */
   async function deleteItem(id: number) {
-    const res = await axios.delete("/api/code/item", { params: { id } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.delete.failure"));
-    const message = res.data?.message ?? t("common.result.deleted");
+    const res = await apiDelete("/api/code/item", { params: { id } });
+    const message = unwrapOk(res, t("admin.code.item.delete.failure")) || t("common.result.deleted");
     await swalAlert(message);
     if (detail.value?.id) await openDetail(detail.value.id);
     await fetchGroups(currentPage.value);
@@ -418,10 +408,10 @@ export const useCodeAdminStore = defineStore("codeAdmin", () => {
         groupCode: detail.value?.groupCode,
         sortOrder: idx + 1,
       }));
-      const res = await axios.put("/api/code/items/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.code.item.order.failure"));
+      const res = await apiPut("/api/code/items/sort-orders", { sortOrders });
+      const message = unwrapOk(res, t("admin.code.item.order.failure")) || t("common.result.sort-order-saved");
       await fetchItems(detail.value.groupCode);
-      return res.data?.message ?? t("common.result.sort-order-saved");
+      return message;
     } finally {
       itemSortSaving.value = false;
     }

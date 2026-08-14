@@ -66,12 +66,13 @@
 - [ ] dead file 제거 확인 — 이번 릴리스 작업으로 더 이상 사용하지 않는 파일(`*_old.*`, 미참조 컴포넌트, 빈 유틸 등) 정리 여부 확인. `import`/`require` 역참조로 검증.
 
 ## 9. 소스코드 고고학 훑어보기
-> 방법론: [CODE_ARCHAEOLOGY_CHECKLIST.md](references/CODE_ARCHAEOLOGY_CHECKLIST.md) 최소(30분) 패스면 충분. 원천: [source-archaeology.md](references/dreamdiary/source-archaeology.md) · 진단·처방: [system-issues.md](references/dreamdiary/system-issues.md).
+> 방법론: [CODE_ARCHAEOLOGY_ADDENDUM.md](references/CODE_ARCHAEOLOGY_ADDENDUM.md). 원천: [REPO_HISTORY.md](references/dreamdiary/REPO_HISTORY.md) · 정적: [REPO_STATIC_ANALYSIS.md](references/dreamdiary/REPO_STATIC_ANALYSIS.md) · 진단: [system-issues.md](references/dreamdiary/system-issues.md).
+> 산출물은 스냅샷이다. 허브 파일이 분해·삭제됐거나 시대가 바뀌었으면 표를 고치지 말고 같은 역할의 문서를 재작성한다(부록 §14).
 
-- [ ] `source-archaeology.md` 재훑기 — 이번 릴리스 변경이 만든 새 지층이 기존 통섭("세우고 접는 수렴")과 어긋나는지 확인.
-- [ ] 이번 릴리스가 남긴 부채 점검 — dead/zombie 코드, 책임 누수, **허브 축적**(허브 서비스·스토어의 LOC·fan-in 증가), 평행 표면, 스키마 baseline drift.
-- [ ] 정량 수치 반영 — 허브 파일(예: `JournalEntryService`·`journalModal.ts`) LOC/fan-in이 크게 변했으면 `source-archaeology.md` 구조 지형도 표 갱신.
-- [ ] 새 지층·처방이 있으면 `source-archaeology.md`(원천, §0 등급 부착)·`system-issues.md`(진단·처방)에 기록. 원천은 사실만, 처방은 진단 문서로 분리.
+- [ ] 역사서 통섭이 이번 릴리스 방향과 어긋나는지 확인. 어긋나면 최소 패스 대신 재작성.
+- [ ] 이번 릴리스가 남긴 부채 — dead/zombie, 허브 축적, 평행 표면, 스키마 baseline drift.
+- [ ] 정적분석 PRESSURE의 파일명이 아직 트리에 있는지 확인. 없으면 재작성.
+- [ ] 진단 매트릭스에 해소된 항이 남아 있으면 `system-issues.md`를 재작성(줄 수정으로 연명하지 않음).
 
 ## 10. 최종 저장소 점검
 > push 직전 `git diff` 한 패스로 아래를 모두 확인한다.
