@@ -236,6 +236,14 @@
 
 ### 상태(state)
 
+#### 현재값 삭제 정책(state/lifecycle)
+
+- `state`와 `lifecycle`은 변경 이력이 아니라 콘텐츠의 현재값을 저장하는 보조 테이블이다. `state`는 활성 상태만 행으로 저장하고 OFF를 행 부재로 표현한다. `lifecycle`은 `PENDING`·`RESOLVED`만 행으로 저장하고 기본값 `OPEN`을 행 부재로 표현한다.
+- `state` OFF는 현재 행을 물리 삭제한다. `lifecycle`은 `PENDING` ↔ `RESOLVED` 전환을 동일 행 UPDATE로 처리하고, `OPEN` 전환은 현재 행을 물리 삭제한다. 유니크 기준은 각각 `(ref_content_type, ref_id, state_key)`, `(ref_content_type, ref_id)`이다.
+- 이 물리 삭제는 현재값의 부재 표현과 유니크 키 재사용을 위한 영속 계약이다. `deleted_at`만 기록하는 소프트 삭제는 행과 인덱스 키를 보존하므로 DB 부하를 줄이는 수단으로 채택하지 않는다. 동일 키의 재등록을 지원하려면 삭제 행 조회·복원과 동시성·멱등 처리를 함께 설계해야 한다.
+- 복구가 도메인 계약인 콘텐츠·소속 관계는 소프트 삭제를 사용할 수 있다. `journal_thread_entry`는 해제된 동일 소속 행을 조회해 되살리는 `findAnyByPair` → `reviveById` 경로와 유니크 키를 하나의 계약으로 유지한다. 현재값 보조 테이블에는 이 복구 의미를 적용하지 않는다.
+- 상태 전이의 감사·분석 요구가 생기면 `state`·`lifecycle` 현재 행을 tombstone으로 누적하지 않고 별도의 append-only 변경 이력으로 모델링한다. 성능 재검토는 실제 DELETE/INSERT 빈도, InnoDB purge lag, 잠금 경합, 테이블·인덱스 크기 측정에서 병목이 확인될 때 수행하며, 그 경우 현재값 상시 저장과 UPDATE 전환을 대안으로 비교한다.
+
 ### 조회자(viewer)
 
 ### 관련글(related)
