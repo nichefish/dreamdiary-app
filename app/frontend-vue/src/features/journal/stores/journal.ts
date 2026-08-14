@@ -50,6 +50,7 @@ export interface LifecycleCmpstn {
 export interface CommentItem {
   id: number;
   content: string;
+  markdownContent?: string;
   regDt?: string;
 }
 

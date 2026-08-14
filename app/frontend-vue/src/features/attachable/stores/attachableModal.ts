@@ -32,6 +32,7 @@ export interface RelatedTargetItem {
 export interface CommentListItem {
   id: number | string;
   content: string;
+  markdownContent?: string;
   createdAt?: string;
   updatedAt?: string;
   createdByNm?: string;

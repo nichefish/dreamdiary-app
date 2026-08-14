@@ -24,9 +24,8 @@
           v-for="cmt in commentList"
           :key="cmt.id"
           class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
-        >
-          {{ cmt.content }}
-        </div>
+          v-html="cmt.markdownContent || cmt.content || ''"
+        ></div>
       </div>
       <!--end::댓글-->
     </div>

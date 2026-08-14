@@ -189,7 +189,7 @@
                 v-if="axisWritable && !hasDreamerName(entry) && !isPrimaryContentTargetedReflection(entry)"
                 class="menu-item px-3"
                 data-kt-menu-trigger="hover"
-                data-kt-menu-placement="right-end"
+                data-kt-menu-placement="right-start"
                 @mouseenter="ensureThreadOptions"
               >
                 <a href="#" class="menu-link px-3" @click.prevent>
@@ -280,7 +280,7 @@
                         : t('journal.entry.thread.empty') }}
                     </span>
                   </div>
-                  <template v-if="filteredThreadOptions.length > 0">
+                  <div v-if="filteredThreadOptions.length > 0" class="thread-candidate-list">
                     <div
                       v-for="opt in filteredThreadOptions"
                       :key="'thread-opt-' + opt.id"
@@ -305,7 +305,7 @@
                         <i v-if="opt.member" class="bi bi-check-lg fs-8 text-success"></i>
                       </div>
                     </div>
-                  </template>
+                  </div>
                   <!--end::스레드 후보 목록-->
                 </div>
               </div>
@@ -516,9 +516,8 @@
           v-for="cmt in commentList"
           :key="cmt.id"
           class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
-        >
-          {{ cmt.content }}
-        </div>
+          v-html="cmt.markdownContent || cmt.content || ''"
+        ></div>
       </div>
       <!--end::댓글-->
     </div>
@@ -835,11 +834,11 @@ function openReflectionRegist() {
  * 변경 전에는 모든 라우트에서 fetchDays 완료 후 일자 DOM을 찾았으나, 스레드 상세에서는
  * 열린 스레드의 원본 엔트리·집계 태그를 다시 조회하고 모달 내부 읽기 위치를 유지한다.
  */
-function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): Promise<void> {
+function scrollAfterFetch(stdrdDt = props.entry.stdrdDt, opts: { scroll?: boolean } = {}): Promise<void> {
   const dt = stdrdDt;
   return refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
-    /* 검색·스레드 상세는 배경 일자 스크롤 대상이 아니다. */
-    if (scope === "thread-detail" || scope === "journal-entry-search" || !dt) return;
+    /* 검색·스레드 상세는 배경 일자 스크롤 대상이 아니다. opts.scroll === false 면 재조회만 하고 스크롤은 생략한다(스레드 소속 변경 등 사용자 위치 유지). */
+    if (opts.scroll === false || scope === "thread-detail" || scope === "journal-entry-search" || !dt) return;
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -851,6 +850,11 @@ function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): Promise<void> {
 </script>
 
 <style scoped>
+/* 스레드 소속 서브메뉴 후보 목록: 높이를 고정 상한으로 묶어 목록 변경 시 서브메뉴 재배치(→ hover 닫힘)를 막는다. */
+.thread-candidate-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
 :deep(.journal-entry-search-keyword-mark) {
   background-color: #fff3cd;
   border-radius: 0.25rem;
