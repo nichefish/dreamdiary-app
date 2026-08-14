@@ -330,7 +330,8 @@ const tagInputTitle = computed(() => (isTagCategoryChoicePending.value
   : t("journal.thread.filter.tag.placeholder")));
 
 onMounted(() => {
-  void store.fetchList(0);
+  // 상세 왕복 후 재마운트 시 보존된 currentPage 를 유지한다(인자 없으면 fetchList 가 currentPage 사용). 첫 진입은 기본 0페이지.
+  void store.fetchList();
 });
 
 function search(): void {
