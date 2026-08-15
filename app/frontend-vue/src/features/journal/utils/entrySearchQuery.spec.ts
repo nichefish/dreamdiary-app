@@ -40,6 +40,7 @@ describe("parseEntrySearchQuery", () => {
       sortField: "date",
       tagIds: [],
       searchKeywords: [],
+      states: [],
       title: "",
     });
   });
@@ -55,10 +56,20 @@ describe("parseEntrySearchQuery", () => {
     expect(parseEntrySearchQuery({ sort: "" }).sort).toBe("desc");
   });
 
-  it("tagIds/searchKeywords 는 normalizeQueryList 규칙으로 파싱한다", () => {
-    const cond = parseEntrySearchQuery({ tagIds: "1,2", searchKeywords: ["바다", "여행"] });
+  it("tagIds/searchKeywords/states 는 목록 규칙으로 파싱한다", () => {
+    const cond = parseEntrySearchQuery({
+      type: "dream",
+      tagIds: "1,2",
+      searchKeywords: ["바다", "여행"],
+      states: ["nhtmr", "HALLUC", "NHTMR", "INVALID"],
+    });
     expect(cond.tagIds).toEqual(["1", "2"]);
     expect(cond.searchKeywords).toEqual(["바다", "여행"]);
+    expect(cond.states).toEqual(["NHTMR", "HALLUC"]);
+  });
+
+  it("일기 검색에서는 꿈 전용 상태를 제거한다", () => {
+    expect(parseEntrySearchQuery({ type: "DIARY", states: "NHTMR" }).states).toEqual([]);
   });
 });
 
@@ -70,6 +81,7 @@ describe("buildEntrySearchParams", () => {
       sortField: "date",
       tagIds: ["1", "2"],
       searchKeywords: ["sea"],
+      states: [],
       title: "",
     });
     expect(params.toString()).toBe("type=DIARY&sort=desc&tagIds=1&tagIds=2&searchKeywords=sea");
@@ -82,10 +94,12 @@ describe("buildEntrySearchParams", () => {
       sortField: "date",
       tagIds: [],
       searchKeywords: ["바다"],
+      states: ["NHTMR", "HALLUC"],
       title: "",
     });
     expect(params.getAll("searchKeywords")).toEqual(["바다"]);
     expect(params.getAll("tagIds")).toEqual([]);
+    expect(params.getAll("states")).toEqual(["NHTMR", "HALLUC"]);
   });
 });
 
@@ -97,6 +111,7 @@ describe("buildEntrySearchRouteQuery", () => {
       sortField: "date",
       tagIds: [],
       searchKeywords: [],
+      states: [],
       title: "",
     })).toEqual({ type: "DIARY" });
   });
@@ -108,17 +123,19 @@ describe("buildEntrySearchRouteQuery", () => {
       sortField: "date",
       tagIds: ["1"],
       searchKeywords: ["바다", "여행"],
+      states: ["NHTMR", "HALLUC"],
       title: "",
     })).toEqual({
       type: "DREAM",
       sort: "asc",
       tagIds: ["1"],
       searchKeywords: ["바다", "여행"],
+      states: ["NHTMR", "HALLUC"],
     });
   });
 
   it("조립한 query 를 다시 파싱하면 같은 조건이 된다 (round-trip 불변식)", () => {
-    const cond = { type: "DREAM", sort: "asc", sortField: "date", tagIds: ["1", "2"], searchKeywords: ["여행"], title: "" };
+    const cond = { type: "DREAM", sort: "asc", sortField: "date", tagIds: ["1", "2"], searchKeywords: ["여행"], states: ["NHTMR"], title: "" };
     expect(parseEntrySearchQuery(buildEntrySearchRouteQuery(cond))).toEqual(cond);
   });
 });
@@ -136,12 +153,14 @@ describe("sortField·title (제목 정렬·제목 검색)", () => {
     const p = buildEntrySearchParams({
       type: "DIARY", sort: "desc", sortField: "title",
       tagIds: [], searchKeywords: [], title: "약속",
+      states: [],
     });
     expect(p.get("sortField")).toBe("TITLE");
     expect(p.get("title")).toBe("약속");
     const q = buildEntrySearchRouteQuery({
       type: "DIARY", sort: "desc", sortField: "title",
       tagIds: [], searchKeywords: [], title: "약속",
+      states: [],
     });
     expect(q).toEqual({ type: "DIARY", sortField: "title", title: "약속" });
   });

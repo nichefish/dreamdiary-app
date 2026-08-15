@@ -105,6 +105,20 @@
         </span>
       </div>
       <!--end::태그 배지 목록-->
+      <!--begin::꿈 상태 배지 목록-->
+      <div v-if="states.length > 0" class="d-flex flex-wrap gap-2 border-start border-gray-300 ps-3">
+        <span
+          v-for="state in states"
+          :key="state"
+          :class="['badge fw-lighter d-flex align-items-center gap-2 px-3 py-2 cursor-pointer', stateBadgeClass(state)]"
+          :title="t('journal.entry.search.state.remove.tooltip')"
+          @click="removeState(state)"
+        >
+          {{ getStateLabel(state) }}
+          <i class="bi bi-x"></i>
+        </span>
+      </div>
+      <!--end::꿈 상태 배지 목록-->
       <!--begin::결과 건수-->
       <div class="d-flex align-items-center gap-2 ms-auto">
         <span class="text-muted fs-8">{{ conditionSummaryLabel }}</span>
@@ -138,6 +152,26 @@
         </div>
       </div>
       <!--end::유형 선택-->
+      <!--begin::꿈 상태 선택 (복수 선택은 OR)-->
+      <div v-if="type === 'DREAM'" class="d-flex align-items-center gap-2 mb-3">
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("journal.entry.search.state") }}</span>
+        <div class="btn-group btn-group-sm" role="group" :aria-label="t('journal.entry.search.state')">
+          <button
+            type="button"
+            :class="['btn', states.includes('NHTMR') ? 'btn-danger' : 'btn-light']"
+            :aria-pressed="states.includes('NHTMR')"
+            @click="toggleState('NHTMR')"
+          >{{ t("state.nightmare") }}</button>
+          <button
+            type="button"
+            :class="['btn', states.includes('HALLUC') ? 'btn-secondary' : 'btn-light']"
+            :aria-pressed="states.includes('HALLUC')"
+            @click="toggleState('HALLUC')"
+          >{{ t("state.hallucination") }}</button>
+        </div>
+        <span class="text-muted fs-8">{{ t("journal.entry.search.state.or-hint") }}</span>
+      </div>
+      <!--end::꿈 상태 선택-->
       <!--begin::키워드 입력-->
       <div class="d-flex align-items-center gap-2">
         <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("common.keyword") }}</span>
@@ -389,6 +423,8 @@ const sort = ref("desc");
 const sortField = ref("date");
 const tagIds = ref<string[]>([]);
 const searchKeywords = ref<string[]>([]);
+/** 꿈 전용 상태 검색 조건. URL에는 NHTMR/HALLUC만 보존하며 복수 선택은 OR로 조회한다. */
+const states = ref<string[]>([]);
 /** 제목 전용 검색 — 적용된 조건(URL SSOT)과 입력 박스를 분리한다(키워드 패턴과 동일). */
 const title = ref("");
 const titleInput = ref("");
@@ -398,7 +434,12 @@ const searchErrorMessage = ref("");
 /** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
 const tagLabelMap = ref<Record<string, string>>({});
 
-const hasSearchConditions = computed(() => searchKeywords.value.length > 0 || tagIds.value.length > 0 || title.value.trim().length > 0);
+const hasSearchConditions = computed(() =>
+  searchKeywords.value.length > 0
+  || tagIds.value.length > 0
+  || states.value.length > 0
+  || title.value.trim().length > 0,
+);
 const hasPendingSearchInputs = computed(() => keywordInput.value.trim().length > 0 || tagInput.value.trim().length > 0);
 const isTagCategoryChoicePending = computed(() => tagCategoryChoices.value.length > 0);
 const isActionLocked = computed(() => loading.value || actionInProgress.value);
@@ -425,6 +466,7 @@ const conditionSummaryLabel = computed(() =>
     .replace("{1}", sortLabel.value)
     .replace("{2}", String(searchKeywords.value.length))
     .replace("{3}", String(tagIds.value.length))
+    .replace("{4}", String(states.value.length))
 );
 
 const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
@@ -445,6 +487,7 @@ function syncFromRoute(): void {
   sortField.value = cond.sortField;
   tagIds.value = cond.tagIds;
   searchKeywords.value = cond.searchKeywords;
+  states.value = cond.states;
   title.value = cond.title;
   titleInput.value = cond.title;
   keywordInput.value = "";
@@ -478,6 +521,7 @@ async function loadEntries(): Promise<void> {
       sortField: sortField.value,
       tagIds: tagIds.value,
       searchKeywords: searchKeywords.value,
+      states: states.value,
       title: title.value,
     });
 
@@ -649,15 +693,16 @@ async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
 }
 
 /** 현재 로컬 ref 상태를 URL query 로 replace한다. */
-async function pushQuery(overrides: Partial<{ type: string; sort: string; sortField: string; tagIds: string[]; searchKeywords: string[]; title: string }> = {}, statusMessage = ""): Promise<void> {
+async function pushQuery(overrides: Partial<{ type: string; sort: string; sortField: string; tagIds: string[]; searchKeywords: string[]; states: string[]; title: string }> = {}, statusMessage = ""): Promise<void> {
   conditionChangedMessage.value = statusMessage;
   const t = overrides.type ?? type.value;
   const s = overrides.sort ?? sort.value;
   const sf = overrides.sortField ?? sortField.value;
   const ids = overrides.tagIds ?? tagIds.value;
   const kws = overrides.searchKeywords ?? searchKeywords.value;
+  const sts = overrides.states ?? states.value;
   const ttl = overrides.title ?? title.value;
-  const query = buildEntrySearchRouteQuery({ type: t, sort: s, sortField: sf, tagIds: ids, searchKeywords: kws, title: ttl });
+  const query = buildEntrySearchRouteQuery({ type: t, sort: s, sortField: sf, tagIds: ids, searchKeywords: kws, states: sts, title: ttl });
   await router.replace({ name: "journal-entry-search", query });
 }
 
@@ -691,6 +736,30 @@ function removeTag(tagId: string): void {
     { tagIds: tagIds.value.filter((id) => id !== tagId) },
     t("journal.entry.search.condition.tag-removed"),
   );
+}
+
+/** 꿈 상태 배지 X 클릭 → 제거 후 재검색 */
+function removeState(state: string): void {
+  void pushQuery(
+    { states: states.value.filter((key) => key !== state) },
+    t("journal.entry.search.condition.state-changed"),
+  );
+}
+
+/** 꿈 상태 토글. 복수 선택 시 백엔드 state EXISTS/IN 계약에 따라 OR로 검색한다. */
+function toggleState(state: "NHTMR" | "HALLUC"): void {
+  const nextStates = states.value.includes(state)
+    ? states.value.filter((key) => key !== state)
+    : [...states.value, state];
+  void pushQuery({ states: nextStates }, t("journal.entry.search.condition.state-changed"));
+}
+
+function getStateLabel(state: string): string {
+  return state === "HALLUC" ? t("state.hallucination") : t("state.nightmare");
+}
+
+function stateBadgeClass(state: string): string {
+  return state === "HALLUC" ? "badge-light-secondary text-gray-700" : "badge-light-danger text-danger";
 }
 
 /** 검색 실행 (고급 필터 아코디언의 "검색" 버튼) */
@@ -745,7 +814,10 @@ function removeTitle(): void {
 function changeType(newType: string): void {
   tagInput.value = "";
   cancelTagCategoryChoice();
-  pushQuery({ type: newType }, t("journal.entry.search.condition.type-changed"));
+  pushQuery(
+    { type: newType, states: newType === "DREAM" ? states.value : [] },
+    t("journal.entry.search.condition.type-changed"),
+  );
 }
 
 /** 초기화 */
@@ -764,7 +836,7 @@ async function exportTxt(): Promise<void> {
   actionInProgress.value = true;
   try {
     if (!await finalizePendingSearchInputs()) return;
-    if (searchKeywords.value.length === 0 && tagIds.value.length === 0) {
+    if (!hasSearchConditions.value) {
       void swalAlert(t("journal.entry.search.condition.required"));
       return;
     }
@@ -774,6 +846,7 @@ async function exportTxt(): Promise<void> {
       sortField: sortField.value,
       tagIds: tagIds.value,
       searchKeywords: searchKeywords.value,
+      states: states.value,
       title: title.value,
     });
     window.location.href = `/api/journal/entries/export?${params.toString()}`;

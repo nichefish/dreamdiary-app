@@ -729,10 +729,10 @@ interface TodoRow {
 - `legacy/static/vue/feature/journal/entry/JournalEntrySearchApp.ts`
 
 **현재 Vue 범위**:
-- `type`, `tagIds`, `tagName`, `searchKeywords` query 파싱
+- `type`, `tagIds`, `tagName`, `searchKeywords`, `states` query 파싱. `states`는 꿈 유형의 `NHTMR`·`HALLUC`만 허용한다
 - `GET /api/journal/entries` 조회 — 응답 `threadList` 포함(일자 목록과 동일 enrich). 결과 카드는 `JournalEntryItem`으로 소속 스레드 칩을 표시한다
 - 결과 목록, 태그 목록, 키워드 검색/초기화, 정렬 전환
-- 고급 필터 토글 영역에서 유형(일기/꿈) 선택과 키워드 추가
+- 고급 필터 토글 영역에서 유형(일기/꿈) 선택, 꿈 상태(악몽/환각·현시) OR 선택과 키워드 추가. 상태만으로도 검색·TXT 내보내기가 가능하며 일기 전환 시 꿈 상태를 제거한다
 - 결과 전체 복사 버튼 (해석 포함/제외 2버튼) — `copyAll(true)`(`bi-copy`)는 각 결과 엔트리 본문 뒤에 그 엔트리 target 리플렉션 본문을 이어 붙이고, `copyAll(false)`(`bi-clipboard`)는 붙이지 않는다(레거시 `JournalEntrySearch.copy()` 포맷=제외에 해당)
 - 개별 결과 복사 버튼 — `JournalEntryItem.copyEntry()` 사용
 - TXT export 버튼 — `GET /api/journal/entries/export`
@@ -744,7 +744,7 @@ interface TodoRow {
 - `JournalReflectionRegistModal`의 제목(`title`)은 필수 항목이 아니다. 제목 없이 본문만으로 리플렉션 등록/수정이 가능해야 한다.
 - 날짜 헤더는 `stdrdDt (요일)` 옆에 새 창 버튼(`bi-box-arrow-up-right`)을 표시한다. 서버 `isHolyday` 가 true 이면 날짜·요일을 `text-danger` 로 표시하고 `holydayNm` 이 있으면 공휴일명을 붙인다(일자 카드와 동일 축; 프론트 재계산 없음). 클릭 시 월간/주간 일자 카드와 동일하게 `window.open(BASE_URL + /journal/daily-popup?stdrdDt=..., "_blank", "width=...,height=...")`로 일자 뷰를 새 창으로 연다.
 
-**표시 문구 i18n**: 컨트롤 바·고급 필터·유형/키워드/태그 입력·카테고리 선택·로딩/빈 결과·일자 새 창 tooltip과 결과 건수·연월 구분선·요일은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
+**표시 문구 i18n**: 컨트롤 바·고급 필터·유형/키워드/태그 입력·꿈 상태와 OR 안내·카테고리 선택·로딩/빈 결과·일자 새 창 tooltip과 결과 건수·연월 구분선·요일은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
 
 **액션 메시지 i18n**: 검색 결과/엔트리 상세 조회 실패, 태그 선택 검증, 검색 조건 검증, 복사 대상 없음과 복사 성공/실패 알림 및 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용한다. 클립보드와 TXT 본문은 기존 레거시 출력 포맷을 유지한다.
 

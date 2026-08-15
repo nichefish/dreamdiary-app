@@ -13,6 +13,8 @@ export interface EntrySearchCondition {
   sortField: string;
   tagIds: string[];
   searchKeywords: string[];
+  /** 꿈 전용 상태 검색 키(NHTMR/HALLUC). 복수 상태는 OR로 조회한다. */
+  states: string[];
   /** 제목 전용 검색어(제목만 매칭). 키워드(제목+본문)와 구분한다. */
   title: string;
 }
@@ -31,19 +33,26 @@ export function normalizeQueryList(value: unknown): string[] {
  * type 은 기본 DIARY 에 대문자화, sort 는 "asc"(대소문자 무관)만 인정하고 그 외는 desc.
  */
 export function parseEntrySearchQuery(query: Record<string, unknown>): EntrySearchCondition {
+  const type = String(query.type ?? "DIARY").toUpperCase();
+  const states = type === "DREAM"
+    ? [...new Set(normalizeQueryList(query.states)
+      .map((state) => state.toUpperCase())
+      .filter((state) => state === "NHTMR" || state === "HALLUC"))]
+    : [];
   return {
-    type: String(query.type ?? "DIARY").toUpperCase(),
+    type,
     sort: String(query.sort ?? "desc").toLowerCase() === "asc" ? "asc" : "desc",
     sortField: String(query.sortField ?? "date").toLowerCase() === "title" ? "title" : "date",
     tagIds: normalizeQueryList(query.tagIds),
     searchKeywords: normalizeQueryList(query.searchKeywords),
+    states,
     title: String(query.title ?? "").trim(),
   };
 }
 
 /**
  * 검색 조건 → API 조회/TXT 내보내기용 URLSearchParams.
- * tagIds/searchKeywords 는 반복 파라미터(tagIds=1&tagIds=2)로 직렬화한다 — Spring 배열 바인딩 계약.
+ * tagIds/searchKeywords/states 는 반복 파라미터로 직렬화한다 — Spring 배열 바인딩 계약.
  */
 export function buildEntrySearchParams(cond: EntrySearchCondition): URLSearchParams {
   const params = new URLSearchParams();
@@ -53,6 +62,7 @@ export function buildEntrySearchParams(cond: EntrySearchCondition): URLSearchPar
   if (cond.title) params.set("title", cond.title);
   cond.tagIds.forEach((tagId) => params.append("tagIds", tagId));
   cond.searchKeywords.forEach((kw) => params.append("searchKeywords", kw));
+  cond.states.forEach((state) => params.append("states", state));
   return params;
 }
 
@@ -67,5 +77,6 @@ export function buildEntrySearchRouteQuery(cond: EntrySearchCondition): Record<s
   if (cond.title) query.title = cond.title;
   if (cond.tagIds.length > 0) query.tagIds = cond.tagIds;
   if (cond.searchKeywords.length > 0) query.searchKeywords = cond.searchKeywords;
+  if (cond.type === "DREAM" && cond.states.length > 0) query.states = cond.states;
   return query;
 }
