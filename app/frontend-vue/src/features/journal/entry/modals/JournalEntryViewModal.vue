@@ -55,9 +55,9 @@
               </div>
             </div>
 
-            <div v-if="isDream && entry.elseDreamerNm" class="mb-4">
+            <div v-if="isDream && entry.dreamerName" class="mb-4">
               <div class="text-gray-700 fs-6 fw-bolder mb-2">{{ t('journal.entry.dreamer.label') }}</div>
-              <div class="fs-6">{{ entry.elseDreamerNm }}</div>
+              <div class="fs-6">{{ entry.dreamerName }}</div>
             </div>
 
             <div class="mb-4">

@@ -340,7 +340,7 @@
               </div>
               <!--end::날짜 헤더-->
               <!-- 중요=빨강·참조=노랑 좌측선 (journal.scss $journal-paired-states 연동).
-                   꿈은 data-else-dream="Y" 일 때 별도 팔레트를 쓰므로 타인 꿈 여부도 함께 내린다. -->
+                   꿈은 꿈꾼 이름이 있을 때 data-else-dream="Y"를 파생해 별도 팔레트를 쓴다. -->
               <div
                 v-for="entry in group.entries"
                 :key="entry.id"
@@ -348,7 +348,7 @@
                 :data-id="entry.id"
                 :data-imprtc="hasEntryState(entry, 'IMPRTC') ? 'Y' : 'N'"
                 :data-refrnc="hasEntryState(entry, 'REFRNC') ? 'Y' : 'N'"
-                :data-else-dream="entry.elseDreamYn === 'Y' ? 'Y' : 'N'"
+                :data-else-dream="hasDreamerName(entry) ? 'Y' : 'N'"
                 :data-stdrd-dt="entry.stdrdDt"
               >
                 <!--begin::본문-->
@@ -412,6 +412,7 @@ import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu
 import type { AnnualSection, AnnualEntryDto, AnnualTagItem, JournalAnnualReviewDto } from "@/features/journal/stores/journalAnnual";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import JournalPeriodThreadSummary from "@/features/journal/day/components/JournalPeriodThreadSummary.vue";
 
 const route = useRoute();

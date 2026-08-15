@@ -508,7 +508,7 @@ interface TodoRow {
 
 **데이터**: `JournalDayDto` (`features/journal/stores/journal.ts`) — `journalChapterList`, `journalDreamSectionList`, `tag`, `meta` 등
 
-**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 가 DREAM 챕터 꿈을 `journalDreamSectionList`(`JournalDreamSectionDto`: `sectionKey`, `title`, `dreamerName`, `entries`) 로 내려준다. 내 꿈=`own`/「꿈」, 지정 꿈꾼=`dreamer:{이름}`/「{이름} 꿈」(동일 철자=한 섹션). 분류·묶음 SSOT는 `JournalDreamSectionHelper`·`JournalDreamerFieldHelper` 이다. `title`은 서버가 요청 locale의 `common.dream`·`journal.dream.section.named` 메시지로 조립한다. Vue는 `journalDreamSectionList` 를 `JournalDreamVirtualSection.vue` 로만 렌더(프론트 재묶음 없음). 지정 꿈꾼 섹션에는 저널 꿈 등록 버튼 없음(내 꿈 `own` 만). 엔트리 본문에 꿈꾼 이름 배지 없음(섹션 헤더로 구분). 등록·복사·TXT 액션 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. `JournalEntryRegistModal.vue` 에 비필수 `elseDreamerNm` 입력.
+**꿈 렌더링 분리 (Phase 1 가상 섹션)**: 백엔드 `JournalEntryViewProjectionHelper.applyDayEntryProjections()` 가 DREAM 챕터 꿈을 `journalDreamSectionList`(`JournalDreamSectionDto`: `sectionKey`, `title`, `dreamerName`, `entries`) 로 내려준다. 내 꿈=`own`/「꿈」, 지정 꿈꾼=`dreamer:{이름}`/「{이름} 꿈」(동일 철자=한 섹션). 분류·묶음 SSOT는 `JournalDreamSectionHelper`·`JournalDreamerFieldHelper` 이다. `title`은 서버가 요청 locale의 `common.dream`·`journal.dream.section.named` 메시지로 조립한다. Vue는 `journalDreamSectionList` 를 `JournalDreamVirtualSection.vue` 로만 렌더(프론트 재묶음 없음). 지정 꿈꾼 섹션에는 저널 꿈 등록 버튼 없음(내 꿈 `own` 만). 엔트리 본문에 꿈꾼 이름 배지 없음(섹션 헤더로 구분). 등록·복사·TXT 액션 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. `JournalEntryRegistModal.vue`는 비필수 `dreamerName` 입력을 전송하며, 이름 존재 여부가 타인 꿈 분류의 단일 원천이다.
 
 **모달 연동**: `useJournalModalStore` — 일자/챕터/엔트리 등록·상세·수정
 

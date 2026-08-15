@@ -209,7 +209,7 @@ public class JournalEntryEntityRefSyncService {
         final Map<String, ExtractedPersonMention> mentionMap = new LinkedHashMap<>();
         collectMentionsFromText(mentionMap, entry == null ? null : entry.getTitle());
         collectMentionsFromText(mentionMap, entry == null ? null : entry.getContent());
-        collectDreamerMention(mentionMap, entry == null ? null : entry.getElseDreamerNm());
+        collectDreamerMention(mentionMap, entry == null ? null : entry.getDreamerName());
         return new ArrayList<>(mentionMap.values());
     }
 

@@ -38,7 +38,7 @@ class JournalEntryEntityRefSyncServiceTest {
         final JournalEntryEntity entry = JournalEntryEntity.builder()
                 .title(FIXTURE_PERSON_A + "님을 다시 봤다")
                 .content("저녁에 " + FIXTURE_PERSON_A + "는 공연 이야기를 했다.")
-                .elseDreamerNm(FIXTURE_PERSON_B)
+                .dreamerName(FIXTURE_PERSON_B)
                 .build();
 
         @SuppressWarnings("unchecked")

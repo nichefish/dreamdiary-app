@@ -111,8 +111,8 @@ export interface JournalEntryRegistModel {
   title?: string;
   sortOrder?: number;
   content?: string;
-  elseDreamYn?: string;
-  elseDreamerNm?: string;
+  /** 지정 꿈꾼 이름. 꿈 엔트리에서만 전송한다. */
+  dreamerName?: string;
   collapsedYn?: string;
   imprtcYn?: string;
   /** 태그 컴포지션 */

@@ -75,8 +75,7 @@ CREATE TABLE IF NOT EXISTS journal_entry (
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
     sort_order INT DEFAULT 1 COMMENT '챕터 내 정렬',
-    else_dream_yn CHAR(1) DEFAULT 'N' COMMENT '타인 꿈 여부 (Y/N)',
-    else_dreamer_nm VARCHAR(64) COMMENT '꿈꾼이 이름',
+    dreamer_name VARCHAR(64) COMMENT '지정 꿈꾼 이름. 값이 있으면 타인의 꿈',
     -- target 컬럼(nullable). Commentary Reflection 본 테이블은 journal_reflection.
     ref_id INT COMMENT 'target 엔티티 번호',
     ref_content_type VARCHAR(50) COMMENT 'target 컨텐츠 타입',
@@ -92,6 +91,7 @@ CREATE TABLE IF NOT EXISTS journal_entry (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
+    CONSTRAINT ck_journal_entry_dreamer_name CHECK (content_type = 'JOURNAL_DREAM' OR dreamer_name IS NULL),
     INDEX (journal_chapter_id),
     INDEX (content_type),
     INDEX (ref_id, ref_content_type)

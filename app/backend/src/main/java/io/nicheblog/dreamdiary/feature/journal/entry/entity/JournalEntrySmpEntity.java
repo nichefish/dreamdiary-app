@@ -44,6 +44,4 @@ public class JournalEntrySmpEntity {
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
     private Integer sortOrder;
 
-    @Column(name = "else_dream_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    private String elseDreamYn;
 }

@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbed
 import io.nicheblog.dreamdiary.feature.journal.embedding.repository.jpa.JournalEntryEmbeddingRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.helper.JournalDreamerFieldHelper;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -516,8 +517,8 @@ public class JournalEntryEmbeddingQueueService {
         appendLine(builder, "태그", tagSummary);
         appendLine(builder, "제목", entry.getTitle());
         appendLine(builder, "본문", entry.getContent());
-        appendLine(builder, "타인의 꿈 여부", entry.getElseDreamYn());
-        appendLine(builder, "꿈 제공자", entry.getElseDreamerNm());
+        appendLine(builder, "타인의 꿈 여부", JournalDreamerFieldHelper.hasDreamerName(entry.getDreamerName()) ? "Y" : "N");
+        appendLine(builder, "꿈 제공자", entry.getDreamerName());
         return StringUtils.trim(builder.toString());
     }
 
@@ -530,7 +531,7 @@ public class JournalEntryEmbeddingQueueService {
     private boolean hasEmbeddableContent(final JournalEntryEntity entry, final JournalChapterEntity chapter) {
         return StringUtils.isNotBlank(entry.getTitle())
                 || StringUtils.isNotBlank(entry.getContent())
-                || StringUtils.isNotBlank(entry.getElseDreamerNm())
+                || StringUtils.isNotBlank(entry.getDreamerName())
                 || (chapter != null && StringUtils.isNotBlank(chapter.getTitle()))
                 || StringUtils.isNotBlank(buildTagSummary(entry));
     }
@@ -571,8 +572,7 @@ public class JournalEntryEmbeddingQueueService {
         payload.put("yy", journalDay == null ? null : journalDay.getYy());
         payload.put("mnth", journalDay == null ? null : journalDay.getMnth());
         payload.put("sortOrder", entry.getSortOrder());
-        payload.put("elseDreamYn", entry.getElseDreamYn());
-        payload.put("elseDreamerNm", entry.getElseDreamerNm());
+        payload.put("dreamerName", entry.getDreamerName());
         payload.put("tags", buildTagSummary(entry));
         return payload;
     }

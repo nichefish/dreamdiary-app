@@ -53,7 +53,7 @@ public class JournalDreamSectionHelper {
         if (CollectionUtils.isNotEmpty(elseDreamEntries)) {
             for (final JournalEntryDto entry : elseDreamEntries) {
                 if (entry == null) continue;
-                final String dreamerName = JournalDreamerFieldHelper.normalizeDreamerName(entry.getElseDreamerNm());
+                final String dreamerName = JournalDreamerFieldHelper.normalizeDreamerName(entry.getDreamerName());
                 if (StringUtils.isBlank(dreamerName)) continue;
                 byDreamerName.computeIfAbsent(dreamerName, key -> new ArrayList<>()).add(entry);
             }

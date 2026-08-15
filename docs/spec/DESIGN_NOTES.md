@@ -54,6 +54,8 @@
 
 ### 저널 꿈(journal-dream)
 
+- 지정 꿈꾼은 `journal_entry.dreamer_name` 하나로 저장한다. 트림한 이름이 있으면 타인의 꿈, 이름이 없으면 내 꿈으로 분류하며 별도 여부 플래그를 저장하지 않는다. 비꿈 엔트리의 `dreamer_name`은 `NULL`이다.
+- **운영 DB 이관 기록(`V0.28.0-dreamer-name-hardcut`, 2026-08-15)**: `else_dreamer_nm` 공백 5,079행을 `NULL`로 정규화한 뒤 `dreamer_name`으로 변경하고, 이름과 값이 일치한 파생 `else_dream_yn`을 삭제했다. 임베딩 payload 9,112행도 `dreamerName` 단일 키로 바꿨으며 기존 벡터와 콘텐츠 해시는 유지한다. 복구 원본은 `_backup_journal_entry_full`의 지정 꿈꾼 11행과 이관 전 일치함을 확인했다.
 - 저널 꿈 태그 해석 추가
   - "태그에 해석을 붙이면 해석의 일관성이 생긴다. 상징 데이터가 누적된다. 반복 상징의 변주를 추적할 수 있다."
   - "dreamdiary가“상징-사례-변형” 구조로 진화한다. 즉, 꿈을 모으는 시스템 → 상징 체계를 구축하는 시스템으로 격상된다."
@@ -235,6 +237,9 @@
 ### 메타(meta)
 
 ### 상태(state)
+
+- `NHTMR`(악몽)와 `HALLUC`(입면 환각)는 저널 꿈 전용 의미 상태이며, `state`가 유일한 영속 원천이다. 두 상태는 서로 독립적인 불리언 표지로서 ON을 `(ref_content_type = JOURNAL_DREAM, ref_id, state_key)` 행 존재로 표현하고 OFF를 행 부재로 표현한다.
+- 컨텐츠 타입별 허용 범위는 `AttachableContentStatePolicy`가 강제하고, 화면은 `POST /api/states` 토글 결과와 조회 DTO의 상태값을 표시한다.
 
 #### 현재값 삭제 정책(state/lifecycle)
 

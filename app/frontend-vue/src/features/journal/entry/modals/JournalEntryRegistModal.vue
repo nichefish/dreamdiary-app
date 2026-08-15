@@ -157,9 +157,9 @@
               <div class="col-4">
                 <input
                   type="text"
-                  name="elseDreamerNm"
+                  name="dreamerName"
                   class="form-control"
-                  v-model="model.elseDreamerNm"
+                  v-model="model.dreamerName"
                   :placeholder="t('journal.entry.dreamer.placeholder')"
                   maxlength="64"
                 />
@@ -488,7 +488,7 @@ async function submit() {
       formData.append("imprtcYn", model.value.imprtcYn ?? "");
     }
     if (isDream.value) {
-      formData.append("elseDreamerNm", model.value.elseDreamerNm?.trim() ?? "");
+      formData.append("dreamerName", model.value.dreamerName?.trim() ?? "");
     }
     if (showTag.value) formData.append("tag.tagListStr", model.value.tag?.tagListStrWithCtgr ?? "");
 

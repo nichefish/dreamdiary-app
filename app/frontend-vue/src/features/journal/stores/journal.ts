@@ -118,8 +118,8 @@ export interface JournalEntryDto {
   prefixId?: number | null;
   /** 소속 챕터 유형으로 해석한 개인 Prefix 목록 content_type */
   prefixContentType?: "JOURNAL_DIARY" | "JOURNAL_DREAM" | "JOURNAL_NOTE";
-  elseDreamYn?: string;
-  elseDreamerNm?: string;
+  /** 지정 꿈꾼 이름. 값이 있으면 타인의 꿈으로 분류한다. */
+  dreamerName?: string;
   tag?: TagCmpstn;
   state?: StateCmpstn;
   lifecycle?: LifecycleCmpstn;

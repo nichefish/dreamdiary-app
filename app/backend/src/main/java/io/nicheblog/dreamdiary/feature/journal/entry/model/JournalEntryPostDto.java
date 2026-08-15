@@ -42,7 +42,8 @@ public class JournalEntryPostDto extends BaseAttachableDto
     private Integer prevJournalChapterId;
     private Integer fromHistoryId;
     private List<JournalEntryDto> reflectionList;
-    private String elseDreamerNm;
+    /** 지정 꿈꾼 이름. 꿈 엔트리에서만 저장한다. */
+    private String dreamerName;
 
     @Builder.Default
     private Boolean isSortOrderChanged = false;

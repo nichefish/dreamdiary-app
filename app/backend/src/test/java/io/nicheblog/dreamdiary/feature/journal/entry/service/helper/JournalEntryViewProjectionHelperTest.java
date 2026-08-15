@@ -20,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JournalEntryViewProjectionHelperTest {
 
+    private static final String FIXTURE_DREAMER_A = "Alice";
+    private static final String FIXTURE_DREAMER_B = "Bob";
+
     private JournalEntryDto diary;
     private JournalEntryDto dream;
 
@@ -159,17 +162,15 @@ class JournalEntryViewProjectionHelperTest {
     }
 
     @Test
-    void applyDayEntryProjections_splitsByDreamerNameNotElseDreamYnAlone() {
+    void applyDayEntryProjections_splitsByNormalizedDreamerName() {
         final JournalEntryDto ownDream = JournalEntryDto.builder()
                 .id(2)
                 .contentType(ContentType.JOURNAL_DREAM.key)
-                .elseDreamYn("Y")
                 .build();
         final JournalEntryDto namedDream = JournalEntryDto.builder()
                 .id(3)
                 .contentType(ContentType.JOURNAL_DREAM.key)
-                .elseDreamYn("N")
-                .elseDreamerNm("  형  ")
+                .dreamerName("  " + FIXTURE_DREAMER_A + "  ")
                 .build();
 
         final JournalChapterDto dreamChapter = JournalChapterDto.builder()
@@ -187,8 +188,8 @@ class JournalEntryViewProjectionHelperTest {
         assertEquals(2, day.getJournalDreamSectionList().size());
         assertEquals("꿈", day.getJournalDreamSectionList().get(0).getTitle());
         assertEquals(ownDream.getId(), day.getJournalDreamSectionList().get(0).getEntries().get(0).getId());
-        assertEquals("dreamer:형", day.getJournalDreamSectionList().get(1).getSectionKey());
-        assertEquals("형 꿈", day.getJournalDreamSectionList().get(1).getTitle());
+        assertEquals("dreamer:" + FIXTURE_DREAMER_A, day.getJournalDreamSectionList().get(1).getSectionKey());
+        assertEquals(FIXTURE_DREAMER_A + " 꿈", day.getJournalDreamSectionList().get(1).getTitle());
         assertEquals(namedDream.getId(), day.getJournalDreamSectionList().get(1).getEntries().get(0).getId());
     }
 
@@ -198,13 +199,13 @@ class JournalEntryViewProjectionHelperTest {
         final JournalEntryDto namedDream = JournalEntryDto.builder()
                 .id(3)
                 .contentType(ContentType.JOURNAL_DREAM.key)
-                .elseDreamerNm("Alex")
+                .dreamerName(FIXTURE_DREAMER_B)
                 .build();
 
         final var sections = JournalDreamSectionHelper.buildSections(List.of(dream), List.of(namedDream));
 
         assertNotNull(sections);
         assertEquals("Dream", sections.get(0).getTitle());
-        assertEquals("Alex's dream", sections.get(1).getTitle());
+        assertEquals(FIXTURE_DREAMER_B + "'s dream", sections.get(1).getTitle());
     }
 }
