@@ -512,12 +512,20 @@
 
       <!--begin::댓글-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
-        <div
-          v-for="cmt in commentList"
-          :key="cmt.id"
-          class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
-          v-html="cmt.markdownContent || cmt.content || ''"
-        ></div>
+        <div v-for="cmt in commentList" :key="cmt.id" class="d-flex align-items-start gap-1">
+          <div
+            class="fs-8 text-muted ps-2 border-start border-2 border-gray-300 flex-grow-1 min-w-0"
+            v-html="cmt.markdownContent || cmt.content || ''"
+          ></div>
+          <div v-if="axisWritable" class="d-flex flex-shrink-0 gap-1">
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-primary" :title="t('comment.modify')" @click.stop="onEditComment(cmt.id)">
+              <i class="bi bi-pencil fs-9"></i>
+            </button>
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-danger" :title="t('comment.delete')" @click.stop="onDeleteComment(cmt.id)">
+              <i class="bi bi-trash fs-9"></i>
+            </button>
+          </div>
+        </div>
       </div>
       <!--end::댓글-->
     </div>
@@ -527,7 +535,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalAlert, swalFire } from "@/shared/utils/swal";
+import { swalAlert, swalFire, swalConfirm } from "@/shared/utils/swal";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { computed, watch, nextTick, provide } from "vue";
 import { useRoute } from "vue-router";
@@ -774,6 +782,26 @@ function openCommentRegist() {
   if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openCommentRegist(props.entry.id, props.entry.contentType);
+}
+
+/** 인라인 댓글 수정 — 기존 CommentRegistModal 수정 모드를 재사용한다. */
+function onEditComment(id: number): void {
+  if (!guardAxisWrite()) return;
+  void attachableStore.openCommentModify(id);
+}
+
+/** 인라인 댓글 삭제 — 확인 후 삭제하고 스크롤 없이 호스트를 재조회한다. */
+async function onDeleteComment(id: number): Promise<void> {
+  if (!guardAxisWrite()) return;
+  if (!await swalConfirm(t("comment.delete.confirm"))) return;
+  try {
+    if (await attachableStore.deleteComment(id)) {
+      await swalAlert(t("common.result.deleted"));
+      void scrollAfterFetch(undefined, { scroll: false });
+    }
+  } catch (e) {
+    void swalAlert(e instanceof Error ? e.message : t("common.result.failure"));
+  }
 }
 
 /** 이력 모달 열기 */

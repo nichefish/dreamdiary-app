@@ -20,12 +20,20 @@
       <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
       <!--begin::댓글 (읽기)-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
-        <div
-          v-for="cmt in commentList"
-          :key="cmt.id"
-          class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
-          v-html="cmt.markdownContent || cmt.content || ''"
-        ></div>
+        <div v-for="cmt in commentList" :key="cmt.id" class="d-flex align-items-start gap-1">
+          <div
+            class="fs-8 text-muted ps-2 border-start border-2 border-gray-300 flex-grow-1 min-w-0"
+            v-html="cmt.markdownContent || cmt.content || ''"
+          ></div>
+          <div v-if="canWrite" class="d-flex flex-shrink-0 gap-1">
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-primary" :title="t('comment.modify')" @click.stop="onEditComment(cmt.id)">
+              <i class="bi bi-pencil fs-9"></i>
+            </button>
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-danger" :title="t('comment.delete')" @click.stop="onDeleteComment(cmt.id)">
+              <i class="bi bi-trash fs-9"></i>
+            </button>
+          </div>
+        </div>
       </div>
       <!--end::댓글-->
     </div>
@@ -482,6 +490,26 @@ function openCommentRegist(): void {
   if (!guardWrite()) return;
   if (!props.reflection.id) return;
   attachableStore.openCommentRegist(props.reflection.id, contentType.value);
+}
+
+/** 인라인 댓글 수정 — 기존 CommentRegistModal 수정 모드를 재사용한다. */
+function onEditComment(id: number): void {
+  if (!guardWrite()) return;
+  void attachableStore.openCommentModify(id);
+}
+
+/** 인라인 댓글 삭제 — 확인 후 삭제하고 호스트를 재조회한다. */
+async function onDeleteComment(id: number): Promise<void> {
+  if (!guardWrite()) return;
+  if (!await swalConfirm(t("comment.delete.confirm"))) return;
+  try {
+    if (await attachableStore.deleteComment(id)) {
+      await swalAlert(t("common.result.deleted"));
+      void refreshHost();
+    }
+  } catch (e) {
+    void swalAlert(e instanceof Error ? e.message : t("common.result.failure"));
+  }
 }
 
 function openHistory(): void {

@@ -188,6 +188,12 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     commentContent.value = "";
   }
 
+  /** 댓글을 삭제한다. DELETE /api/comment/{id} — 성공 여부만 반환하고 호스트 갱신은 호출부가 담당한다. */
+  async function deleteComment(id: number): Promise<boolean> {
+    const res = await axios.delete(`/api/comment/${id}`);
+    return res.data?.rslt === true;
+  }
+
   // ---- 댓글 목록 모달 ----
 
   /** 댓글 목록 모달 오픈 여부 */
@@ -792,6 +798,7 @@ export const useAttachableModalStore = defineStore("attachableModal", () => {
     openCommentRegist,
     openCommentModify,
     closeCommentRegist,
+    deleteComment,
     // 댓글 목록
     commentListOpen,
     commentListLoading,
