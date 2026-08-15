@@ -403,6 +403,8 @@ const tagify = cF.tagify.initMeta(selector, ctgrMap, additionalOptions?)
 
 ### 카테고리 입력 흐름 (`initWithCtgr`)
 
+자동완성은 `categoryMap`의 태그명 prefix를 영문 대소문자 구분 없이 비교한다. 입력 `f`·`F`는 모두 저장된 `Flyway`를 후보로 표시하며, 선택·저장에는 카탈로그의 원래 태그명 표기를 사용한다. 부분 문자열 검색으로 확장하지 않고 prefix 검색 범위를 유지한다.
+
 ```
 1. 사용자가 태그 입력 → Tagify `add` 이벤트 발생
 2. 임시 태그로 처리 (committing = false)
