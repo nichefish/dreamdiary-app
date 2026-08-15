@@ -1,9 +1,10 @@
 # DreamDiary 저장소 — 정적분석 보고서
 
 > 대상: **`main`** HEAD `feb10fd2d` (2026-08-13)
-> 방법론: [CODE_ARCHAEOLOGY_ADDENDUM.md](../CODE_ARCHAEOLOGY_ADDENDUM.md) §7~§14
+> 방법론: CODE_ARCHAEOLOGY.md §7~§14
 > 범위: `main` 트리의 `app/backend` Java · `app/frontend-vue` · 평행 클라이언트. `vendor/` 제외. LOC는 `git show main:<path>` 개행 수.
 > 해석의 원천: [역사서](REPO_HISTORY.md)
+> 1차 재조사 2026-08-15 `[확정]`: 시대·PRESSURE 포화 확인, `attachable` 다형 축(ContentType 17종·fan-in 109·상속 22) 보강.
 
 체크아웃 워킹트리와 숫자가 다를 수 있다. 이 표는 **`main` 블롭**만 잰다.
 
@@ -18,6 +19,8 @@
 | `frontend-vue` tracked | 269 |
 | `frontend-react` tracked | 24 |
 | `mobile-react-native` tracked | 46 |
+| attachable 도메인 파일 (2위) | 193 |
+| `ContentType` 다형 축 | 17종 · fan-in 109 · 상속 22엔티티 |
 | 측정 최대 Java 서비스 | `ChatOrchestrator.java` 1,392 LOC |
 | Entry 허브 | `JournalEntryService.java` 836 LOC |
 | Vue 타입 창고 | `stores/journal.ts` 868 LOC |
@@ -45,6 +48,7 @@
 | `stores/journal.ts` | 868 | 타입+리스트 창고 `[강한추정]` | 🟠 | 타입 이동 시 |
 | `stores/journalModal.ts` | 152 | facade `[확정]` | 🟢 | 다시 한 파일로 합칠 때 🔴 |
 | `journalModalEntry.ts` | 405 | 옛 스토어 질량의 이동 `[강한추정]` | 🟡 | 등록 계약 추가 시 |
+| `attachable/_shared` (BaseAttachable*/ContentType) | — | 다형 canonical 허브 `[확정]` | 🟢 | 확장 시(새 콘텐츠 타입) |
 
 fan-in은 이름 grep 수준이며 워킹트리와 섞지 않음 — 정밀 그래프 `[미확인]`.
 
@@ -102,6 +106,23 @@ fan-in은 이름 grep 수준이며 워킹트리와 섞지 않음 — 정밀 그�
 **Interpretation** `[강한추정]`: 웹 React는 Vue와 같은 제품 표면을 복제할 수 있는 자리. RN은 다른 표면.
 
 **Action**: 제품 지위 결정 전 삭제·확장 금지.
+### 2.5 `attachable` 다형 프레임워크
+
+**Signal** `[확정]`
+- 193 파일(journal 242 다음 2위 도메인). `ContentType` enum 17종.
+- fan-in: `ContentType.` 참조 109 파일. `BaseAttachableEntity` 상속 22 엔티티 — board·calendar·chat·journal·admin **5+ 도메인 횡단**.
+
+**Interpretation** `[강한추정]`
+- 정책의 canonical 저장소가 **enum + `BaseAttachable*` base**다. 제어흐름에 퇴적된 게 아니라 한곳에서 읽힌다.
+- 구 `clsf`(분류체계)의 후신. 2026-04 명명 혁명에서 `attachable`로 승격되며 다형 백본이 됐다.
+
+**Counter Evidence** `[확정]`
+- 값 추가(새 ContentType)가 기존 코드를 안 깨뜨린다 = 안정 축. `ContentType` churn 낮음.
+- 고 fan-in은 허브 리스크지만, 축이 canonical이라 변경 FC가 예측 가능.
+
+**Time Horizon**: 현재 ⚪ / 확장 시(새 콘텐츠 타입·정책 분기) 🟡.
+
+**Action**: 없음. canonical 축이라 대규모 리팩터 대상 아님.
 
 ---
 
@@ -149,6 +170,7 @@ solo. `main` 상위 응력 파일의 Git author는 `nichefish` `[확정]`. 버�
 - `JournalDayService`를 `--follow` churn으로 몬스터 지정.
 - 착지 +324,801줄을 2024년 생산성으로 읽기.
 - 체크아웃 브랜치의 다음 기능을 이 PRESSURE 표에 섞기.
+- `attachable` 프레임워크 대규모 리팩터 — canonical 안정 축, 확장 시에만.
 
 ---
 
@@ -156,5 +178,5 @@ solo. `main` 상위 응력 파일의 Git author는 `nichefish` `[확정]`. 버�
 
 - fan-in/co-change 정밀 그래프 없음.
 - hotfix/장애 전수 없음.
-- `CODE_ARCHAEOLOGY_CHECKLIST.md`는 이 저장소에 없음. 부록만 따름.
+- 별도 CHECKLIST 본체는 이 저장소에 없음. 방법론은 `CODE_ARCHAEOLOGY.md` 정본만 따름.
 - 워킹트리가 `dev_0.28.0`이면 에디터 LOC와 이 표가 어긋나는 것이 정상이다.

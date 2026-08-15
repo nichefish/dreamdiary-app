@@ -66,7 +66,7 @@
 - [ ] dead file 제거 확인 — 이번 릴리스 작업으로 더 이상 사용하지 않는 파일(`*_old.*`, 미참조 컴포넌트, 빈 유틸 등) 정리 여부 확인. `import`/`require` 역참조로 검증.
 
 ## 9. 소스코드 고고학 훑어보기
-> 방법론: [CODE_ARCHAEOLOGY_ADDENDUM.md](references/CODE_ARCHAEOLOGY_ADDENDUM.md). 원천: [REPO_HISTORY.md](references/dreamdiary/REPO_HISTORY.md) · 정적: [REPO_STATIC_ANALYSIS.md](references/dreamdiary/REPO_STATIC_ANALYSIS.md) · 진단: [system-issues.md](references/dreamdiary/system-issues.md).
+> 방법론: [CODE_ARCHAEOLOGY.md](CODE_ARCHAEOLOGY.md). 원천: [REPO_HISTORY.md](references/REPO_HISTORY.md) · 정적: [REPO_STATIC_ANALYSIS.md](references/REPO_STATIC_ANALYSIS.md) · 진단: [SYSTEM_ISSUES.md](references/SYSTEM_ISSUES.md).
 > 산출물은 스냅샷이다. 허브 파일이 분해·삭제됐거나 시대가 바뀌었으면 표를 고치지 말고 같은 역할의 문서를 재작성한다(부록 §14).
 
 - [ ] 역사서 통섭이 이번 릴리스 방향과 어긋나는지 확인. 어긋나면 최소 패스 대신 재작성.
