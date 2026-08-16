@@ -179,4 +179,36 @@ class JournalChapterServiceTest {
         assertEquals(2, JournalChapterService.chapterSortBucket(
                 JournalChapterEntity.builder().summaryYn("N").chapterType(ChapterType.DREAM).build()));
     }
+
+    /**
+     * 요약이 있는 날 일반 챕터의 # 재정렬은 요약·DREAM 슬롯에 밀리지 않고
+     * 일반 챕터 기준 위치에 정확히 반영된다. 요약 S·일반 A·B·C 에서 C 를 #2 로 옮기면
+     * A(1)·C(2)·B(3), 요약 S·DREAM 은 순번 밖(0)으로 유지된다.
+     */
+    @Test
+    void normalizeSortOrderMovesNumberedChapterByNormalOnlyIndex() {
+        final JournalChapterEntity summary = JournalChapterEntity.builder()
+                .id(1).summaryYn("Y").chapterType(ChapterType.DIARY).sortOrder(0).build();
+        final JournalChapterEntity a = JournalChapterEntity.builder()
+                .id(2).summaryYn("N").chapterType(ChapterType.DIARY).sortOrder(1).build();
+        final JournalChapterEntity b = JournalChapterEntity.builder()
+                .id(3).summaryYn("N").chapterType(ChapterType.DIARY).sortOrder(2).build();
+        final JournalChapterEntity c = JournalChapterEntity.builder()
+                .id(4).summaryYn("N").chapterType(ChapterType.DIARY).sortOrder(3).build();
+        final JournalChapterEntity dream = JournalChapterEntity.builder()
+                .id(5).summaryYn("N").chapterType(ChapterType.DREAM).sortOrder(0).build();
+        when(repository.findAllByJournalDayId(FIXTURE_DAY_ID))
+                .thenReturn(new ArrayList<>(List.of(a, b, c, summary, dream)));
+        when(repository.saveAllAndFlush(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // C(id=4) 를 일반 챕터 기준 #2 위치로 옮긴다.
+        service.normalizeSortOrder(FIXTURE_DAY_ID, 4, 2);
+
+        assertEquals(1, a.getSortOrder());
+        assertEquals(2, c.getSortOrder());
+        assertEquals(3, b.getSortOrder());
+        assertEquals(0, summary.getSortOrder());
+        assertEquals(0, dream.getSortOrder());
+    }
+
 }

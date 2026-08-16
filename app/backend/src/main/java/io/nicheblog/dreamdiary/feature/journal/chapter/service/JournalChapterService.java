@@ -436,12 +436,13 @@ public class JournalChapterService
      */
     @Override
     public void postModify(final JournalChapterDto postDto, final JournalChapterDto updatedDto) throws Exception {
+        // 시스템 요약 맨 앞·DREAM 맨 뒤 규칙을 포함해 정규화한다.
+        // sortOrder 변경 시에는 대상 챕터를 목표 위치로 옮기며 정규화한다(단일 JPA 패스).
         if (Boolean.TRUE.equals(postDto.getIsSortOrderChanged())) {
-            // sortOrder 변경 시에는 목표 위치로 삽입 재배치 후 정규화
-            this.getSelf().insert(updatedDto.getJournalDayId(), updatedDto.getId(), postDto.getSortOrder());
+            this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId(), updatedDto.getId(), postDto.getSortOrder());
+        } else {
+            this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
         }
-        // 시스템 요약 맨 앞·DREAM 맨 뒤 규칙을 포함한 최종 정규화
-        this.getSelf().normalizeSortOrder(updatedDto.getJournalDayId());
 
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_CHAPTER);
@@ -551,6 +552,22 @@ public class JournalChapterService
      */
     @Transactional
     public void normalizeSortOrder(final Integer journalDayId) {
+        this.normalizeSortOrder(journalDayId, null, null);
+    }
+
+    /**
+     * 그룹 전체 sort_order 를 정규화하며, movedId 가 주어지면 그 일반 챕터를 목표 순번 위치로 옮긴다.
+     * <p>
+     * 위치 계산·재부여를 실제 JPA 엔티티에서 단일 패스로 수행한다. 요약·DREAM 은 버킷으로 판별해
+     * 순번 밖(0)으로 고정하므로 오분류가 없고, 한 영속성 컨텍스트에서 읽고 쓰므로 staleness 가 없다.
+     * </p>
+     *
+     * @param journalDayId 정렬을 수행할 상위 키
+     * @param movedId 목표 위치로 옮길 일반 챕터 PK. null 이면 이동 없이 정규화만 한다.
+     * @param targetSortOrder 일반 챕터 기준 목표 순번(1-based). null 이면 맨 뒤.
+     */
+    @Transactional
+    public void normalizeSortOrder(final Integer journalDayId, final Integer movedId, final Integer targetSortOrder) {
         final List<JournalChapterEntity> list = repository.findAllByJournalDayId(journalDayId);
         if (CollectionUtils.isEmpty(list)) return;
 
@@ -559,10 +576,27 @@ public class JournalChapterService
                 .thenComparingInt((JournalChapterEntity e) -> e.getSortOrder() == null ? Integer.MAX_VALUE : e.getSortOrder())
                 .thenComparing(JournalChapterEntity::getId));
 
-        int normalOrder = 1;
+        // 일반(순번 대상, 버킷 1) 챕터만 뽑아 target 을 목표 위치로 옮긴다.
+        final List<JournalChapterEntity> numbered = new java.util.ArrayList<>();
         for (final JournalChapterEntity e : list) {
-            // 일반 챕터만 1..N 순번을 잇는다. 요약·DREAM 은 버킷으로 위치가 고정되므로 순번 밖(0)이다.
-            e.setSortOrder(chapterSortBucket(e) == 1 ? normalOrder++ : NON_NUMBERED_SORT_ORDER);
+            if (chapterSortBucket(e) == 1) numbered.add(e);
+        }
+        if (movedId != null) {
+            final JournalChapterEntity moved = numbered.stream()
+                    .filter(e -> movedId.equals(e.getId())).findFirst().orElse(null);
+            if (moved != null) {
+                numbered.remove(moved);
+                final int maxIdx = numbered.size() + 1;
+                final int pos = Math.min(Math.max(targetSortOrder == null ? maxIdx : targetSortOrder, 1), maxIdx) - 1;
+                numbered.add(pos, moved);
+            }
+        }
+
+        // 일반 챕터만 1..N 순번을 잇는다. 요약·DREAM 은 버킷으로 위치가 고정되므로 순번 밖(0)이다.
+        int normalOrder = 1;
+        for (final JournalChapterEntity e : numbered) e.setSortOrder(normalOrder++);
+        for (final JournalChapterEntity e : list) {
+            if (chapterSortBucket(e) != 1) e.setSortOrder(NON_NUMBERED_SORT_ORDER);
         }
         repository.saveAllAndFlush(list);
     }
@@ -578,42 +612,6 @@ public class JournalChapterService
         if (StringUtils.equals(chapter.getSummaryYn(), SUMMARY_YN)) return 0;
         if (chapter.getChapterType() == ChapterType.DREAM) return 2;
         return 1;
-    }
-
-    public void insert(final Integer journalDayId, final Integer id, Integer targetSortOrder) throws Exception {
-        final List<JournalChapterDto> list = journalChapterMapper.findAllForReorder(journalDayId);
-
-        // target 조회
-        final JournalChapterEntity targetEntity = findDtlEntity(id);
-        final JournalChapterDto target = mapstruct.toDto(targetEntity);
-        if (target == null) return;
-
-        // 혹시 이미 포함되어 있으면 제거
-        list.removeIf(e -> Objects.equals(e.getId(), id));
-
-        // chapterNo 변경
-        target.setJournalDayId(journalDayId);
-
-        // targetSortOrder 보정 (upper bound)
-        final int maxIdx = list.size() + 1;
-        final int normalizedIdx = Math.min(targetSortOrder == null ? maxIdx : targetSortOrder, maxIdx);
-        // 삽입 위치 계산
-        int pos = normalizedIdx - 1;
-        pos = Math.min(pos, list.size());
-        list.add(pos, target);
-
-        // sortOrder 재정렬 — 일반 챕터만 1..N. 요약·DREAM 은 순번 밖(0)으로 고정한다.
-        // normalizeSortOrder 와 동일한 버킷 규칙. insert 에서 요약·DREAM 에 순번을 부여하면
-        // 이후 normalizeSortOrder(JPA saveAll)와 이 메서드(MyBatis batchUpdateIdx)의 영속성 컨텍스트
-        // staleness 로 그 값이 DB 에 남아 요약이 sort_order=0 을 벗어날 수 있다.
-        int sortOrder = 1;
-        for (final JournalChapterDto e : list) {
-            final boolean numbered = !StringUtils.equals(e.getSummaryYn(), SUMMARY_YN)
-                    && e.getChapterType() != ChapterType.DREAM;
-            e.setSortOrder(numbered ? sortOrder++ : NON_NUMBERED_SORT_ORDER);
-        }
-
-        journalChapterMapper.batchUpdateIdx(list);
     }
 
     /**

@@ -313,7 +313,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 5. 결과적으로 꿈 챕터가 먼저 있는 날에 첫 일기·노트 챕터를 등록해도 시스템 요약 역할이 정상 부여된다.
 6. 시스템 요약 자동 등록 뒤 빈 DIARY 생성 여부도 `summaryYn=Y`로 판정한다. DREAM이 먼저 존재해도 첫 non-DREAM 챕터는 `summaryYn=Y`·`sortOrder=0`으로 등록되어 빈 DIARY가 누락되지 않는다.
 
-시스템 요약 의미의 SSOT는 `summaryYn`이며 정렬 순번과 사용자 Prefix 선택에서 분리된다. 같은 일자 `normalizeSortOrder`·조회 Spec은 **시스템 요약 맨 앞 → 일반 → DREAM 맨 뒤**다. 일반 챕터 수정 화면의 `#`(=`sortOrder`)는 정규화 후 요약 다음 구간에 반영된다 — 요약이 있는 날 `#1`로 저장하면 요약 바로 다음(전체 순번 2)이 된다. 일반 챕터의 사용자 말머리는 챕터 유형별 PERSONAL Scope와 `prefix_content` 연결을 사용한다.
+시스템 요약 의미의 SSOT는 `summaryYn`이며 정렬 순번과 사용자 Prefix 선택에서 분리된다. 같은 일자 `normalizeSortOrder`·조회 Spec은 **시스템 요약 맨 앞 → 일반 → DREAM 맨 뒤**다. 일반 챕터 수정 화면의 `#`(=`sortOrder`)는 일반 챕터 1..N 기준 위치로 재배치된다. 삽입 위치 계산은 일반 챕터끼리만 수행하고 요약·DREAM(순번 밖, `sortOrder=0`)은 위치 계산에서 제외하므로, `#N`은 N번째 일반 챕터 위치를 정확히 가리킨다. 요약은 항상 맨 앞에 고정되어 `#1` 일반 챕터는 요약 바로 다음(전체 순번 2)에 온다. 일반 챕터의 사용자 말머리는 챕터 유형별 PERSONAL Scope와 `prefix_content` 연결을 사용한다.
 
 ---
 
@@ -546,6 +546,21 @@ function toggleChapter(): void {
 
 ---
 
+### 복사 계약 (Copy Contract) — SSOT
+
+저널의 모든 복사(엔트리·챕터·리플렉션·스레드)가 예외 없이 따르는 단일 계약이다. 아래 개별 복사 섹션은 이 계약의 적용이다.
+
+**계약**: 복사는 저작한 **소스 텍스트를 그대로** 클립보드에 담는다. 순수 텍스트 에디터(메모장 등)에 붙여넣으면 사용자가 입력한 것과 문자 단위로 동일하며, 앱 에디터(TinyMCE)에 되붙이면 원래대로 재렌더된다.
+
+- **소스는 항상 `content`** (TinyMCE 저장 원문). `MarkdownUtils.normalize` 가 사용자가 입력한 마크다운 마커(`!!` `__` `||` `((…))` `"…"`/`『…』` `--…--` `<@>` 줄 단위 `---` 등 `MarkdownUtils.markdown()` dialect)를 **리터럴 텍스트로 보존**하므로 `content` 는 사용자가 입력한 텍스트 그 자체다. 모든 복사 호출부는 `content ?? markdownContent` 로 소스를 고른다.
+- **렌더 파생물 `markdownContent`(= `MarkdownUtils.markdown(content)`)는 복사 소스가 아니다.** 마커가 이미 `<u>`·span 등으로 소비돼 되붙이면 원문을 복원할 수 없다(손실). 소스로 쓰면 계약 위반이다.
+- **변환 규칙**(`htmlToPlainText`): TinyMCE 구조 태그만 텍스트로 환원한다 — `<p>`·`<br>` → 개행, `<hr>` → `------`, HTML 엔티티(이름·10진수·16진수)는 화면과 동일하게 디코드. **문단 구조는 보존**한다(문단 사이 빈 줄 1개 유지, 연속 빈 줄은 1개로 정규화). 그 외 텍스트(마커 포함)는 그대로 둔다.
+- **범위 밖**: 에디터 버튼으로 만든 임의 HTML 서식(`<strong>`, 표, `<hr>` 요소 등)의 완전 왕복 복원은 계약이 보증하지 않는다. 텍스트 레벨 동일성까지가 계약이다.
+
+**검증**: `htmlToPlainText.spec.ts` 가 마커 보존·문단 보존·엔티티 디코드를 계약으로 고정한다.
+
+---
+
 ### 챕터 복사 버튼 (Chapter Copy)
 
 **구현 파일**: `app/frontend-vue/src/features/journal/chapter/components/JournalChapterItem.vue`
@@ -618,6 +633,22 @@ target 리플렉션 본문 평문 (해석 포함 시에만, 리플렉션마다 �
 ```
 
 **구현**: 공통 `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일. 해석 포함(`copyEntry(true)`)이면 이 엔트리를 target 으로 한 `reflectionList` 본문을 빈 줄로 이어 붙인다(마커 없음). 성공 토스트는 복사 범위를 명시한다: 전체 `journal.copy.full.success`, 본문만 `journal.copy.body.success`, 리플렉션이 없는 전체 복사는 공용 `common.copy.success`.
+
+---
+
+### 리플렉션 복사 버튼 (Reflection Copy)
+
+**구현 파일**: `app/frontend-vue/src/features/journal/reflection/components/JournalReflectionItem.vue`
+
+**트리거**: 리플렉션 헤더 우측 복사 버튼(`bi-copy`) 클릭 → `copyReflection()`. split 없는 단일 버튼이다.
+
+**복사 포맷**:
+```
+날짜 (요일)
+리플렉션 본문 (소스 텍스트)
+```
+
+**구현**: 위 「복사 계약」을 따른다. 소스는 `content ?? markdownContent` 로 저작 원문 `content` 를 우선하며, `htmlToPlainText` 로 구조 태그만 환원하고 사용자가 입력한 마커·문단을 보존한다. 날짜 줄은 `getWeekDayStr(stdrdDt, t)` 로 계산한다. 클립보드 성공·실패 알림은 현재 locale 카탈로그(`common.copy.success`/`common.copy.failure`)를 쓴다.
 
 ---
 
