@@ -734,7 +734,8 @@ async function copyReflection(): Promise<void> {
   const dateLine = weekDay
     ? `${props.reflection.stdrdDt} (${weekDay})`
     : (props.reflection.stdrdDt ?? "");
-  const raw = htmlToPlainText(props.reflection.markdownContent ?? props.reflection.content ?? "");
+  /* 복사 계약(interaction-spec.md): 소스는 저작 원문 content. 렌더 파생물 markdownContent 는 마커 소실이라 복사 소스로 쓰지 않는다. */
+  const raw = htmlToPlainText(props.reflection.content ?? props.reflection.markdownContent ?? "");
   const text = [dateLine, raw].filter(Boolean).join("\n");
   try {
     await navigator.clipboard.writeText(text);
