@@ -16,12 +16,12 @@
 | 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/스레드에 추가/삭제. 선택된 `RESOLVED`를 다시 클릭하면 부모 저장·파생 상태·캐시 후처리는 유지하고 직접 연결된 미완료 Reflection의 `RESOLVED` 수렴을 다시 요청한다. | ✓ |
 | FLOW 연결 (수렴 완료) | FLOW 를 스레드 소속으로 수렴 완료했다(`docs/spec/DESIGN_NOTES.md`). 「흐름 보기」·본문 요약 행·「흐름 연결」 UI 는 모두 제거됐다(나-2a·나-2b). 백엔드 `flowSummary` 와 `related_content` FLOW 행도 다-2 에서 제거됐다. | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
-| 챕터 복사 버튼 | `JournalChapterItem.vue` — `copyChapter()`, 날짜(요일)·카테고리·엔트리 전체 텍스트 클립보드 복사 | ✓ |
+| 챕터 복사 split 버튼 | `JournalChapterItem.vue` — `copyChapter(true/false)`, 주 버튼=전체(해석 포함)·▾ 드롭다운=본문만(해석 제외, 항상 노출), 날짜(요일)·말머리·엔트리[·target 리플렉션] 클립보드 복사 | ✓ |
 | 챕터 접힘 스레드 요약 | `JournalChapterItem.vue` — 접힌 상태에서 하위 엔트리 `threadList`를 `threadId`로 중복 제거해 태그와 함께 접힘 바깥에 스레드 버튼 표시; 클릭 시 현재 화면 위에 전역 스레드 상세 모달 열기 | ✓ |
 | 기간별 스레드 요약 | 월간·주간·연간 결산 태그클라우드 아래에 필터와 무관한 기간 스레드를 표시하고 현재 화면 위에 스레드 상세 모달 열기; nullable Prefix는 스레드 목록과 같은 이름·색 배지로 제목 앞에 표시하며 비활성 과거 선택도 유지; 월간·연간 10개 이후 펼치기. 라벨은 `스레드` | ✓ |
 | 스레드 목록 페이지 복원 | `JournalThreadList.vue` — 상세는 별도 라우트(`thread-detail`)라 목록이 재마운트되지만, `onMounted`가 `store.fetchList()`(무인자)로 store에 보존된 `currentPage`를 유지해 상세 왕복 후 진입 직전 페이지로 복원한다(재조회라 상세에서의 수정도 반영). 첫 진입은 기본 0페이지, 필터 검색·초기화(`search`/`resetFilters`)는 0페이지로 리셋. 필터는 store에 보존된다. | ✓ |
 | 꿈 복사 버튼 | `JournalDayCard.vue` — `copyDreams()`, 날짜(요일) 헤더 + 꿈 엔트리 전체 클립보드 복사 | ✓ |
-| 엔트리 복사 버튼 | `JournalEntryItem.vue` — `copyEntry()`, 날짜(요일)·본문 텍스트 클립보드 복사 (레거시 동일 포맷) | ✓ |
+| 엔트리 복사 split 버튼 | `JournalEntryItem.vue` — `copyEntry(true/false)`, 주 버튼=전체(해석 포함)·▾ 드롭다운=본문만(해석 제외, 항상 노출), 날짜(요일)·본문[·target 리플렉션] 클립보드 복사 | ✓ |
 | 헤더 검색 드롭다운 | `Search.vue` — 일기/꿈 유형 선택 + debounce 검색 + 결과 링크 (`journal-entry-search`) | ✓ |
 | 메타 VIEW · 메타 컨텍스트 메뉴 | `metaContextMenu.ts` + `JournalMetaContextMenu.vue` — 헤더 `#메타` 클릭 시 팝업(태그 메뉴와 동일 UI); 현재 locale 메뉴로 「그래프로 보기」→ `addMetaToGraph`(최대 2·이미 있으면 비활성, 제한 경고도 현재 locale), 「검색」→ `openDayFilterModal`(`JournalDayMetaModal`), 「메타 설정」→ `openMetaProfile`(`JournalMetaProfileModal`, `GET /api/journal/day/metas/{id}`) | ✓코드 |
 | 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
@@ -428,7 +428,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **우측 액션 영역 구조**:
 - 댓글 등록 버튼 (⋯ 밖, 단독 버튼) → `attachableStore.openCommentRegist(id, contentType)`
-- 복사 버튼 (`bi-copy`, ⋯ 밖, 단독 버튼) → `copyEntry()` — 날짜(요일)·`htmlToPlainText(content)` 클립보드 복사. `content` = TinyMCE HTML 원문; 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML을 제거한 평문. (레거시 `copy()` 동일 포맷)
+- 복사 split 버튼 (⋯ 밖) → 주 버튼(`bi-copy`)은 `copyEntry(true)`(전체/해석 포함), 주 버튼 옆에 항상 붙는 ▾ 캐럿(`bi-caret-down-fill`)이 `data-kt-menu` 드롭다운을 열어 「본문만 복사」(`copyEntry(false)`, 해석 제외)를 제공한다. 리플렉션이 없으면 본문=전체라 두 결과가 같다. 본문 포맷은 날짜(요일)·`htmlToPlainText(content)` 평문(`content` = TinyMCE HTML 원문, 브라우저 파서로 엔티티 디코딩 후 HTML 제거; 레거시 `copy()` 동일). 성공 토스트는 범위를 명시한다(`journal.copy.full.success`/`journal.copy.body.success`, 리플렉션 없으면 `common.copy.success`).
 - ⋯ 드롭다운:
   - 헤더: contentLabel (일기/꿈)
   - 수정 → `contentType === JOURNAL_REFLECTION` 이면 `openReflectionRegist({ id })`, 그 외 `openEntryModify(id)`
@@ -550,27 +550,29 @@ function toggleChapter(): void {
 
 **구현 파일**: `app/frontend-vue/src/features/journal/chapter/components/JournalChapterItem.vue`
 
-**트리거**: 챕터 헤더 우측 복사 버튼 (`bi-copy`) 클릭
+**트리거**: 챕터 헤더 우측 복사 split 버튼 클릭. 주 버튼(`bi-copy`)은 `copyChapter(true)`(전체/해석 포함), tooltip `journal.copy.full.tooltip`(하위 엔트리에 리플렉션 없으면 `common.copy`). 주 버튼 옆에 항상 붙는 ▾ 캐럿(`bi-caret-down-fill`)이 `data-kt-menu` 드롭다운을 열고, 항목 「본문만 복사」(`journal.copy.body.label`)가 `copyChapter(false)`(해석 제외)를 실행한다. 하위 리플렉션이 없으면 본문=전체라 두 결과가 같다.
 
 **복사 포맷**:
 ```
 날짜 (요일) / 요약 또는 Prefix명 / 챕터 제목   ← 있는 것만 " / " 구분
 #정렬번호
 엔트리 본문 (HTML 태그 제거)
+
+target 리플렉션 본문 (해석 포함 시에만, 리플렉션마다 빈 줄로 이어 붙임)
                                          ← 빈 줄 구분 (엔트리 반복)
 ```
 
 요일은 `getWeekDayStr(stdrdDt, t)` 로 계산하고 현재 locale의 공용 요일 카탈로그를 사용한다 (`journalDate.ts`). 한국어는 기존 한자 표기를 유지한다.
 
-클립보드 쓰기 성공·실패 알림은 현재 locale의 클라이언트 카탈로그를 사용한다.
+클립보드 쓰기 실패 알림은 현재 locale의 클라이언트 카탈로그를 사용한다. 성공 토스트는 복사 범위를 명시한다: 전체 `journal.copy.full.success`, 본문만 `journal.copy.body.success`, 하위 엔트리에 리플렉션이 없는 전체 복사는 공용 `common.copy.success`.
 
 **구현**:
 ```typescript
-async function copyChapter(): Promise<void> {
+async function copyChapter(includeReflection = true): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
   if (props.chapter.stdrdDt) {
-    const weekDay = getWeekDayStr(props.chapter.stdrdDt);
+    const weekDay = getWeekDayStr(props.chapter.stdrdDt, t);
     headerParts.push(weekDay ? `${props.chapter.stdrdDt} (${weekDay})` : props.chapter.stdrdDt);
   }
   if (isSummaryChapter.value) headerParts.push(t("journal.chapter.summary"));
@@ -583,8 +585,18 @@ async function copyChapter(): Promise<void> {
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
     if (sortNum) lines.push(sortNum);
     if (raw) lines.push(raw);
+    /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). */
+    if (includeReflection) {
+      for (const reflection of entry.reflectionList ?? []) {
+        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+        if (reflRaw) { lines.push(""); lines.push(reflRaw); }
+      }
+    }
     lines.push("");
   }
+  const successKey = !includeReflection
+    ? "journal.copy.body.success"
+    : (chapterHasReflections.value ? "journal.copy.full.success" : "common.copy.success");
   await navigator.clipboard.writeText(lines.join("\n").trim());
 }
 ```
@@ -595,15 +607,17 @@ async function copyChapter(): Promise<void> {
 
 **구현 파일**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
 
-**트리거**: 우측 액션 영역 복사 버튼 (`bi-copy`) 클릭 (댓글 버튼과 ⋯ 사이)
+**트리거**: 우측 액션 영역 복사 split 버튼 (댓글 버튼과 링크 복사 사이). 주 버튼(`bi-copy`) 클릭은 `copyEntry(true)`(전체/해석 포함), tooltip `journal.copy.full.tooltip`(리플렉션 없으면 `common.copy`). 주 버튼 옆에 항상 붙는 ▾ 캐럿(`bi-caret-down-fill`)이 `data-kt-menu` 드롭다운을 열고, 항목 「본문만 복사」(`journal.copy.body.label`)가 `copyEntry(false)`(해석 제외)를 실행한다. 리플렉션이 없으면 본문=전체라 두 결과가 같다.
 
 **복사 포맷**:
 ```
 날짜 (요일)
 본문 평문 (HTML 태그 제거)
+
+target 리플렉션 본문 평문 (해석 포함 시에만, 리플렉션마다 빈 줄로 이어 붙임)
 ```
 
-**구현**: 공통 `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일.
+**구현**: 공통 `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일. 해석 포함(`copyEntry(true)`)이면 이 엔트리를 target 으로 한 `reflectionList` 본문을 빈 줄로 이어 붙인다(마커 없음). 성공 토스트는 복사 범위를 명시한다: 전체 `journal.copy.full.success`, 본문만 `journal.copy.body.success`, 리플렉션이 없는 전체 복사는 공용 `common.copy.success`.
 
 ---
 
@@ -667,7 +681,7 @@ async function copyChapter(): Promise<void> {
 - 팝업 외부: 새 창 열기 (`tagIds` 파라미터)
 - 팝업 내부 (`route.name === "journal-entry-search"`): 기존 `tagIds` 배열에 APPEND (중복 무시) → `router.replace()`
 
-**TXT 내보내기**: `GET /api/journal/entries/export?type=...&sort=...&tagIds=...&searchKeywords=...&states=...`. 키워드·태그·제목·꿈 상태 중 하나 이상을 검색 조건으로 인정한다.
+**TXT 내보내기**: split 버튼이다. `GET /api/journal/entries/export?type=...&sort=...&tagIds=...&searchKeywords=...&states=...&includeReflection=`. 키워드·태그·제목·꿈 상태 중 하나 이상을 검색 조건으로 인정한다. 주 버튼 `exportTxt(true)`(`includeReflection=true`, 기본)이면 서버 `buildTxt`가 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙이고, ▾ 드롭다운 「본문만 다운로드」 `exportTxt(false)`이면 붙이지 않는다.
 
 **전체 복사 포맷**: 레거시 `JournalEntrySearch.copy()` 동일 — 날짜가 바뀔 때만 `날짜(요일)` 헤더, `#순번\n본문`, 엔트리 간 빈 줄, `\r\n` 줄바꿈. 요일은 현재 locale의 공용 요일 카탈로그를 사용한다. 확정 전 입력값을 URL 검색 조건으로 반영하고 재조회한 뒤 복사한 경우 성공 알림은 조건 반영 후 복사임을 구분한다.
 
@@ -761,7 +775,7 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 **저널 스레드 상세 엔트리 액션 계약**: 소속 엔트리는 스레드용 읽기 전용 복제본이 아니라 원본 `JournalEntryDto`이므로 저널 일자와 같은 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제 액션을 유지한다. 현재 화면 레이아웃이 해당 액션의 자식 모달을 마운트하고, 전역 마운트된 엔트리 수정·원문 모달은 중복 마운트하지 않는다. 액션 성공 후에는 모달·페이지 공용 `detailOpen`을 전경 판단 기준으로 활성 스레드 상세의 본문·집계 태그·소속 엔트리를 함께 재조회한다. `detailSurface=modal`이고 배경이 주간·월간·일간이면 배경 목록도 재조회하지만 상세 축을 반환해 배경 스크롤은 하지 않고, 검색 팝업 배경이면 등록된 `loadEntries`로 로컬 결과(스레드 칩 포함)를 함께 재조회한다. 독립 페이지는 같은 상세 SSOT만 갱신한다. 현재 스레드 소속 해제·엔트리 삭제는 재조회 결과에서 카드를 제거하고, 수정·관계·라이프사이클·상태·태그 변경은 같은 카드의 최신 DTO로 교체한다. 재조회 실패는 기존 상세를 보존한 채 오류 로그와 안내로 드러낸다.
 
-**저널 스레드 상세 복사·다운로드**: 상세 모달·독립 페이지 모두 「복사」·「다운로드」를 제공한다. 복사는 클라이언트에서 스레드 제목 + 소속 엔트리를 검색 전체 복사와 같은 평문 포맷(`날짜(요일)`·`#순번`·본문)으로 클립보드에 쓰며, 복사 컨트롤은 split이다 — 주 버튼은 `copyThreadDetail(includeReflection=true)`(해석 포함, 각 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙임)이고, 소속 엔트리 중 리플렉션이 있을 때만 붙는 ▾ 드롭다운의 「본문만 복사」가 `copyThreadDetail(false)`(해석 제외)를 실행한다. 성공 토스트는 복사 범위를 명시한다(`journal.copy.full.success`/`journal.copy.body.success`, 소속에 리플렉션이 없으면 `common.copy.success`). 다운로드는 서버 `GET /api/journal/threads/{id}/export`가 `=== dreamdiary export ===` 배너 + `thread: 제목` + 선택 시 `prefix: 말머리` + 소속 엔트리 텍스트를 `thread_{id}_@yyyyMMdd.txt` 첨부로 내려준다(챕터/엔트리 내보내기와 동일 계약, 소유권은 `getEntriesByThread`가 검증). 두 액션은 표시 데이터를 바꾸지 않고 `detailModel`·`detailEntries` SSOT만 읽으며, 로직은 `journalThreadExport.ts` util을 공유한다.
+**저널 스레드 상세 복사·다운로드**: 상세 모달·독립 페이지 모두 「복사」·「다운로드」를 제공한다. 복사는 클라이언트에서 스레드 제목 + 소속 엔트리를 검색 전체 복사와 같은 평문 포맷(`날짜(요일)`·`#순번`·본문)으로 클립보드에 쓰며, 복사 컨트롤은 split이다 — 주 버튼은 `copyThreadDetail(includeReflection=true)`(해석 포함, 각 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙임)이고, 주 버튼 옆에 항상 붙는 ▾ 드롭다운의 「본문만 복사」가 `copyThreadDetail(false)`(해석 제외)를 실행한다. 소속에 리플렉션이 없으면 본문=전체라 두 결과가 같다. 성공 토스트는 복사 범위를 명시한다(`journal.copy.full.success`/`journal.copy.body.success`, 소속에 리플렉션이 없으면 `common.copy.success`). 다운로드도 split이다 — 서버 `GET /api/journal/threads/{id}/export?includeReflection=`가 `=== dreamdiary export ===` 배너 + `thread: 제목` + 선택 시 `prefix: 말머리` + 소속 엔트리 텍스트를 `thread_{id}_@yyyyMMdd.txt` 첨부로 내려주며(챕터/엔트리 내보내기와 동일 계약, 소유권은 `getEntriesByThread`가 검증), `includeReflection=true`(주 버튼, 기본)이면 서버 `buildTxt`가 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙이고 `false`(▾ 「본문만 다운로드」)이면 붙이지 않는다. 두 액션은 표시 데이터를 바꾸지 않고 `detailModel`·`detailEntries` SSOT만 읽으며, 로직은 `journalThreadExport.ts` util을 공유한다.
 
 **저널 스레드 연관 뷰 합성 및 스레드 피커 정책**: 서로 관련된 스레드를 1-hop 대칭 연관으로 묶고(`POST/DELETE /api/related/JOURNAL_THREAD/{id}`), 스레드 상세의 연관 스레드 행별 합성 토글(`relatedThreadIds`)로 선택한 연관 스레드의 엔트리만 같은 시간축에 겹쳐 본다(행 기본 OFF, 임시 화면 옵션). 연관 스레드 추가는 `JournalThreadPickerModal`을 통해 대상 스레드를 키워드로 검색·선택하며, 자기 자신 및 이미 연관된 스레드는 목록에서 선택 불가(비활성화) 처리한다. 빌려온 연관 엔트리(`sourceThreadId` 존재)는 출처 스레드 제목 칩으로 구분하고 설계 §2-6에 따라 「스레드에서 빼기」 멤버십 제거 메뉴를 숨긴다(`filteredThreadOptions` / `toggleThread` 가드).
 

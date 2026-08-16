@@ -45,17 +45,19 @@ public class JournalEntryExportController
      *
      * @param searchParam 검색 조건
      * @param type 엔트리 타입(DIARY/DREAM 또는 JOURNAL_DIARY/JOURNAL_DREAM)
+     * @param includeReflection 해석 포함 여부 (기본 true). 포함 시 각 엔트리의 target 리플렉션 본문을 함께 내보낸다.
      * @return 텍스트 첨부 응답
      * @throws Exception 내보내기 처리 중 예외
      */
     @GetMapping(value = Url.JOURNAL_ENTRIES_EXPORT, produces = "text/plain; charset=UTF-8")
     public ResponseEntity<byte[]> journalEntryExportTxt(
             final JournalEntrySearchParam searchParam,
-            final @RequestParam(value = "type", required = false) String type
+            final @RequestParam(value = "type", required = false) String type,
+            final @RequestParam(value = "includeReflection", defaultValue = "true") boolean includeReflection
     ) throws Exception {
         final ContentType contentType = typeResolver.resolveByRawTypeOrFallback(type, searchParam.getContentType());
         final List<JournalEntryDto> journalEntryList = journalEntryMyViewService.getMyList(searchParam, contentType);
-        return buildTextAttachment(journalEntryList, searchParam, contentType == ContentType.JOURNAL_DIARY ? "diaries" : "dreams");
+        return buildTextAttachment(journalEntryList, searchParam, contentType == ContentType.JOURNAL_DIARY ? "diaries" : "dreams", includeReflection);
     }
 
     /**
@@ -64,15 +66,17 @@ public class JournalEntryExportController
      * @param journalEntryList 내보낼 엔트리 목록
      * @param searchParam 검색 조건
      * @param filenamePrefix 파일명 접두사
+     * @param includeReflection 해석 포함 여부 (기본 true)
      * @return 텍스트 첨부 응답
      * @throws Exception 텍스트 생성 중 예외
      */
     private ResponseEntity<byte[]> buildTextAttachment(
             final List<JournalEntryDto> journalEntryList,
             final JournalEntrySearchParam searchParam,
-            final String filenamePrefix
+            final String filenamePrefix,
+            final boolean includeReflection
     ) throws Exception {
-        final String text = journalEntryExportService.buildTxt(journalEntryList, searchParam);
+        final String text = journalEntryExportService.buildTxt(journalEntryList, searchParam, includeReflection);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = filenamePrefix + "_search_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
 

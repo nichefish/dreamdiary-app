@@ -861,6 +861,7 @@ $journal-dream-paired-states: (
 }
 
 .journal-entry-actions {
+    flex: 0 0 auto;
     min-width: 80px;
 }
 
@@ -885,6 +886,27 @@ $journal-dream-paired-states: (
         opacity: 1;
         transform: translateY(-1px);
     }
+}
+
+/* 복사 split 버튼: 주 버튼(bi-copy)에 붙는 좁은 ▾ 캐럿 꼬리.
+   btn-icon 의 정사각형 고정폭 대신 절반 폭으로 붙여 드롭다운 어피던스로 읽히게 한다. */
+.copy-split-main {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.copy-split-caret {
+    min-width: 0 !important;
+    width: auto !important;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    margin-left: -1px;
 }
 
 .journal-annual-action-btn {

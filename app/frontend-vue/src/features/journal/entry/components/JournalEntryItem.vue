@@ -31,11 +31,11 @@
     <!--end::순번-->
 
     <!--begin::본문 영역-->
-    <div :class="[contentClass, 'flex-grow-1', { 'is-summary-card': isSummary, 'd-flex flex-column': isCollapsed }]">
+    <div :class="[contentClass, 'flex-grow-1', 'min-w-0', { 'is-summary-card': isSummary, 'd-flex flex-column': isCollapsed }]">
       <!--begin::본문+액션 head-row (본문 옆에 액션 정렬; 리플렉션 임베드 액션과 같은 오른쪽 열)-->
       <div class="d-flex gap-2" :class="isCollapsed ? 'flex-grow-1 align-items-stretch' : 'align-items-start'">
         <!--begin::head-main (배지·제목·본문) — collapsed 시 flex-column+세로 중앙으로 제목을 태그 위 공간 중앙에 둔다 (액션은 상단 유지) -->
-        <div class="flex-grow-1" :class="{ 'd-flex flex-column justify-content-center': isCollapsed }">
+        <div class="flex-grow-1 min-w-0" :class="{ 'd-flex flex-column justify-content-center': isCollapsed }">
           <!--begin::꿈 상태 배지 (꿈 엔트리 전용)-->
           <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
             <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!{{ t('state.nightmare') }}</span>
@@ -89,27 +89,42 @@
           </button>
           <!--end::댓글 등록 버튼-->
 
-          <!--begin::복사 버튼 (해석 포함)-->
-          <button
-            type="button"
-            class="btn btn-xs btn-icon journal-entry-action-btn"
-            :title="copyIncludeTitle"
-            @click="copyEntry(true)"
-          >
-            <i class="bi bi-copy fs-8"></i>
-          </button>
-          <!--end::복사 버튼-->
-          <!--begin::해석 제외 복사 (리플렉션 있을 때만 노출 — 없으면 포함=제외)-->
-          <button
-            v-if="reflectionList.length > 0"
-            type="button"
-            class="btn btn-xs btn-icon journal-entry-action-btn"
-            :title="t('journal.copy.exclude-reflection')"
-            @click="copyEntry(false)"
-          >
-            <i class="bi bi-clipboard fs-8"></i>
-          </button>
-          <!--end::해석 제외 복사-->
+          <!--begin::복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+          <div class="btn-group" role="group">
+            <!--begin::주 버튼 (해석 포함)-->
+            <button
+              type="button"
+              class="btn btn-xs btn-icon journal-entry-action-btn copy-split-main"
+              :title="copyIncludeTitle"
+              @click="copyEntry(true)"
+            >
+              <i class="bi bi-copy fs-8"></i>
+            </button>
+            <!--end::주 버튼-->
+            <!--begin::본문만 드롭다운 (항상 노출 — 리플렉션 없으면 본문=전체라 결과 동일)-->
+            <button
+              type="button"
+              class="btn btn-xs journal-entry-action-btn copy-split-caret"
+              data-kt-menu-trigger="click"
+              data-kt-menu-placement="bottom-end"
+              :title="t('common.menu')"
+            >
+              <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+            </button>
+            <div
+              class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-175px py-2"
+              data-kt-menu="true"
+            >
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyEntry(false)">
+                  {{ t('journal.copy.body.label') }}
+                  <i class="bi bi-clipboard fs-8"></i>
+                </div>
+              </div>
+            </div>
+            <!--end::본문만 드롭다운-->
+          </div>
+          <!--end::복사 (split)-->
           <!--begin::링크 복사 (외부에서 클릭 시 해당 일자 일간뷰로 이동해 이 엔트리로 스크롤)-->
           <button
             type="button"
@@ -683,7 +698,7 @@ const reflectionList = computed(() => props.entry.reflectionList ?? []);
 
 /** 복사(해석 포함) 버튼 tooltip. 리플렉션이 있으면 "해석 포함"을 명시하고, 로컬 프로필은 id 를 덧붙인다. */
 const copyIncludeTitle = computed(() => {
-  const base = reflectionList.value.length > 0 ? t("journal.copy.include-reflection") : t("common.copy");
+  const base = reflectionList.value.length > 0 ? t("journal.copy.full.tooltip") : t("common.copy");
   return authStore.isLocalProfile ? `${base} (id ${props.entry.id})` : base;
 });
 
@@ -744,7 +759,11 @@ async function copyEntry(includeReflection = true): Promise<void> {
   const text = parts.join("\n");
   try {
     await navigator.clipboard.writeText(text);
-    void swalFire({ icon: "success", text: t("common.copy.success") });
+    /* 성공 토스트는 복사 범위를 명시한다: 리플렉션 포함 시 "전체", 제외 시 "본문만", 리플렉션이 없으면 공용 문구. */
+    const successKey = !includeReflection
+      ? "journal.copy.body.success"
+      : (reflectionList.value.length > 0 ? "journal.copy.full.success" : "common.copy.success");
+    void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-entry] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });

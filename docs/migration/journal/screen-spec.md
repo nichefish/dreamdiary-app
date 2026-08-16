@@ -538,7 +538,7 @@
 | 태그 상세 | 태그 클릭 | `dF.Tag.dtlModal(tagId)` | 태그 상세 모달 |
 | 소속 엔트리 액션 | 상세의 `JournalEntryItem` 액션 버튼·⋯ 메뉴 | 저널 일자와 같은 원본 엔트리 액션 | 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제를 실행하고 성공 후 열린 스레드 상세·집계 태그·소속 엔트리를 재조회 |
 
-| 전체 복사·다운로드 | 모달 헤더·페이지 툴바 「복사」·「다운로드」 버튼 | `copyThreadDetail` / `downloadThreadDetail` | 복사=제목+소속 엔트리 평문 클립보드, 다운로드=`GET /api/journal/threads/{id}/export` TXT 첨부 |
+| 전체 복사·다운로드 | 모달 헤더·페이지 툴바 복사 split·다운로드 split 버튼 | `copyThreadDetail(includeReflection)` / `downloadThreadDetail(includeReflection)` | 복사=제목+소속 엔트리 평문 클립보드(주 버튼=해석 포함, ▾ 드롭다운=본문만/해석 제외, ▾ 항상 노출), 다운로드=`GET /api/journal/threads/{id}/export?includeReflection=` TXT 첨부(주 버튼=해석 포함, ▾=본문만; 서버 `buildTxt`가 리플렉션 append) |
 
 ### Data Displayed
 

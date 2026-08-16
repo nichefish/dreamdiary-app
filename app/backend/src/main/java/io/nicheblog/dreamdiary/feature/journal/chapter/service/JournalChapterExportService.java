@@ -33,9 +33,10 @@ public class JournalChapterExportService {
      * 챕터 DTO를 텍스트 내보내기 포맷으로 변환한다.
      *
      * @param entry 챕터 DTO
+     * @param includeReflection 해석 포함 여부 (기본 true). 포함 시 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙인다.
      * @return 텍스트 포맷 문자열
      */
-    public String buildTxt(final JournalChapterDto entry) {
+    public String buildTxt(final JournalChapterDto entry, final boolean includeReflection) {
         if (entry == null) return "";
 
         final StringBuilder sb = new StringBuilder();
@@ -61,6 +62,14 @@ public class JournalChapterExportService {
                   .append("\r\n")
                   .append(CmmUtils.htmlToText(diary.getContent()))
                   .append("\r\n");
+                if (includeReflection && CollectionUtils.isNotEmpty(diary.getReflectionList())) {
+                    for (final JournalEntryDto reflection : diary.getReflectionList()) {
+                        if (reflection == null) continue;
+                        final String reflText = CmmUtils.htmlToText(reflection.getContent());
+                        if (StringUtils.isEmpty(reflText)) continue;
+                        sb.append("\r\n").append(reflText).append("\r\n");
+                    }
+                }
                 if (diary.getTag() == null || CollectionUtils.isEmpty(diary.getTag().getList())) {
                     sb.append("\r\n\n");
                     continue;

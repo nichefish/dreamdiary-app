@@ -192,17 +192,19 @@ public class JournalChapterRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param id 식별자
+     * @param includeReflection 해석 포함 여부 (기본 true). 포함 시 각 엔트리의 target 리플렉션 본문을 함께 내보낸다.
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JOURNAL_CHAPTER_EXPORT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<byte[]> journalChapterExportTxtAjax(
-            final @PathVariable("id") Integer id
+            final @PathVariable("id") Integer id,
+            final @RequestParam(value = "includeReflection", defaultValue = "true") boolean includeReflection
     ) throws Exception {
 
         final JournalChapterDto retrievedDto = myJournalChapterService.getMyDetailDtoWithCache(id);
-        final String text = journalChapterExportService.buildTxt(retrievedDto);
+        final String text = journalChapterExportService.buildTxt(retrievedDto, includeReflection);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "chapter_" + DateUtils.asStr(retrievedDto.getStdrdDt(), DatePtn.PDATE) + "_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
 

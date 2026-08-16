@@ -50,21 +50,46 @@
       <!--begin::구분선-->
       <div class="border-start border-gray-300 h-25px ms-1"></div>
       <!--end::구분선-->
-      <!--begin::전체 복사 (해석 포함)-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.include.tooltip')" @click="copyAll(true)">
-        <i class="bi bi-copy"></i>
-      </button>
-      <!--end::전체 복사 (해석 포함)-->
-      <!--begin::전체 복사 (해석 제외)-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.exclude.tooltip')" @click="copyAll(false)">
-        <i class="bi bi-clipboard"></i>
-      </button>
-      <!--end::전체 복사 (해석 제외)-->
-      <!--begin::TXT 내보내기-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canExportResults" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt">
-        <i class="fas fa-download"></i>
-      </button>
-      <!--end::TXT 내보내기-->
+      <!--begin::결과 전체 복사 (split — 주 버튼=해석 포함, ▾ 드롭다운=해석 제외)-->
+      <div class="btn-group" role="group">
+        <!--begin::주 버튼 (해석 포함)-->
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3 copy-split-main" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.include.tooltip')" @click="copyAll(true)">
+          <i class="bi bi-copy"></i>
+        </button>
+        <!--end::주 버튼-->
+        <!--begin::해석 제외 드롭다운-->
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary copy-split-caret" :disabled="!canCopyResults" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" :title="t('common.menu')">
+          <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+        </button>
+        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="copyAll(false)">
+              {{ t('journal.entry.search.copy-all.exclude.tooltip') }}
+              <i class="bi bi-clipboard fs-8"></i>
+            </div>
+          </div>
+        </div>
+        <!--end::해석 제외 드롭다운-->
+      </div>
+      <!--end::결과 전체 복사 (split)-->
+      <!--begin::TXT 내보내기 (split — 주 버튼=해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3 copy-split-main" :disabled="!canExportResults" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt(true)">
+          <i class="fas fa-download"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary copy-split-caret" :disabled="!canExportResults" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" :title="t('common.menu')">
+          <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+        </button>
+        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="exportTxt(false)">
+              {{ t('journal.download.body.label') }}
+              <i class="fas fa-download fs-8"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--end::TXT 내보내기 (split)-->
       <!--begin::키워드 배지 목록 (회색 — 텍스트 검색어)-->
       <div v-if="searchKeywords.length > 0" class="d-flex flex-wrap gap-2 ms-1">
         <span
@@ -831,7 +856,7 @@ function resetSearch(): void {
 }
 
 /** TXT 내보내기. 레거시 exportUrl = /api/journal/entries/export */
-async function exportTxt(): Promise<void> {
+async function exportTxt(includeReflection = true): Promise<void> {
   if (isActionLocked.value) return;
   actionInProgress.value = true;
   try {
@@ -849,7 +874,7 @@ async function exportTxt(): Promise<void> {
       states: states.value,
       title: title.value,
     });
-    window.location.href = `/api/journal/entries/export?${params.toString()}`;
+    window.location.href = `/api/journal/entries/export?${params.toString()}&includeReflection=${includeReflection}`;
   } finally {
     actionInProgress.value = false;
   }

@@ -19,12 +19,14 @@ interface JournalThreadCopySource {
  * @param thread 스레드(제목)
  * @param entries 소속 엔트리 (일자 오름차순)
  * @param t 현재 locale 번역 함수 (요일 라벨용)
+ * @param includeReflection 해석 포함 여부 (기본 true). 포함 시 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙인다.
  * @return 클립보드/미리보기용 평문
  */
 export function buildThreadCopyText(
   thread: JournalThreadCopySource | null | undefined,
   entries: JournalEntryDto[],
   t: (key: string) => string,
+  includeReflection = true,
 ): string {
   const title = (thread?.title ?? "").trim();
   let prevDate: string | null = null;
@@ -39,6 +41,13 @@ export function buildThreadCopyText(
       prevDate = dateLabel;
     }
     block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
+    /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). */
+    if (includeReflection) {
+      for (const reflection of entry.reflectionList ?? []) {
+        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+        if (reflRaw) block += `\r\n\r\n${reflRaw}`;
+      }
+    }
     return block;
   });
   const body = blocks.join("\r\n\r\n").trim();
@@ -51,16 +60,23 @@ export function buildThreadCopyText(
  * @param thread 스레드(제목)
  * @param entries 소속 엔트리
  * @param t 현재 locale 번역 함수
+ * @param includeReflection 해석 포함 여부 (기본 true)
  */
 export async function copyThreadDetail(
   thread: JournalThreadCopySource | null | undefined,
   entries: JournalEntryDto[],
   t: (key: string) => string,
+  includeReflection = true,
 ): Promise<void> {
-  const text = buildThreadCopyText(thread, entries, t);
+  const text = buildThreadCopyText(thread, entries, t, includeReflection);
   try {
     await navigator.clipboard.writeText(text);
-    void swalFire({ icon: "success", text: t("common.copy.success") });
+    /* 성공 토스트는 복사 범위를 명시: 포함=전체, 제외=본문만. 리플렉션이 없으면 공용 문구. */
+    const hasReflection = entries.some((e) => (e.reflectionList?.length ?? 0) > 0);
+    const successKey = !includeReflection
+      ? "journal.copy.body.success"
+      : (hasReflection ? "journal.copy.full.success" : "common.copy.success");
+    void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-thread] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
@@ -72,7 +88,8 @@ export async function copyThreadDetail(
  * 서버가 `=== dreamdiary export ===` 배너 + 제목 + 소속 엔트리 텍스트를 첨부로 내려준다.
  *
  * @param threadId 스레드 식별자
+ * @param includeReflection 해석 포함 여부 (기본 true). 서버 export가 각 엔트리 target 리플렉션 본문을 함께 내보낸다.
  */
-export function downloadThreadDetail(threadId: number | string): void {
-  window.location.href = `/api/journal/threads/${threadId}/export`;
+export function downloadThreadDetail(threadId: number | string, includeReflection = true): void {
+  window.location.href = `/api/journal/threads/${threadId}/export?includeReflection=${includeReflection}`;
 }
