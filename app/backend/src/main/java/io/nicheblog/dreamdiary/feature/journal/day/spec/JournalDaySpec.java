@@ -72,12 +72,12 @@ public class JournalDaySpec
         final List<Predicate> predicate = new ArrayList<>();
 
         final Expression<LocalDate> effectiveDtExp = root.get("journalDate");
-        final String createdBy = resolveCreatedBy(searchParamMap);
+        final String loginUsername = resolveLoginUsername(searchParamMap);
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
             if ("sort".equals(key)) continue;  // "sort" 파라미터는 건너뜀
-            if ("createdBy".equals(key)) continue;
+            if ("loginUsername".equals(key)) continue;
 
             final Object value = searchParamMap.get(key);
             switch (key) {
@@ -105,13 +105,13 @@ public class JournalDaySpec
                     predicate.add(builder.equal(root.get(key), DateUtils.asLocalDate(value)));
                     continue;
                 case "tagId":
-                    resolveTagIdPredicate(predicate, root, builder, value, createdBy, ContentType.JOURNAL_DAY);
+                    resolveTagIdPredicate(predicate, root, builder, value, loginUsername, ContentType.JOURNAL_DAY);
                     continue;
                 case "metaId":
                     // 특정 메타 지칭된 일자만 조회
                     final Join<JournalDayEntity, MetaEmbed> metaJoin = root.join("meta", JoinType.INNER);
                     final Join<MetaEmbed, MetaContentEntity> metaContentJoin = metaJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(metaContentJoin.get("createdBy"), createdBy));
+                    predicate.add(builder.equal(metaContentJoin.get("createdBy"), loginUsername));
                     predicate.add(builder.equal(metaContentJoin.get("metaId"), value));
                     continue;
                 default:
@@ -125,6 +125,13 @@ public class JournalDaySpec
         }
 
         return predicate;
+    }
+
+    /** 부착 데이터의 사용자 스코프에 사용할 로그인명을 추출한다. */
+    private String resolveLoginUsername(final Map<String, Object> searchParamMap) {
+        final Object loginUsername = searchParamMap.get("loginUsername");
+        if (loginUsername != null && !loginUsername.toString().isBlank()) return loginUsername.toString();
+        throw new IllegalArgumentException("loginUsername is required. searchParamMapKeys=" + searchParamMap.keySet());
     }
 
 }

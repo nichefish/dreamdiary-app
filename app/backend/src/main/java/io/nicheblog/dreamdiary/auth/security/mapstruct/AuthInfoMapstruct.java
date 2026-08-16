@@ -37,6 +37,7 @@ public interface AuthInfoMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
+    @Mapping(target = "userId", source = "id")
     @Mapping(target = "lockedYn", expression = "java(entity.acntStus.getLockedYn())")
     @Mapping(target = "lockExpiresAt", expression = "java(entity.acntStus.getLockExpiresAt())")
     @Mapping(target = "lastLoginAt", expression = "java(entity.acntStus.getLastLoginAt() != null ? entity.acntStus.getLastLoginAt() : entity.getCreatedAt())")       // 최종접속일 또는 등록일

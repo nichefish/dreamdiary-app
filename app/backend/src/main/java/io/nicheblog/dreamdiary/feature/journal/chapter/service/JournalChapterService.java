@@ -236,7 +236,7 @@ public class JournalChapterService
     public ServiceResponse registAutoDreamChapter(final Integer journalDayId) throws Exception {
         final JournalDayEntity day = journalDayRepository.findById(journalDayId)
                 .orElseThrow(() -> new BusinessException("journal.day.not-found"));
-        if (!AuthUtils.isCreatedBy(day.getCreatedBy())) {
+        if (!AuthUtils.requireLoginUserId().equals(day.getOwnerId())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
@@ -652,17 +652,18 @@ public class JournalChapterService
 
         final Integer oldJournalDayId = chapterEntity.getJournalDayId();
         final String username = AuthUtils.getLoginUsername();
+        final Integer ownerId = AuthUtils.requireLoginUserId();
 
         // 대상 일자 찾기
         final LocalDate journalDate = DateUtils.asLocalDate(targetStdrdDt);
-        JournalDayEntity targetDay = journalDayRepository.findByJournalDate(journalDate, username);
+        JournalDayEntity targetDay = journalDayRepository.findByJournalDate(journalDate, ownerId);
         if (targetDay == null) {
             // 대상 일자가 없으면 신규 등록
             log.info("[moveChapter] 대상 일자 없음 → 신규 등록: targetStdrdDt={}", targetStdrdDt);
             final JournalDayDto newDayDto = new JournalDayDto();
             newDayDto.setJournalDate(targetStdrdDt);
             journalDayService.regist(newDayDto);
-            targetDay = journalDayRepository.findByJournalDate(journalDate, username);
+            targetDay = journalDayRepository.findByJournalDate(journalDate, ownerId);
             if (targetDay == null) {
                 throw new BusinessException("journal.day.not-found");
             }

@@ -46,7 +46,7 @@ public class JournalDayCalService {
      * @return {@link List} -- 캘린더 목록
      */
     public List<BaseCalDto> getCalListDtoByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
-        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
+        searchParam.setLoginUsername(AuthUtils.requireUsername(username));
         final List<JournalDayDto> myJournalDayList = journalDayQueryService.getYyMnthListDtoEnrichedByUser(username, searchParam);
 
         final List<BaseCalDto> journalCalEventList = new ArrayList<>();

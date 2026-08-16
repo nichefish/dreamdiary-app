@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.entry.spec;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.JournalTestUserSupport;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
@@ -11,7 +12,9 @@ import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
 import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.global.TestConstant;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -57,10 +60,18 @@ class JournalEntryReflectionKeywordSearchIntegrationTest {
     private JournalEntryRepository journalEntryRepository;
     @Resource
     private JournalReflectionRepository journalReflectionRepository;
+    @Resource
+    private UserRepository userRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
     private final JournalEntrySpec spec = new JournalEntrySpec();
+    private Integer ownerId;
+
+    @BeforeEach
+    void setUpOwner() throws Exception {
+        ownerId = JournalTestUserSupport.ensureUser(userRepository, TestConstant.TEST_AUDITOR);
+    }
 
     /** 대상 일기 본문에 없고 딸린 Reflection 본문에만 있는 키워드로도 대상 일기가 검색된다. */
     @Test
@@ -103,7 +114,7 @@ class JournalEntryReflectionKeywordSearchIntegrationTest {
 
     private Integer saveDay() {
         return journalDayRepository.saveAndFlush(JournalDayEntity.builder()
-                .journalDate(LocalDate.of(2026, 8, 4)).yy(2026).mnth(8).build()).getId();
+                .ownerId(ownerId).journalDate(LocalDate.of(2026, 8, 4)).yy(2026).mnth(8).build()).getId();
     }
 
     private Integer saveDiaryChapter(final Integer dayId) {

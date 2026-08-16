@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS journal_day (
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_DAY' COMMENT '컨텐츠 타입',
+    -- scalar FK: 등록 INSERT 전에 인증 사용자의 ID를 직접 설정하므로 NOT NULL을 적용한다.
+    owner_id INT NOT NULL COMMENT '저널 일자 소유 사용자 ID',
     --
     journal_date DATE COMMENT '저널 일자',
     journal_date_precision VARCHAR(20) DEFAULT 'EXACT' COMMENT '저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN)',
@@ -33,7 +35,9 @@ CREATE TABLE IF NOT EXISTS journal_day (
     INDEX (journal_date_precision),
     INDEX (yy),
     INDEX (yy, mnth),
-    INDEX(week_start_date)
+    INDEX(week_start_date),
+    INDEX idx_journal_day_owner (owner_id),
+    CONSTRAINT fk_journal_day_owner FOREIGN KEY (owner_id) REFERENCES user(id)
 ) COMMENT = '저널 일자';
 
 -- 저널 챕터 (journal_chapter)

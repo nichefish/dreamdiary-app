@@ -23,6 +23,9 @@ import java.util.List;
 public class JournalDaySearchParam
         extends BaseSearchParam {
 
+    /** 저널 일자 소유 사용자 영속 ID */
+    private Integer ownerId;
+
     /** 년도 */
     private Integer yy;
     /** 월 */
@@ -72,14 +75,16 @@ public class JournalDaySearchParam
     /**
      * 기본 파라미터 객체 반환
      *
-     * @param username 사용자 계정명
+     * @param ownerId 소유 사용자 영속 ID
+     * @param username 부착 데이터 조회용 사용자 계정명
      * @param yy 년도
      * @param mnth 월
      * @return {@link JournalDaySearchParam}
      */
-    public static JournalDaySearchParam getBaseParam(String username, Integer yy, Integer mnth) {
+    public static JournalDaySearchParam getBaseParam(final Integer ownerId, final String username, final Integer yy, final Integer mnth) {
         return JournalDaySearchParam.builder()
-                .createdBy(username)
+                .ownerId(ownerId)
+                .loginUsername(username)
                 .yy(yy)
                 .mnth(mnth)
                 .sort("ASC")
@@ -89,13 +94,15 @@ public class JournalDaySearchParam
     /**
      * 기간 기준 기본 파라미터 객체 반환
      *
-     * @param username 사용자 계정명
+     * @param ownerId 소유 사용자 영속 ID
+     * @param username 부착 데이터 조회용 사용자 계정명
      * @param weekStartDt 주 시작일
      * @return {@link JournalDaySearchParam}
      */
-    public static JournalDaySearchParam getBaseParam(final String username, final String weekStartDt) {
+    public static JournalDaySearchParam getBaseParam(final Integer ownerId, final String username, final String weekStartDt) {
         return JournalDaySearchParam.builder()
-                .createdBy(username)
+                .ownerId(ownerId)
+                .loginUsername(username)
                 .weekStartDt(weekStartDt)
                 .sort("ASC")
                 .build();

@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.chapter.service;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.JournalTestUserSupport;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
@@ -11,13 +12,14 @@ import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
 import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 @Import(TestAuditConfig.class)
 @Transactional
-@WithMockUser(username = TestConstant.TEST_AUDITOR)
 class JournalChapterReflectionBlockIntegrationTest {
 
     private static final String FIXTURE_DIARY_CONTENT = "평범한 하루 기록";
@@ -53,6 +54,8 @@ class JournalChapterReflectionBlockIntegrationTest {
     @Resource
     private JournalChapterRepository journalChapterRepository;
     @Resource
+    private UserRepository userRepository;
+    @Resource
     private JournalEntryRepository journalEntryRepository;
     @Resource
     private JournalReflectionRepository journalReflectionRepository;
@@ -60,6 +63,14 @@ class JournalChapterReflectionBlockIntegrationTest {
     private JournalDayRepository journalDayRepository;
     @PersistenceContext
     private EntityManager entityManager;
+
+    private Integer ownerId;
+
+    @BeforeEach
+    void setUpOwner() throws Exception {
+        ownerId = JournalTestUserSupport.ensureUser(userRepository, TestConstant.TEST_AUDITOR);
+        JournalTestUserSupport.authenticate(ownerId, TestConstant.TEST_AUDITOR);
+    }
 
     /** 챕터 내 일기에 Reflection 이 있으면 챕터 삭제는 Block 된다. */
     @Test
@@ -95,14 +106,14 @@ class JournalChapterReflectionBlockIntegrationTest {
     /** 하위 엔트리와 Reflection 이 없는 빈 챕터 픽스처를 저장한다. */
     private Integer saveEmptyDiaryChapter() {
         final Integer dayId = journalDayRepository.saveAndFlush(JournalDayEntity.builder()
-                .journalDate(LocalDate.of(2026, 8, 5)).yy(2026).mnth(8).build()).getId();
+                .ownerId(ownerId).journalDate(LocalDate.of(2026, 8, 5)).yy(2026).mnth(8).build()).getId();
         return journalChapterRepository.saveAndFlush(JournalChapterEntity.builder()
                 .chapterType(ChapterType.DIARY).journalDayId(dayId).summaryYn("N").sortOrder(1).build()).getId();
     }
 
     private ChapterFixture saveDiaryChapterWithEntry() {
         final Integer dayId = journalDayRepository.saveAndFlush(JournalDayEntity.builder()
-                .journalDate(LocalDate.of(2026, 8, 5)).yy(2026).mnth(8).build()).getId();
+                .ownerId(ownerId).journalDate(LocalDate.of(2026, 8, 5)).yy(2026).mnth(8).build()).getId();
         final Integer chapterId = journalChapterRepository.saveAndFlush(JournalChapterEntity.builder()
                 .chapterType(ChapterType.DIARY).journalDayId(dayId).summaryYn("N").sortOrder(1).build()).getId();
         final Integer diaryId = journalEntryRepository.saveAndFlush(JournalEntryEntity.builder()

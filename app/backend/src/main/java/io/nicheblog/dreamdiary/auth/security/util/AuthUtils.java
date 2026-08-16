@@ -136,6 +136,20 @@ public class AuthUtils {
     }
 
     /**
+     * 현재 인증 사용자의 영속 ID를 검증하여 반환한다.
+     * 소유권 FK와 인가 비교는 로그인명 대신 이 값을 사용한다.
+     *
+     * @return {@link Integer} -- 검증된 현재 인증 사용자 영속 ID
+     */
+    public static Integer requireLoginUserId() {
+        final AuthInfo authInfo = getAuthenticatedUser();
+        if (authInfo == null || authInfo.getUserId() == null) {
+            throw new IllegalArgumentException("authenticated userId is required.");
+        }
+        return authInfo.getUserId();
+    }
+
+    /**
      * 현재 로그인 중인 사용자 어이디를 반환한다.
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디
