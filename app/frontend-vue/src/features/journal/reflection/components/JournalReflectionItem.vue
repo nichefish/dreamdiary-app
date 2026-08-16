@@ -108,13 +108,6 @@
             </div>
           </div>
 
-          <div v-if="canWrite" class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openRelated">
-              {{ t('journal.entry.related-content.add') }}
-              <i class="bi bi-link-45deg fs-8"></i>
-            </div>
-          </div>
-
           <div
             v-if="canWrite && !isPrimaryContentTargetedReflection(reflection)"
             class="menu-item px-3"
@@ -517,12 +510,6 @@ function openHistory(): void {
   void attachableStore.openHistory(contentType.value, props.reflection.id, {
     writeLocked: !canWrite.value,
   });
-}
-
-function openRelated(): void {
-  if (!guardWrite()) return;
-  if (!props.reflection.id) return;
-  attachableStore.openRelated(contentType.value, props.reflection.id);
 }
 
 function ensureThreadOptions(): void {

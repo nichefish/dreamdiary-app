@@ -259,7 +259,7 @@
 - 컬럼은 방향성을 드러내는 `src/dst`보다 중립적인 `left/right`를 사용한다.
 - "A-B"와 "B-A"를 같은 관계로 보고, 물리적으로는 1행만 저장한다. 조회는 양방향으로 푼다. 자기 자신과의 관계는 금지한다.
 - 저장 전에 항상 pair를 정규화한다. 정규화 후 앞쪽을 `left_*`, 뒤쪽을 `right_*`에 저장한다.
-- 관련글 API·연결 생성의 지원 타입은 `JOURNAL_DIARY`·`JOURNAL_DREAM`이다. 엔트리 삭제 후처리의 관련글 정리 오버로드는 미지원 타입(`JOURNAL_REFLECTION` 등)을 거절하지 않고 no-op 한다.
+- 관련글 API·연결 생성의 지원 타입은 `JOURNAL_DIARY`·`JOURNAL_DREAM`·`JOURNAL_THREAD`다. `JOURNAL_REFLECTION`은 필수 target에 매달린 해석이므로 대칭 관련글 관계에 참여하지 않으며, Reflection에서 발견한 기록 간 관계는 대상 원본 엔트리에 연결한다. 엔트리 삭제 후처리의 관련글 정리 오버로드는 미지원 타입을 거절하지 않고 no-op 한다.
 
 #### FLOW — 폐기된 결정 기록
 

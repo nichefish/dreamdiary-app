@@ -56,9 +56,15 @@ Reflection은 태그를 소유하지 않으며 Reflection 저장·수정·삭제
 Reflection은 스레드 소속 엔트리가 아니다. 스레드는 `journal_entry`의 일기·꿈·노트 엔트리를 소속시키며,
 각 엔트리를 조회할 때 대상 Reflection 목록을 함께 enrich한다.
 
-## 6. 제약
+## 6. 관련글
+
+Reflection은 두 독립 콘텐츠 사이의 대칭 관계인 `related_content`에 참여하지 않는다. Reflection에서 발견한
+기록 간 관계는 Reflection의 대상 원본 엔트리와 상대 엔트리 사이에 연결한다.
+
+## 7. 제약
 
 - 대상 없는 Reflection 등록을 허용하지 않는다.
 - Reflection에 태그·챕터·정렬 순서를 추가하지 않는다.
 - Reflection을 일반 엔트리 저장 API로 보내지 않는다.
 - Reflection을 스레드 소속 엔트리로 추가하지 않는다.
+- Reflection을 관련글의 출발점이나 대상으로 추가하지 않는다.
