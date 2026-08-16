@@ -334,6 +334,35 @@
           <span v-if="entry.stdrdDt" class="badge badge-light-secondary fw-lighter">
             {{ getDateEntryCountLabel(entry.stdrdDt) }}
           </span>
+          <!--begin::이 날짜 엔트리 복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+          <div v-if="entry.stdrdDt" class="btn-group" role="group">
+            <button
+              type="button"
+              class="btn btn-xs btn-icon btn-light-primary copy-split-main"
+              :title="t('journal.entry.search.copy-date.include.tooltip')"
+              @click="copyDate(entry.stdrdDt, true)"
+            >
+              <i class="bi bi-copy fs-8"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-xs btn-icon btn-light-primary copy-split-caret"
+              data-kt-menu-trigger="click"
+              data-kt-menu-placement="bottom-end"
+              :title="t('common.menu')"
+            >
+              <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+            </button>
+            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyDate(entry.stdrdDt, false)">
+                  {{ t('journal.entry.search.copy-date.exclude.tooltip') }}
+                  <i class="bi bi-clipboard fs-8"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end::이 날짜 엔트리 복사 (split)-->
           <button
             v-if="entry.stdrdDt"
             type="button"
@@ -980,6 +1009,56 @@ ${reflRaw}`;
       });
     } catch (error: unknown) {
       console.error("[journal-entry-search] clipboard copy failed", error);
+      void swalAlert(t("common.copy.failure"));
+    }
+  } finally {
+    actionInProgress.value = false;
+  }
+}
+
+/**
+ * 검색 결과 중 특정 날짜에 속한 엔트리만 클립보드에 복사한다.
+ * copyAll 과 동일 포맷(날짜(요일) 헤더 1회 + #순번\n본문, 엔트리 간 빈 줄)을 그 날짜 한정으로 적용한다.
+ * 복사 계약: 소스는 저작 원문 content 우선(→ htmlToPlainText). 해석 포함 시 target 리플렉션 본문을 빈 줄로 이어 붙인다.
+ *
+ * @param stdrdDt 대상 일자(YYYY-MM-DD)
+ * @param includeReflection 해석(리플렉션) 포함 여부
+ */
+async function copyDate(stdrdDt: string | undefined, includeReflection: boolean): Promise<void> {
+  if (!stdrdDt || isActionLocked.value) return;
+  actionInProgress.value = true;
+  try {
+    const dateEntries = entries.value.filter((entry) => entry.stdrdDt === stdrdDt);
+    if (dateEntries.length === 0) {
+      void swalAlert(t("journal.entry.search.copy.empty"));
+      return;
+    }
+    const weekDay = getWeekDayStr(stdrdDt, t);
+    const dateLabel = weekDay ? `${stdrdDt} (${weekDay})` : stdrdDt;
+    const blocks = dateEntries.map((entry) => {
+      const content = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
+      let block = [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
+      /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+      if (includeReflection) {
+        for (const reflection of entry.reflectionList ?? []) {
+          const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+          if (reflRaw) block += `\r\n\r\n${reflRaw}`;
+        }
+      }
+      return block;
+    });
+    const text = `${dateLabel}\r\n${blocks.join("\r\n\r\n")}`.trim();
+    try {
+      await navigator.clipboard.writeText(text);
+      void Swal.fire({
+        text: t("journal.entry.search.copy-date.success")
+          .replace("{0}", stdrdDt)
+          .replace("{1}", String(dateEntries.length)),
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error: unknown) {
+      console.error("[journal-entry-search] clipboard date copy failed", error);
       void swalAlert(t("common.copy.failure"));
     }
   } finally {
