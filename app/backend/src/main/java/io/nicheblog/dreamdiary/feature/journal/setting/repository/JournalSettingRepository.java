@@ -25,5 +25,5 @@ public interface JournalSettingRepository
      * @param scopeKey 범위 키
      * @return 설정 엔티티
      */
-    Optional<JournalSettingEntity> findFirstByScopeAndScopeKey(String scope, String scopeKey);
+    Optional<JournalSettingEntity> findByScopeAndScopeKey(String scope, String scopeKey);
 }

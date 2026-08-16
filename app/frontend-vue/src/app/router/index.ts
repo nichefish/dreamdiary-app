@@ -22,7 +22,7 @@ import { isAuthVerificationError } from "@/shared/utils/authError";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/journal/daily",
+    redirect: "/journal/day/home",
     component: () => import("@/app/layouts/default/DefaultLayout.vue"),
     meta: { middleware: "auth" },
     children: [
@@ -33,7 +33,13 @@ const routes: Array<RouteRecordRaw> = [
         children: [
           {
             path: "",
-            redirect: { name: "journal-daily-tab" },
+            redirect: { name: "journal-day-home" },
+          },
+          {
+            path: "day/home",
+            name: "journal-day-home",
+            component: () => import("@/features/journal/day/JournalDayHome.vue"),
+            meta: { pageTitleKey: "route.title.journal-day-home" },
           },
           {
             path: "daily",
@@ -201,6 +207,11 @@ const routes: Array<RouteRecordRaw> = [
             path: "security",
             name: "user-my-security",
             component: () => import("@/features/user/components/UserMySecurityTab.vue"),
+          },
+          {
+            path: "journal",
+            name: "user-my-journal",
+            component: () => import("@/features/user/components/UserMyJournalTab.vue"),
           },
           {
             path: "prefixes",

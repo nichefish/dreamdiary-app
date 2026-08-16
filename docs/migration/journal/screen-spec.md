@@ -26,7 +26,7 @@
 
 | 화면 | 레거시 URL (대표) | Vue route | Vue view | 구현 |
 |------|-------------------|-----------|----------|------|
-| 저널 기본 진입 | — | `/journal` → `/journal/daily` | `JournalDayDaily.vue` | ✓ 오늘 일자 |
+| 저널 일자 공통 진입 | `/app/journal/day/home` | `/journal/day/home` | `JournalDayHome.vue` | ✓ 활성 프론트엔드 연결 후 사용자 기본 보기 해석 |
 | 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalDayMonthly.vue` | ✓ |
 | 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
 | 저널 일간 (탭) | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 정식 탭(맨앞), JournalDayLayout, aside 포함, 이전/다음 네비 |
@@ -39,7 +39,7 @@
 | 스레드 등록 | `/app/journal/thread/regist-form.do` | `/thread/new` | `JournalThreadList.vue` | ✓ |
 | 스레드 상세 | `/app/journal/thread/detail.do?id={id}` | `/thread/:id` | `JournalThreadDetailPage.vue` | ✓ |
 | 스레드 수정 | `/app/journal/thread/modify-form.do?id={id}` | `/thread/:id/edit` | `JournalThreadEditPage.vue` | ✓ |
-| 내 설정 | `/app/user/my/page.do` | `/my/profile`, `/my/security`, `/my/prefixes` | `UserMyPage.vue` + `UserMy*Tab.vue` | ✓ |
+| 내 설정 | `/app/user/my/page.do` | `/my/profile`, `/my/security`, `/my/journal`, `/my/prefixes` | `UserMyPage.vue` + `UserMy*Tab.vue` | ✓ |
 | 일정 | `/app/schedule/calendar.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
 
 ### 저널 달력 (`JournalDayCalendar.vue`)

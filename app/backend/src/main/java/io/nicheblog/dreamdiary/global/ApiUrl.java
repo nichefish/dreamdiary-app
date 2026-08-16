@@ -221,6 +221,9 @@ public interface ApiUrl {
     /** 저널 도메인 설정 */
     String JOURNAL_SETTINGS = Prefix.API + "/journal/settings";
 
+    /** 로그인 사용자의 저널 설정 */
+    String JOURNAL_MY_SETTINGS = JOURNAL_SETTINGS + "/me";
+
     /** (공통) 파일 */
     String FILE_DOWNLOAD_CHK_AJAX = Prefix.API + "/file/file-download-chk";
     String FILE_INFO_LIST_AJAX = Prefix.API + "/file/file-account-list";

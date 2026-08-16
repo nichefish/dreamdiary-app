@@ -10,9 +10,10 @@
 
 | Vue route | route name | Vue view | Layout | 구현 |
 |-----------|-----------|----------|--------|------|
-| `/` | — | redirect → `/journal/daily` | DefaultLayout | — |
-| `/journal` | — | redirect → `/journal/daily` | JournalLayout | — |
-| `/journal/daily` | `journal-daily-tab` | `JournalDayDaily.vue` | Journal | ✓ 기본 진입·오늘 일자 |
+| `/` | — | redirect → `/journal/day/home` | DefaultLayout | — |
+| `/journal` | — | redirect → `/journal/day/home` | JournalLayout | — |
+| `/journal/day/home` | `journal-day-home` | `JournalDayHome.vue` | Journal | ✓ 제품 화면 URL `/app/journal/day/home`에서 연결·사용자 기본 보기 해석 |
+| `/journal/daily` | `journal-daily-tab` | `JournalDayDaily.vue` | Journal | ✓ 오늘 일자 |
 | `/journal/weekly` | `journal-weekly` | `JournalDayWeekly.vue` | Journal | ✓ |
 | `/journal/monthly` | `journal-monthly` | `JournalDayMonthly.vue` | Journal | ✓ |
 | `/journal/calendar` | `journal-calendar` | `JournalDayCalendar.vue` | Journal | ✓ FullCalendar 일자/일기/꿈+공휴일 |
@@ -25,7 +26,7 @@
 | `/schedule` | `schedule-calendar` | `ScheduleCalendar.vue` | Default | ✓ |
 | `/board/:boardKey` | `board-post-list` | `BoardPostList.vue` | BoardPostLayout | ✓ |
 | `/my` | — | redirect → `/my/profile` | Default | — |
-| `/my/profile` · `/my/security` · `/my/prefixes` | `user-my-profile` · `user-my-security` · `user-my-prefixes` | `UserMyPage.vue` + `UserMy{Profile,Security,Prefixes}Tab.vue` | Default | ✓ |
+| `/my/profile` · `/my/security` · `/my/journal` · `/my/prefixes` | `user-my-profile` · `user-my-security` · `user-my-journal` · `user-my-prefixes` | `UserMyPage.vue` + `UserMy{Profile,Security,Journal,Prefixes}Tab.vue` | Default | ✓ |
 | `/admin` | `admin-page` | `AdminPage.vue` | Default | ✓ |
 | `/admin/auth-policy` | `auth-policy` | `AuthPolicyPage.vue` | Default | ✓ |
 | `/admin/board-group` | `board-group-admin` | `BoardGroupAdminPage.vue` | Default | ✓ |
@@ -150,6 +151,7 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | `schedule.ts` | 일정 캘린더 |
 | `scheduleAside.ts` | 일정 aside 표시 제어 (`visible`, `show/hide`) |
 | `userMy.ts` | 내 정보 |
+| `userJournalSetting.ts` | 사용자별 저널 기본 진입 화면 조회·저장 |
 | `userPrefixes.ts` | 내 설정 사용자 소유 말머리 관리 |
 | `personalPrefixOptions.ts` | 활성 개인 Prefix 선택지 콘텐츠 타입별 세션 캐시 |
 | `userSignup.ts` | 계정 신청 승인 |
