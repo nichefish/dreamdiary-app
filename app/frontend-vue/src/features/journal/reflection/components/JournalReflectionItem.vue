@@ -324,7 +324,7 @@ import { wrapHtmlWithDoubleParen } from "@/features/journal/utils/wrapDoublePare
  * same-chapter dedup 으로 1급 행이 숨겨지므로 수정·삭제·이력·라이프사이클·상태(중요/참조)는
  * 이 임베드 컨텍스트 메뉴에서 수행한다. ⋯ 메뉴의 「전체 (( ))」는 저장 본문 각 `<p>`/`<li>`에 Markdown `((...))` 마커를 멱등적으로 씌운다. Reflection→Reflection 중첩 등록 메뉴는 두지 않는다(형제·독립이 기본, REFLECTION_ONE_TYPE §3.1). 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가를 두지 않는다.
  * 접기(COLLAPSED)는 임베드가 본문을 항상 보이므로 메뉴에 두지 않는다.
- * Reflection 은 완결축 밖이므로 쓰기 가드는 소유권(`isCreatedBy`)이다. 본문 글자 크기는 일기 엔트리와 같다.
+ * Reflection 은 완결축 밖이므로 쓰기 가드는 대상 일자 소유권(`isOwnedBy`)이다. 본문 글자 크기는 일기 엔트리와 같다.
  */
 const props = withDefaults(defineProps<{
   reflection: JournalEntryDto;
@@ -349,8 +349,8 @@ const journalStore = useJournalStore();
 const route = useRoute();
 
 const contentType = computed(() => props.reflection.contentType ?? "JOURNAL_REFLECTION");
-/** 본인 작성 Reflection 만 쓰기 가능. isCreatedBy 미전달 시 잠그지 않는다. */
-const canWrite = computed(() => props.reflection.isCreatedBy !== false);
+/** 대상 일자 소유 시 쓰기 가능. 응답 isOwnedBy 가 대상 일자 owner_id 파생이다. */
+const canWrite = computed(() => props.reflection.isOwnedBy === true);
 
 /** localStorage("debug_collapse") が true のとき接힘 메타정보를 표시한다. */
 const debugCollapse = computed(() => localStorage.getItem("debug_collapse") === "true");

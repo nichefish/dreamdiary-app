@@ -130,8 +130,10 @@ export interface JournalEntryDto {
   threadList?: JournalThreadEntryDto[];
   /** target 이 이 엔트리인 Reflection 목록 (역참조 교차뷰) */
   reflectionList?: JournalEntryDto[];
-  /** 현재 로그인 사용자 소유 여부 (백엔드 BaseAuditRegDto getIsCreatedBy 직렬화) */
+  /** 현재 로그인 사용자와 감사 created_by 일치 여부 (백엔드 BaseAuditRegDto getIsCreatedBy 직렬화) */
   isCreatedBy?: boolean;
+  /** 뷰어가 대상 일자 owner_id 의 소유자인지. Reflection 쓰기 가드. */
+  isOwnedBy?: boolean;
   /** 소속 일자 일기 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */
   diaryResolvedYn?: string;
   /** 소속 일자 꿈 축 완결 Y/N — 검색·상세 등 provide 없는 화면 UI 잠금 */

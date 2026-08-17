@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.feature.journal.reflection.service;
 
-import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.AttachableCacheContext;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
@@ -9,10 +7,10 @@ import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.lifecycle.JournalReflectionLifecycleCascade;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
-import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
 import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
 import io.nicheblog.dreamdiary.feature.journal.reflection.mapstruct.JournalReflectionMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.reflection.model.JournalReflectionPostDto;
@@ -26,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Reflection(Commentary) 쓰기 서비스.
@@ -49,8 +49,8 @@ public class JournalReflectionService
     private final JournalReflectionMapstruct mapstruct;
     private final JournalCacheEvictWorker journalCacheEvictWorker;
     private final JournalReflectionLifecycleCascade journalReflectionLifecycleCascade;
-    private final JournalEntryService journalEntryService;
     private final JournalDayRepository journalDayRepository;
+    private final JournalContentOwnershipGuard journalContentOwnershipGuard;
     private final io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService lifecycleService;
 
     public JournalReflectionMapstruct getReadMapstruct() {
@@ -61,7 +61,7 @@ public class JournalReflectionService
     }
 
     /**
-     * Reflection 단건 상세를 작성자 확인과 함께 조회한다(수정 모달 로드용).
+     * Reflection 단건 상세를 대상 일자 소유 확인과 함께 조회한다(수정 모달 로드용).
      *
      * @param id Reflection ID
      * @return 표시 DTO. 없으면 {@code null}
@@ -71,10 +71,10 @@ public class JournalReflectionService
     public JournalEntryDto getDtlDtoByUser(final Integer id) throws Exception {
         final JournalReflectionEntity entity = this.findDtlEntity(id);
         if (entity == null) return null;
-        if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
-            throw new NotAuthorizedException("common.result.access-not-authorized");
-        }
-        return mapstruct.toDto(entity);
+        journalContentOwnershipGuard.assertOwned(id, ContentType.JOURNAL_REFLECTION);
+        final JournalEntryDto dto = mapstruct.toDto(entity);
+        journalContentOwnershipGuard.applyReflectionViewerOwnership(List.of(dto));
+        return dto;
     }
 
     /**
@@ -122,16 +122,14 @@ public class JournalReflectionService
     }
 
     /**
-     * 수정 전처리. 작성자 본인만 수정할 수 있다.
+     * 수정 전처리. 대상 일자 소유자만 수정할 수 있다.
      *
      * @param postDto 수정 DTO
      * @param modifyEntity 수정 대상 엔티티
      */
     @Override
     public void preModify(final JournalReflectionPostDto postDto, final JournalReflectionEntity modifyEntity) {
-        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
-            throw new NotAuthorizedException("common.result.access-not-authorized");
-        }
+        journalContentOwnershipGuard.assertOwned(modifyEntity.getId(), ContentType.JOURNAL_REFLECTION);
     }
 
     /**
@@ -148,16 +146,14 @@ public class JournalReflectionService
     }
 
     /**
-     * 삭제 전처리. 작성자 본인만 삭제할 수 있다.
+     * 삭제 전처리. 대상 일자 소유자만 삭제할 수 있다.
      * 이 Reflection 을 대상으로 둔 하위 Reflection 이 있으면 삭제를 거부한다(R→R Block).
      *
      * @param deletedDto 삭제 대상 DTO
      */
     @Override
     public void preDelete(final JournalEntryDto deletedDto) {
-        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
-            throw new NotAuthorizedException("common.result.access-not-authorized");
-        }
+        journalContentOwnershipGuard.assertOwned(deletedDto.getId(), ContentType.JOURNAL_REFLECTION);
         if (repository.existsByRefIdAndRefContentType(deletedDto.getId(), ContentType.JOURNAL_REFLECTION)) {
             log.warn("[JournalReflection] 삭제 Block — 하위 Reflection 존재. id={}", deletedDto.getId());
             throw new BusinessException("journal.reflection.delete.blocked-by-child");
@@ -186,14 +182,7 @@ public class JournalReflectionService
     private JournalDayEntity resolveTargetDay(final Integer refId, final ContentType refContentType) {
         if (refId == null || refContentType == null) return null;
 
-        Integer dayId = journalEntryService.resolveJournalDayId(refId, refContentType);
-        if (dayId == null && refContentType == ContentType.JOURNAL_REFLECTION) {
-            // R→R: 부모 Reflection 의 대상 일자로 한 단계 거슬러 올라간다.
-            final JournalReflectionEntity parent = repository.findById(refId).orElse(null);
-            if (parent != null) {
-                dayId = journalEntryService.resolveJournalDayId(parent.getRefId(), parent.getRefContentType());
-            }
-        }
+        final Integer dayId = journalContentOwnershipGuard.resolveTargetJournalDayId(refId, refContentType);
         if (dayId == null) return null;
         return journalDayRepository.findById(dayId).orElse(null);
     }
@@ -236,9 +225,7 @@ public class JournalReflectionService
             final Integer fromHistoryId
     ) throws Exception {
         final JournalReflectionEntity entity = this.getDtlEntity(key);
-        if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
-            throw new NotAuthorizedException("common.result.access-not-authorized");
-        }
+        journalContentOwnershipGuard.assertOwned(key, ContentType.JOURNAL_REFLECTION);
         final JournalReflectionEntity historySnapshot = entity.toBuilder().build();
 
         entity.setContent(content);
@@ -250,6 +237,7 @@ public class JournalReflectionService
         );
 
         final JournalEntryDto updatedDto = mapstruct.toDto(updatedEntity);
+        journalContentOwnershipGuard.applyReflectionViewerOwnership(List.of(updatedDto));
         final JournalDayEntity targetDay = resolveTargetDay(updatedDto.getRefId(), updatedDto.getRefContentType());
         journalCacheEvictWorker.evictAfterCommit(buildEvictParam(updatedDto, targetDay), ContentType.JOURNAL_REFLECTION);
         return updatedDto;

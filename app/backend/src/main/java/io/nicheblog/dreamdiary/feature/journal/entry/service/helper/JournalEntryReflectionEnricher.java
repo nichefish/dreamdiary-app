@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.entry.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
 import io.nicheblog.dreamdiary.feature.journal.reflection.mapstruct.JournalReflectionMapstruct;
@@ -28,6 +29,7 @@ public class JournalEntryReflectionEnricher {
 
     private final JournalReflectionRepository journalReflectionRepository;
     private final JournalReflectionMapstruct mapstruct;
+    private final JournalContentOwnershipGuard journalContentOwnershipGuard;
 
     /**
      * 엔트리 목록에 target 역참조 Reflection 을 병합한다.
@@ -102,6 +104,11 @@ public class JournalEntryReflectionEnricher {
             final String key = buildKey(reflection.getRefContentType().key, reflection.getRefId());
             map.computeIfAbsent(key, k -> new ArrayList<>()).add(mapstruct.toDto(reflection));
         }
+        final List<JournalEntryDto> mapped = new ArrayList<>();
+        for (final List<JournalEntryDto> group : map.values()) {
+            mapped.addAll(group);
+        }
+        journalContentOwnershipGuard.applyReflectionViewerOwnership(mapped);
         return map;
     }
 
