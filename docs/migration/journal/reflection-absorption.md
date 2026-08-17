@@ -65,7 +65,7 @@
 
 ### 스키마
 
-14. 단일 테이블 상속: target 컬럼을 `journal_entry` 에 nullable 로 얹는다(기존 `elseDreamYn`/`elseDreamerNm` 와 동일한 트레이드오프). 순수성(제네릭 Node)보다 기존 패턴과의 일관성을 택한다. full schema SSOT(`schema/full/mariadb/schema-journal-mariadb.sql`)도 런타임과 맞춰 `journal_entry`(+ target 컬럼)를 정본으로 두고 `journal_interpretation` DROP 을 반영한다.
+14. 단일 테이블 상속: target 컬럼을 `journal_entry` 에 nullable 로 얹는다(`dreamerName`과 같은 subtype 전용 nullable 컬럼의 트레이드오프). 순수성(제네릭 Node)보다 현재 영속 패턴과의 일관성을 택한다. full schema SSOT(`schema/full/mariadb/schema-journal-mariadb.sql`)도 런타임과 맞춰 `journal_entry`(+ target 컬럼)를 정본으로 두고 `journal_interpretation` DROP 을 반영한다.
 
 > **스키마 현황:** Primary는 `journal_entry`, Commentary Reflection은 `journal_reflection`이다(흡수 이후 별도 AR 영속). 1.0 전 Flyway 증분 트리는 두지 않으며 선언 SSOT `schema/full/mariadb/schema-journal-mariadb.sql`도 동일 CREATE로 맞춘다.
 

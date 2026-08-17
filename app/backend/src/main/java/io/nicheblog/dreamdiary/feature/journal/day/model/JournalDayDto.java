@@ -45,6 +45,9 @@ public class JournalDayDto
     @Builder.Default
     private String contentType = ContentType.JOURNAL_DAY.key;
 
+    /** 저널 일자 소유 사용자 영속 ID. 서버가 인증 사용자 기준으로 확정한다. */
+    private Integer ownerId;
+
     /* ----- */
 
     /** 저널 일자 */

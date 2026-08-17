@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS journal_day (
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_DAY' COMMENT '컨텐츠 타입',
+    -- scalar FK: 등록 INSERT 전에 인증 사용자의 ID를 직접 설정하므로 NOT NULL을 적용한다.
+    owner_id INT NOT NULL COMMENT '저널 일자 소유 사용자 ID',
     --
     journal_date DATE COMMENT '저널 일자',
     journal_date_precision VARCHAR(20) DEFAULT 'EXACT' COMMENT '저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN)',
@@ -33,7 +35,9 @@ CREATE TABLE IF NOT EXISTS journal_day (
     INDEX (journal_date_precision),
     INDEX (yy),
     INDEX (yy, mnth),
-    INDEX(week_start_date)
+    INDEX(week_start_date),
+    INDEX idx_journal_day_owner (owner_id),
+    CONSTRAINT fk_journal_day_owner FOREIGN KEY (owner_id) REFERENCES user(id)
 ) COMMENT = '저널 일자';
 
 -- 저널 챕터 (journal_chapter)
@@ -75,8 +79,7 @@ CREATE TABLE IF NOT EXISTS journal_entry (
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
     sort_order INT DEFAULT 1 COMMENT '챕터 내 정렬',
-    else_dream_yn CHAR(1) DEFAULT 'N' COMMENT '타인 꿈 여부 (Y/N)',
-    else_dreamer_nm VARCHAR(64) COMMENT '꿈꾼이 이름',
+    dreamer_name VARCHAR(64) COMMENT '지정 꿈꾼 이름. 값이 있으면 타인의 꿈',
     -- target 컬럼(nullable). Commentary Reflection 본 테이블은 journal_reflection.
     ref_id INT COMMENT 'target 엔티티 번호',
     ref_content_type VARCHAR(50) COMMENT 'target 컨텐츠 타입',
@@ -92,6 +95,7 @@ CREATE TABLE IF NOT EXISTS journal_entry (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
+    CONSTRAINT ck_journal_entry_dreamer_name CHECK (content_type = 'JOURNAL_DREAM' OR dreamer_name IS NULL),
     INDEX (journal_chapter_id),
     INDEX (content_type),
     INDEX (ref_id, ref_content_type)
@@ -380,18 +384,19 @@ CREATE TABLE IF NOT EXISTS journal_entry_entity_job (
 
 -- -----------------------
 -- journal_setting
--- 저널 도메인 설정. ADMIN/GLOBAL 1행으로 전역 정책을 관리한다.
+-- 저널 도메인 설정. ADMIN/GLOBAL 전역 정책과 USER/username 사용자 정책을 관리한다.
 -- -----------------------
 CREATE TABLE IF NOT EXISTS journal_setting (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '저널 설정 ID',
     scope VARCHAR(20) NOT NULL DEFAULT 'ADMIN' COMMENT '설정 범위 (ADMIN/USER)',
-    scope_key VARCHAR(100) DEFAULT 'GLOBAL' COMMENT '범위 키 (ADMIN=GLOBAL, USER=username)',
+    scope_key VARCHAR(100) NOT NULL DEFAULT 'GLOBAL' COMMENT '범위 키 (ADMIN=GLOBAL, USER=username)',
     embedding_enabled TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'AI 임베딩 활성화 여부 (1=ON, 0=OFF)',
+    default_entry_view VARCHAR(20) COMMENT '사용자별 저널 기본 진입 화면 (DAILY/WEEKLY/MONTHLY)',
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
-    INDEX idx_journal_setting_scope (scope, scope_key)
+    UNIQUE KEY uk_journal_setting_scope (scope, scope_key)
 ) COMMENT = '저널 도메인 설정';
 
 INSERT INTO journal_setting (scope, scope_key, embedding_enabled, created_by)

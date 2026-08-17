@@ -78,3 +78,6 @@ lerna-debug.log*
 
 /legacy
 /metronic_vue_v8.2.1_demo1/
+
+# 로컬 전용 참조/고고학 문서 (회사 소스 스펙 포함 — 커밋 금지)
+/docs/references/

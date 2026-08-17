@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
 public class AuthInfo
         implements UserDetails, OAuth2User {
 
+    /** 사용자 영속 ID */
+    private Integer userId;
+
     /** 사용자 ID */
     private String username;
 

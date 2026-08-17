@@ -96,7 +96,8 @@ public class JournalDayService
     public List<JournalDayDto> getCachedYyMnthListDtoByUser(final String username, final Integer yy, final Integer mnth) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("createdBy", resolvedUsername);
+        searchParamMap.put("ownerId", AuthUtils.requireLoginUserId());
+        searchParamMap.put("loginUsername", resolvedUsername);
         searchParamMap.put("yy", yy);
         searchParamMap.put("mnth", mnth);
         searchParamMap.put("sort", "ASC");
@@ -130,7 +131,9 @@ public class JournalDayService
     public List<JournalDayDto> getJournalStdrdDaysByUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(null);
+        searchParam.setOwnerId(AuthUtils.requireLoginUserId());
+        searchParam.setLoginUsername(AuthUtils.requireUsername(username));
         searchParam.setSort("ASC");
         final List<JournalDayEntity> myJournalStdrdDayEntityList = this.getListEntity(searchParam);
         return mapstruct.toDtoList(myJournalStdrdDayEntityList);
@@ -148,7 +151,8 @@ public class JournalDayService
     public List<JournalDayDto> getCachedWeeklyListDtoByUser(final String username, final String weekStartDt) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("createdBy", resolvedUsername);
+        searchParamMap.put("ownerId", AuthUtils.requireLoginUserId());
+        searchParamMap.put("loginUsername", resolvedUsername);
         searchParamMap.put("weekStartDt", DateUtils.asDate(weekStartDt));
         searchParamMap.put("sort", "ASC");
         final List<JournalDayEntity> myJournalDayEntityList = this.getListEntity(searchParamMap);
@@ -179,7 +183,9 @@ public class JournalDayService
     public List<JournalDayDto> getListDtoByMetaIdAndUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(null);
+        searchParam.setOwnerId(AuthUtils.requireLoginUserId());
+        searchParam.setLoginUsername(AuthUtils.requireUsername(username));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -194,7 +200,9 @@ public class JournalDayService
     public List<JournalDayDto> getListDtoByTagIdAndUser(final String username, final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(null);
+        searchParam.setOwnerId(AuthUtils.requireLoginUserId());
+        searchParam.setLoginUsername(AuthUtils.requireUsername(username));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -212,7 +220,9 @@ public class JournalDayService
         final JournalDayEntity retrievedEntity = this.getDtlEntity(key);
         final JournalDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsCreatedBy(username)) throw new NotAuthorizedException("common.result.access-not-authorized");
+        if (!AuthUtils.requireLoginUserId().equals(retrievedEntity.getOwnerId())) {
+            throw new NotAuthorizedException("common.result.access-not-authorized");
+        }
 
         return retrieved;
     }
@@ -228,8 +238,8 @@ public class JournalDayService
         if (StringUtils.isBlank(journalDay.getJournalDate())) return false;
 
         final LocalDate journalDate = DateUtils.asLocalDate(journalDay.getJournalDate());
-        final String createdBy = AuthUtils.requireUsername(username);
-        final Integer isDup = repository.countByJournalDate(journalDate, createdBy);
+        AuthUtils.requireUsername(username);
+        final Integer isDup = repository.countByJournalDate(journalDate, AuthUtils.requireLoginUserId());
 
         return isDup > 0;
     }
@@ -243,8 +253,8 @@ public class JournalDayService
     @Transactional(readOnly = true)
     public Integer getDupKeyByUser(final String username, final JournalDayDto journalDay) throws Exception {
         final LocalDate journalDate = DateUtils.asLocalDate(journalDay.getJournalDate());
-        final String createdBy = AuthUtils.requireUsername(username);
-        final JournalDayEntity existingEntity = repository.findByJournalDate(journalDate, createdBy);
+        AuthUtils.requireUsername(username);
+        final JournalDayEntity existingEntity = repository.findByJournalDate(journalDate, AuthUtils.requireLoginUserId());
 
         return existingEntity.getId();
     }
@@ -267,6 +277,17 @@ public class JournalDayService
     }
 
     /**
+     * 등록 엔티티의 소유자를 현재 인증 사용자로 확정한다.
+     * 요청 DTO의 ownerId는 쓰기 매핑에서 제외되므로 클라이언트가 소유자를 지정할 수 없다.
+     *
+     * @param registEntity 등록할 저널 일자 엔티티
+     */
+    @Override
+    public void preRegist(final JournalDayEntity registEntity) {
+        registEntity.setOwnerId(AuthUtils.requireLoginUserId());
+    }
+
+    /**
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
@@ -286,7 +307,7 @@ public class JournalDayService
      */
     @Override
     public void preModify(final JournalDayDto modifyDto, final JournalDayEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
+        if (!AuthUtils.requireLoginUserId().equals(modifyEntity.getOwnerId())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         modifyDto.setPrevWeekStartDt(DateUtils.asStr(modifyEntity.getWeekStartDt(), DatePtn.DATE));
@@ -327,7 +348,7 @@ public class JournalDayService
      */
     @Override
     public void preDelete(final JournalDayDto deletedDto) throws Exception {
-        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
+        if (!AuthUtils.requireLoginUserId().equals(deletedDto.getOwnerId())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         if ("Y".equals(normalizeYn(deletedDto.getDiaryResolvedYn()))
@@ -351,7 +372,7 @@ public class JournalDayService
             final String dreamResolvedYn
     ) throws Exception {
         final JournalDayEntity entity = this.getDtlEntity(id);
-        if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
+        if (!AuthUtils.requireLoginUserId().equals(entity.getOwnerId())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 
@@ -404,7 +425,7 @@ public class JournalDayService
     public JournalDayDto getDeletedDtlDto(final Integer key) throws Exception {
         final JournalDayDto deleted = journalDayMapper.getDeletedById(key);
         if (deleted == null) return null;
-        if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
+        if (!AuthUtils.requireLoginUserId().equals(deleted.getOwnerId())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
         return deleted;

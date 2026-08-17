@@ -8,6 +8,7 @@
         /* JournalDayMapper.getDeletedById */
         SELECT
             day.id,
+            day.owner_id,
             day.created_by,
             day.yy,
             day.mnth
@@ -15,4 +16,3 @@
         WHERE day.id = #{id}
     </select>
 </mapper>
-

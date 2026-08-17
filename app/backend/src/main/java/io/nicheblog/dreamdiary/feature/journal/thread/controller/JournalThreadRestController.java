@@ -325,18 +325,20 @@ public class JournalThreadRestController
      * 소유권은 {@link JournalThreadEntryService#getEntriesByThread} 가 검증한다.
      *
      * @param id 스레드 식별자
+     * @param includeReflection 해석 포함 여부 (기본 true). 포함 시 각 엔트리의 target 리플렉션 본문을 함께 내보낸다.
      * @return {@link ResponseEntity} -- text/plain 첨부 응답
      */
     @GetMapping(Url.JOURNAL_THREAD_EXPORT)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<byte[]> journalThreadExportTxtAjax(
-            final @PathVariable("id") Integer id
+            final @PathVariable("id") Integer id,
+            final @RequestParam(value = "includeReflection", defaultValue = "true") boolean includeReflection
     ) throws Exception {
 
         final JournalThreadDto retrievedDto = journalThreadService.viewDetailPage(id);
         final List<JournalEntryDto> entries = journalThreadEntryService.getEntriesByThread(id);
-        final String text = journalThreadExportService.buildTxt(retrievedDto, entries);
+        final String text = journalThreadExportService.buildTxt(retrievedDto, entries, includeReflection);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "thread_" + id + "_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
 

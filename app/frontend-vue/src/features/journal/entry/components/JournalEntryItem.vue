@@ -31,11 +31,11 @@
     <!--end::순번-->
 
     <!--begin::본문 영역-->
-    <div :class="[contentClass, 'flex-grow-1', { 'is-summary-card': isSummary, 'd-flex flex-column': isCollapsed }]">
+    <div :class="[contentClass, 'flex-grow-1', 'min-w-0', { 'is-summary-card': isSummary, 'd-flex flex-column': isCollapsed }]">
       <!--begin::본문+액션 head-row (본문 옆에 액션 정렬; 리플렉션 임베드 액션과 같은 오른쪽 열)-->
       <div class="d-flex gap-2" :class="isCollapsed ? 'flex-grow-1 align-items-stretch' : 'align-items-start'">
         <!--begin::head-main (배지·제목·본문) — collapsed 시 flex-column+세로 중앙으로 제목을 태그 위 공간 중앙에 둔다 (액션은 상단 유지) -->
-        <div class="flex-grow-1" :class="{ 'd-flex flex-column justify-content-center': isCollapsed }">
+        <div class="flex-grow-1 min-w-0" :class="{ 'd-flex flex-column justify-content-center': isCollapsed }">
           <!--begin::꿈 상태 배지 (꿈 엔트리 전용)-->
           <div v-if="isDream" class="d-flex align-items-center gap-1 mb-1 flex-wrap">
             <span v-if="hasState('NHTMR')" class="badge badge-light-danger">!{{ t('state.nightmare') }}</span>
@@ -89,16 +89,52 @@
           </button>
           <!--end::댓글 등록 버튼-->
 
-          <!--begin::복사 버튼-->
+          <!--begin::복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+          <div class="btn-group" role="group">
+            <!--begin::주 버튼 (해석 포함)-->
+            <button
+              type="button"
+              class="btn btn-xs btn-icon journal-entry-action-btn copy-split-main"
+              :title="copyIncludeTitle"
+              @click="copyEntry(true)"
+            >
+              <i class="bi bi-copy fs-8"></i>
+            </button>
+            <!--end::주 버튼-->
+            <!--begin::본문만 드롭다운 (항상 노출 — 리플렉션 없으면 본문=전체라 결과 동일)-->
+            <button
+              type="button"
+              class="btn btn-xs journal-entry-action-btn copy-split-caret"
+              data-kt-menu-trigger="click"
+              data-kt-menu-placement="bottom-end"
+              :title="t('common.menu')"
+            >
+              <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+            </button>
+            <div
+              class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-175px py-2"
+              data-kt-menu="true"
+            >
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyEntry(false)">
+                  {{ t('journal.copy.body.label') }}
+                  <i class="bi bi-clipboard fs-8"></i>
+                </div>
+              </div>
+            </div>
+            <!--end::본문만 드롭다운-->
+          </div>
+          <!--end::복사 (split)-->
+          <!--begin::링크 복사 (외부에서 클릭 시 해당 일자 일간뷰로 이동해 이 엔트리로 스크롤)-->
           <button
             type="button"
             class="btn btn-xs btn-icon journal-entry-action-btn"
-            :title="authStore.isLocalProfile ? t('common.copy') + ' (id ' + entry.id + ')' : t('common.copy')"
-            @click="copyEntry"
+            :title="t('journal.entry.copy-link')"
+            @click="copyEntryLink"
           >
-            <i class="bi bi-copy fs-8"></i>
+            <i class="bi bi-link-45deg fs-8"></i>
           </button>
-          <!--end::복사 버튼-->
+          <!--end::링크 복사-->
 
           <!--begin::컨텍스트 메뉴-->
           <div class="me-0">
@@ -168,7 +204,7 @@
                 v-if="axisWritable && !hasDreamerName(entry) && !isPrimaryContentTargetedReflection(entry)"
                 class="menu-item px-3"
                 data-kt-menu-trigger="hover"
-                data-kt-menu-placement="right-end"
+                data-kt-menu-placement="right-start"
                 @mouseenter="ensureThreadOptions"
               >
                 <a href="#" class="menu-link px-3" @click.prevent>
@@ -259,7 +295,7 @@
                         : t('journal.entry.thread.empty') }}
                     </span>
                   </div>
-                  <template v-if="filteredThreadOptions.length > 0">
+                  <div v-if="filteredThreadOptions.length > 0" class="thread-candidate-list">
                     <div
                       v-for="opt in filteredThreadOptions"
                       :key="'thread-opt-' + opt.id"
@@ -284,7 +320,7 @@
                         <i v-if="opt.member" class="bi bi-check-lg fs-8 text-success"></i>
                       </div>
                     </div>
-                  </template>
+                  </div>
                   <!--end::스레드 후보 목록-->
                 </div>
               </div>
@@ -491,12 +527,19 @@
 
       <!--begin::댓글-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
-        <div
-          v-for="cmt in commentList"
-          :key="cmt.id"
-          class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
-        >
-          {{ cmt.content }}
+        <div v-for="cmt in commentList" :key="cmt.id" class="d-flex align-items-start gap-1">
+          <div
+            class="fs-8 text-muted ps-2 border-start border-2 border-gray-300 flex-grow-1 min-w-0"
+            v-html="cmt.markdownContent || cmt.content || ''"
+          ></div>
+          <div v-if="axisWritable" class="d-flex flex-shrink-0 gap-1">
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-primary" :title="t('comment.modify')" @click.stop="onEditComment(cmt.id)">
+              <i class="bi bi-pencil fs-9"></i>
+            </button>
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-danger" :title="t('comment.delete')" @click.stop="onDeleteComment(cmt.id)">
+              <i class="bi bi-trash fs-9"></i>
+            </button>
+          </div>
         </div>
       </div>
       <!--end::댓글-->
@@ -507,7 +550,8 @@
 </template>
 
 <script setup lang="ts">
-import { swalAlert, swalFire } from "@/shared/utils/swal";
+import { swalAlert, swalFire, swalConfirm } from "@/shared/utils/swal";
+import { joinAppBasePath } from "@/shared/utils/appPath";
 import { computed, watch, nextTick, provide } from "vue";
 import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
@@ -652,6 +696,12 @@ const {
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const reflectionList = computed(() => props.entry.reflectionList ?? []);
 
+/** 복사(해석 포함) 버튼 tooltip. 리플렉션이 있으면 "해석 포함"을 명시하고, 로컬 프로필은 id 를 덧붙인다. */
+const copyIncludeTitle = computed(() => {
+  const base = reflectionList.value.length > 0 ? t("journal.copy.full.tooltip") : t("common.copy");
+  return authStore.isLocalProfile ? `${base} (id ${props.entry.id})` : base;
+});
+
 /**
  * 엔트리 접힘 시 임베드 Reflection 은 v-if 로 DOM 에서 제거된다.
  * 다시 펼치면 KTMenu(⋯) DOM 이 새로 마운트되므로 Metronic 핸들러를 재바인딩한다.
@@ -691,7 +741,7 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 }
 
 /** 엔트리 내용을 클립보드에 복사한다. 형식: 날짜(요일) → 본문 → 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyEntry(): Promise<void> {
+async function copyEntry(includeReflection = true): Promise<void> {
   const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
   const dateLine = weekDay
     ? `${props.entry.stdrdDt} (${weekDay})`
@@ -699,17 +749,42 @@ async function copyEntry(): Promise<void> {
   /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
   const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
   const parts = [dateLine, raw].filter(Boolean);
-  /* 원문과 해석은 한 몸 — 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-  for (const reflection of reflectionList.value) {
-    const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-    if (reflRaw) parts.push("", reflRaw);
+  /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+  if (includeReflection) {
+    for (const reflection of reflectionList.value) {
+      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+      if (reflRaw) parts.push("", reflRaw);
+    }
   }
   const text = parts.join("\n");
   try {
     await navigator.clipboard.writeText(text);
-    void swalFire({ icon: "success", text: t("common.copy.success") });
+    /* 성공 토스트는 복사 범위를 명시한다: 리플렉션 포함 시 "전체", 제외 시 "본문만", 리플렉션이 없으면 공용 문구. */
+    const successKey = !includeReflection
+      ? "journal.copy.body.success"
+      : (reflectionList.value.length > 0 ? "journal.copy.full.success" : "common.copy.success");
+    void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-entry] clipboard copy failed", error);
+    void swalFire({ icon: "error", text: t("common.copy.failure") });
+  }
+}
+
+/**
+ * 이 엔트리로 가는 링크를 클립보드에 복사한다.
+ * 외부(메신저·메모 등)에서 클릭하면 앱의 해당 일자 일간뷰(journal-daily-tab)로 진입하고,
+ * entryId 로 이 엔트리(#journal-entry-{id})까지 스크롤한다. 절대 URL(origin + BASE_URL) 을 만든다.
+ */
+async function copyEntryLink(): Promise<void> {
+  const stdrdDt = props.entry.stdrdDt;
+  if (!stdrdDt || props.entry.id == null) return;
+  const path = joinAppBasePath(`/journal/daily?stdrdDt=${encodeURIComponent(stdrdDt)}&entryId=${props.entry.id}`);
+  const url = `${window.location.origin}${path}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    void swalFire({ icon: "success", text: t("common.copy.success") });
+  } catch (error: unknown) {
+    console.error("[journal-entry] link copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
   }
 }
@@ -726,6 +801,26 @@ function openCommentRegist() {
   if (!guardAxisWrite()) return;
   if (!props.entry.id || !props.entry.contentType) return;
   attachableStore.openCommentRegist(props.entry.id, props.entry.contentType);
+}
+
+/** 인라인 댓글 수정 — 기존 CommentRegistModal 수정 모드를 재사용한다. */
+function onEditComment(id: number): void {
+  if (!guardAxisWrite()) return;
+  void attachableStore.openCommentModify(id);
+}
+
+/** 인라인 댓글 삭제 — 확인 후 삭제하고 스크롤 없이 호스트를 재조회한다. */
+async function onDeleteComment(id: number): Promise<void> {
+  if (!guardAxisWrite()) return;
+  if (!await swalConfirm(t("comment.delete.confirm"))) return;
+  try {
+    if (await attachableStore.deleteComment(id)) {
+      await swalAlert(t("common.result.deleted"));
+      void scrollAfterFetch(undefined, { scroll: false });
+    }
+  } catch (e) {
+    void swalAlert(e instanceof Error ? e.message : t("common.result.failure"));
+  }
 }
 
 /** 이력 모달 열기 */
@@ -786,11 +881,11 @@ function openReflectionRegist() {
  * 변경 전에는 모든 라우트에서 fetchDays 완료 후 일자 DOM을 찾았으나, 스레드 상세에서는
  * 열린 스레드의 원본 엔트리·집계 태그를 다시 조회하고 모달 내부 읽기 위치를 유지한다.
  */
-function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
+function scrollAfterFetch(stdrdDt = props.entry.stdrdDt, opts: { scroll?: boolean } = {}): Promise<void> {
   const dt = stdrdDt;
-  void refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
-    /* 검색·스레드 상세는 배경 일자 스크롤 대상이 아니다. */
-    if (scope === "thread-detail" || scope === "journal-entry-search" || !dt) return;
+  return refreshJournalEntryHostForRoute(journalStore, threadStore, route, dt).then((scope) => {
+    /* 검색·스레드 상세는 배경 일자 스크롤 대상이 아니다. opts.scroll === false 면 재조회만 하고 스크롤은 생략한다(스레드 소속 변경 등 사용자 위치 유지). */
+    if (opts.scroll === false || scope === "thread-detail" || scope === "journal-entry-search" || !dt) return;
     void nextTick(() => {
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -802,6 +897,11 @@ function scrollAfterFetch(stdrdDt = props.entry.stdrdDt): void {
 </script>
 
 <style scoped>
+/* 스레드 소속 서브메뉴 후보 목록: 높이를 고정 상한으로 묶어 목록 변경 시 서브메뉴 재배치(→ hover 닫힘)를 막는다. */
+.thread-candidate-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
 :deep(.journal-entry-search-keyword-mark) {
   background-color: #fff3cd;
   border-radius: 0.25rem;

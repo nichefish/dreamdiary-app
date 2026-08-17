@@ -1,15 +1,16 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.feature.journal.JournalTestUserSupport;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,11 +32,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @Import(TestAuditConfig.class)
 @Transactional
-@WithMockUser(username = TestConstant.TEST_AUDITOR)
 class JournalDayServiceTest {
 
     @Resource
     private JournalDayService journalDayService;
+    @Resource
+    private UserRepository userRepository;
 
     private JournalDayDto journalDay;
 
@@ -44,10 +46,10 @@ class JournalDayServiceTest {
      */
     @BeforeEach
     void setUp() throws Exception {
+        final Integer ownerId = JournalTestUserSupport.ensureUser(userRepository, TestConstant.TEST_AUDITOR);
+        JournalTestUserSupport.authenticate(ownerId, TestConstant.TEST_AUDITOR);
         // 공통적으로 사용할 JournalDayDto 초기화
         journalDay = JournalDayDtoTestFactory.createWithJournalDt("2000-01-01");
-
-        // 인증 사용자는 @WithMockUser가 테스트마다 설정한다.
     }
 
     /**
@@ -64,6 +66,7 @@ class JournalDayServiceTest {
         // Then::
         assertNotNull(registered, "등록이 정상적으로 이루어지지 않았습니다.");
         assertNotNull(registered.getId(), "등록이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(registered.getOwnerId(), "저널 일자 소유자 ID가 설정되지 않았습니다.");
         // audit
         assertNotNull(registered.getCreatedAt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(registered.getCreatedBy(),  "등록자 audit 처리가 되지 않았습니다.");
@@ -83,12 +86,14 @@ class JournalDayServiceTest {
         // When::
         final JournalDayDto toModify = JournalDayDtoTestFactory.createWithKey(key);
         toModify.setJournalDate("2020-01-01");
+        toModify.setOwnerId(registered.getOwnerId() + 1);
         final ServiceResponse modifyResult =  journalDayService.modify(toModify);
         final JournalDayDto updated = (JournalDayDto) modifyResult.getRsltObj();
 
         // Then::
         assertNotNull(updated.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
         assertEquals("2020-01-01", updated.getJournalDate(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertEquals(registered.getOwnerId(), updated.getOwnerId(), "일반 수정 요청이 소유자를 변경했습니다.");
         // audit
         assertNotNull(updated.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(updated.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");

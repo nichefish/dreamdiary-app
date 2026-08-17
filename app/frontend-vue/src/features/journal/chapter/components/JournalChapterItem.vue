@@ -57,28 +57,76 @@
           {{ entryRegistLabel }}
         </button>
         <!--end::엔트리 등록 TEXT 버튼-->
-        <!--begin::복사 버튼-->
-        <button
-          type="button"
-          class="btn btn-sm btn-light-primary btn-outlined ms-2 px-3 cursor-pointer"
-          :title="t('common.copy')"
-          @click="copyChapter"
-        >
-          <i class="bi bi-copy p-0"></i>
-        </button>
-        <!--end::복사 버튼-->
-        <!--begin::TXT보내기 버튼-->
-        <button
-          type="button"
-          class="btn btn-sm btn-outline btn-light-primary ps-3 pe-2"
-          :title="t('common.export-text')"
-          @click="exportChapter"
-        >
-          <i class="fas fa-download"></i>
-        </button>
-        <!--end::TXT보내기 버튼-->
-        <!--begin::컨텍스트 메뉴 (⋯)-->
-        <div class="me-0 d-flex align-items-center">
+        <!--begin::복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+        <div class="btn-group ms-2" role="group">
+          <!--begin::주 버튼 (해석 포함)-->
+          <button
+            type="button"
+            class="btn btn-sm btn-light-primary btn-outlined px-3 cursor-pointer copy-split-main"
+            :title="chapterHasReflections ? t('journal.copy.full.tooltip') : t('common.copy')"
+            @click="copyChapter(true)"
+          >
+            <i class="bi bi-copy p-0"></i>
+          </button>
+          <!--end::주 버튼-->
+          <!--begin::본문만 드롭다운 (항상 노출 — 하위 리플렉션 없으면 본문=전체라 결과 동일)-->
+          <button
+            type="button"
+            class="btn btn-sm btn-light-primary btn-outlined cursor-pointer copy-split-caret"
+            data-kt-menu-trigger="click"
+            data-kt-menu-placement="bottom-end"
+            :title="t('common.menu')"
+          >
+            <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+          </button>
+          <div
+            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-175px py-2"
+            data-kt-menu="true"
+          >
+            <div class="menu-item px-3 my-1 cursor-pointer">
+              <div class="menu-link flex-stack px-3" @click="copyChapter(false)">
+                {{ t('journal.copy.body.label') }}
+                <i class="bi bi-clipboard fs-8"></i>
+              </div>
+            </div>
+          </div>
+          <!--end::본문만 드롭다운-->
+        </div>
+        <!--end::복사 (split)-->
+        <!--begin::TXT보내기 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+        <div class="btn-group" role="group">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline btn-light-primary ps-3 pe-2 copy-split-main"
+            :title="chapterHasReflections ? t('journal.download.full.tooltip') : t('common.export-text')"
+            @click="exportChapter(true)"
+          >
+            <i class="fas fa-download"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline btn-light-primary copy-split-caret"
+            data-kt-menu-trigger="click"
+            data-kt-menu-placement="bottom-end"
+            :title="t('common.menu')"
+          >
+            <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+          </button>
+          <div
+            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-175px py-2"
+            data-kt-menu="true"
+          >
+            <div class="menu-item px-3 my-1 cursor-pointer">
+              <div class="menu-link flex-stack px-3" @click="exportChapter(false)">
+                {{ t('journal.download.body.label') }}
+                <i class="fas fa-download fs-8"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::TXT보내기 (split)-->
+        <!--begin::컨텍스트 메뉴 (⋯) — 시스템 요약 챕터는 사용자 편집 대상이 아니므로 숨긴다(엔트리 등록·복사·TXT 는 유지). -->
+        <div v-if="!isSummaryChapter" class="me-0 d-flex align-items-center">
           <button
             class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
             data-kt-menu-trigger="click"
@@ -333,6 +381,9 @@ const tagList = computed(() => props.chapter.tag?.list ?? []);
  */
 const isSummaryChapter = computed(() => props.chapter.summaryYn === "Y");
 
+/** 하위 엔트리에 리플렉션(해석)이 하나라도 있는지 — "해석 제외 복사" 버튼 노출 조건. */
+const chapterHasReflections = computed(() => entryList.value.some((e) => (e.reflectionList?.length ?? 0) > 0));
+
 /** 요약 강조 대상 엔트리 id — 시스템 요약 챕터의 첫 non-empty 엔트리(그날 전체 요약). 그 외엔 undefined. */
 const summaryEntryId = computed(() =>
   isSummaryChapter.value ? findFirstNonEmptyEntry(entryList.value)?.id : undefined,
@@ -522,10 +573,10 @@ async function toggleCollapsedState(): Promise<void> {
   }
 }
 
-/** 챕터 TXT보내기 (레거시 exportTxt — 페이지 다운로드) */
-function exportChapter(): void {
+/** 챕터 TXT보내기 (레거시 exportTxt — 페이지 다운로드). includeReflection: 해석 포함 여부(기본 true). */
+function exportChapter(includeReflection = true): void {
   if (!props.chapter.id) return;
-  window.location.href = `/api/journal/chapter/${props.chapter.id}/export`;
+  window.location.href = `/api/journal/chapter/${props.chapter.id}/export?includeReflection=${includeReflection}`;
 }
 
 /** 챕터 삭제 */
@@ -561,7 +612,7 @@ async function deleteChapter(): Promise<void> {
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
 /** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목 → 각 엔트리 #순번·본문, 그 밑에 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyChapter(): Promise<void> {
+async function copyChapter(includeReflection = true): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
   if (props.chapter.stdrdDt) {
@@ -578,12 +629,14 @@ async function copyChapter(): Promise<void> {
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
     if (sortNum) lines.push(sortNum);
     if (raw) lines.push(raw);
-    /* 원문과 해석은 한 몸 — 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-    for (const reflection of entry.reflectionList ?? []) {
-      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-      if (reflRaw) {
-        lines.push("");
-        lines.push(reflRaw);
+    /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+    if (includeReflection) {
+      for (const reflection of entry.reflectionList ?? []) {
+        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+        if (reflRaw) {
+          lines.push("");
+          lines.push(reflRaw);
+        }
       }
     }
     lines.push("");
@@ -591,7 +644,11 @@ async function copyChapter(): Promise<void> {
   const text = lines.join("\n").trim();
   try {
     await navigator.clipboard.writeText(text);
-    void swalFire({ icon: "success", text: t("common.copy.success") });
+    /* 성공 토스트는 복사 범위를 명시한다: 리플렉션 포함 시 "전체", 제외 시 "본문만", 리플렉션이 없으면 공용 문구. */
+    const successKey = !includeReflection
+      ? "journal.copy.body.success"
+      : (chapterHasReflections.value ? "journal.copy.full.success" : "common.copy.success");
+    void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-chapter] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });

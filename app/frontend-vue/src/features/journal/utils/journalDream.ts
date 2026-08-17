@@ -12,8 +12,8 @@ export function normalizeDreamerName(name?: string | null): string {
 }
 
 /** 지정 꿈꾼(타인 꿈) 여부 — 이름 비어 있지 않으면 true */
-export function hasDreamerName(entry: { elseDreamerNm?: string | null } | null | undefined): boolean {
-  return normalizeDreamerName(entry?.elseDreamerNm) !== "";
+export function hasDreamerName(entry: { dreamerName?: string | null } | null | undefined): boolean {
+  return normalizeDreamerName(entry?.dreamerName) !== "";
 }
 
 /** 섹션 목록에 꿈 엔트리가 하나라도 있으면 true */

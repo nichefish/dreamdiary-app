@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiGet, apiPost, apiPut, apiPatch } from "@/shared/api/client";
 import { usePersonalPrefixOptionsStore } from "@/features/attachable/stores/personalPrefixOptions";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
@@ -38,7 +38,7 @@ export const useUserPrefixesStore = defineStore("userPrefixes", () => {
     const requestSequence = ++fetchSequence;
     loading.value = true;
     try {
-      const response = await axios.get("/api/my/prefixes", { params: { contentType } });
+      const response = await apiGet<UserPrefix>("/api/my/prefixes", { params: { contentType } });
       if (requestSequence !== fetchSequence) {
         console.debug("[userPrefixes] stale list response ignored", {
           contentType,
@@ -47,10 +47,10 @@ export const useUserPrefixesStore = defineStore("userPrefixes", () => {
         });
         return;
       }
-      if (!response.data?.rslt) {
-        throw new Error(response.data?.message ?? t("common.result.failure"));
+      if (!response.rslt) {
+        throw new Error(response.message ?? t("common.result.failure"));
       }
-      prefixes.value = response.data?.rsltList ?? [];
+      prefixes.value = response.rsltList ?? [];
     } catch (error) {
       if (requestSequence !== fetchSequence) {
         console.debug("[userPrefixes] stale list failure ignored", {
@@ -70,9 +70,9 @@ export const useUserPrefixesStore = defineStore("userPrefixes", () => {
     saving.value = true;
     try {
       if (payload.id) {
-        await axios.put(`/api/my/prefixes/${payload.id}`, payload, { params: { contentType } });
+        await apiPut(`/api/my/prefixes/${payload.id}`, payload, { params: { contentType } });
       } else {
-        await axios.post("/api/my/prefixes", payload, { params: { contentType } });
+        await apiPost("/api/my/prefixes", payload, { params: { contentType } });
       }
       personalPrefixOptionsStore.invalidate(contentType);
       await fetchPrefixes(contentType);
@@ -82,7 +82,7 @@ export const useUserPrefixesStore = defineStore("userPrefixes", () => {
   }
 
   async function setPrefixActive(contentType: string, prefixId: number, active: boolean) {
-    await axios.patch(`/api/my/prefixes/${prefixId}/active`, null, { params: { contentType, active } });
+    await apiPatch(`/api/my/prefixes/${prefixId}/active`, null, { params: { contentType, active } });
     personalPrefixOptionsStore.invalidate(contentType);
     await fetchPrefixes(contentType);
   }

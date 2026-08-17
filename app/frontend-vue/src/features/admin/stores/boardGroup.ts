@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiPost, apiPut, apiDelete, getObj, getPage, unwrapOk, assertOk } from "@/shared/api/client";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalAlert } from "@/shared/utils/swal";
@@ -83,15 +83,12 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
       };
       if (keyword.value.trim()) params.searchKeyword = keyword.value.trim();
 
-      const res = await axios.get("/api/board/groups", { params });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.list.load.failure"));
-
-      const pageResult = res.data?.rsltObj ?? {};
-      rows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
-      totalElements.value = Number(pageResult.totalElements ?? 0);
-      totalPages.value = Number(pageResult.totalPages ?? 0);
-      currentPage.value = Number(pageResult.number ?? targetPage);
-      pageSize.value = Number(pageResult.size ?? pageSize.value);
+      const pageResult = await getPage<BoardGroupRow>("/api/board/groups", { config: { params }, failureMessage: t("board.group.list.load.failure") });
+      rows.value = pageResult.content;
+      totalElements.value = pageResult.totalElements;
+      totalPages.value = pageResult.totalPages;
+      currentPage.value = pageResult.number;
+      pageSize.value = pageResult.size;
     } catch (e) {
       error.value = e instanceof Error ? e.message : t("board.group.list.load.failure");
     } finally {
@@ -111,9 +108,8 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
     form.value = { ...EMPTY_FORM, id };
     try {
       modalOpen.value = true;
-      const res = await axios.get(`/api/board/groups/${id}`);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.detail.load.failure"));
-      form.value = normalizeForm(res.data?.rsltObj ?? {});
+      const dto = await getObj<BoardGroupRow>(`/api/board/groups/${id}`, { failureMessage: t("board.group.detail.load.failure") });
+      form.value = normalizeForm(dto ?? {});
     } catch (e) {
       modalOpen.value = false;
       void swalAlert(e instanceof Error ? e.message : t("board.group.detail.load.failure"));
@@ -138,12 +134,11 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
       const wasCreate = form.value.id == null;
       const payload = toFormData(form.value);
       const url = form.value.id != null ? `/api/board/groups/${form.value.id}` : "/api/board/groups";
-      const res = await axios.post(url, payload, {
+      const res = await apiPost(url, payload, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.save.failure"));
+      const message = unwrapOk(res, t("board.group.save.failure")) || t("common.result.saved");
       closeModal();
-      const message = res.data?.message ?? t("common.result.saved");
       await swalAlert(message);
       await fetchList(wasCreate ? 0 : currentPage.value);
       return message;
@@ -155,10 +150,10 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
   async function toggleUse(row: BoardGroupRow) {
     const currentlyUse = String(row.useYn).toUpperCase() === "Y";
     const url = currentlyUse ? `/api/board/groups/${row.id}/unuse` : `/api/board/groups/${row.id}/use`;
-    const res = await axios.post(url);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.use-yn.change.failure"));
+    const res = await apiPost(url);
+    const message = unwrapOk(res, t("board.group.use-yn.change.failure")) || t("common.result.changed");
     await fetchList(currentPage.value);
-    return res.data?.message ?? t("common.result.changed");
+    return message;
   }
 
   /**
@@ -167,10 +162,10 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
    * 변경 후에는 성공 알림 OK 이후 목록을 갱신한다.
    */
   async function deleteBoard(id: number) {
-    const res = await axios.delete(`/api/board/groups/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.delete.failure"));
+    const res = await apiDelete(`/api/board/groups/${id}`);
+    assertOk(res, t("board.group.delete.failure"));
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
-    const message = res.data?.message ?? t("common.result.deleted");
+    const message = res.message ?? t("common.result.deleted");
     await swalAlert(message);
     await fetchList(nextPage);
     return message;
@@ -193,10 +188,10 @@ export const useBoardGroupStore = defineStore("boardGroup", () => {
         id: row.id,
         sortOrder: pageOffset + idx,
       }));
-      const res = await axios.put("/api/board/groups/sort-orders", { sortOrders });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("board.group.order.failure"));
+      const res = await apiPut("/api/board/groups/sort-orders", { sortOrders });
+      const message = unwrapOk(res, t("board.group.order.failure")) || t("common.result.sort-order-saved");
       await fetchList(currentPage.value);
-      return res.data?.message ?? t("common.result.sort-order-saved");
+      return message;
     } finally {
       sortSaving.value = false;
     }

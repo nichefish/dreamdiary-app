@@ -20,12 +20,19 @@
       <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
       <!--begin::댓글 (읽기)-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
-        <div
-          v-for="cmt in commentList"
-          :key="cmt.id"
-          class="fs-8 text-muted ps-2 border-start border-2 border-gray-300"
-        >
-          {{ cmt.content }}
+        <div v-for="cmt in commentList" :key="cmt.id" class="d-flex align-items-start gap-1">
+          <div
+            class="fs-8 text-muted ps-2 border-start border-2 border-gray-300 flex-grow-1 min-w-0"
+            v-html="cmt.markdownContent || cmt.content || ''"
+          ></div>
+          <div v-if="canWrite" class="d-flex flex-shrink-0 gap-1">
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-primary" :title="t('comment.modify')" @click.stop="onEditComment(cmt.id)">
+              <i class="bi bi-pencil fs-9"></i>
+            </button>
+            <button type="button" class="btn btn-xs btn-icon btn-active-light-danger" :title="t('comment.delete')" @click.stop="onDeleteComment(cmt.id)">
+              <i class="bi bi-trash fs-9"></i>
+            </button>
+          </div>
         </div>
       </div>
       <!--end::댓글-->
@@ -98,13 +105,6 @@
             >
               {{ t('journal.reflection.history') }}
               <i class="bi bi-clock-history fs-8"></i>
-            </div>
-          </div>
-
-          <div v-if="canWrite" class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="openRelated">
-              {{ t('journal.entry.related-content.add') }}
-              <i class="bi bi-link-45deg fs-8"></i>
             </div>
           </div>
 
@@ -460,9 +460,9 @@ const {
   t,
 });
 
-/** 액션 성공 후 현재 표시 호스트를 재조회한다. */
-function refreshHost(stdrdDt = props.reflection.stdrdDt): void {
-  void refreshJournalEntryHostForRoute(journalStore, threadStore, route, stdrdDt);
+/** 액션 성공 후 현재 표시 호스트를 재조회한다. 호출자가 await 할 수 있도록 재조회 promise 를 반환한다. */
+function refreshHost(stdrdDt = props.reflection.stdrdDt): Promise<unknown> {
+  return refreshJournalEntryHostForRoute(journalStore, threadStore, route, stdrdDt);
 }
 
 /** 임베드에서 Reflection 수정 모달을 연다. 목록에 실린 target 을 함께 넘겨 상세 누락 시에도 태그 UI를 숨긴다. */
@@ -485,17 +485,31 @@ function openCommentRegist(): void {
   attachableStore.openCommentRegist(props.reflection.id, contentType.value);
 }
 
+/** 인라인 댓글 수정 — 기존 CommentRegistModal 수정 모드를 재사용한다. */
+function onEditComment(id: number): void {
+  if (!guardWrite()) return;
+  void attachableStore.openCommentModify(id);
+}
+
+/** 인라인 댓글 삭제 — 확인 후 삭제하고 호스트를 재조회한다. */
+async function onDeleteComment(id: number): Promise<void> {
+  if (!guardWrite()) return;
+  if (!await swalConfirm(t("comment.delete.confirm"))) return;
+  try {
+    if (await attachableStore.deleteComment(id)) {
+      await swalAlert(t("common.result.deleted"));
+      void refreshHost();
+    }
+  } catch (e) {
+    void swalAlert(e instanceof Error ? e.message : t("common.result.failure"));
+  }
+}
+
 function openHistory(): void {
   if (!props.reflection.id) return;
   void attachableStore.openHistory(contentType.value, props.reflection.id, {
     writeLocked: !canWrite.value,
   });
-}
-
-function openRelated(): void {
-  if (!guardWrite()) return;
-  if (!props.reflection.id) return;
-  attachableStore.openRelated(contentType.value, props.reflection.id);
 }
 
 function ensureThreadOptions(): void {
@@ -720,7 +734,8 @@ async function copyReflection(): Promise<void> {
   const dateLine = weekDay
     ? `${props.reflection.stdrdDt} (${weekDay})`
     : (props.reflection.stdrdDt ?? "");
-  const raw = htmlToPlainText(props.reflection.markdownContent ?? props.reflection.content ?? "");
+  /* 복사 계약(interaction-spec.md): 소스는 저작 원문 content. 렌더 파생물 markdownContent 는 마커 소실이라 복사 소스로 쓰지 않는다. */
+  const raw = htmlToPlainText(props.reflection.content ?? props.reflection.markdownContent ?? "");
   const text = [dateLine, raw].filter(Boolean).join("\n");
   try {
     await navigator.clipboard.writeText(text);

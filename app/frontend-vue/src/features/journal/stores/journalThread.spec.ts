@@ -68,6 +68,7 @@ describe("journalThread store 열린 상세 갱신", () => {
         data: { rsltObj: { id: FIXTURE_THREAD_ID, title: "문맥형 상세 스레드" } },
       })
       .mockResolvedValueOnce({ data: { rsltList: [] } })
+      .mockResolvedValueOnce({ data: { rsltList: [] } })
       .mockResolvedValueOnce({
         data: {
           rsltObj: {

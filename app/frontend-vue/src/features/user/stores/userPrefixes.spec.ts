@@ -13,6 +13,12 @@ vi.mock("axios", () => ({
   },
 }));
 
+vi.mock("@/shared/i18n/stores/locale", () => ({
+  useLocaleStore: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
 describe("userPrefixes store 개인 목록 분리", () => {
   const mockedGet = vi.mocked(axios.get);
   const mockedPost = vi.mocked(axios.post);
@@ -26,7 +32,7 @@ describe("userPrefixes store 개인 목록 분리", () => {
 
   it("선택한 콘텐츠 타입으로 서로 다른 개인 Prefix 목록을 조회한다", async () => {
     mockedGet.mockResolvedValue({
-      data: { rsltList: [{ id: 11, name: "가상 말머리", sortOrder: 0, activeYn: "Y" }] },
+      data: { rslt: true, rsltList: [{ id: 11, name: "가상 말머리", sortOrder: 0, activeYn: "Y" }] },
     });
     const store = useUserPrefixesStore();
 
@@ -50,9 +56,9 @@ describe("userPrefixes store 개인 목록 분리", () => {
 
     const threadRequest = store.fetchPrefixes("JOURNAL_THREAD");
     const dreamRequest = store.fetchPrefixes("JOURNAL_DREAM");
-    resolveDream({ data: { rsltList: [{ id: 22, name: "꿈 말머리", sortOrder: 0, activeYn: "Y" }] } });
+    resolveDream({ data: { rslt: true, rsltList: [{ id: 22, name: "꿈 말머리", sortOrder: 0, activeYn: "Y" }] } });
     await dreamRequest;
-    resolveThread({ data: { rsltList: [{ id: 11, name: "스레드 말머리", sortOrder: 0, activeYn: "Y" }] } });
+    resolveThread({ data: { rslt: true, rsltList: [{ id: 11, name: "스레드 말머리", sortOrder: 0, activeYn: "Y" }] } });
     await threadRequest;
 
     expect(store.prefixes).toEqual([
@@ -68,7 +74,7 @@ describe("userPrefixes store 개인 목록 분리", () => {
 
     const request = store.fetchPrefixes("JOURNAL_THREAD");
     store.clearPrefixes();
-    resolveRequest({ data: { rsltList: [{ id: 11, name: "가상 말머리", sortOrder: 0, activeYn: "Y" }] } });
+    resolveRequest({ data: { rslt: true, rsltList: [{ id: 11, name: "가상 말머리", sortOrder: 0, activeYn: "Y" }] } });
     await request;
 
     expect(store.prefixes).toEqual([]);
@@ -78,7 +84,7 @@ describe("userPrefixes store 개인 목록 분리", () => {
   it("등록과 활성 상태 변경도 현재 콘텐츠 타입을 유지해 재조회한다", async () => {
     mockedPost.mockResolvedValue({ data: { rsltObj: { id: 21 } } });
     mockedPatch.mockResolvedValue({ data: { rslt: true } });
-    mockedGet.mockResolvedValue({ data: { rsltList: [] } });
+    mockedGet.mockResolvedValue({ data: { rslt: true, rsltList: [] } });
     const store = useUserPrefixesStore();
 
     await store.savePrefix("JOURNAL_NOTE", {
@@ -111,9 +117,9 @@ describe("userPrefixes store 개인 목록 분리", () => {
   it("관리 수정 성공 시 해당 콘텐츠 타입의 소비자 선택지 캐시만 무효화한다", async () => {
     mockedPut.mockResolvedValue({ data: { rsltObj: { id: 31 } } });
     mockedGet
-      .mockResolvedValueOnce({ data: { rsltList: [{ id: 31, name: "기존 말머리", activeYn: "Y" }] } })
-      .mockResolvedValueOnce({ data: { rsltList: [{ id: 31, name: "수정된 말머리", activeYn: "Y" }] } })
-      .mockResolvedValueOnce({ data: { rsltList: [{ id: 31, name: "수정된 말머리", activeYn: "Y" }] } });
+      .mockResolvedValueOnce({ data: { rslt: true, rsltList: [{ id: 31, name: "기존 말머리", activeYn: "Y" }] } })
+      .mockResolvedValueOnce({ data: { rslt: true, rsltList: [{ id: 31, name: "수정된 말머리", activeYn: "Y" }] } })
+      .mockResolvedValueOnce({ data: { rslt: true, rsltList: [{ id: 31, name: "수정된 말머리", activeYn: "Y" }] } });
     const optionStore = usePersonalPrefixOptionsStore();
     const managementStore = useUserPrefixesStore();
 

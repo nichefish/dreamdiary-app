@@ -22,12 +22,10 @@ import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
@@ -114,11 +112,8 @@ public class JournalEntryDto extends BaseAttachableDto
     /** target 이 이 엔트리인 Reflection 목록 (역참조 교차뷰). reflection 은 자기 chapter 의 1급 엔트리이기도 하다. */
     private List<JournalEntryDto> reflectionList;
 
-    @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String elseDreamYn = "N";
-
-    private String elseDreamerNm;
+    /** 지정 꿈꾼 이름. 값이 있으면 타인의 꿈으로 분류한다. */
+    private String dreamerName;
 
     @Builder.Default
     private Boolean isChapterChanged = false;

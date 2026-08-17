@@ -38,7 +38,7 @@
                     </div>
                   </td>
                   <td class="col-lg-10 col-9 text-start fs-small border-bottom-0">
-                    <div class="div-textarea-smp">{{ comment.content }}</div>
+                    <div class="div-textarea-smp" v-html="comment.markdownContent || comment.content || ''"></div>
                   </td>
                 </tr>
               </tbody>

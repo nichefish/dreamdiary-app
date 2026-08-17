@@ -29,27 +29,28 @@ public interface JournalDayRepository
      * 주어진 날짜에 대한 기 등록 여부를 반환합니다.
      *
      * @param journalDate 중복 체크를 위한 날짜
+     * @param ownerId 소유 사용자 영속 ID
      * @return {@link Integer} -- 주어진 날짜에 대한 중복된 항목의 수
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COUNT(day.journalDate) " +
             "FROM JournalDayEntity day " +
-            "WHERE day.journalDate = :journalDate AND day.createdBy = :createdBy")
-    Integer countByJournalDate(final @Param("journalDate") LocalDate journalDate, final @Param("createdBy") String createdBy);
+            "WHERE day.journalDate = :journalDate AND day.ownerId = :ownerId")
+    Integer countByJournalDate(final @Param("journalDate") LocalDate journalDate, final @Param("ownerId") Integer ownerId);
 
     /**
      * 주어진 날짜에 해당하는 {@link JournalDayEntity}를 반환합니다.
      *
      * @param journalDate 조회할 날짜
-     * @param createdBy 등록자 ID
-     * @return {@link Integer} -- 주어진 날짜에 해당하는 저널 일자 객체
+     * @param ownerId 소유 사용자 영속 ID
+     * @return {@link JournalDayEntity} -- 주어진 날짜에 해당하는 저널 일자 객체
      */
     @Query("SELECT day " +
             "FROM JournalDayEntity day " +
-            "WHERE day.journalDate = :journalDate AND day.createdBy = :createdBy")
+            "WHERE day.journalDate = :journalDate AND day.ownerId = :ownerId")
     @EntityGraph(value = "JournalDayEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
-    JournalDayEntity findByJournalDate(final @Param("journalDate") LocalDate journalDate, final @Param("createdBy") String createdBy);
+    JournalDayEntity findByJournalDate(final @Param("journalDate") LocalDate journalDate, final @Param("ownerId") Integer ownerId);
 
     /**
      * 메타가 기록된 연도 목록을 최신순으로 조회합니다.
@@ -69,5 +70,3 @@ public interface JournalDayRepository
             "ORDER BY day.yy DESC")
     List<Integer> findDistinctYysByMetaIdAndCreatedBy(final @Param("metaId") Integer metaId, final @Param("createdBy") String createdBy);
 }
-
-

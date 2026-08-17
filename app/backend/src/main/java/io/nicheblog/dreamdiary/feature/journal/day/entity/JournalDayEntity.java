@@ -68,6 +68,11 @@ public class JournalDayEntity
     @Comment("컨텐츠 타입")
     private String contentType = ContentType.JOURNAL_DAY.key;
 
+    /** 저널 일자 소유 사용자 영속 ID */
+    @Column(name = "owner_id", nullable = false)
+    @Comment("저널 일자 소유 사용자 ID")
+    private Integer ownerId;
+
     /* ----- */
 
     /** 저널 일자 */
@@ -141,4 +146,3 @@ public class JournalDayEntity
     @Embedded
     public MetaEmbed meta;
 }
-

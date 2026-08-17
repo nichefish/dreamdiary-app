@@ -20,7 +20,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, use_yn )
 WITH T AS ( SELECT 'JOURNAL' AS upper_label )
-SELECT M.id, 'SUB', '저널 일자', '/app/journal/day/monthly.do', NULL, 0, 'system', 'NO_SUB', 'JOURNAL_DAY', 'N', 'N', 'Y'
+SELECT M.id, 'SUB', '저널 일자', '/app/journal/day/home', NULL, 0, 'system', 'NO_SUB', 'JOURNAL_DAY', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
@@ -110,6 +110,12 @@ SELECT M.id, 'SUB', '코드 관리', '/app/admin/code/page.do', NULL, 17, 'niche
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
+INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, use_yn )
+WITH T AS ( SELECT 'ADMIN' AS upper_label )
+SELECT M.id, 'SUB', '템플릿 관리', '/app/admin/tmplat/page.do', NULL, 18, 'nichefish', 'NO_SUB', 'TMPLAT_ADMIN', 'N', 'Y', 'Y'
+FROM T
+INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
+
 -- 컨텐츠 관리
 INSERT INTO menu ( parent_menu_id, menu_type, menu_name, url, icon, sort_order, created_by, submenu_expand_type, menu_label, admin_yn, protected_yn, use_yn )
 WITH T AS ( SELECT 'CONTENT' AS upper_label )
@@ -145,6 +151,7 @@ SET menu_description = CASE menu_label
   WHEN 'ADMIN_PAGE' THEN '캐시, 외부 동기화, 권한, 임베딩 큐를 관리합니다.'
   WHEN 'MENU_ADMIN' THEN '사이드바와 관리자 메뉴 트리를 관리합니다.'
   WHEN 'CODE_ADMIN' THEN '분류 코드와 상세 코드를 관리합니다.'
+  WHEN 'TMPLAT_ADMIN' THEN '저널 작성용 사전입력 템플릿을 관리합니다.'
   WHEN 'BOARD_ADMIN' THEN '게시판 그룹과 카테고리 코드, 사용 여부, 노출 순서를 관리합니다.'
   WHEN 'USER_ACCOUNT' THEN '사용자 계정과 권한을 관리합니다.'
   WHEN 'AUTH_POLICY' THEN '로그인 실패, 계정 잠금, 비밀번호 변경 주기, 세션 정책을 관리합니다.'
@@ -158,6 +165,7 @@ WHERE menu_label IN (
     'ADMIN_PAGE',
     'MENU_ADMIN',
     'CODE_ADMIN',
+    'TMPLAT_ADMIN',
     'BOARD_ADMIN',
     'USER_ACCOUNT',
     'AUTH_POLICY',

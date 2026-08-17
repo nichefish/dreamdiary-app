@@ -26,7 +26,7 @@
 
 | 화면 | 레거시 URL (대표) | Vue route | Vue view | 구현 |
 |------|-------------------|-----------|----------|------|
-| 저널 기본 진입 | — | `/journal` → `/journal/daily` | `JournalDayDaily.vue` | ✓ 오늘 일자 |
+| 저널 일자 공통 진입 | `/app/journal/day/home` | `/journal/day/home` | `JournalDayHome.vue` | ✓ 활성 프론트엔드 연결 후 사용자 기본 보기 해석 |
 | 저널 월간 | `/app/journal/day/monthly.do` | `/journal/monthly` | `JournalDayMonthly.vue` | ✓ |
 | 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
 | 저널 일간 (탭) | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 정식 탭(맨앞), JournalDayLayout, aside 포함, 이전/다음 네비 |
@@ -39,7 +39,7 @@
 | 스레드 등록 | `/app/journal/thread/regist-form.do` | `/thread/new` | `JournalThreadList.vue` | ✓ |
 | 스레드 상세 | `/app/journal/thread/detail.do?id={id}` | `/thread/:id` | `JournalThreadDetailPage.vue` | ✓ |
 | 스레드 수정 | `/app/journal/thread/modify-form.do?id={id}` | `/thread/:id/edit` | `JournalThreadEditPage.vue` | ✓ |
-| 내 설정 | `/app/user/my/page.do` | `/my/profile`, `/my/security`, `/my/prefixes` | `UserMyPage.vue` + `UserMy*Tab.vue` | ✓ |
+| 내 설정 | `/app/user/my/page.do` | `/my/profile`, `/my/security`, `/my/journal`, `/my/prefixes` | `UserMyPage.vue` + `UserMy*Tab.vue` | ✓ |
 | 일정 | `/app/schedule/calendar.do` | `/schedule` | `ScheduleCalendar.vue` | ✓ |
 
 ### 저널 달력 (`JournalDayCalendar.vue`)
@@ -461,7 +461,7 @@
 
 - 탭 active 상태는 서버 변수 `section` 에 따라 초기 설정 (`DIARY` 또는 `DREAM`)
 - 토글 체크박스 2개: 기본 모두 checked 상태
-- **엔트리 중요/참조 색상**: 상세 엔트리 행은 저널 일자 엔트리와 동일하게 `data-imprtc`/`data-refrnc` 속성을 렌더해 `journal.scss` 의 일기 `$journal-paired-states`와 꿈 `$journal-dream-paired-states`로 **중요=빨강, 참조=노랑** 좌측선을 표시한다. 꿈 엔트리는 `data-else-dream` 도 함께 내려 타인 꿈 팔레트(`$journal-else-dream-paired-states`)와 구분한다. 변경 전에는 `journal-diary-item`/`journal-dream-item` 클래스만 있고 상태 속성이 없어 CSS 규칙이 걸리지 않았다(스타일은 이미 존재했고 속성만 빠져 있었다). 결산 상세의 `AnnualEntryDto`는 lifecycle을 제공하지 않으므로 이 화면에서는 RESOLVED 보라 팔레트를 판정하지 않는다.
+- **엔트리 중요/참조 색상**: 상세 엔트리 행은 저널 일자 엔트리와 동일하게 `data-imprtc`/`data-refrnc` 속성을 렌더해 `journal.scss` 의 일기 `$journal-paired-states`와 꿈 `$journal-dream-paired-states`로 **중요=빨강, 참조=노랑** 좌측선을 표시한다. 꿈 엔트리는 `dreamerName` 존재 여부에서 `data-else-dream`을 파생해 타인 꿈 팔레트(`$journal-else-dream-paired-states`)와 구분한다. 변경 전에는 `journal-diary-item`/`journal-dream-item` 클래스만 있고 상태 속성이 없어 CSS 규칙이 걸리지 않았다(스타일은 이미 존재했고 속성만 빠져 있었다). 결산 상세의 `AnnualEntryDto`는 lifecycle을 제공하지 않으므로 이 화면에서는 RESOLVED 보라 팔레트를 판정하지 않는다.
 - **중요·참조 모두 해제 = 빈 결과**: 두 토글이 모두 해제되면 상세 엔트리 목록은 빈 결과를 반환한다(`JournalAnnualRestController.isNoStateSelected` 가 조회 없이 빈 목록 응답). 변경 전에는 **전체가 조회됐다** — 공통 `BaseAttachableSpec.resolveStatesPredicate` 가 states 가 비면 상태 조건을 걸지 않고 return 하기 때문이다. 공통 스펙의 의미를 바꾸면 저널 일자·검색 등 다른 화면에 회귀 위험이 있어 결산 상세 경로에서만 처리한다.
 - 결산 상세의 SUMMARY·REVIEWS·로딩·태그 메뉴 tooltip·IMPORTANT·REFERENCE와 상세/목록 aside의 FILTER·TAGCLOUD·ENTRY FILTER·SUMMARY FILTER·키워드 레이블은 현재 locale의 클라이언트 카탈로그를 사용한다. 영어는 기존 대문자 표기를 유지하며 locale 변경은 선택 연도·활성 탭·필터값·토글 상태를 변경하지 않는다. DIARY/DREAM 엔트리 목록 조회 실패(`store.entriesError` / `journal.annual.entries.load.failure`)는 정상 빈 목록과 구분하며, 실패 시 직전 성공 목록을 유지한다.
 - Vue SPA의 상세 aside는 연도 이동·태그클라우드·엔트리 필터 전용 영역이며 결산 등록 액션을 두지 않는다. 신규 결산 등록은 목록 화면 총 집계 카드 우측 액션 영역에서 수행한다.
@@ -538,7 +538,7 @@
 | 태그 상세 | 태그 클릭 | `dF.Tag.dtlModal(tagId)` | 태그 상세 모달 |
 | 소속 엔트리 액션 | 상세의 `JournalEntryItem` 액션 버튼·⋯ 메뉴 | 저널 일자와 같은 원본 엔트리 액션 | 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제를 실행하고 성공 후 열린 스레드 상세·집계 태그·소속 엔트리를 재조회 |
 
-| 전체 복사·다운로드 | 모달 헤더·페이지 툴바 「복사」·「다운로드」 버튼 | `copyThreadDetail` / `downloadThreadDetail` | 복사=제목+소속 엔트리 평문 클립보드, 다운로드=`GET /api/journal/threads/{id}/export` TXT 첨부 |
+| 전체 복사·다운로드 | 모달 헤더·페이지 툴바 복사 split·다운로드 split 버튼 | `copyThreadDetail(includeReflection)` / `downloadThreadDetail(includeReflection)` | 복사=제목+소속 엔트리 평문 클립보드(주 버튼=해석 포함, ▾ 드롭다운=본문만/해석 제외, ▾ 항상 노출), 다운로드=`GET /api/journal/threads/{id}/export?includeReflection=` TXT 첨부(주 버튼=해석 포함, ▾=본문만; 서버 `buildTxt`가 리플렉션 append) |
 
 ### Data Displayed
 
@@ -757,7 +757,7 @@
                 <i class="bi bi-caret-left fs-2"></i>
             </div>
             <!-- JournalDayAsideWeekNavigatorApp 가 이 div 내부에 요일 셀을 렌더 -->
-            <!-- Vue SPA: 직접 v-for로 요일 셀 렌더 -->
+            <!-- Vue SPA: 요일 셀 스트립 대신 JournalAsideMiniCalendar(주 범위 band, week-start prop)로 렌더 -->
             <div id="journalAsideWeekDays" class="journal-aside-week-days flex-grow-1"
                  aria-label="Weekly navigation">
                 <!-- WeekDayItem { label: "월~일", dateStr: "YYYY-MM-DD", hasDay: boolean, isActive: boolean } -->
@@ -1108,7 +1108,7 @@ type TodoRow = {
 | 2. 년월 | 이전/다음 월 화살표 | ✓ 구현 |
 | 2. 년월 | TODAY 버튼 | ✓ 구현 |
 | 2. 주간 | Week 범위 표시 | ✓ `weekRangeLabel` computed (`JournalAside.vue`) |
-| 2. 주간 | 주간 요일 셀 내비게이터 | ✓ `weekDays` computed + `journal-aside-week-days` |
+| 2. 주간 | 주간 미니 달력 내비게이터 (주 범위 band) | ✓ `JournalAsideMiniCalendar` + `week-start` prop (`is-in-week`) |
 | 2. 주간 | 이전/다음 주 화살표 | ✓ `store.navigateWeek(-1/1)` |
 | 2. 주간 | 주간 TODAY 버튼 | ✓ 공통 TODAY 버튼 (`store.gotoToday()`) |
 | 2. Pinpoint | 핀 고정 버튼 | ✓ `pinpoint()` → `asideStore.setPinpoint` |
@@ -1142,13 +1142,17 @@ type TodoRow = {
 | `type=DIARY` | 일기 검색 축 — Primary(일기)만 결과 행. 딸린 Reflection 본문 키워드가 대상 일기를 매칭(원문·해석 한 몸 EXISTS) |
 | `type=DREAM` | 꿈 검색 |
 | `tagIds=N` | 태그 ID 기반 검색. 검색 팝업의 태그 직접 입력은 기존 태그 자동완성/카테고리 선택으로 특정 태그 ID를 확정한 뒤 이 파라미터에 추가한다. |
-| `searchKeywords=...` | 키워드 검색 |
+| `searchKeywords=...` | 키워드 검색(제목+본문 OR, 복수는 AND) |
+| `states=NHTMR`, `states=HALLUC` | 꿈 전용 상태 검색. `type=DREAM`에서만 유효하며 복수 선택은 악몽 또는 환각/현시를 찾는 OR 조건이다. |
+| `title=...` | 제목 전용 검색(제목만 LIKE). 키워드와 달리 본문은 매칭하지 않는다. |
+| `sortField=title` | 정렬 기준을 제목으로 전환(기본 생략=`date`=일자). `sort`(asc/desc 방향)와 조합하며, 제목 정렬 시 빈 제목(null/'')은 방향과 무관하게 항상 맨 뒤로 민다. |
 
 ### Data Contract
 
 - 목록 API: `GET /api/journal/entries`
-- 파라미터: `type`, `tagIds`, `searchKeywords`
-- 고급 필터: 유형 토글, 키워드 입력, 태그 입력. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다.
+- 파라미터: `type`, `tagIds`, `searchKeywords`, `states`, `title`, `sortField`
+- 정렬: 컨트롤 바의 기준 선택(날짜/제목, `setSortField`)과 방향 토글(asc/desc, `toggleSort`)을 조합한다. 백엔드 `JournalEntrySpec.postQuery`가 `sortField=TITLE`이면 제목 정렬(빈 제목 맨 뒤·2차 일자/순번), 그 외 일자 정렬.
+- 고급 필터: 유형 토글, 키워드 입력, **제목 검색 입력**(제목만 매칭), 태그 입력, 꿈 상태 토글. 제목·꿈 상태 조건은 컨트롤 바에 배지로 표시하고 X로 제거한다. 태그 입력은 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 사용해 기존 태그만 선택하며, 선택 결과는 `tagIds` query로 보존한다. 꿈 상태는 `NHTMR`·`HALLUC`만 허용하고 둘을 함께 선택하면 OR로 조회하며, 일기 유형으로 전환하면 꿈 상태 조건을 제거한다.
 - 응답: `AjaxResponse.rsltList` (`JournalEntryDto[]`)
 - 소속 스레드: 목록 enrich 시 `JournalEntryDto.threadList` 를 채운다(`JournalEntryRelatedEnricher` → `getMapByEntryIds`, 일자 목록과 동일 계약). 검색 결과 행은 `JournalEntryItem`으로 소속 스레드 칩을 표시하며, 칩 클릭은 현재 검색 화면 위에 전역 스레드 상세 모달을 연다.
 - 공휴일·주말 표시: 목록 enrich 시 `JournalEntryDto.isHolyday` / `holydayNm` 을 채운다(`ScheduleService.getHolydayMap` + `JournalEntryHolydayHelper`, 일자 목록과 동일 계약). `isHolyday` 는 공휴일 또는 주말, `holydayNm` 은 공휴일명만(주말 단독이면 비움).
@@ -1173,13 +1177,13 @@ type TodoRow = {
 - 검색 조건은 URL query에 남아야 한다. 검색 결과는 새로고침/공유 가능한 주소 기반 상태여야 한다.
 - 키워드/태그 입력은 Enter 로 조건 추가가 가능함을 입력 힌트와 title로 안내한다. 키워드/태그 배지는 제거 tooltip을 제공한다.
 - 태그명이 여러 카테고리에 걸쳐 카테고리 선택이 필요한 동안에는 태그 입력과 추가 버튼을 비활성화하고, 카테고리 선택 또는 취소를 안내한다.
-- `searchKeywords`와 `tagIds`가 모두 비어 있으면 `type`만으로 목록 API를 호출하지 않고, 검색 전 안내 상태를 표시한다. 검색 전 안내에는 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 추가 CTA가 있어야 한다. 검색 결과가 0건이면 같은 방식으로 조건 수정 CTA를 표시한다. 초기화도 이 검색 전 상태로 돌아간다.
+- 키워드·태그·제목·꿈 상태가 모두 비어 있으면 `type`만으로 목록 API를 호출하지 않고, 검색 전 안내 상태를 표시한다. 검색 전 안내에는 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 추가 CTA가 있어야 한다. 검색 결과가 0건이면 같은 방식으로 조건 수정 CTA를 표시한다. 초기화도 이 검색 전 상태로 돌아간다.
 - 검색, 결과 복사, TXT 내보내기는 키워드/태그 입력칸에 남아 있는 값을 먼저 검색 조건으로 확정한 뒤 실행한다. 중복 키워드/태그는 조용히 무시하지 않고 안내 메시지를 표시한다.
 - 키워드/태그 입력칸에 아직 확정하지 않은 값이 남아 있으면 고급 필터 영역에 검색 실행 시 해당 값도 조건에 포함된다는 안내를 표시한다.
 - 검색 조회 중이거나 복사/TXT 내보내기 실행 중이면 검색·정렬·초기화·결과 복사·TXT 내보내기 버튼을 비활성화한다. 결과 복사는 현재 결과가 있거나 확정 전 입력 조건이 남아 있을 때만 활성화하고, TXT 내보내기는 URL 검색 조건이 있거나 확정 전 입력 조건이 남아 있을 때만 활성화한다.
 - 키워드/태그 배지 제거, 정렬 변경, 유형 변경으로 검색 조건이 바뀌면 결과 상태 라벨에 변경 사유를 표시한다. 직전 결과가 있는 상태에서 새 조회가 진행 중이면 목록을 비우지 않고 유지하며, 목록 위에 갱신 중 안내를 표시한다.
 - 검색 API 실패는 `0건`으로 표시하지 않는다. 직전 성공 결과와 건수를 보존하고 서버 오류 메시지 또는 검색 실패 안내를 표시한다.
 - `결과 복사` 버튼은 현재 검색 결과 전체를 legacy 포맷(`날짜 (요일)`, `#정렬번호`, 본문)으로 클립보드에 복사한다. 본문의 이름·10진수·16진수 HTML 엔티티는 화면 렌더링과 동일하게 문자로 디코딩한다. 확정 전 입력값을 조건에 반영한 뒤 복사한 경우 성공 알림은 조건 반영 후 복사임을 구분해 표시한다.
-- 컨트롤 바·고급 필터·유형/키워드/태그 입력·입력 힌트·확정 전 입력 안내·배지 제거 tooltip·카테고리 선택·카테고리 선택 대기 안내·조건 요약·결과 상태 라벨·검색 전 안내와 조건 추가 CTA·빈 결과 조건 수정 CTA·로딩/빈 결과·갱신 중 안내·결과 요약·일자 새 창 tooltip과 결과 건수·연월 구분선·날짜별 결과 건수는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
+- 컨트롤 바·고급 필터·유형/키워드/태그 입력·꿈 상태와 OR 안내·입력 힌트·확정 전 입력 안내·배지 제거 tooltip·카테고리 선택·카테고리 선택 대기 안내·조건 요약·결과 상태 라벨·검색 전 안내와 조건 추가 CTA·빈 결과 조건 수정 CTA·로딩/빈 결과·갱신 중 안내·결과 요약·일자 새 창 tooltip과 결과 건수·연월 구분선·날짜별 결과 건수는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
 - 검색 결과/엔트리 상세 조회 실패, 태그 선택·검색 조건 검증, 중복 조건 안내, 복사 대상 없음과 복사 성공/실패 알림도 현재 locale의 클라이언트 카탈로그를 사용한다. 클립보드와 TXT 본문은 기존 레거시 출력 포맷을 유지한다.
 - 각 검색 결과 행의 복사 버튼은 해당 엔트리 하나만 같은 포맷으로 복사한다.

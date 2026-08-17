@@ -45,6 +45,7 @@ class AuthInfoMapstructTest {
     void testToDto_checkBasic() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
+        userEntity.setId(42);
         userEntity.setProfileImageUrl("test_url");
         userEntity.setUseAllowedIpYn("Y");
         UserAllowedIpEntity aa = UserAllowedIpEntityTestFactory.create("1.1.1.1");
@@ -59,6 +60,7 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
+        assertEquals(42, dto.getUserId());
         assertEquals(TestConstant.TEST_USER, dto.getUsername());
         assertEquals(TestConstant.TEST_PASSWORD_ENCODED, dto.getPassword());
         assertEquals(TestConstant.TEST_NICK_NM, dto.getNickname());

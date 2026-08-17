@@ -75,7 +75,8 @@ export interface AnnualEntryDto {
   prefix?: JournalPrefixDto | null;
   prefixId?: number | null;
   prefixContentType?: "JOURNAL_DIARY" | "JOURNAL_DREAM" | "JOURNAL_NOTE";
-  elseDreamYn?: string;
+  /** 지정 꿈꾼 이름. 값이 있으면 타인의 꿈으로 분류한다. */
+  dreamerName?: string;
   tag?: AnnualTagCmpstn;
   state?: { list?: Array<{ stateKey?: string }> };
 }

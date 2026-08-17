@@ -37,9 +37,10 @@ public class JournalThreadExportService {
      *
      * @param thread 스레드 DTO (제목·말머리)
      * @param entries 소속 엔트리 목록 (일자 오름차순)
+     * @param includeReflection 해석 포함 여부 (기본 true). 포함 시 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙인다.
      * @return 텍스트 포맷 문자열
      */
-    public String buildTxt(final JournalThreadDto thread, final List<JournalEntryDto> entries) {
+    public String buildTxt(final JournalThreadDto thread, final List<JournalEntryDto> entries, final boolean includeReflection) {
         final StringBuilder sb = new StringBuilder();
         sb.append("=== dreamdiary export ===\r\n");
 
@@ -71,6 +72,15 @@ public class JournalThreadExportService {
               .append("\r\n")
               .append(CmmUtils.htmlToText(entry.getContent()))
               .append("\r\n");
+
+            if (includeReflection && CollectionUtils.isNotEmpty(entry.getReflectionList())) {
+                for (final JournalEntryDto reflection : entry.getReflectionList()) {
+                    if (reflection == null) continue;
+                    final String reflText = CmmUtils.htmlToText(reflection.getContent());
+                    if (StringUtils.isEmpty(reflText)) continue;
+                    sb.append("\r\n").append(reflText).append("\r\n");
+                }
+            }
 
             if (entry.getTag() == null || CollectionUtils.isEmpty(entry.getTag().getList())) {
                 sb.append("\r\n\n");

@@ -24,6 +24,7 @@ import { swalConfirm, swalAlert } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { computed, ref } from "vue";
 import Editor from "@tinymce/tinymce-vue";
+import axios from "axios";
 /** TinyMCE 6 자체 호스팅 - 번들러(Vite)를 통해 직접 임포트 */
 import "tinymce/tinymce";
 import "tinymce/themes/silver/theme";
@@ -55,12 +56,15 @@ interface Props {
   /** 에디터 높이 (px). 기본값 540. */
   height?: number;
   placeholder?: string;
+  /** 템플릿 삽입 드롭다운 노출 여부. 기본값 false. 저널 엔트리 작성 에디터에서만 켠다. */
+  enableTemplates?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
   height: 540,
   placeholder: undefined,
+  enableTemplates: false,
 });
 
 const emit = defineEmits<{
@@ -94,7 +98,7 @@ const editorInit = computed(() => ({
   plugins:
     "help quickbars searchreplace link autolink table lists advlist emoticons visualchars visualblocks pagebreak code codesample",
   toolbar1:
-    "undo redo | searchreplace | styles fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | align | code codesample | help",
+    `undo redo | ${props.enableTemplates ? "tmplat | " : ""}searchreplace | styles fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | align | code codesample | help`,
   toolbar2:
     "emoticons custom_image link | numlist bullist moreless | visualchars visualblocks pagebreak | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
   contextmenu: "link custom_image lists table",
@@ -164,6 +168,35 @@ const editorInit = computed(() => ({
         sectionCount++;
       },
     });
+
+    /** tmplat 메뉴버튼: 활성(useYn=Y) 템플릿을 드롭다운으로 노출하고 선택 시 커서 위치에 삽입한다. (enableTemplates 시에만 등록) */
+    if (props.enableTemplates) {
+      editor.ui.registry.addMenuButton("tmplat", {
+        text: t("rich-editor.tmplat.button"),
+        tooltip: t("rich-editor.tmplat.tooltip"),
+        fetch(callback: (items: any[]) => void): void {
+          void loadActiveTemplates()
+            .then((list: ActiveTmplat[]) => {
+              if (!list.length) {
+                callback([{ type: "menuitem", text: t("rich-editor.tmplat.empty"), enabled: false, onAction(): void {} }]);
+                return;
+              }
+              callback(
+                list.map((tpl) => ({
+                  type: "menuitem",
+                  text: tpl.title,
+                  onAction(): void {
+                    editor.execCommand("mceInsertContent", false, tpl.content ?? "");
+                  },
+                }))
+              );
+            })
+            .catch(() => {
+              callback([{ type: "menuitem", text: t("rich-editor.tmplat.empty"), enabled: false, onAction(): void {} }]);
+            });
+        },
+      });
+    }
   },
 }));
 
@@ -212,5 +245,23 @@ async function handleImageUpload(event: Event): Promise<void> {
   } finally {
     input.value = "";
   }
+}
+
+/** 활성 템플릿 한 건 (백엔드 TmplatDto 부분집합) */
+interface ActiveTmplat {
+  title: string;
+  content?: string;
+}
+
+/**
+ * 템플릿 관리(전역 공용)에서 활성(useYn=Y) 템플릿 목록을 조회한다.
+ * 실패 시 빈 배열을 반환해 드롭다운을 "템플릿 없음"으로 처리한다.
+ *
+ * @return 활성 템플릿 목록 (정렬순서 오름차순은 서버가 보장)
+ */
+async function loadActiveTemplates(): Promise<ActiveTmplat[]> {
+  const res = await axios.get("/api/tmplats/active");
+  if (!res.data?.rslt) return [];
+  return Array.isArray(res.data?.rsltList) ? res.data.rsltList : [];
 }
 </script>

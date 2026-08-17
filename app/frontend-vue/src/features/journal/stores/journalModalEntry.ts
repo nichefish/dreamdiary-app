@@ -132,7 +132,7 @@ export function createJournalModalEntry(deps: JournalModalEntryDeps) {
         journalDayId: params.journalDayId,
         journalChapterId: chapter?.id ?? "",
         stdrdDt: params.stdrdDt,
-        elseDreamerNm: params.dreamerName?.trim() ?? "",
+        dreamerName: params.dreamerName?.trim() ?? "",
         title: "",
         content: "",
         tag: { tagListStrWithCtgr: "" },

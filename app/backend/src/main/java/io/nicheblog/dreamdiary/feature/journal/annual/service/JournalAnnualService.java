@@ -84,10 +84,12 @@ public class JournalAnnualService
         final JournalAnnualEntity annual = repository.findByYyAndCreatedBy(yy, AuthUtils.requireUsername(username)).orElse(new JournalAnnualEntity(yy));
 
         // 해당 년도 꿈 일자 조회해서 갱신
-        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, AuthUtils.requireUsername(username));
+        AuthUtils.requireUsername(username);
+        final Integer ownerId = AuthUtils.requireLoginUserId();
+        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, ownerId);
         annual.setDreamDayCnt(dreamDayCntByYy);
         // 해당 년도 꿈 조회해서 갱신
-        final Integer dreamCntByYy = repository.getDreamCntByYy(yy, AuthUtils.requireUsername(username));
+        final Integer dreamCntByYy = repository.getDreamCntByYy(yy, ownerId);
         annual.setDreamCnt(dreamCntByYy);
 
         repository.save(annual);

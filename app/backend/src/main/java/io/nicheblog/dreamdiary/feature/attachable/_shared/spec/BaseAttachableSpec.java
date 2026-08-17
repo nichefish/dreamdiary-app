@@ -219,7 +219,7 @@ public abstract class BaseAttachableSpec<Entity extends BaseAttachableEntity>
     }
 
     /**
-     * 상태 키 AND/IN. {@code contentType} 으로 state 타입 스코프를 연다.
+     * 상태 키 OR/IN. {@code contentType} 으로 state 타입 스코프를 연다.
      *
      * @param contentType state.ref_content_type 스코프 타입. null이면 타입 스코프 없음
      */
@@ -236,7 +236,7 @@ public abstract class BaseAttachableSpec<Entity extends BaseAttachableEntity>
     }
 
     /**
-     * 상태 키 AND/IN. {@code refContentTypeKeys} 로 state 타입 스코프를 연다.
+     * 상태 키 OR/IN. {@code refContentTypeKeys} 로 state 타입 스코프를 연다.
      *
      * @param refContentTypeKeys state.ref_content_type 허용 키. null/빈이면 타입 스코프 없음
      */

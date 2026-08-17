@@ -124,22 +124,16 @@
         </div>
         <!--end::주간 범위-->
 
-        <!--begin::요일 버튼 (is-active: 선택된 날짜만 파란색 / 항목 없음: 회색음영)-->
-        <div class="journal-aside-week-days">
-          <button
-            v-for="day in weekDays"
-            :key="day.dateStr"
-            type="button"
-            :class="['journal-aside-week-day', { 'is-active': day.isActive }]"
-            :title="day.dateStr"
-            :disabled="!day.hasDay"
-            @click="selectWeekDay(day)"
-          >
-            <span class="journal-aside-week-day__label">{{ day.label }}</span>
-            <span class="journal-aside-week-day__date">{{ day.dayNum }}</span>
-          </button>
-        </div>
-        <!--end::요일 버튼-->
+        <!--begin::미니 달력 (주 범위 하이라이트 — 월~토 한 줄 + 다음 줄 일요일)-->
+        <JournalAsideMiniCalendar
+          :year="store.yy"
+          :month="store.mnth"
+          :selected-date="selectedDt"
+          :week-start="store.weekStartDt || ''"
+          :holidays="miniCalHolidays"
+          @select="onWeekMiniCalendarSelect"
+        />
+        <!--end::미니 달력-->
       </template>
       <!--end::주 내비게이션-->
 
@@ -409,11 +403,11 @@ async function fetchMiniCalHolidays(yy: number, mnth: number): Promise<void> {
   }
 }
 
-// DAILY viewType일 때 store.yy/mnth 변경을 감지해 공휴일을 재조회한다.
+// DAILY/WEEKLY viewType일 때 store.yy/mnth 변경을 감지해 미니 달력용 공휴일을 재조회한다.
 watch(
   () => [store.yy, store.mnth, store.viewType] as const,
   ([yy, mnth, viewType]) => {
-    if (viewType === "DAILY") {
+    if (viewType === "DAILY" || viewType === "WEEKLY") {
       void fetchMiniCalHolidays(yy, mnth);
     }
   },
@@ -431,6 +425,20 @@ function onMiniCalendarSelect(dateStr: string): void {
     store.mnth = mnth;
   }
   void router.replace({ query: { stdrdDt: dateStr } });
+}
+
+/**
+ * 주간 미니 달력 날짜 클릭 → 그 날이 속한 주로 이동한 뒤 그 날 일자 카드로 스크롤한다.
+ * 주 범위 밖(다른 주)을 클릭하면 band 가 해당 주로 이동한다.
+ */
+async function onWeekMiniCalendarSelect(dateStr: string): Promise<void> {
+  const weekStart = getWeekStartDateStr(dateStr);
+  const synced = await syncWeeklyRouteOrFetch(weekStart);
+  if (!synced) return;
+  selectedDt.value = dateStr;
+  await nextTick();
+  const el = document.getElementById(`journal-day-${dateStr}`);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 const sortIconClass = computed(() =>
@@ -463,32 +471,6 @@ const lifecycleOptions = computed(() => [
   { key: "RESOLVED", label: t("status.completed") },
 ]);
 
-/** 주간 요일 버튼 목록 (월~일) */
-const weekDays = computed(() => {
-  if (!store.weekStartDt) return [];
-  const labels = [
-    t("common.weekday.mon"),
-    t("common.weekday.tue"),
-    t("common.weekday.wed"),
-    t("common.weekday.thu"),
-    t("common.weekday.fri"),
-    t("common.weekday.sat"),
-    t("common.weekday.sun"),
-  ];
-  return labels.map((label, i) => {
-    const d = new Date(store.weekStartDt! + "T12:00:00");
-    d.setDate(d.getDate() + i);
-    const dateStr = formatLocalDateStr(d);
-    return {
-      label,
-      dateStr,
-      dayNum: d.getDate(),
-      hasDay: store.dayList.some((day) => day.stdrdDt === dateStr),
-      isActive: dateStr === selectedDt.value,
-    };
-  });
-});
-
 const hasActiveFilters = computed(() =>
   !store.showDiaries ||
   !store.showDreams ||
@@ -499,15 +481,6 @@ const hasActiveFilters = computed(() =>
   store.dreamLifecycleKey !== "" ||
   store.chapterPrefixIds.length > 0
 );
-
-/** 요일 버튼 클릭 → 해당 날짜를 선택 상태로 전환 후 해당 일자 카드로 스크롤 */
-async function selectWeekDay(day: { dateStr: string; hasDay: boolean }): Promise<void> {
-  if (!day.hasDay) return;
-  selectedDt.value = day.dateStr;
-  await nextTick();
-  const el = document.getElementById(`journal-day-${day.dateStr}`);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-}
 
 /** 주간 범위 레이블 클릭 → 날짜 선택기 열기 (표시 기준일 = store.weekStartDt) */
 async function openWeekPicker(): Promise<void> {

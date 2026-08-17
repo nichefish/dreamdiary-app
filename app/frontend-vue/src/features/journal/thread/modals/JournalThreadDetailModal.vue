@@ -16,24 +16,70 @@
         <div class="modal-header">
           <h5 class="modal-title">{{ t("journal.thread.detail.modal.title") }}</h5>
           <div class="d-flex align-items-center gap-2">
-            <button
-              v-if="store.detailModel?.id"
-              type="button"
-              class="btn btn-sm btn-icon btn-light-primary"
-              :title="t('common.copy.tooltip')"
-              @click="onCopy"
-            >
-              <i class="bi bi-copy"></i>
-            </button>
-            <button
-              v-if="store.detailModel?.id"
-              type="button"
-              class="btn btn-sm btn-icon btn-light-primary"
-              :title="t('common.export-text.tooltip')"
-              @click="onDownload"
-            >
-              <i class="bi bi-download"></i>
-            </button>
+            <!--begin::복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+            <div v-if="store.detailModel?.id" class="btn-group" role="group">
+              <button
+                type="button"
+                class="btn btn-sm btn-icon btn-light-primary copy-split-main"
+                :title="hasThreadReflections ? t('journal.copy.full.tooltip') : t('common.copy')"
+                @click="onCopy(true)"
+              >
+                <i class="bi bi-copy"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-light-primary copy-split-caret"
+                data-kt-menu-trigger="click"
+                data-kt-menu-placement="bottom-end"
+                :title="t('common.menu')"
+              >
+                <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+              </button>
+              <div
+                class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-175px py-2"
+                data-kt-menu="true"
+              >
+                <div class="menu-item px-3 my-1 cursor-pointer">
+                  <div class="menu-link flex-stack px-3" @click="onCopy(false)">
+                    {{ t('journal.copy.body.label') }}
+                    <i class="bi bi-clipboard fs-8"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::복사 (split)-->
+            <!--begin::다운로드 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+            <div v-if="store.detailModel?.id" class="btn-group" role="group">
+              <button
+                type="button"
+                class="btn btn-sm btn-icon btn-light-primary copy-split-main"
+                :title="hasThreadReflections ? t('journal.download.full.tooltip') : t('common.export-text.tooltip')"
+                @click="onDownload(true)"
+              >
+                <i class="bi bi-download"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-light-primary copy-split-caret"
+                data-kt-menu-trigger="click"
+                data-kt-menu-placement="bottom-end"
+                :title="t('common.menu')"
+              >
+                <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+              </button>
+              <div
+                class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-175px py-2"
+                data-kt-menu="true"
+              >
+                <div class="menu-item px-3 my-1 cursor-pointer">
+                  <div class="menu-link flex-stack px-3" @click="onDownload(false)">
+                    {{ t('journal.download.body.label') }}
+                    <i class="bi bi-download fs-8"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::다운로드 (split)-->
             <button
               v-if="store.detailModel?.id"
               type="button"
@@ -76,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { Modal } from "bootstrap";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -129,16 +175,21 @@ function openModify(): void {
   void store.openModifyFromDetail(id);
 }
 
-/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. */
-function onCopy(): void {
-  void copyThreadDetail(store.detailModel, store.detailEntries, t);
+/** 스레드 소속 엔트리 중 하나라도 리플렉션이 있으면 true (▾ 드롭다운 노출 조건). */
+const hasThreadReflections = computed(() =>
+  store.detailEntries.some((e) => (e.reflectionList?.length ?? 0) > 0),
+);
+
+/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. (includeReflection: 해석 포함 여부) */
+function onCopy(includeReflection = true): void {
+  void copyThreadDetail(store.detailModel, store.detailEntries, t, includeReflection);
 }
 
-/** 스레드 소속 엔트리를 서버 텍스트 내보내기로 다운로드한다. */
-function onDownload(): void {
+/** 스레드 소속 엔트리를 서버 텍스트 내보내기로 다운로드한다. (includeReflection: 해석 포함 여부) */
+function onDownload(includeReflection = true): void {
   const id = store.detailModel?.id;
   if (!id) return;
-  downloadThreadDetail(id);
+  downloadThreadDetail(id, includeReflection);
 }
 
 </script>

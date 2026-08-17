@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.entry.service;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.JournalTestUserSupport;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
@@ -11,13 +12,13 @@ import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepo
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryPostDto;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @Import(TestAuditConfig.class)
 @Transactional
-@WithMockUser(username = TestConstant.TEST_AUDITOR)
 class JournalEntryDiaryTypedServiceTest {
 
     @Resource
@@ -41,6 +41,8 @@ class JournalEntryDiaryTypedServiceTest {
     private JournalChapterRepository journalChapterRepository;
     @Resource
     private JournalDayRepository journalDayRepository;
+    @Resource
+    private UserRepository userRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -49,7 +51,9 @@ class JournalEntryDiaryTypedServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        final JournalDayEntity journalDay = JournalDayEntityTestFactory.createWithJournalDt("2000-01-01");
+        final Integer ownerId = JournalTestUserSupport.ensureUser(userRepository, TestConstant.TEST_AUDITOR);
+        JournalTestUserSupport.authenticate(ownerId, TestConstant.TEST_AUDITOR);
+        final JournalDayEntity journalDay = JournalDayEntityTestFactory.createWithJournalDt("2000-01-01", ownerId);
         journalDay.setYy(2000);
         journalDay.setMnth(1);
         final Integer journalDayId = journalDayRepository.saveAndFlush(journalDay).getId();

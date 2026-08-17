@@ -36,6 +36,7 @@
         <ul class="nav nav-tabs nav-line-tabs border-0 fs-6">
           <li class="nav-item"><router-link :to="{ name: 'user-my-profile' }" class="nav-link">{{ t("user.my.tab.profile") }}</router-link></li>
           <li class="nav-item"><router-link :to="{ name: 'user-my-security' }" class="nav-link">{{ t("user.my.tab.security") }}</router-link></li>
+          <li class="nav-item"><router-link :to="{ name: 'user-my-journal' }" class="nav-link">{{ t("user.my.tab.journal") }}</router-link></li>
           <li class="nav-item"><router-link :to="{ name: 'user-my-prefixes' }" class="nav-link">{{ t("user.my.tab.prefixes") }}</router-link></li>
         </ul>
       </div>

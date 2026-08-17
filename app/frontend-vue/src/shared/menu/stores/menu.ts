@@ -66,7 +66,7 @@ const menuSection = (
 
 const FALLBACK_USER_MENU_LIST: MenuDto[] = [
   menuSection(-100, "\ub2e4\uc774\uc5b4\ub9ac", [
-    menuItem(-102, "\uc6d4\uac04 \uc77c\uae30", "/journal/monthly", "bi-journal-text"),
+    menuItem(-102, "\uc800\ub110 \uc77c\uc790", "/app/journal/day/home", "bi-journal-text"),
     menuItem(-103, "\uc8fc\uac04 \uc77c\uae30", "/journal/weekly", "bi-calendar-week"),
     menuItem(-104, "\uc77c\uae30 \uce98\ub9b0\ub354", "/journal/calendar", "bi-calendar3"),
     menuItem(-105, "\uc77c\uae30 \uba54\ud0c0", "/journal/meta", "bi-tags"),
@@ -92,6 +92,7 @@ const FALLBACK_MNGR_MENU_LIST: MenuDto[] = [
     menuItem(-205, "\uc778\uc99d \uc815\ucc45", "/admin/auth-policy", "bi-shield-lock"),
     menuItem(-206, "\uac8c\uc2dc\ud310 \uadf8\ub8f9", "/admin/board-group", "bi-layout-text-window"),
     menuItem(-207, "\ucf54\ub4dc \uad00\ub9ac", "/admin/code", "bi-braces"),
+    menuItem(-210, "\ud15c\ud50c\ub9bf \uad00\ub9ac", "/admin/tmplat", "bi-file-earmark-text"),
     menuItem(-208, "\ub85c\uadf8", "/admin/log", "bi-card-list"),
     menuItem(-209, "\uc0ac\uc6a9\uc790 \ud1b5\uacc4", "/admin/log/stats-user", "bi-graph-up"),
   ]),

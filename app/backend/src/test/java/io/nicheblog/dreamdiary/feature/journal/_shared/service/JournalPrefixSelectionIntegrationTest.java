@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.service.JournalChapterService;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
+import io.nicheblog.dreamdiary.feature.journal.JournalTestUserSupport;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepository;
@@ -31,7 +32,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +53,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ActiveProfiles("test")
 @Import(TestAuditConfig.class)
 @Transactional
-@WithMockUser(username = TestConstant.TEST_AUDITOR)
 class JournalPrefixSelectionIntegrationTest {
 
     private static final String FIXTURE_JOURNAL_DATE = "2199-01-01";
@@ -81,20 +80,17 @@ class JournalPrefixSelectionIntegrationTest {
     /** 테스트마다 트랜잭션 안에 독립된 저널 일자를 준비한다. */
     @BeforeEach
     void setUp() throws Exception {
-        ensureTestUser();
-        final JournalDayEntity journalDay = JournalDayEntityTestFactory.createWithJournalDt(FIXTURE_JOURNAL_DATE);
+        final Integer ownerId = ensureTestUser();
+        JournalTestUserSupport.authenticate(ownerId, TestConstant.TEST_AUDITOR);
+        final JournalDayEntity journalDay = JournalDayEntityTestFactory.createWithJournalDt(FIXTURE_JOURNAL_DATE, ownerId);
         journalDay.setYy(2199);
         journalDay.setMnth(1);
         journalDayId = journalDayRepository.saveAndFlush(journalDay).getId();
     }
 
     /** 개인 Prefix Scope가 참조할 가상 테스트 계정을 준비한다. */
-    private void ensureTestUser() throws Exception {
-        if (userRepository.findByUsername(TestConstant.TEST_AUDITOR).isPresent()) return;
-        final UserEntity user = UserEntityTestFactory.create();
-        user.setUsername(TestConstant.TEST_AUDITOR);
-        user.setEmail("journal-prefix-integration@example.test");
-        userRepository.saveAndFlush(user);
+    private Integer ensureTestUser() throws Exception {
+        return JournalTestUserSupport.ensureUser(userRepository, TestConstant.TEST_AUDITOR);
     }
 
     /** 일반 NOTE 챕터는 JOURNAL_CHAPTER 참조에 NOTE 전용 Prefix를 연결한다. */

@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiGet, apiPost, apiPut, apiDelete, getPage } from "@/shared/api/client";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { swalConfirm, swalAlert } from "@/shared/utils/swal";
@@ -66,8 +66,8 @@ export const useUserGroupStore = defineStore("userGroup", () => {
   const isEdit = computed(() => form.value.id != null);
 
   async function fetchPermissions() {
-    const { data } = await axios.get("/api/permissions");
-    permissions.value = Array.isArray(data?.rsltList) ? data.rsltList : [];
+    const res = await apiGet<PermissionOption>("/api/permissions");
+    permissions.value = res.rsltList ?? [];
   }
 
   async function fetchList(page?: number) {
@@ -80,13 +80,11 @@ export const useUserGroupStore = defineStore("userGroup", () => {
         size: pageSize.value,
       };
       if (keyword.value.trim()) params.searchKeyword = keyword.value.trim();
-      const { data } = await axios.get("/api/user/groups", { params });
-      if (!data?.rslt) throw new Error(data?.message ?? t("common.result.failure"));
-      const pageObj = data?.rsltObj;
-      rows.value = Array.isArray(pageObj?.content) ? pageObj.content : [];
-      totalElements.value = Number(pageObj?.totalElements ?? 0);
-      totalPages.value = Number(pageObj?.totalPages ?? 0);
-      currentPage.value = Number(pageObj?.number ?? targetPage);
+      const page = await getPage<UserGroupRow>("/api/user/groups", { config: { params }, failureMessage: t("common.result.failure") });
+      rows.value = page.content;
+      totalElements.value = page.totalElements;
+      totalPages.value = page.totalPages;
+      currentPage.value = page.number;
     } catch (e: unknown) {
       console.error("[userGroup] fetchList failed", e);
       error.value = t("common.result.failure");
@@ -108,8 +106,11 @@ export const useUserGroupStore = defineStore("userGroup", () => {
     modalOpen.value = true;
     try {
       if (!permissions.value.length) await fetchPermissions();
-      const { data } = await axios.get(`/api/user/groups/${id}`);
-      const dto = data?.rsltObj ?? {};
+      const res = await apiGet(`/api/user/groups/${id}`);
+      const dto = (res.rsltObj ?? {}) as {
+        id?: number; groupKey?: string; groupName?: string; description?: string;
+        sortOrder?: number; useYn?: string; permissionKeys?: string[]; memberUsernames?: string[];
+      };
       form.value = {
         id: dto.id ?? id,
         groupKey: dto.groupKey ?? "",
@@ -170,9 +171,9 @@ export const useUserGroupStore = defineStore("userGroup", () => {
         memberUsernames: [...form.value.memberUsernames],
       };
       if (form.value.id == null) {
-        await axios.post("/api/user/groups", payload);
+        await apiPost("/api/user/groups", payload);
       } else {
-        await axios.put(`/api/user/groups/${form.value.id}`, payload);
+        await apiPut(`/api/user/groups/${form.value.id}`, payload);
       }
       modalOpen.value = false;
       await fetchList(form.value.id == null ? 0 : currentPage.value);
@@ -188,7 +189,7 @@ export const useUserGroupStore = defineStore("userGroup", () => {
     const ok = await swalConfirm(t("common.delete.confirm"));
     if (!ok) return;
     try {
-      await axios.delete(`/api/user/groups/${id}`);
+      await apiDelete(`/api/user/groups/${id}`);
       await fetchList(currentPage.value);
       await swalAlert(t("common.result.success"));
     } catch {

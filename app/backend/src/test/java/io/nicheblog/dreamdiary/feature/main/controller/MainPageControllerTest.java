@@ -55,7 +55,7 @@ public class MainPageControllerTest {
 
     /**
      * 메인 화면 조회 Test
-     * 저널 일간 화면으로 이동하는 리다이렉트 경로를 검증한다.
+     * 프론트엔드 구현체와 독립적인 저널 일자 공통 화면 URL로 이동하는지 검증한다.
      */
     @Test
     @WithMockUser
@@ -66,7 +66,7 @@ public class MainPageControllerTest {
         this.mockMvc.perform(get(Url.MAIN)
                 .sessionAttr("authInfo", authInfo))  // 세션 어트리뷰트 추가
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/vue-app/journal/daily"))
+                .andExpect(redirectedUrl(Url.JOURNAL_DAY_HOME))
                 .andDo(document("main"));
     }
 

@@ -20,20 +20,24 @@ public class JournalDayEntityTestFactory {
     /**
      * 테스트용 저널 일자 Entity 생성
      * @param journalDtStr 저널 일자 문자열
+     * @param ownerId 소유 사용자 영속 ID
      */
-    public static JournalDayEntity createWithJournalDt(final String journalDtStr) throws Exception {
+    public static JournalDayEntity createWithJournalDt(final String journalDtStr, final Integer ownerId) throws Exception {
         return JournalDayEntity.builder()
                 .contentType(ContentType.JOURNAL_DAY.key)
+                .ownerId(ownerId)
                 .journalDate(DateUtils.asLocalDate(journalDtStr))
                 .build();
     }
 
     /**
      * 테스트용 저널 일자 Entity 생성
+     * @param ownerId 소유 사용자 영속 ID
      */
-    public static JournalDayEntity create() throws Exception {
+    public static JournalDayEntity create(final Integer ownerId) throws Exception {
         return JournalDayEntity.builder()
                 .contentType(ContentType.JOURNAL_DAY.key)
+                .ownerId(ownerId)
                 .build();
     }
 
@@ -46,4 +50,3 @@ public class JournalDayEntityTestFactory {
                 .build();
     }
 }
-

@@ -11,6 +11,7 @@ import { normalizeRoutePath, stripVueAppPrefix } from "@/shared/utils/appPath";
 /** FreeMarker URL → Vue SPA 경로 매핑 */
 const URL_MAP: Record<string, string> = {
   // 저널
+  "/app/journal/day/home": "/journal/day/home",
   "/app/journal/day/monthly.do": "/journal/monthly",
   "/app/journal/day/daily.do": "/journal/daily-popup",
   "/app/journal/day/weekly.do": "/journal/weekly",
@@ -26,6 +27,7 @@ const URL_MAP: Record<string, string> = {
   "/app/admin/menu/page.do": "/admin/menu",
   "/app/admin/board/page.do": "/admin/board-group",
   "/app/admin/code/page.do": "/admin/code",
+  "/app/admin/tmplat/page.do": "/admin/tmplat",
   "/app/user/list.do": "/admin/users",
   "/app/user/regist-form.do": "/admin/users",
   "/app/user/detail.do": "/admin/users",

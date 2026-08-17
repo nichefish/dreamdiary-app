@@ -104,23 +104,56 @@
                 <!--end::개별 태그 색상-->
               </div>
 
-              <!--begin::크기 최대 (태그클라우드 전용)-->
-              <div class="mb-4 form-check form-check-custom form-check-solid">
-                <input
-                  id="tagForceMax"
-                  v-model="model.forceMax"
-                  type="checkbox"
-                  name="forceMax"
-                  class="form-check-input"
-                >
-                <label for="tagForceMax" class="form-check-label fw-bold">
-                  {{ t("attachable.tag.profile.force-max") }}
+              <!--begin::크기 고정 (태그클라우드 전용)-->
+              <div class="mb-4">
+                <label class="form-label fw-bold d-block">
+                  {{ t("attachable.tag.profile.cloud-size") }}
                 </label>
+                <div class="btn-group" role="group" aria-label="cloud size lock">
+                  <input
+                    id="cloudSizeAuto"
+                    v-model="model.cloudSizeLock"
+                    type="radio"
+                    name="cloudSizeLock"
+                    class="btn-check"
+                    value="AUTO"
+                    autocomplete="off"
+                  >
+                  <label class="btn btn-sm btn-light btn-active-primary" for="cloudSizeAuto">
+                    {{ t("attachable.tag.profile.cloud-size.auto") }}
+                  </label>
+
+                  <input
+                    id="cloudSizeMin"
+                    v-model="model.cloudSizeLock"
+                    type="radio"
+                    name="cloudSizeLock"
+                    class="btn-check"
+                    value="MIN"
+                    autocomplete="off"
+                  >
+                  <label class="btn btn-sm btn-light btn-active-primary" for="cloudSizeMin">
+                    {{ t("attachable.tag.profile.cloud-size.min") }}
+                  </label>
+
+                  <input
+                    id="cloudSizeMax"
+                    v-model="model.cloudSizeLock"
+                    type="radio"
+                    name="cloudSizeLock"
+                    class="btn-check"
+                    value="MAX"
+                    autocomplete="off"
+                  >
+                  <label class="btn btn-sm btn-light btn-active-primary" for="cloudSizeMax">
+                    {{ t("attachable.tag.profile.cloud-size.max") }}
+                  </label>
+                </div>
                 <div class="fs-8 text-muted mt-1">
-                  {{ t("attachable.tag.profile.force-max.guide") }}
+                  {{ t(cloudSizeGuideKey) }}
                 </div>
               </div>
-              <!--end::크기 최대-->
+              <!--end::크기 고정-->
 
 
               <!--begin::프로필-->
@@ -229,6 +262,14 @@ const tagDefaultLabel = computed(() =>
   hasTagCategory.value
     ? t("attachable.tag.profile.same-as-category")
     : t("attachable.tag.profile.default-no-category")
+);
+
+/**
+ * 선택된 크기 고정 상태(AUTO/MIN/MAX)에 대응하는 안내 문구 키.
+ * cloud-size.guide.{auto|min|max} 중 하나로 매핑한다.
+ */
+const cloudSizeGuideKey = computed(
+  () => `attachable.tag.profile.cloud-size.guide.${model.value.cloudSizeLock.toLowerCase()}`
 );
 
 onMounted(() => {

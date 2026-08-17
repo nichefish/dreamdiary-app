@@ -49,8 +49,8 @@ public class MainPageController
 
         // TODO: 접근 권한 통제
 
-        // 메인 화면 꾸밀때까지 저널 일자 화면으로 리다이렉트
-        return "redirect:/vue-app/journal/daily";
+        // 프론트엔드 구현체와 독립적인 저널 일자 공통 화면 URL로 이동한다.
+        return "redirect:" + Url.JOURNAL_DAY_HOME;
     }
 
     /**

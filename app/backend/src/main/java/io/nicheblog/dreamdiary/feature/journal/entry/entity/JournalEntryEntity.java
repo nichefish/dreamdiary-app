@@ -70,11 +70,9 @@ public class JournalEntryEntity
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
     private Integer sortOrder;
 
-    @Column(name = "else_dream_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    private String elseDreamYn;
-
-    @Column(name = "else_dreamer_nm", length = 64)
-    private String elseDreamerNm;
+    /** 지정 꿈꾼 이름. 값이 있으면 타인의 꿈으로 분류한다. */
+    @Column(name = "dreamer_name", length = 64)
+    private String dreamerName;
 
     /** target(해석 대상) 엔티티 번호. nullable. Reflection이 가리키는 대상 Entry를 표시위치로만 참조한다. */
     @Column(name = "ref_id")

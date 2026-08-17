@@ -52,6 +52,7 @@
 
 - `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`). 정상 서버 인증 결과는 메모리에서 15초간 재사용하며, 신선도 만료·새로고침·강제 검증 시 `/api/auth/get-auth-account`를 다시 호출한다. 동시 검증은 진행 중 Promise를 공유한다.
 - 사이드바: `toVuePath(menu.url)` (`utils/urlMapping.ts`).
+- 메뉴 DB와 외부 링크의 `/app/**`는 프론트엔드 종류와 독립적인 제품 화면 URL이다. `.do` 경로는 레거시 MVC 화면 계약이며, 신규 제품 화면 URL은 `.do` 없이 정의할 수 있다. `toVuePath`는 제품 화면 URL을 현재 Vue 내부 route로 연결한다. 데이터 조회·저장 엔드포인트는 `/api/**`에서 분리한다.
 
 ---
 
@@ -402,6 +403,8 @@ const tagify = cF.tagify.initMeta(selector, ctgrMap, additionalOptions?)
 ```
 
 ### 카테고리 입력 흐름 (`initWithCtgr`)
+
+자동완성은 `categoryMap`의 태그명 prefix를 영문 대소문자 구분 없이 비교한다. 입력 `f`·`F`는 모두 저장된 `Flyway`를 후보로 표시하며, 선택·저장에는 카탈로그의 원래 태그명 표기를 사용한다. 부분 문자열 검색으로 확장하지 않고 prefix 검색 범위를 유지한다.
 
 ```
 1. 사용자가 태그 입력 → Tagify `add` 이벤트 발생
@@ -774,12 +777,13 @@ window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
 
 ### 내 설정 Prefix 관리 UI
 
-- `/my`는 `/my/profile`로 redirect하고 공통 정체성 헤더 아래 `/my/profile`, `/my/security`, `/my/prefixes` 하위 route 탭을 제공한다.
+- `/my`는 `/my/profile`로 redirect하고 공통 정체성 헤더 아래 `/my/profile`, `/my/security`, `/my/journal`, `/my/prefixes` 하위 route 탭을 제공한다.
 - 탭 이동은 사용자/관리자 메뉴 모드를 변경하지 않으며 브라우저 URL·새로고침·앞뒤 이동으로 선택 탭을 복원한다.
 - `PUT /api/user/my`는 요청의 사용자 식별자를 받지 않고 로그인 사용자 본인을 수정한다. 허용 필드는 `nickname`, `phoneNumber`, `brthdy`, `lunarYn`, `proflCn`이며 이메일·역할·허용 IP·재직 정보는 이 계약에서 제외한다.
 - 닉네임은 필수·20자 이하, 연락처는 선택·20자 이하, 생년월일은 오늘 이전 날짜, 음력 여부는 `Y|N`, 자기소개는 선택·4000자 이하로 검증한다. 기존 `user_profile` 행이 없으면 저장 트랜잭션에서 생성한다.
 - 내 정보 편집의 오른쪽 주 액션 자리는 조회 상태의 「편집」에서 편집 상태의 「저장」으로 전환하고, 「취소」는 저장 왼쪽의 보조 액션으로 표시한다. 저장은 「내 정보를 저장하시겠습니까?」 확인을 거쳐야 하며 확인을 취소하면 API를 호출하지 않고 편집 상태를 유지한다. 편집 취소는 저장하지 않고 서버에서 조회한 값으로 복원한다.
 - 내 정보 저장 성공 후 `GET /api/user/my`와 인증 정보 조회를 다시 수행해 닉네임·프로필 표시를 서버 확정 상태로 동기화한다.
+- `/my/journal`은 `GET /api/journal/settings/me`로 서버 확정 `defaultEntryView`를 표시하고, 사용자가 선택한 `DAILY | WEEKLY | MONTHLY`를 `PUT /api/journal/settings/me`로 저장한다. 선택값과 서버 확정값이 같으면 저장 버튼을 비활성화하며, 성공 응답의 값을 다시 화면 상태로 사용한다. 조회·저장 실패와 지원하지 않는 응답값은 오류로 표시하고 임의 기본값으로 보정하지 않는다.
 - `/my/prefixes` 진입 시 Scope 존재 여부와 무관하게 작은 `저널` 도메인 헤더 아래 `일기 챕터 / 노트 챕터 / 일기 / 꿈 / 노트 / 스레드` 고정 대상 6행을 표시한다. 각 행은 `JOURNAL_CHAPTER_DIARY`, `JOURNAL_CHAPTER_NOTE`, `JOURNAL_DIARY`, `JOURNAL_DREAM`, `JOURNAL_NOTE`, `JOURNAL_THREAD` 실제 `contentType`에 대응하며 사용자가 대상을 추가·삭제하지 않는다. 이후 다른 도메인은 같은 화면 카탈로그의 별도 그룹으로 추가한다.
 - 초기 대상 목록에서는 Prefix API를 호출하거나 각 행에 말머리 미리보기를 표시하지 않는다. 행을 누르면 해당 목록만 서버에서 조회해 관리 모달을 열고, Prefix가 없으면 빈 상태와 추가 액션을 표시한다. 최초 등록 시 서버가 해당 `(user, content_type)` Scope를 lazy 생성한다.
 - 관리 모달을 닫으면 표시 목록을 비우고 진행 중인 조회를 무효화해 다른 content_type 항목을 임시로 재사용하지 않는다. 늦게 끝난 이전 응답은 요청 순번으로 폐기한다.

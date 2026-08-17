@@ -24,7 +24,7 @@ export interface UseEntryThreadMembershipOptions {
   /** 축 쓰기 잠금 guard. false 반환 시 동작 중단. */
   guardAxisWrite: () => boolean;
   /** 액션 성공 후 화면 재조회+스크롤 트리거 */
-  scrollAfterFetch: () => void;
+  scrollAfterFetch: (stdrdDt?: string, opts?: { scroll?: boolean }) => void;
   /** i18n t 함수 */
   t: (key: string) => string;
 }
@@ -133,7 +133,7 @@ export function useEntryThreadMembership(options: UseEntryThreadMembershipOption
         await membershipStore.fetchThreadOptions(entryId);
       }
       void threadStore.refreshPeriodSummary();
-      scrollAfterFetch();
+      scrollAfterFetch(undefined, { scroll: false });
     }
   }
 
@@ -198,7 +198,7 @@ export function useEntryThreadMembership(options: UseEntryThreadMembershipOption
         await membershipStore.fetchThreadOptions(entryId);
       }
       void threadStore.refreshPeriodSummary();
-      scrollAfterFetch();
+      scrollAfterFetch(undefined, { scroll: false });
     }
   }
 

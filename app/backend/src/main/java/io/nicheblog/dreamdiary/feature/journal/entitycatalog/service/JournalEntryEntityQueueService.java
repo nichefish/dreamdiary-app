@@ -360,7 +360,7 @@ public class JournalEntryEntityQueueService {
                 StringUtils.defaultString(entry.getContentType()),
                 StringUtils.defaultString(entry.getTitle()),
                 StringUtils.defaultString(entry.getContent()),
-                StringUtils.defaultString(entry.getElseDreamerNm())
+                StringUtils.defaultString(entry.getDreamerName())
         );
         return sha256Hex(raw);
     }

@@ -21,6 +21,22 @@
         {{ t("common.reset") }}
       </button>
       <!--end::초기화-->
+      <!--begin::정렬 기준 (날짜/제목)-->
+      <div class="btn-group btn-group-sm" role="group" :aria-label="t('journal.entry.search.sort-field.label')">
+        <button
+          type="button"
+          :class="['btn', sortField === 'date' ? 'btn-primary' : 'btn-light']"
+          :disabled="isActionLocked"
+          @click="setSortField('date')"
+        >{{ t('journal.entry.search.sort-field.date') }}</button>
+        <button
+          type="button"
+          :class="['btn', sortField === 'title' ? 'btn-primary' : 'btn-light']"
+          :disabled="isActionLocked"
+          @click="setSortField('title')"
+        >{{ t('journal.entry.search.sort-field.title') }}</button>
+      </div>
+      <!--end::정렬 기준-->
       <!--begin::정렬 토글-->
       <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="isActionLocked" :title="t('journal.entry.search.sort.tooltip')" @click="toggleSort">
         <i class="bi" :class="sort === 'asc' ? 'bi-sort-down-alt' : 'bi-sort-up'"></i>
@@ -34,16 +50,46 @@
       <!--begin::구분선-->
       <div class="border-start border-gray-300 h-25px ms-1"></div>
       <!--end::구분선-->
-      <!--begin::전체 복사-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.tooltip')" @click="copyAll">
-        <i class="bi bi-copy"></i>
-      </button>
-      <!--end::전체 복사-->
-      <!--begin::TXT 내보내기-->
-      <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3" :disabled="!canExportResults" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt">
-        <i class="fas fa-download"></i>
-      </button>
-      <!--end::TXT 내보내기-->
+      <!--begin::결과 전체 복사 (split — 주 버튼=해석 포함, ▾ 드롭다운=해석 제외)-->
+      <div class="btn-group" role="group">
+        <!--begin::주 버튼 (해석 포함)-->
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3 copy-split-main" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.include.tooltip')" @click="copyAll(true)">
+          <i class="bi bi-copy"></i>
+        </button>
+        <!--end::주 버튼-->
+        <!--begin::해석 제외 드롭다운-->
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary copy-split-caret" :disabled="!canCopyResults" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" :title="t('common.menu')">
+          <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+        </button>
+        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="copyAll(false)">
+              {{ t('journal.entry.search.copy-all.exclude.tooltip') }}
+              <i class="bi bi-clipboard fs-8"></i>
+            </div>
+          </div>
+        </div>
+        <!--end::해석 제외 드롭다운-->
+      </div>
+      <!--end::결과 전체 복사 (split)-->
+      <!--begin::TXT 내보내기 (split — 주 버튼=해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3 copy-split-main" :disabled="!canExportResults" :title="t('journal.entry.search.export-txt.tooltip')" @click="exportTxt(true)">
+          <i class="fas fa-download"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary copy-split-caret" :disabled="!canExportResults" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" :title="t('common.menu')">
+          <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+        </button>
+        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="exportTxt(false)">
+              {{ t('journal.download.body.label') }}
+              <i class="fas fa-download fs-8"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--end::TXT 내보내기 (split)-->
       <!--begin::키워드 배지 목록 (회색 — 텍스트 검색어)-->
       <div v-if="searchKeywords.length > 0" class="d-flex flex-wrap gap-2 ms-1">
         <span
@@ -58,6 +104,18 @@
         </span>
       </div>
       <!--end::키워드 배지 목록-->
+      <!--begin::제목 조건 배지 (제목만 매칭)-->
+      <div v-if="title" class="d-flex align-items-center ms-1">
+        <span
+          class="badge badge-light-info fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-info cursor-pointer"
+          :title="t('journal.entry.search.title.remove.tooltip')"
+          @click="removeTitle"
+        >
+          {{ t('journal.entry.search.title.badge-prefix') }} {{ title }}
+          <i class="bi bi-x"></i>
+        </span>
+      </div>
+      <!--end::제목 조건 배지-->
       <!--begin::태그 배지 목록 (파란색 — #태그명)-->
       <div v-if="tagIds.length > 0" class="d-flex flex-wrap gap-2 border-start border-gray-300 ps-3">
         <span
@@ -72,6 +130,20 @@
         </span>
       </div>
       <!--end::태그 배지 목록-->
+      <!--begin::꿈 상태 배지 목록-->
+      <div v-if="states.length > 0" class="d-flex flex-wrap gap-2 border-start border-gray-300 ps-3">
+        <span
+          v-for="state in states"
+          :key="state"
+          :class="['badge fw-lighter d-flex align-items-center gap-2 px-3 py-2 cursor-pointer', stateBadgeClass(state)]"
+          :title="t('journal.entry.search.state.remove.tooltip')"
+          @click="removeState(state)"
+        >
+          {{ getStateLabel(state) }}
+          <i class="bi bi-x"></i>
+        </span>
+      </div>
+      <!--end::꿈 상태 배지 목록-->
       <!--begin::결과 건수-->
       <div class="d-flex align-items-center gap-2 ms-auto">
         <span class="text-muted fs-8">{{ conditionSummaryLabel }}</span>
@@ -105,6 +177,26 @@
         </div>
       </div>
       <!--end::유형 선택-->
+      <!--begin::꿈 상태 선택 (복수 선택은 OR)-->
+      <div v-if="type === 'DREAM'" class="d-flex align-items-center gap-2 mb-3">
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("journal.entry.search.state") }}</span>
+        <div class="btn-group btn-group-sm" role="group" :aria-label="t('journal.entry.search.state')">
+          <button
+            type="button"
+            :class="['btn', states.includes('NHTMR') ? 'btn-danger' : 'btn-light']"
+            :aria-pressed="states.includes('NHTMR')"
+            @click="toggleState('NHTMR')"
+          >{{ t("state.nightmare") }}</button>
+          <button
+            type="button"
+            :class="['btn', states.includes('HALLUC') ? 'btn-secondary' : 'btn-light']"
+            :aria-pressed="states.includes('HALLUC')"
+            @click="toggleState('HALLUC')"
+          >{{ t("state.hallucination") }}</button>
+        </div>
+        <span class="text-muted fs-8">{{ t("journal.entry.search.state.or-hint") }}</span>
+      </div>
+      <!--end::꿈 상태 선택-->
       <!--begin::키워드 입력-->
       <div class="d-flex align-items-center gap-2">
         <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("common.keyword") }}</span>
@@ -126,6 +218,22 @@
         {{ t("journal.entry.search.input.enter-to-add") }}
       </div>
       <!--end::키워드 입력-->
+      <!--begin::제목 검색 입력 (제목만 매칭 — 키워드는 제목+본문)-->
+      <div class="d-flex align-items-center gap-2 mt-3">
+        <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t('journal.entry.search.title.label') }}</span>
+        <input
+          v-model="titleInput"
+          type="text"
+          class="form-control form-control-sm journal-entry-search-input"
+          :placeholder="t('journal.entry.search.title.placeholder')"
+          maxlength="100"
+          @keydown.enter.prevent="doSearch"
+        />
+        <button type="button" class="btn btn-sm btn-light-primary w-100px" @click="doSearch">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+      <!--end::제목 검색 입력-->
       <!--begin::태그 입력-->
       <div class="d-flex align-items-center gap-2 mt-3">
         <span class="fw-bold fs-7 text-gray-700 min-w-50px">{{ t("common.tag") }}</span>
@@ -226,6 +334,35 @@
           <span v-if="entry.stdrdDt" class="badge badge-light-secondary fw-lighter">
             {{ getDateEntryCountLabel(entry.stdrdDt) }}
           </span>
+          <!--begin::이 날짜 엔트리 복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+          <div v-if="entry.stdrdDt" class="btn-group" role="group">
+            <button
+              type="button"
+              class="btn btn-xs btn-icon btn-light-primary copy-split-main"
+              :title="t('journal.entry.search.copy-date.include.tooltip')"
+              @click="copyDate(entry.stdrdDt, true)"
+            >
+              <i class="bi bi-copy fs-8"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-xs btn-icon btn-light-primary copy-split-caret"
+              data-kt-menu-trigger="click"
+              data-kt-menu-placement="bottom-end"
+              :title="t('common.menu')"
+            >
+              <i class="bi bi-caret-down-fill fs-9 pe-0"></i>
+            </button>
+            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyDate(entry.stdrdDt, false)">
+                  {{ t('journal.entry.search.copy-date.exclude.tooltip') }}
+                  <i class="bi bi-clipboard fs-8"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end::이 날짜 엔트리 복사 (split)-->
           <button
             v-if="entry.stdrdDt"
             type="button"
@@ -336,15 +473,27 @@ const showAdvanced = ref(false);
 
 const type = ref("DIARY");
 const sort = ref("desc");
+/** 정렬 기준 축: "date"(기본) | "title" */
+const sortField = ref("date");
 const tagIds = ref<string[]>([]);
 const searchKeywords = ref<string[]>([]);
+/** 꿈 전용 상태 검색 조건. URL에는 NHTMR/HALLUC만 보존하며 복수 선택은 OR로 조회한다. */
+const states = ref<string[]>([]);
+/** 제목 전용 검색 — 적용된 조건(URL SSOT)과 입력 박스를 분리한다(키워드 패턴과 동일). */
+const title = ref("");
+const titleInput = ref("");
 const searchAttempted = ref(false);
 const searchErrorMessage = ref("");
 
 /** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
 const tagLabelMap = ref<Record<string, string>>({});
 
-const hasSearchConditions = computed(() => searchKeywords.value.length > 0 || tagIds.value.length > 0);
+const hasSearchConditions = computed(() =>
+  searchKeywords.value.length > 0
+  || tagIds.value.length > 0
+  || states.value.length > 0
+  || title.value.trim().length > 0,
+);
 const hasPendingSearchInputs = computed(() => keywordInput.value.trim().length > 0 || tagInput.value.trim().length > 0);
 const isTagCategoryChoicePending = computed(() => tagCategoryChoices.value.length > 0);
 const isActionLocked = computed(() => loading.value || actionInProgress.value);
@@ -371,6 +520,7 @@ const conditionSummaryLabel = computed(() =>
     .replace("{1}", sortLabel.value)
     .replace("{2}", String(searchKeywords.value.length))
     .replace("{3}", String(tagIds.value.length))
+    .replace("{4}", String(states.value.length))
 );
 
 const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
@@ -388,8 +538,12 @@ function syncFromRoute(): void {
   const cond = parseEntrySearchQuery(route.query);
   type.value = cond.type;
   sort.value = cond.sort;
+  sortField.value = cond.sortField;
   tagIds.value = cond.tagIds;
   searchKeywords.value = cond.searchKeywords;
+  states.value = cond.states;
+  title.value = cond.title;
+  titleInput.value = cond.title;
   keywordInput.value = "";
   tagInput.value = "";
   cancelTagCategoryChoice();
@@ -418,8 +572,11 @@ async function loadEntries(): Promise<void> {
     const params = buildEntrySearchParams({
       type: type.value,
       sort: sort.value,
+      sortField: sortField.value,
       tagIds: tagIds.value,
       searchKeywords: searchKeywords.value,
+      states: states.value,
+      title: title.value,
     });
 
     const res = await axios.get("/api/journal/entries", { params });
@@ -590,13 +747,16 @@ async function scrollToSearchEntry(entryId?: number | string): Promise<void> {
 }
 
 /** 현재 로컬 ref 상태를 URL query 로 replace한다. */
-async function pushQuery(overrides: Partial<{ type: string; sort: string; tagIds: string[]; searchKeywords: string[] }> = {}, statusMessage = ""): Promise<void> {
+async function pushQuery(overrides: Partial<{ type: string; sort: string; sortField: string; tagIds: string[]; searchKeywords: string[]; states: string[]; title: string }> = {}, statusMessage = ""): Promise<void> {
   conditionChangedMessage.value = statusMessage;
   const t = overrides.type ?? type.value;
   const s = overrides.sort ?? sort.value;
+  const sf = overrides.sortField ?? sortField.value;
   const ids = overrides.tagIds ?? tagIds.value;
   const kws = overrides.searchKeywords ?? searchKeywords.value;
-  const query = buildEntrySearchRouteQuery({ type: t, sort: s, tagIds: ids, searchKeywords: kws });
+  const sts = overrides.states ?? states.value;
+  const ttl = overrides.title ?? title.value;
+  const query = buildEntrySearchRouteQuery({ type: t, sort: s, sortField: sf, tagIds: ids, searchKeywords: kws, states: sts, title: ttl });
   await router.replace({ name: "journal-entry-search", query });
 }
 
@@ -632,6 +792,30 @@ function removeTag(tagId: string): void {
   );
 }
 
+/** 꿈 상태 배지 X 클릭 → 제거 후 재검색 */
+function removeState(state: string): void {
+  void pushQuery(
+    { states: states.value.filter((key) => key !== state) },
+    t("journal.entry.search.condition.state-changed"),
+  );
+}
+
+/** 꿈 상태 토글. 복수 선택 시 백엔드 state EXISTS/IN 계약에 따라 OR로 검색한다. */
+function toggleState(state: "NHTMR" | "HALLUC"): void {
+  const nextStates = states.value.includes(state)
+    ? states.value.filter((key) => key !== state)
+    : [...states.value, state];
+  void pushQuery({ states: nextStates }, t("journal.entry.search.condition.state-changed"));
+}
+
+function getStateLabel(state: string): string {
+  return state === "HALLUC" ? t("state.hallucination") : t("state.nightmare");
+}
+
+function stateBadgeClass(state: string): string {
+  return state === "HALLUC" ? "badge-light-secondary text-gray-700" : "badge-light-danger text-danger";
+}
+
 /** 검색 실행 (고급 필터 아코디언의 "검색" 버튼) */
 async function doSearch(): Promise<void> {
   if (isActionLocked.value) return;
@@ -651,6 +835,9 @@ async function doSearch(): Promise<void> {
 async function finalizePendingSearchInputs(): Promise<boolean> {
   if (keywordInput.value.trim() && !await addKeyword()) return false;
   if (tagInput.value.trim() && !await addTagFromInput()) return false;
+  if (titleInput.value.trim() !== title.value) {
+    await pushQuery({ title: titleInput.value.trim() });
+  }
   return true;
 }
 
@@ -665,11 +852,26 @@ function toggleSort(): void {
   pushQuery({ sort: sort.value === "desc" ? "asc" : "desc" }, t("journal.entry.search.condition.sort-changed"));
 }
 
+/** 정렬 기준 변경 (날짜/제목) */
+function setSortField(field: string): void {
+  if (sortField.value === field) return;
+  pushQuery({ sortField: field }, t("journal.entry.search.condition.sort-changed"));
+}
+
+/** 제목 조건 제거 → 재검색 */
+function removeTitle(): void {
+  titleInput.value = "";
+  void pushQuery({ title: "" }, t("journal.entry.search.condition.title-changed"));
+}
+
 /** 유형 변경 (키워드·태그 유지) */
 function changeType(newType: string): void {
   tagInput.value = "";
   cancelTagCategoryChoice();
-  pushQuery({ type: newType }, t("journal.entry.search.condition.type-changed"));
+  pushQuery(
+    { type: newType, states: newType === "DREAM" ? states.value : [] },
+    t("journal.entry.search.condition.type-changed"),
+  );
 }
 
 /** 초기화 */
@@ -683,22 +885,25 @@ function resetSearch(): void {
 }
 
 /** TXT 내보내기. 레거시 exportUrl = /api/journal/entries/export */
-async function exportTxt(): Promise<void> {
+async function exportTxt(includeReflection = true): Promise<void> {
   if (isActionLocked.value) return;
   actionInProgress.value = true;
   try {
     if (!await finalizePendingSearchInputs()) return;
-    if (searchKeywords.value.length === 0 && tagIds.value.length === 0) {
+    if (!hasSearchConditions.value) {
       void swalAlert(t("journal.entry.search.condition.required"));
       return;
     }
     const params = buildEntrySearchParams({
       type: type.value,
       sort: sort.value,
+      sortField: sortField.value,
       tagIds: tagIds.value,
       searchKeywords: searchKeywords.value,
+      states: states.value,
+      title: title.value,
     });
-    window.location.href = `/api/journal/entries/export?${params.toString()}`;
+    window.location.href = `/api/journal/entries/export?${params.toString()}&includeReflection=${includeReflection}`;
   } finally {
     actionInProgress.value = false;
   }
@@ -756,7 +961,7 @@ function onTagProfileSuccess(): void {
  * 레거시 JournalEntrySearch.copy() 와 동일 포맷:
  *   날짜(요일)\n#순번\n본문 — 날짜가 바뀔 때만 날짜 헤더 삽입, 엔트리 간 빈 줄.
  */
-async function copyAll(): Promise<void> {
+async function copyAll(includeReflection: boolean): Promise<void> {
   if (isActionLocked.value) return;
   actionInProgress.value = true;
   try {
@@ -782,6 +987,15 @@ async function copyAll(): Promise<void> {
         prevDate = dateLabel;
       }
       block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
+      /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+      if (includeReflection) {
+        for (const reflection of entry.reflectionList ?? []) {
+          const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+          if (reflRaw) block += `
+
+${reflRaw}`;
+        }
+      }
       return block;
     });
     const text = blocks.join("\r\n\r\n").trim();
@@ -795,6 +1009,56 @@ async function copyAll(): Promise<void> {
       });
     } catch (error: unknown) {
       console.error("[journal-entry-search] clipboard copy failed", error);
+      void swalAlert(t("common.copy.failure"));
+    }
+  } finally {
+    actionInProgress.value = false;
+  }
+}
+
+/**
+ * 검색 결과 중 특정 날짜에 속한 엔트리만 클립보드에 복사한다.
+ * copyAll 과 동일 포맷(날짜(요일) 헤더 1회 + #순번\n본문, 엔트리 간 빈 줄)을 그 날짜 한정으로 적용한다.
+ * 복사 계약: 소스는 저작 원문 content 우선(→ htmlToPlainText). 해석 포함 시 target 리플렉션 본문을 빈 줄로 이어 붙인다.
+ *
+ * @param stdrdDt 대상 일자(YYYY-MM-DD)
+ * @param includeReflection 해석(리플렉션) 포함 여부
+ */
+async function copyDate(stdrdDt: string | undefined, includeReflection: boolean): Promise<void> {
+  if (!stdrdDt || isActionLocked.value) return;
+  actionInProgress.value = true;
+  try {
+    const dateEntries = entries.value.filter((entry) => entry.stdrdDt === stdrdDt);
+    if (dateEntries.length === 0) {
+      void swalAlert(t("journal.entry.search.copy.empty"));
+      return;
+    }
+    const weekDay = getWeekDayStr(stdrdDt, t);
+    const dateLabel = weekDay ? `${stdrdDt} (${weekDay})` : stdrdDt;
+    const blocks = dateEntries.map((entry) => {
+      const content = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
+      let block = [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
+      /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
+      if (includeReflection) {
+        for (const reflection of entry.reflectionList ?? []) {
+          const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+          if (reflRaw) block += `\r\n\r\n${reflRaw}`;
+        }
+      }
+      return block;
+    });
+    const text = `${dateLabel}\r\n${blocks.join("\r\n\r\n")}`.trim();
+    try {
+      await navigator.clipboard.writeText(text);
+      void Swal.fire({
+        text: t("journal.entry.search.copy-date.success")
+          .replace("{0}", stdrdDt)
+          .replace("{1}", String(dateEntries.length)),
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error: unknown) {
+      console.error("[journal-entry-search] clipboard date copy failed", error);
       void swalAlert(t("common.copy.failure"));
     }
   } finally {

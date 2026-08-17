@@ -286,7 +286,7 @@ const supportedLocales = computed(() => [
 /** 로그인 후 redirect query 를 안전한 Vue Router 경로로 정규화한다. (`//` 포함 시 기본 화면) */
 function resolvePostLoginRoute(redirect: string): RouteLocationRaw {
   const trimmed = redirect.trim();
-  if (!trimmed || trimmed.includes("//")) return { name: "journal-daily-tab" };
+  if (!trimmed || trimmed.includes("//")) return { name: "journal-day-home" };
   return normalizeRoutePath(trimmed);
 }
 

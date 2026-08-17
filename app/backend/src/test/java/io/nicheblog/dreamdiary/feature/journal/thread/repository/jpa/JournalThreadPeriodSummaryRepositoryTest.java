@@ -192,8 +192,10 @@ class JournalThreadPeriodSummaryRepositoryTest {
             final String username
     ) {
         useAuditor(username);
+        final Integer ownerId = ensureUser(username);
         final JournalDayEntity day = journalDayRepository.saveAndFlush(JournalDayEntity.builder()
                 .contentType("JOURNAL_DAY")
+                .ownerId(ownerId)
                 .journalDate(journalDate)
                 .weekStartDt(weekStartDt)
                 .yy(journalDate.getYear())

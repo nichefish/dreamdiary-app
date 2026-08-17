@@ -32,6 +32,7 @@ public enum SiteMenu {
     USER_GROUP,
     MENU_ADMIN,
     CODE_ADMIN,
+    TMPLAT_ADMIN,
 
     CONTENT,
     BOARD_ADMIN,

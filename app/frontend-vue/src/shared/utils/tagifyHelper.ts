@@ -206,11 +206,24 @@ export function mergeTagifyListIntoCategoryMap(
   return next;
 }
 
-/** 태그 자동완성 (categoryMap 키 prefix 필터). whitelist 가 비면 dropdown 을 닫는다. */
+/**
+ * categoryMap 키에서 태그 자동완성 후보를 찾는다.
+ *
+ * <p>영문 대소문자는 검색에서만 무시하고 반환값은 categoryMap의 원래 표기를 보존한다.</p>
+ */
+export function filterTagifyAutoCompleteCandidates(
+  categoryMap: Record<string, string[]>,
+  input: string,
+): string[] {
+  const normalizedInput = input.toLowerCase();
+  return Object.keys(categoryMap).filter((tag) => tag.toLowerCase().startsWith(normalizedInput));
+}
+
+/** 태그 자동완성 (categoryMap 키의 대소문자 비구분 prefix 필터). whitelist 가 비면 dropdown 을 닫는다. */
 export function bindTagifyAutoComplete(tagify: TagifyInstance, categoryMap: Record<string, string[]>): void {
   tagify.on("input", (e: { detail: { value: string } }) => {
     const val = e.detail.value ?? "";
-    tagify.settings.whitelist = Object.keys(categoryMap).filter((tag) => tag.startsWith(val));
+    tagify.settings.whitelist = filterTagifyAutoCompleteCandidates(categoryMap, val);
     if ((tagify.settings.whitelist as string[]).length > 0) {
       tagify.dropdown.show(val);
     } else {

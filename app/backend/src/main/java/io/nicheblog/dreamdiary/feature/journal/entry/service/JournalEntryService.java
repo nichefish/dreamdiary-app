@@ -416,18 +416,18 @@ public class JournalEntryService
         final JournalEntryTypePolicy policy = policyResolver.resolve(registDto);
         assertChapterForEntry(policy, registDto.getJournalChapterId(), registDto.getRefId());
         journalDayResolvedGuard.assertWritableForEntry(registDto.getJournalChapterId(), policy.contentType);
-        JournalDreamerFieldHelper.applyDreamerFieldsFromPost(registDto, policy.contentType);
+        JournalDreamerFieldHelper.applyDreamerNameFromPost(registDto, policy.contentType);
         registDto.setSortOrder(journalEntryOrderService.getNextSortOrder(registDto.getJournalChapterId(), policy.contentType));
     }
 
     /**
-     * 등록 직전 엔티티에 꿈꾼 이름·else_dream_yn 을 반영한다.
+     * 등록 직전 엔티티에 정규화된 꿈꾼 이름을 반영한다.
      *
      * @param registEntity 등록 엔티티
      */
     @Override
     public void preRegist(final JournalEntryEntity registEntity) throws Exception {
-        JournalDreamerFieldHelper.applyDreamerFieldsToEntity(registEntity);
+        JournalDreamerFieldHelper.applyDreamerNameToEntity(registEntity);
     }
 
     /**
@@ -454,7 +454,7 @@ public class JournalEntryService
     @Override
     public void preModify(final JournalEntryPostDto modifyDto, final JournalEntryEntity modifyEntity) {
         final JournalEntryTypePolicy policy = policyResolver.resolve(modifyDto);
-        JournalDreamerFieldHelper.applyDreamerFieldsFromPost(modifyDto, policy.contentType);
+        JournalDreamerFieldHelper.applyDreamerNameFromPost(modifyDto, policy.contentType);
         policyResolver.assertMatches(modifyEntity, policy);
         if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("common.result.access-not-authorized");
@@ -537,7 +537,7 @@ public class JournalEntryService
         this.preModify(postDto, modifyEntity);
 
         mapstruct.updateFromDto(postDto, modifyEntity);
-        JournalDreamerFieldHelper.applyDreamerFieldsToEntity(modifyEntity);
+        JournalDreamerFieldHelper.applyDreamerNameToEntity(modifyEntity);
         BaseAttachableManagtHelper.applyModifyManagt(postDto, modifyEntity);
         BaseAttachableHistoryHelper.applyModifyHistory(historySnapshot, modifyEntity);
 

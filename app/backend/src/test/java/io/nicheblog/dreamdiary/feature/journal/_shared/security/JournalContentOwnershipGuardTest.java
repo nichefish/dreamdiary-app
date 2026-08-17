@@ -42,6 +42,8 @@ class JournalContentOwnershipGuardTest {
 
     private static final String FIXTURE_OWNER = "fixture_journal_owner";
     private static final String FIXTURE_OTHER_OWNER = "fixture_other_owner";
+    private static final Integer FIXTURE_OWNER_ID = 10;
+    private static final Integer FIXTURE_OTHER_OWNER_ID = 20;
     private static final Integer FIXTURE_DAY_ID = 100;
     private static final Integer FIXTURE_CHAPTER_ID = 101;
     private static final Integer FIXTURE_ENTRY_ID = 102;
@@ -65,6 +67,7 @@ class JournalContentOwnershipGuardTest {
     void setUp() {
         authUtils = mockStatic(AuthUtils.class);
         authUtils.when(AuthUtils::requireLoginUsername).thenReturn(FIXTURE_OWNER);
+        authUtils.when(AuthUtils::requireLoginUserId).thenReturn(FIXTURE_OWNER_ID);
         guard = new JournalContentOwnershipGuard(
                 journalDayRepository,
                 journalChapterRepository,
@@ -79,11 +82,11 @@ class JournalContentOwnershipGuardTest {
         authUtils.close();
     }
 
-    /** 일자와 챕터는 각 원본 행의 작성자 소유권을 사용한다. */
+    /** 일자는 ownerId, 챕터는 현재 계약인 원본 작성자 소유권을 사용한다. */
     @Test
     void ownedDayAndChapterAreAccepted() {
         when(journalDayRepository.findById(FIXTURE_DAY_ID)).thenReturn(Optional.of(
-                JournalDayEntity.builder().id(FIXTURE_DAY_ID).createdBy(FIXTURE_OWNER).build()
+                JournalDayEntity.builder().id(FIXTURE_DAY_ID).ownerId(FIXTURE_OWNER_ID).createdBy(FIXTURE_OWNER).build()
         ));
         when(journalChapterRepository.findById(FIXTURE_CHAPTER_ID)).thenReturn(Optional.of(
                 JournalChapterEntity.builder().id(FIXTURE_CHAPTER_ID).createdBy(FIXTURE_OWNER).build()
@@ -129,7 +132,7 @@ class JournalContentOwnershipGuardTest {
     @Test
     void contentOwnedByAnotherUserIsRejectedForAllDomains() {
         when(journalDayRepository.findById(FIXTURE_DAY_ID)).thenReturn(Optional.of(
-                JournalDayEntity.builder().id(FIXTURE_DAY_ID).createdBy(FIXTURE_OTHER_OWNER).build()
+                JournalDayEntity.builder().id(FIXTURE_DAY_ID).ownerId(FIXTURE_OTHER_OWNER_ID).createdBy(FIXTURE_OWNER).build()
         ));
         when(journalChapterRepository.findById(FIXTURE_CHAPTER_ID)).thenReturn(Optional.of(
                 JournalChapterEntity.builder().id(FIXTURE_CHAPTER_ID).createdBy(FIXTURE_OTHER_OWNER).build()

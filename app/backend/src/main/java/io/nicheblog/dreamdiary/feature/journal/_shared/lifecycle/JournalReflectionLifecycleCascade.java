@@ -21,7 +21,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Reflection 과 일기·꿈·노트(primary target) 사이의 라이프사이클 연쇄.
@@ -65,31 +67,56 @@ public class JournalReflectionLifecycleCascade {
     }
 
     /**
-     * primary 엔트리가 {@code RESOLVED} 로 바뀐 뒤, 그 엔트리를 target 으로 둔 Reflection 을 같은 값으로 맞춘다.
+     * primary 엔트리가 {@code RESOLVED} 로 요청되면, 그 엔트리를 target 으로 둔 미완료 Reflection 을
+     * 같은 값으로 맞춘다. 이미 {@code RESOLVED} 인 Reflection 은 저장·파생 상태·캐시 후처리를 반복하지 않는다.
      *
      * @param parent 방금 설정된 primary 라이프사이클 요청
      */
     public void cascadeResolvedToAttachedReflections(final LifecycleSetDto parent) {
         if (parent == null || parent.getId() == null || parent.getContentType() == null) return;
         if (!LifecycleKey.RESOLVED.equals(parent.getLifecycleKey())) return;
-        if (!PRIMARY_TARGET_TYPES.contains(parent.getContentType())) return;
+        if (!isPrimaryTargetType(parent.getContentType())) return;
 
         final List<JournalReflectionEntity> reflections = journalReflectionRepository
                 .findAllByRefIdAndRefContentType(parent.getId(), parent.getContentType());
         if (reflections.isEmpty()) return;
 
+        final Set<Integer> reflectionIds = new LinkedHashSet<>();
+        for (final JournalReflectionEntity reflection : reflections) {
+            if (reflection != null && reflection.getId() != null) {
+                reflectionIds.add(reflection.getId());
+            }
+        }
+        if (reflectionIds.isEmpty()) return;
+
+        final Set<Integer> resolvedReflectionIds = new LinkedHashSet<>();
+        lifecycleRepository.findAllByRefContentTypeAndRefIdIn(
+                        ContentType.JOURNAL_REFLECTION.key,
+                        reflectionIds
+                ).stream()
+                .filter(lifecycle -> lifecycle.getRefId() != null)
+                .filter(lifecycle -> LifecycleKey.RESOLVED.equals(
+                        LifecycleService.normalize(lifecycle.getLifecycleKey())
+                ))
+                .forEach(lifecycle -> resolvedReflectionIds.add(lifecycle.getRefId()));
+
+        final List<Integer> unresolvedReflectionIds = reflectionIds.stream()
+                .filter(reflectionId -> !resolvedReflectionIds.contains(reflectionId))
+                .toList();
+
         log.info(
-                "[ReflectionLifecycleCascade] primary RESOLVED → 딸린 Reflection {}건. targetId={}, targetType={}",
-                reflections.size(),
+                "[ReflectionLifecycleCascade] primary RESOLVED cascade 대상 계산. attached={}, skippedResolved={}, targets={}, targetId={}, targetType={}",
+                reflectionIds.size(),
+                resolvedReflectionIds.size(),
+                unresolvedReflectionIds.size(),
                 parent.getId(),
                 parent.getContentType()
         );
 
-        for (final JournalReflectionEntity reflection : reflections) {
-            if (reflection == null || reflection.getId() == null) continue;
+        for (final Integer reflectionId : unresolvedReflectionIds) {
             try {
                 lifecycleService.set(LifecycleSetDto.builder()
-                        .id(reflection.getId())
+                        .id(reflectionId)
                         .contentType(ContentType.JOURNAL_REFLECTION)
                         .lifecycleKey(LifecycleKey.RESOLVED)
                         .cacheContext(parent.getCacheContext())
@@ -97,7 +124,7 @@ public class JournalReflectionLifecycleCascade {
             } catch (final Exception e) {
                 log.error(
                         "[ReflectionLifecycleCascade] Reflection RESOLVED 연쇄 실패. reflectionId={}, targetId={}: {}",
-                        reflection.getId(),
+                        reflectionId,
                         parent.getId(),
                         e.getMessage(),
                         e
@@ -105,6 +132,22 @@ public class JournalReflectionLifecycleCascade {
                 throw (e instanceof RuntimeException re) ? re : new IllegalStateException(e);
             }
         }
+        log.info(
+                "[ReflectionLifecycleCascade] primary RESOLVED cascade 완료. transitioned={}, targetId={}, targetType={}",
+                unresolvedReflectionIds.size(),
+                parent.getId(),
+                parent.getContentType()
+        );
+    }
+
+    /**
+     * Reflection 완료 연쇄를 소유하는 primary 엔트리 타입인지 확인한다.
+     *
+     * @param contentType 검사할 콘텐츠 타입
+     * @return 일기·꿈·노트이면 {@code true}
+     */
+    public static boolean isPrimaryTargetType(final ContentType contentType) {
+        return contentType != null && PRIMARY_TARGET_TYPES.contains(contentType);
     }
 
     /**
@@ -122,7 +165,7 @@ public class JournalReflectionLifecycleCascade {
             final AttachableCacheContext cacheContext
     ) {
         if (targetId == null || targetContentType == null) return;
-        if (!PRIMARY_TARGET_TYPES.contains(targetContentType)) return;
+        if (!isPrimaryTargetType(targetContentType)) return;
 
         final String currentKey = lifecycleRepository
                 .findByRefIdAndRefContentType(targetId, targetContentType.key)

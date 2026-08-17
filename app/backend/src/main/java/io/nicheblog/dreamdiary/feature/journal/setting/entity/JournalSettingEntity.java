@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.setting.entity;
 
+import io.nicheblog.dreamdiary.feature.journal.setting.type.JournalDefaultEntryView;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
@@ -9,13 +10,20 @@ import java.time.LocalDateTime;
 /**
  * JournalSettingEntity
  * <pre>
- *  저널 도메인 설정 Entity. ADMIN/GLOBAL 1행으로 전역 정책을 관리한다.
+ *  저널 도메인 설정 Entity.
+ *  ADMIN/GLOBAL 행은 전역 정책을, USER/username 행은 사용자별 정책을 관리한다.
  * </pre>
  *
  * @author nichefish
  */
 @Entity
-@Table(name = "journal_setting")
+@Table(
+        name = "journal_setting",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_journal_setting_scope",
+                columnNames = {"scope", "scope_key"}
+        )
+)
 @Getter
 @Setter
 @Builder
@@ -33,7 +41,7 @@ public class JournalSettingEntity {
     @Comment("설정 범위 (ADMIN/USER)")
     private String scope;
 
-    @Column(name = "scope_key", length = 100)
+    @Column(name = "scope_key", nullable = false, length = 100)
     @Comment("범위 키 (ADMIN=GLOBAL, USER=username)")
     private String scopeKey;
 
@@ -42,6 +50,12 @@ public class JournalSettingEntity {
     @Column(name = "embedding_enabled", nullable = false)
     @Comment("AI 임베딩 활성화 여부 (1=ON, 0=OFF)")
     private Boolean embeddingEnabled = true;
+
+    /** 사용자별 저널 기본 진입 화면. USER 범위에서 사용하며 미설정 값은 서비스 기본값으로 해석한다. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "default_entry_view", length = 20)
+    @Comment("사용자별 저널 기본 진입 화면 (DAILY/WEEKLY/MONTHLY)")
+    private JournalDefaultEntryView defaultEntryView;
 
     @Column(name = "created_by", length = 20)
     private String createdBy;

@@ -47,9 +47,10 @@ public class JournalDayBootstrapService {
 
         final JournalDayEntity day = journalDayRepository.findById(journalDayId)
                 .orElseThrow(() -> new BusinessException("journal.day.not-found"));
-        if (!AuthUtils.isCreatedBy(day.getCreatedBy())) {
-            log.warn("Journal day bootstrap ownership check failed. journalDayId={}, createdBy={}, loginUsername={}",
-                    journalDayId, day.getCreatedBy(), AuthUtils.getLoginUsername());
+        final Integer loginUserId = AuthUtils.requireLoginUserId();
+        if (!loginUserId.equals(day.getOwnerId())) {
+            log.warn("Journal day bootstrap ownership check failed. journalDayId={}, ownerId={}, loginUserId={}",
+                    journalDayId, day.getOwnerId(), loginUserId);
             throw new NotAuthorizedException("common.result.access-not-authorized");
         }
 

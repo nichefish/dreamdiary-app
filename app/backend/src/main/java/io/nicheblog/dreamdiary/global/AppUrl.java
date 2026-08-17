@@ -24,6 +24,8 @@ public interface AppUrl {
 
     String ADMIN_MAIN = Prefix.APP + "/admin/main.do";
     String ADMIN_PAGE = Prefix.APP + "/admin/admin-page.do";
+    /** 프론트엔드 구현체와 독립적인 저널 일자 공통 화면 진입 URL */
+    String JOURNAL_DAY_HOME = Prefix.APP + "/journal/day/home";
     /** 저널 일자 (리스트) */
     String JOURNAL_DAY_MONTHLY = Prefix.APP + "/journal/day/monthly.do";
     String JOURNAL_DAY_WEEKLY = Prefix.APP + "/journal/day/weekly.do";
@@ -81,6 +83,7 @@ public interface AppUrl {
 
     /** 코드 관리 */
     String CODE_ADMIN_PAGE = Prefix.APP + "/admin/code/page.do";
+    String TMPLAT_ADMIN_PAGE = Prefix.APP + "/admin/tmplat/page.do";
 
     /** 로그 조회 */
     String LOG_LIST = Prefix.APP + "/log/list.do";

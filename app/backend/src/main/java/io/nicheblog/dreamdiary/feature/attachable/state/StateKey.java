@@ -20,9 +20,9 @@ public enum StateKey {
     COLLAPSED("COLLAPSED", "접기"),
     IMPRTC("IMPRTC", "중요"),
     REFRNC("REFRNC", "참조"),
-    /** 저널 꿈 전용: 악몽 (기존 {@code journal_dream.nhtmr_yn} 이관 대상) */
+    /** 저널 꿈 전용 의미 상태: 악몽 */
     NHTMR("NHTMR", "악몽"),
-    /** 저널 꿈 전용: 입면 환각 (기존 {@code journal_dream.halluc_yn} 이관 대상) */
+    /** 저널 꿈 전용 의미 상태: 입면 환각 */
     HALLUC("HALLUC", "입면 환각");
 
     /** DB 및 API에 사용되는 문자열 키 */

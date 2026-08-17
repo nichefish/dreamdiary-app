@@ -66,12 +66,13 @@
 - [ ] dead file 제거 확인 — 이번 릴리스 작업으로 더 이상 사용하지 않는 파일(`*_old.*`, 미참조 컴포넌트, 빈 유틸 등) 정리 여부 확인. `import`/`require` 역참조로 검증.
 
 ## 9. 소스코드 고고학 훑어보기
-> 방법론: [CODE_ARCHAEOLOGY_CHECKLIST.md](references/CODE_ARCHAEOLOGY_CHECKLIST.md) 최소(30분) 패스면 충분. 원천: [source-archaeology.md](references/dreamdiary/source-archaeology.md) · 진단·처방: [system-issues.md](references/dreamdiary/system-issues.md).
+> 방법론: [CODE_ARCHAEOLOGY.md](CODE_ARCHAEOLOGY.md). 원천: [REPO_HISTORY.md](references/REPO_HISTORY.md) · 정적: [REPO_STATIC_ANALYSIS.md](references/REPO_STATIC_ANALYSIS.md) · 진단: [SYSTEM_ISSUES.md](references/SYSTEM_ISSUES.md).
+> 산출물은 스냅샷이다. 허브 파일이 분해·삭제됐거나 시대가 바뀌었으면 표를 고치지 말고 같은 역할의 문서를 재작성한다(부록 §14).
 
-- [ ] `source-archaeology.md` 재훑기 — 이번 릴리스 변경이 만든 새 지층이 기존 통섭("세우고 접는 수렴")과 어긋나는지 확인.
-- [ ] 이번 릴리스가 남긴 부채 점검 — dead/zombie 코드, 책임 누수, **허브 축적**(허브 서비스·스토어의 LOC·fan-in 증가), 평행 표면, 스키마 baseline drift.
-- [ ] 정량 수치 반영 — 허브 파일(예: `JournalEntryService`·`journalModal.ts`) LOC/fan-in이 크게 변했으면 `source-archaeology.md` 구조 지형도 표 갱신.
-- [ ] 새 지층·처방이 있으면 `source-archaeology.md`(원천, §0 등급 부착)·`system-issues.md`(진단·처방)에 기록. 원천은 사실만, 처방은 진단 문서로 분리.
+- [ ] 역사서 통섭이 이번 릴리스 방향과 어긋나는지 확인. 어긋나면 최소 패스 대신 재작성.
+- [ ] 이번 릴리스가 남긴 부채 — dead/zombie, 허브 축적, 평행 표면, 스키마 baseline drift.
+- [ ] 정적분석 PRESSURE의 파일명이 아직 트리에 있는지 확인. 없으면 재작성.
+- [ ] 진단 매트릭스에 해소된 항이 남아 있으면 `system-issues.md`를 재작성(줄 수정으로 연명하지 않음).
 
 ## 10. 최종 저장소 점검
 > push 직전 `git diff` 한 패스로 아래를 모두 확인한다.
@@ -87,10 +88,10 @@
 
 > 매 릴리스마다 이 섹션만 갱신한다. 위 항목 중 이번에 특별히 챙길 것·현재 상태를 적는다.
 
-### v0.27.0
-- 기능 배선 QA: 기본 진입 `/journal/daily`, 일간 뷰 탭·미니 캘린더·일자 태그 클라우드, 팝업 모드 유지 여부를 확인한다.
-- AI 설정 QA: 관리자 AI 탭의 저널 임베딩 ON/OFF 저장·실패 복원과, OFF 상태에서 엔트리 등록·수정 시 embedding/entity queue를 건너뛰는지 확인한다.
-- 성능·캐시 QA: 에디터·태그·차트 지연 로딩, 정적 자산 immutable cache, API GET ETag/304, 인증 조회 재사용이 사용자 상태를 오염시키지 않는지 확인한다.
-- 의존성 lock: `element-plus`·`yup` 제거에 따른 `package-lock.json` 축소는 의도된 번들 정리다.
+### v0.28.0
+- 기능 배선 QA: 복사·다운로드 split(전체/본문만) 각 표면(엔트리·챕터·검색·스레드), 검색 날짜별 복사, 사용자별 기본 진입 화면, 에디터 템플릿 삽입, 인라인 댓글 수정/삭제의 상태 배선·전파를 확인한다.
+- 복사 계약 QA: 리플렉션·엔트리 복사가 저작 소스 텍스트(마크다운 원문·문단)를 담고, 앱 에디터에 되붙이면 원래대로 재렌더되는지 확인한다.
+- 데이터 계약 QA: 일자 소유권을 사용자 영속 ID로 분리한 뒤에도 소유 판정이 유지되는지 확인한다.
+- 의존성 lock: `happy-dom`(DOM 테스트 환경) 추가에 따른 `package-lock.json` 증가는 의도된 변경이다.
 - 스키마: Flyway 증분 없음(1.0 전). 마스터 스키마와 런타임 entity 정합을 확인한다.
-- 태그: `v0.27.0`은 dev 브랜치가 아니라 main 머지 커밋에 생성한다. 과거 릴리스 태그 백필은 각 main 머지 커밋 대조 후 별도로 수행한다.
+- 태그: `v0.28.0`은 dev 브랜치가 아니라 main 머지 커밋에 생성한다.

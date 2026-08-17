@@ -14,6 +14,7 @@
 | 인증 정책 관리 | `/admin/auth-policy` | `AuthPolicyPage.vue` | ✓ |
 | 게시판 그룹 관리 | `/admin/board-group` | `BoardGroupAdminPage.vue` | ✓ |
 | 코드 관리 | `/admin/code` | `CodeAdminPage.vue` | ✓ |
+| 템플릿 관리 | `/admin/tmplat` | `TmplatAdminPage.vue` | ✓ |
 | 메뉴 관리 | `/admin/menu` | `MenuAdminPage.vue` | ✓ |
 | 사용자 그룹 관리 | `/admin/user-groups` | `UserGroupAdminPage.vue` | ✓ |
 | 계정 관리 | `/admin/users` | `UserAdminPage.vue` | ✓ |
@@ -132,6 +133,21 @@
 - 다국어 번역은 `code_item_i18n` 테이블(code_item_id, locale, code_name 복합PK)에 저장. 현재 `en` 언어만 지원.
 - API: `GET/POST /api/code/groups`, `GET/PATCH/DELETE /api/code/group/{id}`
 - API: `GET/POST /api/code/items`, `GET/DELETE /api/code/item`, `PUT /api/code/items/sort-orders`
+
+---
+
+## 템플릿 관리 (`tmplat-admin`)
+
+**Vue view**: `app/frontend-vue/src/features/admin/TmplatAdminPage.vue`  
+**스토어**: `features/admin/stores/tmplat.ts`
+
+**기능**:
+- 저널 엔트리 작성 에디터에서 드롭다운으로 골라 삽입하는 전역 공용 템플릿을 관리한다. 평면 단일 목록으로 `제목 + HTML 내용` 한 쌍을 등록/수정/삭제한다. 그룹·분류 계층은 없다.
+- 템플릿 등록 버튼은 코드 관리와 동형인 뷰 툴바(`tmplat-admin-view-toolbar`, `pe-5 mt-3 mb-1`)에 둔다. ASIDE·탭용 `mt-5` 빈 여백은 없다. 목록 카드는 `margin-top: 0`으로 툴바에 붙인다. 화면 설명은 `TMPLAT_ADMIN` 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시한다.
+- 목록 열: 번호·제목·정렬·사용 여부·관리(⋯). ⋯ 컨텍스트 메뉴는 코드 관리와 동일하게 Metronic `data-kt-menu` + `data-kt-menu-overflow="true"`를 쓰고, 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다. 행 클릭은 수정 모달을 열되 `isMetronicMenuEventTarget` 로 메뉴 클릭을 가드한다.
+- 등록/수정 모달: `제목`(text) + `내용`(공용 `RichEditor`, height 320) + `정렬 순서`(number) + `사용 여부`(switch). 폼 전송은 `FormData`(@ModelAttribute 바인딩).
+- 사용 여부(`useYn`)는 목록 노출용 플래그다. 에디터 소비 API는 `useYn=Y` 만 반환한다.
+- API: `GET/POST /api/tmplats`, `GET/POST/DELETE /api/tmplat/{id}`, `GET /api/tmplats/active`(에디터 소비용, 인증 사용자).
 
 ---
 

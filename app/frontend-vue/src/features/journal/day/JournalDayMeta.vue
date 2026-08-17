@@ -176,10 +176,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from "vue";
+import { ref, watch, computed, onMounted, defineAsyncComponent } from "vue";
 import axios from "axios";
-import Apexchart from "vue3-apexcharts";
-import "apexcharts/dist/apexcharts.css";
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { useMetaContextMenuStore } from "@/features/journal/stores/metaContextMenu";
 import JournalDayViewToolbar from "./components/JournalDayViewToolbar.vue";
@@ -189,6 +187,15 @@ import { useLocaleStore } from "@/shared/i18n/stores/locale";
 const store = useJournalStore();
 const metaContextMenuStore = useMetaContextMenuStore();
 const { t } = useLocaleStore();
+
+/**
+ * apexcharts 지연 로드: 라우트 청크에서 apexcharts(JS+CSS)를 별도 async 청크로 분리한다.
+ * 차트는 hasChartData 시점에만 렌더되므로 초기 진입 비용에서 제외된다.
+ */
+const Apexchart = defineAsyncComponent(async () => {
+  await import("apexcharts/dist/apexcharts.css");
+  return (await import("vue3-apexcharts")).default;
+});
 
 type GraphPoint = { dt: string; value: number };
 type GraphStats = { sum: number; avg: number; max: number; min: number; maxDt: string; minDt: string };

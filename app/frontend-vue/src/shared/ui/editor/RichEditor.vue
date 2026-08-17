@@ -9,6 +9,7 @@
     :model-value="modelValue"
     :height="height"
     :placeholder="placeholder"
+    :enable-templates="enableTemplates"
     @update:model-value="emit('update:modelValue', $event)"
   />
   <!--end::리치 에디터 지연 로딩 경계-->
@@ -27,12 +28,15 @@ interface Props {
   /** 에디터 높이 (px). 기본값 540. */
   height?: number;
   placeholder?: string;
+  /** 템플릿 삽입 드롭다운 노출 여부. 기본값 false. 저널 엔트리 작성 에디터에서만 켠다. */
+  enableTemplates?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   modelValue: "",
   height: 540,
   placeholder: undefined,
+  enableTemplates: false,
 });
 
 const emit = defineEmits<{

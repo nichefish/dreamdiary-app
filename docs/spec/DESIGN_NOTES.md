@@ -54,6 +54,8 @@
 
 ### 저널 꿈(journal-dream)
 
+- 지정 꿈꾼은 `journal_entry.dreamer_name` 하나로 저장한다. 트림한 이름이 있으면 타인의 꿈, 이름이 없으면 내 꿈으로 분류하며 별도 여부 플래그를 저장하지 않는다. 비꿈 엔트리의 `dreamer_name`은 `NULL`이다.
+- **운영 DB 이관 기록(`V0.28.0-dreamer-name-hardcut`, 2026-08-15)**: `else_dreamer_nm` 공백 5,079행을 `NULL`로 정규화한 뒤 `dreamer_name`으로 변경하고, 이름과 값이 일치한 파생 `else_dream_yn`을 삭제했다. 임베딩 payload 9,112행도 `dreamerName` 단일 키로 바꿨으며 기존 벡터와 콘텐츠 해시는 유지한다. 복구 원본은 `_backup_journal_entry_full`의 지정 꿈꾼 11행과 이관 전 일치함을 확인했다.
 - 저널 꿈 태그 해석 추가
   - "태그에 해석을 붙이면 해석의 일관성이 생긴다. 상징 데이터가 누적된다. 반복 상징의 변주를 추적할 수 있다."
   - "dreamdiary가“상징-사례-변형” 구조로 진화한다. 즉, 꿈을 모으는 시스템 → 상징 체계를 구축하는 시스템으로 격상된다."
@@ -230,11 +232,25 @@
 #### 태그 프로필(tag-profile)
 - 태그클라우드 색상 설정 추가.
   - "태그를 색으로 분리하면 인지적 분류 비용이 급감한다." "이건 단순 스타일이 아니라 주의(attention)와 해석 레이어를 분리하는 기능이다."
-- 태그클라우드 크기 최대(`forceMax`): 체크 시 빈도 산출과 무관하게 `ts-9`로 고정. 색(`textClass`)과 직교. sized 태그클라우드만(엔트리 본문 태그줄 제외).
+- 태그클라우드 크기 고정(`cloudSizeLock`): MAX면 `ts-9`, MIN이면 `ts-1`로 고정(AUTO는 빈도 산출). 색(`textClass`)과 직교. sized 태그클라우드만(엔트리 본문 태그줄 제외).
 
 ### 메타(meta)
 
 ### 상태(state)
+
+- `NHTMR`(악몽)와 `HALLUC`(입면 환각)는 저널 꿈 전용 의미 상태이며, `state`가 유일한 영속 원천이다. 두 상태는 서로 독립적인 불리언 표지로서 ON을 `(ref_content_type = JOURNAL_DREAM, ref_id, state_key)` 행 존재로 표현하고 OFF를 행 부재로 표현한다.
+- 컨텐츠 타입별 허용 범위는 `AttachableContentStatePolicy`가 강제하고, 화면은 `POST /api/states` 토글 결과와 조회 DTO의 상태값을 표시한다.
+
+#### 현재값 삭제 정책(state/lifecycle)
+
+- `state`와 `lifecycle`은 변경 이력이 아니라 콘텐츠의 현재값을 저장하는 보조 테이블이다. `state`는 활성 상태만 행으로 저장하고 OFF를 행 부재로 표현한다. `lifecycle`은 `PENDING`·`RESOLVED`만 행으로 저장하고 기본값 `OPEN`을 행 부재로 표현한다.
+- `state` OFF는 현재 행을 물리 삭제한다. `lifecycle`은 `PENDING` ↔ `RESOLVED` 전환을 동일 행 UPDATE로 처리하고, `OPEN` 전환은 현재 행을 물리 삭제한다. 유니크 기준은 각각 `(ref_content_type, ref_id, state_key)`, `(ref_content_type, ref_id)`이다.
+- 이 물리 삭제는 현재값의 부재 표현과 유니크 키 재사용을 위한 영속 계약이다. `deleted_at`만 기록하는 소프트 삭제는 행과 인덱스 키를 보존하므로 DB 부하를 줄이는 수단으로 채택하지 않는다. 동일 키의 재등록을 지원하려면 삭제 행 조회·복원과 동시성·멱등 처리를 함께 설계해야 한다.
+- 두 테이블의 PK는 `INT AUTO_INCREMENT`이며, 행을 물리 삭제한 뒤 같은 현재값을 다시 활성화하면 새 ID를 사용한다. ID의 숫자 크기와 빈 구간은 4바이트 `INT` 키의 크기를 바꾸지 않으므로, 성능은 ID 값 자체가 아니라 활성 행 수·인덱스 크기·실제 DELETE/INSERT 빈도로 판단한다. 사용자 조작으로 발생하는 현재 변경 빈도에서는 이 비용을 낮은 것으로 본다.
+- AUTO_INCREMENT 카운터는 일상 운영에서 재사용하거나 초기화하지 않는다. 활성 행이 있는 테이블의 카운터를 낮추려면 PK 재번호화나 테이블 재구성이 필요하므로 정기 유지보수 수단으로 삼지 않는다.
+- 제품 규모에서는 `information_schema.tables.AUTO_INCREMENT`와 일별 ID 증가량으로 잔여 기간을 관찰한다. signed `INT` 상한에 접근할 가능성이 생기면 ID 리셋 대신 PK와 애플리케이션 ID 타입을 `BIGINT`/`Long`으로 전환한다. 수억 단위 ID 자체는 전환 조건이 아니며, 예상 증가율에 따른 상한 도달 시점과 실제 쓰기 병목을 기준으로 결정한다.
+- 복구가 도메인 계약인 콘텐츠·소속 관계는 소프트 삭제를 사용할 수 있다. `journal_thread_entry`는 해제된 동일 소속 행을 조회해 되살리는 `findAnyByPair` → `reviveById` 경로와 유니크 키를 하나의 계약으로 유지한다. 현재값 보조 테이블에는 이 복구 의미를 적용하지 않는다.
+- 상태 전이의 감사·분석 요구가 생기면 `state`·`lifecycle` 현재 행을 tombstone으로 누적하지 않고 별도의 append-only 변경 이력으로 모델링한다. 성능 재검토는 실제 DELETE/INSERT 빈도, InnoDB purge lag, 잠금 경합, 테이블·인덱스 크기 측정에서 병목이 확인될 때 수행하며, 그 경우 현재값 상시 저장과 UPDATE 전환을 대안으로 비교한다.
 
 ### 조회자(viewer)
 
@@ -243,7 +259,7 @@
 - 컬럼은 방향성을 드러내는 `src/dst`보다 중립적인 `left/right`를 사용한다.
 - "A-B"와 "B-A"를 같은 관계로 보고, 물리적으로는 1행만 저장한다. 조회는 양방향으로 푼다. 자기 자신과의 관계는 금지한다.
 - 저장 전에 항상 pair를 정규화한다. 정규화 후 앞쪽을 `left_*`, 뒤쪽을 `right_*`에 저장한다.
-- 관련글 API·연결 생성의 지원 타입은 `JOURNAL_DIARY`·`JOURNAL_DREAM`이다. 엔트리 삭제 후처리의 관련글 정리 오버로드는 미지원 타입(`JOURNAL_REFLECTION` 등)을 거절하지 않고 no-op 한다.
+- 관련글 API·연결 생성의 지원 타입은 `JOURNAL_DIARY`·`JOURNAL_DREAM`·`JOURNAL_THREAD`다. `JOURNAL_REFLECTION`은 필수 target에 매달린 해석이므로 대칭 관련글 관계에 참여하지 않으며, Reflection에서 발견한 기록 간 관계는 대상 원본 엔트리에 연결한다. 엔트리 삭제 후처리의 관련글 정리 오버로드는 미지원 타입을 거절하지 않고 no-op 한다.
 
 #### FLOW — 폐기된 결정 기록
 
