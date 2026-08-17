@@ -85,7 +85,7 @@
                 </label>
               </div>
               <div class="col-12">
-                <RichEditor v-model="model.content" :height="350" />
+                <RichEditor :model-value="model.content" @update:model-value="model && (model.content = $event)" :height="350" />
               </div>
             </div>
             <!--end::내용-->
