@@ -49,6 +49,7 @@
   - 탭 진입·전환 시 embedding/entity stats·Ollama health·RAG settings를 조회한다. Embedding/Entity 카드 안의 Refresh는 해당 섹션만 재조회한다.
   - AI 관리 탭은 AI Embedding Backfill / Entity Queue Backfill 카드를 5:5 컬럼으로 배치한다.
   - 서버 기동 시 `app.journal.embedding.sync-on-startup`(기본 `true`)이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`)
+  - `JOURNAL_ENTRY_EMBEDDING_SYNC` 실행 스레드의 p6spy statement SQL은 DEBUG로 남긴다. 요청 스레드 SQL은 INFO를 유지한다.
   - `total` = active journal entry count (Entries baseline)
   - `queueRows` / `unqueuedEntries` = queue table row count / entries not yet queued
   - progress bars use entry coverage (`embedded/total`, `synced/total`)

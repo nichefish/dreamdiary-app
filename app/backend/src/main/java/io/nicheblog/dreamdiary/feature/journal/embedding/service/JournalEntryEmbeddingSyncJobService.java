@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbe
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncJobStatusDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncResultDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.repository.jpa.JournalEntryEmbeddingSyncJobRepository;
+import io.nicheblog.dreamdiary.infrastructure.log.p6spy.P6SpySqlLogQuietScope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -91,24 +92,29 @@ public class JournalEntryEmbeddingSyncJobService {
         });
     }
 
+    /**
+     * 전수 sync를 실행한다. 이 스레드의 p6spy statement SQL은 DEBUG로 남긴다.
+     */
     private void runSync() {
-        try {
-            final JournalEntryEmbeddingSyncResultDto syncResult =
-                    queueService.syncWithJournalEntries(this::markProgress);
-            markCompleted(syncResult);
-            log.info(
-                    "Journal entry embedding sync completed. entries={}, created={}, requeued={}, unchanged={}, skipped={}, removed={}",
-                    syncResult.getActiveEntryCount(),
-                    syncResult.getCreated(),
-                    syncResult.getRequeued(),
-                    syncResult.getUnchanged(),
-                    syncResult.getSkipped(),
-                    syncResult.getRemoved()
-            );
-        } catch (final Exception e) {
-            markFailed(e);
-            log.warn("Journal entry embedding sync failed.", e);
-        }
+        P6SpySqlLogQuietScope.run(() -> {
+            try {
+                final JournalEntryEmbeddingSyncResultDto syncResult =
+                        queueService.syncWithJournalEntries(this::markProgress);
+                markCompleted(syncResult);
+                log.info(
+                        "Journal entry embedding sync completed. entries={}, created={}, requeued={}, unchanged={}, skipped={}, removed={}",
+                        syncResult.getActiveEntryCount(),
+                        syncResult.getCreated(),
+                        syncResult.getRequeued(),
+                        syncResult.getUnchanged(),
+                        syncResult.getSkipped(),
+                        syncResult.getRemoved()
+                );
+            } catch (final Exception e) {
+                markFailed(e);
+                log.warn("Journal entry embedding sync failed.", e);
+            }
+        });
     }
 
     private void markProgress(final int processedCount) {
