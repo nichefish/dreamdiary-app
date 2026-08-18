@@ -46,6 +46,12 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.time.LocalDateTime;
+import org.springframework.data.domain.PageImpl;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.ThreadLatestEntryDateProjection;
+import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 
 /**
  * JournalThreadService
@@ -145,21 +151,52 @@ public class JournalThreadService
 
 
     /**
-     * 페이징 목록 조회 후 소속 집계·라이프사이클을 붙인다.
+     * 페이징 목록 조회. 소속 엔트리의 최신 일기 날짜 기준으로 정렬하고 소속 집계·라이프사이클을 붙인다.
      * <p>
-     * 소속 엔트리 태그 합집합({@code tag}), 활성 소속 수({@code membershipCount}),
-     * 소속 기간({@code firstEntryDate}/{@code lastEntryDate})은 집계 쿼리로 채우고,
-     * 라이프사이클은 일괄 병합한다. 엔트리 풀 DTO 로드는 하지 않는다.
+     * 필터는 기존 Spec 을 그대로 재사용해(필터·soft-delete 계약 단일화) 매칭 스레드 전체를 조회한 뒤,
+     * 소속 엔트리(일기/꿈/노트)의 {@code journal_day.journal_date} 최대값 기준으로 최신 스레드를 앞에 둔다.
+     * 소속 엔트리가 없는 스레드는 뒤로 보낸다(동점은 스레드 {@code createdAt} DESC → id DESC). 파생 정렬이라
+     * 단순 property Sort 로는 표현할 수 없어 정렬·페이징을 이 메서드에서 수행한다. 페이지 DTO 에 소속 엔트리
+     * 태그 합집합·활성 소속 수·소속 기간 집계와 라이프사이클을 병합한다. 엔트리 풀 DTO 로드는 하지 않는다.
      * </p>
      *
      * @param searchParamMap 검색 조건
-     * @param pageable 페이징
-     * @return 태그 집계가 채워진 페이징 DTO
+     * @param pageable 페이징(정렬은 이 메서드가 소속 엔트리 최신 날짜 기준으로 수행)
+     * @return 소속 엔트리 최신 날짜로 정렬되고 집계가 채워진 페이징 DTO
      */
     @Override
     @Transactional(readOnly = true)
     public Page<JournalThreadDto> getPageDto(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
-        final Page<JournalThreadDto> page = BaseAttachableService.super.getPageDto(searchParamMap, pageable);
+        // 필터는 기존 Spec 재사용(SSOT). 원본 getPageDto 와 동일하게 빈 값·비검색 키를 정리한 뒤 조회한다.
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
+        final List<JournalThreadEntity> filtered = this.getListEntity(filteredSearchKey);
+        if (filtered.isEmpty()) return this.pageEntityToDto(new PageImpl<>(List.of(), pageable, 0));
+
+        // 소속 엔트리 최신 일기 날짜 집계.
+        final List<Integer> threadIds = filtered.stream().map(JournalThreadEntity::getId).toList();
+        final Map<Integer, LocalDate> latestByThread = new HashMap<>();
+        for (final ThreadLatestEntryDateProjection row : repository.findLatestMemberEntryDates(threadIds)) {
+            latestByThread.put(row.getThreadId(), row.getLatestDate());
+        }
+
+        // 최신 날짜 DESC → 없으면 뒤 → 스레드 createdAt DESC → id DESC.
+        final List<JournalThreadEntity> sorted = filtered.stream()
+                .sorted(Comparator
+                        .comparing((JournalThreadEntity t) -> latestByThread.get(t.getId()),
+                                Comparator.nullsLast(Comparator.<LocalDate>reverseOrder()))
+                        .thenComparing(JournalThreadEntity::getCreatedAt,
+                                Comparator.nullsLast(Comparator.<LocalDateTime>reverseOrder()))
+                        .thenComparing(JournalThreadEntity::getId, Comparator.reverseOrder()))
+                .toList();
+
+        final int total = sorted.size();
+        final int from = (int) pageable.getOffset();
+        final List<JournalThreadEntity> pageEntities = from >= total
+                ? List.of()
+                : sorted.subList(from, Math.min(from + pageable.getPageSize(), total));
+
+        // 변환(rnum 포함)은 원본 pageEntityToDto 재사용, 이후 소속 집계·라이프사이클 병합.
+        final Page<JournalThreadDto> page = this.pageEntityToDto(new PageImpl<>(pageEntities, pageable, total));
         this.applyEntryTagSummaries(page.getContent());
         this.applyThreadLifecycles(page.getContent());
         return page;

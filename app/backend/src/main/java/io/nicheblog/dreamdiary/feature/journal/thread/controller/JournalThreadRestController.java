@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -141,7 +140,8 @@ public class JournalThreadRestController
             @RequestParam(defaultValue = "10") final int size
     ) throws Exception {
 
-        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        // 정렬은 서비스가 소속 엔트리 최신 일기 날짜 기준으로 수행한다(파생 정렬). 여기선 페이지 번호·크기만 전달.
+        final PageRequest pageRequest = PageRequest.of(page, size);
         final Page<JournalThreadDto> pageResult = journalThreadService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
