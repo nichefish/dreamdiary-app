@@ -48,6 +48,9 @@ public class JournalSettingService {
     /**
      * AI 임베딩이 활성화되어 있는지 반환한다.
      *
+     * <p>전역 ADMIN/GLOBAL 행의 {@code embeddingEnabled}를 본다.
+     * false이면 엔트리 적재, 전수 sync, 임베딩 워커를 건너뛴다.</p>
+     *
      * @return true=활성, false=비활성
      */
     public boolean isEmbeddingEnabled() {

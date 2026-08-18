@@ -842,9 +842,9 @@ if (confirmed && !isAuthPopupRoute(route.name)) {
 **사용자 API**: `GET /api/journal/settings/me` — 로그인 사용자의 저널 설정 조회, `PUT /api/journal/settings/me` — 로그인 사용자의 저널 설정 갱신 (USER/MNGR 권한). 사용자 식별자는 요청 본문에서 받지 않고 인증 정보의 username을 사용한다.
 
 **설정 항목**:
-- `embeddingEnabled` (Boolean) — AI 임베딩 활성화 여부. ON이면 엔트리 등록/수정 시 embedding queue + entity queue에 적재, OFF면 건너뜀.
+- `embeddingEnabled` (Boolean) — AI 임베딩 활성화 여부. ON이면 엔트리 등록/수정 시 embedding queue + entity queue에 적재하고, 기동·Admin 전수 sync와 임베딩 워커를 실행한다. OFF면 적재·전수 sync·워커를 건너뛴다.
 - `defaultEntryView` (`DAILY | WEEKLY | MONTHLY`) — 사용자별 저널 기본 진입 화면. 사용자 행이 없거나 값이 비어 있으면 `DAILY`를 반환하며 조회만으로 행을 생성하지 않는다. 최초 저장 시 `scope=USER`, `scope_key=username` 행을 생성한다.
 
 **저장 유일성**: `journal_setting`의 `(scope, scope_key)` 조합은 유일하다. `ADMIN/GLOBAL` 행은 전역 정책, `USER/username` 행은 사용자 정책을 담당한다.
 
-**동작**: `JournalEntryService.postRegist`/`postModify`에서 `JournalSettingService.isEmbeddingEnabled()` 확인 후 queue 적재를 조건부 실행. Reflection은 임베딩 대상이 아니라 적용되지 않음. 설정 변경은 즉시 반영(재시작 불필요). 임베딩 기본값은 ON이다. `/my/journal`은 사용자 기본 진입 화면을 조회·저장한다. 제품 화면 URL `/app/journal/day/home`은 현재 활성 프론트엔드의 `/vue-app/journal/day/home`으로 연결되고, Vue 내부 `/journal/day/home` route는 서버 확정값을 `journal-daily-tab`·`journal-weekly`·`journal-monthly` route로 해석한다. 설정 조회 실패나 지원하지 않는 값은 DAILY로 보정하지 않고 앱 런타임 오류로 표시한다.
+**동작**: `JournalEntryService.postRegist`/`postModify`에서 `JournalSettingService.isEmbeddingEnabled()` 확인 후 queue 적재를 조건부 실행한다. 기동 sync(`DreamdiaryInitializer`), Admin Sync Entries(`JournalEntryEmbeddingSyncJobService.startSync`), 임베딩 워커 스케줄러도 같은 플래그를 본다. Reflection은 임베딩 대상이 아니라 적용되지 않는다. 설정 변경은 즉시 반영(재시작 불필요). 임베딩 기본값은 ON이다. `/my/journal`은 사용자 기본 진입 화면을 조회·저장한다. 제품 화면 URL `/app/journal/day/home`은 현재 활성 프론트엔드의 `/vue-app/journal/day/home`으로 연결되고, Vue 내부 `/journal/day/home` route는 서버 확정값을 `journal-daily-tab`·`journal-weekly`·`journal-monthly` route로 해석한다. 설정 조회 실패나 지원하지 않는 값은 DAILY로 보정하지 않고 앱 런타임 오류로 표시한다.

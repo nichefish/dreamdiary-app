@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.scheduler;
 import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingWorker;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,7 @@ public class JournalEntryEmbeddingScheduler {
     private final JournalEntryEmbeddingWorker journalEntryEmbeddingWorker;
     private final JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
     private final JournalProperties journalProperties;
+    private final JournalSettingService journalSettingService;
 
     /**
      * 대기 중인 임베딩 작업이 있으면 설정된 배치 크기로 비동기 워커를 실행한다.
@@ -28,6 +30,11 @@ public class JournalEntryEmbeddingScheduler {
             initialDelayString = "${app.journal.embedding.worker.initial-delay-ms:15000}"
     )
     public void processPendingEmbeddings() {
+        if (!journalSettingService.isEmbeddingEnabled()) {
+            log.debug("Journal entry embedding scheduler skipped. reason=embeddingDisabled");
+            return;
+        }
+
         final long pendingCount = journalEntryEmbeddingQueueService.countPending();
         if (pendingCount <= 0) {
             log.debug("Journal entry embedding scheduler tick. pending=0");

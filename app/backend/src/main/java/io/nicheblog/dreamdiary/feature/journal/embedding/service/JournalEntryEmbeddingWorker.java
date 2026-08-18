@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.ai.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,7 @@ public class JournalEntryEmbeddingWorker {
 
     private final JournalEntryEmbeddingQueueService queueService;
     private final JournalEntryEmbeddingSearchService searchService;
+    private final JournalSettingService journalSettingService;
     private final OllamaClient ollamaClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AtomicBoolean running = new AtomicBoolean(false);
@@ -74,6 +76,11 @@ public class JournalEntryEmbeddingWorker {
      * @return 임베딩 벡터 생성에 성공한 작업 건수
      */
     public int processPendingBatch(final Integer batchSize) {
+        if (!journalSettingService.isEmbeddingEnabled()) {
+            log.info("Journal entry embedding worker skipped. reason=embeddingDisabled");
+            return 0;
+        }
+
         queueService.requeueStaleProcessing(LocalDateTime.now().minus(STALE_PROCESSING_AGE), batchSize);
 
         final List<JournalEntryEmbeddingEntity> entityList = queueService.claimPendingBatch(batchSize);

@@ -78,7 +78,7 @@ journal_day.journal_date
 
 > **구현 현황 (2026-07)**: 현재 worker는 아래 v1 중첩 스키마가 아니라 `JournalEntryEmbeddingQueueService.buildPayload()`의 **flat map**(`source`, `journalEntryId`, `contentKind`, `retrievalWeight`, `tags`, `journalDate`, `journalChapterSummaryYn`, `journalChapterPrefixId`, `journalChapterPrefixName`, …)을 `embedding_payload_json`에 저장한다. 시스템 요약은 사용자 Prefix가 아니며 `journalChapterSummaryYn=Y`, `journalChapterPrefixId/Name=null`로 구분한다. v1 JSON은 목표 구조이며, 수렴 작업 시 flat → v1 마이그레이션을 별도 정의한다.
 
-활성 임베딩 행은 챕터 메타데이터를 `journalChapterSummaryYn`, `journalChapterPrefixId`, `journalChapterPrefixName`으로 저장한다. 관리자 임베딩 동기화는 현재 `queueForEntry` 계약으로 텍스트와 payload를 다시 구성한다.
+활성 임베딩 행은 챕터 메타데이터를 `journalChapterSummaryYn`, `journalChapterPrefixId`, `journalChapterPrefixName`으로 저장한다. 관리자 임베딩 동기화는 현재 `queueForEntry` 계약으로 텍스트와 payload를 다시 구성한다. 전수 sync는 챕터와 기존 임베딩 행을 배치 조회하고, 진행 하트비트는 50건마다 갱신한다.
 
 v1 payload 구조:
 

@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyServi
 import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingSyncJobService;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.account.model.UserRoleDto;
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
@@ -53,6 +54,7 @@ public class DreamdiaryInitializer
     private final ApplicationEventPublisherWrapper publisher;
     private final ReleaseHistoryService releaseHistoryService;
     private final JournalEntryEmbeddingSyncJobService journalEntryEmbeddingSyncJobService;
+    private final JournalSettingService journalSettingService;
     private final JournalProperties journalProperties;
     private final AuthProperties authProperties;
 
@@ -220,11 +222,16 @@ public class DreamdiaryInitializer
      * 서버 기동 시 embedding queue sync job을 백그라운드로 enqueue한다.
      *
      * <p>Admin Sync Entries와 동일한 {@link JournalEntryEmbeddingSyncJobService#startSync()} 경로를 사용한다.
-     * 이미 RUNNING이면 중복 시작하지 않는다.</p>
+     * 이미 RUNNING이면 중복 시작하지 않는다.
+     * {@code embeddingEnabled=false}이면 enqueue하지 않는다.</p>
      */
     private void queueEmbeddingSyncOnStartup() {
         if (!journalProperties.getEmbedding().getSyncOnStartup()) {
             log.info("Startup task skipped. task=journalEntryEmbeddingSync reason=disabled");
+            return;
+        }
+        if (!journalSettingService.isEmbeddingEnabled()) {
+            log.info("Startup task skipped. task=journalEntryEmbeddingSync reason=embeddingDisabled");
             return;
         }
 
