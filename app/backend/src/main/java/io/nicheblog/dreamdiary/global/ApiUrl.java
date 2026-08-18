@@ -66,6 +66,8 @@ public interface ApiUrl {
     String JOURNAL_ENTRIES = Prefix.API + "/journal/entries";
     String JOURNAL_ENTRY = Prefix.API + "/journal/entry/{id}";
     String JOURNAL_ENTRIES_EXPORT = Prefix.API + "/journal/entries/export";
+    /** 작성 중 엔트리·리플렉션 본문 미리보기 (미저장 HTML → markdownContent) */
+    String JOURNAL_ENTRY_PREVIEW = Prefix.API + "/journal/entries/preview";
 
     /** 저널 Reflection(Commentary) 쓰기 — 별도 Aggregate(journal_reflection). 읽기는 대상 엔트리 embed 로 실린다. */
     String JOURNAL_REFLECTIONS = Prefix.API + "/journal/reflections";

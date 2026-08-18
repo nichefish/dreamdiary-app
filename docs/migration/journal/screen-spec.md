@@ -31,6 +31,7 @@
 | 저널 주간 | `/app/journal/day/weekly.do` | `/journal/weekly` | `JournalDayWeekly.vue` | ✓ |
 | 저널 일간 (탭) | `/app/journal/day/daily.do` | `/journal/daily` | `JournalDayDaily.vue` | ✓ 정식 탭(맨앞), JournalDayLayout, aside 포함, 이전/다음 네비 |
 | 저널 일간 (팝업) | — | `/journal/daily-popup` | `JournalDayDaily.vue` | ✓ 새 창 전용, SystemLayout, 사이드바/헤더 없음, 이전/다음 네비 |
+| 저널 작성 미리보기 (팝업) | — | `/journal/entry/preview-pop` | `JournalEntryPreviewPage.vue` | ✓ 새 창 전용, SystemLayout, 등록 모달 미저장 본문 |
 | 저널 달력 | `/app/journal/day/cal.do` | `/journal/calendar` | `JournalDayCalendar.vue` | ✓ |
 | 저널 메타 | `/app/journal/day/meta.do` | `/journal/meta` | `JournalDayMeta.vue` | ✓ 컨텍스트 메뉴·단일 비교 차트(최대 2시리즈)·연도 전체 |
 | 연간 결산 목록 | FTL annual list | `/annual` | `JournalAnnualList.vue` | ✓ |
@@ -254,9 +255,9 @@
 
 `JournalDayDetailModal.vue`의 제목·기준 날짜 요일·날짜 정밀도 배지·빈 상태·조회 실패·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
-`JournalReflectionRegistModal.vue`의 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그(`journal.reflection.*`)를 사용한다. 저장 API가 `message`를 반환하면 서버 메시지를 우선 표시하며, 리플렉션 제목은 locale과 무관하게 선택값으로 유지한다.
+`JournalReflectionRegistModal.vue`의 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그(`journal.reflection.*`)를 사용한다. 미리보기 라벨·툴팁·실패 문구는 엔트리 모달과 같은 `common.preview` / `journal.entry.preview.*` 키를 쓴다. 저장 API가 `message`를 반환하면 서버 메시지를 우선 표시하며, 리플렉션 제목은 locale과 무관하게 선택값으로 유지한다. 미리보기는 엔트리 등록 모달과 같은 새 창 계약을 쓴다.
 
-`JournalEntryRegistModal.vue`의 일기·꿈·노트·기본 엔트리별 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 말머리·제목·순서·꿈꾼 placeholder, 저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, locale 변경은 챕터·말머리 선택, 태그·꿈꾼 값과 저장 payload를 변경하지 않는다.
+`JournalEntryRegistModal.vue`의 일기·꿈·노트·기본 엔트리별 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 말머리·제목·순서·꿈꾼 placeholder, 미리보기·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시하며, locale 변경은 챕터·말머리 선택, 태그·꿈꾼 값과 저장 payload를 변경하지 않는다. 미리보기는 푸터 저장 왼쪽 버튼으로 `/journal/entry/preview-pop` 새 창을 연다.
 
 엔트리 등록·수정 폼의 말머리 select는 소속 챕터의 논리 유형에 맞는 개인 목록 하나만 사용한다. 일기는 `JOURNAL_DIARY`, 꿈은 `JOURNAL_DREAM`, 노트는 `JOURNAL_NOTE` 활성 Prefix를 표시하며 선택하지 않는 것도 허용한다. 활성 선택지가 없는 정상 상태에서는 말머리 필드를 렌더링하지 않고 제목 입력이 해당 영역을 사용한다. 수정 시 비활성 과거 선택은 흐리게 표시해 유지·해제할 수 있으며, 이 경우 활성 선택지가 없어도 말머리 필드를 표시한다. NOTE 엔트리의 화면과 선택 Scope는 소속 NOTE 챕터를 기준으로 한다.
 

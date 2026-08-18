@@ -88,6 +88,15 @@
           <div class="d-flex justify-content-end gap-2">
             <button
               type="button"
+              class="btn btn-sm btn-light-primary"
+              :title="t('journal.entry.preview.tooltip')"
+              :disabled="!model || submitting"
+              @click="preview"
+            >
+              <i class="bi bi-eye"></i>{{ t('common.preview') }}
+            </button>
+            <button
+              type="button"
               class="btn btn-sm btn-primary"
               :disabled="submitting"
               @click="submit"
@@ -113,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
@@ -127,6 +136,7 @@ import { useRoute } from "vue-router";
 import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { openJournalEntryPreview } from "@/features/journal/utils/journalEntryPreview";
 
 const modalStore = useJournalModalStore();
 const { reflectionRegistModel, reflectionRegistOpen } = storeToRefs(modalStore);
@@ -170,6 +180,25 @@ watch(
     } else bsModal?.hide();
   }
 );
+
+/** 작성 중 본문을 목록과 같은 markdownContent로 새 창에 띄운다. */
+async function preview(): Promise<void> {
+  if (!model.value) return;
+  try {
+    const result = await openJournalEntryPreview({
+      contentType: "JOURNAL_REFLECTION",
+      title: model.value.title,
+      sortOrder: model.value.sortOrder,
+      content: model.value.content,
+    }, t("journal.entry.preview.failure"));
+    if (result === "blocked") {
+      void swalAlert(t("common.error.popup"));
+    }
+  } catch (error) {
+    console.error("[JournalReflectionRegistModal] preview failed", error);
+    void swalAlert(error instanceof Error ? error.message : t("journal.entry.preview.failure"));
+  }
+}
 
 function close() {
   resetSafeClose();

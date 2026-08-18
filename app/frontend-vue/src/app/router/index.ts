@@ -291,6 +291,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { pageTitleKey: "route.title.journal-entry-search", middleware: "auth" },
       },
       {
+        path: "/journal/entry/preview-pop",
+        name: "journal-entry-preview",
+        component: () => import("@/features/journal/entry/JournalEntryPreviewPage.vue"),
+        meta: { pageTitleKey: "route.title.journal-entry-preview", middleware: "auth" },
+      },
+      {
         path: "/error",
         name: "error",
         component: () => import("@/app/pages/ErrorPage.vue"),

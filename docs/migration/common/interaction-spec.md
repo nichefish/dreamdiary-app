@@ -645,27 +645,19 @@ Vue 서비스 모듈에서 CRUD 완료 콜백:
 
 ---
 
-## 미리보기 패턴 (저널 엔트리 등록 모달)
+## 미리보기 패턴 (저널 엔트리·리플렉션 등록 모달)
 
-저널 엔트리 등록 모달의 미리보기 버튼:
+`JournalEntryRegistModal` / `JournalReflectionRegistModal` 푸터는 저장 왼쪽에 미리보기 버튼을 둔다.
 
 ```html
-<button type="button" class="btn btn-sm btn-light-primary me-2"
-        onclick="${entryRegPreviewHandler}"
-        data-bs-toggle="tooltip" title="미리보기">
-    <i class="bi bi-eye"></i>미리보기
+<button type="button" class="btn btn-sm btn-light-primary"
+        :title="t('journal.entry.preview.tooltip')"
+        @click="preview">
+    <i class="bi bi-eye"></i>{{ t('common.preview') }}
 </button>
 ```
 
-핸들러:
-```javascript
-// DIARY
-window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_DIARY')
-// DREAM
-window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_DREAM')
-// NOTE
-window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
-```
+클릭 즉시 이름 있는 새 창(`/journal/entry/preview-pop`, `SystemLayout`)을 연 뒤 `POST /api/journal/entries/preview`로 미저장 HTML을 `MarkdownUtils.markdown()`한 `markdownContent`를 받아 localStorage로 전달한다. 팝업은 목록과 같은 `journal-content`와 유형별 item/content 클래스로 렌더한다. 팝업 차단 시 `common.error.popup`을 표시하고 API를 호출하지 않는다.
 
 ---
 

@@ -41,6 +41,7 @@
 | `/user/signup` | `user-signup` | `UserSignupPage.vue` | Auth | ✓ |
 | `/auth/verify-result` | `auth-verify-result` | `VerifyResultPage.vue` | Auth | ✓ |
 | `/journal/entry/search` | `journal-entry-search` | `JournalEntrySearchPage.vue` | System | ✓ |
+| `/journal/entry/preview-pop` | `journal-entry-preview` | `JournalEntryPreviewPage.vue` | System | ✓ 작성 중 본문 미리보기 새 창 |
 | `/error`, `/400`, `/403`, `/404`, `/500` | — | `ErrorPage.vue` | System | ✓ |
 
 ---

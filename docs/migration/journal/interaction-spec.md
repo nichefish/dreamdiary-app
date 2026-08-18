@@ -32,6 +32,7 @@
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ✓ |
 | 일간 날짜 네비게이션 | 탭(`journal-daily-tab`)은 aside의 `JournalAsideMiniCalendar.vue`만 사용하며 중복 본문 네비게이션 행을 표시하지 않는다. 팝업(`journal-daily`)은 aside가 없으므로 본문 이전/날짜/다음 행을 유지한다. 두 경로 모두 날짜 선택 시 `router.replace({ query: { stdrdDt } })`로 이동한다. 미니 달력은 토/일·공휴일을 빨간색으로 표시하고 공휴일은 `GET /api/schedule/holidays`로 조회한다. | ✓ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
+| 엔트리·리플렉션 작성 미리보기 | `JournalEntryRegistModal` / `JournalReflectionRegistModal` 푸터 저장 왼쪽 `미리보기`(`btn-sm btn-light-primary`, `bi-eye`). 클릭 즉시 `/journal/entry/preview-pop` 새 창을 열고 `POST /api/journal/entries/preview`로 미저장 HTML을 `markdownContent`로 렌더한다. 팝업 차단 시 `common.error.popup`. | ✓ |
 | 엔트리 작성 에디터 템플릿 드롭다운 | `JournalEntryRegistModal`의 `RichEditor`에 `:enable-templates="true"` 전달. 툴바 `tmplat` 메뉴버튼을 열면 `GET /api/tmplats/active`(활성 템플릿)를 조회해 제목 목록을 드롭다운으로 노출하고, 선택 시 현재 커서 위치에 `mceInsertContent`로 비파괴 삽입한다(기존 내용 보존). 템플릿이 없거나 조회 실패 시 비활성 "등록된 템플릿이 없습니다" 항목만 표시한다. 다른 화면의 `RichEditor`는 prop 기본값 false 라 드롭다운이 없다. | ✓ |
 | 툴바 floating·aside 열기 | `JournalDayViewToolbar` 전체와 열린 저널 일자 aside의 상단선이 고정 앱 헤더 아래에서 sticky로 일치하고, 툴바는 별도 그림자 없이 하단 경계만 사용. aside 숨김 시 우측 끝 버튼이 `asideStore.show()` 호출. 모바일은 본문 우상단 전용 버튼 유지 | ✓ |
 | 어사이드 목록 키워드 필터 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` → `fetchDays()` (목록 축소) | ✓ — 툴바 `openSearchTab` 전체검색과 분리 (`vue-screen-overview.md` 필터·검색 정책) |

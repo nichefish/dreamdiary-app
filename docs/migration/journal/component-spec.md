@@ -468,7 +468,9 @@ interface TodoRow {
 
 **등록·수정 정보 조회 실패**: 꿈 등록 정보 또는 엔트리 수정 정보 조회가 실패하면 불완전한 폼을 닫고, 서버 메시지를 우선 표시하며 없으면 현재 locale의 fallback을 사용한다.
 
-**i18n**: 일기·꿈·노트·기본 엔트리별 모달 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 말머리·제목·순서·꿈꾼 placeholder, 저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. locale 변경은 표시 문구만 바꾸며 챕터·말머리 선택, 태그·꿈꾼 값과 저장 payload는 유지한다.
+**미리보기**: 푸터 저장 왼쪽에 `btn-sm btn-light-primary` · `bi-eye` · `common.preview` 버튼을 둔다. 클릭 즉시 `/journal/entry/preview-pop` 새 창을 연 뒤 `POST /api/journal/entries/preview`로 작성 중 본문을 목록과 같은 `markdownContent`로 렌더한다. 팝업 차단 시 `common.error.popup`을 표시한다.
+
+**i18n**: 일기·꿈·노트·기본 엔트리별 모달 제목, 기준 날짜 요일, 필드 레이블, 글자 수 안내, 말머리·제목·순서·꿈꾼 placeholder, 미리보기·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다. locale 변경은 표시 문구만 바꾸며 챕터·말머리 선택, 태그·꿈꾼 값과 저장 payload는 유지한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
@@ -492,7 +494,9 @@ interface TodoRow {
 
 **데이터·동작**: `useJournalModalStore` reflection 등록 모델의 제목·본문을 편집한다. 제목은 선택값이다. Reflection 은 대상 필수(About-A)라 모달은 제목·본문만 두고 태그·챕터 선택 UI 는 없다. 대상(`refId`/`refContentType`)은 「해석 등록」 진입 시 payload 로 정해진다. 영속 `content_type`은 `JOURNAL_REFLECTION`이고 `ref_content_type`은 대상 타입이다. 일기 태그클라우드·결산 DIARY 집계·챕터 접힘 태그 요약과 검색 태그·state 스코프는 `JOURNAL_DIARY` 단일 축을 사용한다. Reflection 본문 키워드는 대상 일기를 매칭시킨다(원문·해석 한 몸 EXISTS, `REFLECTION_ONE_TYPE.md` §4). Reflection 은 별도 Aggregate(`journal_reflection`)라 전용 엔드포인트로 쓴다. 신규는 `POST /api/journal/reflections`, 수정은 `POST /api/journal/reflection/{id}`, 삭제는 `DELETE /api/journal/reflection/{id}`, 수정 로드는 `GET /api/journal/reflection/{id}` 로 처리한다(multipart form data). 서버 쓰기는 `JournalReflectionService`가 담당하며 대상 필수(About-A: `refId`/`refContentType`)를 검증한다. 저장 성공 시 응답의 `targetReflectionList`와 `targetLifecycleKey`로 대상 엔트리의 Reflection 목록·라이프사이클을 부분 교체하고, 응답에 갱신 데이터가 없을 때 호스트를 다시 조회한다.
 
-**i18n**: 모달 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그(`journal.reflection.*`)를 사용한다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
+**미리보기**: 엔트리 등록 모달과 같은 푸터 미리보기 버튼·새 창·`POST /api/journal/entries/preview` 계약을 쓴다. 콘텐츠 유형은 `JOURNAL_REFLECTION`이다.
+
+**i18n**: 모달 제목·기준 날짜 요일·필드·placeholder·안내·저장·닫기·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그(`journal.reflection.*`)를 사용한다. 미리보기 라벨·툴팁·실패 문구는 엔트리 모달과 같은 `common.preview` / `journal.entry.preview.*` 키를 쓴다. API 응답에 `message`가 있으면 서버 메시지를 우선 표시한다.
 
 **현재 Vue 동등**: ✓ 구현 완료
 
