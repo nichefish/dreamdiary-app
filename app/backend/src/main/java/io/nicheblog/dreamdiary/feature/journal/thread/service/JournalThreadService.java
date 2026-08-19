@@ -4,7 +4,9 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableHistoryHelper;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.PrefixEntity;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.service.PrefixContentService;
@@ -253,6 +255,55 @@ public class JournalThreadService
         this.applyEntryTagSummary(dto);
         this.applyThreadLifecycles(List.of(dto));
         return dto;
+    }
+
+    /**
+     * 사용자 소유 스레드를 이력 조회 대상으로 반환한다.
+     *
+     * @param username 소유 사용자 계정명
+     * @param key 스레드 ID
+     * @return 사용자 소유 스레드 DTO
+     * @throws Exception 조회·변환 중 예외
+     */
+    @Transactional(readOnly = true)
+    public JournalThreadDto getDtlDtoByUser(final String username, final Integer key) throws Exception {
+        final JournalThreadEntity entity = repository.findByIdAndCreatedBy(key, username)
+                .orElseThrow(() -> new NotAuthorizedException("common.result.access-not-authorized"));
+        return mapstruct.toDto(entity);
+    }
+
+    /**
+     * 이력 복원 본문을 사용자 소유 스레드에 반영한다.
+     * 현재 본문은 복원 이력의 새 스냅샷으로 남고 제목·말머리·소속은 유지된다.
+     *
+     * @param key 스레드 ID
+     * @param content 복원할 본문
+     * @param historyType 이력 유형
+     * @param fromHistoryId 복원 원본 이력 ID
+     * @return 복원된 스레드 DTO
+     * @throws Exception 소유권 검증·저장 중 예외
+     */
+    @Transactional
+    public JournalThreadDto updtContent(
+            final Integer key,
+            final String content,
+            final HistoryType historyType,
+            final Integer fromHistoryId
+    ) throws Exception {
+        final String username = AuthUtils.requireLoginUsername();
+        final JournalThreadEntity restoreEntity = repository.findByIdAndCreatedBy(key, username)
+                .orElseThrow(() -> new NotAuthorizedException("common.result.access-not-authorized"));
+        final JournalThreadEntity historySnapshot = restoreEntity.toBuilder().build();
+
+        restoreEntity.setContent(content);
+        BaseAttachableHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+
+        final JournalThreadEntity updatedEntity = repository.saveAndFlush(restoreEntity);
+        BaseAttachableHistoryHelper.publishHistoryEventIfSupported(
+                this, historySnapshot, updatedEntity, historyType, fromHistoryId);
+        log.info("[JournalThread.history] 본문 이력 복원. threadId={}, fromHistoryId={}, username={}",
+                key, fromHistoryId, username);
+        return mapstruct.toDto(updatedEntity);
     }
 
     /** 선택한 Prefix의 소유권·활성 상태를 검증하고 prefix_content 연결을 반영한다. */

@@ -1,4 +1,4 @@
-import type { LifecycleCmpstn } from "@/features/journal/stores/journal";
+import type { HistoryCmpstn, LifecycleCmpstn } from "@/features/journal/stores/journal";
 
 // ---- 타입 정의 ----
 
@@ -39,6 +39,8 @@ export interface JournalThreadDto {
   /** 활성 소속 엔트리 기준일 max (YYYY-MM-DD). 목록 enrich. */
   lastEntryDate?: string;
   lifecycle?: LifecycleCmpstn;
+  /** 마지막 본문 변경 이력 트리거 정보. */
+  history?: HistoryCmpstn;
   title?: string;
   content?: string;
   markdownContent?: string;

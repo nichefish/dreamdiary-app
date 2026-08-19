@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableE
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.entity.embed.PrefixEmbed;
@@ -18,7 +20,7 @@ import javax.persistence.*;
 
 /**
  * JournalThreadEntity
- * 저널 스레드(JOURNAL_THREAD) 영속 엔티티. 파일·댓글·태그 임베드를 포함한다.
+ * 저널 스레드(JOURNAL_THREAD) 영속 엔티티. 파일·댓글·말머리·이력 임베드를 포함한다.
  *
  * @author nichefish
  */
@@ -33,7 +35,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE journal_thread SET deleted_at = NOW() WHERE id = ?")
 public class JournalThreadEntity
         extends BaseAttachableEntity
-        implements FileEmbedModule, CommentEmbedModule, PrefixEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, PrefixEmbedModule, HistoryEmbedModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_THREAD;
@@ -68,5 +70,9 @@ public class JournalThreadEntity
 
     @Embedded
     public CommentEmbed comment;
+
+    /** 본문 변경 이력의 마지막 트리거 정보. */
+    @Embedded
+    public HistoryEmbed history;
 
 }

@@ -9,7 +9,7 @@
     <CommentListModal />
     <CommentRegistModal />
     <JournalReflectionRegistModal />
-    <HistoryModal @success="refreshOpenThreadDetail" />
+    <HistoryModal @success="refreshThreadHistoryTarget" />
     <RelatedContentAddModal />
     <JournalTagProfileModal />
     <JournalTagContextMenu />
@@ -37,9 +37,10 @@ const store = useJournalThreadStore();
 
 let syncToken = 0;
 
-/** 이력 복원·삭제처럼 자식 모달이 원본 엔트리를 바꾸면 열린 스레드 상세를 다시 조회한다. */
-function refreshOpenThreadDetail(): void {
-  void store.refreshOpenDetail();
+/** 이력 복원·삭제 후 열린 상세와 현재 스레드 목록을 최신 상태로 맞춘다. */
+async function refreshThreadHistoryTarget(): Promise<void> {
+  if (store.detailOpen) await store.refreshOpenDetail();
+  await store.fetchList();
 }
 
 async function syncThreadRoute(): Promise<void> {

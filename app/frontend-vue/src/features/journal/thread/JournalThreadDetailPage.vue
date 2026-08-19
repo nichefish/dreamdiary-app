@@ -74,6 +74,17 @@
           v-if="store.detailModel?.id"
           type="button"
           class="btn btn-sm btn-light-primary"
+          :disabled="!hasHistory"
+          :title="t('common.history')"
+          @click="hasHistory ? openHistory() : undefined"
+        >
+          <i class="bi bi-clock-history me-1"></i>
+          {{ t("common.history") }}
+        </button>
+        <button
+          v-if="store.detailModel?.id"
+          type="button"
+          class="btn btn-sm btn-light-primary"
           :title="t('common.mdf')"
           @click="goToEdit"
         >
@@ -106,13 +117,18 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import JournalThreadDetailContent from "@/features/journal/thread/components/JournalThreadDetailContent.vue";
 import { copyThreadDetail, downloadThreadDetail } from "@/features/journal/utils/journalThreadExport";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const router = useRouter();
 const store = useJournalThreadStore();
+const attachableStore = useAttachableModalStore();
 const { t } = useLocaleStore();
+
+/** 현재 스레드에 본문 변경 이력이 하나 이상 존재하는지 여부. */
+const hasHistory = computed(() => !!store.detailModel?.history?.historyTriggeredAt);
 
 /** 독립 상세를 닫고 스레드 목록의 정식 route로 이동한다. */
 function goToList(): void {
@@ -128,6 +144,14 @@ function goToEdit(): void {
   }
   void router.push({ name: "thread-edit", params: { id } });
 }
+
+/** 현재 스레드의 본문 이력 모달을 연다. */
+function openHistory(): void {
+  const id = store.detailModel?.id;
+  if (!id) return;
+  void attachableStore.openHistory(store.detailModel?.contentType ?? "JOURNAL_THREAD", id);
+}
+
 /** 스레드 소속 엔트리 중 하나라도 리플렉션이 있으면 true (▾ 드롭다운 노출 조건). */
 const hasThreadReflections = computed(() =>
   store.detailEntries.some((e) => (e.reflectionList?.length ?? 0) > 0),

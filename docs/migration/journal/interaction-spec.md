@@ -819,6 +819,8 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 **저널 스레드 목록 행 액션**: 관리 열은 수정·삭제 개별 버튼 대신 ⋯ 컨텍스트 메뉴를 제공한다. 수정은 기존 수정 route로 이동하고 삭제는 기존 확인·삭제 store 액션을 유지한다. **변경 후**: 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu`(+목록 렌더 후 `reinitMetronicAfterDom`)를 쓴다. KTMenu 는 `document.body` 위임 클릭으로 열리므로 트리거에 `@click.stop`을 두면 메뉴가 열리지 않는다 — 행 상세 이동은 `isMetronicMenuEventTarget` 가드로 막는다. Bootstrap `strategy:fixed` 땜빵은 제거했다.
 
+**저널 스레드 본문 이력**: 스레드는 공통 `HistoryEmbed`와 `history` 테이블을 사용한다. 본문이 실제로 달라질 때 수정 전 본문을 `ref_content_type=JOURNAL_THREAD` 스냅샷으로 저장하고 `historyTriggeredAt`을 갱신한다. 제목·Prefix·소속·라이프사이클 변경은 이력을 만들지 않으며 복원도 본문만 교체한다. 목록 ⋯ 메뉴와 문맥형 상세 모달·독립 상세 페이지의 이력 액션은 `history.historyTriggeredAt`이 있을 때 활성화되고 `HistoryModal`을 연다. 조회·복원·단건 삭제·전체 삭제는 현재 사용자 소유 스레드만 허용한다. 복원은 현재 본문도 새 스냅샷으로 남기며, 성공 후 열린 상세가 있으면 상세·소속 엔트리를 재조회하고 현재 스레드 목록도 재조회한다.
+
 저널 할일 등록·수정 모달의 제목 필수 검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API의 서버 `message`가 있으면 우선 표시하고, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route의 저널 목록을 갱신한다.
 
 저널 해석 등록·수정 모달의 확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 해석 제목은 선택값으로 유지하고, 저장 API의 서버 `message`가 있으면 우선 표시하며, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalEntryHostForRoute()`로 현재 표시 호스트를 갱신한다. 스레드 상세에서는 열린 상세·집계 태그·소속 엔트리를 재조회하고, 그 밖의 route에서는 기존 저널 목록 갱신을 유지한다.

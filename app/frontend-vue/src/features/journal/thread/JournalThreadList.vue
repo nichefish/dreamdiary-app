@@ -209,6 +209,17 @@
                         <i class="bi bi-pencil-square fs-8"></i>
                       </div>
                     </div>
+                    <!--begin::이력 (historyTriggeredAt 없으면 disabled)-->
+                    <div class="menu-item px-3 my-1 cursor-pointer">
+                      <div
+                        :class="['menu-link flex-stack px-3', { 'disabled text-muted': !hasHistory(thread) }]"
+                        @click="hasHistory(thread) ? openHistory(thread) : undefined"
+                      >
+                        {{ t("common.history") }}
+                        <i class="bi bi-clock-history fs-8"></i>
+                      </div>
+                    </div>
+                    <!--end::이력-->
                     <div class="separator my-2"></div>
                     <!--begin::라이프사이클 서브메뉴-->
                     <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start">
@@ -379,6 +390,17 @@ async function onSetLifecycle(id: number, lifecycleKey: string): Promise<void> {
 
 function openModify(id: number): void {
   void router.push({ name: "thread-edit", params: { id } });
+}
+
+/** 본문 변경 이력이 하나 이상 존재하는지 반환한다. */
+function hasHistory(thread: JournalThreadDto): boolean {
+  return !!thread.history?.historyTriggeredAt;
+}
+
+/** 스레드 본문 이력 모달을 연다. */
+function openHistory(thread: JournalThreadDto): void {
+  if (!thread.id) return;
+  void attachableStore.openHistory(thread.contentType ?? "JOURNAL_THREAD", thread.id);
 }
 
 /** 스레드 태그 보유 여부 */
