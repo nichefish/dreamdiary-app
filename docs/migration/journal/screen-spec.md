@@ -525,7 +525,7 @@
 | Action | Trigger | Legacy handler | Expected behavior |
 |--------|---------|---------------|-------------------|
 | 상세 보기 | 제목 행 클릭 | `router.push({ name: "thread-detail", params: { id } })` | 독립 상세 페이지 `/thread/:id`로 이동 |
-| 독립 상세에서 목록 복귀 | 상세 카드 우측 목록 버튼 | `router.push({ name: "thread-list" })` | `/thread` 목록으로 이동하고 상세 SSOT 정리 |
+| 독립 상세에서 목록 복귀 | 상세 카드 우측 목록 버튼 | `router.back()` 또는 `router.push({ name: "thread-list" })` | 브라우저 복귀 이력이 있으면 직전 화면으로 돌아가고, 없으면 `/thread` 목록으로 이동 |
 | 독립 상세에서 수정 | 상세 카드 우측 「수정」 | `router.push({ name: "thread-edit", params: { id } })` | 같은 탭의 독립 수정 페이지로 이동. 저장·취소 뒤 `/thread/:id` 상세로 복귀 |
 | 문맥형 상세 모달 닫기 | 헤더 × 또는 푸터 「닫기」 클릭 | `store.closeDetail()` | 저널 화면 위 모달에서만 사용. 명시적 조작으로만 닫히며 backdrop 클릭과 Escape는 무시 |
 | 상세 소속 엔트리 정렬 | 독립 상세 페이지 또는 문맥형 모달 조회·갱신 | `GET /api/journal/threads/{id}/entries` | 일자 → 원본 엔트리 `sortOrder` → ID 오름차순. 소속 `sort_order`는 미사용 |

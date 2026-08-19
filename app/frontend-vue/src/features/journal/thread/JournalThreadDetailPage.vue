@@ -130,8 +130,12 @@ const { t } = useLocaleStore();
 /** 현재 스레드에 본문 변경 이력이 하나 이상 존재하는지 여부. */
 const hasHistory = computed(() => !!store.detailModel?.history?.historyTriggeredAt);
 
-/** 독립 상세를 닫고 스레드 목록의 정식 route로 이동한다. */
+/** 직전 화면으로 돌아간다. 히스토리가 없으면 스레드 목록으로 이동한다. */
 function goToList(): void {
+  if (typeof window.history.state?.back === "string") {
+    router.back();
+    return;
+  }
   void router.push({ name: "thread-list" });
 }
 
