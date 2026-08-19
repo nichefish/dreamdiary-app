@@ -727,6 +727,7 @@ const {
   isDreamEntry,
   guardAxisWrite,
   scrollAfterFetch,
+  refreshTagCloudAfterDelete,
   t,
 });
 
@@ -890,6 +891,36 @@ function scrollAfterFetch(stdrdDt = props.entry.stdrdDt, opts: { scroll?: boolea
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+  });
+}
+
+/**
+ * 엔트리 삭제 뒤 현재 기간의 유형별 태그 클라우드를 갱신한다.
+ * 검색 화면은 태그 클라우드를 표시하지 않으며, NOTE는 전용 태그 클라우드 섹션을 갖지 않는다.
+ */
+function refreshTagCloudAfterDelete(contentType?: string): void {
+  if (route.name === "journal-entry-search") {
+    console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신 생략", {
+      contentType,
+      routeName: route.name,
+      reason: "search-route",
+    });
+    return;
+  }
+  if (contentType === "JOURNAL_DIARY") {
+    console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신", { contentType, section: "diary" });
+    void journalStore.fetchTagCloud({ sections: ["diary"] });
+    return;
+  }
+  if (contentType === "JOURNAL_DREAM") {
+    console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신", { contentType, section: "dream" });
+    void journalStore.fetchTagCloud({ sections: ["dream"] });
+    return;
+  }
+  console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신 생략", {
+    contentType,
+    routeName: route.name,
+    reason: "unsupported-content-type",
   });
 }
 

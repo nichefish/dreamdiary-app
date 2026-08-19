@@ -478,6 +478,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **대상 삭제 Block(Reference→Block)**: 일기·꿈·노트를 가리키는 Reflection 이 있으면 그 대상 엔트리 삭제(`DELETE /api/journal/entry/{id}`)는 `journal.entry.delete.blocked-by-reflection` 으로 거부된다. Reflection 을 가리키는 하위 Reflection 이 있으면 부모 Reflection 삭제는 `journal.reflection.delete.blocked-by-child` 으로 거부된다. 챕터 내 엔트리에 참조 Reflection 이 있으면 챕터 삭제(`DELETE /api/journal/chapter/{id}`)는 `journal.chapter.delete.blocked-by-reflection` 으로 거부된다(Hibernate cascade 가 엔트리 서비스 `preDelete` 를 우회하므로 챕터 `preDelete` 에서 막는다). nullify·orphan 화는 하지 않으며, 사용자는 참조 Reflection 을 먼저 삭제한다. 명시 cascade(대상+Reflection 동시 삭제)는 미구현이다. 정본 `docs/migration/journal/reflection-domain-model.md` §5.
 
+**엔트리 삭제 후 태그 클라우드 갱신**: 삭제 성공 알림 확인 후 현재 엔트리 호스트를 재조회하면서 현재 기간의 해당 태그 클라우드 섹션도 갱신한다. `JOURNAL_DIARY`는 `diary`, `JOURNAL_DREAM`은 `dream`만 조회하며, 전용 섹션이 없는 `JOURNAL_NOTE`와 태그 클라우드를 표시하지 않는 엔트리 검색 화면은 조회하지 않는다.
+
 ---
 
 ### 엔트리 클라이언트 접힘 토글 (Entry Local Collapse Toggle)

@@ -24,6 +24,8 @@ export interface UseEntryLifecycleStateOptions {
   guardAxisWrite: () => boolean;
   /** 액션 성공 후 화면 재조회+스크롤 트리거 */
   scrollAfterFetch: (stdrdDt?: string) => void;
+  /** 삭제 성공 후 현재 화면의 엔트리 유형별 태그 클라우드 갱신 트리거 */
+  refreshTagCloudAfterDelete: (contentType?: string) => void;
   /** i18n t 함수 */
   t: (key: string) => string;
 }
@@ -34,7 +36,7 @@ export interface UseEntryLifecycleStateOptions {
  * 반환값은 템플릿의 라이프사이클/상태 서브메뉴와 삭제 핸들러에서 직접 사용된다.
  */
 export function useEntryLifecycleState(options: UseEntryLifecycleStateOptions) {
-  const { entry, isDreamEntry, guardAxisWrite, scrollAfterFetch, t } = options;
+  const { entry, isDreamEntry, guardAxisWrite, scrollAfterFetch, refreshTagCloudAfterDelete, t } = options;
 
   const threadStore = useJournalThreadStore();
 
@@ -101,6 +103,7 @@ export function useEntryLifecycleState(options: UseEntryLifecycleStateOptions) {
           successFallback: t("common.result.deleted"),
         });
         void threadStore.refreshPeriodSummary();
+        refreshTagCloudAfterDelete(entry.value.prefixContentType ?? entry.value.contentType);
         scrollAfterFetch(stdrdDt);
       } else {
         void swalAjaxResult({
