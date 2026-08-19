@@ -22,8 +22,9 @@ import javax.persistence.*;
  * 저널 Reflection(Commentary) Entity.
  *
  * <p>Reflection 은 Primary Content(Diary/Dream/Note)에 대한 해석 층(Commentary)이며, 반드시 대상
- * Entry 를 가리키는(About-A) 별도 Aggregate Root 다. Primary 스트림의 peer 가 아니므로 chapter·day·sort 를
- * 소유하지 않고, 대상({@code refId}/{@code refContentType})을 필수로 갖는다.</p>
+ * Entry 를 가리키는(About-A) 별도 Aggregate Root 다. Primary 스트림의 peer 가 아니므로 chapter·day 를
+ * 소유하지 않고, 대상({@code refId}/{@code refContentType})을 필수로 갖는다.
+ * 같은 대상 아래 형제 순번은 {@code sortOrder} 가 담당한다.</p>
  *
  * <p>골격은 흡수 이전 {@code JournalInterpretation} 을 잇는다(별도 테이블·attachable owner). 흡수가 얹은
  * chapter 소유·STI 는 버리고, About-A 를 NOT NULL 로 조인다. content_type 은 전용 테이블이라 항상
@@ -82,6 +83,12 @@ public class JournalReflectionEntity
     @Column(name = "ref_content_type", nullable = false, length = 50)
     @Comment("대상 컨텐츠 타입")
     private ContentType refContentType;
+
+    /** 같은 대상 아래 형제 정렬 순번. 1부터 연속. */
+    @Builder.Default
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
+    @Comment("대상 아래 정렬")
+    private Integer sortOrder = 1;
 
     /* ----- attachable embed (owner 컬럼: File=file_group_id, History=history_triggered_*; State·Comment 는 별도 테이블) ----- */
 

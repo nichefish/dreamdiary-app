@@ -491,7 +491,7 @@ public class JournalDayService
         if (targetIds.isEmpty()) return ReflectionStateMaps.empty();
 
         final List<JournalReflectionEntity> reflections =
-                journalReflectionRepository.findAllByRefIdInOrderByCreatedAtAsc(targetIds);
+                journalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc(targetIds);
         final Map<Integer, JournalState> stateMap = new HashMap<>();
         final List<Integer> reflectionIds = new java.util.ArrayList<>();
         for (final JournalReflectionEntity reflection : reflections) {

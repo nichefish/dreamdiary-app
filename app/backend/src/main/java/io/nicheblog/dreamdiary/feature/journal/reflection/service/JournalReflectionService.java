@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Reflection(Commentary) 쓰기 서비스.
@@ -52,6 +53,7 @@ public class JournalReflectionService
     private final JournalDayRepository journalDayRepository;
     private final JournalContentOwnershipGuard journalContentOwnershipGuard;
     private final io.nicheblog.dreamdiary.feature.attachable.lifecycle.service.LifecycleService lifecycleService;
+    private final JournalReflectionOrderService journalReflectionOrderService;
 
     public JournalReflectionMapstruct getReadMapstruct() {
         return this.mapstruct;
@@ -87,6 +89,8 @@ public class JournalReflectionService
         if (registDto.getRefId() == null || registDto.getRefContentType() == null) {
             throw new BusinessException("journal.reflection.target-required");
         }
+        registDto.setSortOrder(journalReflectionOrderService.getNextSortOrder(
+                registDto.getRefId(), registDto.getRefContentType()));
     }
 
     /**
@@ -130,6 +134,7 @@ public class JournalReflectionService
     @Override
     public void preModify(final JournalReflectionPostDto postDto, final JournalReflectionEntity modifyEntity) {
         journalContentOwnershipGuard.assertOwned(modifyEntity.getId(), ContentType.JOURNAL_REFLECTION);
+        postDto.setIsSortOrderChanged(isSortOrderChanged(postDto, modifyEntity));
     }
 
     /**
@@ -141,6 +146,14 @@ public class JournalReflectionService
      */
     @Override
     public void postModify(final JournalReflectionPostDto postDto, final JournalEntryDto updatedDto) throws Exception {
+        if (Boolean.TRUE.equals(postDto.getIsSortOrderChanged())) {
+            journalReflectionOrderService.reorderSortOrder(
+                    updatedDto.getRefId(),
+                    updatedDto.getId(),
+                    postDto.getSortOrder(),
+                    updatedDto.getRefContentType()
+            );
+        }
         final JournalDayEntity targetDay = resolveTargetDay(updatedDto.getRefId(), updatedDto.getRefContentType());
         journalCacheEvictWorker.evictAfterCommit(buildEvictParam(updatedDto, targetDay), ContentType.JOURNAL_REFLECTION);
     }
@@ -168,8 +181,21 @@ public class JournalReflectionService
      */
     @Override
     public void postDelete(final JournalEntryDto deletedDto) throws Exception {
+        journalReflectionOrderService.normalizeSortOrder(deletedDto.getRefId(), deletedDto.getRefContentType());
         final JournalDayEntity targetDay = resolveTargetDay(deletedDto.getRefId(), deletedDto.getRefContentType());
         journalCacheEvictWorker.evictAfterCommit(buildEvictParam(deletedDto, targetDay), ContentType.JOURNAL_REFLECTION);
+    }
+
+    /**
+     * 수정 요청 순번이 저장된 순번과 다른지 판별한다. 요청 순번이 없으면 변경이 아니다.
+     *
+     * @param modifyDto 수정 DTO
+     * @param modifyEntity 수정 대상 엔티티
+     * @return 변경 여부
+     */
+    private boolean isSortOrderChanged(final JournalReflectionPostDto modifyDto, final JournalReflectionEntity modifyEntity) {
+        if (modifyDto.getSortOrder() == null) return false;
+        return !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
     }
 
     /**

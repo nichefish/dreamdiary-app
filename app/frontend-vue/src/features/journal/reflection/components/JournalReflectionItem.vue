@@ -17,7 +17,7 @@
         class="journal-content p-2"
         v-html="reflection.markdownContent"
       ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
+      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center"><span v-if="reflection.sortOrder != null">#{{ reflection.sortOrder }}&nbsp;</span>(collapsed)</div>
       <!--begin::댓글 (읽기)-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
         <div v-for="cmt in commentList" :key="cmt.id" class="d-flex align-items-start gap-1">

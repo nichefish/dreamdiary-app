@@ -115,6 +115,7 @@ CREATE TABLE IF NOT EXISTS journal_reflection (
     -- About-A
     ref_id INT NOT NULL COMMENT '대상(About-A) 엔티티 번호',
     ref_content_type VARCHAR(50) NOT NULL COMMENT '대상 컨텐츠 타입',
+    sort_order INT DEFAULT 1 COMMENT '대상 아래 정렬',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- history

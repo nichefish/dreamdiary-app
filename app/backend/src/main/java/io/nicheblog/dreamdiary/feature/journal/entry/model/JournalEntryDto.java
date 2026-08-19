@@ -61,6 +61,7 @@ public class JournalEntryDto extends BaseAttachableDto
     private Integer mnth;
     private Boolean isHolyday;
     private String holydayNm;
+    /** 표시 정렬 순번. Entry 는 챕터 내, Reflection 은 같은 대상 아래 형제. */
     private Integer sortOrder;
 
     private String contentType;

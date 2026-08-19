@@ -52,6 +52,8 @@ class JournalReflectionServiceIntegrationTest {
 
     /** 가상 픽스처 — Reflection 본문. */
     private static final String FIXTURE_CONTENT = "이 기록에 대한 사유 한 줄";
+    /** 가상 픽스처 — 같은 대상의 둘째 Reflection 본문. */
+    private static final String FIXTURE_CONTENT_SECOND = "같은 기록에 대한 둘째 사유";
     /** 가상 픽스처 — 마이그레이션 감사 스탬프. */
     private static final String FIXTURE_MIGRATION_AUDIT = "MIGRATION_SPLIT";
     /** 가상 픽스처 — 다른 일자 소유자. */
@@ -95,7 +97,7 @@ class JournalReflectionServiceIntegrationTest {
 
         assertTrue(Boolean.TRUE.equals(response.getRslt()));
         final List<JournalReflectionEntity> reflections =
-                journalReflectionRepository.findAllByRefIdInOrderByCreatedAtAsc(List.of(diaryId));
+                journalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc(List.of(diaryId));
         assertEquals(1, reflections.size());
         assertEquals(ContentType.JOURNAL_DIARY, reflections.get(0).getRefContentType());
     }
@@ -181,7 +183,109 @@ class JournalReflectionServiceIntegrationTest {
         assertTrue(journalReflectionRepository.findById(reflectionId).isPresent());
     }
 
-    private Integer saveDiaryTarget() {
+    /** 같은 대상에 연속 등록하면 서버가 1, 2를 부여하고 클라이언트가 보낸 순번은 무시한다. */
+    @Test
+    void registAppendsConsecutiveSortOrderIgnoringClientValue() throws Exception {
+        final Integer diaryId = saveDiaryTarget();
+
+        journalReflectionService.regist(JournalReflectionPostDto.builder()
+                .refId(diaryId)
+                .refContentType(ContentType.JOURNAL_DIARY)
+                .content(FIXTURE_CONTENT)
+                .sortOrder(99)
+                .build());
+        journalReflectionService.regist(JournalReflectionPostDto.builder()
+                .refId(diaryId)
+                .refContentType(ContentType.JOURNAL_DIARY)
+                .content(FIXTURE_CONTENT_SECOND)
+                .sortOrder(1)
+                .build());
+        entityManager.flush();
+        entityManager.clear();
+
+        final List<JournalReflectionEntity> reflections =
+                journalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc(List.of(diaryId));
+        assertEquals(2, reflections.size());
+        assertEquals(1, reflections.get(0).getSortOrder());
+        assertEquals(FIXTURE_CONTENT, reflections.get(0).getContent());
+        assertEquals(2, reflections.get(1).getSortOrder());
+        assertEquals(FIXTURE_CONTENT_SECOND, reflections.get(1).getContent());
+    }
+
+    /** 수정 모달 # 변경은 같은 대상 아래 형제를 재배치한다. */
+    @Test
+    void modifySortOrderReordersSiblings() throws Exception {
+        final Integer diaryId = saveDiaryTarget();
+        journalReflectionService.regist(JournalReflectionPostDto.builder()
+                .refId(diaryId)
+                .refContentType(ContentType.JOURNAL_DIARY)
+                .content(FIXTURE_CONTENT)
+                .build());
+        journalReflectionService.regist(JournalReflectionPostDto.builder()
+                .refId(diaryId)
+                .refContentType(ContentType.JOURNAL_DIARY)
+                .content(FIXTURE_CONTENT_SECOND)
+                .build());
+        entityManager.flush();
+        entityManager.clear();
+
+        final List<JournalReflectionEntity> before =
+                journalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc(List.of(diaryId));
+        final Integer firstId = before.get(0).getId();
+        final Integer secondId = before.get(1).getId();
+
+        journalReflectionService.modify(JournalReflectionPostDto.builder()
+                .id(firstId)
+                .refId(diaryId)
+                .refContentType(ContentType.JOURNAL_DIARY)
+                .content(FIXTURE_CONTENT)
+                .sortOrder(2)
+                .build());
+        entityManager.flush();
+        entityManager.clear();
+
+        final List<JournalReflectionEntity> after =
+                journalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc(List.of(diaryId));
+        assertEquals(2, after.size());
+        assertEquals(secondId, after.get(0).getId());
+        assertEquals(1, after.get(0).getSortOrder());
+        assertEquals(firstId, after.get(1).getId());
+        assertEquals(2, after.get(1).getSortOrder());
+    }
+
+    /** 삭제 후 남은 형제의 순번을 1..N으로 다시 매긴다. */
+    @Test
+    void deleteNormalizesRemainingSortOrder() throws Exception {
+        final Integer diaryId = saveDiaryTarget();
+        journalReflectionService.regist(JournalReflectionPostDto.builder()
+                .refId(diaryId)
+                .refContentType(ContentType.JOURNAL_DIARY)
+                .content(FIXTURE_CONTENT)
+                .build());
+        journalReflectionService.regist(JournalReflectionPostDto.builder()
+                .refId(diaryId)
+                .refContentType(ContentType.JOURNAL_DIARY)
+                .content(FIXTURE_CONTENT_SECOND)
+                .build());
+        entityManager.flush();
+        entityManager.clear();
+
+        final Integer firstId = journalReflectionRepository
+                .findAllByRefIdInOrderBySortOrderAscIdAsc(List.of(diaryId))
+                .get(0)
+                .getId();
+        journalReflectionService.delete(firstId);
+        entityManager.flush();
+        entityManager.clear();
+
+        final List<JournalReflectionEntity> remaining =
+                journalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc(List.of(diaryId));
+        assertEquals(1, remaining.size());
+        assertEquals(FIXTURE_CONTENT_SECOND, remaining.get(0).getContent());
+        assertEquals(1, remaining.get(0).getSortOrder());
+    }
+
+        private Integer saveDiaryTarget() {
         return saveDiaryTargetForOwner(ownerId, LocalDate.of(2026, 8, 4));
     }
 

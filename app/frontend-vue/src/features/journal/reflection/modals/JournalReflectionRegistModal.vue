@@ -61,7 +61,7 @@
                   name="sortOrder"
                   min="1"
                   max="99"
-                  v-model="model.sortOrder"
+                  v-model.number="model.sortOrder"
                   maxlength="3"
                 />
               </div>
@@ -243,6 +243,7 @@ async function submit() {
     if (model.value.refId != null) formData.append("refId", String(model.value.refId));
     if (model.value.refContentType) formData.append("refContentType", model.value.refContentType);
     formData.append("title", model.value.title ?? "");
+    if (model.value.sortOrder != null) formData.append("sortOrder", String(model.value.sortOrder));
     formData.append("content", model.value.content ?? "");
 
     /* Reflection 은 별도 Aggregate(journal_reflection) 전용 등록/수정 API(POST)를 쓴다. */
