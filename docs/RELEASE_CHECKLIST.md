@@ -44,8 +44,9 @@
 - [ ] 신규/변경 기능에 테스트 추가 — 특히 커버 안 된 **이음새**(상태 배선·합성 로직).
 
 ## 6. 스키마·데이터
-- [ ] **1.0 전까지 Flyway 증분 마이그레이션을 만들지 않는다.** 마스터 스키마만 도메인/엔티티와 일치하면 된다. 기존 마이그레이션 쿼리는 정리(삭제) 대상이며, 증분 마이그레이션은 **1.0부터** 누적한다.
+- [ ] **증분 마이그레이션 SQL은 `app/backend/src/main/resources/schema/migration/mariadb/` 에 Flyway 네이밍(`V{version}__{desc}.sql`)으로 누적한다.** 1.0 전까지 `FlywayRunner` 자동 실행은 비활성화 상태이며, 적용 시점은 수동으로 통제한다.
 - [ ] 마스터 스키마 정합 확인 — `app/backend/src/main/resources/schema/full/mariadb/schema-*.sql` (도메인 변경 반영: 예 `schema-journal-mariadb.sql`).
+- [ ] 증분 마이그레이션과 마스터 스키마 동기화 — 증분 SQL이 추가됐으면 마스터 스키마에도 해당 변경이 반영되어 있는지 대조.
 - [ ] 시드/필수 데이터 정합 — `app/backend/src/main/resources/schema/full/mariadb/data-required-*.sql`.
 
 ## 7. 릴리스 메타
@@ -93,5 +94,5 @@
 - 복사 계약 QA: 리플렉션·엔트리 복사가 저작 소스 텍스트(마크다운 원문·문단)를 담고, 앱 에디터에 되붙이면 원래대로 재렌더되는지 확인한다.
 - 데이터 계약 QA: 일자 소유권을 사용자 영속 ID로 분리한 뒤에도 소유 판정이 유지되는지 확인한다.
 - 의존성 lock: `happy-dom`(DOM 테스트 환경) 추가에 따른 `package-lock.json` 증가는 의도된 변경이다.
-- 스키마: Flyway 증분 없음(1.0 전). 마스터 스키마와 런타임 entity 정합을 확인한다.
+- 스키마: 증분 마이그레이션 SQL은 `schema/migration/mariadb/`에 파일로 누적, 실행은 수동. 마스터 스키마와 런타임 entity 정합을 확인한다.
 - 태그: `v0.28.0`은 dev 브랜치가 아니라 main 머지 커밋에 생성한다.
