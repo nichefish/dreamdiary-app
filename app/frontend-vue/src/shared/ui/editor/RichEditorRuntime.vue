@@ -87,6 +87,8 @@ const editorInit = computed(() => ({
   branding: false,
   statusbar: false,
   promotion: false,
+  /** 소스 코드·링크·표 등 TinyMCE 모달을 헤더 드래그로 이동한다. */
+  draggable_modal: true,
   /** Vite 번들로 CSS 가 이미 주입되므로 skin URL 로딩 비활성화 */
   skin: false,
   /** iframe 내부 content CSS 는 브라우저 기본값 사용 */

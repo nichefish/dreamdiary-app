@@ -22,8 +22,17 @@ describe("htmlToPlainText — 복사 계약", () => {
     expect(htmlToPlainText("<p>A</p>\n<p>B</p>")).toBe("A\n\nB");
   });
 
-  it("연속 빈 문단을 단일 빈 줄로 정규화한다", () => {
-    expect(htmlToPlainText("<p>A</p><p></p><p>&nbsp;</p><p>B</p>")).toBe("A\n\nB");
+  it("빈 문단의 연속 개수를 보존한다", () => {
+    expect(htmlToPlainText("<p>A</p><p></p><p>&nbsp;</p><p>B</p>")).toBe("A\n\n\n\nB");
+  });
+
+  it("br 로 표현된 TinyMCE 빈 문단을 보존한다", () => {
+    expect(htmlToPlainText('<p>A</p><p><br data-mce-bogus="1"></p><p>B</p>')).toBe("A\n\n\nB");
+  });
+
+  it("본문 앞뒤와 단독 빈 문단을 보존한다", () => {
+    expect(htmlToPlainText("<p>&nbsp;</p><p>A</p><p>&nbsp;</p>")).toBe("\n\nA\n\n");
+    expect(htmlToPlainText("<p>&nbsp;</p>")).toBe("\n");
   });
 
   it("HTML 엔티티를 화면과 동일하게 디코드한다", () => {
@@ -32,6 +41,14 @@ describe("htmlToPlainText — 복사 계약", () => {
 
   it("br 은 개행으로 환원한다", () => {
     expect(htmlToPlainText("<p>a<br>b</p>")).toBe("a\nb");
+  });
+
+  it("div 블록 경계를 개행으로 환원한다", () => {
+    expect(htmlToPlainText("<div>A</div><div>B</div>")).toBe("A\nB");
+  });
+
+  it("목록 항목 경계를 개행으로 환원한다", () => {
+    expect(htmlToPlainText("<ul><li>A</li><li>B</li></ul>")).toBe("A\nB");
   });
 
   it("hr 은 ------ 로 환원한다", () => {
