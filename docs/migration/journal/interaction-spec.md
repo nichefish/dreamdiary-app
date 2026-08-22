@@ -206,7 +206,7 @@ const weekRangeLabel = computed(() => {
 
 **주간 미니 달력 날짜 클릭 → 해당 주 이동 + 일자 카드 스크롤** (`onWeekMiniCalendarSelect`):
 - `JournalAsideMiniCalendar`(일요일 시작)에서 날짜 클릭 시 `getWeekStartDateStr(dateStr)`로 그 날이 속한 주(월요일 시작)를 구해 `syncWeeklyRouteOrFetch`로 이동한다. 다른 주를 클릭하면 주 범위 band 가 그 주로 이동한다.
-- 이동 성공 후 `selectedDt`(클릭한 날 강조) 갱신, `await nextTick()` 후 `#journal-day-{dateStr}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
+- `syncWeeklyRouteOrFetch` 호출 후 `selectedDt`(클릭한 날 강조)를 갱신하고, `#journal-day-{dateStr}` 카드가 렌더될 때까지 재시도(`scrollToDayCardWhenReady`, `nextTick`+50ms 폴링, 최대 약 1초)한 뒤 `scrollIntoView({ behavior: "smooth", block: "start" })` 한다. 같은 주 재클릭(중복 네비게이션)이어도 조기 반환하지 않고 스크롤하며, 다른 주 이동은 fetch·재렌더가 비동기라 한 tick 뒤엔 카드가 아직 없을 수 있어 렌더 완료 후에 스크롤한다.
 - 선택된 주는 `week-start` prop 으로 전달되어 `[weekStart … +6일]` 셀이 `is-in-week`(옅은 파란 band)로 칠해진다. 일요일 시작 그리드라 월~토는 한 줄, 그 주의 일요일은 다음 줄 첫 칸에 칠해진다. 클릭한 날은 `is-selected`(진한 파랑).
 
 ---
