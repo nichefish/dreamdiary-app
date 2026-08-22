@@ -226,6 +226,9 @@ async function syncTagCategories(): Promise<void> {
 
 /** 신규 저널 일자 등록 모달 */
 function openDayRegist(): void {
-  void modalStore.openDayRegist();
+  // 일간 뷰에서는 현재 보고 있는 날짜(route.query.stdrdDt)를 신규 일자 등록 기본값으로 세팅한다.
+  // 주간·월간처럼 stdrdDt 가 없으면 인자를 넘기지 않아 openDayRegist 가 오늘로 fallback 한다.
+  const activeDate = route.query.stdrdDt as string | undefined;
+  void modalStore.openDayRegist(activeDate ? { journalDate: activeDate } : undefined);
 }
 </script>

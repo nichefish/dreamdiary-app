@@ -85,7 +85,7 @@
 - **팝업 모드 (`journal-daily`)**: `SystemLayout` > `JournalDayDailyLayout` — 헤더/사이드바 없이 선택 일자 태그클라우드와 날짜 카드를 표시한다. URL: `/journal/daily-popup?stdrdDt=YYYY-MM-DD`. 진입: `JournalDayCard` 컨텍스트 메뉴 "새 창으로 열기 (일자 뷰)", 태그 상세 모달 일자 행 버튼, 엔트리 검색 페이지 일자 링크. `window.open(url, "_blank", "width=...,height=...")` — features 지정으로 탭 아닌 창 강제.
 - **공유 컴포넌트**: 두 모드 모두 `JournalDayDaily.vue` 를 렌더. route name 분기(`journal-daily` | `journal-daily-tab`)로 watch·갱신 경로를 공유.
 - **태그클라우드**: 탭·팝업 모두 `JournalTagCloudHeader`를 렌더하고 URL `stdrdDt` 하루에 속한 일자·일기·꿈 태그를 각각 집계한다. 이전/다음·날짜 선택으로 기준일이 바뀌면 세 섹션을 새 날짜로 조회하며, 진행 중인 이전 날짜 응답은 store 기간 키와 요청 순서 검증으로 폐기한다. 탭 모드의 `TAGCLOUD` 토글은 표시와 조회 여부를 제어하고 팝업 모드는 기본 표시 상태를 사용한다.
-- **네비게이션**: 탭 모드는 aside 미니 달력으로 날짜를 선택하고, 중복되는 본문 이전/날짜/다음 행은 표시하지 않는다. aside가 없는 팝업 모드는 본문 상단 이전/날짜/다음 행으로 날짜를 이동한다(`router.replace` + `stdrdDt` query). 일자 등록/수정 저장 후 일간에서는 sticky 툴바·날짜 선택 문맥을 유지하도록 카드 `scrollIntoView`를 생략하며, 저장 날짜가 URL `stdrdDt`와 다르면 query를 새 날짜로 동기화한다.
+- **네비게이션**: 탭 모드는 aside 미니 달력으로 날짜를 선택하고, 중복되는 본문 이전/날짜/다음 행은 표시하지 않는다. aside가 없는 팝업 모드는 본문 상단 이전/날짜/다음 행으로 날짜를 이동한다(`router.replace` + `stdrdDt` query). 일자 등록/수정 저장 후 일간에서는 sticky 툴바·날짜 선택 문맥을 유지하도록 카드 `scrollIntoView`를 생략하며, 저장 날짜가 URL `stdrdDt`와 다르면 query를 새 날짜로 동기화한다. 신규 「저널 일자 등록」(`JournalDayViewToolbar.openDayRegist`)은 일간에서 현재 active 날짜(`route.query.stdrdDt`)를 기본 일자로 세팅하며, `stdrdDt` 가 없는 주간·월간에서는 오늘로 fallback 한다.
 - **i18n**: 이전/다음 버튼, 날짜 선택 tooltip, 빈 상태, 목록 조회 실패 fallback은 현재 locale 카탈로그를 사용한다. locale 변경은 선택 날짜·`stdrdDt` query·조회 조건을 변경하지 않는다.
 - **모달**: 팝업 모드는 `JournalDayDailyLayout`에 전체 편집 모달 포함. 탭 모드는 `JournalDayLayout`의 모달 컨테이너를 공유.
 - **챕터 모달 i18n**: `JournalChapterRegistModal.vue`의 표시 문구·기준 날짜 요일·확인창·결과 fallback은 현재 locale 카탈로그를 사용하며, 등록·수정·일자 이동 API의 서버 `message`가 있으면 우선 표시
