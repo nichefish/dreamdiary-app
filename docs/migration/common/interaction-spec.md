@@ -336,7 +336,7 @@ cF.ui.swalOrConfirm(
 
 각 서비스 모듈 내부에서 `cF.ui.swalOrConfirm()` 또는 `Swal.fire({ showCancelButton: true })` 형태로 구현. 레거시 코드에서 삭제 전 확인 다이얼로그는 서비스별로 개별 구현.
 
-Vue SPA에서 Bootstrap 모달이 열린 상태의 SweetAlert2 확인 다이얼로그는 활성 모달 위에 표시한다. z-index SSOT는 `shared/utils/overlayZIndex.ts`의 `SWAL_Z`(6200)이며, `App.vue` CSS(`!important`)와 `swalFire` `didOpen` inline 강제·모달 스택 `MODAL_MAX_Z` 캡이 함께 확인창이 모달 뒤로 가려지지 않게 한다. 같은 모달 안의 TinyMCE code/link 등 보조 UI(`.tox-tinymce-aux`)는 `TINYMCE_AUX_Z`(6190)로 올려 모달(6100+)·Tagify(6120)에 가려지지 않게 하고, SweetAlert보다는 아래에 둔다.
+Vue SPA에서 Bootstrap 모달이 열린 상태의 SweetAlert2 확인 다이얼로그는 활성 모달 위에 표시한다. z-index SSOT는 `shared/utils/overlayZIndex.ts`의 `SWAL_Z`(6200)이며, `App.vue` CSS(`!important`)와 `swalFire` `didOpen` inline 강제·모달 스택 `MODAL_MAX_Z` 캡이 함께 확인창이 모달 뒤로 가려지지 않게 한다. 같은 모달 안의 TinyMCE code/link 등 보조 UI(`.tox-tinymce-aux`)는 `TINYMCE_AUX_Z`(6190)로 올려 모달(6100+)·Tagify(6120)에 가려지지 않게 하고, SweetAlert보다는 아래에 둔다. 또한 `.tox-tinymce-aux`로의 `focusin`을 `installModalStacking`이 capture 단계에서 가로채 Bootstrap 모달 FocusTrap의 포커스 회수를 면제하므로, 모달 안 에디터에서 find/replace·link 등 다이얼로그 입력창에 타이핑할 수 있다.
 
 ### 모달 닫기 버튼 확인
 
