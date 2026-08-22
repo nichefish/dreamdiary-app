@@ -4,6 +4,8 @@
     class="journal-reflection-embed"
     :class="{ 'align-items-stretch': isCollapsed }"
     :data-id="reflection.id"
+    :data-imprtc="hasState('IMPRTC') ? 'Y' : 'N'"
+    :data-refrnc="hasState('REFRNC') ? 'Y' : 'N'"
     :data-resolved="isResolved ? 'Y' : 'N'"
     :data-lifecycle="lcKey || 'OPEN'"
   >

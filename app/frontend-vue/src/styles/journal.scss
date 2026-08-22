@@ -142,18 +142,26 @@ $color-else-dream-line-2: rgba(148, 163, 184, 0.4);
 
 /* Reflection 슬림 임베드: target 엔트리 본문과 태그 사이에 얹혀 "이 엔트리에 매달린 해석"으로 읽힌다.
    헤더·제목 없이 본문만 흐르고, 상단 마진 0 으로 본문에 바로 붙인다(하단만 반 줄 띄워 태그와 분리).
-   옅은 1px 좌측선이 유일한 깊이·소속 신호다. 태그 행이 아래를 닫아 소속을 확정한다. RESOLVED는 일기 완료와 같은 초록 배경 음영과 좌측선 색으로 신호한다. */
+   옅은 1px 좌측선이 유일한 깊이·소속 신호다. 태그 행이 아래를 닫아 소속을 확정한다. RESOLVED·중요·참조는 일기 엔트리와 같은 배경 음영과 조합 상태선으로 신호한다. */
 .journal-reflection-embed {
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
     margin: 0 0 0.4rem 0.25rem;
     padding-left: 0.75rem;
+    position: relative;
     border-inline-start: 1px solid var(--bs-gray-200);
-}
-.journal-reflection-embed[data-resolved="Y"] {
-    border-inline-start-color: rgba(34, 197, 94, 0.35);
-    background: rgba(34, 197, 94, 0.05);
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: -1px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: var(--bs-gray-200);
+        pointer-events: none;
+    }
 }
 
 /* 임베드 리플렉션 PENDING(보류) = 1급 행과 동일한 회색 배경. 접힘은 컴포넌트가 placeholder 로 처리. */
@@ -249,6 +257,15 @@ $color-else-dream-line-2: rgba(148, 163, 184, 0.4);
             background: $before-bg;
             box-shadow: $before-shadow;
         }
+    }
+}
+
+@mixin journal-reflection-paired-state($bg, $before-bg, $before-shadow: none) {
+    background: $bg;
+
+    &::before {
+        background: $before-bg;
+        box-shadow: $before-shadow;
     }
 }
 
@@ -978,6 +995,14 @@ $journal-dream-paired-states: (
         @include journal-paired-state(
             map-get($state, bg),
             map-get($state, border),
+            map-get($state, before-bg),
+            map-get($state, before-shadow)
+        );
+    }
+
+    .journal-reflection-embed#{$selector} {
+        @include journal-reflection-paired-state(
+            map-get($state, bg),
             map-get($state, before-bg),
             map-get($state, before-shadow)
         );
