@@ -55,6 +55,19 @@ function stripTags(html: string): string {
     .replace(/\u00a0/g, " ");
 }
 
+/** MarkdownUtils 수평선과 같은 하이픈 3개 이상 단독 블록인지 판별한다. */
+function isHorizontalRule(text: string): boolean {
+  return /^-{3,}$/.test((text ?? "").trim());
+}
+
+/** 전체 감싸기가 만든 `((---))` 형태이면 원래 수평선 문자열을 반환한다. */
+function unwrapWrappedHorizontalRule(text: string): string | null {
+  const source = (text ?? "").trim();
+  if (!source.startsWith("((") || !source.endsWith("))")) return null;
+  const inner = source.slice(2, -2).trim();
+  return isHorizontalRule(inner) ? inner : null;
+}
+
 /**
  * TinyMCE HTML 의 각 `<p>`/`<li>` 본문을 `((...))` 로 감싼다.
  *
@@ -76,6 +89,14 @@ export function wrapHtmlWithDoubleParen(html: string): WrapDoubleParenResult {
     if (!plain) {
       return `<${tag}${attrs ?? ""}>${inner}</${tag}>`;
     }
+    const restoredHorizontalRule = unwrapWrappedHorizontalRule(plain);
+    if (restoredHorizontalRule != null) {
+      changed = true;
+      return `<${tag}${attrs ?? ""}>${restoredHorizontalRule}</${tag}>`;
+    }
+    if (isHorizontalRule(plain)) {
+      return `<${tag}${attrs ?? ""}>${inner}</${tag}>`;
+    }
     if (isFullyDoubleParenWrapped(plain)) {
       return `<${tag}${attrs ?? ""}>${inner}</${tag}>`;
     }
@@ -89,6 +110,13 @@ export function wrapHtmlWithDoubleParen(html: string): WrapDoubleParenResult {
 
   const plainOnly = stripTags(source).replace(/\s+/g, " ").trim();
   if (!plainOnly) {
+    return { html: source, changed: false };
+  }
+  const restoredHorizontalRule = unwrapWrappedHorizontalRule(plainOnly);
+  if (restoredHorizontalRule != null) {
+    return { html: `<p>${restoredHorizontalRule}</p>`, changed: true };
+  }
+  if (isHorizontalRule(plainOnly)) {
     return { html: source, changed: false };
   }
   if (isFullyDoubleParenWrapped(plainOnly)) {
