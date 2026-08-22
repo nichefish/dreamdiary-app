@@ -286,6 +286,8 @@ async function submit() {
           rsltMap.targetReflectionList,
           rsltMap.targetLifecycleKey,
         );
+        // 스레드 상세 모달이 열려 있으면 dayList 전용 부분 패치로는 상세가 갱신되지 않으므로 상세도 재조회한다.
+        if (threadStore.detailOpen) void threadStore.refreshOpenDetail();
       } else {
         // enrichment 실패 fallback: 전체 재조회
         void refreshJournalEntryHostForRoute(journalStore, threadStore, route);
