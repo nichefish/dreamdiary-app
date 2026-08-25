@@ -96,7 +96,7 @@
               type="button"
               class="btn btn-xs btn-icon journal-entry-action-btn copy-split-main"
               :title="copyIncludeTitle"
-              @click="copyEntry(true)"
+              @click="copyEntry('full')"
             >
               <i class="bi bi-copy fs-8"></i>
             </button>
@@ -116,7 +116,13 @@
               data-kt-menu="true"
             >
               <div class="menu-item px-3 my-1 cursor-pointer">
-                <div class="menu-link flex-stack px-3" @click="copyEntry(false)">
+                <div class="menu-link flex-stack px-3" @click="copyEntry('no-pending')">
+                  {{ t('journal.copy.no-pending.label') }}
+                  <i class="bi bi-copy fs-8"></i>
+                </div>
+              </div>
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyEntry('body')">
                   {{ t('journal.copy.body.label') }}
                   <i class="bi bi-clipboard fs-8"></i>
                 </div>
@@ -579,6 +585,11 @@ import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import {
+  type CopyReflectionMode,
+  copySuccessKey,
+  includeReflectionInCopy,
+} from "@/features/journal/utils/journalCopyReflection";
 import { highlightKeywordsInHtml } from "@/features/journal/utils/highlightKeywords";
 import { openJournalEntryViewPopup } from "@/features/journal/utils/journalEntryViewPopup";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
@@ -752,7 +763,7 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 }
 
 /** 엔트리 내용을 클립보드에 복사한다. 형식: 날짜(요일) → 본문 → 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyEntry(includeReflection = true): Promise<void> {
+async function copyEntry(mode: CopyReflectionMode = "full"): Promise<void> {
   const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
   const dateLine = weekDay
     ? `${props.entry.stdrdDt} (${weekDay})`
@@ -760,20 +771,17 @@ async function copyEntry(includeReflection = true): Promise<void> {
   /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
   const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
   const parts = [dateLine, raw].filter(Boolean);
-  /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-  if (includeReflection) {
-    for (const reflection of reflectionList.value) {
-      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-      if (reflRaw) parts.push("", reflRaw);
-    }
+  /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
+  for (const reflection of reflectionList.value) {
+    if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
+    const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+    if (reflRaw) parts.push("", reflRaw);
   }
   const text = parts.join("\n");
   try {
     await navigator.clipboard.writeText(text);
-    /* 성공 토스트는 복사 범위를 명시한다: 리플렉션 포함 시 "전체", 제외 시 "본문만", 리플렉션이 없으면 공용 문구. */
-    const successKey = !includeReflection
-      ? "journal.copy.body.success"
-      : (reflectionList.value.length > 0 ? "journal.copy.full.success" : "common.copy.success");
+    /* 성공 토스트는 복사 범위를 명시한다: 전체/보류 제외/본문만, 리플렉션이 없으면 공용 문구. */
+    const successKey = copySuccessKey(mode, reflectionList.value.length > 0);
     void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-entry] clipboard copy failed", error);

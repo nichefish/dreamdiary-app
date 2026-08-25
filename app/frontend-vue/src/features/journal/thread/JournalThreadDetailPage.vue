@@ -12,7 +12,7 @@
             type="button"
             class="btn btn-sm btn-icon btn-light-primary copy-split-main"
             :title="hasThreadReflections ? t('journal.copy.full.tooltip') : t('common.copy')"
-            @click="onCopy(true)"
+            @click="onCopy('full')"
           >
             <i class="bi bi-copy"></i>
           </button>
@@ -30,7 +30,13 @@
             data-kt-menu="true"
           >
             <div class="menu-item px-3 my-1 cursor-pointer">
-              <div class="menu-link flex-stack px-3" @click="onCopy(false)">
+              <div class="menu-link flex-stack px-3" @click="onCopy('no-pending')">
+                {{ t('journal.copy.no-pending.label') }}
+                <i class="bi bi-copy fs-8"></i>
+              </div>
+            </div>
+            <div class="menu-item px-3 my-1 cursor-pointer">
+              <div class="menu-link flex-stack px-3" @click="onCopy('body')">
                 {{ t('journal.copy.body.label') }}
                 <i class="bi bi-clipboard fs-8"></i>
               </div>
@@ -119,6 +125,7 @@ import { useRouter } from "vue-router";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import JournalThreadDetailContent from "@/features/journal/thread/components/JournalThreadDetailContent.vue";
+import type { CopyReflectionMode } from "@/features/journal/utils/journalCopyReflection";
 import { copyThreadDetail, downloadThreadDetail } from "@/features/journal/utils/journalThreadExport";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
@@ -161,9 +168,9 @@ const hasThreadReflections = computed(() =>
   store.detailEntries.some((e) => (e.reflectionList?.length ?? 0) > 0),
 );
 
-/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. (includeReflection: 해석 포함 여부) */
-function onCopy(includeReflection = true): void {
-  void copyThreadDetail(store.detailModel, store.detailEntries, t, includeReflection);
+/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. (mode: 전체·보류 제외·본문만) */
+function onCopy(mode: CopyReflectionMode = "full"): void {
+  void copyThreadDetail(store.detailModel, store.detailEntries, t, mode);
 }
 
 /** 스레드 소속 엔트리를 서버 텍스트 내보내기로 다운로드한다. (includeReflection: 해석 포함 여부) */

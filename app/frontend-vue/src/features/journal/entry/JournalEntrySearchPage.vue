@@ -53,7 +53,7 @@
       <!--begin::결과 전체 복사 (split — 주 버튼=해석 포함, ▾ 드롭다운=해석 제외)-->
       <div class="btn-group" role="group">
         <!--begin::주 버튼 (해석 포함)-->
-        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3 copy-split-main" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.include.tooltip')" @click="copyAll(true)">
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3 copy-split-main" :disabled="!canCopyResults" :title="t('journal.entry.search.copy-all.include.tooltip')" @click="copyAll('full')">
           <i class="bi bi-copy"></i>
         </button>
         <!--end::주 버튼-->
@@ -63,7 +63,13 @@
         </button>
         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
           <div class="menu-item px-3 my-1 cursor-pointer">
-            <div class="menu-link flex-stack px-3" @click="copyAll(false)">
+            <div class="menu-link flex-stack px-3" @click="copyAll('no-pending')">
+              {{ t('journal.copy.no-pending.label') }}
+              <i class="bi bi-copy fs-8"></i>
+            </div>
+          </div>
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="copyAll('body')">
               {{ t('journal.entry.search.copy-all.exclude.tooltip') }}
               <i class="bi bi-clipboard fs-8"></i>
             </div>
@@ -340,7 +346,7 @@
               type="button"
               class="btn btn-xs btn-icon btn-light-primary copy-split-main"
               :title="t('journal.entry.search.copy-date.include.tooltip')"
-              @click="copyDate(entry.stdrdDt, true)"
+              @click="copyDate(entry.stdrdDt, 'full')"
             >
               <i class="bi bi-copy fs-8"></i>
             </button>
@@ -355,7 +361,13 @@
             </button>
             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-2" data-kt-menu="true">
               <div class="menu-item px-3 my-1 cursor-pointer">
-                <div class="menu-link flex-stack px-3" @click="copyDate(entry.stdrdDt, false)">
+                <div class="menu-link flex-stack px-3" @click="copyDate(entry.stdrdDt, 'no-pending')">
+                  {{ t('journal.copy.no-pending.label') }}
+                  <i class="bi bi-copy fs-8"></i>
+                </div>
+              </div>
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyDate(entry.stdrdDt, 'body')">
                   {{ t('journal.entry.search.copy-date.exclude.tooltip') }}
                   <i class="bi bi-clipboard fs-8"></i>
                 </div>
@@ -417,6 +429,10 @@ import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { registerJournalEntrySearchHost } from "@/features/journal/utils/journalEntryHostRefresh";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import {
+  type CopyReflectionMode,
+  includeReflectionInCopy,
+} from "@/features/journal/utils/journalCopyReflection";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import {
@@ -961,7 +977,7 @@ function onTagProfileSuccess(): void {
  * 레거시 JournalEntrySearch.copy() 와 동일 포맷:
  *   날짜(요일)\n#순번\n본문 — 날짜가 바뀔 때만 날짜 헤더 삽입, 엔트리 간 빈 줄.
  */
-async function copyAll(includeReflection: boolean): Promise<void> {
+async function copyAll(mode: CopyReflectionMode): Promise<void> {
   if (isActionLocked.value) return;
   actionInProgress.value = true;
   try {
@@ -987,14 +1003,13 @@ async function copyAll(includeReflection: boolean): Promise<void> {
         prevDate = dateLabel;
       }
       block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
-      /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-      if (includeReflection) {
-        for (const reflection of entry.reflectionList ?? []) {
-          const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-          if (reflRaw) block += `
+      /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
+      for (const reflection of entry.reflectionList ?? []) {
+        if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
+        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+        if (reflRaw) block += `
 
 ${reflRaw}`;
-        }
       }
       return block;
     });
@@ -1022,9 +1037,9 @@ ${reflRaw}`;
  * 복사 계약: 소스는 저작 원문 content 우선(→ htmlToPlainText). 해석 포함 시 target 리플렉션 본문을 빈 줄로 이어 붙인다.
  *
  * @param stdrdDt 대상 일자(YYYY-MM-DD)
- * @param includeReflection 해석(리플렉션) 포함 여부
+ * @param mode 복사 모드(full=전체·no-pending=보류 제외·body=본문만)
  */
-async function copyDate(stdrdDt: string | undefined, includeReflection: boolean): Promise<void> {
+async function copyDate(stdrdDt: string | undefined, mode: CopyReflectionMode): Promise<void> {
   if (!stdrdDt || isActionLocked.value) return;
   actionInProgress.value = true;
   try {
@@ -1038,12 +1053,11 @@ async function copyDate(stdrdDt: string | undefined, includeReflection: boolean)
     const blocks = dateEntries.map((entry) => {
       const content = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
       let block = [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
-      /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-      if (includeReflection) {
-        for (const reflection of entry.reflectionList ?? []) {
-          const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-          if (reflRaw) block += `\r\n\r\n${reflRaw}`;
-        }
+      /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
+      for (const reflection of entry.reflectionList ?? []) {
+        if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
+        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
+        if (reflRaw) block += `\r\n\r\n${reflRaw}`;
       }
       return block;
     });
