@@ -671,8 +671,8 @@ The vector cache may contain many users' records, but `JournalEntryEmbeddingSear
 - Keyword extraction is heuristic-based and Korean-particle aware, not a full morphological analyzer.
 - `personFocus.topRoles` comes from entity-catalog role rows (`journal_entry_entity_role`) produced by `JournalEntityRoleExtractor` (hardened keyword heuristics: noise cues like `조금`/`작업`/`처럼` removed; multi-hit confidence boost). Still not a full LLM relation extractor; roles refresh when the entity sync worker reprocesses entries.
 
-## Next Candidates
+## Recent Contract Additions
 
-1. _(shipped)_ SUMMARY/SYNTHESIS/STANCE-specific top-K and synthesis min-score are admin-configurable (`rag_summary_top_k`, `rag_synthesis_top_k`, `rag_stance_top_k`, `rag_synthesis_min_score`).
-2. _(shipped)_ Ambiguity-gated LLM second-pass when SUMMARY+SYNTHESIS cues overlap (`RagIntentClassifier#needsLlmSecondPass` + `chat.ai.prompt.intent-classify`); heuristic fallback on failure.
-3. _(shipped)_ Korean-only guard prompt construction covered by `ChatOrchestratorTest` (`languageRetryPrompt_*`, `containsDisallowedHanScript_*`, `buildLanguageFallback_*`).
+1. SUMMARY/SYNTHESIS/STANCE-specific top-K and synthesis min-score are admin-configurable (`rag_summary_top_k`, `rag_synthesis_top_k`, `rag_stance_top_k`, `rag_synthesis_min_score`).
+2. Ambiguity-gated LLM second-pass runs when SUMMARY+SYNTHESIS cues overlap (`RagIntentClassifier#needsLlmSecondPass` + `chat.ai.prompt.intent-classify`), with heuristic fallback on failure.
+3. Korean-only guard prompt construction is covered by `ChatOrchestratorTest` (`languageRetryPrompt_*`, `containsDisallowedHanScript_*`, `buildLanguageFallback_*`).

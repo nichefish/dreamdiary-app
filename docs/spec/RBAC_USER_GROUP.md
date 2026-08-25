@@ -158,7 +158,7 @@ SPA `canUseMngrMenuMode()` (같은 키, `isMngr` fallback).
 
 1. 새 세분화는 **롤 키를 늘리지 말고** permission + (필요 시) group grant로만 추가한다.
 2. ~~관리 API permission 게이트~~ — 2차 완료. MNGR은 시드상 전 permission을 가지므로 기존 동작과 동치.
-3. `admin_yn`은 모드 UX용으로 유지하거나, 장기적으로 permission만으로 트리를 가르는 정리 대상으로 둔다.
+3. `admin_yn`은 모드별 트리 UX에 사용하고 세부 노출 판정은 permission으로 수행한다.
 4. `auth_policy` 테이블/화면은 **로그인·세션·비밀번호 정책**이며 RBAC과 이름만 비슷한 별 도메인이다.
 
 ## 8. 운영 · 적용

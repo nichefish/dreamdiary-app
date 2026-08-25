@@ -39,7 +39,6 @@ AI 채팅의 동작 기준과 현재 구현 상태는 [AI Chat Spec](CHAT_AI_SPE
 - 벡터를 `embedding_vector_json LONGTEXT`에 JSON 배열로 저장, 검색 시 Java에서 계산.
 - pgvector(PostgreSQL), MariaDB 11.7+ VECTOR 타입 등 네이티브 방식을 검토했으나 채택 안 함.
 - 근거: 현재 ~8,400건, 최대 ~17,000건 예상. 이 규모에서는 Java 계산 + 인메모리 캐시로 충분.
-- 10만 건 초과 시 MariaDB 11.7+ VECTOR 타입(VEC_DISTANCE 함수) 마이그레이션 고려.
 
 **프레임워크 미채택 (Spring AI, LangChain4j)**
 - Spring AI는 Spring Boot 3.x 필요 → 현재 2.7.18과 호환 안 됨.

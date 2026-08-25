@@ -1,11 +1,11 @@
-# AI 도메인 분리 설계
+# AI 도메인 소유 경계
 
-**상태:** Phase 0–6 완료 (feature/ai 능력 분리 + RAG context pipeline/text in `ai/rag` + chat ChatOrchestrator·ChatWebSocketSender)
+**상태:** 현재 계약 — `feature/ai` 능력과 `feature/chat` 채널의 소유 경계
 **관련:** [CHAT_AI_PHILOSOPHY.md](CHAT_AI_PHILOSOPHY.md), [CHAT_AI_SPEC.md](CHAT_AI_SPEC.md)
 
-## 1. 문제(분리 동기)와 현재 구조
+## 1. 현재 구조
 
-채팅은 사용자가 보는 **채널(외연)** 이다. LLM·RAG·프롬프트·인물·가드 능력은 `feature/ai`로 분리했고, 채널 오케스트레이션은 `ChatOrchestrator` + `ChatWebSocketSender`가 담당한다.
+채팅은 사용자가 보는 **채널(외연)** 이다. `feature/ai`가 LLM·RAG·프롬프트·인물·가드 능력을 소유하고, `feature/chat`의 `ChatOrchestrator`와 `ChatWebSocketSender`가 채널 오케스트레이션을 담당한다.
 
 | 현상 | 근거 |
 |---|---|
@@ -17,11 +17,10 @@
 
 ## 2. 원칙
 
-1. **`ai/` = 능력(capability)** — LLM 호출, 검색 정책, 프롬프트, 응답 가드, (선택) 인물 추론  
+1. **`ai/` = 능력(capability)** — LLM 호출, 검색 정책, 프롬프트, 응답 가드, 인물 추론
 2. **`chat/` = 채널(channel)** — 세션·메시지·설정·WebSocket·오케스트레이션  
 3. **저널 영속/임베딩 큐는 `journal/`에 남긴다** — `ai/rag`는 저널 검색 서비스를 **소비**하며, 임베딩 테이블·백필 워커를 흡수하지 않는다  
-4. 이후 도메인 활용은 `journal/...` 또는 `feature/journal/ai/` 등이 `feature/ai/`를 의존한다 (`chat`을 경유하지 않음)  
-5. 마이그레이션은 **동작·API·FE 계약 불변**으로 내부 위임부터 하고, SAVEPOINT(커밋) 단위로 자른다  
+4. 저널 등 채널 외 도메인 소비자는 `feature/ai/`를 직접 의존하며 `chat`을 경유하지 않는다.
 
 ## 3. 경계 (소유권)
 
@@ -38,26 +37,26 @@ frontend chat UI         AppChat / STOMP
 
 | 관심사 | 패키지 | 비고 |
 |---|---|---|
-| Ollama HTTP·모델 설정 | `ai/client`, `ai/config` | chat에서 이관 |
+| Ollama HTTP·모델 설정 | `ai/client`, `ai/config` | 모델 호출과 런타임 설정 |
 | Intent·결과 merge·컨텍스트 텍스트 | `ai/rag` | `JournalEntryEmbeddingSearchService` 호출 |
 | 시스템/의도 프롬프트 | `ai/prompt` | |
 | 언어·할루시네이션·재시도 가드 | `ai/guard` | |
 | PersonFocus / SNAPSHOT / stance | `ai/person` | 저널 entity catalog 소비 |
-| 세션·메시지 CRUD | `chat/service` | 유지 |
-| `processChat` 흐름 | `chat` 오케스트레이터 | 현 `ChatOrchestrator` 축소본 |
+| 세션·메시지 CRUD | `chat/service` | 채널 영속과 조회 |
+| `processChat` 흐름 | `chat` 오케스트레이터 | `ChatOrchestrator` |
 | WS PROGRESS/DELTA | `chat` (ws 유틸) | 채널 전용 |
 | `chat_setting` (recentMessageLimit 등) | `chat` | 사용자 체감 채널 설정 |
-| Admin RAG knobs (`rag_top_k` 등) | 1차 `chat` 유지, 이후 `ai` 설정으로 이전 검토 | 운영 UI는 admin — 소유권만 문서화 |
+| Admin RAG knobs (`rag_top_k` 등) | `chat` | 운영 UI는 admin이며 설정 영속·조회는 chat이 소유 |
 
-## 4. 목표 패키지 구조
+## 4. 현재 패키지 구조
 
 ```
 feature/
   ai/
     client/          OllamaClient, *Request/*Response
-    config/          OllamaProperties (+ 필요 시 AiProperties)
-    rag/             RagSearchFacade(또는 Service), context text builder,
-                     RagIntentClassifier (현 chat 패키지 클래스 이관·통합)
+    config/          OllamaProperties
+    rag/             RagSearchFacade, RagContextService, RagContextTextBuilder,
+                     RagIntentClassifier
     prompt/          SystemPromptBuilder, IntentPromptResolver
     guard/           ResponseGuardService
     person/          PersonFocusResolver, Snapshot/Stance …
@@ -66,28 +65,26 @@ feature/
 
   chat/
     controller/      ChatController (REST + STOMP)
-    service/         ChatOrchestrator (← ChatOrchestrator 축소),
+    service/         ChatOrchestrator,
                      ChatSessionService, ChatMessageService, ChatSettingService
     entity|model|…   세션·메시지·설정
     ws/              ChatWebSocketSender (broadcastProgress/Delta)
 ```
 
-`RagIntent` / `RagIntentClassifier` / `RagSearchFacade`는 `feature/ai/rag`에 둔다. PersonFocus·QueryClassifier·FocusResolver·SnapshotService·Path C hybrid(`PersonSynthesisHybridService`)는 `feature/ai/person`에 둔다. 언어·person 가드 구현은 `feature/ai/guard/ResponseGuardService`에 둔다. 시스템/의도 프롬프트는 `feature/ai/prompt`(`SystemPromptBuilder`·`IntentPromptResolver`)에 둔다.
+`RagIntent` / `RagIntentClassifier` / `RagSearchFacade`는 `feature/ai/rag`에 둔다. `PersonFocus`·`PersonQueryClassifier`·`PersonFocusResolver`·`PersonSnapshotService`·`PersonSynthesisHybridService`는 `feature/ai/person`에 둔다. 언어·person 가드 구현은 `feature/ai/guard/ResponseGuardService`에 둔다. 시스템/의도 프롬프트는 `feature/ai/prompt`(`SystemPromptBuilder`·`IntentPromptResolver`)에 둔다.
 
-## 5. ChatOrchestrator 분해 매핑 (요약)
+## 5. ChatOrchestrator 협력 경계
 
-| 영역 | 이동 대상 |
+| 영역 | 소유 위치 |
 |---|---|
 | `processChat` / `cancelChat` 흐름 | `chat/.../ChatOrchestrator` |
 | `broadcastProgress` / `broadcastDelta` | `chat/.../ws/ChatWebSocketSender` |
 | RAG build/merge/topK/minScore | `ai/rag/*` |
 | `buildSystemPromptWithRag`, intent prompt, `responseGuardPrompt` | `ai/prompt` (`SystemPromptBuilder`·`IntentPromptResolver`) |
-| PersonFocus·SNAPSHOT·tag merge | `ai/person/*` (3a+3b ✓) |
-| Path C hybrid·rule-primary·retry prompt | `ai/person/PersonSynthesisHybridService` (3c ✓) |
-| language/person guard 구현 | `ai/guard/ResponseGuardService` (4a ✓) |
+| PersonFocus·SNAPSHOT·tag merge | `ai/person/*` |
+| Path C hybrid·rule-primary·retry prompt | `ai/person/PersonSynthesisHybridService` |
+| language/person guard 구현 | `ai/guard/ResponseGuardService` |
 | OllamaClient·Properties·HealthDto | `ai/client|config|model` |
-
-세부 메서드 목록은 구현 Phase 진입 시 `ChatOrchestrator` 기준으로 체크리스트화한다 (이 문서에 전수 나열하지 않음).
 
 ## 6. 의존 방향 (허용)
 
@@ -97,35 +94,16 @@ chat/ChatOrchestrator
   → chat/ws, chat/ChatMessageService, chat/ChatSessionService, chat/ChatSettingService
   → (간접) journal/embedding, journal/entitycatalog
 
-journal/ai/* (향후)
+journal AI consumer
   → ai/client, ai/rag, ai/prompt
   ✗ chat 패키지 의존 금지
 ```
 
 금지: `ai` → `chat` (역의존).
 
-## 7. 마이그레이션 Phase (SAVEPOINT)
+## 7. 동작 계약 (CHAT_AI_SPEC 기준)
 
-각 Phase는 **공개 API·STOMP 계약·FE 불변**, 빌드 통과, 채팅 수동 스모크 후 사용자 커밋.
-
-| Phase | 내용 | 회귀 초점 |
-|:---:|---|---|
-| **0** ✓ | 본 설계 문서 확정·스펙 상호 링크 | 문서만 |
-| **1** ✓ | `ai/client`·`ai/config`·Health DTO 패키지 이동, `AiChatMessage`로 chat DTO 역의존 차단, import 갱신 | Ollama health, chat 생성 |
-| **2** ✓ | `ai/rag` — intent classifier 이관 + `RagSearchFacade` 검색·병합 위임 (person/context text는 chat 잔류) | LOOKUP/SUMMARY/SYNTHESIS, 근거 링크 |
-| **3a+3b** ✓ | `ai/person` — PersonFocus/QueryClassifier/FocusResolver/SnapshotService (focus·tag merge·snapshot) | 인물 질문·스냅샷 |
-| **3c** ✓ | Path C hybrid → `PersonSynthesisHybridService` (세션 컨텍스트는 chat, 가드는 `PersonSynthesisGuardPort`) | hybrid·rule-primary |
-| **4a** ✓ | `ai/guard/ResponseGuardService` — 언어·person 가드 구현, Path C `PersonSynthesisGuardPort` | 언어 가드·person hollow/stance |
-| **4b** ✓ | i/prompt — SystemPromptBuilder·IntentPromptResolver | 시스템/의도 프롬프트 |
-| **5a** ✓ | chat/ws/ChatWebSocketSender — PROGRESS/DELTA/message broadcast | 스트림 DELTA/PROGRESS |
-| **5b** ✓ | ChatAIService → ChatOrchestrator 이름·역할 수렴 | cancel·오케스트레이션 |
-| **6** ✓ | `ai/rag` — RagContextService·RagContextTextBuilder (검색 파이프라인+context text) | LOOKUP/SUMMARY/SYNTHESIS·tag-only·metadata |
-
-한 Phase 안에서도 파일이 크면 sub-savepoint(예: 2a intent 이동 / 2b merge 위임)를 제안한 뒤 진입한다.
-
-## 불변 계약 (CHAT_AI_SPEC 기준)
-
-분리 전후로 아래 동작 계약은 변경 없이 유지해야 한다. 정본: [CHAT_AI_SPEC.md](CHAT_AI_SPEC.md).
+아래 동작의 상세 정본은 [CHAT_AI_SPEC.md](CHAT_AI_SPEC.md)다.
 
 ### RAG 검색 계약
 - Intent 1차 규칙 우선순위 (CHAT_AI_SPEC RAG Intent와 동일):
@@ -154,7 +132,8 @@ journal/ai/* (향후)
 
 ### 메타데이터 계약
 - `chat_message.metadata_json` 구조: `ragIntent`, `ragSourceCount`, `personFocus`, `ragTagSummary`, `ragTimelineSummary`, `ragSources`
-- `responseMode` 값(정본 CHAT_AI_SPEC): `LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_APPEARANCE_FALLBACK`, `LANGUAGE_FALLBACK`, 레거시 표시용 `PERSON_STANCE_FALLBACK`(신규 emit 없음)
+- 생성되는 `responseMode` 값(정본 CHAT_AI_SPEC): `LLM`, `PERSON_SYNTHESIS_HYBRID`, `RULE_PRIMARY`, `PERSON_MEANING_FALLBACK`, `PERSON_APPEARANCE_FALLBACK`, `LANGUAGE_FALLBACK`
+- 저장된 메시지 조회·표시는 호환 값 `PERSON_STANCE_FALLBACK`도 해석한다.
 - `guardDetail` / `retryGuardDetail` 코드 체계
 
 ### WS/REST 계약
@@ -162,19 +141,10 @@ journal/ai/* (향후)
 - Progress 이벤트 (`SEARCHING`, `GENERATING`), DELTA 스트리밍
 - REST 세션/메시지/설정 엔드포인트 경로 및 응답 형태
 
-## 8. 비목표 (이번 분리에서 하지 않음)
-
-- 채팅 UX·프롬프트 문구·RAG 품질 튜닝 재설계  
-- 임베딩 스키마/`journal_entry_embedding` 소유권 변경  
-- 모바일 RN 채팅 앱 구조 변경 (API 불변이면 불필요)  
-- `feature/journal/ai/` 신규 기능 구현 (소비 측은 후속)
-
-## 9. 문서 역할
+## 8. 문서 역할
 
 | 문서 | 역할 |
 |---|---|
 | CHAT_AI_PHILOSOPHY | 채팅 채널의 제품 철학 (세션·기억·연속성) |
 | CHAT_AI_SPEC | **현재** 동작·API·파일 위치 as-built |
-| **본 문서** | 능력/채널 분리 **목표 구조**와 Phase 계획 |
-
-구현이 Phase를 통과할 때마다 CHAT_AI_SPEC의 Server 표 경로를 현재 위치에 맞게 갱신한다.
+| **본 문서** | 능력/채널 소유 경계와 현재 의존 구조 |
