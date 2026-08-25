@@ -1,6 +1,6 @@
 # Reflection 도메인 모델 (Primary vs Commentary)
 
-**상태: 확립(Established).** 이 문서는 Reflection 의 도메인 정체성(존재론·Aggregate)을 정의하는 **영구 계약**이다. 저장 방식(테이블·마이그레이션·인프라)은 이 문서의 범위가 아니다 — [reflection-persistence-proposal.md](reflection-persistence-proposal.md) 가 다룬다.
+**상태: 확립(Established).** 이 문서는 Reflection 의 도메인 정체성(존재론·Aggregate)을 정의하는 **영구 계약**이다. 저장 방식(테이블·마이그레이션·인프라)은 이 문서의 범위가 아니다 — [reflection-persistence-contract.md](reflection-persistence-contract.md) 가 다룬다.
 
 > 도메인과 영속을 분리한다: 영속 결정이 바뀌어도(예: 저장 후보 회귀) 이 문서는 거의 불변으로 남는다.
 

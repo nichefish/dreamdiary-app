@@ -33,5 +33,5 @@
 ## 관련 현재 계약
 
 - [Reflection 도메인 모델](../migration/journal/reflection-domain-model.md)
-- [Reflection 영속 계약](../migration/journal/reflection-persistence-proposal.md)
+- [Reflection 영속 계약](../migration/journal/reflection-persistence-contract.md)
 - [Reflection 단일 타입](../spec/REFLECTION_ONE_TYPE.md)
