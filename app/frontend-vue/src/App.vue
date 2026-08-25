@@ -36,8 +36,8 @@ const localeStore = useLocaleStore();
 const route = useRoute();
 const appName = import.meta.env.VITE_APP_NAME;
 
-/** 팝업 전용 라우트(검색 팝업 등)에서는 AI 챗 숨김 */
-const isPopup = computed(() => ["journal-entry-search", "journal-daily"].includes(String(route.name)));
+/** 팝업 전용 라우트(검색·저장 엔트리 보기 팝업 등)에서는 AI 챗 숨김 */
+const isPopup = computed(() => ["journal-entry-search", "journal-daily", "journal-entry-view-popup"].includes(String(route.name)));
 
 /** 현재 route와 locale에 맞춰 브라우저 탭 제목을 갱신한다. */
 watchEffect(() => {

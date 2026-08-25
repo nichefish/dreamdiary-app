@@ -42,6 +42,7 @@
 | `/auth/verify-result` | `auth-verify-result` | `VerifyResultPage.vue` | Auth | ✓ |
 | `/journal/entry/search` | `journal-entry-search` | `JournalEntrySearchPage.vue` | System | ✓ |
 | `/journal/entry/preview-pop` | `journal-entry-preview` | `JournalEntryPreviewPage.vue` | System | ✓ 작성 중 본문 미리보기 새 창 |
+| `/journal/entry/view-pop` | `journal-entry-view-popup` | `JournalEntryViewPage.vue` | System | ✓ 저장된 엔트리·리플렉션 단건 읽기 전용 새 창 |
 | `/error`, `/400`, `/403`, `/404`, `/500` | — | `ErrorPage.vue` | System | ✓ |
 
 ---

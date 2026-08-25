@@ -13,7 +13,7 @@
 | 일자 카드 ⋯ 컨텍스트 메뉴 | `JournalDayCard.vue` — Metronic dropdown | ✓ |
 | 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
 | 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; 각 일자는 카드형(날짜 → 메타·태그 → SUMMARY)으로 표시하고, SUMMARY 첫 non-empty 엔트리 본문(`summaryEntryHtmlOf`, SEARCH `journalChapterList` 파생)을 레거시 `collapse-3`/`expand-btn`으로 최대 3줄 미리보기한 뒤 클릭·더보기로 전체를 펼친다(접힘 중 빈 문단·여백 축소, 펼침 시 원문 유지); `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴; 태그 입력 검색 — 컨트롤 행의 태그 입력(모달 내 datalist 미표시 대응: 인라인 typeahead 미리보기; 모달 오픈·포커스 시 `journalModalStore.dayTagCategoryMap`(SSOT)과 `/api/journal/day/tags` 를 병합해 최초 1회 로드)으로 기존 태그만 AND 필터에 추가(엔트리 검색과 동일 `findKnownTagName`·categoryMap 매칭); 카탈로그에 없는 이름은 Swal 대신 인라인 안내(모달 유지), 동명 태그(다중 카테고리)는 카테고리 선택 버튼으로 분기; 모달 닫힘 시 입력·힌트·카테고리 선택 상태 초기화(카탈로그 캐시는 유지) | ✓코드 |
-| 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — lifecycle/status/수정/이력/관련글/스레드에 추가/삭제. 선택된 `RESOLVED`를 다시 클릭하면 부모 저장·파생 상태·캐시 후처리는 유지하고 직접 연결된 미완료 Reflection의 `RESOLVED` 수렴을 다시 요청한다. | ✓ |
+| 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — 새 창 보기/lifecycle/status/수정/이력/관련글/스레드에 추가/삭제. 새 창 보기는 ID 기반 읽기 전용 popup을 열며, 선택된 `RESOLVED`를 다시 클릭하면 부모 저장·파생 상태·캐시 후처리는 유지하고 직접 연결된 미완료 Reflection의 `RESOLVED` 수렴을 다시 요청한다. | ✓ |
 | FLOW 연결 (수렴 완료) | FLOW 를 스레드 소속으로 수렴 완료했다(`docs/spec/DESIGN_NOTES.md`). 「흐름 보기」·본문 요약 행·「흐름 연결」 UI 는 모두 제거됐다(나-2a·나-2b). 백엔드 `flowSummary` 와 `related_content` FLOW 행도 다-2 에서 제거됐다. | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 split 버튼 | `JournalChapterItem.vue` — `copyChapter(true/false)`, 주 버튼=전체(해석 포함)·▾ 드롭다운=본문만(해석 제외, 항상 노출), 날짜(요일)·말머리·엔트리[·target 리플렉션] 클립보드 복사 | ✓ |
@@ -425,6 +425,8 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **구현 파일**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
 
+**저장 항목 새 창 보기**: 엔트리와 임베드 Reflection의 ⋯ 메뉴는 쓰기 가능 여부와 무관하게 `common.open-in-new-window`를 제공한다. `openJournalEntryViewPopup(id)`는 `/journal/entry/view-pop?entryId={id}`를 `journal_entry_view_{id}` 이름의 창으로 열어 같은 ID 재호출은 기존 창을 재사용하고 다른 ID는 독립 창으로 유지한다. 팝업 차단은 `common.error.popup`으로 안내한다. `JournalEntryViewPage`는 `GET /api/journal/entry/{id}`로 현재 사용자 소유 상세를 조회하며, 서버가 실제 `contentType`을 판별하므로 Primary 엔트리와 Reflection이 같은 route·조회 경로를 사용한다. 화면은 날짜·유형·순번·말머리·제목·꿈꾼(해당 시)·`markdownContent`·태그(해당 시)를 읽기 전용으로 표시한다. 잘못된 ID·빈 상세·조회 실패는 오류 로그와 `journal.entry.view.load.failure`을 표시한다.
+
 **레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryContextMenu.ts`
 
 **우측 액션 영역 구조**:
@@ -468,7 +470,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **Reflection 태그**: Reflection 은 태그를 두지 않는다(모달에 태그 UI 없음, 서버 쓰기 DTO 에 tag 필드 없음). 저장 `content_type`은 `JOURNAL_REFLECTION`이고 `ref_content_type`은 대상 타입이다. 결산·엔트리 태그클라우드·챕터 접힘 요약의 DIARY 집계는 `JOURNAL_DIARY` 단일 축을 사용한다. 원문 뷰(`JournalEntryViewModal`)의 「수정」은 `JournalReflectionRegistModal`로 연다(태그 UI 없음). 일기용 `JournalEntryRegistModal`로 보내지 않는다. 백엔드 `JournalCacheEvictWorker`는 Reflection 저장 후 대상 일자·챕터·라이프사이클 캐시를 무효화하며 태그 캐시는 유지한다. 엔트리 삭제 후처리의 관련글 정리(`RelatedContentService.deleteAllByRef(key, createdBy)`)는 관련글 지원 타입(일기·꿈·스레드)만 수행하고, Reflection 등 미지원 타입은 no-op 한다. Reflection 은 스레드 소속 대상이 아니다. 라이프사이클·상태: Reflection은 OPEN/PENDING/RESOLVED와 COLLAPSED/IMPRTC/REFRNC를 허용한다. Reflection은 대상 엔트리 아래 임베드로만 표시되며 접힘/펼침 토글과 일자 aside 기본 접힘 모드를 따른다. primary(일기·꿈·노트) `RESOLVED` 시 딸린 Reflection도 `RESOLVED`로 맞추고, `RESOLVED` primary에 Reflection 신규 등록 시 primary를 `OPEN`(+`COLLAPSED` 해제)으로 재개한다.
 
-**임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. ⋯에서 수정·이력·라이프사이클·중요/참조·삭제를 제공한다. Reflection은 대칭 `related_content` 관계에 참여하지 않으므로 관련글 추가 액션을 제공하지 않는다. Reflection→Reflection 중첩 등록 메뉴는 숨기고, 신규 등록은 primary 엔트리의 「해석 등록」 경로를 사용한다. Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
+**임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. ⋯에서 새 창 보기·수정·이력·라이프사이클·중요/참조·삭제를 제공한다. 새 창 보기는 쓰기 가능 여부와 무관하게 ID 기반 읽기 전용 popup을 연다. Reflection은 대칭 `related_content` 관계에 참여하지 않으므로 관련글 추가 액션을 제공하지 않는다. Reflection→Reflection 중첩 등록 메뉴는 숨기고, 신규 등록은 primary 엔트리의 「해석 등록」 경로를 사용한다. Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
 
 **Reflection 등록 기본 라이프사이클**: 등록 시 서버(`postRegist`)가 즉시 lifecycle을 `PENDING`으로 설정한다. 프론트에서 PENDING은 자동 접힘이므로 리플렉션은 기본 접힌 상태로 시작한다. 사용자가 수동으로 OPEN 또는 RESOLVED로 변경할 수 있다.
 
@@ -748,11 +750,11 @@ target 리플렉션 본문 평문 (해석 포함 시에만, 리플렉션마다 �
 
 ### AI 챗 숨김 (`App.vue`)
 
-팝업 라우트(`journal-entry-search`, `journal-daily`)에서는 `AppChat`을 렌더하지 않는다.
+팝업 라우트(`journal-entry-search`, `journal-daily`, `journal-entry-view-popup`)에서는 `AppChat`을 렌더하지 않는다.
 
 ```typescript
 // App.vue
-const isPopup = computed(() => ["journal-entry-search", "journal-daily"].includes(String(route.name)));
+const isPopup = computed(() => ["journal-entry-search", "journal-daily", "journal-entry-view-popup"].includes(String(route.name)));
 // template: <AppChat v-if="authStore.isAuthenticated && !isPopup" />
 ```
 
@@ -781,13 +783,13 @@ assistant 메시지는 서버가 저장한 평문 `content`(마크다운 기호 
 assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalModalStore().openEntryView(journalEntryId)`로 읽기 전용 엔트리 모달(`JournalEntryViewModal`)을 연다. 본문은 목록과 동일하게 `markdownContent` HTML(`journal-content`)을 표시한다. footer **편집**은 `openEntryModifyFromView`로 전환하되, `JOURNAL_REFLECTION`이면 `JournalReflectionRegistModal`, 그 외는 `JournalEntryRegistModal`을 연다.
 
 - 모달 마운트: 비팝업 인증 라우트에서는 `App.vue`가 `JournalEntryViewModal`과 `JournalEntryRegistModal`을 전역 마운트한다 (`JournalDayLayout`에서는 등록/수정 모달 중복 마운트하지 않음).
-- 팝업 라우트(`journal-entry-search`, `journal-daily`)는 각자 레이아웃/페이지에 등록/수정 모달을 유지하고, `AppChat` 자체가 숨겨지므로 채팅 출처 딥링크 경로가 없다.
+- 편집 액션이 있는 팝업 라우트(`journal-entry-search`, `journal-daily`)는 각자 레이아웃/페이지에 등록/수정 모달을 유지한다. 읽기 전용 `journal-entry-view-popup`은 편집 모달을 마운트하지 않는다. 세 라우트 모두 `AppChat` 자체가 숨겨지므로 채팅 출처 딥링크 경로가 없다.
 - 채팅 드로어 z-index(6002)보다 모달이 위에 오도록 `App.vue`가 `body.modal-open`일 때 `.modal` / `.modal-backdrop` z-index를 6100 / 6090으로 올린다. 모달 내부 저장·삭제 확인 SweetAlert2는 `shared/utils/overlayZIndex.ts`의 `SWAL_Z`(6200)가 SSOT다 — `App.vue`가 `.swal2-container`에 `6200 !important`를 주고, `swalFire` `didOpen`이 컨테이너 inline z-index도 같은 값으로 강제한다. 모든 모달을 6100으로 평탄화하면 중첩 모달(예: 스레드 상세에서 연 수정·댓글·이력 모달)이 DOM 순서에 따라 부모 뒤로 깔린다. 이를 막기 위해 `shared/utils/modalStack.ts`의 `installModalStacking()`이 `show.bs.modal`에서 이미 열린 모달 수에 따라 z-index를 `6100 + n*2`로 올리고(해당 backdrop은 `z-1`) 자식 모달을 부모 위로 스태킹하되, `MODAL_MAX_Z`(`SWAL_Z - 20`)로 캡해 확인창이 모달에 가려지지 않게 한다.
 - 출처 목록은 기본 5건 미리보기이며, 숨은 건수가 있으면 `chat.rag.source.more`로 전체 펼친다.
 
 ### 팝업 직접 진입 세션 만료 처리 (`router/index.ts`, `sessionExpired.ts`)
 
-팝업 전용 보호 라우트(`journal-entry-search`, `journal-daily`)는 인증이 없을 때 로그인 화면을 팝업 내부에 렌더하지 않는다. 라우터 가드는 `confirmSessionExpired(to.name)`을 호출해 레거시처럼 창 닫기 확인 alert를 표시하고, 확인 시 `window.close()`를 호출한 뒤 현재 route 이동은 `next(false)`로 중단한다.
+팝업 전용 보호 라우트(`journal-entry-search`, `journal-daily`, `journal-entry-view-popup`)는 인증이 없을 때 로그인 화면을 팝업 내부에 렌더하지 않는다. 라우터 가드는 `confirmSessionExpired(to.name)`을 호출해 레거시처럼 창 닫기 확인 alert를 표시하고, 확인 시 `window.close()`를 호출한 뒤 현재 route 이동은 `next(false)`로 중단한다.
 
 ### 401 세션 만료 처리 (`main.ts`)
 

@@ -86,6 +86,15 @@
             <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t('journal.reflection.label') }}</div>
           </div>
 
+          <!--begin::저장된 리플렉션 새 창 보기-->
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="openInNewWindow">
+              {{ t('common.open-in-new-window') }}
+              <i class="bi bi-box-arrow-up-right fs-8"></i>
+            </div>
+          </div>
+          <!--end::저장된 리플렉션 새 창 보기-->
+
           <div v-if="canWrite" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openEdit">
               {{ t('common.edit') }}
@@ -318,6 +327,7 @@ import {
   useJournalReflectionDefaultCollapsed,
 } from "@/features/journal/utils/journalReflectionCollapseMode";
 import { wrapHtmlWithDoubleParen } from "@/features/journal/utils/wrapDoubleParen";
+import { openJournalEntryViewPopup } from "@/features/journal/utils/journalEntryViewPopup";
 
 /**
  * target 엔트리 본문과 태그 사이에 슬림 임베드되는 Reflection 한 건.
@@ -745,6 +755,13 @@ async function copyReflection(): Promise<void> {
   } catch (error: unknown) {
     console.error("[journal-reflection] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
+  }
+}
+
+/** 저장된 리플렉션 한 건을 ID 기반 읽기 전용 새 창으로 연다. */
+function openInNewWindow(): void {
+  if (!openJournalEntryViewPopup(props.reflection.id)) {
+    void swalAlert(t("common.error.popup"));
   }
 }
 

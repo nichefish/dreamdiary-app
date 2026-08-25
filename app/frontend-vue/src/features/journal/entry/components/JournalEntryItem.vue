@@ -157,6 +157,15 @@
               </div>
               <!--end::메뉴 헤더-->
 
+              <!--begin::저장된 엔트리 새 창 보기-->
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="openInNewWindow">
+                  {{ t('common.open-in-new-window') }}
+                  <i class="bi bi-box-arrow-up-right fs-8"></i>
+                </div>
+              </div>
+              <!--end::저장된 엔트리 새 창 보기-->
+
               <!--begin::수정-->
               <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
                 <div class="menu-link flex-stack px-3" @click="openModify">
@@ -571,6 +580,7 @@ import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { highlightKeywordsInHtml } from "@/features/journal/utils/highlightKeywords";
+import { openJournalEntryViewPopup } from "@/features/journal/utils/journalEntryViewPopup";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalReflectionItem from "../../reflection/components/JournalReflectionItem.vue";
@@ -787,6 +797,13 @@ async function copyEntryLink(): Promise<void> {
   } catch (error: unknown) {
     console.error("[journal-entry] link copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
+  }
+}
+
+/** 저장된 엔트리 한 건을 ID 기반 읽기 전용 새 창으로 연다. */
+function openInNewWindow(): void {
+  if (!openJournalEntryViewPopup(props.entry.id)) {
+    void swalAlert(t("common.error.popup"));
   }
 }
 
