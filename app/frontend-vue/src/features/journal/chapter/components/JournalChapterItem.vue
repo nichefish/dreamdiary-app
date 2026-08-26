@@ -268,9 +268,10 @@ import type { JournalChapterDto, JournalThreadEntryDto } from "@/features/journa
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import {
+  appendReflectionsToCopyText,
   type CopyReflectionMode,
   copySuccessKey,
-  includeReflectionInCopy,
+  JOURNAL_COPY_LINE_BREAK,
 } from "@/features/journal/utils/journalCopyReflection";
 import { findFirstNonEmptyEntry } from "@/features/journal/utils/summaryEntryPreview";
 import {
@@ -638,20 +639,13 @@ async function copyChapter(mode: CopyReflectionMode = "full"): Promise<void> {
     const sortNum = entry.sortOrder != null ? "#" + String(entry.sortOrder) : "";
     /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
-    if (sortNum) lines.push(sortNum);
-    if (raw) lines.push(raw);
-    /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
-    for (const reflection of entry.reflectionList ?? []) {
-      if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
-      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-      if (reflRaw) {
-        lines.push("");
-        lines.push(reflRaw);
-      }
-    }
+    const entryBaseText = [sortNum, raw].filter(Boolean).join(JOURNAL_COPY_LINE_BREAK);
+    /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+    const entryText = appendReflectionsToCopyText(entryBaseText, entry.reflectionList, mode);
+    if (entryText) lines.push(entryText);
     lines.push("");
   }
-  const text = lines.join("\n").trim();
+  const text = lines.join(JOURNAL_COPY_LINE_BREAK).trim();
   try {
     await navigator.clipboard.writeText(text);
     /* 성공 토스트는 복사 범위를 명시한다: 전체/보류 제외/본문만, 리플렉션이 없으면 공용 문구. */

@@ -1,8 +1,8 @@
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import {
+  appendReflectionsToCopyText,
   type CopyReflectionMode,
   copySuccessKey,
-  includeReflectionInCopy,
 } from "@/features/journal/utils/journalCopyReflection";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
@@ -46,13 +46,8 @@ export function buildThreadCopyText(
       prevDate = dateLabel;
     }
     block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
-    /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
-    for (const reflection of entry.reflectionList ?? []) {
-      if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
-      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-      if (reflRaw) block += `\r\n\r\n${reflRaw}`;
-    }
-    return block;
+    /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+    return appendReflectionsToCopyText(block, entry.reflectionList, mode);
   });
   const body = blocks.join("\r\n\r\n").trim();
   return title ? `${title}\r\n\r\n${body}`.trim() : body;

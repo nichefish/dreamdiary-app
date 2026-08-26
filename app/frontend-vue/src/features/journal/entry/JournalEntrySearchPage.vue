@@ -430,8 +430,8 @@ import { registerJournalEntrySearchHost } from "@/features/journal/utils/journal
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import {
+  appendReflectionsToCopyText,
   type CopyReflectionMode,
-  includeReflectionInCopy,
 } from "@/features/journal/utils/journalCopyReflection";
 import { joinAppBasePath } from "@/shared/utils/appPath";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
@@ -1003,15 +1003,8 @@ async function copyAll(mode: CopyReflectionMode): Promise<void> {
         prevDate = dateLabel;
       }
       block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
-      /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
-      for (const reflection of entry.reflectionList ?? []) {
-        if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
-        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-        if (reflRaw) block += `
-
-${reflRaw}`;
-      }
-      return block;
+      /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+      return appendReflectionsToCopyText(block, entry.reflectionList, mode);
     });
     const text = blocks.join("\r\n\r\n").trim();
     try {
@@ -1053,12 +1046,8 @@ async function copyDate(stdrdDt: string | undefined, mode: CopyReflectionMode): 
     const blocks = dateEntries.map((entry) => {
       const content = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
       let block = [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
-      /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
-      for (const reflection of entry.reflectionList ?? []) {
-        if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
-        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-        if (reflRaw) block += `\r\n\r\n${reflRaw}`;
-      }
+      /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+      block = appendReflectionsToCopyText(block, entry.reflectionList, mode);
       return block;
     });
     const text = `${dateLabel}\r\n${blocks.join("\r\n\r\n")}`.trim();

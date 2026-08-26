@@ -586,9 +586,10 @@ import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import {
+  appendReflectionsToCopyText,
   type CopyReflectionMode,
   copySuccessKey,
-  includeReflectionInCopy,
+  JOURNAL_COPY_LINE_BREAK,
 } from "@/features/journal/utils/journalCopyReflection";
 import { highlightKeywordsInHtml } from "@/features/journal/utils/highlightKeywords";
 import { openJournalEntryViewPopup } from "@/features/journal/utils/journalEntryViewPopup";
@@ -770,14 +771,9 @@ async function copyEntry(mode: CopyReflectionMode = "full"): Promise<void> {
     : (props.entry.stdrdDt ?? "");
   /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
   const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
-  const parts = [dateLine, raw].filter(Boolean);
-  /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
-  for (const reflection of reflectionList.value) {
-    if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
-    const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-    if (reflRaw) parts.push("", reflRaw);
-  }
-  const text = parts.join("\n");
+  const baseText = [dateLine, raw].filter(Boolean).join(JOURNAL_COPY_LINE_BREAK);
+  /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+  const text = appendReflectionsToCopyText(baseText, reflectionList.value, mode);
   try {
     await navigator.clipboard.writeText(text);
     /* 성공 토스트는 복사 범위를 명시한다: 전체/보류 제외/본문만, 리플렉션이 없으면 공용 문구. */

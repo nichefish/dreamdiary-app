@@ -559,16 +559,17 @@ function toggleChapter(): void {
 - **소스는 항상 `content`** (TinyMCE 저장 원문). `MarkdownUtils.normalize` 가 사용자가 입력한 마크다운 마커(`!!` `__` `||` `((…))` `"…"`/`『…』` `--…--` `<@>` 줄 단위 `---` 등 `MarkdownUtils.markdown()` dialect)를 **리터럴 텍스트로 보존**하므로 `content` 는 사용자가 입력한 텍스트 그 자체다. 모든 복사 호출부는 `content ?? markdownContent` 로 소스를 고른다.
 - **렌더 파생물 `markdownContent`(= `MarkdownUtils.markdown(content)`)는 복사 소스가 아니다.** 마커가 이미 `<u>`·span 등으로 소비돼 되붙이면 원문을 복원할 수 없다(손실). 소스로 쓰면 계약 위반이다.
 - **변환 규칙**(`htmlToPlainText`): TinyMCE 구조 태그만 텍스트로 환원한다 — `<p>` 문단과 `<br>`·`<div>`·`<li>` 줄 경계는 개행, `<hr>`는 `------`, HTML 엔티티(이름·10진수·16진수)는 화면과 동일하게 디코드. **문단 구조는 보존**한다. 일반 문단 사이에는 빈 줄 1개를 유지하고, 사용자가 만든 빈 문단(`<p></p>`·`<p>&nbsp;</p>`·`<p><br></p>`)은 각각 추가 개행 1개로 환원해 연속 개수와 본문 앞뒤 위치를 보존한다. 구조 태그에서 파생된 중복 개행만 빈 줄 1개로 정규화한다. 그 외 텍스트(마커 포함)는 그대로 둔다.
+- **줄바꿈·리플렉션 경계**: 리플렉션을 합성해 클립보드에 쓰는 최종 평문은 Windows 호환 CRLF(`\r\n`)로 통일한다. 엔트리 본문과 첫 리플렉션 사이 및 형제 리플렉션 사이는 CRLF 2개(`\r\n\r\n`)로 빈 줄 1개를 둔다. 엔트리·챕터·검색·스레드는 `journalCopyReflection.ts`의 `appendReflectionsToCopyText`를 공유한다.
 - **범위 밖**: 에디터 버튼으로 만든 임의 HTML 서식(`<strong>`, 표, `<hr>` 요소 등)의 완전 왕복 복원은 계약이 보증하지 않는다. 텍스트 레벨 동일성까지가 계약이다.
 
-**복사 범위 모드 (3단계) — SSOT**: 복사 split 버튼이 리플렉션(해석)을 어느 범위까지 담을지는 `journal/utils/journalCopyReflection.ts` 의 `CopyReflectionMode` 단일 타입으로 정한다. 이 축은 위 「무엇을 담는가(소스 텍스트)」 계약과 직교하며, 엔트리·챕터·검색·스레드 복사 4곳이 이 헬퍼를 공유한다.
+**복사 범위 모드 (3단계) — SSOT**: 복사 split 버튼이 리플렉션(해석)을 어느 범위까지 담을지는 `journal/utils/journalCopyReflection.ts` 의 `CopyReflectionMode` 단일 타입으로 정한다. 이 축은 위 「무엇을 담는가(소스 텍스트)」 계약과 직교하며, 엔트리·챕터·검색·스레드 복사 4곳이 범위 판정과 리플렉션 본문 조립 helper를 공유한다.
 - `full` — 주 버튼(`bi-copy`). 모든 리플렉션 포함(보류 PENDING 포함).
 - `no-pending` — 드롭다운 상단 항목(`journal.copy.no-pending.label`). 리플렉션을 포함하되 보류(PENDING)만 제외하고 OPEN·RESOLVED 는 유지한다.
 - `body` — 드롭다운 하단 항목. 리플렉션을 전부 제외(본문만).
 
-판정은 `includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)`(리플렉션마다 호출), 성공 토스트 키는 `copySuccessKey(mode, hasReflection)` 로 고른다. 본문만은 항상 본문 문구, `full`·`no-pending` 은 복사 대상에 리플렉션이 하나도 없으면 공용 `common.copy.success` 로 수렴한다. 세 항목 모두 리플렉션 유무와 무관하게 항상 노출한다(리플렉션이 없거나 보류가 없으면 결과만 같아진다). 검색 페이지는 성공 토스트가 건수 문구라 모드와 무관하게 기존 문구를 유지한다.
+판정은 `includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)`이고 `appendReflectionsToCopyText(baseText, reflections, mode)`가 판정·평문 변환·CRLF 정규화·빈 줄 경계를 함께 적용한다. 성공 토스트 키는 `copySuccessKey(mode, hasReflection)` 로 고른다. 본문만은 항상 본문 문구, `full`·`no-pending` 은 복사 대상에 리플렉션이 하나도 없으면 공용 `common.copy.success` 로 수렴한다. 세 항목 모두 리플렉션 유무와 무관하게 항상 노출한다(리플렉션이 없거나 보류가 없으면 결과만 같아진다). 검색 페이지는 성공 토스트가 건수 문구라 모드와 무관하게 기존 문구를 유지한다.
 
-**검증**: `htmlToPlainText.spec.ts` 가 마커 보존·일반/빈 문단 보존·블록/목록 줄 경계·엔티티 디코드를 계약으로 고정한다.
+**검증**: `htmlToPlainText.spec.ts` 가 마커 보존·일반/빈 문단 보존·블록/목록 줄 경계·엔티티 디코드를 계약으로 고정한다. `journalCopyReflection.spec.ts`는 CRLF 정규화·리플렉션 사이 빈 줄·복사 모드 적용을 고정한다.
 
 ---
 
@@ -609,18 +610,14 @@ async function copyChapter(mode: CopyReflectionMode = "full"): Promise<void> {
     const sortNum = entry.sortOrder != null ? "#" + String(entry.sortOrder) : "";
     /* content = TinyMCE HTML 원문; markdownContent = MarkdownUtils 처리 후 HTML */
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
-    if (sortNum) lines.push(sortNum);
-    if (raw) lines.push(raw);
-    /* 모드별로 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). 보류(PENDING)는 no-pending 모드에서 제외. */
-    for (const reflection of entry.reflectionList ?? []) {
-      if (!includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)) continue;
-      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-      if (reflRaw) { lines.push(""); lines.push(reflRaw); }
-    }
+    const entryBaseText = [sortNum, raw].filter(Boolean).join(JOURNAL_COPY_LINE_BREAK);
+    /* 공통 formatter가 모드별 포함 여부와 CRLF 빈 줄 경계를 함께 보장한다. */
+    const entryText = appendReflectionsToCopyText(entryBaseText, entry.reflectionList, mode);
+    if (entryText) lines.push(entryText);
     lines.push("");
   }
   const successKey = copySuccessKey(mode, chapterHasReflections.value);
-  await navigator.clipboard.writeText(lines.join("\n").trim());
+  await navigator.clipboard.writeText(lines.join(JOURNAL_COPY_LINE_BREAK).trim());
 }
 ```
 
@@ -640,7 +637,7 @@ async function copyChapter(mode: CopyReflectionMode = "full"): Promise<void> {
 target 리플렉션 본문 평문 (full·no-pending 모드에서만, 리플렉션마다 빈 줄로 이어 붙임; no-pending 은 보류 제외)
 ```
 
-**구현**: 공통 `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일. `full`·`no-pending` 모드이면 이 엔트리를 target 으로 한 `reflectionList` 본문을 `includeReflectionInCopy` 로 걸러(보류 제외 여부) 빈 줄로 이어 붙인다(마커 없음). 성공 토스트는 복사 범위를 명시한다(`copySuccessKey`): 전체 `journal.copy.full.success`, 보류 제외 `journal.copy.no-pending.success`, 본문만 `journal.copy.body.success`, 리플렉션이 없는 전체·보류 제외 복사는 공용 `common.copy.success`.
+**구현**: 공통 `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일. `full`·`no-pending` 모드이면 `appendReflectionsToCopyText`가 이 엔트리를 target 으로 한 `reflectionList`를 모드에 맞게 걸러 CRLF 빈 줄로 이어 붙인다(마커 없음). 성공 토스트는 복사 범위를 명시한다(`copySuccessKey`): 전체 `journal.copy.full.success`, 보류 제외 `journal.copy.no-pending.success`, 본문만 `journal.copy.body.success`, 리플렉션이 없는 전체·보류 제외 복사는 공용 `common.copy.success`.
 
 ---
 
@@ -816,7 +813,7 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 **저널 스레드 상세 엔트리 액션 계약**: 소속 엔트리는 스레드용 읽기 전용 복제본이 아니라 원본 `JournalEntryDto`이므로 저널 일자와 같은 수정·댓글·해석·이력·관련글·스레드 소속·라이프사이클·상태·삭제 액션을 유지한다. 현재 화면 레이아웃이 해당 액션의 자식 모달을 마운트하고, 전역 마운트된 엔트리 수정·원문 모달은 중복 마운트하지 않는다. 액션 성공 후에는 모달·페이지 공용 `detailOpen`을 전경 판단 기준으로 활성 스레드 상세의 본문·집계 태그·소속 엔트리를 함께 재조회한다. `detailSurface=modal`이고 배경이 주간·월간·일간이면 배경 목록도 재조회하지만 상세 축을 반환해 배경 스크롤은 하지 않고, 검색 팝업 배경이면 등록된 `loadEntries`로 로컬 결과(스레드 칩 포함)를 함께 재조회한다. 독립 페이지는 같은 상세 SSOT만 갱신한다. 현재 스레드 소속 해제·엔트리 삭제는 재조회 결과에서 카드를 제거하고, 수정·관계·라이프사이클·상태·태그 변경은 같은 카드의 최신 DTO로 교체한다. 재조회 실패는 기존 상세를 보존한 채 오류 로그와 안내로 드러낸다.
 
-**저널 스레드 상세 복사·다운로드**: 상세 모달·독립 페이지 모두 「복사」·「다운로드」를 제공한다. 복사는 클라이언트에서 스레드 제목 + 소속 엔트리를 검색 전체 복사와 같은 평문 포맷(`날짜(요일)`·`#순번`·본문)으로 클립보드에 쓰며, 복사 컨트롤은 split이다 — 주 버튼은 `copyThreadDetail(mode='full')`(해석 포함, 각 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙임)이고, 주 버튼 옆에 항상 붙는 ▾ 드롭다운의 상단 「보류 해석 제외 복사」가 `copyThreadDetail('no-pending')`(보류만 제외), 하단 「본문만 복사」가 `copyThreadDetail('body')`(해석 제외)를 실행한다(3단계 모드는 「복사 범위 모드」 참조; `includeReflectionInCopy` 로 리플렉션마다 판정). 소속에 리플렉션이 없으면 세 결과가 같다. 성공 토스트는 복사 범위를 명시한다(`journal.copy.full.success`/`journal.copy.no-pending.success`/`journal.copy.body.success`, 소속에 리플렉션이 없으면 `common.copy.success`). 다운로드도 split이다 — 서버 `GET /api/journal/threads/{id}/export?includeReflection=`가 `=== dreamdiary export ===` 배너 + `thread: 제목` + 선택 시 `prefix: 말머리` + 소속 엔트리 텍스트를 `thread_{id}_@yyyyMMdd.txt` 첨부로 내려주며(챕터/엔트리 내보내기와 동일 계약, 소유권은 `getEntriesByThread`가 검증), `includeReflection=true`(주 버튼, 기본)이면 서버 `buildTxt`가 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙이고 `false`(▾ 「본문만 다운로드」)이면 붙이지 않는다. 두 액션은 표시 데이터를 바꾸지 않고 `detailModel`·`detailEntries` SSOT만 읽으며, 로직은 `journalThreadExport.ts` util을 공유한다.
+**저널 스레드 상세 복사·다운로드**: 상세 모달·독립 페이지 모두 「복사」·「다운로드」를 제공한다. 복사는 클라이언트에서 스레드 제목 + 소속 엔트리를 검색 전체 복사와 같은 평문 포맷(`날짜(요일)`·`#순번`·본문)으로 클립보드에 쓰며, 복사 컨트롤은 split이다 — 주 버튼은 `copyThreadDetail(mode='full')`(해석 포함, 각 엔트리를 target 으로 한 리플렉션 본문을 `appendReflectionsToCopyText`의 CRLF 빈 줄로 이어 붙임)이고, 주 버튼 옆에 항상 붙는 ▾ 드롭다운의 상단 「보류 해석 제외 복사」가 `copyThreadDetail('no-pending')`(보류만 제외), 하단 「본문만 복사」가 `copyThreadDetail('body')`(해석 제외)를 실행한다(3단계 모드는 「복사 범위 모드」 참조). 소속에 리플렉션이 없으면 세 결과가 같다. 성공 토스트는 복사 범위를 명시한다(`journal.copy.full.success`/`journal.copy.no-pending.success`/`journal.copy.body.success`, 소속에 리플렉션이 없으면 `common.copy.success`). 다운로드도 split이다 — 서버 `GET /api/journal/threads/{id}/export?includeReflection=`가 `=== dreamdiary export ===` 배너 + `thread: 제목` + 선택 시 `prefix: 말머리` + 소속 엔트리 텍스트를 `thread_{id}_@yyyyMMdd.txt` 첨부로 내려주며(챕터/엔트리 내보내기와 동일 계약, 소유권은 `getEntriesByThread`가 검증), `includeReflection=true`(주 버튼, 기본)이면 서버 `buildTxt`가 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙이고 `false`(▾ 「본문만 다운로드」)이면 붙이지 않는다. 두 액션은 표시 데이터를 바꾸지 않고 `detailModel`·`detailEntries` SSOT만 읽으며, 로직은 `journalThreadExport.ts` util을 공유한다.
 
 **저널 스레드 연관 뷰 합성 및 스레드 피커 정책**: 서로 관련된 스레드를 1-hop 대칭 연관으로 묶고(`POST/DELETE /api/related/JOURNAL_THREAD/{id}`), 스레드 상세의 연관 스레드 행별 합성 토글(`relatedThreadIds`)로 선택한 연관 스레드의 엔트리만 같은 시간축에 겹쳐 본다(행 기본 OFF, 임시 화면 옵션). 연관 스레드 추가는 `JournalThreadPickerModal`을 통해 대상 스레드를 키워드로 검색·선택하며, 자기 자신 및 이미 연관된 스레드는 목록에서 선택 불가(비활성화) 처리한다. 빌려온 연관 엔트리(`sourceThreadId` 존재)는 출처 스레드 제목 칩으로 구분하고 설계 §2-6에 따라 「스레드에서 빼기」 멤버십 제거 메뉴를 숨긴다(`filteredThreadOptions` / `toggleThread` 가드).
 
