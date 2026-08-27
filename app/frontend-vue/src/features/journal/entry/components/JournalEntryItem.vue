@@ -52,6 +52,8 @@
             Prefix 소비 추가 후: 말머리는 제목 앞의 색상 배지로 표시하며 제목이 없어도 말머리만 남긴다.
             접힘 시: 제목 + (collapsed)를 한 줄에 fs-7로 표시. -->
           <div v-if="entry.prefix || entry.title" class="d-flex align-items-center flex-wrap mb-1" :class="isCollapsed ? 'fs-7' : 'fw-bold fs-5'">
+            <!--begin::접힘 PENDING 표식 — 제목·말머리보다 앞(줄 맨 앞)에 둔다. 접힘+보류일 때만.-->
+            <span v-if="isCollapsed && isPending" class="fw-bold text-warning me-1">{{ t('journal.pending.todo') }}</span>
             <span
               v-if="entry.prefix"
               class="badge me-2 fs-8"
@@ -71,7 +73,7 @@
             class="journal-content p-2"
             v-html="displayMarkdownContent"
           ></div>
-          <div v-else-if="isCollapsed && !entry.prefix && !entry.title" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
+          <div v-else-if="isCollapsed && !entry.prefix && !entry.title" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center"><span v-if="isPending" class="fw-bold fst-normal text-warning me-1">{{ t('journal.pending.todo') }}</span>(collapsed)</div>
           <!--end::마크다운 본문-->
         </div>
         <!--end::head-main-->

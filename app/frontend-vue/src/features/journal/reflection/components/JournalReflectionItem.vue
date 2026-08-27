@@ -19,7 +19,7 @@
         class="journal-content p-2"
         v-html="reflection.markdownContent"
       ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center"><span v-if="reflection.sortOrder != null">#{{ reflection.sortOrder }}&nbsp;</span><span v-if="reflection.title">{{ reflection.title }}&nbsp;</span>(collapsed)</div>
+      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center"><span v-if="isPending" class="fw-bold fst-normal text-warning me-1">{{ t('journal.pending.todo') }}</span><span v-if="reflection.sortOrder != null">#{{ reflection.sortOrder }}&nbsp;</span><span v-if="reflection.title">{{ reflection.title }}&nbsp;</span>(collapsed)</div>
       <!--begin::댓글 (읽기)-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
         <div v-for="cmt in commentList" :key="cmt.id" class="d-flex align-items-start gap-1">
@@ -369,6 +369,8 @@ const debugCollapse = computed(() => localStorage.getItem("debug_collapse") === 
 
 const lcKey = computed(() => props.reflection.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
+/** 보류(PENDING) 상태 — 접힘 시 (collapsed) 앞 TODO: 표식 노출 조건. */
+const isPending = computed(() => lcKey.value === "PENDING");
 /** 클라이언트 임시 접힘 오버라이드. null=상위 신호 따름, true/false=강제. */
 const localCollapsedOverride = ref<boolean | null>(null);
 /** 저널 일자 aside 토글. provide 없는 검색·스레드에서는 항상 false(기존 계약). */
