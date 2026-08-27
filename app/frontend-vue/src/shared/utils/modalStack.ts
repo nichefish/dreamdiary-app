@@ -9,6 +9,9 @@
  * <p>
  * 스택 상한은 {@link MODAL_MAX_Z}(= SweetAlert {@link SWAL_Z} - 20)로 캡해, 깊은 중첩에서도
  * 확인창이 모달에 가려지지 않게 한다.
+ * <p>
+ * 또한 TinyMCE 다이얼로그(`.tox-tinymce-aux`, find/replace·code 등)로의 `focusin`을 capture 단계에서
+ * 가로채 Bootstrap 모달 FocusTrap의 포커스 회수를 면제한다 — 모달 안 에디터에서 다이얼로그 입력이 막히던 문제.
  */
 import { MODAL_BASE_Z, MODAL_MAX_Z, MODAL_STEP } from "@/shared/utils/overlayZIndex";
 
@@ -46,4 +49,16 @@ export function installModalStacking(): void {
       if (latest) latest.style.zIndex = String(z - 1);
     });
   });
+
+  /*
+   * TinyMCE 다이얼로그(find/replace·code·link 등)는 `.tox-tinymce-aux`로 body 직하에 렌더돼
+   * Bootstrap 모달 FocusTrap이 포커스를 모달로 회수해 입력이 막힌다. tox-aux 안으로의 포커스
+   * 이동은 capture 단계에서 stopImmediatePropagation 하여 FocusTrap 핸들러를 건너뛴다.
+   */
+  document.addEventListener("focusin", (e: Event) => {
+    const target = e.target;
+    if (target instanceof HTMLElement && target.closest(".tox-tinymce-aux")) {
+      e.stopImmediatePropagation();
+    }
+  }, true);
 }

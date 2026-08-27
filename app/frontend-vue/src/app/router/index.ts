@@ -291,6 +291,18 @@ const routes: Array<RouteRecordRaw> = [
         meta: { pageTitleKey: "route.title.journal-entry-search", middleware: "auth" },
       },
       {
+        path: "/journal/entry/preview-pop",
+        name: "journal-entry-preview",
+        component: () => import("@/features/journal/entry/JournalEntryPreviewPage.vue"),
+        meta: { pageTitleKey: "route.title.journal-entry-preview", middleware: "auth" },
+      },
+      {
+        path: "/journal/entry/view-pop",
+        name: "journal-entry-view-popup",
+        component: () => import("@/features/journal/entry/JournalEntryViewPage.vue"),
+        meta: { pageTitleKey: "route.title.journal-entry-view-popup", middleware: "auth" },
+      },
+      {
         path: "/error",
         name: "error",
         component: () => import("@/app/pages/ErrorPage.vue"),
@@ -340,7 +352,7 @@ const router = createRouter({
 });
 
 function isPopupProtectedRoute(name: unknown): boolean {
-  return ["journal-entry-search", "journal-daily"].includes(String(name));
+  return ["journal-entry-search", "journal-daily", "journal-entry-view-popup"].includes(String(name));
 }
 
 function isManagerMenuRoute(path: string): boolean {

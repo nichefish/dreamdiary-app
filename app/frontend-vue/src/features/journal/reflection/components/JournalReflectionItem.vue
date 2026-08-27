@@ -4,6 +4,8 @@
     class="journal-reflection-embed"
     :class="{ 'align-items-stretch': isCollapsed }"
     :data-id="reflection.id"
+    :data-imprtc="hasState('IMPRTC') ? 'Y' : 'N'"
+    :data-refrnc="hasState('REFRNC') ? 'Y' : 'N'"
     :data-resolved="isResolved ? 'Y' : 'N'"
     :data-lifecycle="lcKey || 'OPEN'"
   >
@@ -17,7 +19,7 @@
         class="journal-content p-2"
         v-html="reflection.markdownContent"
       ></div>
-      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
+      <div v-else-if="isCollapsed" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center"><span v-if="isPending" class="fw-bold fst-normal text-warning me-1">{{ t('journal.pending.todo') }}</span><span v-if="reflection.sortOrder != null">#{{ reflection.sortOrder }}&nbsp;</span><span v-if="reflection.title">{{ reflection.title }}&nbsp;</span>(collapsed)</div>
       <!--begin::댓글 (읽기)-->
       <div v-if="commentList.length > 0" class="d-flex flex-column gap-1 mt-2 ps-2">
         <div v-for="cmt in commentList" :key="cmt.id" class="d-flex align-items-start gap-1">
@@ -83,6 +85,15 @@
           <div class="menu-item px-3">
             <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ t('journal.reflection.label') }}</div>
           </div>
+
+          <!--begin::저장된 리플렉션 새 창 보기-->
+          <div class="menu-item px-3 my-1 cursor-pointer">
+            <div class="menu-link flex-stack px-3" @click="openInNewWindow">
+              {{ t('common.open-in-new-window') }}
+              <i class="bi bi-box-arrow-up-right fs-8"></i>
+            </div>
+          </div>
+          <!--end::저장된 리플렉션 새 창 보기-->
 
           <div v-if="canWrite" class="menu-item px-3 my-1 cursor-pointer">
             <div class="menu-link flex-stack px-3" @click="openEdit">
@@ -316,6 +327,7 @@ import {
   useJournalReflectionDefaultCollapsed,
 } from "@/features/journal/utils/journalReflectionCollapseMode";
 import { wrapHtmlWithDoubleParen } from "@/features/journal/utils/wrapDoubleParen";
+import { openJournalEntryViewPopup } from "@/features/journal/utils/journalEntryViewPopup";
 
 /**
  * target 엔트리 본문과 태그 사이에 슬림 임베드되는 Reflection 한 건.
@@ -324,7 +336,7 @@ import { wrapHtmlWithDoubleParen } from "@/features/journal/utils/wrapDoublePare
  * same-chapter dedup 으로 1급 행이 숨겨지므로 수정·삭제·이력·라이프사이클·상태(중요/참조)는
  * 이 임베드 컨텍스트 메뉴에서 수행한다. ⋯ 메뉴의 「전체 (( ))」는 저장 본문 각 `<p>`/`<li>`에 Markdown `((...))` 마커를 멱등적으로 씌운다. Reflection→Reflection 중첩 등록 메뉴는 두지 않는다(형제·독립이 기본, REFLECTION_ONE_TYPE §3.1). 일기·꿈·노트를 target으로 둔 Reflection은 스레드 소속 추가를 두지 않는다.
  * 접기(COLLAPSED)는 임베드가 본문을 항상 보이므로 메뉴에 두지 않는다.
- * Reflection 은 완결축 밖이므로 쓰기 가드는 소유권(`isCreatedBy`)이다. 본문 글자 크기는 일기 엔트리와 같다.
+ * Reflection 은 완결축 밖이므로 쓰기 가드는 대상 일자 소유권(`isOwnedBy`)이다. 본문 글자 크기는 일기 엔트리와 같다.
  */
 const props = withDefaults(defineProps<{
   reflection: JournalEntryDto;
@@ -349,14 +361,16 @@ const journalStore = useJournalStore();
 const route = useRoute();
 
 const contentType = computed(() => props.reflection.contentType ?? "JOURNAL_REFLECTION");
-/** 본인 작성 Reflection 만 쓰기 가능. isCreatedBy 미전달 시 잠그지 않는다. */
-const canWrite = computed(() => props.reflection.isCreatedBy !== false);
+/** 대상 일자 소유 시 쓰기 가능. 응답 isOwnedBy 가 대상 일자 owner_id 파생이다. */
+const canWrite = computed(() => props.reflection.isOwnedBy === true);
 
 /** localStorage("debug_collapse") が true のとき接힘 메타정보를 표시한다. */
 const debugCollapse = computed(() => localStorage.getItem("debug_collapse") === "true");
 
 const lcKey = computed(() => props.reflection.lifecycle?.lifecycleKey ?? "");
 const isResolved = computed(() => lcKey.value === "RESOLVED");
+/** 보류(PENDING) 상태 — 접힘 시 (collapsed) 앞 TODO: 표식 노출 조건. */
+const isPending = computed(() => lcKey.value === "PENDING");
 /** 클라이언트 임시 접힘 오버라이드. null=상위 신호 따름, true/false=강제. */
 const localCollapsedOverride = ref<boolean | null>(null);
 /** 저널 일자 aside 토글. provide 없는 검색·스레드에서는 항상 false(기존 계약). */
@@ -743,6 +757,13 @@ async function copyReflection(): Promise<void> {
   } catch (error: unknown) {
     console.error("[journal-reflection] clipboard copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
+  }
+}
+
+/** 저장된 리플렉션 한 건을 ID 기반 읽기 전용 새 창으로 연다. */
+function openInNewWindow(): void {
+  if (!openJournalEntryViewPopup(props.reflection.id)) {
+    void swalAlert(t("common.error.popup"));
   }
 }
 

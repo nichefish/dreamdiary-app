@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.embedding.service;
 
 import io.nicheblog.dreamdiary.feature.ai.client.OllamaClient;
 import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbeddingEntity;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +38,27 @@ class JournalEntryEmbeddingWorkerTest {
     @Mock
     private OllamaClient ollamaClient;
 
+    @Mock
+    private JournalSettingService journalSettingService;
+
     private JournalEntryEmbeddingWorker worker;
 
     @BeforeEach
     void setUp() {
-        worker = new JournalEntryEmbeddingWorker(queueService, searchService, ollamaClient);
-        when(queueService.countPending()).thenReturn(0L);
+        worker = new JournalEntryEmbeddingWorker(queueService, searchService, journalSettingService, ollamaClient);
+        when(journalSettingService.isEmbeddingEnabled()).thenReturn(true);
+        org.mockito.Mockito.lenient().when(queueService.countPending()).thenReturn(0L);
+    }
+
+    @Test
+    void processPendingBatch_skipsWhenEmbeddingDisabled() {
+        when(journalSettingService.isEmbeddingEnabled()).thenReturn(false);
+
+        final int successCount = worker.processPendingBatch(20);
+
+        assertEquals(0, successCount);
+        verify(queueService, never()).claimPendingBatch(org.mockito.ArgumentMatchers.any());
+        verify(queueService, never()).requeueStaleProcessing(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
     }
 
     @Test

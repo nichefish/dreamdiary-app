@@ -33,6 +33,7 @@
          그 상태를 구독해 실제로 그리는 모달이 같은 화면에 마운트돼 있어야 열린다.
          (저널 일자 레이아웃과 동일 구성: DayMeta + TagProfile + TagContextMenu) -->
     <JournalDayMetaModal />
+    <HistoryModal @success="onHistorySuccess" />
     <JournalTagProfileModal />
     <JournalTagContextMenu />
     <!--end::결산 모달 컨테이너-->
@@ -46,11 +47,19 @@ import JournalAnnualViewToolbar from "./components/JournalAnnualViewToolbar.vue"
 import JournalAnnualRegistModal from "./modals/JournalAnnualRegistModal.vue";
 import JournalAnnualReviewRegistModal from "./modals/JournalAnnualReviewRegistModal.vue";
 import JournalDayMetaModal from "@/features/journal/day/modals/JournalDayMetaModal.vue";
+import HistoryModal from "@/features/attachable/HistoryModal.vue";
 import JournalTagProfileModal from "@/features/journal/shared/modals/JournalTagProfileModal.vue";
 import JournalTagContextMenu from "@/features/journal/shared/components/JournalTagContextMenu.vue";
 import { useJournalAnnualAsideStore } from "@/features/journal/stores/journalAnnualAside";
+import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const { t } = useLocaleStore();
 const asideStore = useJournalAnnualAsideStore();
+const threadStore = useJournalThreadStore();
+
+/** 결산 위에서 연 스레드의 이력 복원·삭제 후 열린 상세를 다시 조회한다. */
+function onHistorySuccess(): void {
+  if (threadStore.detailOpen) void threadStore.refreshOpenDetail();
+}
 </script>

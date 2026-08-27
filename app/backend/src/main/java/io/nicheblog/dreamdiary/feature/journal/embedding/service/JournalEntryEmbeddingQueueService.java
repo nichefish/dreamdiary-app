@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -58,6 +60,8 @@ public class JournalEntryEmbeddingQueueService {
     private static final int MIN_BATCH_SIZE = 1;
     private static final int MAX_BATCH_SIZE = 100;
     private static final int ERROR_MESSAGE_LIMIT = 4000;
+    /** 전수 sync 진행 하트비트·flush 간격. prefix/state {@code @BatchSize}와 맞춘다. */
+    private static final int SYNC_PROGRESS_INTERVAL = 50;
 
     @Getter
     private final JournalEntryEmbeddingRepository repository;
@@ -107,6 +111,31 @@ public class JournalEntryEmbeddingQueueService {
         final JournalChapterEntity chapter = entry.getJournalChapterId() == null
                 ? null
                 : journalChapterRepository.findById(entry.getJournalChapterId()).orElse(null);
+        final SyncAction action = upsertEmbeddingForEntry(
+                entry,
+                chapter,
+                repository.findFirstByJournalEntryId(entry.getId()).orElse(null)
+        );
+        repository.flush();
+        return action;
+    }
+
+    /**
+     * 원본 엔트리와 미리 조회한 챕터·임베딩 행으로 큐 row를 upsert한다.
+     *
+     * <p>단건 적재는 조회 후 즉시 flush하고, 전수 sync는 호출측에서 간격을 두고 flush한다.</p>
+     *
+     * @param entry 원본 저널 엔트리
+     * @param chapter 소속 챕터. 없으면 {@code null}
+     * @param existing 기존 임베딩 행. 없으면 {@code null}
+     * @return 동기화 액션
+     * @throws Exception payload JSON 또는 해시 생성 중 예외가 발생한 경우
+     */
+    private SyncAction upsertEmbeddingForEntry(
+            final JournalEntryEntity entry,
+            final JournalChapterEntity chapter,
+            final JournalEntryEmbeddingEntity existing
+    ) throws Exception {
         final JournalDaySmpEntity journalDay = chapter == null ? null : chapter.getJournalDay();
         final String contentKind = resolveContentKind(entry, chapter);
         final BigDecimal retrievalWeight = resolveRetrievalWeight(contentKind);
@@ -115,11 +144,12 @@ public class JournalEntryEmbeddingQueueService {
         final String payloadJson = objectMapper.writeValueAsString(buildPayload(entry, chapter, journalDay, contentKind, retrievalWeight));
         final boolean hasEmbeddableContent = hasEmbeddableContent(entry, chapter);
 
-        final Optional<JournalEntryEmbeddingEntity> existing = repository.findFirstByJournalEntryId(entry.getId());
-        final boolean exists = existing.isPresent();
-        final JournalEntryEmbeddingEntity entity = existing.orElseGet(() -> JournalEntryEmbeddingEntity.builder()
+        final boolean exists = existing != null;
+        final JournalEntryEmbeddingEntity entity = exists
+                ? existing
+                : JournalEntryEmbeddingEntity.builder()
                 .journalEntryId(entry.getId())
-                .build());
+                .build();
         final boolean hasReusableVector = Objects.equals(entity.getContentHash(), contentHash)
                 && STATUS_EMBEDDED.equals(entity.getEmbeddingStatus())
                 && StringUtils.isNotBlank(entity.getEmbeddingVectorJson());
@@ -140,7 +170,7 @@ public class JournalEntryEmbeddingQueueService {
             entity.setEmbeddingVectorJson(null);
             entity.setEmbeddedAt(null);
             entity.setErrorMessage("no embeddable title, content, tag, chapter, or dreamer context");
-            repository.saveAndFlush(entity);
+            repository.save(entity);
             return SyncAction.SKIPPED;
         } else if (!hasReusableVector) {
             entity.setEmbeddingStatus(STATUS_PENDING);
@@ -148,11 +178,11 @@ public class JournalEntryEmbeddingQueueService {
             entity.setEmbeddingVectorJson(null);
             entity.setEmbeddedAt(null);
             entity.setErrorMessage(null);
-            repository.saveAndFlush(entity);
+            repository.save(entity);
             return exists ? SyncAction.REQUEUED : SyncAction.CREATED;
         } else {
             entity.setErrorMessage(null);
-            repository.saveAndFlush(entity);
+            repository.save(entity);
             return SyncAction.UNCHANGED;
         }
     }
@@ -175,7 +205,8 @@ public class JournalEntryEmbeddingQueueService {
      * 현재 활성 저널 엔트리를 기준으로 임베딩 작업 테이블을 재동기화한다.
      *
      * <p>누락된 임베딩 작업은 생성하고, 원본이 사라진 활성 임베딩 작업은 제거하며,
-     * 본문 해시가 달라진 작업은 다시 {@code PENDING} 상태로 돌린다.</p>
+     * 본문 해시가 달라진 작업은 다시 {@code PENDING} 상태로 돌린다.
+     * 챕터와 기존 임베딩 행은 배치 조회하고, 진행 하트비트는 {@link #SYNC_PROGRESS_INTERVAL}건마다 갱신한다.</p>
      *
      * @return 동기화 처리 결과
      * @throws Exception 임베딩 작업 구성 중 예외가 발생한 경우
@@ -206,13 +237,33 @@ public class JournalEntryEmbeddingQueueService {
         }
         repository.flush();
 
+        final Map<Integer, JournalChapterEntity> chapterById = loadChaptersForSync(entryList);
+        final Map<Integer, JournalEntryEmbeddingEntity> embeddingByEntryId = embeddingListBefore.stream()
+                .filter(embedding -> embedding.getJournalEntryId() != null)
+                .collect(Collectors.toMap(
+                        JournalEntryEmbeddingEntity::getJournalEntryId,
+                        embedding -> embedding,
+                        (left, right) -> left
+                ));
+
         long created = 0L;
         long requeued = 0L;
         long unchanged = 0L;
         long skipped = 0L;
         int processed = 0;
+        final int total = entryList.size();
         for (final JournalEntryEntity entry : entryList) {
-            final SyncAction action = queueForEntry(entry);
+            if (entry == null || entry.getId() == null) {
+                continue;
+            }
+            final JournalChapterEntity chapter = entry.getJournalChapterId() == null
+                    ? null
+                    : chapterById.get(entry.getJournalChapterId());
+            final SyncAction action = upsertEmbeddingForEntry(
+                    entry,
+                    chapter,
+                    embeddingByEntryId.get(entry.getId())
+            );
             switch (action) {
                 case CREATED -> created++;
                 case REQUEUED -> requeued++;
@@ -221,10 +272,12 @@ public class JournalEntryEmbeddingQueueService {
                 default -> unchanged++;
             }
             processed++;
-            if (progressConsumer != null) {
+            if (progressConsumer != null && shouldReportSyncProgress(processed, total)) {
+                repository.flush();
                 progressConsumer.accept(processed);
             }
         }
+        repository.flush();
 
         return JournalEntryEmbeddingSyncResultDto.builder()
                 .activeEntryCount(entryList.size())
@@ -242,6 +295,66 @@ public class JournalEntryEmbeddingQueueService {
     public long countJournalEntriesForSync() {
         return journalEntryRepository.count();
     }
+
+    /**
+     * 전수 sync에 필요한 챕터를 한 번에 조회하고 prefix/state 컬렉션을 배치 초기화한다.
+     *
+     * @param entryList 동기화 대상 엔트리
+     * @return 챕터 ID를 키로 한 챕터 맵
+     */
+    private Map<Integer, JournalChapterEntity> loadChaptersForSync(final List<JournalEntryEntity> entryList) {
+        final Set<Integer> chapterIdSet = entryList.stream()
+                .map(JournalEntryEntity::getJournalChapterId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        if (chapterIdSet.isEmpty()) {
+            return Map.of();
+        }
+
+        final List<JournalChapterEntity> chapterList = journalChapterRepository.findAllById(chapterIdSet);
+        initializeChapterEmbeds(chapterList);
+        return chapterList.stream()
+                .filter(chapter -> chapter.getId() != null)
+                .collect(Collectors.toMap(
+                        JournalChapterEntity::getId,
+                        chapter -> chapter,
+                        (left, right) -> left
+                ));
+    }
+
+    /**
+     * 챕터 prefix/state 지연 컬렉션을 초기화해 {@code @BatchSize} IN 조회가 묶이게 한다.
+     *
+     * @param chapterList 배치 조회한 챕터
+     */
+    private void initializeChapterEmbeds(final List<JournalChapterEntity> chapterList) {
+        for (final JournalChapterEntity chapter : chapterList) {
+            if (chapter.getPrefix() != null) {
+                Hibernate.initialize(chapter.getPrefix().getList());
+            }
+            if (chapter.getState() != null) {
+                Hibernate.initialize(chapter.getState().getList());
+            }
+        }
+    }
+
+    /**
+     * 전수 sync 진행 하트비트를 남길 시점인지 판단한다.
+     *
+     * @param processed 처리한 엔트리 수
+     * @param total 전체 엔트리 수
+     * @return 하트비트를 남기면 {@code true}
+     */
+    static boolean shouldReportSyncProgress(final int processed, final int total) {
+        if (processed <= 0 || total <= 0) {
+            return false;
+        }
+        if (processed >= total) {
+            return true;
+        }
+        return processed % SYNC_PROGRESS_INTERVAL == 0;
+    }
+
 
     /**
      * 대기 중인 작업을 배치 크기만큼 선점하고 처리 중 상태로 변경한다.

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.entry.service.helper;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal._shared.security.JournalContentOwnershipGuard;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryDto;
 import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
 import io.nicheblog.dreamdiary.feature.journal.reflection.mapstruct.JournalReflectionMapstruct;
@@ -19,7 +20,7 @@ import java.util.Map;
  * <p>
  * Reflection 은 별도 Aggregate(journal_reflection)이며, {@code refId = 대상 엔트리 ∧ refContentType = 대상 타입}
  * 으로 대상 엔트리의 {@code reflectionList} 에 싣는다. 자식 해석 합성이 아니라 target 역참조 연관이다.
- * 표시 정렬은 {@code created_at} 오름차순이다(chapter sortOrder 아님).
+ * 표시 정렬은 같은 대상 아래 {@code sortOrder} 오름차순이다.
  * </p>
  */
 @Component
@@ -28,6 +29,7 @@ public class JournalEntryReflectionEnricher {
 
     private final JournalReflectionRepository journalReflectionRepository;
     private final JournalReflectionMapstruct mapstruct;
+    private final JournalContentOwnershipGuard journalContentOwnershipGuard;
 
     /**
      * 엔트리 목록에 target 역참조 Reflection 을 병합한다.
@@ -95,13 +97,18 @@ public class JournalEntryReflectionEnricher {
         if (targetIds == null || targetIds.isEmpty()) return Map.of();
 
         final List<JournalReflectionEntity> reflections =
-                journalReflectionRepository.findAllByRefIdInOrderByCreatedAtAsc(targetIds);
+                journalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc(targetIds);
         final Map<String, List<JournalEntryDto>> map = new HashMap<>();
         for (final JournalReflectionEntity reflection : reflections) {
             if (reflection == null || reflection.getRefId() == null || reflection.getRefContentType() == null) continue;
             final String key = buildKey(reflection.getRefContentType().key, reflection.getRefId());
             map.computeIfAbsent(key, k -> new ArrayList<>()).add(mapstruct.toDto(reflection));
         }
+        final List<JournalEntryDto> mapped = new ArrayList<>();
+        for (final List<JournalEntryDto> group : map.values()) {
+            mapped.addAll(group);
+        }
+        journalContentOwnershipGuard.applyReflectionViewerOwnership(mapped);
         return map;
     }
 

@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onErrorCaptured, onMounted, watchEffect } from "vue";
+import { computed, nextTick, onErrorCaptured, onMounted, watch, watchEffect } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import AppRuntimeStatus from "@/shared/components/system/AppRuntimeStatus.vue";
 import AppChat from "@/features/chat/AppChat.vue";
@@ -36,8 +36,8 @@ const localeStore = useLocaleStore();
 const route = useRoute();
 const appName = import.meta.env.VITE_APP_NAME;
 
-/** 팝업 전용 라우트(검색 팝업 등)에서는 AI 챗 숨김 */
-const isPopup = computed(() => ["journal-entry-search", "journal-daily"].includes(String(route.name)));
+/** 팝업 전용 라우트(검색·저장 엔트리 보기 팝업 등)에서는 AI 챗 숨김 */
+const isPopup = computed(() => ["journal-entry-search", "journal-daily", "journal-entry-view-popup"].includes(String(route.name)));
 
 /** 현재 route와 locale에 맞춰 브라우저 탭 제목을 갱신한다. */
 watchEffect(() => {
@@ -57,6 +57,31 @@ onMounted(() => {
   document.body.classList.remove("page-loading");
   if (authStore.isAuthenticated) void preloadCategoryMaps();
 });
+
+/**
+ * 세션 만료 등으로 인증이 해제되면 전역 저널 모달(JournalEntryRegistModal 등)이
+ * `v-if`로 즉시 unmount 된다. Bootstrap Modal 이 body 직하에 append 한 `.modal-backdrop`
+ * 과 `body.modal-open`(overflow/padding-right 잠금)은 element 제거만으로는 걷히지 않아
+ * 화면 전체를 덮는 정적 오버레이로 남는다. 인증 해제(true→false) 시 nextTick 에서 이 고아
+ * backdrop 과 body 잠금을 걷어 로그인 복귀 화면이 막히지 않게 한다.
+ *
+ * Vue 가 직접 렌더하는 admin 페이지 backdrop 은 #app 하위이므로, body 직하 backdrop 만
+ * 제거해 Vue 관리 노드는 건드리지 않는다.
+ */
+watch(
+  () => authStore.isAuthenticated,
+  (isAuth, wasAuth) => {
+    if (!wasAuth || isAuth) return;
+    void nextTick(() => {
+      document
+        .querySelectorAll("body > .modal-backdrop")
+        .forEach((el) => el.remove());
+      document.body.classList.remove("modal-open");
+      document.body.style.removeProperty("overflow");
+      document.body.style.removeProperty("padding-right");
+    });
+  }
+);
 
 onErrorCaptured((error) => {
   reportRuntimeError(error, "vue-render");

@@ -5,6 +5,8 @@ import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbe
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncJobStatusDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.model.JournalEntryEmbeddingSyncResultDto;
 import io.nicheblog.dreamdiary.feature.journal.embedding.repository.jpa.JournalEntryEmbeddingSyncJobRepository;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
+import io.nicheblog.dreamdiary.infrastructure.log.p6spy.P6SpySqlLogQuietScope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,7 @@ public class JournalEntryEmbeddingSyncJobService {
     private static final Duration STALE_RUNNING_AGE = Duration.ofMinutes(30);
 
     private final JournalEntryEmbeddingQueueService queueService;
+    private final JournalSettingService journalSettingService;
     private final JournalEntryEmbeddingSyncJobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final ObjectMapper objectMapper;
@@ -45,6 +48,11 @@ public class JournalEntryEmbeddingSyncJobService {
     private final Executor taskExecutor;
 
     public JournalEntryEmbeddingSyncJobStatusDto startSync() {
+        if (!journalSettingService.isEmbeddingEnabled()) {
+            log.info("Journal entry embedding sync skipped. reason=embeddingDisabled");
+            return getStatus();
+        }
+
         final StartDecision decision = claimStart();
         if (!decision.started) {
             return decision.status;
@@ -91,27 +99,40 @@ public class JournalEntryEmbeddingSyncJobService {
         });
     }
 
+    /**
+     * 전수 sync를 실행한다. 이 스레드의 p6spy statement SQL은 DEBUG로 남긴다.
+     */
     private void runSync() {
-        try {
-            final JournalEntryEmbeddingSyncResultDto syncResult =
-                    queueService.syncWithJournalEntries(this::markProgress);
-            markCompleted(syncResult);
-            log.info(
-                    "Journal entry embedding sync completed. entries={}, created={}, requeued={}, unchanged={}, skipped={}, removed={}",
-                    syncResult.getActiveEntryCount(),
-                    syncResult.getCreated(),
-                    syncResult.getRequeued(),
-                    syncResult.getUnchanged(),
-                    syncResult.getSkipped(),
-                    syncResult.getRemoved()
-            );
-        } catch (final Exception e) {
-            markFailed(e);
-            log.warn("Journal entry embedding sync failed.", e);
-        }
+        P6SpySqlLogQuietScope.run(() -> {
+            try {
+                if (!journalSettingService.isEmbeddingEnabled()) {
+                    log.info("Journal entry embedding sync aborted. reason=embeddingDisabled");
+                    markFailed(new IllegalStateException("Journal embedding is disabled."));
+                    return;
+                }
+                final JournalEntryEmbeddingSyncResultDto syncResult =
+                        queueService.syncWithJournalEntries(this::markProgress);
+                markCompleted(syncResult);
+                log.info(
+                        "Journal entry embedding sync completed. entries={}, created={}, requeued={}, unchanged={}, skipped={}, removed={}",
+                        syncResult.getActiveEntryCount(),
+                        syncResult.getCreated(),
+                        syncResult.getRequeued(),
+                        syncResult.getUnchanged(),
+                        syncResult.getSkipped(),
+                        syncResult.getRemoved()
+                );
+            } catch (final Exception e) {
+                markFailed(e);
+                log.warn("Journal entry embedding sync failed.", e);
+            }
+        });
     }
 
     private void markProgress(final int processedCount) {
+        if (!journalSettingService.isEmbeddingEnabled()) {
+            throw new IllegalStateException("Journal embedding is disabled.");
+        }
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             final JournalEntryEmbeddingSyncJobEntity job = getOrCreateJobRow(false);
             if (!STATUS_RUNNING.equals(job.getStatus())) return;

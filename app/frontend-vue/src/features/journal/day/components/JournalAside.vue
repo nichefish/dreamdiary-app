@@ -433,12 +433,29 @@ function onMiniCalendarSelect(dateStr: string): void {
  */
 async function onWeekMiniCalendarSelect(dateStr: string): Promise<void> {
   const weekStart = getWeekStartDateStr(dateStr);
-  const synced = await syncWeeklyRouteOrFetch(weekStart);
-  if (!synced) return;
+  // 같은 주 재클릭(중복 네비게이션)이어도 스크롤은 수행해야 하므로 synced 게이트로 조기 반환하지 않는다.
+  await syncWeeklyRouteOrFetch(weekStart);
   selectedDt.value = dateStr;
-  await nextTick();
-  const el = document.getElementById(`journal-day-${dateStr}`);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  // 다른 주 이동 시 fetch·재렌더가 비동기라, 대상 카드가 렌더될 때까지 재시도 후 스크롤한다.
+  await scrollToDayCardWhenReady(dateStr);
+}
+
+/**
+ * 주간 목록에서 해당 일자 카드(`#journal-day-{dateStr}`)가 렌더될 때까지 재시도한 뒤 스크롤한다.
+ * 다른 주 이동은 fetch·재렌더가 비동기라 한 tick 뒤에는 카드가 아직 없을 수 있다. 최대 약 1초.
+ *
+ * @param dateStr 스크롤 대상 일자(YYYY-MM-DD)
+ */
+async function scrollToDayCardWhenReady(dateStr: string): Promise<void> {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    await nextTick();
+    const el = document.getElementById(`journal-day-${dateStr}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
 }
 
 const sortIconClass = computed(() =>

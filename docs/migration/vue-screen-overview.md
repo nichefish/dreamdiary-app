@@ -41,6 +41,8 @@
 | `/user/signup` | `user-signup` | `UserSignupPage.vue` | Auth | ✓ |
 | `/auth/verify-result` | `auth-verify-result` | `VerifyResultPage.vue` | Auth | ✓ |
 | `/journal/entry/search` | `journal-entry-search` | `JournalEntrySearchPage.vue` | System | ✓ |
+| `/journal/entry/preview-pop` | `journal-entry-preview` | `JournalEntryPreviewPage.vue` | System | ✓ 작성 중 본문 미리보기 새 창 |
+| `/journal/entry/view-pop` | `journal-entry-view-popup` | `JournalEntryViewPage.vue` | System | ✓ 저장된 엔트리·리플렉션 단건 읽기 전용 새 창 |
 | `/error`, `/400`, `/403`, `/404`, `/500` | — | `ErrorPage.vue` | System | ✓ |
 
 ---
@@ -143,7 +145,7 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 | `journalAnnual.ts` | 연간 결산 목록/상세 |
 | `journalAnnualAside.ts` | 결산 목록/상세 공통 FILTER 어사이드 표시 제어 (`visible`, `show/hide`) |
 | `journalThread.ts` | 스레드 목록/상세 |
-| `journalThreadMembership.ts` | 저널 엔트리↔스레드 소속 지정 액션 (FLOW 대체 축) |
+| `journalThreadMembership.ts` | 저널 엔트리↔스레드 소속 지정 액션 |
 | `tagContextMenu.ts` | 태그 클릭 컨텍스트 메뉴 위치·상태 |
 | `metaContextMenu.ts` | 메타 클릭 컨텍스트 메뉴 위치·상태 |
 | `attachableModal.ts` | 댓글/이력/파일/태그 공통 모달 |

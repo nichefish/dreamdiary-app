@@ -172,7 +172,7 @@
                 <label class="d-flex align-items-center mb-2">
                   <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.body') }}</span>
                 </label>
-                <RichEditor v-model="model.content" :enable-templates="true" />
+                <RichEditor :model-value="model.content" @update:model-value="model && (model.content = $event)" :enable-templates="true" />
               </div>
             </div>
             <!--end::본문-->
@@ -194,6 +194,15 @@
         <!--begin::Modal Footer-->
         <div class="modal-footer">
           <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-sm btn-light-primary"
+              :title="t('journal.entry.preview.tooltip')"
+              :disabled="!model || submitting"
+              @click="preview"
+            >
+              <i class="bi bi-eye"></i>{{ t('common.preview') }}
+            </button>
             <button
               type="button"
               class="btn btn-sm btn-primary"
@@ -238,6 +247,7 @@ import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { resolveJournalPrefixField } from "@/features/journal/utils/journalPrefixField";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { openJournalEntryPreview, type JournalEntryPreviewContentType } from "@/features/journal/utils/journalEntryPreview";
 
 const modalStore = useJournalModalStore();
 const journalStore = useJournalStore();
@@ -372,6 +382,42 @@ watch(
     } else bsModal?.hide();
   }
 );
+
+function resolvePreviewPrefix(): { prefixName?: string; prefixColor?: string } {
+  const current = model.value;
+  if (!current?.prefixId) return {};
+  if (current.prefix && current.prefix.id === current.prefixId) {
+    return { prefixName: current.prefix.name, prefixColor: current.prefix.color ?? undefined };
+  }
+  const option = entryPrefixOptions.value.find((p) => p.id === current.prefixId) ?? currentInactivePrefix.value;
+  return { prefixName: option?.name, prefixColor: option?.color ?? undefined };
+}
+
+function previewContentType(): JournalEntryPreviewContentType {
+  if (isDream.value) return "JOURNAL_DREAM";
+  if (isNote.value) return "JOURNAL_NOTE";
+  return "JOURNAL_DIARY";
+}
+
+/** 작성 중 본문을 목록과 같은 markdownContent로 새 창에 띄운다. */
+async function preview(): Promise<void> {
+  if (!model.value) return;
+  try {
+    const result = await openJournalEntryPreview({
+      contentType: previewContentType(),
+      title: model.value.title,
+      sortOrder: model.value.sortOrder,
+      content: model.value.content,
+      ...resolvePreviewPrefix(),
+    }, t("journal.entry.preview.failure"));
+    if (result === "blocked") {
+      void swalAlert(t("common.error.popup"));
+    }
+  } catch (error) {
+    console.error("[JournalEntryRegistModal] preview failed", error);
+    void swalAlert(error instanceof Error ? error.message : t("journal.entry.preview.failure"));
+  }
+}
 
 function close() {
   resetSafeClose();

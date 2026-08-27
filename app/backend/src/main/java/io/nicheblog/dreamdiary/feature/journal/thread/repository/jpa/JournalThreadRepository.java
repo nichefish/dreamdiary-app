@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa;
 
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadCandidateProjection;
+import io.nicheblog.dreamdiary.feature.journal.thread.model.ThreadLatestEntryDateProjection;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -93,4 +94,22 @@ public interface JournalThreadRepository
             final @Param("includeResolved") String includeResolved,
             final Pageable pageable
     );
+
+    /**
+     * 주어진 스레드들의 소속 엔트리 최신 일기 날짜(MAX(journal_day.journal_date))를 스레드별로 집계한다.
+     * 소속 엔트리가 없거나 날짜가 없는 스레드는 결과에 포함되지 않는다(호출측에서 null=뒤로 처리).
+     *
+     * @param threadIds 대상 스레드 PK 목록
+     * @return 스레드별 소속 엔트리 최신 일기 날짜 집계
+     */
+    @Query(value =
+            "SELECT jte.thread_id AS threadId, MAX(d.journal_date) AS latestDate " +
+            "FROM journal_thread_entry jte " +
+            "JOIN journal_entry je ON je.id = jte.entry_id AND je.deleted_at IS NULL " +
+            "JOIN journal_chapter jc ON jc.id = je.journal_chapter_id AND jc.deleted_at IS NULL " +
+            "JOIN journal_day d ON d.id = jc.journal_day_id AND d.deleted_at IS NULL " +
+            "WHERE jte.thread_id IN (:threadIds) AND jte.deleted_at IS NULL " +
+            "GROUP BY jte.thread_id",
+            nativeQuery = true)
+    List<ThreadLatestEntryDateProjection> findLatestMemberEntryDates(final @Param("threadIds") List<Integer> threadIds);
 }

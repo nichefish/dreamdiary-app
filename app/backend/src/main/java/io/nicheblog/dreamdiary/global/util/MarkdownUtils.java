@@ -58,6 +58,8 @@ public class MarkdownUtils {
 
     /** 중첩 재귀 깊이 상한. maxGroupLength 안에서도 폭주 매칭을 막는다. */
     private static final int MAX_NEST_DEPTH = 32;
+    /** ASCII·스마트 큰따옴표가 서로 섞인 대화체도 하나의 인용 범위로 해석한다. */
+    private static final Pattern DIALOG_PATTERN = Pattern.compile("[\"\u201c](.*?)[\"\u201d]");
 
     /**
      * 중첩 가능한 인라인 패턴을 한 레벨씩 적용한다.
@@ -74,8 +76,7 @@ public class MarkdownUtils {
         }
 
         String part = source;
-        part = replaceDialogPatternNested(part, Pattern.compile("\"(.*?)\""), "\u201c", "\u201d", maxGroupLength, generatedHtmlList, depth);
-        part = replaceDialogPatternNested(part, Pattern.compile("\u201c(.*?)\u201d"), "\u201c", "\u201d", maxGroupLength, generatedHtmlList, depth);
+        part = replaceDialogPatternNested(part, DIALOG_PATTERN, "\u201c", "\u201d", maxGroupLength, generatedHtmlList, depth);
         part = replaceDialogPatternNested(part, Pattern.compile("\u300e(.*?)\u300f"), "\u300e", "\u300f", maxGroupLength, generatedHtmlList, depth);
         part = replaceGeneratedPattern(part, Pattern.compile("--(.*?)(--)"), maxGroupLength, generatedHtmlList, matcher -> {
             final String nested = processNestableInline(matcher.group(1), maxGroupLength, generatedHtmlList, depth + 1);

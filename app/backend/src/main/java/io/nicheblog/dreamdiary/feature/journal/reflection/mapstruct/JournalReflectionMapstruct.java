@@ -39,6 +39,7 @@ public abstract class JournalReflectionMapstruct
 
     /**
      * 수정 DTO 값을 기존 Reflection 엔티티에 반영한다.
+     * 형제 순번({@code sortOrder})은 {@code JournalReflectionOrderService}가 재배치하므로 여기서 덮어쓰지 않는다.
      *
      * @param dto 수정 DTO
      * @param entity 대상 엔티티
@@ -47,6 +48,7 @@ public abstract class JournalReflectionMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
+    @Mapping(target = "sortOrder", ignore = true)
     public abstract void updateFromDto(final JournalReflectionPostDto dto, final @MappingTarget JournalReflectionEntity entity) throws Exception;
 
     /**

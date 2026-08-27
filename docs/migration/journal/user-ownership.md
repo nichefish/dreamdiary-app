@@ -14,6 +14,12 @@
 
 현재 소유권 컬럼 적용 대상은 `journal_day`다. 챕터 생성과 일자 부트스트랩처럼 Day를 직접 여는 경로는 `journal_day.owner_id`를 검사한다.
 
+## Reflection 쓰기 인가
+
+일자 트리의 해석(`journal_reflection`) 수정·삭제·상세(수정 로드)·이력 본문 갱신·상태·라이프사이클은 대상(About-A)이 속한 `journal_day.owner_id`와 인증 객체의 `userId`를 비교한다. 일자를 해석할 수 없으면 거부한다. R→R은 한 단계 위 대상의 일자까지 따라간다.
+
+`created_by`는 감사 스냅샷이며 인가 기준이 아니다. 응답 DTO의 `isOwnedBy`는 뷰어가 그 대상 일자를 소유하는가다. `isCreatedBy`는 감사 작성자 일치다. `journal_reflection`에 `owner_id` 컬럼을 두지 않는다.
+
 ## 운영 DB 적용 SQL
 
 애플리케이션은 `journal_day.owner_id`를 항상 조회하므로 다음 SQL을 애플리케이션 기동 전에 적용한다. 백필은 활성 사용자 중 username이 정확히 한 행인 경우만 수행한다. 미매핑 또는 중복 사용자가 있으면 검증 조회에 남고 `NOT NULL` 전환이 실패하여 비정상 소유권을 감추지 않는다.

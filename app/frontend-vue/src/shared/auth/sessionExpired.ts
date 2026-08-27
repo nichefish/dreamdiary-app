@@ -4,7 +4,7 @@ import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const SESSION_EXPIRED_QUERY = { sessionExpired: "Y" };
-const POPUP_ROUTE_NAMES = ["journal-entry-search", "journal-daily"];
+const POPUP_ROUTE_NAMES = ["journal-entry-search", "journal-daily", "journal-entry-view-popup"];
 
 let authExpiredDialogShowing = false;
 

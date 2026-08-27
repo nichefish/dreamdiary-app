@@ -42,6 +42,23 @@ describe("wrapHtmlWithDoubleParen", () => {
     });
   });
 
+  it("수평선 블록은 제외하고 나머지 문단만 감싼다", () => {
+    expect(wrapHtmlWithDoubleParen("<p>A</p><p>---</p><p>----</p><p>B</p>")).toEqual({
+      html: "<p>((A))</p><p>---</p><p>----</p><p>((B))</p>",
+      changed: true,
+    });
+  });
+
+  it("기존 전체 감싸기가 만든 수평선 마커를 원복한다", () => {
+    const restored = wrapHtmlWithDoubleParen("<p>((---))</p><p>((A))</p>");
+
+    expect(restored).toEqual({
+      html: "<p>---</p><p>((A))</p>",
+      changed: true,
+    });
+    expect(wrapHtmlWithDoubleParen(restored.html).changed).toBe(false);
+  });
+
   it("일부만 감싸진 경우 나머지만 감싼다", () => {
     expect(wrapHtmlWithDoubleParen("<p>((A))</p><p>B</p>")).toEqual({
       html: "<p>((A))</p><p>((B))</p>",

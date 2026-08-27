@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -128,6 +130,36 @@ class MarkdownUtilsTest {
         assertTrue(result.contains("md-text-dialog"));
         assertTrue(result.contains("<u>말</u>"));
         assertFalse(result.contains("__말__"));
+    }
+
+    @Test
+    @DisplayName("markdown accepts ASCII and smart dialog delimiters in every valid mixed pair")
+    void markdownAcceptsMixedDialogDelimiters() {
+        final List<String> dialogs = List.of(
+                "\"__말__\"",
+                "“__말__”",
+                "\"__말__”",
+                "“__말__\""
+        );
+
+        for (final String dialog : dialogs) {
+            final String result = MarkdownUtils.markdown("<p>" + dialog + "</p>");
+
+            assertTrue(result.contains("<span class=\"md-text-dialog\">“<u>말</u>”</span>"), dialog);
+            assertFalse(result.contains("__말__"), dialog);
+        }
+    }
+
+    @Test
+    @DisplayName("mixed dialog delimiter closes before following prose and dialog")
+    void markdownMixedDialogDoesNotConsumeFollowingDialog() {
+        final String result = MarkdownUtils.markdown(
+                "<p>\"첫 번째.\" \"두 번째?” 뒤 문장. \"네\"라고 답했다.</p>"
+        );
+
+        assertEquals(3, result.split("md-text-dialog", -1).length - 1);
+        assertTrue(result.contains("<span class=\"md-text-dialog\">“두 번째?”</span> 뒤 문장."));
+        assertTrue(result.contains("<span class=\"md-text-dialog\">“네”</span>라고 답했다."));
     }
 
     @Test

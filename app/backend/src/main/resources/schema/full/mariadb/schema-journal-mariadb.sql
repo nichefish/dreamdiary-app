@@ -115,6 +115,7 @@ CREATE TABLE IF NOT EXISTS journal_reflection (
     -- About-A
     ref_id INT NOT NULL COMMENT '대상(About-A) 엔티티 번호',
     ref_content_type VARCHAR(50) NOT NULL COMMENT '대상 컨텐츠 타입',
+    sort_order INT DEFAULT 1 COMMENT '대상 아래 정렬',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- history
@@ -158,7 +159,7 @@ CREATE TABLE IF NOT EXISTS journal_todo (
 
 -- 저널 스레드 (journal_thread)
 -- @extends: BasePostEntity
--- @implements: TagEmbed, CommentEmbed
+-- @uses: FileEmbed, CommentEmbed, PrefixEmbed, HistoryEmbed
 CREATE TABLE IF NOT EXISTS journal_thread(
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
@@ -169,6 +170,9 @@ CREATE TABLE IF NOT EXISTS journal_thread(
     -- 말머리 선택은 journal_thread 컬럼이 아니라 prefix_content(ref_id, ref_content_type) 연결로 보유한다.
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
+    -- HISTORY
+    history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
+    history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

@@ -37,22 +37,6 @@ journal_day.journal_date
 
 이 값은 embedding vector를 변형하지 않는다. 검색 결과 ranking 단계에서 score multiplier로 사용한다.
 
-## 세그먼트 가중치
-
-`embedding_payload_json.weights`에 다음 값을 저장한다.
-
-| segment | weight |
-| --- | ---: |
-| `title` | `1.25` |
-| `content` | `1.00` |
-| `chapter` | `0.85` |
-| `tags` | `1.35` |
-| `states` | `1.20` |
-| `meta` | `1.10` |
-| `time` | `0.70` |
-
-태그와 상태는 짧지만 사용자의 의미 분류가 직접 반영된 신호라 본문보다 높게 둔다.
-
 ## embedding_text
 
 모델에 넣는 텍스트는 사람이 읽을 수 있는 labeled text로 만든다.
@@ -62,9 +46,9 @@ journal_day.journal_date
 날짜: 2025-04-10
 챕터: ...
 챕터 말머리: 회고
-핵심 태그: [엔서클]#불안 [엔서클]#가족
-주제 태그: [엔서클]#불안 [엔서클]#가족
-태그: [엔서클]#불안 [엔서클]#가족
+핵심 태그: [감정]#불안 [관계]#가족
+주제 태그: [감정]#불안 [관계]#가족
+태그: [감정]#불안 [관계]#가족
 제목: ...
 본문: ...
 타인의 꿈 여부: N
@@ -75,62 +59,17 @@ journal_day.journal_date
 
 ## embedding_payload_json
 
+`JournalEntryEmbeddingQueueService.buildPayload()`는 현재 다음 키를 가진 flat map을 저장한다.
 
-> **구현 현황 (2026-07)**: 현재 worker는 아래 v1 중첩 스키마가 아니라 `JournalEntryEmbeddingQueueService.buildPayload()`의 **flat map**(`source`, `journalEntryId`, `contentKind`, `retrievalWeight`, `tags`, `journalDate`, `journalChapterSummaryYn`, `journalChapterPrefixId`, `journalChapterPrefixName`, …)을 `embedding_payload_json`에 저장한다. 시스템 요약은 사용자 Prefix가 아니며 `journalChapterSummaryYn=Y`, `journalChapterPrefixId/Name=null`로 구분한다. v1 JSON은 목표 구조이며, 수렴 작업 시 flat → v1 마이그레이션을 별도 정의한다.
-
-활성 임베딩 행은 챕터 메타데이터를 `journalChapterSummaryYn`, `journalChapterPrefixId`, `journalChapterPrefixName`으로 저장한다. 관리자 임베딩 동기화는 현재 `queueForEntry` 계약으로 텍스트와 payload를 다시 구성한다.
-
-v1 payload 구조:
-
-```json
-{
-  "schemaVersion": 1,
-  "ref": {
-    "type": "journal_entry",
-    "id": 123,
-    "contentType": "JOURNAL_DREAM",
-    "kind": "DREAM",
-    "typeWeight": 1.30
-  },
-  "time": {
-    "journalDate": "2025-04-10",
-    "precision": "EXACT",
-    "semanticCreatedAt": "2025-04-10 00:00:00"
-  },
-  "text": {
-    "title": "...",
-    "chapterTitle": "...",
-    "content": "..."
-  },
-  "signals": {
-    "tags": ["불안", "가족"],
-    "states": ["NHTMR"],
-    "meta": [
-      {
-        "name": "mood",
-        "category": "emotion",
-        "value": "anxious",
-        "unit": null
-      }
-    ]
-  },
-  "weights": {
-    "type": 1.30,
-    "title": 1.25,
-    "content": 1.0,
-    "chapter": 0.85,
-    "tags": 1.35,
-    "states": 1.2,
-    "meta": 1.1,
-    "time": 0.7
-  },
-  "embedding": {
-    "status": "PENDING",
-    "textHash": "...",
-    "model": null
-  }
-}
+```text
+source, journalEntryId, contentType, contentKind, retrievalWeight,
+title, journalChapterId, journalChapterTitle, journalChapterType,
+journalChapterSummaryYn, journalChapterPrefixId, journalChapterPrefixName,
+journalDayId, journalDate, journalDatePrecision, yy, mnth,
+sortOrder, dreamerName, tags
 ```
+
+시스템 요약은 사용자 Prefix가 아니며 `journalChapterSummaryYn=Y`와 요약 역할명으로 구분한다. 관리자 임베딩 동기화는 `queueForEntry` 계약으로 텍스트와 payload를 다시 구성한다. 전수 sync는 챕터와 기존 임베딩 행을 배치 조회하고, 진행 하트비트는 50건마다 갱신한다.
 
 ## 검색 단계에서의 사용
 
@@ -139,19 +78,6 @@ v1 payload 구조:
 ```text
 final_score = vector_similarity * retrieval_weight
 ```
-
-추후 확장:
-
-```text
-final_score =
-  vector_similarity
-  * type_weight
-  + tag_match_score
-  + state_match_score
-  + date_proximity_score
-```
-
-초기에는 타입 가중치만 사용하고, 태그/상태/날짜 가중치는 ranking 고도화 단계에서 반영한다.
 
 ## 품질 실측 (Quality Eval)
 

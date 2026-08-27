@@ -61,7 +61,7 @@
                   name="sortOrder"
                   min="1"
                   max="99"
-                  v-model="model.sortOrder"
+                  v-model.number="model.sortOrder"
                   maxlength="3"
                 />
               </div>
@@ -74,7 +74,7 @@
                 <label class="d-flex align-items-center mb-2">
                   <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.body') }}</span>
                 </label>
-                <RichEditor v-model="model.content" />
+                <RichEditor :model-value="model.content" @update:model-value="model && (model.content = $event)" />
               </div>
             </div>
             <!--end::본문-->
@@ -86,6 +86,15 @@
         <!--begin::Modal Footer-->
         <div class="modal-footer">
           <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-sm btn-light-primary"
+              :title="t('journal.entry.preview.tooltip')"
+              :disabled="!model || submitting"
+              @click="preview"
+            >
+              <i class="bi bi-eye"></i>{{ t('common.preview') }}
+            </button>
             <button
               type="button"
               class="btn btn-sm btn-primary"
@@ -113,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { swalConfirm, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
+import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useSafeModalClose } from "@/shared/utils/safeModalClose";
 import { ref, computed, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
@@ -127,6 +136,7 @@ import { useRoute } from "vue-router";
 import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
+import { openJournalEntryPreview } from "@/features/journal/utils/journalEntryPreview";
 
 const modalStore = useJournalModalStore();
 const { reflectionRegistModel, reflectionRegistOpen } = storeToRefs(modalStore);
@@ -171,6 +181,25 @@ watch(
   }
 );
 
+/** 작성 중 본문을 목록과 같은 markdownContent로 새 창에 띄운다. */
+async function preview(): Promise<void> {
+  if (!model.value) return;
+  try {
+    const result = await openJournalEntryPreview({
+      contentType: "JOURNAL_REFLECTION",
+      title: model.value.title,
+      sortOrder: model.value.sortOrder,
+      content: model.value.content,
+    }, t("journal.entry.preview.failure"));
+    if (result === "blocked") {
+      void swalAlert(t("common.error.popup"));
+    }
+  } catch (error) {
+    console.error("[JournalReflectionRegistModal] preview failed", error);
+    void swalAlert(error instanceof Error ? error.message : t("journal.entry.preview.failure"));
+  }
+}
+
 function close() {
   resetSafeClose();
   modalStore.closeReflectionRegist();
@@ -214,6 +243,7 @@ async function submit() {
     if (model.value.refId != null) formData.append("refId", String(model.value.refId));
     if (model.value.refContentType) formData.append("refContentType", model.value.refContentType);
     formData.append("title", model.value.title ?? "");
+    if (model.value.sortOrder != null) formData.append("sortOrder", String(model.value.sortOrder));
     formData.append("content", model.value.content ?? "");
 
     /* Reflection 은 별도 Aggregate(journal_reflection) 전용 등록/수정 API(POST)를 쓴다. */
@@ -256,6 +286,8 @@ async function submit() {
           rsltMap.targetReflectionList,
           rsltMap.targetLifecycleKey,
         );
+        // 스레드 상세 모달이 열려 있으면 dayList 전용 부분 패치로는 상세가 갱신되지 않으므로 상세도 재조회한다.
+        if (threadStore.detailOpen) void threadStore.refreshOpenDetail();
       } else {
         // enrichment 실패 fallback: 전체 재조회
         void refreshJournalEntryHostForRoute(journalStore, threadStore, route);

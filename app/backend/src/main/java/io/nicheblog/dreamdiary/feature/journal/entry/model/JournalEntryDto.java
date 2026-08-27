@@ -61,6 +61,7 @@ public class JournalEntryDto extends BaseAttachableDto
     private Integer mnth;
     private Boolean isHolyday;
     private String holydayNm;
+    /** 표시 정렬 순번. Entry 는 챕터 내, Reflection 은 같은 대상 아래 형제. */
     private Integer sortOrder;
 
     private String contentType;
@@ -68,6 +69,12 @@ public class JournalEntryDto extends BaseAttachableDto
     private Integer refId;
     /** Reflection target 콘텐츠 타입. 독립이면 null. */
     private ContentType refContentType;
+    /**
+     * 뷰어가 대상 일자 {@code owner_id}의 소유자인지.
+     * Reflection 쓰기 가드. 감사 {@code isCreatedBy}와 별축이다.
+     */
+    @Builder.Default
+    private Boolean isOwnedBy = false;
     /** 엔트리가 선택한 개인 말머리(0..1) */
     private PrefixDto prefix;
     /** 등록·수정 payload에서 선택한 개인 말머리 ID */

@@ -64,7 +64,7 @@
             type="button"
             class="btn btn-sm btn-light-primary btn-outlined px-3 cursor-pointer copy-split-main"
             :title="chapterHasReflections ? t('journal.copy.full.tooltip') : t('common.copy')"
-            @click="copyChapter(true)"
+            @click="copyChapter('full')"
           >
             <i class="bi bi-copy p-0"></i>
           </button>
@@ -84,7 +84,13 @@
             data-kt-menu="true"
           >
             <div class="menu-item px-3 my-1 cursor-pointer">
-              <div class="menu-link flex-stack px-3" @click="copyChapter(false)">
+              <div class="menu-link flex-stack px-3" @click="copyChapter('no-pending')">
+                {{ t('journal.copy.no-pending.label') }}
+                <i class="bi bi-copy fs-8"></i>
+              </div>
+            </div>
+            <div class="menu-item px-3 my-1 cursor-pointer">
+              <div class="menu-link flex-stack px-3" @click="copyChapter('body')">
                 {{ t('journal.copy.body.label') }}
                 <i class="bi bi-clipboard fs-8"></i>
               </div>
@@ -261,6 +267,12 @@ import { refreshJournalDaysForRoute } from "@/features/journal/utils/journalDayR
 import type { JournalChapterDto, JournalThreadEntryDto } from "@/features/journal/stores/journal";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import {
+  appendReflectionsToCopyText,
+  type CopyReflectionMode,
+  copySuccessKey,
+  JOURNAL_COPY_LINE_BREAK,
+} from "@/features/journal/utils/journalCopyReflection";
 import { findFirstNonEmptyEntry } from "@/features/journal/utils/summaryEntryPreview";
 import {
   resolveChapterAggregateLifecycle,
@@ -612,7 +624,7 @@ async function deleteChapter(): Promise<void> {
 
 /** HTML 태그 제거 후 일반 텍스트로 변환 (줄바꿈 보존) */
 /** 챕터 전체 내용을 클립보드에 복사. 형식: 날짜(요일) / 말머리 / 제목 → 각 엔트리 #순번·본문, 그 밑에 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyChapter(includeReflection = true): Promise<void> {
+async function copyChapter(mode: CopyReflectionMode = "full"): Promise<void> {
   const lines: string[] = [];
   const headerParts: string[] = [];
   if (props.chapter.stdrdDt) {
@@ -627,27 +639,17 @@ async function copyChapter(includeReflection = true): Promise<void> {
     const sortNum = entry.sortOrder != null ? "#" + String(entry.sortOrder) : "";
     /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
     const raw = htmlToPlainText(entry.content ?? entry.markdownContent ?? "");
-    if (sortNum) lines.push(sortNum);
-    if (raw) lines.push(raw);
-    /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-    if (includeReflection) {
-      for (const reflection of entry.reflectionList ?? []) {
-        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-        if (reflRaw) {
-          lines.push("");
-          lines.push(reflRaw);
-        }
-      }
-    }
+    const entryBaseText = [sortNum, raw].filter(Boolean).join(JOURNAL_COPY_LINE_BREAK);
+    /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+    const entryText = appendReflectionsToCopyText(entryBaseText, entry.reflectionList, mode);
+    if (entryText) lines.push(entryText);
     lines.push("");
   }
-  const text = lines.join("\n").trim();
+  const text = lines.join(JOURNAL_COPY_LINE_BREAK).trim();
   try {
     await navigator.clipboard.writeText(text);
-    /* 성공 토스트는 복사 범위를 명시한다: 리플렉션 포함 시 "전체", 제외 시 "본문만", 리플렉션이 없으면 공용 문구. */
-    const successKey = !includeReflection
-      ? "journal.copy.body.success"
-      : (chapterHasReflections.value ? "journal.copy.full.success" : "common.copy.success");
+    /* 성공 토스트는 복사 범위를 명시한다: 전체/보류 제외/본문만, 리플렉션이 없으면 공용 문구. */
+    const successKey = copySuccessKey(mode, chapterHasReflections.value);
     void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-chapter] clipboard copy failed", error);

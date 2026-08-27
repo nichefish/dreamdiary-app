@@ -13,7 +13,7 @@
 | 런타임 | Expo SDK 55 / React Native 0.83.2 / React 19.2.0 |
 | 내비게이션 | React Navigation v7 (`@react-navigation/native-stack`, `@react-navigation/bottom-tabs`) |
 | 상태 | React Context (`AuthContext`) |
-| 인증 | JWT HttpOnly 쿠키 (백엔드 로그인 후 자동 첨부) |
+| 인증 | JWT HttpOnly 쿠키 + SecureStore access JWT. REST는 쿠키와 Bearer를 함께 전송하고 WebSocket은 Bearer를 사용 |
 | API 클라이언트 | `src/api/client.ts` — fetch wrapper (`credentials: include`) |
 | 텍스트 유틸 | `src/utils/text.ts` — `stripHtml` (HTML 태그 제거) |
 
@@ -24,10 +24,11 @@
 ```
 앱 시작
   └─ AuthContext.mount
-        ├─ setUnauthorizedHandler 등록 (401 → 자동 로그아웃)
+        ├─ setUnauthorizedHandler 등록 (401 → 토큰 삭제 + 자동 로그아웃)
+        ├─ SecureStore access JWT → 메모리 hydrate
         └─ GET /api/auth/get-auth-account
-              ├─ 성공(세션 있음) → isAuthenticated = true → MainTabs 진입
-              ├─ 실패(401)      → isAuthenticated = false → LoginScreen 표시
+              ├─ 성공(세션 있음) → access JWT refresh → isAuthenticated = true → MainTabs 진입
+              ├─ 실패(401)      → 토큰 삭제 → isAuthenticated = false → LoginScreen 표시
               └─ 실패(403/5xx/네트워크) → authError 표시 → 다시 시도 버튼 제공
 
 세션 만료 (API 401)
@@ -36,7 +37,7 @@
         → AppNavigator 가 isAuthenticated 변경 감지 → LoginScreen 자동 전환
 ```
 
-로그아웃: `POST /api/auth/logout-json` → `setUser(null)` → LoginScreen 자동 전환
+로그아웃: `POST /api/auth/logout-json` → access JWT 삭제 → `setUser(null)` → LoginScreen 자동 전환
 
 ---
 
@@ -47,15 +48,16 @@ RootStack (headerShown: false)
   ├─ Login       (비인증 상태)
   ├─ Main        (인증 상태)
   │     └─ MainTabs (하단 탭 5개)
-│           ├─ Today    → TodayScreen    (탭 레이블: "오늘" 📖, initialRouteName, QuickCapturePanel 내장)
-│           ├─ Calendar → CalendarScreen (탭 레이블: "달력" 📅)
-│           ├─ Tag      → TagExploreScreen (탭 레이블: "태그" 🏷️)
-│           ├─ Search   → SearchScreen   (탭 레이블: "검색" 🔍)
-│           └─ Profile  → ProfileScreen  (탭 레이블: "나"   👤)
+  │           ├─ Today    → TodayScreen    (탭 레이블: "오늘" 📖, initialRouteName, QuickCapturePanel 내장)
+  │           ├─ Calendar → CalendarScreen (탭 레이블: "달력" 📅)
+  │           ├─ Tag      → TagExploreScreen (탭 레이블: "태그" 🏷️)
+  │           ├─ Search   → SearchScreen   (탭 레이블: "검색" 🔍)
+  │           └─ Profile  → ProfileScreen  (탭 레이블: "나"   👤)
   ├─ EntryDetail → EntryDetailScreen { entry, isDream }
   ├─ EntryEdit   → EntryEditScreen           { entry, isDream }  ← EntryDetail 에서 push
   ├─ InterpretationDetail → InterpretationScreen { entry }        ← EntryDetail(꿈) 에서 push
-  └─ AddEntry    → AddEntryScreen    { date }            ← TodayScreen FAB 에서 push
+  ├─ AddEntry    → AddEntryScreen    { date }            ← TodayScreen FAB 에서 push
+  └─ AiChat      → AIChatScreen                          ← QuickCapture/Profile/AddEntry 에서 push
 ```
 
 **일반적인 탐색 경로**
@@ -121,9 +123,6 @@ RootStack (headerShown: false)
 - 별도 Capture 하단 탭 제거 (`HomeScreen.tsx` 삭제)
 - ProfileScreen 보조 진입: 「AI 대화」 버튼 → `AiChat` push
 - 과거 날짜 입력: Calendar/Tag → 오늘 탭(해당 날짜) → FAB → AddEntry
-
-**TODO**
-- (완료) AIChat STOMP — `chatStomp.ts` / `useChatStomp`
 
 ---
 
@@ -218,16 +217,14 @@ JournalDay
 - 월 변경 시 재조회, 탭 포커스 시 재조회
 - API 오류 시 해당 월의 도트를 정상 빈 결과로 표시하지 않고 오류 문구와 `다시 시도` 버튼을 표시한다. 마지막 성공 월 데이터는 상태에 보존하지만 선택 월과 일치할 때만 도트 계산에 사용한다.
 
-**날짜 탭 → DayView 이동**
-- `navigation.navigate("DayView", { date: "YYYY-MM-DD" })`
-- 오늘 포함 과거 날짜만 탭 가능
-
-> **참고**: 백엔드 `viewType=MONTHLY` 지원 여부에 따라 도트 표시가 동작하지 않을 수 있음.
-> API 오류 시 달력 날짜 그리드는 유지하고 오류 문구와 재시도 동작을 제공한다. 도트는 조회 성공이 확인된 월에만 표시한다.
+**날짜 탭 → Daily 허브 이동**
+- `navigateToDailyHub(navigation, date)`가 날짜를 검증·오늘 이하로 보정한 뒤 `Today` 탭에 `{ date }`를 전달한다.
+- 오늘 포함 과거 날짜만 탭 가능하다.
+- API 오류 시 달력 날짜 그리드는 유지하고 오류 문구와 재시도 동작을 제공한다. 도트는 조회 성공이 확인된 월에만 표시한다.
 
 ---
 
-### 7. EntryEditScreen / 기록 수정 (`src/screens/EntryEditScreen.tsx`)
+### 6. EntryEditScreen / 기록 수정 (`src/screens/EntryEditScreen.tsx`)
 
 **상태**: 구현 완료
 
@@ -255,7 +252,7 @@ JournalDay
 
 ---
 
-### 8. AddEntryScreen / 기록 추가 (`src/screens/AddEntryScreen.tsx`)
+### 7. AddEntryScreen / 기록 추가 (`src/screens/AddEntryScreen.tsx`)
 
 **상태**: 구현 완료
 
@@ -301,7 +298,8 @@ JournalDay
 
 ### API 클라이언트 (`src/api/client.ts`)
 - Base URL: `API_BASE_URL` (환경 변수 또는 `src/config/env.ts` 설정)
-- 모든 요청: `credentials: "include"` (JWT 쿠키 자동 첨부)
+- 모든 요청: `credentials: "include"`로 JWT 쿠키를 첨부하고, 메모리 access JWT가 있으면 `Authorization: Bearer ...`도 전송
+- 로그인·refresh 성공 응답의 `Authorization` 헤더는 `expo-secure-store`와 메모리 캐시에 저장하며, 앱 시작 시 hydrate한 뒤 인증 계정 확인 후 refresh
 - FormData 전송 시 Content-Type 헤더 생략 (fetch가 boundary 자동 설정)
 - query 옵션의 값이 string[]이면 key[0]=v0&key[1]=v1 형태로 변환 (Spring MVC List 바인딩 대응)
 - 401 → `_onUnauthorized` 콜백 호출 → AuthContext 자동 로그아웃
@@ -333,7 +331,7 @@ JournalDay
 파일 전체 UTF-8(BOM 없음). 한글 주석·레이블 포함.
 
 
-### 9. ProfileScreen / 내 정보 (`src/screens/ProfileScreen.tsx`)
+### 8. ProfileScreen / 내 정보 (`src/screens/ProfileScreen.tsx`)
 
 **상태**: 구현 완료
 
@@ -358,9 +356,9 @@ JournalDay
 - `useFocusEffect` — 탭 포커스 시 이번 달 통계 재로드 (오늘 탭 저장 후 복귀 등)
 
 
-### 10. TagExploreScreen / 태그 탐색 (`src/screens/TagExploreScreen.tsx`)
+### 9. TagExploreScreen / 태그 탐색 (`src/screens/TagExploreScreen.tsx`)
 
-**상태**: 구현 완료 (2차)
+**상태**: 구현 완료
 
 **목적**: 웹 주간/월간 목록 상단 태그 클라우드를 모바일 전용 탐색 탭으로 분리
 
@@ -380,7 +378,7 @@ JournalDay
 
 ---
 
-### 11. SearchScreen / 검색 (`src/screens/SearchScreen.tsx`)
+### 10. SearchScreen / 검색 (`src/screens/SearchScreen.tsx`)
 
 **상태**: 구현 완료
 
@@ -410,7 +408,7 @@ JournalDay
 - 검색 결과 카드 탭 → `EntryDetail` 스택 push
 
 
-### 12. InterpretationScreen / 꿈 해석 (`src/screens/InterpretationScreen.tsx`)
+### 11. InterpretationScreen / 꿈 해석 (`src/screens/InterpretationScreen.tsx`)
 
 **상태**: 구현 완료
 
@@ -437,9 +435,8 @@ JournalDay
 - 뒤로 버튼 → goBack()
 
 ---
----
 
-### 13. AIChatScreen / AI 대화 (`src/screens/AIChatScreen.tsx`)
+### 12. AIChatScreen / AI 대화 (`src/screens/AIChatScreen.tsx`)
 
 **상태**: 구현 완료 (REST + STOMP WebSocket)
 
@@ -476,183 +473,28 @@ JournalDay
 
 ---
 
-## IA 방향 (Daily-first) — 2026-05-27
+## IA 계약 (Daily-first)
 
 > 웹(Vue) 저널은 월간/주간/태그클라우드·어사이드가 한 화면에 공존한다.
 > 모바일은 **실행(Daily)** 과 **탐색(Calendar / Tag / Search)** 을 분리하는 것이 기본 철학이다.
-> 관리자·연간결산·스레드 등 웹 관리/분석 축은 모바일 범위 밖(의도적 제외).
+> 관리자·연간결산·스레드 등 관리·분석 화면은 웹이 제공한다.
 
 ### UI 철학 (웹 vs 모바일)
 
 | 축 | 웹 | 모바일 |
 |---|---|---|
 | 기본 단위 | 주간/월간 목록 + 어사이드 필터 | **하루(DAILY)** |
-| 태그클라우드 | 목록 상단 상시 노출 가능 | **별도 탭** 또는 탐색 진입점 |
+| 태그클라우드 | 목록 상단 상시 노출 가능 | **태그 탭** |
 | 입력 | 툴바·모달·다중 뷰 전환 | FAB / 하단 시트 / 단일 포커스 |
 | 탐색 | 같은 레이아웃 안 필터 | 달력·태그·검색 탭으로 분리 |
 
-### 현재 탭 (기준선)
+### 하단 탭
 
-**현재 (안 B 적용 후)**: `오늘` · `달력` · `태그` · `검색` · `나` — 5탭.
-- 실행 축: Today 단일 (QuickCapture + FAB)
-- 탐색 축: Search + Calendar (태그 클라우드 없음)
-- AddEntry / EntryDetail 은 Stack push. 일자 조회는 오늘 탭 단일 경로
+`MainTabs`는 `오늘` · `달력` · `태그` · `검색` · `나`의 5탭이며 `Today`가 초기 탭이다.
 
----
-
-### 안 A — 탭 유지형 (재배치·라벨 정리, 구현 비용 낮음)
-
-**목표**: 기존 5탭·화면 파일 대부분 유지. 순서·이름·초기 탭만 Daily-first로 맞춘다.
-
-```
-하단 탭 (권장 순서)
-  1. 기록 (Today)     ← 앱 기본 탭 / initialRouteName
-  2. 입력 (Capture)   ← 오늘 빠른 캡처 (선택: Today FAB으로 흡수 검토)
-  3. 달력 (Calendar)
-  4. 검색 (Search)
-  5. 나 (Profile)
-```
-
-| 변경 | 내용 |
-|---|---|
-| 초기 탭 | `Today` 를 `initialRouteName` 으로 고정 |
-| 라벨 | `기록` → `오늘` 또는 `일기` (Daily 의미 명확화) |
-| Today | 상단 날짜 네비 + 목록 + FAB 유지. 태그클라우드 **미노출** |
-| Capture | 오늘 탭 QuickCapture(오늘만). 과거 입력: Calendar/Tag→오늘 탭→AddEntry |
-| 검색 | 키워드 탐색 전용. 태그 클라우드 UI는 넣지 않음 |
-| Profile | 로그아웃·통계만 (관리 기능 없음) |
-
-**Stack (변경 없음)**  
-`AddEntry` · `EntryDetail` · `EntryEdit` · `InterpretationDetail` · `AiChat`
-
-**장점**: `AppNavigator` 순서·initialRoute 변경 위주. 회귀 적음.  
-**단점**: 탭 5개 유지 → 탐색(태그) 전용 진입이 여전히 약함. Capture/Today 이중 입력 경로 잔존.
-
-**Phase (안 A)**  
-1. `initialRouteName="Today"` + 탭 순서  
-2. Today FAB = AddEntry(selectedDate) (이미 구현)  
-3. (선택) Capture를 Today 내 “빠른 입력” 시트로 점진 흡수
-
----
-
-### 안 B — 탭 교체형 (Daily 허브 + 태그 탭, 권장 목표 구조)
-
-**목표**: 하단 4~5탭을 **실행 1 + 탐색 2~3 + 계정 1** 로 재정의. 태그클라우드를 모바일 1급 기능으로 승격.
-
-```
-하단 탭 (권장 5탭)
-  1. 오늘 (DailyHub)   ← TodayScreen 확장 또는 Today=허브
-  2. 달력 (Calendar)
-  3. 태그 (TagExplore)  ← 신규: 태그 클라우드 + 태그 탭 결과 피드
-  4. 검색 (Search)      ← 키워드·타입 (태그와 역할 분리)
-  5. 나 (Profile)
-
-또는 4탭 압축:
-  오늘 | 달력 | 탐색(Tag+Search 상위 탭/세그먼트) | 나
-```
-
-**Daily 허브 (탭 1)**  
-- 기본: `viewType=DAILY` + 선택일(오늘) 목록  
-- 상단: ‹ 날짜 › · 오늘로  
-- FAB: 해당 일 `AddEntry`  
-- **태그클라우드 없음** (웹 주간/월간 헤더와 분리)
-
-**Tag 탭 (신규)**  
-- API: 웹과 동일 축 — 일자/일기/꿈 태그 (`GET /api/journal/day/tags`, `entry/tags?type=`)  
-- 기간: 선택일 또는 “이번 달” (Daily 허브의 yy/mnth와 동기화 가능)  
-- UX: 상단 태그 클라우드(또는 카테고리별 칩) → 탭 시 **검색 API** (`tagIds`) 또는 일자 목록 필터  
-- 웹의 “태그 컨텍스트 메뉴 → 새 창 검색” 대신 **같은 탭/Stack 내 결과 목록**
-
-**Capture (HomeScreen) 처리**  
-- 하단 탭에서 제거 → Daily 허브 상단 **「빠른 기록」** 버튼 또는 모달 시트  
-- AI 대화: Profile 또는 Daily 허브 보조 진입 (`AiChat` push 유지)
-
-**Calendar**  
-- 월 그리드 + 도트 → `navigateToDailyHub` → 오늘 탭 (DayView 제거 완료)
-
-**Stack**  
-- `TagEntryList` (선택): 태그 탭에서 push — `SearchScreen` 재사용 + query `tagIds`  
-- 기존 `EntryDetail` / `EntryEdit` / `InterpretationDetail` 공유
-
-**장점**: 태그·Daily·달력 역할이 명확. 웹 기능을 억지로 한 화면에 넣지 않음.  
-**단점**: `TagExploreScreen` 신규 + Capture 탭 제거에 따른 내비·스펙 변경. 구현량 안 A보다 큼.
-
-**Phase (안 B)**  
-1. Daily 허브 = initial tab + 날짜 가드 (현행 Today 강화)  
-2. `TagExploreScreen` + 태그 API 연동 + EntryDetail 연결  
-3. Capture → Daily 허브 내 빠른 입력으로 이전, 탭 5→4 검토  
-4. ~~DayScreen/TodayScreen 수렴~~ → DayView 제거, `JournalDayList` + 오늘 탭 `{ date }` 파라미터
-
----
-
-### 안 A vs 안 B (요약)
-
-| 항목 | 안 A 탭 유지형 | 안 B 탭 교체형 |
-|---|---|---|
-| 구현 비용 | 낮음 | 중~높음 |
-| Daily 중심 | 순서·초기탭으로 충분 | 구조적으로 고정 |
-| 태그클라우드 | 검색/후속 | **전용 탭** |
-| 입력 경로 | Capture 탭 유지 | Daily 허브 집중 |
-| 웹과의 관계 | 점진 수렴 | 역할 분리 명시적 |
-| 권장 | **단기 SAVEPOINT** | **중기 목표 IA** |
-
-### 권장 결론
-
-- **지금**: 안 A로 `Today` 초기 탭·라벨·역할 문서화만 해도 체감이 맞아짐.  
-- **적용 완료**: Daily 단일 경로 — DayView 제거, Calendar/Tag → 오늘 탭 `{ date }`.  
-- 공통 원칙: 모바일에서 **DAILY가 SSOT**, 태그/검색/달력은 **탐색 레이어**, 관리·연간·주간 월간 뷰는 웹 전용.
-
-
-
-### Phase B — 실사용 2차 (2026-05-28)
-
-| 항목 | 상태 | 비고 |
-|---|---|---|
-| access JWT SecureStore | ✓ | `expo-secure-store` + `hydrateAccessTokenFromSecureStore` |
-| WebSocket 토큰 후 재연결 | ✓ | `subscribeAccessToken` → `useChatStomp` `connectGeneration` |
-| EntryEdit 저장 후 스택 | ✓ | `exitAfterEntrySave` — EntryDetail 경유 시 pop(2) |
-
-### Phase C — 탐색 다듬기 (2026-05-28)
-
-| 항목 | 상태 | 비고 |
-|---|---|---|
-| Search 복귀 시 재조회 | ✓ | `useFocusEffect`로 상세/수정/삭제 후 자동 동기화 |
-| Tag 결과 오류 상태 | ✓ | 일자/엔트리 결과 영역 오류 문구 + `다시 시도` |
-| Tag 복귀 시 재조회 | ✓ | 포커스 복귀 시 선택 태그 결과 재로딩 |
-
-### Phase D — 배포/실기기 운영 정리 (2026-05-28)
-
-| 항목 | 상태 | 비고 |
-|---|---|---|
-| API URL 런타임 가이드 | ✓ | `.env.example`에 emulator/device 예시 추가 |
-| EAS preview QA 가이드 | ✓ | `README.md`에 빌드·검증 절차 명시 |
-| 실기기 네트워크 (LTE+Tailscale) | ✓ | [`run-guide.md`](./run-guide.md) |
-| 실행 가이드 MD | ✓ | [un-guide.md](./run-guide.md) |
-
-### Phase A — 실사용 안정화 (2026-05-28)
-
-| 항목 | 상태 | 비고 |
-|---|---|---|
-| WebSocket Bearer 토큰 | ✓ | `accessToken.ts` + login/refresh `captureAccessToken` |
-| 앱 시작 토큰 갱신 | ✓ | `getAuthAccount` 성공 후 `refreshAccessToken` |
-| API URL 개발 안내 | ✓ | `getApiBaseUrlDevHint()` — LoginScreen 배너 |
-| AddEntry 저장 후 복귀 | ✓ | `navigation.goBack()` — Today `useFocusEffect` refresh |
-| AddEntry 헤더 뒤로 라벨 | ✓ | `달력` → `뒤로` |
-### 구현 현황 (2026-05-28 Daily 훅 수렴)
-
-| 항목 | 상태 |
-|---|---|
-| `initialRouteName="Today"` | ✓ |
-| 탭 순서: 오늘 → 달력 → 태그 → 검색 → 나 (5탭) | ✓ |
-| `TagExploreScreen` (월간 태그 + 일자 태그 → 오늘 탭) | ✓ |
-| `searchEntries({ keyword \| tagIds })` | ✓ |
-| Capture → Daily 흡수 (QuickCapturePanel) | ✓ |
-| `JournalDayList` + `useJournalDay` + `useSelectedJournalDate` + DayView 제거 | ✓ |
-
----
-
-## 미구현 화면 (향후 계획)
-
-| 화면 | 우선순위 | 설명 |
-|---|---|---|
-| (현재 없음) | — | 핵심 모바일 화면 구현 완료. 이후는 UX 미세조정/QA 이슈 기반 보완 |
+- **실행 축**: `TodayScreen`이 선택 날짜의 Daily 허브다. 오늘에는 `QuickCapturePanel`을 표시하고 모든 날짜에 해당 날짜 기준 `AddEntry` FAB를 제공한다.
+- **탐색 축**: `CalendarScreen`은 날짜, `TagExploreScreen`은 월간 태그, `SearchScreen`은 키워드·유형으로 기록을 찾는다.
+- **일자 단일 경로**: 달력·일자 태그 결과는 `navigateToDailyHub`를 통해 `Today` 탭에 `{ date }`를 전달한다. 일자 목록은 `JournalDayList`와 `useJournalDay`가 담당한다.
+- **상세·쓰기 표면**: `AddEntry`·`EntryDetail`·`EntryEdit`·`InterpretationDetail`·`AiChat`은 RootStack에서 push한다.
+- **계정 축**: `ProfileScreen`은 계정 정보·월간 통계·AI 대화 진입·로그아웃을 제공한다.
+- **웹과의 경계**: 모바일은 Daily 실행과 달력·태그·검색 탐색을 제공하고, 관리·연간 결산·주간·월간 분석 화면은 웹이 제공한다.

@@ -184,6 +184,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   }
 
   async function syncEmbeddingQueue() {
+    if (!journalSettingEmbeddingEnabled.value) {
+      return;
+    }
     embeddingSyncRunning.value = true;
     embeddingStatsError.value = "";
     try {
@@ -212,6 +215,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   }
 
   async function requeueFailedEmbeddingQueue() {
+    if (!journalSettingEmbeddingEnabled.value) {
+      return;
+    }
     embeddingRequeueRunning.value = true;
     embeddingStatsError.value = "";
     try {

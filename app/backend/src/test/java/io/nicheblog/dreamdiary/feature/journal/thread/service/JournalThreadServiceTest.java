@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.thread.service;
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDto;
 import io.nicheblog.dreamdiary.feature.journal.thread.model.JournalThreadDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,6 +85,33 @@ class JournalThreadServiceTest {
         // Then::
         assertNotNull(modified.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
         assertEquals("test", modified.getContent(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(modified.getHistory(), "본문 변경 이력 트리거가 기록되지 않았습니다.");
+        assertNotNull(modified.getHistory().getHistoryTriggeredAt(), "본문 변경 이력 시각이 기록되지 않았습니다.");
+    }
+
+    /**
+     * 이력 복원은 본문만 교체하고 스레드 제목을 유지한다.
+     */
+    @Test
+    void restoreHistoryContent() throws Exception {
+        // Given::
+        final ServiceResponse registResult = journalThreadService.regist(journalThread);
+        final JournalThreadDto registered = (JournalThreadDto) registResult.getRsltObj();
+        final String registeredTitle = registered.getTitle();
+
+        // When::
+        final JournalThreadDto restored = journalThreadService.updtContent(
+                registered.getKey(),
+                "restored thread content",
+                HistoryType.RESTORE,
+                701
+        );
+
+        // Then::
+        assertEquals("restored thread content", restored.getContent());
+        assertEquals(registeredTitle, restored.getTitle(), "이력 복원이 제목을 변경했습니다.");
+        assertNotNull(restored.getHistory());
+        assertNotNull(restored.getHistory().getHistoryTriggeredAt());
     }
 
     /**

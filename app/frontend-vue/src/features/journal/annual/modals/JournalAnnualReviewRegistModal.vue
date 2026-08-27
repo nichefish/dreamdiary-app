@@ -35,7 +35,7 @@
                 <label class="d-flex align-items-center mb-2">
                   <span class="text-gray-700 fs-6 fw-bolder">{{ t('common.content') }}</span>
                 </label>
-                <RichEditor v-model="model.content" />
+                <RichEditor :model-value="model.content" @update:model-value="model && (model.content = $event)" />
               </div>
             </div>
             <!--end::본문-->

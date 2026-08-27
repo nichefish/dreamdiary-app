@@ -125,6 +125,7 @@ cF.ajax.request(url, options, callback, continueBlock?)
 - 인터셉터에서 401 처리 후 `AuthExpiredError` sentinel(`utils/authError.ts`)을 throw 해 각 catch 블록의 일반 오류 alert 가 중복으로 뜨지 않도록 억제한다.
 - 라우터 가드(`router/index.ts`)가 `verifyAuth()` 이후 미인증 상태를 감지한 경우에도 같은 `confirmSessionExpired()`를 거친다. 일반 보호 라우트는 확인 시 `buildSessionExpiredSignInRoute(to.fullPath)`로 이동하고, 팝업 보호 라우트는 alert 후 `next(false)`로 로그인 화면 렌더를 막는다.
 - `auth.purgeAuth()`는 로그아웃·세션 만료 시 categoryMap·개인 Prefix·메뉴와 함께 저널 태그 클라우드의 목록·오류·로딩·진행 중 요청 세대를 초기화한다. 이전 사용자 세대의 늦은 태그 클라우드 응답은 다음 사용자 상태에 반영하지 않는다.
+- 인증 해제(`isAuthenticated` true→false) 시 `App.vue`가 `v-if`로 마운트하는 전역 저널 모달(`JournalEntryRegistModal`·`JournalEntryViewModal`·`JournalThreadDetailModal`·`JournalThreadRegistModal`)이 즉시 unmount된다. 이 모달들은 Bootstrap `Modal({ backdrop: "static" })`을 사용하므로 body 직하에 append된 `.modal-backdrop`과 `body.modal-open`(overflow·padding-right 잠금)은 element 제거만으로는 걷히지 않는다. `App.vue`의 `isAuthenticated` watch가 nextTick에서 `body > .modal-backdrop`과 body 잠금을 걷어, 세션 만료로 로그인 화면에 복귀했을 때 정적 오버레이가 화면 전체를 막지 않게 한다. admin 페이지가 Vue로 직접 렌더하는 backdrop은 `#app` 하위라 이 정리 대상에서 제외한다.
 - `confirmSessionExpired()`의 일반 화면·팝업 제목, 설명, 확인·취소 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다. locale은 안내 문구만 변경하며 HTTP 상태 판정, 중복 다이얼로그 방지, 팝업 닫기, 로그인 이동·취소 분기를 변경하지 않는다.
 - 사용자 체감 로그인 유지 시간은 `auth_policy.session_timeout_minutes` 단일 정책으로 관리한다. 서버는 이 값을 Spring Session max inactive interval, JWT access token `exp`, JWT 쿠키 max-age에 적용하고, JWT 검증 시에도 `issuedAt + policyTimeout`을 넘으면 만료로 처리한다. 정책값이 없거나 조회 실패 시 기존 `server.servlet.session.timeout` 설정을 fallback으로 사용한다.
 - Vue 저널의 submit/delete/state catch는 `swalRequestError(e)`를 호출한다. 이 공통 함수가 `AuthExpiredError`를 즉시 무시하고, 그 외 오류는 콘솔에 기록한 뒤 서버 `message` 또는 현재 locale의 `common.error.processing` 공통 실패 문구를 `swalFire({ icon: "error", text })`로 표시한다.
@@ -336,7 +337,7 @@ cF.ui.swalOrConfirm(
 
 각 서비스 모듈 내부에서 `cF.ui.swalOrConfirm()` 또는 `Swal.fire({ showCancelButton: true })` 형태로 구현. 레거시 코드에서 삭제 전 확인 다이얼로그는 서비스별로 개별 구현.
 
-Vue SPA에서 Bootstrap 모달이 열린 상태의 SweetAlert2 확인 다이얼로그는 활성 모달 위에 표시한다. z-index SSOT는 `shared/utils/overlayZIndex.ts`의 `SWAL_Z`(6200)이며, `App.vue` CSS(`!important`)와 `swalFire` `didOpen` inline 강제·모달 스택 `MODAL_MAX_Z` 캡이 함께 확인창이 모달 뒤로 가려지지 않게 한다. 같은 모달 안의 TinyMCE code/link 등 보조 UI(`.tox-tinymce-aux`)는 `TINYMCE_AUX_Z`(6190)로 올려 모달(6100+)·Tagify(6120)에 가려지지 않게 하고, SweetAlert보다는 아래에 둔다.
+Vue SPA에서 Bootstrap 모달이 열린 상태의 SweetAlert2 확인 다이얼로그는 활성 모달 위에 표시한다. z-index SSOT는 `shared/utils/overlayZIndex.ts`의 `SWAL_Z`(6200)이며, `App.vue` CSS(`!important`)와 `swalFire` `didOpen` inline 강제·모달 스택 `MODAL_MAX_Z` 캡이 함께 확인창이 모달 뒤로 가려지지 않게 한다. 같은 모달 안의 TinyMCE code/link 등 보조 UI(`.tox-tinymce-aux`)는 `TINYMCE_AUX_Z`(6190)로 올려 모달(6100+)·Tagify(6120)에 가려지지 않게 하고, SweetAlert보다는 아래에 둔다. 또한 `.tox-tinymce-aux`로의 `focusin`을 `installModalStacking`이 capture 단계에서 가로채 Bootstrap 모달 FocusTrap의 포커스 회수를 면제하므로, 모달 안 에디터에서 find/replace·link 등 다이얼로그 입력창에 타이핑할 수 있다.
 
 ### 모달 닫기 버튼 확인
 
@@ -645,27 +646,19 @@ Vue 서비스 모듈에서 CRUD 완료 콜백:
 
 ---
 
-## 미리보기 패턴 (저널 엔트리 등록 모달)
+## 미리보기 패턴 (저널 엔트리·리플렉션 등록 모달)
 
-저널 엔트리 등록 모달의 미리보기 버튼:
+`JournalEntryRegistModal` / `JournalReflectionRegistModal` 푸터는 저장 왼쪽에 미리보기 버튼을 둔다.
 
 ```html
-<button type="button" class="btn btn-sm btn-light-primary me-2"
-        onclick="${entryRegPreviewHandler}"
-        data-bs-toggle="tooltip" title="미리보기">
-    <i class="bi bi-eye"></i>미리보기
+<button type="button" class="btn btn-sm btn-light-primary"
+        :title="t('journal.entry.preview.tooltip')"
+        @click="preview">
+    <i class="bi bi-eye"></i>{{ t('common.preview') }}
 </button>
 ```
 
-핸들러:
-```javascript
-// DIARY
-window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_DIARY')
-// DREAM
-window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_DREAM')
-// NOTE
-window.JournalEntryRegVueApp && JournalEntryRegVueApp.preview('JOURNAL_NOTE')
-```
+클릭 즉시 이름 있는 새 창(`/journal/entry/preview-pop`, `SystemLayout`)을 연 뒤 `POST /api/journal/entries/preview`로 미저장 HTML을 `MarkdownUtils.markdown()`한 `markdownContent`를 받아 localStorage로 전달한다. 팝업은 목록과 같은 `journal-content`와 유형별 item/content 클래스로 렌더한다. 팝업 차단 시 `common.error.popup`을 표시하고 API를 호출하지 않는다.
 
 ---
 

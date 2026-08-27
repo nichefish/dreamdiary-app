@@ -52,6 +52,8 @@
             Prefix 소비 추가 후: 말머리는 제목 앞의 색상 배지로 표시하며 제목이 없어도 말머리만 남긴다.
             접힘 시: 제목 + (collapsed)를 한 줄에 fs-7로 표시. -->
           <div v-if="entry.prefix || entry.title" class="d-flex align-items-center flex-wrap mb-1" :class="isCollapsed ? 'fs-7' : 'fw-bold fs-5'">
+            <!--begin::접힘 PENDING 표식 — 제목·말머리보다 앞(줄 맨 앞)에 둔다. 접힘+보류일 때만.-->
+            <span v-if="isCollapsed && isPending" class="fw-bold text-warning me-1">{{ t('journal.pending.todo') }}</span>
             <span
               v-if="entry.prefix"
               class="badge me-2 fs-8"
@@ -71,7 +73,7 @@
             class="journal-content p-2"
             v-html="displayMarkdownContent"
           ></div>
-          <div v-else-if="isCollapsed && !entry.prefix && !entry.title" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center">(collapsed)</div>
+          <div v-else-if="isCollapsed && !entry.prefix && !entry.title" class="text-muted fs-8 fst-italic ps-2 d-flex align-items-center"><span v-if="isPending" class="fw-bold fst-normal text-warning me-1">{{ t('journal.pending.todo') }}</span>(collapsed)</div>
           <!--end::마크다운 본문-->
         </div>
         <!--end::head-main-->
@@ -96,7 +98,7 @@
               type="button"
               class="btn btn-xs btn-icon journal-entry-action-btn copy-split-main"
               :title="copyIncludeTitle"
-              @click="copyEntry(true)"
+              @click="copyEntry('full')"
             >
               <i class="bi bi-copy fs-8"></i>
             </button>
@@ -116,7 +118,13 @@
               data-kt-menu="true"
             >
               <div class="menu-item px-3 my-1 cursor-pointer">
-                <div class="menu-link flex-stack px-3" @click="copyEntry(false)">
+                <div class="menu-link flex-stack px-3" @click="copyEntry('no-pending')">
+                  {{ t('journal.copy.no-pending.label') }}
+                  <i class="bi bi-copy fs-8"></i>
+                </div>
+              </div>
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyEntry('body')">
                   {{ t('journal.copy.body.label') }}
                   <i class="bi bi-clipboard fs-8"></i>
                 </div>
@@ -156,6 +164,15 @@
                 <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">{{ contentLabel }}</div>
               </div>
               <!--end::메뉴 헤더-->
+
+              <!--begin::저장된 엔트리 새 창 보기-->
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="openInNewWindow">
+                  {{ t('common.open-in-new-window') }}
+                  <i class="bi bi-box-arrow-up-right fs-8"></i>
+                </div>
+              </div>
+              <!--end::저장된 엔트리 새 창 보기-->
 
               <!--begin::수정-->
               <div v-if="axisWritable" class="menu-item px-3 my-1 cursor-pointer">
@@ -570,7 +587,14 @@ import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
+import {
+  appendReflectionsToCopyText,
+  type CopyReflectionMode,
+  copySuccessKey,
+  JOURNAL_COPY_LINE_BREAK,
+} from "@/features/journal/utils/journalCopyReflection";
 import { highlightKeywordsInHtml } from "@/features/journal/utils/highlightKeywords";
+import { openJournalEntryViewPopup } from "@/features/journal/utils/journalEntryViewPopup";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import JournalReflectionItem from "../../reflection/components/JournalReflectionItem.vue";
@@ -727,6 +751,7 @@ const {
   isDreamEntry,
   guardAxisWrite,
   scrollAfterFetch,
+  refreshTagCloudAfterDelete,
   t,
 });
 
@@ -741,28 +766,20 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
 }
 
 /** 엔트리 내용을 클립보드에 복사한다. 형식: 날짜(요일) → 본문 → 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyEntry(includeReflection = true): Promise<void> {
+async function copyEntry(mode: CopyReflectionMode = "full"): Promise<void> {
   const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
   const dateLine = weekDay
     ? `${props.entry.stdrdDt} (${weekDay})`
     : (props.entry.stdrdDt ?? "");
   /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
   const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
-  const parts = [dateLine, raw].filter(Boolean);
-  /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(포맷: 마커 없음). */
-  if (includeReflection) {
-    for (const reflection of reflectionList.value) {
-      const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-      if (reflRaw) parts.push("", reflRaw);
-    }
-  }
-  const text = parts.join("\n");
+  const baseText = [dateLine, raw].filter(Boolean).join(JOURNAL_COPY_LINE_BREAK);
+  /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+  const text = appendReflectionsToCopyText(baseText, reflectionList.value, mode);
   try {
     await navigator.clipboard.writeText(text);
-    /* 성공 토스트는 복사 범위를 명시한다: 리플렉션 포함 시 "전체", 제외 시 "본문만", 리플렉션이 없으면 공용 문구. */
-    const successKey = !includeReflection
-      ? "journal.copy.body.success"
-      : (reflectionList.value.length > 0 ? "journal.copy.full.success" : "common.copy.success");
+    /* 성공 토스트는 복사 범위를 명시한다: 전체/보류 제외/본문만, 리플렉션이 없으면 공용 문구. */
+    const successKey = copySuccessKey(mode, reflectionList.value.length > 0);
     void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-entry] clipboard copy failed", error);
@@ -786,6 +803,13 @@ async function copyEntryLink(): Promise<void> {
   } catch (error: unknown) {
     console.error("[journal-entry] link copy failed", error);
     void swalFire({ icon: "error", text: t("common.copy.failure") });
+  }
+}
+
+/** 저장된 엔트리 한 건을 ID 기반 읽기 전용 새 창으로 연다. */
+function openInNewWindow(): void {
+  if (!openJournalEntryViewPopup(props.entry.id)) {
+    void swalAlert(t("common.error.popup"));
   }
 }
 
@@ -890,6 +914,36 @@ function scrollAfterFetch(stdrdDt = props.entry.stdrdDt, opts: { scroll?: boolea
       const el = document.getElementById(`journal-day-${dt}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+  });
+}
+
+/**
+ * 엔트리 삭제 뒤 현재 기간의 유형별 태그 클라우드를 갱신한다.
+ * 검색 화면은 태그 클라우드를 표시하지 않으며, NOTE는 전용 태그 클라우드 섹션을 갖지 않는다.
+ */
+function refreshTagCloudAfterDelete(contentType?: string): void {
+  if (route.name === "journal-entry-search") {
+    console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신 생략", {
+      contentType,
+      routeName: route.name,
+      reason: "search-route",
+    });
+    return;
+  }
+  if (contentType === "JOURNAL_DIARY") {
+    console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신", { contentType, section: "diary" });
+    void journalStore.fetchTagCloud({ sections: ["diary"] });
+    return;
+  }
+  if (contentType === "JOURNAL_DREAM") {
+    console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신", { contentType, section: "dream" });
+    void journalStore.fetchTagCloud({ sections: ["dream"] });
+    return;
+  }
+  console.info("[JournalEntryItem] 엔트리 삭제 후 태그 클라우드 갱신 생략", {
+    contentType,
+    routeName: route.name,
+    reason: "unsupported-content-type",
   });
 }
 

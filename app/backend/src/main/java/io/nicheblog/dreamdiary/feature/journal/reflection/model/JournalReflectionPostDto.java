@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
  * Reflection(Commentary) 쓰기 DTO.
  *
  * <p>Reflection 은 별도 Aggregate(journal_reflection)이며 대상 필수(About-A)다. Primary 스트림의 peer 가
- * 아니므로 chapter·sortOrder 를 갖지 않고, 대상({@code refId}/{@code refContentType})을 필수로 싣는다.
+ * 아니므로 chapter 를 갖지 않고, 대상({@code refId}/{@code refContentType})을 필수로 싣는다. 같은 대상 아래 형제 순번은 {@code sortOrder} 가 담당한다.
  * 태그는 두지 않는다(딸린 Reflection 태그 없음, 도메인 §1.4/§5.2).</p>
  */
 @Getter
@@ -36,6 +36,11 @@ public class JournalReflectionPostDto extends BaseAttachableDto
     private Integer refId;
     /** 대상 엔티티 콘텐츠 타입 {JOURNAL_DIARY, JOURNAL_DREAM, JOURNAL_REFLECTION}. 필수. */
     private ContentType refContentType;
+    /** 같은 대상 아래 형제 정렬 순번. 등록 시 서버가 맨 뒤를 부여한다. */
+    private Integer sortOrder;
+    /** 수정 시 순번이 바뀌었는지. 서버 preModify 가 채운다. */
+    @Builder.Default
+    private Boolean isSortOrderChanged = false;
     /** 전용 테이블이라 항상 JOURNAL_REFLECTION. attachable join referencedColumnName 으로 저장. */
     @Builder.Default
     private String contentType = ContentType.JOURNAL_REFLECTION.key;

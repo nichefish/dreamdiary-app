@@ -1,6 +1,6 @@
 # Reflection 도메인 모델 (Primary vs Commentary)
 
-**상태: 확립(Established).** 이 문서는 Reflection 의 도메인 정체성(존재론·Aggregate)을 정의하는 **영구 계약**이다. 저장 방식(테이블·마이그레이션·인프라)은 이 문서의 범위가 아니다 — [reflection-persistence-proposal.md](reflection-persistence-proposal.md) 가 다룬다.
+**상태: 확립(Established).** 이 문서는 Reflection 의 도메인 정체성(존재론·Aggregate)을 정의하는 **영구 계약**이다. 저장 방식(테이블·마이그레이션·인프라)은 이 문서의 범위가 아니다 — [reflection-persistence-contract.md](reflection-persistence-contract.md) 가 다룬다.
 
 > 도메인과 영속을 분리한다: 영속 결정이 바뀌어도(예: 저장 후보 회귀) 이 문서는 거의 불변으로 남는다.
 
@@ -68,8 +68,7 @@ Diary/Dream/Note = Primary Aggregate root 들이 **supertype(공유 record shape
 - **Standalone 폐기·Promotion 없음**: About-A 의 귀결. 대상 없는 Reflection 은 오분류(교정), 큰 사유는 새 Primary 생성(Generation)이지 전이가 아니다.
 - **Entry = supertype**: Diary/Dream/Note 의 공유 record shape 이지 Reflection 을 소유하는 aggregate 가 아니다.
 
-## 5. 열린 질문 (도메인)
+## 5. 도메인 경계
 
-- **대상 삭제 정책 (잠정 · 전체 의미론 보류)**: Reflection 은 관계가 About/Reference 이므로 삭제도 **Reference 규칙**을 따른다 — 잠정 **Block(재귀) + 명시 승인 cascade(서브트리)**. 규칙은 엔티티가 아니라 **관계 타입**에 붙으며(Ownership→Cascade / Reference→Block / Classification→Unlink / Derivation→Rebuild / Attribution→Preserve), 전체 관계 생명주기 의미론은 [RELATIONSHIP_LIFECYCLE.md](../../spec/RELATIONSHIP_LIFECYCLE.md)(보류)로 미룬다. 마이그레이션 R3 이 이 잠정 Block 을 적용한다.
+- **대상 삭제 정책**: Reflection이 참조하는 대상의 삭제는 **Block(재귀)** 한다. 현재 런타임은 대상 엔트리·부모 Reflection·대상 엔트리를 포함한 챕터 삭제를 서비스 경계에서 거부한다. 여러 도메인의 삭제·복원·이동·복제·병합을 관계 타입 하나로 일반화하는 논의는 [관계 생명주기 의미론 아이디어](../../ideas/relationship-lifecycle-semantics.md)이며 이 계약의 정본이 아니다.
 - **standalone 4행 → Note 재분류(확정)**: orphan-NOTE 의 대상 없는 Reflection 은 About-A 대상이 없어 애초에 Reflection 이 아니므로 `contentType` 을 JOURNAL_NOTE 로 교정(journal_entry 잔류).
-- **chapter/thread**: chapter(정렬·소속)·thread 가 Reflection 과 독립된 **조직(organizational) aggregate**(엔트리를 id 로 참조)인지. Reflection 과 별개 축.

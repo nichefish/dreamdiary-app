@@ -3,6 +3,11 @@ package io.nicheblog.dreamdiary.feature.journal.thread.model;
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.attachable.history.model.HistoryActionModule;
+import io.nicheblog.dreamdiary.feature.attachable.history.model.HistoryDto;
+import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.prefix.model.PrefixDto;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
@@ -14,6 +19,8 @@ import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 /**
  * JournalThreadDto
@@ -29,7 +36,7 @@ import lombok.experimental.SuperBuilder;
 public class JournalThreadDto
         extends BaseAttachableDto
         implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule,
-        LifecycleCmpstnModule {
+        LifecycleCmpstnModule, HistoryCmpstnModule, HistoryActionModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_THREAD;
@@ -42,6 +49,13 @@ public class JournalThreadDto
     private String content;
 
     private String markdownContent;
+
+    /** 이력 복원 요청의 원본 이력 ID. 일반 수정이면 {@code null}. */
+    private Integer fromHistoryId;
+
+    /** 본문 변경 이력 유형. */
+    @Builder.Default
+    private String historyType = HistoryType.CHANGE.key;
 
     /** 콘텐츠당 없거나 하나만 선택하는 말머리. */
     private PrefixDto prefix;
@@ -100,6 +114,10 @@ public class JournalThreadDto
 
     public FileCmpstn file;
     public CommentCmpstn comment;
+    /** 마지막 본문 변경 이력 트리거 정보. */
+    public HistoryCmpstn history;
+    /** 이력 모달에 표시할 본문 스냅샷 목록. */
+    private List<HistoryDto> historyList;
     /** 스레드 라이프사이클. 목록·상세 enrich 가 부착 테이블에서 채운다. 없으면 OPEN. */
     public LifecycleCmpstn lifecycle;
     /** 태그 컴포지션. 스레드는 자체 태그를 소유하지 않는다(엔티티 TagEmbed 제거).

@@ -585,7 +585,9 @@ let statsTimer: number | undefined;
 const BACKGROUND_SYNC_NOTE = t("admin.page.background.queue-note");
 
 const activeTab = computed<AdminTab>(() => (route.query.tab === "ai" ? "ai" : "general"));
-const syncButtonDisabled = computed(() => store.embeddingSyncRunning || store.embeddingStats.syncRunning);
+const syncButtonDisabled = computed(
+  () => !store.journalSettingEmbeddingEnabled || store.embeddingSyncRunning || store.embeddingStats.syncRunning
+);
 const ollamaHealthBadgeClass = computed(() => {
   const status = store.ollamaHealth?.status ?? "DOWN";
   if (status === "UP") return "badge-light-success";
@@ -593,7 +595,8 @@ const ollamaHealthBadgeClass = computed(() => {
   return "badge-light-danger";
 });
 const embeddingFailedRequeueDisabled = computed(
-  () => store.embeddingRequeueRunning || store.embeddingStats.failed <= 0
+  () =>
+    !store.journalSettingEmbeddingEnabled || store.embeddingRequeueRunning || store.embeddingStats.failed <= 0
 );
 const entitySyncButtonDisabled = computed(() => store.entityQueueSyncRunning);
 const entityFailedRequeueDisabled = computed(() => store.entityQueueRequeueRunning || store.entityQueueStats.failed <= 0);

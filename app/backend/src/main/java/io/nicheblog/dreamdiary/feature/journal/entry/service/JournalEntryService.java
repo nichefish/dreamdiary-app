@@ -188,6 +188,9 @@ public class JournalEntryService
             case JOURNAL_DIARY, JOURNAL_DREAM -> this.findByRef(refId, refContentType)
                     .map(entity -> entity.getJournalChapter() != null ? entity.getJournalChapter().getJournalDayId() : null)
                     .orElse(null);
+            case JOURNAL_NOTE -> repository.findById(refId)
+                    .map(entity -> entity.getJournalChapter() != null ? entity.getJournalChapter().getJournalDayId() : null)
+                    .orElse(null);
             default -> null;
         };
     }

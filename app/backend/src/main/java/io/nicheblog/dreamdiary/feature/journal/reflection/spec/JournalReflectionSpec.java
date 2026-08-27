@@ -12,13 +12,13 @@ import java.util.Map;
  * Reflection(Commentary) Specification.
  *
  * <p>Reflection 쓰기 서비스({@code JournalReflectionService})의 조회 계약을 만족시키는 최소 spec 이다.
- * 대상 역참조 로드는 {@code JournalReflectionRepository.findAllByRefIdInOrderByCreatedAtAsc} 가 담당하며,
+ * 대상 역참조 로드는 {@code JournalReflectionRepository.findAllByRefIdInOrderBySortOrderAscIdAsc} 가 담당하며,
  * 이 spec 은 단건 상세·작성자 스코프 조회에 쓰인다.</p>
  */
 public class JournalReflectionSpec extends BaseAttachableSpec<JournalReflectionEntity> {
 
     /**
-     * 조회 후 정렬·distinct 를 설정한다. Reflection 은 created_at 오름차순으로 정렬한다.
+     * 조회 후 정렬·distinct 를 설정한다. Reflection 은 sortOrder, id 오름차순으로 정렬한다.
      *
      * @param root 조회 루트
      * @param query Criteria 쿼리
@@ -32,7 +32,7 @@ public class JournalReflectionSpec extends BaseAttachableSpec<JournalReflectionE
             final CriteriaBuilder builder,
             final Map<String, Object> searchParamMap
     ) {
-        query.orderBy(builder.asc(root.get("createdAt")));
+        query.orderBy(builder.asc(root.get("sortOrder")), builder.asc(root.get("id")));
         query.distinct(true);
     }
 

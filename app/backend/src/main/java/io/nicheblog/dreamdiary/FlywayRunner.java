@@ -17,11 +17,13 @@ import java.sql.SQLException;
  * <pre>
  *  어플리케이션 초기화 로직 수행 클래스.
  *  개발, 운영 환경에서만 실행한다.
+ *  1.0 전까지 비활성화 — SQL 마이그레이션 파일은 schema/migration/mariadb/ 에 누적하되,
+ *  실행은 수동으로 한다. 1.0 릴리스 시 @Component 복원하여 자동 실행 전환.
  * </pre>
  *
  * @author nichefish
  */
-@Component
+// @Component  // 1.0 전까지 비활성화. 마이그레이션 SQL은 파일로 누적, 적용은 수동.
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
 @Log4j2

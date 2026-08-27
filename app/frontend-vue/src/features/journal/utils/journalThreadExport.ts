@@ -1,4 +1,9 @@
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
+import {
+  appendReflectionsToCopyText,
+  type CopyReflectionMode,
+  copySuccessKey,
+} from "@/features/journal/utils/journalCopyReflection";
 import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
 import { swalFire } from "@/shared/utils/swal";
@@ -19,14 +24,14 @@ interface JournalThreadCopySource {
  * @param thread 스레드(제목)
  * @param entries 소속 엔트리 (일자 오름차순)
  * @param t 현재 locale 번역 함수 (요일 라벨용)
- * @param includeReflection 해석 포함 여부 (기본 true). 포함 시 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙인다.
+ * @param mode 복사 모드 (기본 full). 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙이며, no-pending 모드에서 보류(PENDING)는 제외한다.
  * @return 클립보드/미리보기용 평문
  */
 export function buildThreadCopyText(
   thread: JournalThreadCopySource | null | undefined,
   entries: JournalEntryDto[],
   t: (key: string) => string,
-  includeReflection = true,
+  mode: CopyReflectionMode = "full",
 ): string {
   const title = (thread?.title ?? "").trim();
   let prevDate: string | null = null;
@@ -41,14 +46,8 @@ export function buildThreadCopyText(
       prevDate = dateLabel;
     }
     block += [`#${entry.sortOrder ?? ""}`, content].join("\r\n");
-    /* 해석 포함 시에만: 이 엔트리를 target 으로 한 리플렉션 본문을 빈 줄로 이어 붙인다(마커 없음). */
-    if (includeReflection) {
-      for (const reflection of entry.reflectionList ?? []) {
-        const reflRaw = htmlToPlainText(reflection.content ?? reflection.markdownContent ?? "");
-        if (reflRaw) block += `\r\n\r\n${reflRaw}`;
-      }
-    }
-    return block;
+    /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
+    return appendReflectionsToCopyText(block, entry.reflectionList, mode);
   });
   const body = blocks.join("\r\n\r\n").trim();
   return title ? `${title}\r\n\r\n${body}`.trim() : body;
@@ -60,22 +59,20 @@ export function buildThreadCopyText(
  * @param thread 스레드(제목)
  * @param entries 소속 엔트리
  * @param t 현재 locale 번역 함수
- * @param includeReflection 해석 포함 여부 (기본 true)
+ * @param mode 복사 모드 (기본 full)
  */
 export async function copyThreadDetail(
   thread: JournalThreadCopySource | null | undefined,
   entries: JournalEntryDto[],
   t: (key: string) => string,
-  includeReflection = true,
+  mode: CopyReflectionMode = "full",
 ): Promise<void> {
-  const text = buildThreadCopyText(thread, entries, t, includeReflection);
+  const text = buildThreadCopyText(thread, entries, t, mode);
   try {
     await navigator.clipboard.writeText(text);
-    /* 성공 토스트는 복사 범위를 명시: 포함=전체, 제외=본문만. 리플렉션이 없으면 공용 문구. */
+    /* 성공 토스트는 복사 범위를 명시: 전체/보류 제외/본문만. 리플렉션이 없으면 공용 문구. */
     const hasReflection = entries.some((e) => (e.reflectionList?.length ?? 0) > 0);
-    const successKey = !includeReflection
-      ? "journal.copy.body.success"
-      : (hasReflection ? "journal.copy.full.success" : "common.copy.success");
+    const successKey = copySuccessKey(mode, hasReflection);
     void swalFire({ icon: "success", text: t(successKey) });
   } catch (error: unknown) {
     console.error("[journal-thread] clipboard copy failed", error);

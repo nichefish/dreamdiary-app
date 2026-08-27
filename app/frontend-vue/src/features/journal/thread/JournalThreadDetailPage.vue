@@ -12,7 +12,7 @@
             type="button"
             class="btn btn-sm btn-icon btn-light-primary copy-split-main"
             :title="hasThreadReflections ? t('journal.copy.full.tooltip') : t('common.copy')"
-            @click="onCopy(true)"
+            @click="onCopy('full')"
           >
             <i class="bi bi-copy"></i>
           </button>
@@ -30,7 +30,13 @@
             data-kt-menu="true"
           >
             <div class="menu-item px-3 my-1 cursor-pointer">
-              <div class="menu-link flex-stack px-3" @click="onCopy(false)">
+              <div class="menu-link flex-stack px-3" @click="onCopy('no-pending')">
+                {{ t('journal.copy.no-pending.label') }}
+                <i class="bi bi-copy fs-8"></i>
+              </div>
+            </div>
+            <div class="menu-item px-3 my-1 cursor-pointer">
+              <div class="menu-link flex-stack px-3" @click="onCopy('body')">
                 {{ t('journal.copy.body.label') }}
                 <i class="bi bi-clipboard fs-8"></i>
               </div>
@@ -74,6 +80,17 @@
           v-if="store.detailModel?.id"
           type="button"
           class="btn btn-sm btn-light-primary"
+          :disabled="!hasHistory"
+          :title="t('common.history')"
+          @click="hasHistory ? openHistory() : undefined"
+        >
+          <i class="bi bi-clock-history me-1"></i>
+          {{ t("common.history") }}
+        </button>
+        <button
+          v-if="store.detailModel?.id"
+          type="button"
+          class="btn btn-sm btn-light-primary"
           :title="t('common.mdf')"
           @click="goToEdit"
         >
@@ -106,16 +123,26 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
+import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
 import JournalThreadDetailContent from "@/features/journal/thread/components/JournalThreadDetailContent.vue";
+import type { CopyReflectionMode } from "@/features/journal/utils/journalCopyReflection";
 import { copyThreadDetail, downloadThreadDetail } from "@/features/journal/utils/journalThreadExport";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 
 const router = useRouter();
 const store = useJournalThreadStore();
+const attachableStore = useAttachableModalStore();
 const { t } = useLocaleStore();
 
-/** 독립 상세를 닫고 스레드 목록의 정식 route로 이동한다. */
+/** 현재 스레드에 본문 변경 이력이 하나 이상 존재하는지 여부. */
+const hasHistory = computed(() => !!store.detailModel?.history?.historyTriggeredAt);
+
+/** 직전 화면으로 돌아간다. 히스토리가 없으면 스레드 목록으로 이동한다. */
 function goToList(): void {
+  if (typeof window.history.state?.back === "string") {
+    router.back();
+    return;
+  }
   void router.push({ name: "thread-list" });
 }
 
@@ -128,14 +155,22 @@ function goToEdit(): void {
   }
   void router.push({ name: "thread-edit", params: { id } });
 }
+
+/** 현재 스레드의 본문 이력 모달을 연다. */
+function openHistory(): void {
+  const id = store.detailModel?.id;
+  if (!id) return;
+  void attachableStore.openHistory(store.detailModel?.contentType ?? "JOURNAL_THREAD", id);
+}
+
 /** 스레드 소속 엔트리 중 하나라도 리플렉션이 있으면 true (▾ 드롭다운 노출 조건). */
 const hasThreadReflections = computed(() =>
   store.detailEntries.some((e) => (e.reflectionList?.length ?? 0) > 0),
 );
 
-/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. (includeReflection: 해석 포함 여부) */
-function onCopy(includeReflection = true): void {
-  void copyThreadDetail(store.detailModel, store.detailEntries, t, includeReflection);
+/** 스레드 제목 + 소속 엔트리를 클립보드에 복사한다. (mode: 전체·보류 제외·본문만) */
+function onCopy(mode: CopyReflectionMode = "full"): void {
+  void copyThreadDetail(store.detailModel, store.detailEntries, t, mode);
 }
 
 /** 스레드 소속 엔트리를 서버 텍스트 내보내기로 다운로드한다. (includeReflection: 해석 포함 여부) */

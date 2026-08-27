@@ -26,7 +26,7 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 | 구분 | Vue 경로 | 레거시 매크로 대응 | 비고 |
 |------|----------|-------------------|------|
-| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. TinyMCE 런타임·플러그인·스킨은 `RichEditor` 최초 렌더 시 단일 공유 Promise로 로드하고 준비 중에는 spinner를 표시하며, 로드 실패는 앱 런타임 상태와 콘솔에 기록한다. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. 모달 안 code/link 등 `.tox-tinymce-aux`는 `TINYMCE_AUX_Z`(6190)로 Bootstrap 모달 위에 표시한다. 선택적 `enableTemplates` prop 을 켜면 툴바에 `tmplat` 메뉴버튼(드롭다운)을 노출하고, 열 때마다 `GET /api/tmplats/active`(활성 템플릿)를 조회해 선택 시 커서 위치에 `mceInsertContent`로 비파괴 삽입한다. 기본값 false 라 다른 사용처의 툴바·동작은 변하지 않는다. |
+| 리치 에디터 | `shared/ui/editor/RichEditor.vue` | TinyMCE (`cF.tinymce`) | 저널·게시판 등록 모달. TinyMCE 런타임·플러그인·스킨은 `RichEditor` 최초 렌더 시 단일 공유 Promise로 로드하고 준비 중에는 spinner를 표시하며, 로드 실패는 앱 런타임 상태와 콘솔에 기록한다. placeholder(`rich-editor.placeholder`), 이미지·접기 섹션 버튼 tooltip, 새 섹션 기본 문구, 이미지 검증·업로드 실패 문구는 에디터 초기화 시점 locale의 클라이언트 카탈로그를 사용한다. 작성 중 내용·커서 보존을 위해 locale 변경만으로 열린 TinyMCE 인스턴스를 재생성하지 않는다. 모달 안 code/link 등 `.tox-tinymce-aux`는 `TINYMCE_AUX_Z`(6190)로 Bootstrap 모달 위에 표시하며, `draggable_modal=true`로 소스 코드·링크·표 등 TinyMCE 모달을 헤더 드래그로 이동할 수 있다. `.tox-tinymce-aux`로의 focusin은 `installModalStacking`이 capture 단계에서 가로채 Bootstrap 모달 FocusTrap의 포커스 회수를 면제해, 모달 안에서 find/replace 등 다이얼로그 입력창 타이핑이 막히지 않는다. 선택적 `enableTemplates` prop 을 켜면 툴바에 `tmplat` 메뉴버튼(드롭다운)을 노출하고, 열 때마다 `GET /api/tmplats/active`(활성 템플릿)를 조회해 선택 시 커서 위치에 `mceInsertContent`로 비파괴 삽입한다. 기본값 false 라 다른 사용처의 툴바·동작은 변하지 않는다. |
 | 태그 입력 | `shared/ui/tag/TagifyEditor.vue` + `shared/utils/tagifyHelper.ts` | Tagify (`cF.tagify` init / initWithCtgr / initMeta) | ✓ 레거시 카테고리·메타 2단계 흐름 이식. Tagify 런타임과 기본 스타일은 `TagifyEditor` 최초 렌더 시 단일 공유 Promise로 로드하고 준비 중에는 spinner를 표시하며, 로드 실패는 앱 런타임 상태와 콘솔에 기록한다. 카테고리·메타 값 placeholder, 태그 삭제 접근성 레이블, 직접입력 선택지는 현재 locale의 클라이언트 카탈로그를 사용한다. helper는 번역 레이블을 옵션으로 주입받으며 locale 변경 시 Tagify 인스턴스를 재생성하지 않고 기존 태그·draft·포커스를 보존한다. 자동완성은 `categoryMap` 태그명 prefix를 영문 대소문자 구분 없이 비교하고 카탈로그의 원래 표기를 후보·저장에 유지한다. dropdown은 `document.body`에 append 하고 Bootstrap 모달보다 높은 z-index로 표시한다. |
 | 댓글 목록/등록 | `features/attachable/CommentListModal.vue` 등 | `list_comment`, `CommentList.modal` | `useAttachableModalStore.openCommentList` |
 | 파일 그룹 | `FileGroupListModal.vue`, `FileGroupDetail.vue`, `FileGroupSection.vue` | `list_file_group` | `openFileList`. 다운로드 레이블과 파일 크기 단위는 현재 locale의 클라이언트 카탈로그를 사용하며 다운로드 URL·클릭 흐름은 유지한다. |
@@ -52,7 +52,7 @@ Import alias: `@/features/...`, `@/shared/...`, `@/app/...`, `@metronic/...`(→
 
 `useAttachableModalStore` (`features/attachable/stores/attachableModal.ts`) 주요 API: `openCommentRegist`, `openCommentModify`, `openCommentList`, `openHistory`, `openRelated`, `openTagList`, `openTagProfile`, `openFileList`.
 `RelatedContentAddModal.vue`의 제목·필드·옵션·검색 상태·검증·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 연결 대상 검색은 선택 유형을 `DIARY|DREAM`으로 변환해 통합 `GET /api/journal/entries`를 호출하고 제목 또는 본문 일치 결과를 최신순 최대 8건 표시한다. 요청 실패는 오류 메시지로 표시해 정상 0건과 구분한다. `openRelated`는 일반 관련글(RELATED) 전용이다.
-현재 `RelatedContentAddModal.vue`와 `/api/related` API는 일기·꿈 사이의 직접 관련글 1단계 연결을 구현한다. 엔트리 관련글 행의 직접 관계 해제도 **구현 완료(✓)**다. FLOW 축은 저널 스레드 소속으로 수렴 완료되어 attachable 관련글·종단 보기 경로에 두지 않는다(`docs/migration/journal/interaction-spec.md`, `docs/migration/journal/component-spec.md`).
+현재 `RelatedContentAddModal.vue`와 `/api/related` API는 일기·꿈 사이의 직접 관련글 1단계 연결을 구현한다. 엔트리 관련글 행의 직접 관계 해제도 **구현 완료(✓)**다.
 `JournalTagProfileModal.vue`의 제목·필드·선택지·버튼·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 저장·삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다. 크기 고정(`cloudSizeLock`)은 태그클라우드에서 MAX면 `ts-9`, MIN이면 `ts-1`로 고정하며(AUTO는 빈도 산출) 엔트리 본문 태그줄에는 적용하지 않는다.
 `JournalTagListModal.vue`의 제목·빈 상태·분류·버튼·태그별 일자 목록 툴팁은 현재 locale의 클라이언트 카탈로그를 사용한다.
 `CommentRegistModal.vue`의 제목·필드·버튼·검증·확인·결과 메시지는 현재 locale의 클라이언트 카탈로그를 사용하며, 등록·수정 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
@@ -196,7 +196,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 
 **클릭 동작**: `CommentList.modal(id, contentType)` — 댓글 목록 모달 호출
 
-**현재 Vue 동등**: 미존재 (MISSING). 스레드 목록(`JournalThreadListApp`), 게시판 목록은 각 Vue 컴포넌트 내부 처리. 공통 Vue 컴포넌트로 추출 가능.
+**현재 Vue 동등**: 공통 컴포넌트는 없으며 스레드 목록(`JournalThreadListApp`)과 게시판 목록이 각 Vue 컴포넌트 내부에서 처리한다.
 
 ---
 
@@ -233,7 +233,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 **CSS 클래스**: `badge badge-secondary p-2 btn-white bg-hover-white blank blink-slow float-end`
 아이콘: `bi bi-stickies fs-5 text-noti opacity-hover`
 
-**현재 Vue 동등**: 미존재 (MISSING). 각 목록 컴포넌트 내부에 인라인으로 구현되어 있음. 공통 Vue 컴포넌트로 추출 가능.
+**현재 Vue 동등**: 공통 컴포넌트는 없으며 각 목록 컴포넌트 내부에 인라인으로 구현되어 있다.
 
 ---
 
@@ -380,7 +380,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 
 **클릭 동작**: `dF.Tag.dtlModal(tagId)` — 태그 상세 모달 호출
 
-**현재 Vue 동등**: 미존재 공통 컴포넌트 (MISSING). 스레드 목록은 `JournalThreadListApp` 내부 처리. 별도 `TagList.vue` 컴포넌트로 추출 가능.
+**현재 Vue 동등**: 공통 컴포넌트는 없으며 스레드 목록은 `JournalThreadListApp` 내부에서 처리한다.
 
 ---
 
@@ -414,7 +414,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 
 **닫기 동작**: `ModalHistory.pop()` + `data-bs-dismiss="modal"`
 
-**현재 Vue 동등**: 미존재 공통 컴포넌트 (MISSING). Vue 마이그레이션 대상 모달들은 모두 이 헤더 패턴 사용. `ModalHeader.vue` 컴포넌트 추출 권장.
+**현재 Vue 동등**: 공통 컴포넌트는 없으며 Vue 모달이 각자 이 헤더 패턴을 렌더링한다.
 
 ---
 
@@ -452,7 +452,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 
 **적용 모달**: `journal_day_dtl` (저널 일자 상세, size=xxl) — 다른 모달에서 열리는 경우
 
-**현재 Vue 동등**: 미존재 (MISSING). `ModalHeaderWithBack.vue` 컴포넌트로 추출 가능.
+**현재 Vue 동등**: 공통 컴포넌트는 없다.
 
 ---
 
@@ -507,7 +507,7 @@ cF.ui.chckboxLabel(checkboxNm, ynLabel, ynColor);
 아이콘: `bi bi-pencil-square`
 스피너: `spinner-border spinner-border-sm align-middle ms-2` (로딩 중 표시)
 
-**현재 Vue 동등**: 미존재 공통 컴포넌트. 각 모달 footer에 인라인으로 존재. `ModalBtnSave.vue` 추출 권장.
+**현재 Vue 동등**: 공통 컴포넌트는 없으며 각 모달 footer에 인라인으로 존재한다.
 
 ---
 
@@ -811,7 +811,6 @@ Pagination.fnRepage(pageNo, prevPageSize, newPageSize)  // 페이지 재계산
 | 댓글 목록 | `openCommentList` + `CommentListModal.vue` |
 | 이력 | `openHistory` + `HistoryModal.vue`. 각 이력 카드에 텍스트 복사 버튼 구현 완료 |
 | 관련글 추가 | `openRelated` + `RelatedContentAddModal.vue` — RELATED 직접 연결 ✓ |
-| FLOW 종단 보기 | 제거 — 저널 스레드 소속으로 수렴 (`docs/migration/journal/component-spec.md`) |
 | 태그 목록 | `openTagList` + `JournalTagListModal.vue` |
 | 태그 프로필 | `openTagProfile` + `JournalTagProfileModal.vue` |
 | 파일 그룹 | `FileGroup` 계열 컴포넌트로 흡수한다. FTLH가 owner인 상태를 최종 상태로 보지 않는다. |
