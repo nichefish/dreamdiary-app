@@ -96,13 +96,13 @@ public class JournalThreadRestController
     }
 
     /**
-     * 월간·주간 저널 화면의 기간별 스레드 요약 조회 (Ajax).
+     * 월간·주간·연간·일간 저널 화면의 기간별 스레드 요약 조회 (Ajax).
      * <p>
-     * LIST는 {@code yy}/{@code mnth}, WEEKLY는 {@code weekStartDt}를 사용한다.
+     * LIST는 {@code yy}/{@code mnth}, WEEKLY는 {@code weekStartDt}, ANNUAL은 {@code yy}, DAILY는 {@code stdrdDt}를 사용한다.
      * 일자 화면의 표시·검색 필터와 무관한 기간 전체 활성 소속을 집계한다.
      *
-     * @param viewType LIST 또는 WEEKLY
-     * @param searchParam 월간 연·월 또는 주 시작일
+     * @param viewType LIST, WEEKLY, ANNUAL 또는 DAILY
+     * @param searchParam 연·월, 주 시작일, 연도 또는 일자
      * @return {@link ResponseEntity} -- 기간별 스레드 요약
      */
     @GetMapping(Url.JOURNAL_THREAD_PERIOD_SUMMARY)

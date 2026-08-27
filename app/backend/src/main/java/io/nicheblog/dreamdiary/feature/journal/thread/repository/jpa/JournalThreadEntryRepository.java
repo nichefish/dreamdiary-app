@@ -176,6 +176,43 @@ public interface JournalThreadEntryRepository
     );
 
     /**
+     * 일간 화면에 표시할 하루치 스레드 집계를 조회한다.
+     * <p>
+     * 월간·주간과 동일하게 현재 사용자 소유의 활성 소속·스레드·엔트리만 포함하며,
+     * 일자 목록의 키워드·챕터·일기/꿈 표시 필터는 적용하지 않아 태그클라우드와 같은 하루 전체 요약을 유지한다.
+     *
+     * @param createdBy 현재 사용자 계정명
+     * @param journalDate 조회할 일자
+     * @return 스레드별 그날 엔트리 수와 최초 등장일
+     * @see #findPeriodSummaryByMonth(String, Integer, Integer)
+     */
+    @Query("SELECT te.threadId AS threadId, " +
+            "       thread.title AS title, " +
+            "       prefix.id AS prefixId, " +
+            "       prefix.name AS prefixName, " +
+            "       prefix.color AS prefixColor, " +
+            "       prefix.activeYn AS prefixActiveYn, " +
+            "       COUNT(DISTINCT te.entryId) AS entryCount, " +
+            "       MIN(day.journalDate) AS firstEntryDate " +
+            "FROM JournalThreadEntryEntity te " +
+            "JOIN te.journalThread thread " +
+            "LEFT JOIN PrefixContentEntity prefixContent " +
+            "  ON prefixContent.refId = te.threadId " +
+            " AND prefixContent.refContentType = 'JOURNAL_THREAD' " +
+            "LEFT JOIN prefixContent.prefix prefix " +
+            "JOIN te.journalEntry entry " +
+            "JOIN entry.journalChapter chapter " +
+            "JOIN chapter.journalDay day " +
+            "WHERE te.createdBy = :createdBy " +
+            "  AND thread.createdBy = :createdBy " +
+            "  AND day.journalDate = :journalDate " +
+            "GROUP BY te.threadId, thread.title, prefix.id, prefix.name, prefix.color, prefix.activeYn")
+    List<JournalThreadPeriodSummaryProjection> findPeriodSummaryByStdrdDt(
+            final @Param("createdBy") String createdBy,
+            final @Param("journalDate") LocalDate journalDate
+    );
+
+    /**
      * 연간 결산 화면에 표시할 기간별 스레드 집계를 조회한다.
      *
      * @param createdBy 현재 사용자 계정명

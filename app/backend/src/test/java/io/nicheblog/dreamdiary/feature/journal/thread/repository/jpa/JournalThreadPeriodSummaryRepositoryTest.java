@@ -145,6 +145,33 @@ class JournalThreadPeriodSummaryRepositoryTest {
         assertEquals(LocalDate.of(2026, 7, 31), result.get(0).getFirstEntryDate());
     }
 
+    /** 일간 집계는 지정한 일자의 엔트리만 세고 다른 날·다른 사용자 소속을 제외한다. */
+    @Test
+    void findPeriodSummaryByStdrdDtAggregatesOnlyEntriesOnDate() {
+        final LocalDate targetDate = LocalDate.of(2026, 7, 6);
+        final JournalThreadEntity thread = saveThread("일간 스레드", FIXTURE_USERNAME);
+        final JournalThreadEntity otherThread = saveThread("다른 사용자 일간 스레드", OTHER_USERNAME);
+
+        final JournalEntryEntity firstOnDate = saveEntry(targetDate, targetDate, FIXTURE_USERNAME);
+        final JournalEntryEntity secondOnDate = saveEntry(targetDate, targetDate, FIXTURE_USERNAME);
+        final JournalEntryEntity otherDate = saveEntry(LocalDate.of(2026, 7, 7), targetDate, FIXTURE_USERNAME);
+        final JournalEntryEntity otherUserSameDate = saveEntry(targetDate, targetDate, OTHER_USERNAME);
+
+        saveMembership(thread.getId(), firstOnDate.getId(), FIXTURE_USERNAME);
+        saveMembership(thread.getId(), secondOnDate.getId(), FIXTURE_USERNAME);
+        saveMembership(thread.getId(), otherDate.getId(), FIXTURE_USERNAME);
+        saveMembership(otherThread.getId(), otherUserSameDate.getId(), OTHER_USERNAME);
+        journalThreadEntryRepository.flush();
+
+        final List<JournalThreadPeriodSummaryProjection> result =
+                journalThreadEntryRepository.findPeriodSummaryByStdrdDt(FIXTURE_USERNAME, targetDate);
+
+        assertEquals(1, result.size());
+        assertEquals(thread.getId(), result.get(0).getThreadId());
+        assertEquals(2L, result.get(0).getEntryCount().longValue());
+        assertEquals(targetDate, result.get(0).getFirstEntryDate());
+    }
+
     /** 기간 집계 테스트용 가상 스레드를 저장한다. */
     private JournalThreadEntity saveThread(final String title, final String username) {
         useAuditor(username);

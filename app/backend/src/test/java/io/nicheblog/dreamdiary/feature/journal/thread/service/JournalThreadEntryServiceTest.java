@@ -272,6 +272,40 @@ class JournalThreadEntryServiceTest {
         verify(repository, never()).findPeriodSummaryByMonth(any(), any(), any());
     }
 
+    /** 일간 집계는 그날 스레드를 엔트리 수 내림차순·스레드 ID 순으로 정렬한다. */
+    @Test
+    void getPeriodSummaryOrdersDailyThreadsByEntryCount() throws Exception {
+        final LocalDate targetDate = LocalDate.of(2026, 7, 6);
+        final List<JournalThreadPeriodSummaryProjection> summaries = List.of(
+                periodSummary(23, "세 번째 스레드", 1, targetDate),
+                periodSummary(22, "두 번째 스레드", 3, targetDate),
+                periodSummary(21, "첫 번째 스레드", 3, targetDate)
+        );
+        when(repository.findPeriodSummaryByStdrdDt(FIXTURE_USERNAME, targetDate))
+                .thenReturn(summaries);
+
+        final List<JournalThreadPeriodSummaryDto> result = service.getPeriodSummary(
+                JournalDayViewType.DAILY,
+                JournalDaySearchParam.builder().stdrdDt("2026-07-06").build()
+        );
+
+        assertEquals(List.of(21, 22, 23), result.stream()
+                .map(JournalThreadPeriodSummaryDto::getThreadId)
+                .toList());
+        verify(repository).findPeriodSummaryByStdrdDt(FIXTURE_USERNAME, targetDate);
+    }
+
+    /** 일간 기준일이 없거나 잘못되면 repository를 호출하기 전에 거부한다. */
+    @Test
+    void getPeriodSummaryRejectsInvalidDailyDate() {
+        assertThrows(IllegalArgumentException.class, () -> service.getPeriodSummary(
+                JournalDayViewType.DAILY,
+                JournalDaySearchParam.builder().stdrdDt(" ").build()
+        ));
+
+        verify(repository, never()).findPeriodSummaryByStdrdDt(any(), any());
+    }
+
     /** 타인 소유 스레드에는 소속을 등록할 수 없다. */
     @Test
     void registRejectsThreadNotOwnedByCurrentUser() {

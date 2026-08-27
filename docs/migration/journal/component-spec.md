@@ -81,11 +81,12 @@
 
 ### 18-1. `JournalPeriodThreadSummary` (기간별 스레드 요약)
 
-**신규 기능**: 레거시 대응 없음. 월간·주간 태그클라우드 아래에서 현재 조회 기간에 엔트리가 등장한 스레드를 요약한다.
+**신규 기능**: 레거시 대응 없음. 월간·주간·연간·일간 태그클라우드 아래에서 현재 조회 기간에 엔트리가 등장한 스레드를 요약한다.
 
 **표시 계약**:
 - 주간은 해당 `weekStartDt`의 스레드를 기간 내 최초 엔트리 일자순으로 모두 표시한다.
 - 월간은 해당 `yy`/`mnth`의 스레드를 기간 내 엔트리 수 내림차순, 최초 엔트리 일자순으로 표시하며 처음 10개 이후는 펼치기로 노출한다.
+- 일간은 URL `stdrdDt` 그날 하루의 스레드를 엔트리 수 내림차순·스레드 ID순으로 모두 표시한다(일간 태그클라우드와 같은 하루 축, 펼치기 미적용).
 - 집계는 일기/꿈 표시·키워드·챕터 필터와 무관한 기간 전체를 대상으로 한다. 현재 필터가 적용된 `store.dayList`를 클라이언트에서 재집계하지 않는다.
 - 같은 스레드의 엔트리 수는 전체 소속 수가 아니라 조회 기간 안의 소속 엔트리 수다.
 - 스레드가 없는 기간에는 요약 행을 표시하지 않는다. 스레드 선택 시 현재 기간 화면을 유지하고 전역 `JournalThreadDetailModal`을 직접 연다.
@@ -95,10 +96,11 @@
 - 주간 파라미터: `viewType=WEEKLY&weekStartDt=YYYY-MM-DD`
 - 월간 파라미터: `viewType=LIST&yy=YYYY&mnth=M`
 - 연간 파라미터: `viewType=ANNUAL&yy=YYYY`
+- 일간 파라미터: `viewType=DAILY&stdrdDt=YYYY-MM-DD`
 - 응답 항목: `threadId`, `title`, nullable `prefix`(`id`, `name`, `color`, `activeYn`), `entryCount`, `firstEntryDate`
 - 기간 집계는 현재 사용자 소유의 활성 스레드·활성 소속·활성 엔트리만 포함한다.
 
-**현재 구현 상태**: ✓ 구현 완료 — 기간 집계 DTO·repository·service와 `GET /api/journal/threads/period-summary`, `useJournalThreadStore`의 기간별 조회 상태·이전 요청 폐기, `JournalPeriodThreadSummary` UI·월간 10개 이후 펼치기를 구현한다. 기간 집계는 `prefix_content`를 LEFT JOIN해 스레드의 nullable Prefix를 함께 반환하고, 공통 요약 버튼은 스레드 목록과 같은 이름·색 배지를 제목 앞에 표시한다. Prefix가 없으면 제목만 표시하며 비활성 과거 Prefix도 연결이 남아 있으면 표시한다. 조회 실패는 빈 기간으로 가장하지 않고 오류 문구를 표시한다. 행 라벨은 기간 문맥이 화면에 있으므로 `스레드`다. 엔트리 소속 추가·해제·새 스레드 생성과 엔트리 삭제 성공 시 `JournalEntryItem`이 `JournalThreadStore.refreshPeriodSummary()`를 호출해 마지막 조회 조건으로 이 요약을 재조회한다(store가 조건 보유, 요약 컴포넌트는 언마운트 시 조건을 비워 비활성 재조회 방지). 연간 결산(`JournalAnnualDetail`)도 같은 컴포넌트를 재사용한다 — day store 대신 옵셔널 `query` prop(`{ viewType: "ANNUAL", yy }`)을 받으면 그걸 쓰고 없으면 기존처럼 day store에서 파생한다. ANNUAL은 `GET /journal/threads/period-summary?viewType=ANNUAL&yy=`(백엔드 `findPeriodSummaryByYear`, 월간과 동일 엔트리 수 내림차순 정렬)로 그 해 전체 스레드를 집계하고 월간처럼 10개 초과 펼치기를 적용한다.
+**현재 구현 상태**: ✓ 구현 완료 — 기간 집계 DTO·repository·service와 `GET /api/journal/threads/period-summary`, `useJournalThreadStore`의 기간별 조회 상태·이전 요청 폐기, `JournalPeriodThreadSummary` UI·월간 10개 이후 펼치기를 구현한다. 기간 집계는 `prefix_content`를 LEFT JOIN해 스레드의 nullable Prefix를 함께 반환하고, 공통 요약 버튼은 스레드 목록과 같은 이름·색 배지를 제목 앞에 표시한다. Prefix가 없으면 제목만 표시하며 비활성 과거 Prefix도 연결이 남아 있으면 표시한다. 조회 실패는 빈 기간으로 가장하지 않고 오류 문구를 표시한다. 행 라벨은 기간 문맥이 화면에 있으므로 `스레드`다. 엔트리 소속 추가·해제·새 스레드 생성과 엔트리 삭제 성공 시 `JournalEntryItem`이 `JournalThreadStore.refreshPeriodSummary()`를 호출해 마지막 조회 조건으로 이 요약을 재조회한다(store가 조건 보유, 요약 컴포넌트는 언마운트 시 조건을 비워 비활성 재조회 방지). 연간 결산(`JournalAnnualDetail`)도 같은 컴포넌트를 재사용한다 — day store 대신 옵셔널 `query` prop(`{ viewType: "ANNUAL", yy }`)을 받으면 그걸 쓰고 없으면 기존처럼 day store에서 파생한다. ANNUAL은 `GET /journal/threads/period-summary?viewType=ANNUAL&yy=`(백엔드 `findPeriodSummaryByYear`, 월간과 동일 엔트리 수 내림차순 정렬)로 그 해 전체 스레드를 집계하고 월간처럼 10개 초과 펼치기를 적용한다. 일간(`journal-daily`/`journal-daily-tab`)은 day store의 `viewType=DAILY`·`dailyStdrdDt`에서 `{ viewType: "DAILY", stdrdDt }`를 파생해 `GET /journal/threads/period-summary?viewType=DAILY&stdrdDt=`(백엔드 `findPeriodSummaryByStdrdDt`)로 그날 하루 스레드를 집계한다. 하루라 최초 등장일이 같아 엔트리 수·스레드 ID순으로 정렬하고, 태그클라우드 하루 축과 일치하며 펼치기는 적용하지 않는다.
 
 ---
 
