@@ -197,7 +197,7 @@
 | 저널 일자 등록 | 상단 「저널 일자 등록」 버튼 | `JournalDayRuntimeService` (`data-journal-day-action=reg-modal`) | `JournalDayRegistModal` 신규 등록 오픈 (`openDayRegist()`) |
 | 사이드 필터 열기 | aside 숨김 시 상단 툴바 맨 오른쪽 버튼 | — | `asideStore.show()`로 사이드 필터를 표시. 데스크톱에서는 sticky 툴바와 함께 고정 헤더 아래를 따라가며, 모바일에서는 본문 우상단 전용 버튼을 유지 |
 
-**레이아웃 전역 툴바** (`JournalDayViewToolbar.vue`): 고급필터(사이드 패널 토글)·태그 카테고리 동기화·저널 일자 등록·aside 열기 — SPA ✓. 일정 등록·개인 일정은 저널 맥락을 전달하지 않는 중복 진입점이므로 일정 화면에서만 제공한다 (`docs/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
+**레이아웃 전역 툴바** (`JournalDayViewToolbar.vue`): 고급필터(사이드 패널 토글)·태그 카테고리 동기화·저널 일자 등록·aside 열기 — SPA ✓. 일정 등록·개인 일정은 저널 맥락을 전달하지 않는 중복 진입점이므로 일정 화면에서만 제공한다 (`docs/spec/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §4.1–4.3).
 
 **인증 만료 후 복귀**: 월간 VIEW 의 현재 기간은 URL query `yy`/`mnth`가 SSOT다. 월 이동, 연도 변경, 월 버튼, TODAY, Pinpoint 되돌리기는 `/journal/monthly?yy=YYYY&mnth=M` 형태로 주소를 갱신하며, 세션 만료로 로그인 화면에 이동할 때 해당 `fullPath`를 `redirect`로 넘긴다. 로그인 성공 후 동일 query로 복귀하면 `JournalDayMonthly`가 query를 store에 복원한 뒤 목록과 태그 클라우드를 조회한다.
 
@@ -1025,7 +1025,7 @@ const pinnedMnth = ref<number | null>(null);
 **레거시 소스**: `legacy/static/vue/feature/journal/day/JournalDayAsideTodoCardApp.ts`
 
 **API**:
-- 목록 조회: `GET /api/journal/todo/list?yy=&mnth=` → `rsltList: TodoRow[]`
+- 목록 조회: `GET /api/journal/todos?yy=&mnth=` → `rsltList: TodoRow[]`
 - 삭제: `DELETE /api/journal/todo/{id}`
 - 등록: 별도 모달 (`#journal_todo_regist`) Bootstrap modal
 

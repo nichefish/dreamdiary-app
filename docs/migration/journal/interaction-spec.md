@@ -22,7 +22,6 @@
 | 스레드 목록 페이지 복원 | `JournalThreadList.vue` — 상세는 별도 라우트(`thread-detail`)라 목록이 재마운트되지만, `onMounted`가 `store.fetchList()`(무인자)로 store에 보존된 `currentPage`를 유지해 상세 왕복 후 진입 직전 페이지로 복원한다(재조회라 상세에서의 수정도 반영). 첫 진입은 기본 0페이지, 필터 검색·초기화(`search`/`resetFilters`)는 0페이지로 리셋. 필터는 store에 보존된다. | ✓ |
 | 꿈 복사 버튼 | `JournalDayCard.vue` — `copyDreams()`, 날짜(요일) 헤더 + 꿈 엔트리 전체 클립보드 복사 | ✓ |
 | 엔트리 복사 split 버튼 | `JournalEntryItem.vue` — `copyEntry('full'/'no-pending'/'body')`, 주 버튼=전체(해석 포함)·▾ 드롭다운=보류 해석 제외·본문만(해석 제외), 3항목 항상 노출, 날짜(요일)·본문[·target 리플렉션] 클립보드 복사 | ✓ |
-| 헤더 검색 드롭다운 | `Search.vue` — 일기/꿈 유형 선택 + debounce 검색 + 결과 링크 (`journal-entry-search`) | ✓ |
 | 메타 VIEW · 메타 컨텍스트 메뉴 | `metaContextMenu.ts` + `JournalMetaContextMenu.vue` — 헤더 `#메타` 클릭 시 팝업(태그 메뉴와 동일 UI); 현재 locale 메뉴로 「그래프로 보기」→ `addMetaToGraph`(최대 2·이미 있으면 비활성, 제한 경고도 현재 locale), 「검색」→ `openDayFilterModal`(`JournalDayMetaModal`), 「메타 설정」→ `openMetaProfile`(`JournalMetaProfileModal`, `GET /api/journal/day/metas/{id}`) | ✓코드 |
 | 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
 | Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
@@ -687,28 +686,6 @@ target 리플렉션 본문 평문 (full·no-pending 모드에서만, 리플렉�
 ```
 
 **구현**: 위 「복사 계약」을 따른다. 소스는 `content ?? markdownContent` 로 저작 원문 `content` 를 우선하며, `htmlToPlainText` 로 구조 태그만 환원하고 사용자가 입력한 마커·문단을 보존한다. 날짜 줄은 `getWeekDayStr(stdrdDt, t)` 로 계산한다. 클립보드 성공·실패 알림은 현재 locale 카탈로그(`common.copy.success`/`common.copy.failure`)를 쓴다.
-
----
-
-### 헤더 검색 드롭다운 (Header Search Dropdown)
-
-**구현 파일**: `app/frontend-vue/src/app/layouts/default/components/search/Search.vue`
-
-**참고**: 이 파일은 `.gitignore` 경로(`/app/frontend-vue/src/app/layouts/default/components/search/`)에 포함되어 git 추적 대상이 아님.
-
-**UI 구조**:
-- 일기/꿈 유형 버튼 (`btn-primary` / `btn-info`)
-- 검색어 input (debounce 400ms 후 API 호출)
-- 결과 목록: 날짜 배지 + 80자 content snippet + 검색 페이지 링크 버튼
-- "전체 결과 보기" RouterLink → `journal-entry-search` route
-
-**검색 API**: `GET /api/journal/entries?type=DIARY|DREAM&sort=asc|desc&searchKeywords=...&tagIds=...`
-- 응답: `AjaxResponse.rsltList`
-- `type=DIARY`: 결과 행 = 일기(Primary)만. Reflection 은 별도 Aggregate(journal_reflection)이고 대상 필수(About-A)라 검색 결과 행이 되지 않는다. 대상 일기를 가리키는 Reflection 본문에 키워드가 있으면 대상 일기가 매칭된다(원문·해석 한 몸, `JournalEntrySpec#targetReflectionKeywordSubquery` 가 journal_reflection 을 EXISTS 로 조회). 태그·state 검색과 태그 클릭 팝업은 `JOURNAL_DIARY` 단일 축을 사용한다. 태그클라우드·결산·챕터 요약도 동일한 DIARY 단일 태그 축을 사용한다.
-
-**결과 클릭**: `RouterLink :to="{ name: 'journal-entry-search', query: { type, searchKeywords } }"`
-- 검색 팝업에서 직접 수정/삭제하지 않고 검색 페이지(`JournalEntrySearchPage`)로 이동
-- `JournalEntryRegistModal`은 `JournalLayout` 하위에만 마운트되므로 헤더 드롭다운에서는 모달 직접 열기 불가
 
 ---
 

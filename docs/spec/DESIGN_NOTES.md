@@ -59,7 +59,7 @@
 ### 저널 노트(journal-note)
 
 - NOTE 는 **chapter 타입**(`ChapterType.NOTE`)으로 존재한다. 현재 쓰기 경로에서 NOTE chapter 의 entry 는 `JOURNAL_DIARY` 로 저장된다(`JOURNAL_NOTE` contentType 은 예약).
-- Reflection 흡수 후 NOTE 의 추가 역할: day 없는 **orphan-NOTE 버킷 chapter** — 무소속 사유·이관 시 live target 없는 행의 착지처. 정본: `docs/migration/journal/reflection-absorption.md` §4.3.
+- Reflection 흡수 후 NOTE 의 추가 역할: day 없는 **orphan-NOTE 버킷 chapter** — 무소속 사유·이관 시 live target 없는 행의 착지처. 정본: `docs/migration/journal/reflection-domain-model.md` (§ standalone 4행 → Note 재분류).
 
 ### 저널 리플렉션(journal-reflection)
 

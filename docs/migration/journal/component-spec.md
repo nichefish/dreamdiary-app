@@ -292,7 +292,7 @@ HTML 요소:
 **API**:
 | 작업 | 엔드포인트 | 응답 |
 |------|-----------|------|
-| 목록 조회 | `GET /api/journal/todo/list?yy=&mnth=` | `{ rsltList: TodoRow[] }` |
+| 목록 조회 | `GET /api/journal/todos?yy=&mnth=` | `{ rsltList: TodoRow[] }` |
 | 삭제 | `DELETE /api/journal/todo/{id}` | `{ rslt: boolean }` |
 
 **TodoRow 모델**:
@@ -706,7 +706,7 @@ interface TodoRow {
 
 **Pinia 스토어**: `app/frontend-vue/src/features/journal/stores/selectionContextMenu.ts`
 
-**아이디어 출처**: `docs/ideas/entry-selection-context-menu.md`(계약화되어 본 스펙으로 이관)
+**연혁**: 아이디어 단계에서 계약화되어 본 스펙으로 이관되었다.
 
 **동작**: 일기/꿈 엔트리·리플렉션 본문(`.journal-content`)에서 텍스트를 드래그 선택한 채 우클릭하면 브라우저 기본 메뉴 대신 태그·메타 메뉴와 동일한 fixed 팝업을 띄운다. payload `{ text, type }`(type=DIARY|DREAM). 컴포넌트가 `document`의 `contextmenu`를 직접 가로채 판정한다.
 
@@ -733,7 +733,7 @@ interface TodoRow {
 
 **데이터**: `GET /api/journal/day/metas/{id}` → 로그인 사용자 기준 `contentSize`(JOURNAL_DAY 기록 수)를 포함한 `journalModalStore.metaProfileModel`. 컨텍스트 메뉴 seed(이름·카테고리·단위·기록 수)와 API 응답을 병합한다.
 
-**동작**: 조회 전용 모달이다(`spec/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §17.2). 태그 프로필처럼 색·메모 편집은 `meta_profile` 엔티티/API가 없으며 본 모달 범위 밖이다.
+**동작**: 조회 전용 모달이다(`docs/spec/JOURNAL_SCREEN_BEHAVIOR_SPEC.md` §17.2). 태그 프로필처럼 색·메모 편집은 `meta_profile` 엔티티/API가 없으며 본 모달 범위 밖이다.
 
 **i18n**: 모달 제목·배지·필드 레이블·조회 실패 문구·닫기 버튼은 현재 locale의 클라이언트 카탈로그를 사용한다.
 

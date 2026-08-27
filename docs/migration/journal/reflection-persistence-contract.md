@@ -1,6 +1,6 @@
 # Reflection 영속 계약
 
-> **상태: 부분 구현(⚠).** 애플리케이션의 별도 Aggregate 경로와 마스터 스키마는 구현되어 있다. 기존 DB를 같은 구조로 수렴시키는 Flyway SQL과 `journal_entry` 잔존 경로 정리는 완료되지 않았다.
+> **상태: 부분 구현(⚠).** 애플리케이션의 별도 Aggregate 경로와 마스터 스키마는 구현되어 있다. 기존 DB 수렴은 1.0 전까지 flyway 미사용 정책에 따라 transient SQL(수동 적용 후 폐기)로 처리하며, `journal_entry` 잔존 경로 정리는 완료되지 않았다.
 >
 > 도메인 정체성은 [reflection-domain-model.md](reflection-domain-model.md), 사용자 동작은 [REFLECTION_ONE_TYPE.md](../../spec/REFLECTION_ONE_TYPE.md)가 정본이다. 이 문서는 Repository·Mapper·Projection·Storage 경계를 정의한다.
 
@@ -50,12 +50,11 @@ Reflection은 Primary 엔트리의 플랫 검색 결과 행이 아니라 대상 
 | 신규 설치용 마스터 스키마 | ✓ | `schema-journal-mariadb.sql` |
 | 등록·수정 대상 존재·소유권 검증 | ⚠ | 등록은 대상 키의 null 여부만 검사하고, 수정은 저장된 대상의 소유권만 검사함 |
 | `content_type=JOURNAL_REFLECTION` 강제 | ⚠ | 애플리케이션 기본값은 있으나 DB `NOT NULL`·`CHECK`와 요청값 강제 고정이 없음 |
-| 기존 DB 생성·데이터 이동·attachable 재키잉 Flyway SQL | ❌ | `schema/migration/mariadb/`에 해당 migration 파일 없음 |
 | `journal_entry` 영속 경로 수렴 | ⚠ | target 컬럼과 Reflection 전용 분기·역참조 Repository 메서드가 남아 있음 |
 
 ## 5. 미완료 수렴 경계
 
-기존 DB 수렴은 추적 가능한 Flyway migration 파일을 필요로 한다. 이 migration은 다음을 하나의 데이터 계약으로 처리해야 한다.
+기존 DB 수렴은 1.0 전까지 flyway 미사용 정책에 따라 transient SQL(사용자 수동 적용 후 폐기, `schema/migration/mariadb/` 파일 미대상)로 처리한다. 이 수렴 SQL은 다음을 하나의 데이터 계약으로 처리한다.
 
 1. `journal_reflection` 생성과 제약·인덱스 구성
 2. `journal_entry(content_type=JOURNAL_REFLECTION)` 데이터의 대상 필수 검증과 전용 테이블 이동
@@ -63,7 +62,7 @@ Reflection은 Primary 엔트리의 플랫 검색 결과 행이 아니라 대상 
 4. 대상 없는 행의 합의된 재분류 적용
 5. 이동 검증 후 `journal_entry`의 Reflection 행과 전용 target 경로 정리
 
-재키잉 검증 기준은 [attachable-rekey-methodology.md](../attachable-rekey-methodology.md)를 따른다. 저장소에는 이 migration이 없으므로 기존 운영 DB의 적용 여부와 데이터 수렴 상태를 이 문서가 보증하지 않는다.
+재키잉 검증 기준은 [attachable-rekey-methodology.md](../attachable-rekey-methodology.md)를 따른다. 수렴 SQL은 transient라 저장소에 파일로 남지 않으며 적용은 사용자 수동 통제이므로, 기존 운영 DB의 적용 여부와 데이터 수렴 상태를 이 문서가 보증하지 않는다.
 
 애플리케이션에서도 `journal_entry.ref_id/ref_content_type`, `JournalEntryService`의 Reflection 챕터 검증 분기, `JournalEntryRepository.findAllByContentTypeAndRefIdIn` 등 전용 Aggregate와 겹치는 경로가 남아 있다. 현재 쓰기 API는 `JournalReflectionService` 단일 경로를 사용하지만, 영속 모델의 완전한 단일화에는 이 잔존 경로 제거가 필요하다.
 
