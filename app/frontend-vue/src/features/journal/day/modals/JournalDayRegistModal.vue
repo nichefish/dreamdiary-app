@@ -387,12 +387,10 @@ function refreshCurrentDayView(targetDate?: string): void {
     if (nextDt) {
       const currentDt = typeof route.query.stdrdDt === "string" ? route.query.stdrdDt.trim() : "";
       if (currentDt !== nextDt) {
-        console.log("[JournalDayRegistModal] daily stdrdDt sync", { currentDt, nextDt, routeName: route.name });
         void router.replace({ query: { stdrdDt: nextDt } });
         return;
       }
     }
-    console.log("[JournalDayRegistModal] daily refresh without scroll", { targetDate, routeName: route.name });
     void refreshJournalDaysForRoute(journalStore, route, targetDate);
     return;
   }
