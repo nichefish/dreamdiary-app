@@ -14,6 +14,7 @@
 | 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
 | 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; 각 일자는 카드형(날짜 → 메타·태그 → SUMMARY)으로 표시하고, SUMMARY 첫 non-empty 엔트리 본문(`summaryEntryHtmlOf`, SEARCH `journalChapterList` 파생)을 레거시 `collapse-3`/`expand-btn`으로 최대 3줄 미리보기한 뒤 클릭·더보기로 전체를 펼친다(접힘 중 빈 문단·여백 축소, 펼침 시 원문 유지); `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴; 태그 입력 검색 — 컨트롤 행의 태그 입력(모달 내 datalist 미표시 대응: 인라인 typeahead 미리보기; 모달 오픈·포커스 시 `journalModalStore.dayTagCategoryMap`(SSOT)과 `/api/journal/day/tags` 를 병합해 최초 1회 로드)으로 기존 태그만 AND 필터에 추가(엔트리 검색과 동일 `findKnownTagName`·categoryMap 매칭); 카탈로그에 없는 이름은 Swal 대신 인라인 안내(모달 유지), 동명 태그(다중 카테고리)는 카테고리 선택 버튼으로 분기; 모달 닫힘 시 입력·힌트·카테고리 선택 상태 초기화(카탈로그 캐시는 유지) | ✓코드 |
 | 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — 새 창 보기/lifecycle/status/수정/이력/관련글/스레드에 추가/삭제. 새 창 보기는 ID 기반 읽기 전용 popup을 열며, 선택된 `RESOLVED`를 다시 클릭하면 부모 저장·파생 상태·캐시 후처리는 유지하고 직접 연결된 미완료 Reflection의 `RESOLVED` 수렴을 다시 요청한다. | ✓ |
+| 본문 선택 우클릭 컨텍스트 메뉴 | `selectionContextMenu.ts` + `JournalSelectionContextMenu.vue` — 일기/꿈 엔트리·리플렉션 본문(`.journal-content`) 드래그 선택 후 우클릭 시 네이티브 메뉴를 가로채 「검색」·「복사」 노출; 선택 상위 엔트리 `data-journal-domain`(diary/dream)에서 검색 type 파생(리플렉션은 부모 엔트리 상속), 노트·본문 밖·선택 없음은 네이티브 유지; 검색은 툴바 전체검색과 동일한 새 창 팝업 | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 split 버튼 | `JournalChapterItem.vue` — `copyChapter('full'/'no-pending'/'body')`, 주 버튼=전체(해석 포함)·▾ 드롭다운=보류 해석 제외·본문만(해석 제외), 3항목 항상 노출, 날짜(요일)·말머리·엔트리[·target 리플렉션] 클립보드 복사 | ✓ |
 | 챕터 접힘 스레드 요약 | `JournalChapterItem.vue` — 접힌 상태에서 하위 엔트리 `threadList`를 `threadId`로 중복 제거해 태그와 함께 접힘 바깥에 스레드 버튼 표시; 클릭 시 현재 화면 위에 전역 스레드 상세 모달 열기 | ✓ |
@@ -378,6 +379,35 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 - 검색은 URL 기반 새 창으로 열어야 하며, 검색 조건은 주소로 재현 가능해야 한다.
 - 새 창 검색은 앱 내 탐색 화면이 아니므로 기본 메뉴와 저널 aside를 붙이지 않는다. route는 `SystemLayout.vue` 하위 auth route로 둔다.
 - 검색 팝업 내부 태그 클릭도 동일 컨텍스트 메뉴(`JournalTagContextMenu`)를 사용하며, `태그 설정`은 팝업 안에서 `JournalTagProfileModal`을 열 수 있어야 한다.
+
+---
+
+### 본문 선택 우클릭 컨텍스트 메뉴 (Selection Context Menu)
+
+**구현 파일**: `app/frontend-vue/src/features/journal/shared/components/JournalSelectionContextMenu.vue` + `app/frontend-vue/src/features/journal/stores/selectionContextMenu.ts` (App.vue 전역 마운트)
+
+**목표**: 일기/꿈 엔트리·리플렉션 본문에서 텍스트를 드래그 선택한 채 우클릭하면 브라우저 기본 메뉴 대신 저널 맥락 메뉴(검색·복사)를 띄운다.
+
+**가로채기 조건**(모두 충족 시에만 `preventDefault`, 하나라도 어긋나면 브라우저 기본 메뉴 유지):
+- `window.getSelection()`에 trim 후 비지 않은 선택 텍스트가 있다.
+- 선택 시작 노드(`anchorNode`)가 `.journal-content`(엔트리·리플렉션 본문) 안에 있다.
+- 그 본문의 상위 엔트리 루트 `data-journal-domain`이 `diary` 또는 `dream`으로 존재한다.
+- 선택 없음·본문 밖·노트 본문은 조건 불충족으로 네이티브 메뉴를 그대로 둔다.
+
+**도메인 파생**(`JournalEntryItem.vue`의 `journalDomain` computed → 루트 `data-journal-domain`):
+- 꿈(`isDream` 강제 또는 `contentType === 'JOURNAL_DREAM'`) → `dream`, 일기(`JOURNAL_DIARY`) → `diary`.
+- 노트(`JOURNAL_NOTE`)·리플렉션 등에는 마커를 붙이지 않는다(null → 속성 미출력). 노트 본문은 1차 대상에서 제외한다.
+- 리플렉션 본문은 자체 마커가 없어 `.closest('[data-journal-domain]')`가 부모 엔트리 도메인을 상속한다.
+
+**메뉴**: `JournalSelectionContextMenu.vue`
+- 버튼: `검색`(`common.search`), `복사`(`common.copy`)
+- 위치: 클릭 좌표 기준, viewport 안쪽으로 clamp
+- 닫기: 외부 클릭, ESC, scroll/resize
+- 리스너: 컴포넌트가 `document`의 `contextmenu`/`click`/`keydown`과 `window` scroll/resize를 mount 시 등록하고 unmount 시 해제한다.
+
+**검색 액션**: 파생 type과 선택 텍스트를 키워드로 새 창 전체검색 팝업을 연다. `assertAuthenticatedBeforePopup(router, route)` 확인 후 `window.open(joinAppBasePath('/journal/entry/search?type={type}&searchKeywords={선택}'), 'journal-entry-search-{type}', ...)`. 툴바 전체검색(`openSearchTab`)과 동일한 팝업 진입 계약을 따른다.
+
+**복사 액션**: 선택 평문을 그대로 `navigator.clipboard.writeText`로 복사하고 `common.copy.success`/`common.copy.failure` 토스트를 표시한다. 엔트리 복사(저작 소스텍스트 계약)와 달리 사용자가 드래그한 텍스트 그대로를 담는다.
 
 ---
 

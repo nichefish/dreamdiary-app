@@ -9,6 +9,7 @@
     :data-resolved="isResolved ? 'Y' : 'N'"
     :data-lifecycle="lcKey || 'OPEN'"
     :data-else-dream="isElseDream ? 'Y' : 'N'"
+    :data-journal-domain="journalDomain"
     :data-stdrd-dt="entry.stdrdDt"
     :data-yy="entryCacheYy"
     :data-mnth="entryCacheMnth"
@@ -630,6 +631,18 @@ const { t } = useLocaleStore();
 
 /** 현재 엔트리가 꿈 유형인지 여부. 꿈 RESOLVED 전용 보라색 표시 계약에 사용한다. */
 const isDreamEntry = computed(() => props.isDream || props.entry.contentType === "JOURNAL_DREAM");
+
+/**
+ * 본문 선택 우클릭 검색의 도메인 파생 마커.
+ * 꿈(강제 isDream 또는 JOURNAL_DREAM)→'dream', 일기(JOURNAL_DIARY)→'diary'로 매긴다.
+ * 노트·리플렉션 등에는 마커를 붙이지 않아(null) 선택 컨텍스트 메뉴가 뜨지 않는다.
+ * 리플렉션 본문은 부모 엔트리 루트의 이 마커를 `.closest`로 상속한다.
+ */
+const journalDomain = computed<string | null>(() => {
+  if (props.isDream || props.entry.contentType === "JOURNAL_DREAM") return "dream";
+  if (props.entry.contentType === "JOURNAL_DIARY") return "diary";
+  return null;
+});
 
 const parentDayResolvedAxis = useJournalDayResolved();
 const mergedDayResolvedAxis = computed(() =>

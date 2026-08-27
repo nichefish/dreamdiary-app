@@ -13,6 +13,7 @@
   -->
   <JournalThreadDetailModal v-if="authStore.isAuthenticated" />
   <JournalThreadRegistModal v-if="authStore.isAuthenticated" />
+  <JournalSelectionContextMenu v-if="authStore.isAuthenticated" />
   <AppRuntimeStatus />
 </template>
 
@@ -25,6 +26,7 @@ import JournalEntryRegistModal from "@/features/journal/entry/modals/JournalEntr
 import JournalEntryViewModal from "@/features/journal/entry/modals/JournalEntryViewModal.vue";
 import JournalThreadDetailModal from "@/features/journal/thread/modals/JournalThreadDetailModal.vue";
 import JournalThreadRegistModal from "@/features/journal/thread/modals/JournalThreadRegistModal.vue";
+import JournalSelectionContextMenu from "@/features/journal/shared/components/JournalSelectionContextMenu.vue";
 import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";

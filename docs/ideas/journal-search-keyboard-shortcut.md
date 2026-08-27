@@ -19,4 +19,4 @@
 - 실제로 만들지 여부 자체가 미정.
 
 ## 관련
-- 본문 선택 우클릭 컨텍스트 메뉴 아이디어(`entry-selection-context-menu.md`)의 "검색"과 진입점을 공유할 수 있음.
+- 본문 선택 우클릭 컨텍스트 메뉴는 계약화되어 구현됨(`docs/migration/journal/interaction-spec.md` §본문 선택 우클릭 컨텍스트 메뉴). 이 단축키도 같은 전체검색 진입점을 공유할 수 있음.

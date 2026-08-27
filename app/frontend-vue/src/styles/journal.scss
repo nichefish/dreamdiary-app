@@ -1106,6 +1106,16 @@ $journal-dream-paired-states: (
             background: #ffedd5;
         }
     }
+
+    &--copy {
+        background: transparent;
+        color: #334155;
+        margin-top: 4px;
+
+        &:hover {
+            background: #f1f5f9;
+        }
+    }
 }
 
 .journal-entry-regist-modal__body {

@@ -698,6 +698,33 @@ interface TodoRow {
 
 ---
 
+### 23-3a2. `JournalSelectionContextMenu` (본문 선택 우클릭 컨텍스트 메뉴)
+
+**Vue 구현**: `app/frontend-vue/src/features/journal/shared/components/JournalSelectionContextMenu.vue`
+
+**Pinia 스토어**: `app/frontend-vue/src/features/journal/stores/selectionContextMenu.ts`
+
+**아이디어 출처**: `docs/ideas/entry-selection-context-menu.md`(계약화되어 본 스펙으로 이관)
+
+**동작**: 일기/꿈 엔트리·리플렉션 본문(`.journal-content`)에서 텍스트를 드래그 선택한 채 우클릭하면 브라우저 기본 메뉴 대신 태그·메타 메뉴와 동일한 fixed 팝업을 띄운다. payload `{ text, type }`(type=DIARY|DREAM). 컴포넌트가 `document`의 `contextmenu`를 직접 가로채 판정한다.
+
+**가로채기 조건**(모두 충족 시에만 `preventDefault`): 선택 텍스트 존재 · `anchorNode`가 `.journal-content` 내부 · 상위 엔트리 `data-journal-domain`이 `diary`/`dream`. 노트 본문·본문 밖·선택 없음은 네이티브 메뉴를 유지한다. 도메인 마커는 `JournalEntryItem.vue`의 `journalDomain` computed가 루트에 부여하며, 리플렉션은 부모 엔트리 마커를 `.closest('[data-journal-domain]')`로 상속한다.
+
+**메뉴 액션**:
+
+| 액션 | 동작 |
+|------|------|
+| 검색 | 파생 type·선택 텍스트로 새 창 전체검색 팝업 (`assertAuthenticatedBeforePopup` → `window.open(joinAppBasePath('/journal/entry/search?type=..&searchKeywords=..'))`), 툴바 전체검색과 동일 계약 |
+| 복사 | 선택 평문 그대로 `navigator.clipboard.writeText` + `common.copy.success`/`common.copy.failure` 토스트 |
+
+버튼 라벨은 `common.search`/`common.copy`. 위치는 클릭 좌표 기준 viewport clamp, 닫기는 외부 클릭·ESC·scroll/resize.
+
+**마운트 위치**: `App.vue` — `<JournalSelectionContextMenu v-if="authStore.isAuthenticated" />` (전역 1회, Teleport to body). `.journal-content`·도메인 마커 가드로 저널 밖 화면에서는 자연히 비활성이다.
+
+**현재 Vue 동등**: ✓ 구현 완료
+
+---
+
 ### 23-3b. `JournalMetaProfileModal` (메타 설정 모달)
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/shared/modals/JournalMetaProfileModal.vue`
