@@ -3,7 +3,11 @@ package io.nicheblog.dreamdiary.feature.journal.entry.controller;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagSearchParam;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryBulkTagReqDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryBulkTagResDto;
+import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryBulkTagUndoReqDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryTagQuery;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryBulkTagService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.my.JournalEntryMyTagService;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.policy.JournalEntryTypeResolver;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -17,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,6 +46,7 @@ public class JournalEntryTagRestController
 
     private final JournalEntryMyTagService journalEntryMyTagService;
     private final JournalEntryTypeResolver typeResolver;
+    private final JournalEntryBulkTagService journalEntryBulkTagService;
 
     /**
      * 엔트리 태그 카테고리 맵을 조회한다.
@@ -73,6 +80,44 @@ public class JournalEntryTagRestController
             final @RequestParam("type") String type
     ) throws Exception {
         return doTagListAjax(searchParam, typeResolver.resolveByRawType(type));
+    }
+
+    /**
+     * 선택 엔트리들에 기존 태그를 일괄 추가·제거한다.
+     *
+     * @param req 작업 종류(ADD/REMOVE)·콘텐츠 타입·엔트리/태그 ID 목록
+     * @return Ajax 응답 (실제 변경 연결 쌍과 집계)
+     * @throws Exception 검증 실패(빈 선택·상한·미존재·소유권·완결·태그 미소속) 또는 처리 예외
+     */
+    @PostMapping(Url.JOURNAL_ENTRIES_TAGS_BULK)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> bulkTagAjax(
+            final @RequestBody JournalEntryBulkTagReqDto req
+    ) throws Exception {
+        final JournalEntryBulkTagResDto result = journalEntryBulkTagService.bulkTag(req);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(result));
+    }
+
+    /**
+     * 직전 일괄 태그 작업을 되돌린다(원 작업의 역연산).
+     *
+     * @param req 원 작업 종류·콘텐츠 타입·되돌릴 연결 쌍
+     * @return Ajax 응답 (역연산된 연결 쌍과 집계)
+     * @throws Exception 검증 실패 또는 처리 예외
+     */
+    @PostMapping(Url.JOURNAL_ENTRIES_TAGS_BULK_UNDO)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> bulkTagUndoAjax(
+            final @RequestBody JournalEntryBulkTagUndoReqDto req
+    ) throws Exception {
+        final JournalEntryBulkTagResDto result = journalEntryBulkTagService.undoBulkTag(req);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage("common.result.success");
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(result));
     }
 
     /**

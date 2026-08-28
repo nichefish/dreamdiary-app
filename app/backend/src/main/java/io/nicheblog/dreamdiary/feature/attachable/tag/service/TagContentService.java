@@ -151,17 +151,33 @@ public class TagContentService
 
     /**
      * 특정 게시물에 대해 태그-컨텐츠 목록 추가.
+     * <p>
+     * 유니크 키 {@code uk_tag_content_pair}(deleted_at 제외)를 지키기 위해 새 INSERT 대신
+     * 기존 연결을 먼저 조회한다. 소프트 삭제된 동일 연결은 복원하고, 이미 활성인 연결은
+     * 멱등 no-op 으로 다룬다. (related_content·journal_thread_entry 와 동일한 복원 관례)
      *
      * @param attachableKey 참조 복합키 정보 (BaseAttachableKey)
      * @param rsList 처리할 태그 엔티티 목록
-     * @return {@link List} -- 등록된 태그-컨텐츠 엔티티 목록
+     * @return {@link List} -- 등록·복원된 태그-컨텐츠 엔티티 목록
      */
     @Transactional
     public List<TagContentEntity> addTagContents(final BaseAttachableKey attachableKey, final List<TagEntity> rsList) throws Exception {
-        final List<TagContentEntity> tagContentList = rsList.stream()
-                .map(tag -> new TagContentEntity(tag.getId(), attachableKey))
-                .collect(Collectors.toList());
-        return this.registAll(tagContentList);
+        final String createdBy = AuthUtils.getLoginUsername();
+        final List<TagContentEntity> result = new ArrayList<>();
+        for (final TagEntity tag : rsList) {
+            final Optional<TagContentEntity> existing = repository.findAnyByPair(
+                    tag.getId(), attachableKey.getId(), attachableKey.getContentType(), createdBy);
+            if (existing.isPresent()) {
+                final TagContentEntity row = existing.get();
+                if (row.getDeletedAt() != null) {
+                    repository.reviveById(row.getId());
+                }
+                result.add(row);
+            } else {
+                result.add(repository.save(new TagContentEntity(tag.getId(), attachableKey)));
+            }
+        }
+        return result;
     }
 }
 

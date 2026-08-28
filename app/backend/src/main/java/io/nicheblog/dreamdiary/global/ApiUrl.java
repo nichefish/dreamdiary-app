@@ -64,6 +64,8 @@ public interface ApiUrl {
 
     /** 저널 엔트리(통합) */
     String JOURNAL_ENTRIES = Prefix.API + "/journal/entries";
+    String JOURNAL_ENTRIES_TAGS_BULK = Prefix.API + "/journal/entries/tags/bulk";  // 엔트리 일괄 태그 추가·제거
+    String JOURNAL_ENTRIES_TAGS_BULK_UNDO = Prefix.API + "/journal/entries/tags/bulk/undo";  // 일괄 태그 마지막 작업 되돌리기
     String JOURNAL_ENTRY = Prefix.API + "/journal/entry/{id}";
     String JOURNAL_ENTRIES_EXPORT = Prefix.API + "/journal/entries/export";
     /** 작성 중 엔트리·리플렉션 본문 미리보기 (미저장 HTML → markdownContent) */

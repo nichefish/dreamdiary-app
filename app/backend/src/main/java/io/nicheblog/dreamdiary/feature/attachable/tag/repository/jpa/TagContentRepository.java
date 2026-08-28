@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * TagContentRepository
@@ -30,10 +31,11 @@ public interface TagContentRepository
      * @param param - 삭제할 대상의 파라미터 (게시글 번호, 컨텐츠 타입, 태그 이름, 카테고리 포함)
      */
     @Modifying
-    @Query("DELETE FROM TagContentEntity ct " +
+    @Query("UPDATE TagContentEntity ct SET ct.deletedAt = CURRENT_TIMESTAMP " +
             "WHERE ct.refId = :#{#param.refId} " +
             "  AND ct.refContentType = :#{#param.refContentType} " +
             "  AND ct.createdBy = :#{#param.createdBy} " +
+            "  AND ct.deletedAt IS NULL " +
             "  AND EXISTS (SELECT 1 FROM TagEntity t " +
             "               LEFT JOIN t.tagCategory tc " +
             "               WHERE t.id = ct.tagId " +
@@ -43,6 +45,36 @@ public interface TagContentRepository
             "                      OR tc.name = :#{#param.ctgr} " +
             "                 ))")
     void deleteObsoleteTagContents(final @Param("param") TagContentParam param);
+
+    /**
+     * (tag_id, ref_id, ref_content_type, created_by) 쌍의 소프트 삭제 포함 기존 행을 조회한다.
+     * 유니크 키(uk_tag_content_pair)가 deleted_at 을 제외하므로, 재등록 시 이 조회로 복원 대상을 찾는다.
+     *
+     * @param tagId 태그 ID
+     * @param refId 참조 글 번호
+     * @param refContentType 참조 콘텐츠 타입
+     * @param createdBy 등록자 계정명
+     * @return 소프트 삭제 포함 기존 연결 (없으면 empty)
+     */
+    @Query(value = "SELECT * FROM tag_content " +
+            "WHERE tag_id = :tagId AND ref_id = :refId " +
+            "  AND ref_content_type = :refContentType AND created_by = :createdBy " +
+            "ORDER BY id LIMIT 1", nativeQuery = true)
+    Optional<TagContentEntity> findAnyByPair(
+            final @Param("tagId") Integer tagId,
+            final @Param("refId") Integer refId,
+            final @Param("refContentType") String refContentType,
+            final @Param("createdBy") String createdBy);
+
+    /**
+     * 소프트 삭제된 태그-컨텐츠 연결을 복원한다(deleted_at = NULL).
+     *
+     * @param id 복원할 연결 ID
+     * @return 갱신된 행 수
+     */
+    @Modifying
+    @Query(value = "UPDATE tag_content SET deleted_at = NULL WHERE id = :id", nativeQuery = true)
+    int reviveById(final @Param("id") Integer id);
 
     /**
      * 주어진 tag ID 목록 중 tag_content 참조가 0인 고아 태그 ID를 반환한다.
