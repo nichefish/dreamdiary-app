@@ -203,6 +203,12 @@ const weekRangeLabel = computed(() => {
 - 목록 렌더 완료 후 선택한 날짜(`val`)에 해당하는 `#journal-day-{val}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
 - 구현: 숨긴 `<input type="date">` (opacity:0, pointer-events:none) + `showPicker()` 호출.
 
+**일간/월간 월 라벨 클릭 → 날짜 선택기** (`openDayMonthPicker`/`onDayPickerChange`, `openMonthPicker`/`onMonthPickerChange`):
+- 사이드바 월 이동 컨트롤의 월 라벨(`{mnth}월`, 이전/다음 화살표 사이)을 클릭하면 주간 범위 라벨과 동일하게 브라우저 네이티브 date picker 팝업. 일간·월간·달력(CAL)·통계(META) 뷰 모두 적용된다(월 라벨 블록이 공유됨).
+- 라벨에 `text-hover-primary cursor-pointer` 를 부여하고, 화살표 사이 컨테이너를 `position-relative` 로 하여 숨긴 `<input type="date">` (opacity:0, pointer-events:none) + `showPicker()` 로 팝업한다.
+- 일간(DAILY): 팝업 표시 기준일은 현재 선택 날짜(`route.query.stdrdDt`), 없으면 해당 월 1일(`defaultMonthDate`). 날짜 선택 시 `onMiniCalendarSelect(val)` 와 동일 계약으로 그 날짜의 일간 view 로 이동한다(년/월 동기화 + `router.replace({ query: { stdrdDt } })`).
+- 월간/CAL/META: 팝업 표시 기준일은 해당 월 1일(`defaultMonthDate`). 날짜 선택 시 선택 날짜가 속한 년/월로 `syncMonthlyRouteOrFetch(yy, mnth)` 를 호출한다(월 이동 화살표 `navigateMonth` 와 동일 경로 — `journal-monthly` 는 route query 갱신, CAL/META 는 `store.yy`/`mnth` 갱신 + `fetchDays`).
+
 **주간 미니 달력 날짜 클릭 → 해당 주 이동 + 일자 카드 스크롤** (`onWeekMiniCalendarSelect`):
 - `JournalAsideMiniCalendar`(일요일 시작)에서 날짜 클릭 시 `getWeekStartDateStr(dateStr)`로 그 날이 속한 주(월요일 시작)를 구해 `syncWeeklyRouteOrFetch`로 이동한다. 다른 주를 클릭하면 주 범위 band 가 그 주로 이동한다.
 - `syncWeeklyRouteOrFetch` 호출 후 `selectedDt`(클릭한 날 강조)를 갱신하고, `#journal-day-{dateStr}` 카드가 렌더될 때까지 재시도(`scrollToDayCardWhenReady`, `nextTick`+50ms 폴링, 최대 약 1초)한 뒤 `scrollIntoView({ behavior: "smooth", block: "start" })` 한다. 같은 주 재클릭(중복 네비게이션)이어도 조기 반환하지 않고 스크롤하며, 다른 주 이동은 fetch·재렌더가 비동기라 한 tick 뒤엔 카드가 아직 없을 수 있어 렌더 완료 후에 스크롤한다.

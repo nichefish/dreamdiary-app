@@ -44,12 +44,24 @@
 
       <!--begin::일간 미니 달력 (DAILY)-->
       <template v-if="store.viewType === 'DAILY'">
-        <!--begin::월 이동 컨트롤-->
-        <div class="d-flex align-items-center justify-content-between">
+        <!--begin::월 이동 컨트롤 (월 라벨 클릭 → 네이티브 날짜 선택기, 주간 범위 라벨과 동일 패턴)-->
+        <div class="d-flex align-items-center justify-content-between position-relative">
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
-          <span class="fw-bold fs-6">{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <span
+            class="fw-bold fs-6 text-hover-primary cursor-pointer"
+            :title="t('journal.aside.date-select.tooltip')"
+            @click="openDayMonthPicker"
+          >{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <input
+            ref="dayPickerRef"
+            type="date"
+            :value="dailySelectedDate || defaultMonthDate"
+            style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+            tabindex="-1"
+            @change="onDayPickerChange"
+          />
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
@@ -70,12 +82,24 @@
 
       <!--begin::월 내비게이션 (MONTHLY/CAL/LIST)-->
       <template v-else-if="store.viewType !== 'WEEKLY'">
-        <!--begin::월 이동 컨트롤-->
-        <div class="d-flex align-items-center justify-content-between">
+        <!--begin::월 이동 컨트롤 (월 라벨 클릭 → 네이티브 날짜 선택기, 주간 범위 라벨과 동일 패턴)-->
+        <div class="d-flex align-items-center justify-content-between position-relative">
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
-          <span class="fw-bold fs-6">{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <span
+            class="fw-bold fs-6 text-hover-primary cursor-pointer"
+            :title="t('journal.aside.date-select.tooltip')"
+            @click="openMonthPicker"
+          >{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <input
+            ref="monthPickerRef"
+            type="date"
+            :value="defaultMonthDate"
+            style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+            tabindex="-1"
+            @change="onMonthPickerChange"
+          />
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
@@ -390,6 +414,9 @@ const yyOptions = Array.from({ length: currentYear - 2009 }, (_, i) => currentYe
 /** 일간(DAILY) view에서 route query.stdrdDt → 미니 달력 선택 날짜 */
 const dailySelectedDate = computed(() => (route.query.stdrdDt as string) || "");
 
+/** 일간/월간 월 라벨 날짜 선택기 표시 기준일 — 현재 store.yy/mnth 의 1일 (YYYY-MM-DD) */
+const defaultMonthDate = computed(() => `${store.yy}-${String(store.mnth).padStart(2, "0")}-01`);
+
 /** 미니 달력에 표시할 공휴일 날짜 목록 */
 const miniCalHolidays = ref<string[]>([]);
 
@@ -520,6 +547,42 @@ async function onWeekPickerChange(e: Event): Promise<void> {
   await nextTick();
   const el = document.getElementById(`journal-day-${val}`);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/** 일간 월 라벨 날짜 선택기 inputRef */
+const dayPickerRef = ref<HTMLInputElement | null>(null);
+/** 월간(MONTHLY/CAL/META) 월 라벨 날짜 선택기 inputRef */
+const monthPickerRef = ref<HTMLInputElement | null>(null);
+
+/** 일간: 월 라벨 클릭 → 날짜 선택기 열기 (표시 기준일 = 현재 선택 날짜, 없으면 해당 월 1일) */
+async function openDayMonthPicker(): Promise<void> {
+  const el = dayPickerRef.value;
+  if (el) el.value = dailySelectedDate.value || defaultMonthDate.value;
+  await nextTick();
+  (el as HTMLInputElement & { showPicker?: () => void } | null)?.showPicker?.();
+}
+
+/** 일간: 날짜 선택 → 해당 날짜 일간 view로 이동 (onMiniCalendarSelect 와 동일 계약) */
+function onDayPickerChange(e: Event): void {
+  const val = (e.target as HTMLInputElement).value;
+  if (!val) return;
+  onMiniCalendarSelect(val);
+}
+
+/** 월간: 월 라벨 클릭 → 날짜 선택기 열기 (표시 기준일 = 해당 월 1일) */
+async function openMonthPicker(): Promise<void> {
+  const el = monthPickerRef.value;
+  if (el) el.value = defaultMonthDate.value;
+  await nextTick();
+  (el as HTMLInputElement & { showPicker?: () => void } | null)?.showPicker?.();
+}
+
+/** 월간: 날짜 선택 → 선택 날짜가 속한 달의 월간 view로 이동 (navigateMonth 와 동일하게 syncMonthlyRouteOrFetch) */
+async function onMonthPickerChange(e: Event): Promise<void> {
+  const val = (e.target as HTMLInputElement).value;
+  if (!val) return;
+  const [yStr, mStr] = val.split("-");
+  await syncMonthlyRouteOrFetch(Number(yStr), Number(mStr));
 }
 
 /** 현재 년/월을 Pinpoint로 고정 (localStorage `journal_day_pinpoint`) */
