@@ -80,6 +80,14 @@
         <!--end::head-main-->
         <!--begin::우측 액션 영역-->
         <div v-if="entry.id" class="journal-entry-actions d-flex flex-row align-items-start pt-1 gap-1">
+          <!--begin::본문 최종수정 glance (hover) — hasHistory일 때만 노출. 클릭 액션 없음(전체 리비전은 ⋯ 메뉴 이력 항목→모달). 값은 history.historyTriggeredAt=본문 최종수정.-->
+          <i
+            v-if="hasHistory"
+            class="bi bi-info-circle fs-8 text-muted align-self-start pt-1"
+            style="cursor: help;"
+            :title="t('history.last-modified') + ' ' + (entry.history?.historyTriggeredAt ?? '')"
+          ></i>
+          <!--end::본문 최종수정 glance-->
           <!--begin::댓글 등록 버튼-->
           <button
             v-if="axisWritable"

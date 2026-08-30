@@ -43,6 +43,14 @@
 
     <!--begin::우측 액션 (엔트리와 동일: 댓글·복사·⋯) — 엔트리 액션과 같은 오른쪽 열-->
     <div class="journal-reflection-embed__actions d-flex flex-row align-items-start gap-1">
+      <!--begin::본문 최종수정 glance (hover) — hasHistory일 때만 노출. 클릭 액션 없음(전체 리비전은 ⋯ 메뉴 이력→모달). 값은 reflection.history.historyTriggeredAt=본문 최종수정.-->
+      <i
+        v-if="hasHistory"
+        class="bi bi-info-circle fs-8 text-muted align-self-start pt-1"
+        style="cursor: help;"
+        :title="t('history.last-modified') + ' ' + (reflection.history?.historyTriggeredAt ?? '')"
+      ></i>
+      <!--end::본문 최종수정 glance-->
       <button
         v-if="canWrite"
         type="button"
