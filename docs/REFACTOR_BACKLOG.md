@@ -21,7 +21,7 @@
 | `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue` | 1422 → **1161** | ✅ SP1·SP2a 완료 | 일괄 태그(SP1 → `useEntryBulkTag`)·태그 카탈로그(SP2a → `useSearchTagCatalog`) 추출 완료(-261줄, 컴포저블 2·테스트 13). **잔여 1161줄은 검색조건 상태·쿼리/URL 동기화·복사/내보내기·모달 배선이 서로 결합된 코어 — 추가 분해 시 의존 주입 폭증(복사/내보내기 ~14개, 액션바 자식 ~21 props)으로 거짓 캡슐화가 되어 보류.** |
 | `app/frontend-vue/src/features/chat/AppChat.vue` | 1869 | = | 프론트 최대. |
 | `app/frontend-vue/src/features/admin/AdminPage.vue` | 1038 | 증가 | |
-| `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue` | 997 | 증가(847→997) | 이전 추출(highlightKeywords) 후 재증식. 액션·복사 로직 추가 추출 후보. |
+| `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue` | 950 | 감소(997→950) | 복사 tooltip·본문/리플렉션 조립·딥링크·결과 처리를 `useEntryCopy`로 추출하고 회귀 테스트 6개를 추가했다. 잔여 파일은 575줄 규모 템플릿과 모달 액션 배선이 큰 비중을 차지한다. |
 | `app/backend/.../feature/chat/service/ChatOrchestrator.java` | 1392 | = | 백엔드 최대. |
 | `app/backend/.../feature/ai/person/PersonSynthesisHybridService.java` | 971 | = | |
 | `app/backend/.../feature/journal/entry/service/JournalEntryService.java` | 834 | = | |

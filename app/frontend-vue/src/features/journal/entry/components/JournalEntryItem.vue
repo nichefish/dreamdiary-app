@@ -100,7 +100,7 @@
           </button>
           <!--end::댓글 등록 버튼-->
 
-          <!--begin::복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=본문만/해석 제외)-->
+          <!--begin::복사 (split — 주 버튼=전체/해석 포함, ▾ 드롭다운=보류 제외/본문만/링크 복사)-->
           <div class="btn-group" role="group">
             <!--begin::주 버튼 (해석 포함)-->
             <button
@@ -112,7 +112,7 @@
               <i class="bi bi-copy fs-8"></i>
             </button>
             <!--end::주 버튼-->
-            <!--begin::본문만 드롭다운 (항상 노출 — 리플렉션 없으면 본문=전체라 결과 동일)-->
+            <!--begin::복사 드롭다운 (항상 노출 — 리플렉션 없으면 범위별 본문 결과 동일, 링크 복사 포함)-->
             <button
               type="button"
               class="btn btn-xs journal-entry-action-btn copy-split-caret"
@@ -138,20 +138,19 @@
                   <i class="bi bi-clipboard fs-8"></i>
                 </div>
               </div>
+              <div class="separator my-2"></div>
+              <!--begin::링크 복사 (외부에서 클릭 시 해당 일자 일간뷰로 이동해 이 엔트리로 스크롤)-->
+              <div class="menu-item px-3 my-1 cursor-pointer">
+                <div class="menu-link flex-stack px-3" @click="copyEntryLink">
+                  {{ t('journal.entry.copy-link') }}
+                  <i class="bi bi-link-45deg fs-8"></i>
+                </div>
+              </div>
+              <!--end::링크 복사-->
             </div>
-            <!--end::본문만 드롭다운-->
+            <!--end::복사 드롭다운-->
           </div>
           <!--end::복사 (split)-->
-          <!--begin::링크 복사 (외부에서 클릭 시 해당 일자 일간뷰로 이동해 이 엔트리로 스크롤)-->
-          <button
-            type="button"
-            class="btn btn-xs btn-icon journal-entry-action-btn"
-            :title="t('journal.entry.copy-link')"
-            @click="copyEntryLink"
-          >
-            <i class="bi bi-link-45deg fs-8"></i>
-          </button>
-          <!--end::링크 복사-->
 
           <!--begin::컨텍스트 메뉴-->
           <div class="me-0">
@@ -576,13 +575,12 @@
 </template>
 
 <script setup lang="ts">
-import { swalAlert, swalFire, swalConfirm } from "@/shared/utils/swal";
-import { joinAppBasePath } from "@/shared/utils/appPath";
+import { swalAlert, swalConfirm } from "@/shared/utils/swal";
 import { computed, watch, nextTick, provide } from "vue";
 import { useRoute } from "vue-router";
 import { useJournalModalStore } from "@/features/journal/stores/journalModal";
-import { useAuthStore } from "@/shared/auth/stores/auth";
 import { useAttachableModalStore } from "@/features/attachable/stores/attachableModal";
+import { useEntryCopy } from "@/features/journal/entry/composables/useEntryCopy";
 import { useEntryThreadMembership } from "@/features/journal/entry/composables/useEntryThreadMembership";
 import { useEntryLifecycleState } from "@/features/journal/entry/composables/useEntryLifecycleState";
 import { useEntryRelatedContent } from "@/features/journal/entry/composables/useEntryRelatedContent";
@@ -592,16 +590,8 @@ import { useTagContextMenuStore } from "@/features/journal/stores/tagContextMenu
 import { useJournalStore } from "@/features/journal/stores/journal";
 import { refreshJournalEntryHostForRoute } from "@/features/journal/utils/journalEntryHostRefresh";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
-import { getWeekDayStr } from "@/features/journal/utils/journalDate";
 import { hasDreamerName } from "@/features/journal/utils/journalDream";
 import { isPrimaryContentTargetedReflection } from "@/features/journal/utils/journalReflectionThread";
-import { htmlToPlainText } from "@/features/journal/utils/htmlToPlainText";
-import {
-  appendReflectionsToCopyText,
-  type CopyReflectionMode,
-  copySuccessKey,
-  JOURNAL_COPY_LINE_BREAK,
-} from "@/features/journal/utils/journalCopyReflection";
 import { highlightKeywordsInHtml } from "@/features/journal/utils/highlightKeywords";
 import { openJournalEntryViewPopup } from "@/features/journal/utils/journalEntryViewPopup";
 import { reinitMetronicAfterDom } from "@/shared/utils/metronicReinit";
@@ -629,7 +619,6 @@ const props = defineProps<{
 }>();
 
 const modalStore = useJournalModalStore();
-const authStore = useAuthStore();
 const attachableStore = useAttachableModalStore();
 const tagContextMenuStore = useTagContextMenuStore();
 const journalStore = useJournalStore();
@@ -741,10 +730,15 @@ const {
 const commentList = computed(() => props.entry.comment?.list ?? []);
 const reflectionList = computed(() => props.entry.reflectionList ?? []);
 
-/** 복사(해석 포함) 버튼 tooltip. 리플렉션이 있으면 "해석 포함"을 명시하고, 로컬 프로필은 id 를 덧붙인다. */
-const copyIncludeTitle = computed(() => {
-  const base = reflectionList.value.length > 0 ? t("journal.copy.full.tooltip") : t("common.copy");
-  return authStore.isLocalProfile ? `${base} (id ${props.entry.id})` : base;
+/** 엔트리 본문·리플렉션 범위·딥링크 복사와 결과 알림을 캡슐화. */
+const {
+  copyIncludeTitle,
+  copyEntry,
+  copyEntryLink,
+} = useEntryCopy({
+  entry: entryRef,
+  reflections: reflectionList,
+  t,
 });
 
 /**
@@ -784,47 +778,6 @@ function openTagContextMenu(event: MouseEvent, tag: { tagId: number | string; na
     ctgr: tag.ctgr ?? "",
     contentType: props.entry.contentType ?? "",
   });
-}
-
-/** 엔트리 내용을 클립보드에 복사한다. 형식: 날짜(요일) → 본문 → 그 엔트리를 문(target) 리플렉션 본문(원문·해석은 한 몸으로 함께 복사). */
-async function copyEntry(mode: CopyReflectionMode = "full"): Promise<void> {
-  const weekDay = getWeekDayStr(props.entry.stdrdDt, t);
-  const dateLine = weekDay
-    ? `${props.entry.stdrdDt} (${weekDay})`
-    : (props.entry.stdrdDt ?? "");
-  /* content = TinyMCE HTML 원문(마크다운 재처리 이전); markdownContent = MarkdownUtils 처리 후 HTML */
-  const raw = htmlToPlainText(props.entry.content ?? props.entry.markdownContent ?? "");
-  const baseText = [dateLine, raw].filter(Boolean).join(JOURNAL_COPY_LINE_BREAK);
-  /* 공통 formatter가 모드별 리플렉션 포함 여부와 본문 사이의 CRLF 빈 줄 경계를 함께 보장한다. */
-  const text = appendReflectionsToCopyText(baseText, reflectionList.value, mode);
-  try {
-    await navigator.clipboard.writeText(text);
-    /* 성공 토스트는 복사 범위를 명시한다: 전체/보류 제외/본문만, 리플렉션이 없으면 공용 문구. */
-    const successKey = copySuccessKey(mode, reflectionList.value.length > 0);
-    void swalFire({ icon: "success", text: t(successKey) });
-  } catch (error: unknown) {
-    console.error("[journal-entry] clipboard copy failed", error);
-    void swalFire({ icon: "error", text: t("common.copy.failure") });
-  }
-}
-
-/**
- * 이 엔트리로 가는 링크를 클립보드에 복사한다.
- * 외부(메신저·메모 등)에서 클릭하면 앱의 해당 일자 일간뷰(journal-daily-tab)로 진입하고,
- * entryId 로 이 엔트리(#journal-entry-{id})까지 스크롤한다. 절대 URL(origin + BASE_URL) 을 만든다.
- */
-async function copyEntryLink(): Promise<void> {
-  const stdrdDt = props.entry.stdrdDt;
-  if (!stdrdDt || props.entry.id == null) return;
-  const path = joinAppBasePath(`/journal/daily?stdrdDt=${encodeURIComponent(stdrdDt)}&entryId=${props.entry.id}`);
-  const url = `${window.location.origin}${path}`;
-  try {
-    await navigator.clipboard.writeText(url);
-    void swalFire({ icon: "success", text: t("common.copy.success") });
-  } catch (error: unknown) {
-    console.error("[journal-entry] link copy failed", error);
-    void swalFire({ icon: "error", text: t("common.copy.failure") });
-  }
 }
 
 /** 저장된 엔트리 한 건을 ID 기반 읽기 전용 새 창으로 연다. */

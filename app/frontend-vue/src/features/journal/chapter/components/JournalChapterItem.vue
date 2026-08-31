@@ -107,7 +107,7 @@
             :title="chapterHasReflections ? t('journal.download.full.tooltip') : t('common.export-text')"
             @click="exportChapter(true)"
           >
-            <i class="fas fa-download"></i>
+            <i class="bi bi-download"></i>
           </button>
           <button
             type="button"
@@ -125,7 +125,7 @@
             <div class="menu-item px-3 my-1 cursor-pointer">
               <div class="menu-link flex-stack px-3" @click="exportChapter(false)">
                 {{ t('journal.download.body.label') }}
-                <i class="fas fa-download fs-8"></i>
+                <i class="bi bi-download fs-8"></i>
               </div>
             </div>
           </div>
