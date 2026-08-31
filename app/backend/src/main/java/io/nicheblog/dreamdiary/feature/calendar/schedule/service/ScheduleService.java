@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.calendar.schedule.service;
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableProcPostProcessor;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.mapstruct.ScheduleMapstruct;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
@@ -272,6 +273,9 @@ public class ScheduleService
         // update
         final ScheduleEntity updatedEntity = this.updt(modifyEntity);
         final ScheduleDto updatedDto = mapstruct.toDto(updatedEntity);
+
+        // 필수 후처리(등록/수정 공통): tag/meta 전달 + 처리
+        BaseAttachableProcPostProcessor.afterWrite(modifyDto, updatedDto);
 
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getId() != null)

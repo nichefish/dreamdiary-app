@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.calendar.schedule.service;
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.auth.security.util.AuditorUtils;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableProcPostProcessor;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.SchedulePrtcpntEntity;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -156,6 +160,22 @@ class ScheduleServiceValidationTest {
 
         authenticate(FIXTURE_OWNER);
         assertDoesNotThrow(() -> scheduleService.preDelete(dto));
+    }
+
+    @Test
+    void modifyRunsCanonicalTagPostProcessing() throws Exception {
+        authenticate(FIXTURE_OWNER);
+        final ScheduleDto dto = schedule(Code.SCHEDULE_ETC, "2026-07-21", "2026-07-21");
+        dto.setId(1);
+        final ScheduleEntity entity = privateScheduleEntity();
+        when(repository.findById(1)).thenReturn(Optional.of(entity));
+        when(repository.saveAndFlush(any())).thenReturn(entity);
+
+        try (final MockedStatic<BaseAttachableProcPostProcessor> postProcessor = mockStatic(BaseAttachableProcPostProcessor.class)) {
+            scheduleService.modify(dto);
+            // canonical modify 계약: 저장 뒤 tag/meta 후처리 hook 호출
+            postProcessor.verify(() -> BaseAttachableProcPostProcessor.afterWrite(eq(dto), any(ScheduleDto.class)));
+        }
     }
 
     private ScheduleDto schedule(final String scheduleCd, final String bgnDt, final String endDt) {

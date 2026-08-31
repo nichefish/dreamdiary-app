@@ -201,6 +201,7 @@
 - 목록 관리 열의 ⋯ 컨텍스트 메뉴는 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu` + `data-kt-menu-overflow="true"`를 쓴다. 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다. 트리거 `@click.stop` 금지(KTMenu body 위임); 행 클릭이 있으면 `isMetronicMenuEventTarget` 가드. 본인 계정(isMe) 삭제는 disabled다. **변경 전**: Bootstrap `strategy:fixed` 땜빵(메뉴 관리와 동일하다는 주석은 사실이 아니었다).
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
+- 계정 등록/수정 저장 시 허용 IP 목록이 비어 있으면 `useAllowedIpYn`을 `N`으로, 허용 IP 목록을 빈 값으로 정규화해 저장한다(canonical `preModify` 계약, 등록·수정 공통). ✓
 - 계정 삭제 (본인 계정 삭제 불가)
 - 비밀번호 초기화. 초기화 전 비밀번호 해시는 `user_password_history`에 기록되어 `auth_policy.password_history_count` 재사용 제한에 포함된다.
 - 중복 체크 (아이디/이메일)
