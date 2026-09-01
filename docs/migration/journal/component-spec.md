@@ -7,45 +7,15 @@
 
 ### 18. `JournalTagCloudHeader` (저널 태그 클라우드 헤더)
 
-**Source (Legacy)**: `legacy/templates/view/feature/journal/day/tag/_journal_day_tag_header.ftlh`
-
 **Vue 구현 완료**: `app/frontend-vue/src/features/journal/day/components/JournalTagCloudHeader.vue`
 
 **사용 화면**: `JournalDayMonthly.vue`, `JournalDayWeekly.vue`, `JournalDayCalendar.vue`, `JournalDayDaily.vue` — `.card.post > .card-header` 내부 (`v-if="store.showTagCloud"`). 일간 탭과 팝업은 동일한 `JournalDayDaily.vue`에서 선택 날짜 하루의 태그클라우드를 표시한다.
 
-**레거시 HTML 구조**:
-```html
-<div id="journal_tag_header" class="mb-6 ms-4 w-100">
-  <!-- 일자 태그 행 -->
-  <div id="journal_day_tag_header" class="row align-items-center mb-4 ms-4 min-h-42px">
-    <div class="journal-tag-header__label col-auto d-none d-md-flex ms-4 me-6 text-center fs-6"><b>일자 태그 :</b></div>
-    <div class="col flex-grow-1" id="journal_day_tag_list_div"><!-- Handlebars 태그 렌더 --></div>
-    <div class="col-auto d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-    <div class="col-auto d-none d-md-flex ms-4 me-20 text-center fs-6 gap-3">
-      <button class="btn btn-sm btn-outline btn-light-primary px-4"
-              onclick="dF.Tag.hideSingleTag('#journal_day_tag_list_div');">
-        <i class="bi bi-tag pe-0"></i>
-      </button>
-      <button class="btn btn-sm btn-outline btn-light-primary px-4"
-              onclick="dF.JournalTag.listAllAjax();">
-        <i class="bi bi-tag pe-0"></i>
-      </button>
-    </div>
-  </div>
-  <div class="separator"></div>
-  <!-- 일기 태그 행: 동일 구조, id=journal_diary_tag_header, mb-4 -->
-  <div class="separator"></div>
-  <!-- 꿈 태그 행: 동일 구조, id=journal_dream_tag_header, mb-6 (마지막이므로) -->
-</div>
-```
-
 **Vue 데이터 바인딩**:
-| 레거시 | Vue |
-|--------|-----|
-| Handlebars 태그 목록 렌더 | `store.tagCloud.{dayTagList,diaryTagList,dreamTagList}` |
-| `dF.Tag.hideSingleTag(selector)` | 각 행별 로컬 ref (`hideDaySingles`, `hideDiarySingles`, `hideDreamSingles`) |
-| `dF.JournalTag.listAllAjax()` | `attachableStore.openTagList({ yy, mnth, weekStartDt })` |
-| 태그 클릭 → 일자 필터 모달 | `journalModalStore.openDayFilterModal({ type: "tag", id: tag.id, name: tag.name, ctgr: tag.ctgr })` |
+- 태그 목록 렌더: `store.tagCloud.{dayTagList,diaryTagList,dreamTagList}`
+- 단일 태그 숨김: 각 행별 로컬 ref (`hideDaySingles`, `hideDiarySingles`, `hideDreamSingles`)
+- 전체 태그 목록: `attachableStore.openTagList({ yy, mnth, weekStartDt })`
+- 태그 클릭 → 일자 필터 모달: `journalModalStore.openDayFilterModal({ type: "tag", id: tag.id, name: tag.name, ctgr: tag.ctgr })`
 
 **상태 / API**:
 | 항목 | 위치 |
@@ -81,7 +51,7 @@
 
 ### 18-1. `JournalPeriodThreadSummary` (기간별 스레드 요약)
 
-**신규 기능**: 레거시 대응 없음. 월간·주간·연간·일간 태그클라우드 아래에서 현재 조회 기간에 엔트리가 등장한 스레드를 요약한다.
+**신규 기능**: 월간·주간·연간·일간 태그클라우드 아래에서 현재 조회 기간에 엔트리가 등장한 스레드를 요약한다.
 
 **표시 계약**:
 - 주간은 해당 `weekStartDt`의 스레드를 기간 내 최초 엔트리 일자순으로 모두 표시한다.
@@ -105,8 +75,6 @@
 ---
 
 ### 19. `JournalAsideFilterHeader` (어사이드 필터 카드 헤더)
-
-**Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideFilterHeaderApp.ts`
 
 0**현재 Vue 동등**: ✓ 구현 완료 — `JournalAside.vue` 상단 `#journal_aside_header` + `#sortIcon` + `store.toggleSort()`
 
@@ -143,15 +111,13 @@ function toggleSort() {
 
 ### 20. `JournalAsideYyMnthSection` (어사이드 연월·주간·핀포인트)
 
-**Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideYyMnthApp.ts`
-
 **현재 Vue 동등**: ✓ 구현완료 — 연도 select + 월 그리드/TODAY + 주간 네비게이터 + Pinpoint (`JournalAside.vue`)
 
 **3개 sub-block 요약**:
 
 **Sub-block 1 — 연도 select + 월 그리드 + 이전/다음 화살표**:
 - 연도: `<select class="form-select form-select-sm">` — `:value="store.yy"` / `onYyChange` — 2010년~현재 역순 목록
-- 월: 1~12 버튼 그리드 — `store.gotoYyMnth(store.yy, m)` 호출. 레거시 `<select id="mnth">` 구조는 쓰지 않는다.
+- 월: 1~12 버튼 그리드 — `store.gotoYyMnth(store.yy, m)` 호출.
 - 이전 월 화살표: `<i class="bi bi-caret-left fs-2">` — `store.navigateMonth(-1)` 호출
 - 다음 월 화살표: `<i class="bi bi-caret-right fs-2">` — `store.navigateMonth(1)` 호출
 - TODAY 버튼: `btn btn-sm btn-outline btn-light-info blink-slow` — `store.gotoToday()` 호출
@@ -187,8 +153,6 @@ HTML 요소:
 ---
 
 ### 21. `JournalAsideEntryFilters` (어사이드 엔트리 필터)
-
-**Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideEntryFiltersApp.ts`
 
 **현재 Vue 동등**: ✓ — `JournalAside.vue` 인라인. 블록 A–C·라이프사이클·어사이드 목록 키워드 구현. 블록 D(고급필터 아코디언)는 **이식 대상 아님** (`vue-screen-overview.md` 필터·검색 정책).
 
@@ -277,13 +241,11 @@ HTML 요소:
 </div>
 ```
 
-레거시 aside accordion 본문은 placeholder뿐이며 Vue 에서 이식하지 않는다. 멀티 키워드·태그 AND 고급 필터는 `JournalEntrySearchPage.vue` 에만 구현한다.
+멀티 키워드·태그 AND 고급 필터는 `JournalEntrySearchPage.vue` 에만 구현한다.
 
 ---
 
 ### 22. `JournalAsideTodoCard` (어사이드 투두 카드)
-
-**Source (Legacy)**: `legacy/static/vue/feature/journal/day/JournalDayAsideTodoCardApp.ts`
 
 **현재 Vue 동등**: ✓ `JournalAsideTodoCard.vue` — 카드 헤더·월별 목록 조회·삭제·등록 모달 호출 구현
 
@@ -355,10 +317,6 @@ interface TodoRow {
 
 **Vue 구현 완료**: `app/frontend-vue/src/features/journal/day/components/JournalDayViewToolbar.vue`
 
-**레거시 출처**:
-- 본문 상단 탭 행: `journal_day_monthly.ftlh` / `journal_day_weekly.ftlh` — `nav-tabs-line` 4탭
-- 일자 등록 버튼: `_journal_day_page_header.ftlh` — `@component.header_btn_reg_modal` (`data-journal-day-action=reg-modal` → `JournalDayRuntimeService`)
-
 **사용 화면**: `JournalDayWeekly.vue`, `JournalDayMonthly.vue`, `JournalDayCalendar.vue`, `JournalDayMeta.vue` — 카드(`.card.post`) 위 첫 행
 
 **DOM 구조**:
@@ -396,11 +354,9 @@ interface TodoRow {
 
 **Vue**: `JournalDayRegistModal.vue` — `#journalDate` 입력
 
-**레거시**: `attachRegFormControls()` → `cF.datepicker.singleDatePicker("#journalDate", "yyyy-MM-DD", obj.journalDate)` (daterangepicker)
-
 **Vue 동등**: `flatpickrSingleDate.ts` — `bindSingleDatePicker()` (flatpickr, `Y-m-d`, locale `ko`). 모달 `shown` 시 부착·`hidden` 시 `destroy`. 캘린더 아이콘 클릭 → `open()`. 모달 내부 입력도 calendar DOM은 기본 body append를 사용한다. `.modal-body`에 append하면 입력칸 좌표와 calendar 좌표 기준이 달라져 위치가 틀어질 수 있다.
 
-**신규 등록 기본값**: `openDayRegist()` 에서 `journalDate` 비어 있으면 오늘(`formatLocalDateStr`) — 레거시 daterangepicker `startDate: moment()` 와 동일.
+**신규 등록 기본값**: `openDayRegist()` 에서 `journalDate` 비어 있으면 오늘(`formatLocalDateStr`).
 
 **저장 후 갱신**: `JournalDayRegistModal.vue` 는 저장 성공 시 모달을 닫고 성공 알림을 표시한 뒤, 사용자가 OK를 누르면 현재 route 기준으로 목록을 갱신한다. `/journal/weekly` 에서는 `setViewType("WEEKLY")` 후 `fetchDays({ viewType: "WEEKLY" })`, `/journal/monthly` 에서는 `setViewType("LIST")` 후 `fetchDays({ viewType: "LIST" })` 를 호출해 주간 등록 완료 후 월간 목록으로 돌아가지 않게 한다. 일자 태그 변경이 일자 태그클라우드에 반영되도록 OK 이후 `fetchTagCloud({ sections: ["day"] })`도 함께 호출한다 (2026-05-19 수정, 2026-06-02 OK 이후 갱신, 2026-06-03 부분 갱신).
 
@@ -440,7 +396,7 @@ interface TodoRow {
 
 **대상**: 저널 일자/챕터/엔트리/해석/할일/댓글/관련 컨텐츠, 저널 연간/연간 리뷰, 저널 스레드 등록·수정 모달.
 
-**정책**: 작성 중 내용 유실을 막기 위해 등록/수정 성격의 모달은 백드롭 클릭 및 Escape 키로 닫히지 않는다. 명시적인 닫기 버튼도 레거시 `modal_btn_close_safe`와 동일하게 1회 클릭 시 확인 상태로 전환하고, 2초 안에 한 번 더 클릭해야 닫는다. 저장 성공 흐름은 즉시 닫는다.
+**정책**: 작성 중 내용 유실을 막기 위해 등록/수정 성격의 모달은 백드롭 클릭 및 Escape 키로 닫히지 않는다. 명시적인 닫기 버튼도 1회 클릭 시 확인 상태로 전환하고, 2초 안에 한 번 더 클릭해야 닫는다. 저장 성공 흐름은 즉시 닫는다.
 
 **구현**: 각 Vue 모달의 루트에 `data-bs-backdrop="static"` / `data-bs-keyboard="false"`를 선언하고, `new Modal(...)` 생성 옵션에도 `{ backdrop: "static", keyboard: false }`를 지정한다. 닫기 버튼은 공통 `useSafeModalClose()`를 사용해 헤더 X 버튼과 푸터 닫기/취소 버튼 모두 동일한 2회 클릭 정책을 적용한다.
 
@@ -466,7 +422,7 @@ interface TodoRow {
 
 **중복 제출 방지**: 저장 클릭 즉시 `submitting` guard를 세운 뒤 확인창을 띄운다. 확인창이 떠 있는 동안 재클릭되어도 두 번째 `submit()`은 무시되어 같은 꿈/일기 엔트리가 두 번 POST되지 않는다. 꿈 등록 모달 오픈도 `dreamEntryRegistOpening` guard로 `dream-auto` 요청 중복을 막는다.
 
-**본문 문단 저장 기준**: `RichEditor`가 전송한 TinyMCE HTML은 서버 저장 정규화(`MarkdownUtils.normalize`)를 거친다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉜 본문은 저장 시 별도 `<p>` 문단으로 분리해 레거시처럼 문단 단위 여백을 유지한다.
+**본문 문단 저장 기준**: `RichEditor`가 전송한 TinyMCE HTML은 서버 저장 정규화(`MarkdownUtils.normalize`)를 거친다. 단일 `<p>` 안에 직접 자식 `<br>`로 문단이 나뉜 본문은 저장 시 별도 `<p>` 문단으로 분리해 문단 단위 여백을 유지한다.
 
 **저장 후 위치 복귀**: 저장 성공 시 `JournalEntryRegistModal`은 모달을 닫고 성공 알림을 표시한다. 월간/주간 기본 목록은 성공 알림 OK 이후 현재 route 기준 목록을 갱신하되 강제 스크롤하지 않고, 기존 목록 DOM 유지로 브라우저 스크롤 위치 보존에 맡긴다. 일자 상세 팝업이 열려 있으면 OK 이후 `JournalDayDetailModal` 데이터를 다시 조회하고, 팝업 내부의 `[data-id]` 엔트리 위치로 스크롤한다. 검색 팝업은 `prepare-success` 이벤트에서 결과 DOM을 준비하고, OK 이후 `success` 이벤트 payload를 받아 `#journal-entry-search-{id}`로 스크롤한다. 스레드 상세가 열려 있으면 route와 무관하게 상세 본문·집계 태그·소속 엔트리를 다시 조회하고, 배경이 주간·월간·일간이면 배경 목록도 재조회하되 배경 스크롤은 하지 않는다. 검색 배경은 기존 로컬 결과 교체를 함께 수행한다. 태그클라우드는 엔트리 타입별로 필요한 섹션만 갱신한다: `JOURNAL_DIARY`는 `fetchTagCloud({ sections: ["diary"] })`, `JOURNAL_DREAM`은 `fetchTagCloud({ sections: ["dream"] })`, `JOURNAL_NOTE`는 태그클라우드를 갱신하지 않는다. 엔트리 삭제 성공도 같은 유형별 부분 갱신을 수행해 현재 기간의 태그 빈도와 항목 제거를 즉시 반영하며, 태그 클라우드가 없는 검색 화면에서는 조회하지 않는다. 신규 엔트리 등록 성공 시 선택된 `journalChapterId`를 목록·상세 갱신 동안 일회성 펼침 대상으로 표시하고, 같은 챕터의 모든 마운트 인스턴스가 로컬 펼침을 적용한다. 완료 자동 접힘과 서버 COLLAPSED보다 이번 화면의 신규 콘텐츠 노출을 우선하지만 서버 상태는 삭제하지 않으며, 엔트리 수정 저장에는 적용하지 않는다.
 
@@ -524,9 +480,9 @@ interface TodoRow {
 
 **모달 연동**: `useJournalModalStore` — 일자/챕터/엔트리 등록·상세·수정
 
-**현재 Vue 동등**: ✓ 구현 완료 (레거시 `JournalDayMonthlyListApp` / 텔레포트 대체)
+**현재 Vue 동등**: ✓ 구현 완료
 
-**컨텍스트 메뉴**: ✓ 구현 완료 — 레거시 `JournalDayContextMenu.ts` → `JournalDayCard.vue` 내 Metronic ⋯ dropdown 흡수. 「주간 뷰로 이동」은 route `journal-weekly` 에서 미표시(월간·캘린더·메타 등 전용).
+**컨텍스트 메뉴**: ✓ 구현 완료 — `JournalDayCard.vue` 내 Metronic ⋯ dropdown. 「주간 뷰로 이동」은 route `journal-weekly` 에서 미표시(월간·캘린더·메타 등 전용).
 
 **i18n**: 기준 날짜 요일·날짜 정확도 배지·일기/꿈 완결 배지·챕터 필터 안내, 챕터·꿈 등록, 메뉴·저널 일자 헤더, 주간 뷰 이동·일자 뷰 새 창, 수정·상태·중요·일기/꿈 완결·접힘·삭제, 메타 tooltip, 숨겨진 카테고리·꿈 숨김 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 route·팝업·상태·필터 데이터와 액션 호출을 변경하지 않는다.
 
@@ -559,7 +515,7 @@ interface TodoRow {
 **챕터 헤더 식별**: 헤더는 유형 라벨 + 개인 Prefix 이름에 이어 `chapter.title`이 있으면 `· {제목}`을 헤더 톤(`text-gray-700`, 헤더 `fw-bolder` 상속)으로 인라인 표시한다(접힘·펼침 무관 항상). 같은 Prefix의 챕터가 한 일자에 여러 개일 때 접힘 상태에서도 제목으로 구분하기 위함이며, Prefix가 없으면 유형·제목만 표시한다. 시스템 요약은 Prefix 대신 고정 `요약`을 표시한다. 기존 헤더 행에 붙여 세로 높이를 늘리지 않는다.
 
 **챕터 등록 모달 (`JournalChapterRegistModal.vue`)**: 제목(`title`)은 필수 항목이 아님.
-- 레거시에서 제목 없이 등록 가능 — `title` 빈 값 허용.
+- 제목 없이 등록 가능 — `title` 빈 값 허용.
 - `submit()` 에서 title 공백 검증 제거.
 - 일반 DIARY/NOTE는 챕터 유형별 개인 Prefix 목록에서 `prefixId` 0..1개를 선택한다. 일기 챕터는 `JOURNAL_CHAPTER_DIARY`, 노트 챕터는 `JOURNAL_CHAPTER_NOTE` 목록을 사용하며, 챕터의 attachable 정체성은 `JOURNAL_CHAPTER`로 유지한다. 유형(`model.chapterType`)에 따라 표시 목록이 달라진다(`modalStore.chapterPrefixOptionsFor(chapterType)`). 사용자가 유형 select를 바꾸면(`@change`) 이전 유형 목록의 선택은 새 유형 목록에 없으므로 `prefixId`를 초기화한다. 모달을 여는 시점(수정 폼)의 기존 선택은 보존한다.
 - 시스템 요약은 고정 `요약`을 표시하고 Prefix 선택기를 숨긴다. DREAM도 사용자 Prefix 선택 대상이 아니므로 선택기를 표시하지 않는다.
@@ -569,7 +525,7 @@ interface TodoRow {
 - `isCreatedBy === false`: 헤더에 `타인 작성` 배지, 수정·삭제·엔트리/리플렉션 등록·⋯ 메뉴·서버 접힘 변경 버튼 숨김 (읽기·클라이언트 접힘·복사·TXT는 유지)
 - 수정 API 거부 시 메시지 `msg.rslt.not-owner` → 「본인이 작성한 글이 아닙니다.」(HTTP 403)
 
-**헤더 액션 버튼** (우측 `col-3` 영역, `canManageChapter` 일 때만, 레거시 `JournalChapterItem.ts` 동형):
+**헤더 액션 버튼** (우측 `col-3` 영역, `canManageChapter` 일 때만):
 - 엔트리 등록 TEXT 버튼: 타입별 `저널 일기 등록` / `저널 꿈 등록` / `저널 노트 등록` + `bi-book` / `bi-moon-stars` — `openEntryNew()`
 - 복사 split 버튼: 주 버튼(`bi-copy`)은 `copyChapter('full')`(전체/해석 포함) — 날짜·말머리·제목 + 하위 엔트리 전체를 CRLF 줄바꿈 연결 텍스트로 클립보드 복사하고, `appendReflectionsToCopyText`가 각 엔트리 본문 밑에 그 엔트리를 문(target) 리플렉션 본문을 빈 줄 1개로 이어 붙인다(원문·해석은 한 몸, 마커 없음). 주 버튼 옆 ▾ 캐럿(`bi-caret-down-fill`, 항상 노출)이 `data-kt-menu` 드롭다운을 열어 「보류 해석 제외 복사」(`copyChapter('no-pending')`)와 「본문만 복사」(`copyChapter('body')`, 해석 제외)를 제공한다(하위 리플렉션 없으면 세 결과 동일). 성공 토스트는 범위를 명시한다(`journal.copy.full.success`/`journal.copy.no-pending.success`/`journal.copy.body.success`, 리플렉션 없으면 `common.copy.success`)
 - TXT보내기 split 버튼 (`bi bi-download`, `btn-outline btn-light-primary`): 주 버튼 `exportChapter(true)` — `GET /api/journal/chapter/{id}/export?includeReflection=true`(해석 포함), 주 버튼 옆 ▾ 캐럿(항상 노출)이 `data-kt-menu` 드롭다운을 열어 「본문만 다운로드」(`exportChapter(false)`, 해석 제외)를 제공한다. 서버 `JournalChapterExportService.buildTxt(...,includeReflection)`가 포함 시 각 엔트리 target 리플렉션 본문을 이어 붙인다
@@ -578,15 +534,13 @@ interface TodoRow {
 - 챕터 유형·소유권 배지·타입별 등록 버튼·액션 툴팁·메뉴·빈 상태 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 - 소유권 경고·삭제 확인·삭제 결과 fallback·클립보드 복사 결과와 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용하며, 삭제 API가 서버 `message`를 반환하면 그 값을 우선 표시한다.
 
-**시스템 요약 첫 엔트리 강조 (신규)**: 레거시 대응 없음. `chapter.summaryYn === 'Y'` 인 챕터에 한해(프리뷰용 `findSummaryChapter` 의 non-DREAM fallback 은 쓰지 않는다 — 요약 챕터가 없는 날은 강조하지 않는다) 그 챕터의 첫 non-empty 엔트리(`findFirstNonEmptyEntry`, sortOrder→id)에만 `:is-summary="true"` 를 넘긴다. 그 엔트리가 그날 전체 요약임을 나타낸다. 챕터가 접히면 하위 엔트리가 `display:none` 이므로 강조도 함께 사라진다(의도된 동작 — 접힘을 뚫고 표시하지 않는다). 일간·주간·월간이 같은 `JournalDayCard → JournalChapterItem → JournalEntryItem` 체인을 쓰므로 이 판정 한 곳으로 세 뷰가 모두 적용된다.
+**시스템 요약 첫 엔트리 강조 (신규)**: `chapter.summaryYn === 'Y'` 인 챕터에 한해(프리뷰용 `findSummaryChapter` 의 non-DREAM fallback 은 쓰지 않는다 — 요약 챕터가 없는 날은 강조하지 않는다) 그 챕터의 첫 non-empty 엔트리(`findFirstNonEmptyEntry`, sortOrder→id)에만 `:is-summary="true"` 를 넘긴다. 그 엔트리가 그날 전체 요약임을 나타낸다. 챕터가 접히면 하위 엔트리가 `display:none` 이므로 강조도 함께 사라진다(의도된 동작 — 접힘을 뚫고 표시하지 않는다). 일간·주간·월간이 같은 `JournalDayCard → JournalChapterItem → JournalEntryItem` 체인을 쓰므로 이 판정 한 곳으로 세 뷰가 모두 적용된다.
 
 ---
 
 ### 23-2. `JournalEntryItem` (저널 엔트리 아이템)
 
 **Vue 구현**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
-
-**레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryItem.ts`
 
 **scss 클래스 바인딩**:
 - 외부 div: `itemClass` computed (contentType/isDream 기준) → `journal-dream-item` / `journal-note-item` / `journal-diary-item`
@@ -643,9 +597,7 @@ interface TodoRow {
 
 **Pinia 스토어**: `app/frontend-vue/src/features/journal/stores/tagContextMenu.ts`
 
-**레거시 출처**: `legacy/static/vue/feature/journal/day/services/journalDayTagContextMenuShell.ts`
-
-**동작**: 일자/일기/꿈 태그 클릭 시 즉시 검색하지 않고, legacy와 같이 2단계 액션 메뉴를 연다. payload는 `{ tagId, name, ctgr, contentType }`이며 viewport clamp 후 fixed 위치에 표시한다.
+**동작**: 일자/일기/꿈 태그 클릭 시 즉시 검색하지 않고, 2단계 액션 메뉴를 연다. payload는 `{ tagId, name, ctgr, contentType }`이며 viewport clamp 후 fixed 위치에 표시한다.
 
 **메뉴 액션**:
 | 액션 | `JOURNAL_DAY` | `JOURNAL_DIARY` | `JOURNAL_DREAM` |
@@ -765,10 +717,6 @@ interface TodoRow {
 
 **Layout**: `SystemLayout.vue` 하위 auth route. 새 창 검색 화면이므로 `DefaultLayout` 메뉴와 `JournalLayout` aside를 붙이지 않는다.
 
-**Source (Legacy)**:
-- `legacy/templates/view/feature/journal/entry/journal_entry_search.ftlh`
-- `legacy/static/vue/feature/journal/entry/JournalEntrySearchApp.ts`
-
 **현재 Vue 범위**:
 - `type`, `tagIds`, `tagName`, `searchKeywords`, `states` query 파싱. `states`는 꿈 유형의 `NHTMR`·`HALLUC`만 허용한다
 - `GET /api/journal/entries` 조회 — 응답 `threadList` 포함(일자 목록과 동일 enrich). 결과 카드는 `JournalEntryItem`으로 소속 스레드 칩을 표시한다
@@ -787,10 +735,7 @@ interface TodoRow {
 
 **표시 문구 i18n**: 컨트롤 바·고급 필터·유형/키워드/태그 입력·꿈 상태와 OR 안내·카테고리 선택·로딩/빈 결과·일자 새 창 tooltip과 결과 건수·연월 구분선·요일은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 URL query·검색 조건·정렬·태그 선택·결과 목록을 변경하지 않는다.
 
-**액션 메시지 i18n**: 검색 결과/엔트리 상세 조회 실패, 태그 선택 검증, 검색 조건 검증, 복사 대상 없음과 복사 성공/실패 알림 및 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용한다. 클립보드와 TXT 본문은 기존 레거시 출력 포맷을 유지한다.
-
-**남은 legacy 동등성 확인 대상**:
-- 고급 검색 영역의 태그 직접 입력 UX
+**액션 메시지 i18n**: 검색 결과/엔트리 상세 조회 실패, 태그 선택 검증, 검색 조건 검증, 복사 대상 없음과 복사 성공/실패 알림 및 복사 날짜 헤더의 요일은 현재 locale의 클라이언트 카탈로그를 사용한다. 클립보드와 TXT 본문은 「엔트리 복사」·TXT 내보내기의 출력 포맷 계약을 따른다.
 
 ---
 
@@ -898,7 +843,7 @@ interface TodoRow {
 
 **마운트 모달·메뉴**: `JournalDayRegistModal`, `JournalDayDetailModal`, `JournalChapterRegistModal`, `JournalReflectionRegistModal`, `JournalTodoRegistModal`, `JournalDayMetaModal`, `CommentRegistModal`, `CommentListModal`, `HistoryModal`, `RelatedContentAddModal`, `JournalTagProfileModal`, `JournalMetaProfileModal`, `JournalTagContextMenu`, `JournalMetaContextMenu`. (`JournalEntryRegistModal`·`JournalEntryViewModal`은 채팅 RAG 원문 딥링크를 위해 `App.vue`에서 비팝업 전역 마운트 — 레이아웃 중복 마운트 없음. 출처 클릭은 읽기 전용 뷰, 편집은 뷰 footer에서 수정 모달로 전환.)
 
-`JournalDayMetaModal.vue`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 각 일자는 카드형(날짜 → 메타·태그 → 시스템 요약, 구분선)으로 표시한다. 시스템 요약 챕터(`summaryYn=Y`, 없으면 첫 non-DREAM)의 첫 non-empty 엔트리 본문(`summaryEntryHtmlOf`, `journal-content`/`v-html`)은 레거시 `collapse-3`(최대 3줄)·`expand-btn`으로 미리보고 클릭·더보기로 전체를 펼친다. 접힘 중에는 빈 문단을 제거·문단 여백을 줄이고, 펼침 시 원문 HTML·간격을 그대로 둔다. 데이터는 SEARCH 목록의 `journalChapterList`를 파생하며 추가 API는 없다. locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
+`JournalDayMetaModal.vue`의 제목·결과 건수·연도/전체 연도·연월 구분선·기준 날짜 요일·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 각 일자는 카드형(날짜 → 메타·태그 → 시스템 요약, 구분선)으로 표시한다. 시스템 요약 챕터(`summaryYn=Y`, 없으면 첫 non-DREAM)의 첫 non-empty 엔트리 본문(`summaryEntryHtmlOf`, `journal-content`/`v-html`)은 `collapse-3`(최대 3줄)·`expand-btn`으로 미리보고 클릭·더보기로 전체를 펼친다. 접힘 중에는 빈 문단을 제거·문단 여백을 줄이고, 펼침 시 원문 HTML·간격을 그대로 둔다. 데이터는 SEARCH 목록의 `journalChapterList`를 파생하며 추가 API는 없다. locale 변경은 선택 메타/태그·AND 필터·연도·일자 목록을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 
 `JournalDayDetailModal.vue`의 제목·기준 날짜 요일·날짜 정밀도 배지·빈 상태·조회 실패·닫기 문구는 현재 locale의 클라이언트 카탈로그를 사용한다.
 
@@ -909,11 +854,11 @@ interface TodoRow {
 ## 저널 컴포넌트 현황 요약
 
 
-| 컴포넌트 | 레거시 위치 | Vue 동등 | 우선순위 |
-|---------|-----------|---------|---------|
-| `JournalDayViewToolbar` | `_journal_day_page_header.ftlh` (`header_btn_reg_modal`) + 탭 행 | ✓ `JournalDayViewToolbar.vue` | 완료 |
-| `JournalTagCloudHeader` | `_journal_day_tag_header.ftlh` | ✓ `JournalTagCloudHeader.vue` | 완료 |
-| `JournalAsideFilterHeader` | `JournalDayAsideFilterHeaderApp.ts` | ✓ `JournalAside.vue` (`#journal_aside_header` + 정렬 토글) | 완료 |
-| `JournalAsideYyMnthSection` | `JournalDayAsideYyMnthApp.ts` | ✓ `JournalAside.vue` (연/월/TODAY/Week/Pinpoint 모두 구현) | 완료 |
-| `JournalAsideEntryFilters` | `JournalDayAsideEntryFiltersApp.ts` | ✓ (블록 D 제외 — 이식 대상 아님) | — |
-| `JournalAsideTodoCard` | `JournalDayAsideTodoCardApp.ts` | ✓ `JournalAsideTodoCard.vue` (카드 헤더·목록 API·삭제·등록 모달 호출) | 완료 |
+| 컴포넌트 | Vue 구현 |
+|---------|---------|
+| `JournalDayViewToolbar` | `JournalDayViewToolbar.vue` |
+| `JournalTagCloudHeader` | `JournalTagCloudHeader.vue` |
+| `JournalAsideFilterHeader` | `JournalAside.vue` (`#journal_aside_header` + 정렬 토글) |
+| `JournalAsideYyMnthSection` | `JournalAside.vue` (연/월/TODAY/Week/Pinpoint) |
+| `JournalAsideEntryFilters` | `JournalAside.vue` (블록 D 제외 — 이식 대상 아님) |
+| `JournalAsideTodoCard` | `JournalAsideTodoCard.vue` (카드 헤더·목록 API·삭제·등록 모달 호출) |

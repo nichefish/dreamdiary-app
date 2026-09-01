@@ -212,24 +212,12 @@ const weekRangeLabel = computed(() => {
 
 ---
 
-### 연/월 SELECT 기반 내비게이션
+### 연/월 내비게이션
 
-레거시에서는 연도·월을 `<select id="yy">` / `<select id="mnth">` 로 선택했다.
-Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
+`JournalAside.vue`는 연도 `<select>`(`onYyChange`) + 월 버튼 그리드로 연/월을 이동한다. 연도 목록은 현재 연도 → 2010년까지 역순이며 2010년은 `"~2010"` 레이블을 쓴다.
 
-**레거시 연도 목록**: 현재 연도 → 2010년까지 역순, 2010년은 `"~2010"` 레이블
-
-**연도 변경 시 동작** (`onYyChange`):
-1. 선택된 연도로 `store.yy = newYy`
-2. 월 선택 초기화 (`store.mnth`를 유지하거나 초기화 — 레거시는 월 select 초기화)
-3. `store.fetchDays()` 호출
-
-**월 변경 시 동작** (`onMnthChange`):
-1. `store.gotoYyMnth(store.yy, newMnth)`
-
-> **구현 노트**: Vue SPA는 현재 그리드+화살표 방식이 select보다 UX상 낫다.
-> 다만 `id="yy"`, `id="mnth"` 가 없어 레거시 jQuery 코드와 호환이 안 된다.
-> 완전 수렴 후 레거시 jQuery는 제거 대상이므로 id 호환보다 Vue 방식 유지가 맞다.
+- **연도 변경** (`onYyChange`): `store.gotoYyMnth(newYy, store.mnth)`.
+- **월 변경** (월 그리드 버튼): `store.gotoYyMnth(store.yy, newMnth)`.
 
 **DAILY/WEEKLY viewType 미니 달력**:
 - `store.viewType === 'DAILY'` 일 때 월 그리드(1~12월) 대신 `JournalAsideMiniCalendar` 컴포넌트를 렌더한다.

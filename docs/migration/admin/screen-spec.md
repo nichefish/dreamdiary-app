@@ -220,9 +220,9 @@
 - 본문 상단 목록/통계 전환 버튼 표시. 화면 설명은 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 운영 로그 목록/검색/상세 모달
 - `/admin/log` → 전체 로그 관측 뷰 (`isStatsView = false`)
-- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**(레거시 `log_stats_user_list` 기본 노출 동일). 통계 뷰 진입 시 조회. 통계 조회 실패(`store.error`)는 정상 빈 통계와 구분하며 직전 성공 통계를 유지한다
+- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**. 통계 뷰 진입 시 조회. 통계 조회 실패(`store.error`)는 정상 빈 통계와 구분하며 직전 성공 통계를 유지한다
 - 로그 목록·검색·상세의 URL·URI·Trace·IP·Referer와 응답시간 `ms` 단위는 현재 locale의 공통 기술 카탈로그를 사용하며 기술 표기 자체는 한·영에서 동일하게 유지한다.
-- API: `GET /api/logs`, `GET /api/logs/{id}`, `GET /api/logs/stats-user` (`LogStatsUserQueryService` — 레거시 서비스를 현행 flat 패키지로 복원, 응답 `rsltObj = { userList, anonymousList }`)
+- API: `GET /api/logs`, `GET /api/logs/{id}`, `GET /api/logs/stats-user` (`LogStatsUserQueryService`, 응답 `rsltObj = { userList, anonymousList }`)
 
 ---
 
