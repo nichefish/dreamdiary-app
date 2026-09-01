@@ -195,8 +195,18 @@ export function SignInPage() {
 
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
-    setFieldErrors({});
+    const nextFieldErrors: { username?: string; password?: string } = {};
+    if (!username) nextFieldErrors.username = '필수 입력 항목입니다.';
+    if (!password) nextFieldErrors.password = '필수 입력 항목입니다.';
+    setFieldErrors(nextFieldErrors);
     setErrorMsgLines([]);
+    if (nextFieldErrors.username || nextFieldErrors.password) {
+      console.info('[SignIn] login not sent: required fields empty.', {
+        hasUsername: Boolean(username),
+        hasPassword: Boolean(password),
+      });
+      return;
+    }
     setIsLoading(true);
     try {
       await login({ username, password });

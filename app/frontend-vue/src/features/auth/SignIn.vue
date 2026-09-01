@@ -469,10 +469,25 @@ onMounted(async () => {
   }
 });
 
+/** 아이디·비밀번호가 비어 있으면 로그인 API를 호출하지 않는다. */
+function validateLoginForm(): boolean {
+  fieldErrors.value = {};
+  if (!form.value.username) fieldErrors.value.username = t('auth.login.required');
+  if (!form.value.password) fieldErrors.value.password = t('auth.login.required');
+  return !fieldErrors.value.username && !fieldErrors.value.password;
+}
+
 /** 로그인 처리 */
 async function handleLogin(): Promise<void> {
   fieldErrors.value = {};
   errorMsgLines.value = [];
+  if (!validateLoginForm()) {
+    console.info('[SignIn] login not sent: required fields empty.', {
+      hasUsername: Boolean(form.value.username),
+      hasPassword: Boolean(form.value.password),
+    });
+    return;
+  }
   isLoading.value = true;
   try {
     await authStore.login({ username: form.value.username, password: form.value.password });
