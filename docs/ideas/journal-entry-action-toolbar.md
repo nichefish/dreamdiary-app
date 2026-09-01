@@ -39,9 +39,9 @@
 ### 발견된 불일치
 
 **A. 순수 비주얼 (스타일만, DOM 흐름 불변 — 저비용·저위험)**
-- **F1 다운로드 아이콘 폰트 두 세트**: 챕터 `fas fa-download`(`JournalChapterItem.vue`) vs 스레드 `bi bi-download`(`JournalThreadDetailPage.vue`/`…Modal.vue`). 같은 동작·다른 아이콘.
-- **F2 ⋯ 아이콘 크기 불일치**: 엔트리·리플렉션 `fs-6`, 챕터·스레드 목록 `fs-2x`.
-- **F3 인라인 버튼 스타일 분기**: 엔트리 `journal-entry-action-btn` vs 리플렉션·스레드 `btn-bg-light btn-active-color-primary`(둘 다 인라인). 챕터는 헤더라 `btn-sm…btn-outlined`(정당).
+- ✅ **F1 다운로드 아이콘 폰트 두 세트** (완료): 챕터 `fas fa-download`를 `bi bi-download`로 통일해 저널 툴바 아이콘 세트를 일치시킴.
+- ⛔ **F2 ⋯ 아이콘 크기** (제외 — 오탐): `fs-2x`는 `btn-sm`, `fs-6`은 `btn-xs`와 상관하는 맥락 사이징이라 드리프트가 아님.
+- ✅ **F3 인라인 버튼 스타일 분기** (완료): 엔트리의 `journal-entry-action-btn`(칩)을 `btn-bg-light btn-active-color-primary`(플레인)로 통일하고 `journal.scss`의 커스텀 규칙을 제거. 챕터는 헤더라 `btn-sm…btn-outlined`(정당).
 
 **B. 계약 정합 (동작·의미 통일 필요)**
 - **F4 복사 계열 비대칭**: 리플렉션만 split 없이 단일 복사(no-pending/body 없음). 링크 복사는 엔트리에만 있고 챕터·스레드엔 없음.
@@ -53,7 +53,7 @@
 
 ### 추천 진행 순서 (각 = 별도 SAVEPOINT)
 
-1. A그룹 비주얼 통일(F1~F3) — 스타일만, 조작 흐름 불변. 착수 시 UI 변경이라 승인 필요.
+1. ✅ A그룹 비주얼 통일 완료 — F1(아이콘)·F3(버튼 스타일) 통일, F2는 오탐 제외.
 2. F4 복사 계열 통일 — "링크 복사를 챕터·스레드에도 / 리플렉션에 split" 계약 결정 선행.
 3. F5 접기 어포던스 통일 — 엔트리 빠른 토글 여부 등 정책 결정 선행.
 4. F7 액션 레지스트리 수렴 — 위를 근본에서 없애나 리팩터 규모 큼, 마지막.

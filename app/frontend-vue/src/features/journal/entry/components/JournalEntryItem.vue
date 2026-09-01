@@ -92,7 +92,7 @@
           <button
             v-if="axisWritable"
             type="button"
-            class="btn btn-xs btn-icon journal-entry-action-btn"
+            class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
             :title="t('comment.register')"
             @click="openCommentRegist"
           >
@@ -105,7 +105,7 @@
             <!--begin::주 버튼 (해석 포함)-->
             <button
               type="button"
-              class="btn btn-xs btn-icon journal-entry-action-btn copy-split-main"
+              class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary copy-split-main"
               :title="copyIncludeTitle"
               @click="copyEntry('full')"
             >
@@ -115,7 +115,7 @@
             <!--begin::복사 드롭다운 (항상 노출 — 리플렉션 없으면 범위별 본문 결과 동일, 링크 복사 포함)-->
             <button
               type="button"
-              class="btn btn-xs journal-entry-action-btn copy-split-caret"
+              class="btn btn-xs btn-bg-light btn-active-color-primary copy-split-caret"
               data-kt-menu-trigger="click"
               data-kt-menu-placement="bottom-end"
               :title="t('common.menu')"
@@ -156,7 +156,7 @@
           <div class="me-0">
             <button
               type="button"
-              class="btn btn-xs btn-icon journal-entry-action-btn"
+              class="btn btn-xs btn-icon btn-bg-light btn-active-color-primary"
               data-kt-menu-trigger="click"
               data-kt-menu-placement="bottom-end"
               :title="t('common.menu')"
