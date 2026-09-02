@@ -145,6 +145,24 @@ tasks.register('buildFrontend', NpmTask) {
     args = ['run', 'build']
 }
 
+/**
+ * 프론트엔드 테스트(vitest) 실행. `npm run test`(=`vitest run`)를 gradle 태스크로 감싼다.
+ * 배포 경로(bootJar/processResources)에는 물리지 않으며, 아래 `check` 연결로만 게이트에 걸린다.
+ */
+tasks.register('testFrontend', NpmTask) {
+    dependsOn npmInstall
+    workingDir = file("$projectDir/app/frontend-vue")
+    args = ['run', 'test']
+}
+
+/**
+ * `check` 라이프사이클에 프론트엔드 테스트를 포함한다.
+ * 백엔드 test/커버리지 검증(testconfig.gradle)과 함께 `./gradlew check` 로 실행된다.
+ */
+tasks.named('check') {
+    dependsOn tasks.named('testFrontend')
+}
+
 def i18nCatalogRoot = layout.buildDirectory.dir('generated/i18n-catalogs')
 def generateI18nCatalogs = tasks.register('generateI18nCatalogs', GenerateI18nCatalogsTask) {
     group = 'build'
