@@ -16,7 +16,7 @@
 
 | 파일 | 현재 라인 | 델타 | 메모 |
 |---|---|---|---|
-| `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue` | 1422 | 신규 급증 | 검색 + 일괄 태그 패널 + 태그 카테고리 선택 + 리플렉션 수정 배선이 혼재. **분해 1순위** (하위 컴포넌트/컴포저블 추출: 일괄 태그 패널, 태그 카테고리 로직, 리플렉션 모달 배선). 최근 급증분이라 ROI 최고. |
+| `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue` | 1422 → **1161** | ✅ SP1·SP2a 완료 | 일괄 태그(SP1 → `useEntryBulkTag`)·태그 카탈로그(SP2a → `useSearchTagCatalog`) 추출 완료(-261줄, 컴포저블 2·테스트 13). **잔여 1161줄은 검색조건 상태·쿼리/URL 동기화·복사/내보내기·모달 배선이 서로 결합된 코어 — 추가 분해 시 의존 주입 폭증(복사/내보내기 ~14개, 액션바 자식 ~21 props)으로 거짓 캡슐화가 되어 보류.** |
 | `app/frontend-vue/src/features/chat/AppChat.vue` | 1869 | = | 프론트 최대. |
 | `app/frontend-vue/src/features/admin/AdminPage.vue` | 1038 | 증가 | |
 | `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue` | 997 | 증가(847→997) | 이전 추출(highlightKeywords) 후 재증식. 액션·복사 로직 추가 추출 후보. |
@@ -26,6 +26,8 @@
 | `app/backend/.../feature/journal/embedding/service/JournalEntryEmbeddingQueueService.java` | 781 | 신규 상위 | |
 
 god 파일 분해는 회귀 위험이 크므로 **커버리지 확보 후** 착수한다.
+
+**진행 기록 (JournalEntrySearchPage.vue, 2026-08-30)**: 깨끗하게 분리 가능한 두 관심사만 컴포저블로 추출했다 — SP1 일괄 태그(`useEntryBulkTag`, 커밋 935dd1d5f), SP2a 태그 카탈로그·라벨·정규화(`useSearchTagCatalog`, 커밋 84ff83399). DOM/템플릿은 무변경(§4), 각 단계 vue-tsc 0·프론트 전체 스위트 통과(gradle node 직접 검증). 나머지(복사/내보내기·대화형 태그 추가·검색 조건·모달)는 검색 상태와 강결합이라 컴포저블화하면 의존 주입만 늘어 응집을 해쳐 **여기서 종료**한다.
 
 ## P1
 

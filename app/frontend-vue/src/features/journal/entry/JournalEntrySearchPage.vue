@@ -529,6 +529,8 @@ import RelatedContentAddModal from "../shared/modals/RelatedContentAddModal.vue"
 import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
 import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { useEntryBulkTag } from "./composables/useEntryBulkTag";
+import { useSearchTagCatalog } from "./composables/useSearchTagCatalog";
 
 interface JournalEntrySaveEvent {
   entryId?: number | string;
@@ -540,12 +542,6 @@ interface JournalEntrySavePrepareEvent extends JournalEntrySaveEvent {
   waitUntil: (task: Promise<void>) => void;
 }
 
-interface SearchTagDto {
-  id?: number | string;
-  tagId?: number | string;
-  name?: string;
-  ctgr?: string;
-}
 
 const route = useRoute();
 const router = useRouter();
@@ -559,9 +555,6 @@ const conditionChangedMessage = ref("");
 const keywordInput = ref("");
 const keywordInputEl = ref<HTMLInputElement | null>(null);
 const tagInput = ref("");
-const tagCategoryMap = ref<Record<string, string[]>>({});
-const tagCatalog = ref<SearchTagDto[]>([]);
-const tagSelectorLoadedType = ref("");
 const pendingTagName = ref("");
 const tagCategoryChoices = ref<string[]>([]);
 const showAdvanced = ref(false);
@@ -572,203 +565,21 @@ const sort = ref("desc");
 const sortField = ref("date");
 const tagIds = ref<string[]>([]);
 
-// ===== 일괄 태그 (검색 결과에서 선택한 엔트리에 기존 태그 ADD/REMOVE) =====
-/** 선택된 엔트리 ID 집합. 검색 재조회·조건 변경과 무관하게 사용자가 명시적으로 고른다. */
-const selectedEntryIds = ref<Set<number>>(new Set());
-/** 일괄 작업에 적용할 태그 ID 목록(검색 조건 tagIds 와 별개). */
-const bulkTagIds = ref<number[]>([]);
-/** 일괄 태그 입력창(기존 태그 자동완성 재사용). */
-const bulkTagInput = ref("");
-/** 일괄 태그 입력에서 카테고리 확정을 대기 중인 태그 이름(다중 카테고리일 때만 세팅). */
-const bulkPendingTagName = ref("");
-/** 일괄 태그 입력에서 선택 가능한 카테고리 목록(2개 이상일 때만 선택 UI 표시). */
-const bulkTagCategoryChoices = ref<string[]>([]);
-/** 일괄 API 진행 중 플래그(중복 제출 방지). */
-const bulkActionInProgress = ref(false);
-/** 되돌리기 대상 = 같은 검색 화면 세션에서 마지막으로 성공한 일괄 작업 1건(메모리 전용). */
-interface LastBulkAction { operation: string; contentType: string; pairs: { entryId: number; tagId: number }[]; }
-const lastBulkAction = ref<LastBulkAction | null>(null);
+// ===== 태그 카탈로그·라벨·정규화 데이터층 — 상태·동작은 useSearchTagCatalog 컴포저블로 이관 =====
+const {
+  tagCatalog,
+  tagCategoryMap,
+  tagLabelMap,
+  tagCategoryLabelMap,
+  tagNameOptions,
+  cacheTagName,
+  cacheTagCategory,
+  hydrateTagNamesFromEntries,
+  hydrateMissingTagNames,
+  ensureTagSelectorData,
+  findKnownTagName,
+} = useSearchTagCatalog({ type, tagIds });
 
-const selectedCount = computed(() => selectedEntryIds.value.size);
-const allSelected = computed(() => entries.value.length > 0
-  && entries.value.every((e) => e.id != null && selectedEntryIds.value.has(Number(e.id))));
-const canApplyBulk = computed(() => selectedEntryIds.value.size > 0
-  && bulkTagIds.value.length > 0 && !bulkActionInProgress.value);
-/** 일괄 태그 입력이 카테고리 선택 대기 중인지 여부(선택 중엔 입력·추가 버튼 잠금). */
-const isBulkTagCategoryChoicePending = computed(() => bulkTagCategoryChoices.value.length > 0);
-
-/** 엔트리가 선택되었는지 여부. */
-function isEntrySelected(id: number | string | undefined): boolean {
-  return id != null && selectedEntryIds.value.has(Number(id));
-}
-
-/** 엔트리 선택 토글. Set 반응성을 위해 새 Set 으로 재할당한다. */
-function toggleEntrySelection(id: number | string | undefined): void {
-  if (id == null) return;
-  const next = new Set(selectedEntryIds.value);
-  const numId = Number(id);
-  if (next.has(numId)) next.delete(numId); else next.add(numId);
-  selectedEntryIds.value = next;
-}
-
-/** 현재 검색 결과 전체 선택/해제 토글. */
-function toggleSelectAll(): void {
-  if (allSelected.value) {
-    selectedEntryIds.value = new Set();
-    return;
-  }
-  const next = new Set<number>();
-  entries.value.forEach((e) => { if (e.id != null) next.add(Number(e.id)); });
-  selectedEntryIds.value = next;
-}
-
-/** 일괄 태그 ID 의 표시 이름을 태그 카탈로그에서 해석한다. */
-function bulkTagLabel(tagId: number): string {
-  const matched = tagCatalog.value.find((tg) => Number(tg.id ?? tg.tagId) === tagId);
-  return String(matched?.name ?? tagId);
-}
-
-/** 일괄 태그 배지에 표시할 카테고리(ctgr). 미분류(빈 문자열)면 빈 문자열을 반환해 라벨을 숨긴다. */
-function bulkTagCategory(tagId: number): string {
-  return tagCategoryLabelMap.value[String(tagId)] ?? "";
-}
-
-/**
- * 일괄 태그 입력의 태그 이름을 카테고리까지 확정해 일괄 태그 목록에 추가한다.
- * 검색 조건 입력(addTagFromInput)과 동일 계약: 이름이 다중 카테고리면 카테고리 선택 단계로 넘긴다.
- */
-async function addBulkTagFromInput(): Promise<void> {
-  await ensureTagSelectorData();
-  const tagName = findKnownTagName(bulkTagInput.value);
-  const categories = tagCategoryMap.value[tagName] ?? [];
-  if (!tagName || categories.length === 0) {
-    void swalAlert(t("journal.entry.search.tag.select-existing"));
-    return;
-  }
-  if (categories.length === 1) {
-    addBulkTagByNameAndCategory(tagName, categories[0]);
-    return;
-  }
-  bulkPendingTagName.value = tagName;
-  bulkTagCategoryChoices.value = categories;
-}
-
-/** 일괄 태그: 다중 카테고리 중 하나를 골라 확정한다. */
-function selectBulkTagCategory(ctgr: string): void {
-  addBulkTagByNameAndCategory(bulkPendingTagName.value, ctgr);
-}
-
-/** 일괄 태그: 카테고리 선택 대기 상태를 취소한다. */
-function cancelBulkTagCategoryChoice(): void {
-  bulkPendingTagName.value = "";
-  bulkTagCategoryChoices.value = [];
-}
-
-/**
- * 일괄 태그: 이름+카테고리로 tagId 를 확정해 일괄 태그 목록에 추가한다.
- * 확정 시 이름·카테고리를 캐시해 배지에 카테고리 라벨을 표시한다.
- */
-function addBulkTagByNameAndCategory(tagName: string, ctgr: string): void {
-  const matched = tagCatalog.value.find((tg) =>
-    String(tg.name ?? "") === tagName && String(tg.ctgr ?? "") === ctgr
-  );
-  const tagId = matched?.id ?? matched?.tagId;
-  if (tagId == null) { void swalAlert(t("journal.entry.search.tag.not-found")); return; }
-  const numId = Number(tagId);
-  if (bulkTagIds.value.includes(numId)) { void swalAlert(t("journal.entry.search.tag.duplicate")); return; }
-  cacheTagName(numId, tagName);
-  cacheTagCategory(numId, ctgr);
-  bulkTagIds.value = [...bulkTagIds.value, numId];
-  bulkTagInput.value = "";
-  cancelBulkTagCategoryChoice();
-}
-
-/** 선택한 일괄 태그를 목록에서 제거한다. */
-function removeBulkTag(tagId: number): void {
-  bulkTagIds.value = bulkTagIds.value.filter((id) => id !== tagId);
-}
-
-/**
- * 선택 엔트리들에 일괄 태그를 추가·제거한다.
- * 확인 후 POST /api/journal/entries/tags/bulk 를 호출하고, 성공 시 결과를 알린 뒤
- * 선택·일괄 태그를 비우고 현재 검색 조건으로 결과를 재조회한다.
- */
-async function applyBulkTag(operation: "ADD" | "REMOVE"): Promise<void> {
-  if (!canApplyBulk.value) return;
-  const entryIds = [...selectedEntryIds.value];
-  const tagIdList = [...bulkTagIds.value];
-  const opLabel = operation === "ADD"
-    ? t("journal.entry.bulk-tag.op.add")
-    : t("journal.entry.bulk-tag.op.remove");
-  const confirmText = t("journal.entry.bulk-tag.confirm")
-    .replace("{op}", opLabel)
-    .replace("{entries}", String(entryIds.length))
-    .replace("{tags}", String(tagIdList.length));
-  if (!await swalConfirm(confirmText)) return;
-
-  bulkActionInProgress.value = true;
-  try {
-    const res = await axios.post("/api/journal/entries/tags/bulk", {
-      operation,
-      contentType: type.value === "DREAM" ? "JOURNAL_DREAM" : "JOURNAL_DIARY",
-      entryIds,
-      tagIds: tagIdList,
-    });
-    const rslt = res.data?.rsltObj;
-    const changedPairs = Array.isArray(rslt?.changedPairs) ? rslt.changedPairs : [];
-    // 마지막 성공 작업의 실제 변경분만 Undo 대상으로 메모리에 둔다(변경이 없으면 폐기).
-    lastBulkAction.value = changedPairs.length > 0
-      ? {
-          operation,
-          contentType: type.value === "DREAM" ? "JOURNAL_DREAM" : "JOURNAL_DIARY",
-          pairs: changedPairs,
-        }
-      : null;
-    void swalFire({
-      icon: "success",
-      text: t("journal.entry.bulk-tag.result")
-        .replace("{changed}", String(rslt?.changedLinkCount ?? 0))
-        .replace("{entries}", String(rslt?.affectedEntryCount ?? 0)),
-    });
-    selectedEntryIds.value = new Set();
-    bulkTagIds.value = [];
-    cancelBulkTagCategoryChoice();
-    await loadEntries();
-  } catch (e: unknown) {
-    void swalRequestError(e);
-  } finally {
-    bulkActionInProgress.value = false;
-  }
-}
-
-/**
- * 마지막 성공한 일괄 태그 작업을 되돌린다.
- * 서버가 응답한 실제 변경 연결 쌍(pairs)만 역연산한다(원 ADD -> 제거, 원 REMOVE -> 복원).
- * 성공 시 결과를 알리고 Undo 상태를 비운 뒤 현재 검색 조건으로 재조회한다.
- */
-async function undoLastBulk(): Promise<void> {
-  const action = lastBulkAction.value;
-  if (action == null || bulkActionInProgress.value) return;
-  bulkActionInProgress.value = true;
-  try {
-    const res = await axios.post("/api/journal/entries/tags/bulk/undo", {
-      operation: action.operation,
-      contentType: action.contentType,
-      pairs: action.pairs,
-    });
-    const rslt = res.data?.rsltObj;
-    void swalFire({
-      icon: "success",
-      text: t("journal.entry.bulk-tag.undo.result").replace("{reverted}", String(rslt?.changedLinkCount ?? 0)),
-    });
-    lastBulkAction.value = null;
-    await loadEntries();
-  } catch (e: unknown) {
-    void swalRequestError(e);
-  } finally {
-    bulkActionInProgress.value = false;
-  }
-}
 const searchKeywords = ref<string[]>([]);
 /** 꿈 전용 상태 검색 조건. URL에는 NHTMR/HALLUC만 보존하며 복수 선택은 OR로 조회한다. */
 const states = ref<string[]>([]);
@@ -778,20 +589,41 @@ const titleInput = ref("");
 const searchAttempted = ref(false);
 const searchErrorMessage = ref("");
 
-/** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
-const tagLabelMap = ref<Record<string, string>>({});
-
-/**
- * tagId → 카테고리(ctgr) 로컬 캐시. 검색 조건 칩·일괄 태그 배지에 카테고리 라벨을 표시하는 데 쓴다.
- * 빈 문자열은 미분류를 의미하며, 이 경우 배지에 카테고리 라벨을 표시하지 않는다.
- */
-const tagCategoryLabelMap = ref<Record<string, string>>({});
-
-/** tagId 의 카테고리(ctgr)를 캐시한다. cacheTagName 과 짝을 이뤄 같은 소스에서 함께 채운다. */
-function cacheTagCategory(tagId?: number | string, ctgr?: string): void {
-  if (tagId === undefined || tagId === null) return;
-  tagCategoryLabelMap.value[String(tagId)] = String(ctgr ?? "");
-}
+// ===== 일괄 태그 (검색 결과에서 선택한 엔트리에 기존 태그 ADD/REMOVE) — 상태·동작은 useEntryBulkTag 컴포저블로 이관 =====
+const {
+  selectedCount,
+  allSelected,
+  canApplyBulk,
+  isBulkTagCategoryChoicePending,
+  isEntrySelected,
+  toggleEntrySelection,
+  toggleSelectAll,
+  bulkTagInput,
+  bulkTagIds,
+  bulkTagCategoryChoices,
+  bulkActionInProgress,
+  lastBulkAction,
+  bulkTagLabel,
+  bulkTagCategory,
+  addBulkTagFromInput,
+  selectBulkTagCategory,
+  cancelBulkTagCategoryChoice,
+  removeBulkTag,
+  applyBulkTag,
+  undoLastBulk,
+} = useEntryBulkTag({
+  t,
+  entries,
+  type,
+  tagCatalog,
+  tagCategoryMap,
+  tagCategoryLabelMap,
+  ensureTagSelectorData,
+  findKnownTagName,
+  cacheTagName,
+  cacheTagCategory,
+  reloadEntries: loadEntries,
+});
 
 const hasSearchConditions = computed(() =>
   searchKeywords.value.length > 0
@@ -828,7 +660,6 @@ const conditionSummaryLabel = computed(() =>
     .replace("{4}", String(states.value.length))
 );
 
-const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
 const resultDateCount = computed(() => new Set(entries.value.map((entry) => entry.stdrdDt).filter(Boolean)).size);
 const resultMonthCount = computed(() => new Set(entries.value.map((entry) => getYyMm(entry.stdrdDt)).filter(Boolean)).size);
 const tagInputHint = computed(() => isTagCategoryChoicePending.value
@@ -903,99 +734,6 @@ async function loadEntries(): Promise<void> {
     loading.value = false;
     void reinitMetronicAfterDom();
   }
-}
-
-function cacheTagName(tagId?: number | string, name?: string): void {
-  if (tagId === undefined || tagId === null || !name) return;
-  tagLabelMap.value[String(tagId)] = name;
-}
-
-function hydrateTagNamesFromEntries(entryList: JournalEntryDto[]): void {
-  entryList.forEach((entry) => {
-    (entry.tag?.list ?? []).forEach((tag) => {
-      cacheTagName(tag.tagId, tag.name);
-      cacheTagCategory(tag.tagId, tag.ctgr);
-    });
-  });
-}
-
-async function hydrateMissingTagNames(): Promise<void> {
-  const missingIds = tagIds.value.filter((tagId) => !tagLabelMap.value[tagId]);
-  if (missingIds.length === 0) return;
-
-  const requestedType = type.value;
-  try {
-    const res = await axios.get("/api/journal/entry/tags", { params: { type: requestedType } });
-    if (requestedType !== type.value) return;
-    const list = (res.data?.rsltList ?? []) as SearchTagDto[];
-    list.forEach((tag) => {
-      cacheTagName(tag.id ?? tag.tagId, tag.name);
-      cacheTagCategory(tag.id ?? tag.tagId, tag.ctgr);
-    });
-  } catch {
-    // 태그명 표시에 실패해도 tagIds 검색 자체는 유지한다.
-  }
-}
-
-async function ensureTagSelectorData(): Promise<void> {
-  const requestedType = type.value;
-  if (tagSelectorLoadedType.value === requestedType) return;
-
-  try {
-    const [categoryRes, tagRes] = await Promise.all([
-      axios.get("/api/journal/entry/tag/categories", { params: { type: requestedType } }),
-      axios.get("/api/journal/entry/tags", { params: { type: requestedType } }),
-    ]);
-    if (requestedType !== type.value) return;
-    tagCatalog.value = (tagRes.data?.rsltList ?? []) as SearchTagDto[];
-    tagCategoryMap.value = mergeCatalogIntoCategoryMap(
-      normalizeCategoryMap(categoryRes.data?.rsltMap ?? categoryRes.data?.rsltObj),
-      tagCatalog.value,
-    );
-    tagCatalog.value.forEach((tag) => {
-      cacheTagName(tag.id ?? tag.tagId, tag.name);
-      cacheTagCategory(tag.id ?? tag.tagId, tag.ctgr);
-    });
-    tagSelectorLoadedType.value = requestedType;
-  } catch {
-    console.warn("[JournalEntrySearchPage] tag selector data load failed.", { type: requestedType });
-  }
-}
-
-function mergeCatalogIntoCategoryMap(baseMap: Record<string, string[]>, catalog: SearchTagDto[]): Record<string, string[]> {
-  const next: Record<string, string[]> = {};
-  for (const [tagName, categories] of Object.entries(baseMap)) {
-    next[tagName] = [...categories];
-  }
-  catalog.forEach((tag) => {
-    const name = String(tag.name ?? "").trim();
-    if (!name) return;
-    const ctgr = String(tag.ctgr ?? "");
-    const categories = next[name] ? [...next[name]] : [];
-    if (!categories.includes(ctgr)) categories.push(ctgr);
-    next[name] = categories;
-  });
-  return next;
-}
-
-function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-  const out: Record<string, string[]> = {};
-  for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
-    if (!Array.isArray(categories)) continue;
-    out[tagName] = categories.map((c) => String(c ?? "")).filter((c) => c.length > 0);
-  }
-  return out;
-}
-
-function normalizeTagName(raw: string): string {
-  return raw.trim().replace(/\s+/g, "_");
-}
-
-function findKnownTagName(input: string): string {
-  const normalized = normalizeTagName(input);
-  if (tagCategoryMap.value[normalized]) return normalized;
-  return tagNameOptions.value.find((name) => name.toLowerCase() === normalized.toLowerCase()) ?? normalized;
 }
 
 async function addTagFromInput(): Promise<boolean> {
