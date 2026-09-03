@@ -48,8 +48,8 @@ public class JournalEntryEmbeddingSyncJobService {
     private final Executor taskExecutor;
 
     public JournalEntryEmbeddingSyncJobStatusDto startSync() {
-        if (!journalSettingService.isEmbeddingEnabled()) {
-            log.info("Journal entry embedding sync skipped. reason=embeddingDisabled");
+        if (!journalSettingService.isAiEnabled()) {
+            log.info("Journal entry embedding sync skipped. reason=aiDisabled");
             return getStatus();
         }
 
@@ -105,8 +105,8 @@ public class JournalEntryEmbeddingSyncJobService {
     private void runSync() {
         P6SpySqlLogQuietScope.run(() -> {
             try {
-                if (!journalSettingService.isEmbeddingEnabled()) {
-                    log.info("Journal entry embedding sync aborted. reason=embeddingDisabled");
+                if (!journalSettingService.isAiEnabled()) {
+                    log.info("Journal entry embedding sync aborted. reason=aiDisabled");
                     markFailed(new IllegalStateException("Journal embedding is disabled."));
                     return;
                 }
@@ -130,7 +130,7 @@ public class JournalEntryEmbeddingSyncJobService {
     }
 
     private void markProgress(final int processedCount) {
-        if (!journalSettingService.isEmbeddingEnabled()) {
+        if (!journalSettingService.isAiEnabled()) {
             throw new IllegalStateException("Journal embedding is disabled.");
         }
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {

@@ -8,6 +8,8 @@ import io.nicheblog.dreamdiary.feature.journal.setting.repository.JournalSetting
 import io.nicheblog.dreamdiary.feature.journal.setting.type.JournalDefaultEntryView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,16 +48,17 @@ public class JournalSettingService {
     }
 
     /**
-     * AI 임베딩이 활성화되어 있는지 반환한다.
+     * AI 기능(임베딩·개체추출)이 활성화되어 있는지 반환한다.
      *
-     * <p>전역 ADMIN/GLOBAL 행의 {@code embeddingEnabled}를 본다.
-     * false이면 엔트리 적재, 전수 sync, 임베딩 워커를 건너뛴다.</p>
+     * <p>전역 ADMIN/GLOBAL 행의 {@code aiEnabled}를 본다.
+     * false이면 엔트리 적재, 전수 sync, 임베딩·개체추출 워커를 건너뛴다.</p>
      *
      * @return true=활성, false=비활성
      */
-    public boolean isEmbeddingEnabled() {
+    @Cacheable(value = "journalSettingAdmin", key = "'ai-enabled'")
+    public boolean isAiEnabled() {
         final JournalSettingEntity entity = getOrCreateAdminEntity();
-        return Boolean.TRUE.equals(entity.getEmbeddingEnabled());
+        return Boolean.TRUE.equals(entity.getAiEnabled());
     }
 
     /**
@@ -64,11 +67,12 @@ public class JournalSettingService {
      * @param dto 갱신할 설정 DTO
      * @return 갱신된 설정 DTO
      */
+    @CacheEvict(value = "journalSettingAdmin", key = "'ai-enabled'")
     @Transactional
     public JournalSettingDto updateAdminSetting(final JournalSettingDto dto) {
         final JournalSettingEntity entity = getOrCreateAdminEntity();
-        if (dto.getEmbeddingEnabled() != null) {
-            entity.setEmbeddingEnabled(dto.getEmbeddingEnabled());
+        if (dto.getAiEnabled() != null) {
+            entity.setAiEnabled(dto.getAiEnabled());
         }
         entity.setUpdatedBy(AuthUtils.getLoginUsernameOrDefault());
         entity.setUpdatedAt(LocalDateTime.now());
@@ -108,7 +112,7 @@ public class JournalSettingService {
                 .orElseGet(() -> JournalSettingEntity.builder()
                         .scope(SCOPE_USER)
                         .scopeKey(username)
-                        .embeddingEnabled(true)
+                        .aiEnabled(true)
                         .createdBy(username)
                         .createdAt(LocalDateTime.now())
                         .build());
@@ -130,7 +134,7 @@ public class JournalSettingService {
                     final JournalSettingEntity newEntity = JournalSettingEntity.builder()
                             .scope(SCOPE_ADMIN)
                             .scopeKey(SCOPE_KEY_GLOBAL)
-                            .embeddingEnabled(true)
+                            .aiEnabled(true)
                             .createdBy("system")
                             .createdAt(LocalDateTime.now())
                             .build();
@@ -140,7 +144,7 @@ public class JournalSettingService {
 
     private JournalSettingDto toDto(final JournalSettingEntity entity) {
         return JournalSettingDto.builder()
-                .embeddingEnabled(entity.getEmbeddingEnabled())
+                .aiEnabled(entity.getAiEnabled())
                 .build();
     }
 

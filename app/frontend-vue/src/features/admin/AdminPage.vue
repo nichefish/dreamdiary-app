@@ -105,19 +105,19 @@
           <!--begin::저널 임베딩 ON/OFF 토글-->
           <div class="admin-tool-row mb-5">
             <div>
-              <div class="fw-bold">{{ t('admin.page.journal-embedding.title') }}</div>
-              <div class="text-muted fs-8">{{ t('admin.page.journal-embedding.desc') }}</div>
+              <div class="fw-bold">{{ t('admin.page.journal-ai.title') }}</div>
+              <div class="text-muted fs-8">{{ t('admin.page.journal-ai.desc') }}</div>
             </div>
             <div class="admin-tool-actions">
               <label class="form-check form-switch">
                 <input
-                  v-model="store.journalSettingEmbeddingEnabled"
+                  v-model="store.journalSettingAiEnabled"
                   class="form-check-input"
                   type="checkbox"
                   :disabled="store.journalSettingLoading || store.journalSettingSaving"
                   @change="saveJournalEmbeddingSetting"
                 />
-                <span class="form-check-label">{{ store.journalSettingEmbeddingEnabled ? 'ON' : 'OFF' }}</span>
+                <span class="form-check-label">{{ store.journalSettingAiEnabled ? 'ON' : 'OFF' }}</span>
               </label>
             </div>
           </div>
@@ -586,7 +586,7 @@ const BACKGROUND_SYNC_NOTE = t("admin.page.background.queue-note");
 
 const activeTab = computed<AdminTab>(() => (route.query.tab === "ai" ? "ai" : "general"));
 const syncButtonDisabled = computed(
-  () => !store.journalSettingEmbeddingEnabled || store.embeddingSyncRunning || store.embeddingStats.syncRunning
+  () => !store.journalSettingAiEnabled || store.embeddingSyncRunning || store.embeddingStats.syncRunning
 );
 const ollamaHealthBadgeClass = computed(() => {
   const status = store.ollamaHealth?.status ?? "DOWN";
@@ -596,7 +596,7 @@ const ollamaHealthBadgeClass = computed(() => {
 });
 const embeddingFailedRequeueDisabled = computed(
   () =>
-    !store.journalSettingEmbeddingEnabled || store.embeddingRequeueRunning || store.embeddingStats.failed <= 0
+    !store.journalSettingAiEnabled || store.embeddingRequeueRunning || store.embeddingStats.failed <= 0
 );
 const entitySyncButtonDisabled = computed(() => store.entityQueueSyncRunning);
 const entityFailedRequeueDisabled = computed(() => store.entityQueueRequeueRunning || store.entityQueueStats.failed <= 0);
@@ -840,7 +840,7 @@ async function saveJournalEmbeddingSetting() {
     await store.saveJournalSetting();
   } catch {
     // 실패 시 토글을 원래 값으로 복원
-    store.journalSettingEmbeddingEnabled = !store.journalSettingEmbeddingEnabled;
+    store.journalSettingAiEnabled = !store.journalSettingAiEnabled;
   }
 }
 

@@ -94,7 +94,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   const entityQueueRequeueRunning = ref(false);
 
   /** 저널 설정 (임베딩 ON/OFF) */
-  const journalSettingEmbeddingEnabled = ref(true);
+  const journalSettingAiEnabled = ref(true);
   const journalSettingLoading = ref(false);
   const journalSettingSaving = ref(false);
   const journalSettingError = ref("");
@@ -184,7 +184,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   }
 
   async function syncEmbeddingQueue() {
-    if (!journalSettingEmbeddingEnabled.value) {
+    if (!journalSettingAiEnabled.value) {
       return;
     }
     embeddingSyncRunning.value = true;
@@ -215,7 +215,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   }
 
   async function requeueFailedEmbeddingQueue() {
-    if (!journalSettingEmbeddingEnabled.value) {
+    if (!journalSettingAiEnabled.value) {
       return;
     }
     embeddingRequeueRunning.value = true;
@@ -419,7 +419,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     try {
       const res = await axios.get("/api/journal/settings");
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to load journal settings");
-      journalSettingEmbeddingEnabled.value = res.data.rsltObj?.embeddingEnabled !== false;
+      journalSettingAiEnabled.value = res.data.rsltObj?.aiEnabled !== false;
     } catch (error) {
       journalSettingError.value = error instanceof Error ? error.message : "Failed to load journal settings";
     } finally {
@@ -432,10 +432,10 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     journalSettingError.value = "";
     try {
       const res = await axios.put("/api/journal/settings", {
-        embeddingEnabled: journalSettingEmbeddingEnabled.value,
+        aiEnabled: journalSettingAiEnabled.value,
       });
       if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to save journal settings");
-      journalSettingEmbeddingEnabled.value = res.data.rsltObj?.embeddingEnabled !== false;
+      journalSettingAiEnabled.value = res.data.rsltObj?.aiEnabled !== false;
     } catch (error) {
       journalSettingError.value = error instanceof Error ? error.message : "Failed to save journal settings";
       throw error;
@@ -470,7 +470,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     entityQueueSyncResult,
     entityQueueRequeueRunning,
     backfillWorkActive,
-    journalSettingEmbeddingEnabled,
+    journalSettingAiEnabled,
     journalSettingLoading,
     journalSettingSaving,
     journalSettingError,

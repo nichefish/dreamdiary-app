@@ -66,6 +66,7 @@
     <!-- 저널 -->
 
     <!-- 저널 일자 -->
+    <cache alias="journalSettingAdmin" uses-template="defaultTemplate" />
     <cache alias="journalDayYyMnthListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayWeeklyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayDtlDtoByUser" uses-template="defaultTemplate" />

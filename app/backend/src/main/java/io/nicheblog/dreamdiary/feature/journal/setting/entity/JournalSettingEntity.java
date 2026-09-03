@@ -45,11 +45,11 @@ public class JournalSettingEntity {
     @Comment("범위 키 (ADMIN=GLOBAL, USER=username)")
     private String scopeKey;
 
-    /** AI 임베딩 활성화 여부. true=등록/수정 시 embedding+entity queue 적재, false=건너뜀. */
+    /** AI 기능(임베딩·개체추출) 활성화 여부. true=등록/수정 시 embedding+entity queue 적재, false=건너뜀. */
     @Builder.Default
-    @Column(name = "embedding_enabled", nullable = false)
-    @Comment("AI 임베딩 활성화 여부 (1=ON, 0=OFF)")
-    private Boolean embeddingEnabled = true;
+    @Column(name = "ai_enabled", nullable = false)
+    @Comment("AI 기능 활성화 여부 (임베딩·개체추출, 1=ON, 0=OFF)")
+    private Boolean aiEnabled = true;
 
     /** 사용자별 저널 기본 진입 화면. USER 범위에서 사용하며 미설정 값은 서비스 기본값으로 해석한다. */
     @Enumerated(EnumType.STRING)

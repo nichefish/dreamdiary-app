@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,7 @@ public class JournalEntryEntityQueueService {
     private final JournalEntryEntityJobRepository repository;
     private final JournalEntryRepository journalEntryRepository;
     private final JournalEntryEntityRefSyncService journalEntryEntityRefSyncService;
+    private final JournalSettingService journalSettingService;
 
     /**
      * Queue one journal entry for entity sync when its extracted source text changed.
@@ -57,6 +59,11 @@ public class JournalEntryEntityQueueService {
     @Transactional
     public void queueForEntryId(final Integer journalEntryId) throws Exception {
         if (journalEntryId == null) return;
+
+        if (!journalSettingService.isAiEnabled()) {
+            log.debug("Journal entry entity queue skipped. reason=aiDisabled, entryId={}", journalEntryId);
+            return;
+        }
 
         final JournalEntryEntity entry = journalEntryRepository.findById(journalEntryId).orElse(null);
         if (entry == null) {

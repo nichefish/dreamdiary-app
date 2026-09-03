@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.journal.entitycatalog.entity.JournalEntry
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Async;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class JournalEntryEntityWorker {
     private static final Duration STALE_PROCESSING_AGE = Duration.ofMinutes(10);
 
     private final JournalEntryEntityQueueService queueService;
+    private final JournalSettingService journalSettingService;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     /**
@@ -59,6 +61,10 @@ public class JournalEntryEntityWorker {
      * @return successfully processed row count
      */
     public int processPendingBatch(final Integer batchSize) {
+        if (!journalSettingService.isAiEnabled()) {
+            log.debug("Journal entry entity worker skipped. reason=aiDisabled");
+            return 0;
+        }
         queueService.requeueStaleProcessing(LocalDateTime.now().minus(STALE_PROCESSING_AGE), batchSize);
 
         final List<JournalEntryEntityJobEntity> jobList = queueService.claimPendingBatch(batchSize);

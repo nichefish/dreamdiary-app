@@ -858,7 +858,7 @@ if (confirmed && !isAuthPopupRoute(route.name)) {
 **사용자 API**: `GET /api/journal/settings/me` — 로그인 사용자의 저널 설정 조회, `PUT /api/journal/settings/me` — 로그인 사용자의 저널 설정 갱신 (USER/MNGR 권한). 사용자 식별자는 요청 본문에서 받지 않고 인증 정보의 username을 사용한다.
 
 **설정 항목**:
-- `embeddingEnabled` (Boolean) — AI 임베딩 활성화 여부. ON이면 엔트리 등록/수정 시 embedding queue + entity queue에 적재하고, 기동·Admin 전수 sync와 임베딩 워커를 실행한다. OFF면 적재·전수 sync·워커를 건너뛴다.
+- `aiEnabled` (Boolean) — AI 기능(임베딩·개체추출) 활성화 여부. ON이면 엔트리 등록/수정 시 embedding queue + entity queue에 적재하고, 기동·Admin 전수 sync와 워커를 실행한다. OFF면 적재·전수 sync·워커를 건너뛴다.
 - `defaultEntryView` (`DAILY | WEEKLY | MONTHLY`) — 사용자별 저널 기본 진입 화면. 사용자 행이 없거나 값이 비어 있으면 `DAILY`를 반환하며 조회만으로 행을 생성하지 않는다. 최초 저장 시 `scope=USER`, `scope_key=username` 행을 생성한다.
 
 **저장 유일성**: `journal_setting`의 `(scope, scope_key)` 조합은 유일하다. `ADMIN/GLOBAL` 행은 전역 정책, `USER/username` 행은 사용자 정책을 담당한다.

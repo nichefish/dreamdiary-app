@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.entitycatalog.scheduler;
 import io.nicheblog.dreamdiary.feature.journal.config.JournalProperties;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityQueueService;
 import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityWorker;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,7 @@ public class JournalEntryEntityScheduler {
     private final JournalEntryEntityWorker journalEntryEntityWorker;
     private final JournalEntryEntityQueueService journalEntryEntityQueueService;
     private final JournalProperties journalProperties;
+    private final JournalSettingService journalSettingService;
 
     /**
      * Trigger the worker only when pending entity-sync rows exist.
@@ -28,6 +30,10 @@ public class JournalEntryEntityScheduler {
             initialDelayString = "${app.journal.entity.worker.initial-delay-ms:10000}"
     )
     public void processPendingEntityJobs() {
+        if (!journalSettingService.isAiEnabled()) {
+            log.debug("Journal entry entity scheduler skipped. reason=aiDisabled");
+            return;
+        }
         final long pendingCount = journalEntryEntityQueueService.countPending();
         if (pendingCount <= 0) {
             log.debug("Journal entry entity scheduler tick. pending=0");

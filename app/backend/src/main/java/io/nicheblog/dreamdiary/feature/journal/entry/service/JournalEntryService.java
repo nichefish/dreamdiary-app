@@ -83,7 +83,6 @@ public class JournalEntryService
     private final JournalDayResolvedGuard journalDayResolvedGuard;
     private final PrefixContentService prefixContentService;
     private final JournalReflectionRepository journalReflectionRepository;
-    private final io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService journalSettingService;
 
     /**
      * ref(id + contentType) 기반으로 엔트리를 안전 조회한다.
@@ -442,10 +441,8 @@ public class JournalEntryService
     @Override
     public void postRegist(final JournalEntryDto updatedDto) throws Exception {
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), policyResolver.resolve(updatedDto).contentType);
-        if (journalSettingService.isEmbeddingEnabled()) {
-            journalEntryEntityQueueService.queueForEntryId(updatedDto.getKey());
-            journalEntryEmbeddingQueueService.queueForEntryId(updatedDto.getKey());
-        }
+        journalEntryEntityQueueService.queueForEntryId(updatedDto.getKey());
+        journalEntryEmbeddingQueueService.queueForEntryId(updatedDto.getKey());
     }
 
     /**
@@ -590,10 +587,8 @@ public class JournalEntryService
             );
         }
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(postDto, updatedDto), contentType);
-        if (journalSettingService.isEmbeddingEnabled()) {
-            journalEntryEntityQueueService.queueForEntryId(updatedDto.getKey());
-            journalEntryEmbeddingQueueService.queueForEntryId(updatedDto.getKey());
-        }
+        journalEntryEntityQueueService.queueForEntryId(updatedDto.getKey());
+        journalEntryEmbeddingQueueService.queueForEntryId(updatedDto.getKey());
     }
 
     /**

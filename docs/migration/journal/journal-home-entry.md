@@ -21,7 +21,7 @@
 
 | 범위 | 키 | 담당 설정 |
 |---|---|---|
-| `ADMIN` | `GLOBAL` | `embedding_enabled` 전역 정책 |
+| `ADMIN` | `GLOBAL` | `ai_enabled` 전역 정책 |
 | `USER` | 로그인 username | `default_entry_view` 사용자 정책 |
 
 - `GET /api/journal/settings/me`: 사용자 행이 없거나 값이 비어 있으면 DB 쓰기 없이 `DAILY`를 반환한다.
@@ -51,7 +51,7 @@ HAVING COUNT(*) > 1;
 
 ALTER TABLE journal_setting
     ADD COLUMN default_entry_view VARCHAR(20) NULL
-        COMMENT '사용자별 저널 기본 진입 화면 (DAILY/WEEKLY/MONTHLY)' AFTER embedding_enabled,
+        COMMENT '사용자별 저널 기본 진입 화면 (DAILY/WEEKLY/MONTHLY)' AFTER ai_enabled,
     MODIFY COLUMN scope VARCHAR(20) NOT NULL DEFAULT 'ADMIN'
         COMMENT '설정 범위 (ADMIN/USER)',
     MODIFY COLUMN scope_key VARCHAR(100) NOT NULL DEFAULT 'GLOBAL'
