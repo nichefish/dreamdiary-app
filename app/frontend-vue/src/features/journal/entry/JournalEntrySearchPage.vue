@@ -419,7 +419,7 @@
  * JournalEntryItem 을 그대로 사용해 저널 일자 목록과 동일한 UI·컨텍스트 메뉴 제공.
  * 레거시 journal_entry_search_module.ts 의 멀티키워드·멀티태그 AND 검색을 Vue SPA 로 재현.
  */
-import { computed, nextTick, onScopeDispose, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onScopeDispose, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -1100,6 +1100,16 @@ function getDateEntryCountLabel(stdrdDt?: string | null): string {
  */
 const unregisterSearchHost = registerJournalEntrySearchHost(() => loadEntries());
 onScopeDispose(unregisterSearchHost);
+
+/**
+ * 팝업 최초 오픈 시 검색 조건이 없으면 고급 필터를 펼치고 키워드 입력창에 포커스를 준다.
+ * Shift 더블탭 진입(useJournalSearchShortcut) 직후 바로 키워드를 입력·검색할 수 있게 하는 진입 편의다.
+ * 최초 마운트 1회만 적용한다. 이후 조건 제거·초기화로 다시 조건이 비어도 자동 펼침/포커스를 하지 않아
+ * 사용자가 다른 요소를 조작하는 중 포커스를 빼앗기는 상황을 막는다.
+ */
+onMounted(() => {
+  if (!hasSearchConditions.value) void openConditionEditor();
+});
 </script>
 
 <style scoped>

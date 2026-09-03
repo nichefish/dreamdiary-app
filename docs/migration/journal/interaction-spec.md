@@ -32,6 +32,7 @@
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ✓ |
 | 일간 날짜 네비게이션 | 탭(`journal-daily-tab`)은 aside의 `JournalAsideMiniCalendar.vue`만 사용하며 중복 본문 네비게이션 행을 표시하지 않는다. 팝업(`journal-daily`)은 aside가 없으므로 본문 이전/날짜/다음 행을 유지한다. 두 경로 모두 날짜 선택 시 `router.replace({ query: { stdrdDt } })`로 이동한다. 미니 달력은 토/일·공휴일을 빨간색으로 표시하고 공휴일은 `GET /api/schedule/holidays`로 조회한다. | ✓ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
+| 저널 검색 진입 단축키 | `useJournalSearchShortcut`(App.vue 전역 설치) — 좌측 Shift(`ShiftLeft`)를 400ms 이내 연속 두 번 누르면 일기(DIARY) 전체검색 팝업을 새 창으로 연다(툴바 전체검색·본문 선택 우클릭 검색과 동일 `window.open` 계약). 저널 일자 화면(`JournalDayLayout` 하위 라우트, 라우트 meta `journalSearchShortcut`)에서만 동작하고, 검색 팝업 등 다른 화면에서는 무시한다. 입력 필드(input/textarea/select/contenteditable) 포커스·IME 조합 중(`isComposing`)에는 무시해 한글 쌍자음 입력의 Shift 를 가로채지 않는다. Shift 외 다른 키가 끼면 카운터 리셋, 누른 채 반복(`event.repeat`) 무시, 미인증 시 미동작 | ✓ |
 | 엔트리·리플렉션 작성 미리보기 | `JournalEntryRegistModal` / `JournalReflectionRegistModal` 푸터 저장 왼쪽 `미리보기`(`btn-sm btn-light-primary`, `bi-eye`). 클릭 즉시 `/journal/entry/preview-pop` 새 창을 열고 `POST /api/journal/entries/preview`로 미저장 HTML을 `markdownContent`로 렌더한다. 팝업 차단 시 `common.error.popup`. | ✓ |
 | 엔트리 작성 에디터 템플릿 드롭다운 | `JournalEntryRegistModal`의 `RichEditor`에 `:enable-templates="true"` 전달. 툴바 `tmplat` 메뉴버튼을 열면 `GET /api/tmplats/active`(활성 템플릿)를 조회해 제목 목록을 드롭다운으로 노출하고, 선택 시 현재 커서 위치에 `mceInsertContent`로 비파괴 삽입한다(기존 내용 보존). 템플릿이 없거나 조회 실패 시 비활성 "등록된 템플릿이 없습니다" 항목만 표시한다. 다른 화면의 `RichEditor`는 prop 기본값 false 라 드롭다운이 없다. | ✓ |
 | 툴바 floating·aside 열기 | `JournalDayViewToolbar` 전체와 열린 저널 일자 aside의 상단선이 고정 앱 헤더 아래에서 sticky로 일치하고, 툴바는 별도 그림자 없이 하단 경계만 사용. aside 숨김 시 우측 끝 버튼이 `asideStore.show()` 호출. 모바일은 본문 우상단 전용 버튼 유지 | ✓ |
@@ -727,7 +728,7 @@ target 리플렉션 본문 평문 (full·no-pending 모드에서만, 리플렉�
 
 **꿈 상태 OR 검색**: 꿈 유형은 `states[]` URL 파라미터로 `NHTMR`·`HALLUC`를 관리한다. 하나를 선택하면 해당 상태만, 둘을 선택하면 공통 `state` 검색의 `EXISTS + IN` 계약으로 둘 중 하나가 있는 꿈을 조회한다. 상태만으로도 목록 조회와 TXT 내보내기를 실행할 수 있다.
 
-**검색 전/빈 결과/실패 상태**: 키워드·태그·제목·꿈 상태 조건이 모두 비어 있으면 `type`만으로 `GET /api/journal/entries`를 호출하지 않고 검색 전 안내를 표시한다. 검색 전 안내에는 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 추가 CTA를 제공한다. 검색 결과가 0건이면 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 수정 CTA를 제공한다. 초기화는 조건·결과·오류 상태를 비우고 검색 전 상태로 돌아간다. 검색 실패 시 기존 결과 배열과 결과 건수를 비우지 않고 inline 오류 안내를 표시해 실제 0건과 조회 실패를 구분한다.
+**검색 전/빈 결과/실패 상태**: 키워드·태그·제목·꿈 상태 조건이 모두 비어 있으면 `type`만으로 `GET /api/journal/entries`를 호출하지 않고 검색 전 안내를 표시한다. 검색 전 안내에는 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 추가 CTA를 제공한다. 팝업이 검색 조건 없이 처음 마운트될 때는 이 조건 추가 동작(고급 필터 열기 + 키워드 입력 포커스)을 자동으로 1회 실행해 Shift 더블탭 진입 직후 바로 키워드를 입력·검색할 수 있게 한다. 이후 조건 제거·초기화로 다시 조건이 비어도 자동 실행하지 않아 포커스 탈취를 막는다. 검색 결과가 0건이면 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 수정 CTA를 제공한다. 초기화는 조건·결과·오류 상태를 비우고 검색 전 상태로 돌아간다. 검색 실패 시 기존 결과 배열과 결과 건수를 비우지 않고 inline 오류 안내를 표시해 실제 0건과 조회 실패를 구분한다.
 
 **실행 전 입력 확정**: 검색, 전체 복사, TXT 내보내기는 키워드/태그 입력칸에 남아 있는 값을 먼저 URL 검색 조건으로 확정한 뒤 실행한다. 태그명이 여러 카테고리에 걸쳐 있으면 카테고리 선택이 완료될 때까지 검색·복사·내보내기 실행을 보류한다. 이미 추가된 키워드/태그를 다시 입력하면 조건을 조용히 무시하지 않고 locale 메시지로 중복 상태를 안내한다.
 

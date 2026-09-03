@@ -32,11 +32,15 @@ import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import { preloadCategoryMaps } from "@/features/journal/stores/journalModal";
 import { reportRuntimeError } from "@/shared/utils/appRuntimeStatus";
 import { installModalStacking } from "@/shared/utils/modalStack";
+import { useJournalSearchShortcut } from "@/features/journal/composables/useJournalSearchShortcut";
 
 const authStore = useAuthStore();
 const localeStore = useLocaleStore();
 const route = useRoute();
 const appName = import.meta.env.VITE_APP_NAME;
+
+/** 좌측 Shift 더블탭 → 일기 검색 팝업 전역 단축키 설치 */
+useJournalSearchShortcut();
 
 /** 팝업 전용 라우트(검색·저장 엔트리 보기 팝업 등)에서는 AI 챗 숨김 */
 const isPopup = computed(() => ["journal-entry-search", "journal-daily", "journal-entry-view-popup"].includes(String(route.name)));
