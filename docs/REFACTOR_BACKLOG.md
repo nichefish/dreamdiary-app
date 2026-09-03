@@ -11,6 +11,8 @@
 - **차트 청크 지연 로드** — `JournalDayMeta.vue`가 `await import("vue3-apexcharts")` + async CSS로 지연 로드 전환 완료. apexcharts가 초기 번들에서 제거됨.
 - **백엔드 EAGER 페치** — 조사 후 철회. 저널 목록이 태그·댓글을 인라인 렌더하므로 로드가 정당하며, 단순 EAGER→LAZY는 OSIV+DTO 매핑으로 무효. 월간뷰가 무거우면 백엔드가 아니라 프론트 렌더(가상스크롤/페이지네이션) 이슈.
 - **스토어 테스트 안전망** — 대체로 완료(전체 약 223 테스트).
+- **Canonical modify contract — Schedule tag 후처리 누락** — DIG-002에서 확인한 `ScheduleService.modify()`의 canonical `afterWrite()` 누락을 `7ed5bed22`에서 복원하고 `ScheduleServiceValidationTest.modifyRunsCanonicalTagPostProcessing` 회귀 테스트를 추가했다.
+- **Canonical modify contract — User 전처리 누락** — DIG-002에서 확인한 `UserService.modify()`의 `preModify()` 누락을 `7ed5bed22`에서 복원하고 빈 허용 IP 정규화 회귀 테스트를 추가했다. 계정 등록·수정 공통 계약은 `docs/migration/admin/screen-spec.md`와 동기화했다.
 
 ## P0 — god 파일 분해 (가장 시급)
 
