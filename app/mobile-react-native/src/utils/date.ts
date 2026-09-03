@@ -48,3 +48,18 @@ export function clampDateToToday(dateStr: string): string {
   return normalized > today ? today : normalized;
 }
 
+/**
+ * 기준일이 속한 주의 월요일(YYYY-MM-DD).
+ * 백엔드 DateUtils.getWeekStartDateStr·Vue getWeekStartDateStr 와 동일하게 월요일을 주 시작으로 본다.
+ * @param dateStr 기준일 YYYY-MM-DD. 비정상/누락이면 오늘 기준.
+ */
+export function getWeekStartDateStr(dateStr?: string | null): string {
+  const normalized = dateStr ? normalizeDateStr(dateStr) : null;
+  const base = normalized ? parseDateOnly(normalized) : new Date();
+  const dow = base.getDay();
+  // 일요일(0)은 직전 월요일로 -6, 그 외는 월요일까지 1 - dow
+  const offset = dow === 0 ? -6 : 1 - dow;
+  base.setDate(base.getDate() + offset);
+  return toDateStr(base);
+}
+

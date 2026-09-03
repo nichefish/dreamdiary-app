@@ -1,7 +1,7 @@
 # 모바일 앱 실행 가이드 (LTE + Tailscale)
 
 폰을 **LTE(셀룰러)** 로만 쓰고, PC 백엔드에 **Tailscale**로 붙여 DreamDiary 모바일 앱을 띄우는 절차입니다.  
-화면·API 스펙은 [`screen-spec.md`](./screen-spec.md)를 참고하세요.
+모바일 v0.1 제품·화면 계약은 [`screen-spec.md`](./screen-spec.md)를 참고하세요.
 
 ---
 
@@ -141,13 +141,16 @@ npx expo run:android
 
 ---
 
-## 6. 스모크 테스트 체크리스트
+## 6. v0.1 계약 스모크 테스트 체크리스트
 
 - [ ] 폰 LTE + Tailscale Connected
 - [ ] 로그인 / 앱 재시작 후 세션 유지
-- [ ] **오늘** 탭: 날짜 이동, 새로고침, FAB → 기록 추가
-- [ ] **달력** / **태그** / **검색** → 상세 → 수정·삭제 후 목록 갱신
-- [ ] **AI 대화**: 연결, 전송, 중단
+- [ ] 일별 조회 → 상세 읽기
+- [ ] 주별 조회 → 상세 읽기
+- [ ] 월별 조회 → 상세 읽기
+- [ ] 키워드 검색 → 상세 읽기
+- [ ] 태그 검색 → 상세 읽기
+- [ ] 날짜·검색·상세 흐름에 저널 생성·수정·삭제 조작이 노출되지 않음
 
 ---
 
@@ -171,4 +174,4 @@ npx expo run:android
 | `app/mobile-react-native/.env.example` | 환경 변수 템플릿 |
 | `app/mobile-react-native/README.md` | 패키지 개요 |
 | `app/mobile-react-native/eas.json` | EAS 프로필 |
-| `docs/migration/mobile/screen-spec.md` | 화면·Phase 현황 |
+| `docs/migration/mobile/screen-spec.md` | 모바일 v0.1 제품·화면 계약과 구현 현황 |

@@ -15,12 +15,15 @@ React Native / Expo based mobile starter. It is intentionally independent from `
 
 Gradle Node만 있을 때는 루트에서 `.\gradlew.bat npmSetup` 후 `mobileAndroid` 실행.
 
-## Goals
+## v0.1 Goals
 
-- Fast dream capture
-- Daily emotion capture
-- AI chat entry point
-- Thin API client layer for the Spring Boot API
+- Read journal entries by day, week, and month
+- Search journal entries by keyword and tag
+- Open a search or period result and read its full content
+- Keep journal data read-only in the mobile user flow
+
+The product and screen contract is documented in
+[`docs/migration/mobile/screen-spec.md`](../../docs/migration/mobile/screen-spec.md).
 
 ## Start
 
@@ -120,8 +123,6 @@ npx eas-cli build --platform android --profile preview
    - Login
    - Today date navigation
    - Calendar/Tag/Search to EntryDetail
-   - Add/Edit/Delete entry flow
-   - AI chat WebSocket connect/send/cancel
 
 ## Structure
 
@@ -136,4 +137,3 @@ app/mobile-react-native/
 ```
 
 Authentication uses cookie-based JWT (`credentials: "include"`) for REST. Login and `POST /api/auth/refresh` also return `Authorization: Bearer …`; the app persists the access token in SecureStore with an in-memory cache (`src/auth/accessToken.ts`) for WebSocket handshake headers on real devices where cookies may not attach to `WebSocket`.
-

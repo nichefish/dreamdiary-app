@@ -9,9 +9,7 @@ import {
   Text,
   View
 } from "react-native";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../navigation/AppNavigator";
+import { useFocusEffect } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import { getMonthlyJournalDays } from "../api/dreamDiaryApi";
 import { colors } from "../theme/colors";
@@ -60,7 +58,6 @@ function calcMonthStats(monthDays: JournalDay[]): MonthStats {
 // ─── 메인 화면 ──────────────────────────────────────────────
 
 export function ProfileScreen() {
-  const rootNav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { user, logout } = useAuth();
   const [loggingOut, setLoggingOut]     = useState(false);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -172,14 +169,6 @@ export function ProfileScreen() {
           )}
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => rootNav.navigate("AiChat")}
-          style={styles.aiChatButton}
-        >
-          <Text style={styles.aiChatText}>AI 대화</Text>
-        </Pressable>
-
         {/* 로그아웃 버튼 */}
         <Pressable
           accessibilityRole="button"
@@ -289,14 +278,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  aiChatButton: {
-    backgroundColor: colors.accent,
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  aiChatText: { color: colors.onAccent, fontSize: 16, fontWeight: "700" },
   logoutButtonDisabled: { opacity: 0.6 },
   logoutText: { color: "#fff", fontSize: 16, fontWeight: "700" }
 });
