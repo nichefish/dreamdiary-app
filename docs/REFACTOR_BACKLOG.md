@@ -33,7 +33,7 @@ god 파일 분해는 회귀 위험이 크므로 **커버리지 확보 후** 착�
 
 ## P1
 
-- **공유 API 클라이언트 수렴** — 스토어 HTTP를 `@/shared/api/client`(타입드 `AjaxResponse<T>`/`PageResult<T>` + 언랩)로 수렴. 현재 채택 9 스토어 / raw axios 38. **강제 이관하지 않고 touch 시 기회적 채택**(컨벤션: `docs/DEV_NOTES.md` §frontend SPA 구조). 고빈도·무테스트 스토어(chat·userAdmin·adminPage·journalAnnual·journalThreadDetail)는 이관 전 **테스트 선행**.
+- **공유 API 클라이언트 수렴** — 스토어 HTTP를 `@/shared/api/client`(타입드 `AjaxResponse<T>`/`PageResult<T>` + 언랩)로 수렴. 현재 채택 14 스토어 / raw axios 33. **강제 이관하지 않고 touch 시 기회적 채택**(컨벤션: `docs/DEV_NOTES.md` §frontend SPA 구조). 지정 고빈도·무테스트 스토어 4종은 이관 전 **테스트 선행**으로 모두 완료: chat(46a6f4cd9)·userAdmin(2ae4f1eea→c2d72c96d)·adminPage(90f255a0c→4dd21d27b)·journalThreadDetail(159e41dce→a38fa1fdd)·journalAnnual(f16b2af3d→435af55bf). 잔여 raw axios 스토어는 touch 시 기회적 채택.
 - **프론트 테스트 게이트화 (구조 이슈, 미해결)** — `npm run test`가 어떤 빌드 게이트에도 걸리지 않아 스펙이 조용히 썩는다. `build.gradle`/CI 변경을 수반하므로 **별도 승인** 후 진행.
 
 ## P2 — 위생

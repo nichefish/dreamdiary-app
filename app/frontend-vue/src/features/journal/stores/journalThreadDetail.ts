@@ -1,5 +1,5 @@
 import { computed, ref, type Ref, type ComputedRef } from "vue";
-import axios from "axios";
+import { apiGet, apiPost, apiDelete } from "@/shared/api/client";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import type { JournalEntryDto, RelatedContentItem } from "@/features/journal/stores/journal";
@@ -88,14 +88,14 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
       -1,
     ) + 1;
     try {
-      const response = await axios.post("/api/my/prefixes", {
+      const response = await apiPost<ThreadPrefix>("/api/my/prefixes", {
         name,
         color: null,
         sortOrder,
       }, {
         params: { contentType: "JOURNAL_THREAD" },
       });
-      const created = response.data?.rsltObj as ThreadPrefix | undefined;
+      const created = response.rsltObj;
       if (!created?.id) {
         console.error("[journalThread] quickAddPrefix rejected empty response");
         throw new Error(t("journal.thread.prefix.quick-add.failure"));
@@ -163,7 +163,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
     try {
       registSurface.value = surface;
       registOpen.value = true;
-      const res = await axios.get(`/api/journal/threads/${id}`);
+      const res = await apiGet<JournalThreadDto>(`/api/journal/threads/${id}`);
       if (requestToken !== registRequestToken) {
         console.info("[journalThread] loadModify discarded stale response", {
           id,
@@ -173,7 +173,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
         });
         return false;
       }
-      const dto = res.data?.rsltObj as JournalThreadDto | null | undefined;
+      const dto = res.rsltObj;
       if (!dto?.id || dto.id !== id) {
         console.warn("[journalThread] loadModify rejected invalid detail", {
           requestedId: id,
@@ -284,14 +284,14 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
       const url = registModel.value.id != null
         ? `/api/journal/threads/${registModel.value.id}`
         : "/api/journal/threads";
-      const res = await axios.post(url, fd, {
+      const res = await apiPost(url, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (res.data?.rslt) {
+      if (res.rslt) {
         closeRegist();
         await swalAjaxResult({
           rslt: true,
-          message: res.data?.message,
+          message: res.message,
           successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
         });
         void fetchList(0);
@@ -299,7 +299,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
       }
       void swalAjaxResult({
         rslt: false,
-        message: res.data?.message,
+        message: res.message,
         failureFallback: t("common.result.failure"),
       });
       return false;
@@ -361,18 +361,18 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
     const confirmed = await swalConfirm(t("journal.thread.delete.confirm"));
     if (!confirmed) return;
     try {
-      const res = await axios.delete(`/api/journal/threads/${id}`);
-      if (res.data?.rslt) {
+      const res = await apiDelete(`/api/journal/threads/${id}`);
+      if (res.rslt) {
         await swalAjaxResult({
           rslt: true,
-          message: res.data?.message,
+          message: res.message,
           successFallback: t("common.result.deleted"),
         });
         void fetchList(0);
       } else {
         void swalAjaxResult({
           rslt: false,
-          message: res.data?.message,
+          message: res.message,
           failureFallback: t("journal.thread.delete.failure"),
         });
       }
@@ -397,7 +397,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
       for (const relatedThreadId of relatedThreadIds) {
         params.append("relatedThreadIds", String(relatedThreadId));
       }
-      const res = await axios.get(`/api/journal/threads/${id}/entries`, {
+      const res = await apiGet<JournalEntryDto>(`/api/journal/threads/${id}/entries`, {
         params: params.toString() ? params : undefined,
       });
       if (requestToken !== detailRequestToken || detailModel.value?.id !== id) {
@@ -409,7 +409,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
         });
         return;
       }
-      detailEntries.value = (res.data?.rsltList ?? []) as JournalEntryDto[];
+      detailEntries.value = res.rsltList ?? [];
     } catch (e: unknown) {
       console.error("[journalThread] fetchDetailEntries failed", { id }, e);
       if (requestToken === detailRequestToken) {
@@ -431,8 +431,8 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
     detailRelatedThreadsLoading.value = true;
     detailRelatedError.value = null;
     try {
-      const res = await axios.get(`/api/related/JOURNAL_THREAD/${id}`);
-      detailRelatedThreads.value = (res.data?.rsltList ?? []) as RelatedContentItem[];
+      const res = await apiGet<RelatedContentItem>(`/api/related/JOURNAL_THREAD/${id}`);
+      detailRelatedThreads.value = res.rsltList ?? [];
       const aliveIds = new Set(
         detailRelatedThreads.value.map((r) => r.targetId).filter((tid): tid is number => tid != null),
       );
@@ -455,15 +455,15 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
    */
   async function addRelatedThread(baseThreadId: number, targetThreadId: number): Promise<boolean> {
     try {
-      const res = await axios.post(`/api/related/JOURNAL_THREAD/${baseThreadId}`, {
+      const res = await apiPost(`/api/related/JOURNAL_THREAD/${baseThreadId}`, {
         srcId: baseThreadId,
         srcContentType: "JOURNAL_THREAD",
         targetId: targetThreadId,
         targetContentType: "JOURNAL_THREAD",
         relationType: "REFERENCE",
       });
-      if (res.data?.rslt !== true) {
-        void swalAjaxResult({ rslt: false, message: res.data?.message, failureFallback: t("common.result.failure") });
+      if (res.rslt !== true) {
+        void swalAjaxResult({ rslt: false, message: res.message, failureFallback: t("common.result.failure") });
         return false;
       }
       await fetchRelatedThreads(baseThreadId);
@@ -485,10 +485,10 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
    */
   async function removeRelatedThread(baseThreadId: number, relatedContentId: number): Promise<boolean> {
     try {
-      const res = await axios.delete(`/api/related/${relatedContentId}`);
-      const rslt = res.data?.rslt === true;
+      const res = await apiDelete(`/api/related/${relatedContentId}`);
+      const rslt = res.rslt === true;
       if (!rslt) {
-        void swalAjaxResult({ rslt: false, message: res.data?.message, failureFallback: t("common.result.failure") });
+        void swalAjaxResult({ rslt: false, message: res.message, failureFallback: t("common.result.failure") });
         return false;
       }
       // fetchRelatedThreads가 살아 있는 targetId만 남기도록 합성 선택을 prune한다
@@ -535,7 +535,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
     detailLoading.value = true;
     detailModel.value = null;
     try {
-      const res = await axios.get(`/api/journal/threads/${id}`);
+      const res = await apiGet<JournalThreadDto>(`/api/journal/threads/${id}`);
       if (requestToken !== detailRequestToken) {
         console.info("[journalThread] loadDetail discarded stale response", {
           id,
@@ -545,7 +545,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
         });
         return false;
       }
-      const loadedDetail = res.data?.rsltObj as JournalThreadDto | null | undefined;
+      const loadedDetail = res.rsltObj;
       if (!loadedDetail) {
         console.warn("[journalThread] loadDetail rejected empty detail", { id, surface });
         detailModel.value = null;
@@ -619,10 +619,10 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
 
     try {
       const [detailRes, entriesRes] = await Promise.all([
-        axios.get(`/api/journal/threads/${id}`),
-        axios.get(`/api/journal/threads/${id}/entries`),
+        apiGet<JournalThreadDto>(`/api/journal/threads/${id}`),
+        apiGet<JournalEntryDto>(`/api/journal/threads/${id}/entries`),
       ]);
-      const refreshedDetail = detailRes.data?.rsltObj as JournalThreadDto | undefined;
+      const refreshedDetail = detailRes.rsltObj;
       if (!refreshedDetail) {
         console.warn("[journalThread] refreshOpenDetail rejected empty detail", { id });
         return false;
@@ -637,7 +637,7 @@ export function createJournalThreadDetail(deps: JournalThreadDetailDeps) {
       }
 
       detailModel.value = refreshedDetail;
-      detailEntries.value = (entriesRes.data?.rsltList ?? []) as JournalEntryDto[];
+      detailEntries.value = entriesRes.rsltList ?? [];
       return true;
     } catch (e: unknown) {
       console.error("[journalThread] refreshOpenDetail failed", { id }, e);

@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiGet, apiPost, apiPut, apiPatch, assertOk } from "@/shared/api/client";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
 import {
   DEFAULT_ADMIN_PAGE_META,
@@ -17,6 +17,7 @@ import {
   type CacheMap,
   type EmbeddingStats,
   type EmbeddingSyncResult,
+  type EmbeddingSyncJobStatus,
   type EmbeddingQualityEvalReport,
   type EntityQueueStats,
   type EntityQueueSyncResult,
@@ -144,8 +145,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   async function fetchBootstrap() {
     bootstrapLoading.value = true;
     try {
-      const res = await axios.get("/api/admin/page/bootstrap");
-      const payload = res.data?.rsltObj ?? {};
+      const res = await apiGet<{ meta?: Partial<AdminPageMeta>; roleList?: RoleRow[] }>("/api/admin/page/bootstrap");
+      const payload = res.rsltObj ?? {};
       meta.value = { ...DEFAULT_ADMIN_PAGE_META, ...(payload.meta ?? {}) };
       roles.value = Array.isArray(payload.roleList) ? payload.roleList : [];
     } finally {
@@ -156,9 +157,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   async function fetchOllamaHealth() {
     ollamaHealthError.value = "";
     try {
-      const res = await axios.get("/api/admin/ollama/health");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Ollama health request failed");
-      ollamaHealth.value = normalizeOllamaHealth(res.data.rsltObj);
+      const res = await apiGet<Partial<OllamaHealth>>("/api/admin/ollama/health");
+      assertOk(res, "Ollama health request failed");
+      ollamaHealth.value = normalizeOllamaHealth(res.rsltObj);
     } catch (error) {
       ollamaHealthError.value = error instanceof Error ? error.message : "Ollama health request failed";
     }
@@ -169,11 +170,11 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingStatsError.value = "";
     try {
       const [statsRes] = await Promise.all([
-        axios.get("/api/admin/journal-entry-embeddings/stats"),
+        apiGet<Partial<EmbeddingStats>>("/api/admin/journal-entry-embeddings/stats"),
         fetchOllamaHealth(),
       ]);
-      if (!statsRes.data?.rslt) throw new Error(statsRes.data?.message ?? "Embedding stats request failed");
-      embeddingStats.value = normalizeEmbeddingStats(statsRes.data.rsltObj);
+      assertOk(statsRes, "Embedding stats request failed");
+      embeddingStats.value = normalizeEmbeddingStats(statsRes.rsltObj);
       embeddingSyncResult.value = embeddingStats.value.syncResult;
     } catch (error) {
       embeddingStatsError.value = error instanceof Error ? error.message : "Embedding stats request failed";
@@ -190,9 +191,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingSyncRunning.value = true;
     embeddingStatsError.value = "";
     try {
-      const res = await axios.post("/api/admin/journal-entry-embeddings/sync");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding sync request failed");
-      const status = normalizeEmbeddingSyncJobStatus(res.data.rsltObj);
+      const res = await apiPost<Partial<EmbeddingSyncJobStatus>>("/api/admin/journal-entry-embeddings/sync");
+      assertOk(res, "Embedding sync request failed");
+      const status = normalizeEmbeddingSyncJobStatus(res.rsltObj);
       embeddingSyncResult.value = status.result;
       embeddingStats.value = {
         ...embeddingStats.value,
@@ -221,8 +222,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingRequeueRunning.value = true;
     embeddingStatsError.value = "";
     try {
-      const res = await axios.post("/api/admin/journal-entry-embeddings/requeue-failed");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding requeue request failed");
+      const res = await apiPost("/api/admin/journal-entry-embeddings/requeue-failed");
+      assertOk(res, "Embedding requeue request failed");
       await fetchEmbeddingStats();
     } catch (error) {
       embeddingStatsError.value = error instanceof Error ? error.message : "Embedding requeue request failed";
@@ -236,9 +237,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     embeddingQualityEvalRunning.value = true;
     embeddingQualityEvalError.value = "";
     try {
-      const res = await axios.get("/api/admin/journal-entry-embeddings/quality-eval");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Embedding quality eval failed");
-      embeddingQualityEvalReport.value = normalizeEmbeddingQualityEvalReport(res.data.rsltObj);
+      const res = await apiGet<Partial<EmbeddingQualityEvalReport>>("/api/admin/journal-entry-embeddings/quality-eval");
+      assertOk(res, "Embedding quality eval failed");
+      embeddingQualityEvalReport.value = normalizeEmbeddingQualityEvalReport(res.rsltObj);
     } catch (error) {
       embeddingQualityEvalError.value = error instanceof Error ? error.message : "Embedding quality eval request failed";
     } finally {
@@ -250,9 +251,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     entityQueueStatsLoading.value = true;
     entityQueueError.value = "";
     try {
-      const res = await axios.get("/api/admin/journal-entry-entities/stats");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Entity queue stats request failed");
-      entityQueueStats.value = normalizeEntityQueueStats(res.data.rsltObj);
+      const res = await apiGet<Partial<EntityQueueStats>>("/api/admin/journal-entry-entities/stats");
+      assertOk(res, "Entity queue stats request failed");
+      entityQueueStats.value = normalizeEntityQueueStats(res.rsltObj);
     } catch (error) {
       entityQueueError.value = error instanceof Error ? error.message : "Entity queue stats request failed";
     } finally {
@@ -265,9 +266,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     entityQueueSyncRunning.value = true;
     entityQueueError.value = "";
     try {
-      const res = await axios.post("/api/admin/journal-entry-entities/sync");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Entity queue sync request failed");
-      entityQueueSyncResult.value = normalizeEntityQueueSyncResult(res.data.rsltObj);
+      const res = await apiPost<Partial<EntityQueueSyncResult>>("/api/admin/journal-entry-entities/sync");
+      assertOk(res, "Entity queue sync request failed");
+      entityQueueSyncResult.value = normalizeEntityQueueSyncResult(res.rsltObj);
       await fetchEntityQueueStats();
     } catch (error) {
       entityQueueError.value = error instanceof Error ? error.message : "Entity queue sync request failed";
@@ -281,8 +282,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     entityQueueRequeueRunning.value = true;
     entityQueueError.value = "";
     try {
-      const res = await axios.post("/api/admin/journal-entry-entities/requeue-failed");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Entity queue failed-row requeue request failed");
+      const res = await apiPost("/api/admin/journal-entry-entities/requeue-failed");
+      assertOk(res, "Entity queue failed-row requeue request failed");
       await fetchEntityQueueStats();
     } catch (error) {
       entityQueueError.value = error instanceof Error ? error.message : "Entity queue failed-row requeue request failed";
@@ -295,22 +296,22 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   async function syncHolyday(yy: string) {
     const fd = new FormData();
     fd.append("yy", yy);
-    const res = await axios.post("/api/holyday/get-holyday-account.do", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.holyday.sync.failure"));
-    return res.data?.message ?? t("common.result.processed");
+    const res = await apiPost("/api/holyday/get-holyday-account.do", fd);
+    assertOk(res, t("admin.page.holyday.sync.failure"));
+    return res.message ?? t("common.result.processed");
   }
 
   async function fetchNotion(dataType: string, dataId: string) {
-    const res = await axios.get("/api/notion/notion.do", { params: { dataType, dataId } });
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.notion.failure"));
-    return res.data;
+    const res = await apiGet("/api/notion/notion.do", { params: { dataType, dataId } });
+    assertOk(res, t("admin.page.notion.failure"));
+    return res;
   }
 
   async function fetchCacheMap() {
     cacheLoading.value = true;
     try {
-      const res = await axios.get("/api/cache/cache-active-map");
-      cacheMap.value = (res.data?.rsltMap ?? {}) as CacheMap;
+      const res = await apiGet("/api/cache/cache-active-map");
+      cacheMap.value = ((res as { rsltMap?: CacheMap }).rsltMap ?? {}) as CacheMap;
     } finally {
       cacheLoading.value = false;
     }
@@ -319,8 +320,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   async function fetchCacheDetail(cacheName: string, cacheKey: string) {
     cacheLoading.value = true;
     try {
-      const res = await axios.get("/api/cache/cache-active-dtl", { params: { cacheName, cacheKey } });
-      cacheDetail.value = (res.data?.rsltObj ?? null) as CacheDetail;
+      const res = await apiGet("/api/cache/cache-active-dtl", { params: { cacheName, cacheKey } });
+      cacheDetail.value = (res.rsltObj ?? null) as CacheDetail;
     } finally {
       cacheLoading.value = false;
     }
@@ -329,8 +330,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
   async function clearCacheByName(cacheName: string) {
     const fd = new FormData();
     fd.append("cacheName", cacheName);
-    const res = await axios.post("/api/cache/cache-clear-by-nm", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.cache.delete.failure"));
+    const res = await apiPost("/api/cache/cache-clear-by-nm", fd);
+    assertOk(res, t("admin.page.cache.delete.failure"));
     const next = { ...cacheMap.value };
     delete next[cacheName];
     cacheMap.value = next;
@@ -340,18 +341,18 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     const fd = new FormData();
     fd.append("cacheName", cacheName);
     fd.append("cacheKey", cacheKey);
-    const res = await axios.post("/api/cache/cache-evict", fd);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.cache.item.delete.failure"));
+    const res = await apiPost("/api/cache/cache-evict", fd);
+    assertOk(res, t("admin.page.cache.item.delete.failure"));
     const cache = { ...(cacheMap.value[cacheName] ?? {}) };
     delete cache[cacheKey];
     cacheMap.value = { ...cacheMap.value, [cacheName]: cache };
   }
 
   async function clearAllCaches() {
-    const res = await axios.post("/api/cache-clear");
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("admin.page.cache.all.delete.failure"));
+    const res = await apiPost("/api/cache-clear");
+    assertOk(res, t("admin.page.cache.all.delete.failure"));
     cacheMap.value = {};
-    return res.data?.message ?? t("common.result.processed");
+    return res.message ?? t("common.result.processed");
   }
 
 
@@ -359,9 +360,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     chatRagSettingsLoading.value = true;
     chatRagSettingsError.value = "";
     try {
-      const res = await axios.get("/admin/chat/settings");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to load chat settings");
-      const obj = res.data.rsltObj ?? {};
+      const res = await apiGet("/admin/chat/settings");
+      assertOk(res, "Failed to load chat settings");
+      const obj = (res.rsltObj ?? {}) as Record<string, unknown>;
       chatRagSettings.value = {
         ragEnabled: obj.ragEnabled !== false,
         ragTopK: Number(obj.ragTopK ?? 5),
@@ -383,7 +384,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     chatRagSettingsSaving.value = true;
     chatRagSettingsError.value = "";
     try {
-      const res = await axios.patch("/admin/chat/settings", {
+      const res = await apiPatch("/admin/chat/settings", {
         ragEnabled: chatRagSettings.value.ragEnabled,
         ragTopK: chatRagSettings.value.ragTopK,
         ragMinScore: chatRagSettings.value.ragMinScore,
@@ -392,8 +393,8 @@ export const useAdminPageStore = defineStore("adminPage", () => {
         ragStanceTopK: chatRagSettings.value.ragStanceTopK,
         ragSynthesisMinScore: chatRagSettings.value.ragSynthesisMinScore,
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to save chat settings");
-      const obj = res.data.rsltObj ?? {};
+      assertOk(res, "Failed to save chat settings");
+      const obj = (res.rsltObj ?? {}) as Record<string, unknown>;
       chatRagSettings.value = {
         ragEnabled: obj.ragEnabled !== false,
         ragTopK: Number(obj.ragTopK ?? chatRagSettings.value.ragTopK),
@@ -403,7 +404,7 @@ export const useAdminPageStore = defineStore("adminPage", () => {
         ragStanceTopK: Number(obj.ragStanceTopK ?? chatRagSettings.value.ragStanceTopK),
         ragSynthesisMinScore: Number(obj.ragSynthesisMinScore ?? chatRagSettings.value.ragSynthesisMinScore),
       };
-      return res.data?.message ?? "Saved";
+      return res.message ?? "Saved";
     } catch (error) {
       chatRagSettingsError.value =
         error instanceof Error ? error.message : "Failed to save chat settings";
@@ -417,9 +418,9 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     journalSettingLoading.value = true;
     journalSettingError.value = "";
     try {
-      const res = await axios.get("/api/journal/settings");
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to load journal settings");
-      journalSettingAiEnabled.value = res.data.rsltObj?.aiEnabled !== false;
+      const res = await apiGet<{ aiEnabled?: boolean }>("/api/journal/settings");
+      assertOk(res, "Failed to load journal settings");
+      journalSettingAiEnabled.value = res.rsltObj?.aiEnabled !== false;
     } catch (error) {
       journalSettingError.value = error instanceof Error ? error.message : "Failed to load journal settings";
     } finally {
@@ -431,11 +432,11 @@ export const useAdminPageStore = defineStore("adminPage", () => {
     journalSettingSaving.value = true;
     journalSettingError.value = "";
     try {
-      const res = await axios.put("/api/journal/settings", {
+      const res = await apiPut<{ aiEnabled?: boolean }>("/api/journal/settings", {
         aiEnabled: journalSettingAiEnabled.value,
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? "Failed to save journal settings");
-      journalSettingAiEnabled.value = res.data.rsltObj?.aiEnabled !== false;
+      assertOk(res, "Failed to save journal settings");
+      journalSettingAiEnabled.value = res.rsltObj?.aiEnabled !== false;
     } catch (error) {
       journalSettingError.value = error instanceof Error ? error.message : "Failed to save journal settings";
       throw error;
