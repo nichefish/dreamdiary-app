@@ -614,6 +614,8 @@ interface TodoRow {
 **태그 프로필 cloudSizeLock**: 모달 세그먼트 컨트롤에서 MAX 선택 시 sized 태그클라우드 크기를 `ts-9`, MIN이면 `ts-1`로 고정한다(AUTO는 빈도 산출). 저장·삭제 후 클라우드 재조회로 반영. 엔트리 본문 태그줄에는 적용하지 않는다.
 
 
+**태그 프로필 본문(상징 해석)**: 모달의 프로필 본문(`content`, `LONGTEXT`)은 태그의 자유서술 자리다. 컨텐츠타입이 `JOURNAL_DREAM`이면 라벨·플레이스홀더를 "상징 해석"으로 노출해(`attachable.tag.profile.dream-interpretation` / `.dream-interpretation-placeholder`), 이 태그 상징이 반복해서 나타날 때의 의미·변주를 기록하는 계약이다. `JOURNAL_DAY`·`JOURNAL_DIARY`는 범용 "프로필" 라벨(`attachable.tag.profile.profile`)을 유지한다. 저장 데이터·API(`POST /api/tags/{tagId}/profile`)는 컨텐츠타입과 무관하게 동일하며, 개별 꿈 Reflection(엔트리 기준면)과 태그 상징 해석(태그 기준면)은 서로 다른 축이라 같은 슬롯을 다투지 않는다.
+
 **태그 프로필 저장·삭제 후 갱신** (`JournalTagProfileModal`): 월간/주간/일간 등은 성공 알림 확인 후 `refreshJournalDaysForRoute` + contentType 대응 `fetchTagCloud`(day/diary/dream). 결산 상세(`annual-detail`)는 일자 `fetchTagCloud`가 아니라 `useJournalAnnualStore.fetchTagRows(yy, activeSection)`로 태그클라우드 행을 재조회한다(SSOT: `/api/journal/annual/{yy}/tags`). 검색 팝업은 일자/클라우드 재조회 없이 `@success` → `loadEntries()`. 스레드 상세가 열려 있으면 route와 무관하게 소속 엔트리 태그 집계의 SSOT인 `JournalThreadStore.refreshOpenDetail()`을 먼저 수행하고, 이어서 검색·결산·일자 배경의 기존 갱신 경로도 수행한다.
 
 **검색 팝업 내부 동작**: 현재 route가 `journal-entry-search`이면 `검색` 액션은 새 창을 열지 않고 같은 창에서 `router.replace({ name: "journal-entry-search", query })`를 호출한다. `JournalEntrySearchPage`가 route 변경을 watch해 목록을 즉시 갱신한다.
