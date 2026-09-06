@@ -22,7 +22,7 @@
 | 파일 | 현재 라인 | 델타 | 메모 |
 |---|---|---|---|
 | `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue` | 1422 → **1161** | ✅ SP1·SP2a 완료 | 일괄 태그(SP1 → `useEntryBulkTag`)·태그 카탈로그(SP2a → `useSearchTagCatalog`) 추출 완료(-261줄, 컴포저블 2·테스트 13). **잔여 1161줄은 검색조건 상태·쿼리/URL 동기화·복사/내보내기·모달 배선이 서로 결합된 코어 — 추가 분해 시 의존 주입 폭증(복사/내보내기 ~14개, 액션바 자식 ~21 props)으로 거짓 캡슐화가 되어 보류.** |
-| `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue` | 950 | 감소(997→950) | 복사 tooltip·본문/리플렉션 조립·딥링크·결과 처리를 `useEntryCopy`로 추출하고 회귀 테스트 6개를 추가했다. 잔여 파일은 575줄 규모 템플릿과 모달 액션 배선이 큰 비중을 차지한다. |
+| `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue` | 950 | 감소(997→950) | 복사 tooltip·본문/리플렉션 조립·딥링크·결과 처리를 `useEntryCopy`로 추출하고 회귀 테스트 6개를 추가했다. 잔여 파일은 575줄 규모 템플릿과 모달 액션 배선이 큰 비중을 차지한다. **추가 분해 보류(2026-09-06)**: 로직은 이미 컴포저블 6종(useEntryCopy·Collapse·RelatedContent·LifecycleState·ThreadMembership·DayResolved)으로 분리 완료 — 리팩터 가치는 실현됨. 잔여 574줄 template 은 대부분 ⋯ 컨텍스트 메뉴 마크업이고, 최대 블록인 우측 액션 영역(~377줄)은 액션 전용 컴포저블 3종을 자식으로 통째 이동해도 `guardAxisWrite`·`scrollAfterFetch`·`refreshTagCloudAfterDelete` 콜백을 함수 prop 으로 내려야 해(≈8 props) `JournalEntrySearchPage` 와 같은 거짓 캡슐화가 된다. 마크업만 이동하고 배선 인터페이스가 늘어 이득 대비 간접화가 커 **여기서 보류**한다. 소형 표시 섹션(관련글·소속 스레드·댓글·꿈 태그 프로필)은 각 10~30줄이라 컴포넌트 오버헤드 대비 감소폭이 미미해 제외. |
 | `app/backend/.../feature/chat/service/ChatOrchestrator.java` | 1392 | = | 백엔드 최대. |
 | `app/backend/.../feature/ai/person/PersonSynthesisHybridService.java` | 971 | = | |
 | `app/backend/.../feature/journal/entry/service/JournalEntryService.java` | 834 | = | |
