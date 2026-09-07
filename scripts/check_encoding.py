@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -83,13 +84,24 @@ def is_excluded(path: Path) -> bool:
 
 
 def iter_text_files(root: Path) -> list[Path]:
-    return [
-        path
-        for path in root.rglob("*")
-        if path.is_file()
-        and path.suffix.lower() in TEXT_EXTENSIONS
-        and not is_excluded(path)
-    ]
+    text_files: list[Path] = []
+
+    for dirpath, dirnames, filenames in os.walk(root, topdown=True):
+        current_dir = Path(dirpath)
+        dirnames[:] = [
+            dirname
+            for dirname in dirnames
+            if not is_excluded(current_dir / dirname)
+        ]
+
+        text_files.extend(
+            path
+            for filename in filenames
+            if (path := current_dir / filename).suffix.lower() in TEXT_EXTENSIONS
+            and not is_excluded(path)
+        )
+
+    return text_files
 
 
 def has_mojibake(text: str) -> tuple[int, str] | None:
