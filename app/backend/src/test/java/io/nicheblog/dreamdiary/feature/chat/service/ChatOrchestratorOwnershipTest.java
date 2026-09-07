@@ -22,8 +22,6 @@ class ChatOrchestratorOwnershipTest {
                 null,
                 null,
                 null,
-                null,
-                null,
                 null
         );
 
@@ -38,8 +36,6 @@ class ChatOrchestratorOwnershipTest {
         final ChatOrchestrator service = new ChatOrchestrator(
                 null,
                 chatSessionService,
-                null,
-                null,
                 null,
                 null,
                 null,
