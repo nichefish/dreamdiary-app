@@ -135,15 +135,15 @@ const weekRangeLabel = ref<string>('----');
 
 **Sub-block 3 — Pinpoint** ✓ 구현:
 ```typescript
-// useJournalAsideStore — pinnedYy/pinnedMnth + setPinpoint(yy, mnth)
-// localStorage journal_day_pinpoint: { yy, mnth } (서버 미저장)
-// pinpoint(): asideStore.setPinpoint(store.yy, store.mnth)
-// turnback(): store.gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth)
+// useJournalAsideStore — pinnedViewType/pinnedYy/pinnedMnth/pinnedWeekStartDt/pinnedStdrdDt + pinnedLabel + setPinpoint(snapshot)
+// localStorage journal_day_pinpoint: { viewType, yy, mnth, weekStartDt?, stdrdDt? } (서버 미저장, 이전 { yy, mnth } 월간 호환)
+// pinpoint(): viewType별 캡처 — 일간 stdrdDt·주간 weekStartDt·월간 yy/mnth
+// turnback(): viewType별 router.replace 복원 — 일간 journal-daily-tab{stdrdDt}·주간 journal-weekly{weekStartDt}·월간 journal-monthly{yy,mnth}
 ```
 
 HTML 요소:
 - 핀 버튼: `<i class="bi bi-bookmarks">` — pinpoint() 호출
-- 고정 표시: pinnedYy/pinnedMnth 반응형 표시 — null이면 `----`, `--`
+- 고정 표시: `pinnedLabel` 반응형 표시(일간=기준일·주간=주 시작일·월간=연/월) — 빈 값이면 `----`
 - 돌아가기 버튼: `<i class="bi bi-reply-all">` — turnback() 호출; pinnedYy null이면 disabled
 
 **주간 미니 달력 주 범위 하이라이트**: WEEKLY aside 는 `JournalAsideMiniCalendar`(일요일 시작)를 재사용하고 `week-start` prop 으로 선택된 주를 전달한다. `[weekStart … +6일]` 셀이 `is-in-week`(옅은 파란 band)로 칠해지며(월~토 한 줄 + 다음 줄 일요일), 클릭한 날은 `is-selected`(진한 파랑). 날짜 클릭 시 `getWeekStartDateStr`로 그 날이 속한 주로 이동한다.

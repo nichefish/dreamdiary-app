@@ -24,7 +24,7 @@
 | 엔트리 복사 split 버튼 | `JournalEntryItem.vue` — `copyEntry('full'/'no-pending'/'body')`, 주 버튼=전체(해석 포함)·▾ 드롭다운=보류 해석 제외·본문만(해석 제외), 3항목 항상 노출, 날짜(요일)·본문[·target 리플렉션] 클립보드 복사 | ✓ |
 | 메타 VIEW · 메타 컨텍스트 메뉴 | `metaContextMenu.ts` + `JournalMetaContextMenu.vue` — 헤더 `#메타` 클릭 시 팝업(태그 메뉴와 동일 UI); 현재 locale 메뉴로 「그래프로 보기」→ `addMetaToGraph`(최대 2·이미 있으면 비활성, 제한 경고도 현재 locale), 「검색」→ `openDayFilterModal`(`JournalDayMetaModal`), 「메타 설정」→ `openMetaProfile`(`JournalMetaProfileModal`, `GET /api/journal/day/metas/{id}`) | ✓코드 |
 | 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
-| Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
+| Pinpoint | `JournalAside.vue` — viewType별 스냅샷(`pinnedViewType/pinnedYy/pinnedMnth/pinnedWeekStartDt/pinnedStdrdDt`) + `pinnedLabel` + pinpoint/turnback 함수 | ✓ |
 | 챕터 말머리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY`(일기 챕터) 개인 Prefix 체크박스, `store.chapterPrefixIds` → `fetchDays` | ✓ |
 | 일기/꿈 라이프사이클 필터 | `JournalAside.vue` — `store.diaryLifecycleKey` / `store.dreamLifecycleKey` → `fetchDays` 후 일기/꿈 각각 후처리 필터 | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 미니 달력(`JournalAsideMiniCalendar`, 일요일 시작) 주 범위 하이라이트(월~토 한 줄 + 다음 줄 일요일), 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
@@ -89,20 +89,20 @@ function toggleSort() {
 
 ### 핀포인트 (Pinpoint)
 
-**목적**: 현재 조회 중인 연/월을 임시 저장하고, 나중에 그 시점으로 돌아올 수 있게 함.
+**목적**: 현재 조회 중인 기간을 viewType별로 임시 저장하고, 나중에 그 뷰·시점으로 돌아올 수 있게 함(일간 기준일·주간 시작일·월간 연/월).
 
 **트리거 A — 핀 고정** (`<i class="bi bi-bookmarks">`):
-1. `asideStore.setPinpoint(store.yy, store.mnth)` — `localStorage` 동기 저장
-2. UI 갱신: 고정 연도·월 표시 (`asideStore.pinnedYy` / `pinnedMnth`)
+1. `asideStore.setPinpoint({ viewType, yy, mnth, weekStartDt?, stdrdDt? })` — 현재 `store.viewType`에 맞춰 복원 기준(일간 `stdrdDt`·주간 `weekStartDt`·월간 `yy/mnth`)까지 캡처, `localStorage` 동기 저장
+2. UI 갱신: 고정 기간 표시 (`asideStore.pinnedLabel` — 일간=기준일·주간=주 시작일·월간=연/월)
 
 **트리거 B — 돌아가기** (`<i class="bi bi-reply-all">`):
-1. `if (asideStore.pinnedYy && asideStore.pinnedMnth)`
-2. `store.gotoYyMnth(...)` 호출
-3. 목록 재조회 (`store.fetchDays()` 내부 호출됨)
+1. `if (asideStore.pinnedYy == null || asideStore.pinnedMnth == null) return`
+2. viewType별 `router.replace` 복원 — 일간 `{ name: "journal-daily-tab", query: { stdrdDt } }`, 주간 `{ name: "journal-weekly", query: { weekStartDt } }`, 월간 `{ name: "journal-monthly", query: { yy, mnth } }`
+3. 대상 뷰의 route query watch가 목록을 재조회
 
-**상태 저장 위치**: `useJournalAsideStore` + 브라우저 `localStorage` 키 `journal_day_pinpoint` (`{ yy, mnth }` JSON). 서버·계정 설정에 저장하지 않음. 새로고침·재방문 시 복원.
+**상태 저장 위치**: `useJournalAsideStore` + 브라우저 `localStorage` 키 `journal_day_pinpoint` (`{ viewType, yy, mnth, weekStartDt?, stdrdDt? }` JSON; 이전 `{ yy, mnth }` 스키마는 월간 고정으로 호환). 서버·계정 설정에 저장하지 않음. 새로고침·재방문 시 복원.
 
-**초기 표시**: `pinnedYy === null` → `<span id="pinnedYy">----</span>`, `<span id="pinnedMnth">--</span>`
+**초기 표시**: `pinnedLabel`이 빈 문자열이면 `----` 표시
 
 ---
 

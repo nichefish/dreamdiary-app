@@ -181,9 +181,7 @@
           </button>
           <span class="mx-1">|</span>
           <span class="px-1 text-center">
-            <span class="fs-6 text-muted">{{ asideStore.pinnedYy != null ? String(asideStore.pinnedYy) : '----' }}</span>
-            <span class="text-muted"> / </span>
-            <span class="fs-6 text-muted">{{ asideStore.pinnedMnth != null ? String(asideStore.pinnedMnth) : '--' }}</span>
+            <span class="fs-6 text-muted">{{ asideStore.pinnedLabel || '----' }}</span>
             <i class="bi bi-pin-map fs-7 ms-1 text-muted"></i>
           </span>
           <span class="mx-1">|</span>
@@ -607,15 +605,32 @@ async function onMonthPickerChange(e: Event): Promise<void> {
   await syncMonthlyRouteOrFetch(Number(yStr), Number(mStr));
 }
 
-/** 현재 년/월을 Pinpoint로 고정 (localStorage `journal_day_pinpoint`) */
+/** 현재 조회 중인 기간을 Pinpoint로 고정 (viewType 별 복원 기준 포함, localStorage `journal_day_pinpoint`) */
 function pinpoint(): void {
-  asideStore.setPinpoint(store.yy, store.mnth);
+  if (store.viewType === "DAILY") {
+    asideStore.setPinpoint({ viewType: "DAILY", yy: store.yy, mnth: store.mnth, stdrdDt: store.dailyStdrdDt });
+  } else if (store.viewType === "WEEKLY") {
+    asideStore.setPinpoint({ viewType: "WEEKLY", yy: store.yy, mnth: store.mnth, weekStartDt: store.weekStartDt });
+  } else {
+    asideStore.setPinpoint({ viewType: store.viewType, yy: store.yy, mnth: store.mnth });
+  }
 }
 
-/** 고정한 년/월로 되돌리기 */
+/** 고정한 기간으로 되돌리기 (viewType 별: 일간 stdrdDt·주간 weekStartDt·월간 yy/mnth) */
 function turnback(): void {
   if (asideStore.pinnedYy == null || asideStore.pinnedMnth == null) return;
-  void gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth);
+  if (asideStore.pinnedViewType === "DAILY" && asideStore.pinnedStdrdDt) {
+    void router.replace({ name: "journal-daily-tab", query: { stdrdDt: asideStore.pinnedStdrdDt } });
+    return;
+  }
+  if (asideStore.pinnedViewType === "WEEKLY" && asideStore.pinnedWeekStartDt) {
+    void router.replace({ name: "journal-weekly", query: { weekStartDt: asideStore.pinnedWeekStartDt } });
+    return;
+  }
+  void router.replace({
+    name: "journal-monthly",
+    query: { yy: String(asideStore.pinnedYy), mnth: String(asideStore.pinnedMnth) },
+  });
 }
 
 function onYyChange(e: Event) {
