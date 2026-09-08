@@ -2,7 +2,7 @@
 
 프로젝트 전반의 리팩터·병목 후보를 우선순위로 정리한 **상시 문서**다. 특정 에이전트/세션의 소유가 아니라 공용 백로그이므로(§11 멀티 에이전트), 누구든 항목을 착수·해결하면 이 문서의 현황과 수치를 갱신한다.
 
-- 최근 실측: **2026-08-30** (기준선 2026-08-14 대비 델타 표기) · AppChat 분해 완료 반영 **2026-09-06**
+- 최근 실측: **2026-08-30** (기준선 2026-08-14 대비 델타 표기) · AppChat·AdminPage 분해 완료 반영 **2026-09-06**
 - 측정 방식: 파일 라인 수 + 알려진 백로그 대조 기반 스캔(정밀 per-file SRP 분석은 착수 시 별도 수행)
 - 검증 환경 제약: 이 저장소 일부 셸은 gradle loopback 차단으로 빌드 미검증 → 착수 시 사용자 머신 `./gradlew buildFrontend` 필요
 
@@ -14,13 +14,13 @@
 - **Canonical modify contract — Schedule tag 후처리 누락** — DIG-002에서 확인한 `ScheduleService.modify()`의 canonical `afterWrite()` 누락을 `7ed5bed22`에서 복원하고 `ScheduleServiceValidationTest.modifyRunsCanonicalTagPostProcessing` 회귀 테스트를 추가했다.
 - **Canonical modify contract — User 전처리 누락** — DIG-002에서 확인한 `UserService.modify()`의 `preModify()` 누락을 `7ed5bed22`에서 복원하고 빈 허용 IP 정규화 회귀 테스트를 추가했다. 계정 등록·수정 공통 계약은 `docs/migration/admin/screen-spec.md`와 동기화했다.
 - **AppChat.vue god 파일 분해** — 1532줄 SFC를 160줄 shell 오케스트레이터로 수렴하고, 기능 블록을 `features/chat/components/` 하위 8개 컴포넌트 + 공유 스타일 partial(`chatMessageRow.scss`)로 분리했다: ChatLauncher·ChatHeader·ChatEmptyState·ChatSessionBar·ChatComposer·ChatRagPanel·ChatMessageRow·ChatPendingRow. DOM·CSS 클래스·핸들러·모바일 @media·스크롤 컨테이너를 1:1 보존(§4)해 동작·레이아웃·인터랙션 무변경. 커밋 `c4ffbb28b`(SP1~SP4b 서브컴포넌트 추출을 squash). 빌드 검증은 사용자 머신 `./gradlew buildFrontend` 대기.
+- **AdminPage.vue god 파일 분해** — 1038줄 SFC를 169줄 shell 오케스트레이터로 수렴하고, general/ai 탭 카드를 `features/admin/components/` 하위 6개 컴포넌트로 분리했다: AdminRoleCard·AdminDevToolsCard·AdminGeneralSettingsCard·AdminEntityQueueCard·AdminAiSettingsCard·AdminCacheModals. 공유 스타일은 `adminCards.scss` partial, 공용 숫자 포매터는 `adminFormat.ts` 로 수렴. DOM·CSS 클래스·핸들러·activeTab 게이트·bootstrap Modal lifecycle 을 1:1 보존(§4)해 동작·레이아웃 무변경. 카드 간 결합은 emit+defineExpose(캐시)·v-model(holydayYy)로 처리. 커밋 `d38dd8ac1`(SP1~SP5 squash). 빌드 검증은 사용자 머신 대기.
 
 ## P0 — god 파일 분해 (가장 시급)
 
 | 파일 | 현재 라인 | 델타 | 메모 |
 |---|---|---|---|
 | `app/frontend-vue/src/features/journal/entry/JournalEntrySearchPage.vue` | 1422 → **1161** | ✅ SP1·SP2a 완료 | 일괄 태그(SP1 → `useEntryBulkTag`)·태그 카탈로그(SP2a → `useSearchTagCatalog`) 추출 완료(-261줄, 컴포저블 2·테스트 13). **잔여 1161줄은 검색조건 상태·쿼리/URL 동기화·복사/내보내기·모달 배선이 서로 결합된 코어 — 추가 분해 시 의존 주입 폭증(복사/내보내기 ~14개, 액션바 자식 ~21 props)으로 거짓 캡슐화가 되어 보류.** |
-| `app/frontend-vue/src/features/admin/AdminPage.vue` | 1038 | 증가 | |
 | `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue` | 950 | 감소(997→950) | 복사 tooltip·본문/리플렉션 조립·딥링크·결과 처리를 `useEntryCopy`로 추출하고 회귀 테스트 6개를 추가했다. 잔여 파일은 575줄 규모 템플릿과 모달 액션 배선이 큰 비중을 차지한다. |
 | `app/backend/.../feature/chat/service/ChatOrchestrator.java` | 1392 | = | 백엔드 최대. |
 | `app/backend/.../feature/ai/person/PersonSynthesisHybridService.java` | 971 | = | |
