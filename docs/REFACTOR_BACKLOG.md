@@ -2,7 +2,7 @@
 
 프로젝트 전반의 리팩터·병목 후보를 우선순위로 정리한 **상시 문서**다. 특정 에이전트/세션의 소유가 아니라 공용 백로그이므로(§11 멀티 에이전트), 누구든 항목을 착수·해결하면 이 문서의 현황과 수치를 갱신한다.
 
-- 최근 실측: **2026-08-30** (기준선 2026-08-14 대비 델타 표기) · AppChat·AdminPage 분해 완료 반영 **2026-09-06**
+- 최근 실측: **2026-08-30** (기준선 2026-08-14 대비 델타 표기) · AppChat·AdminPage·UserAdminPage 분해 완료 반영 **2026-09-06**
 - 측정 방식: 파일 라인 수 + 알려진 백로그 대조 기반 스캔(정밀 per-file SRP 분석은 착수 시 별도 수행)
 - 검증 환경 제약: 이 저장소 일부 셸은 gradle loopback 차단으로 빌드 미검증 → 착수 시 사용자 머신 `./gradlew buildFrontend` 필요
 
@@ -15,6 +15,7 @@
 - **Canonical modify contract — User 전처리 누락** — DIG-002에서 확인한 `UserService.modify()`의 `preModify()` 누락을 `7ed5bed22`에서 복원하고 빈 허용 IP 정규화 회귀 테스트를 추가했다. 계정 등록·수정 공통 계약은 `docs/migration/admin/screen-spec.md`와 동기화했다.
 - **AppChat.vue god 파일 분해** — 1532줄 SFC를 160줄 shell 오케스트레이터로 수렴하고, 기능 블록을 `features/chat/components/` 하위 8개 컴포넌트 + 공유 스타일 partial(`chatMessageRow.scss`)로 분리했다: ChatLauncher·ChatHeader·ChatEmptyState·ChatSessionBar·ChatComposer·ChatRagPanel·ChatMessageRow·ChatPendingRow. DOM·CSS 클래스·핸들러·모바일 @media·스크롤 컨테이너를 1:1 보존(§4)해 동작·레이아웃·인터랙션 무변경. 커밋 `c4ffbb28b`(SP1~SP4b 서브컴포넌트 추출을 squash). 빌드 검증은 사용자 머신 `./gradlew buildFrontend` 대기.
 - **AdminPage.vue god 파일 분해** — 1038줄 SFC를 169줄 shell 오케스트레이터로 수렴하고, general/ai 탭 카드를 `features/admin/components/` 하위 6개 컴포넌트로 분리했다: AdminRoleCard·AdminDevToolsCard·AdminGeneralSettingsCard·AdminEntityQueueCard·AdminAiSettingsCard·AdminCacheModals. 공유 스타일은 `adminCards.scss` partial, 공용 숫자 포매터는 `adminFormat.ts` 로 수렴. DOM·CSS 클래스·핸들러·activeTab 게이트·bootstrap Modal lifecycle 을 1:1 보존(§4)해 동작·레이아웃 무변경. 카드 간 결합은 emit+defineExpose(캐시)·v-model(holydayYy)로 처리. 커밋 `d38dd8ac1`(SP1~SP5 squash). 빌드 검증은 사용자 머신 대기.
+- **UserAdminPage.vue god 파일 분해** — 912줄 SFC를 139줄 shell 오케스트레이터로 수렴하고, 계정 관리 화면을 `features/admin/components/` 하위 3개 컴포넌트 + 공유 스타일 partial(`userAdminShared.scss`)로 분리했다: UserAdminDetailModal·UserAdminFormModal·UserAdminAccountList. DOM·CSS 클래스·핸들러·activeTab 게이트를 1:1 보존(§4)해 동작·레이아웃 무변경. 모달은 store 플래그(detailOpen/formOpen) v-if 구동이라 인스턴스 lifecycle 결합이 없고, 목록↔부모는 detail·edit 이벤트 위임으로 결합한다(openDetail/openEdit 는 딥링크·모달 바인딩 때문에 상위 유지). 커밋 `ddc5c0dfd`(SP1~SP3 squash). 빌드 검증은 사용자 머신 대기.
 
 ## P0 — god 파일 분해 (가장 시급)
 

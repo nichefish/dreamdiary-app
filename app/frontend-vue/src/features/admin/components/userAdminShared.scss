@@ -1,0 +1,243 @@
+/* UserAdmin 공유 스타일. UserAdminPage 및 user-admin 카드/모달 컴포넌트가 <style scoped> 에서
+   @import 한다(각 컴포넌트에 scoped 로 적용; 미사용 셀렉터는 무해). */
+
+.user-admin-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-admin-listbar,
+.user-admin-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.user-admin-actions,
+.user-admin-search,
+.user-admin-account,
+.user-admin-inline,
+.user-admin-email {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-admin-search {
+  min-width: min(560px, 100%);
+  flex-wrap: wrap;
+}
+
+.user-admin-search .form-control {
+  min-width: 220px;
+}
+
+.user-admin-role-filter {
+  width: 150px;
+}
+
+.user-admin-page-size {
+  width: 110px;
+}
+
+.user-admin-manage-col {
+  width: 104px;
+}
+
+.user-admin-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--bs-light);
+  color: var(--bs-gray-600);
+}
+
+.user-admin-avatar.lg {
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+}
+
+.user-admin-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-admin-account strong,
+.user-admin-detail-head h3 {
+  display: block;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.user-admin-account span,
+.user-admin-detail-head span {
+  color: var(--bs-gray-600);
+  font-size: 0.8rem;
+}
+
+.user-admin-ellipsis {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  color: var(--bs-gray-600);
+}
+
+.user-admin-detail-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.user-admin-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.user-admin-detail-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--bs-gray-200);
+  border-radius: 8px;
+}
+
+.user-admin-detail-grid span {
+  color: var(--bs-gray-600);
+  font-size: 0.78rem;
+}
+
+.user-admin-detail-grid strong {
+  overflow-wrap: anywhere;
+}
+
+.user-admin-detail-block {
+  margin-top: 1rem;
+}
+
+.user-admin-detail-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.user-admin-detail-block h4 {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.user-admin-detail-block pre {
+  min-height: 72px;
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--bs-light);
+  color: var(--bs-gray-700);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.user-admin-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.user-admin-form-row {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.user-admin-form-row > .form-label {
+  padding-top: 0.75rem;
+  font-weight: 700;
+}
+
+.user-admin-role-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+}
+
+.user-admin-subform {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.user-admin-date {
+  width: 180px;
+}
+
+.user-admin-email {
+  flex-wrap: wrap;
+}
+
+.user-admin-email .form-control {
+  width: 180px;
+}
+
+.user-admin-modal-top {
+  z-index: 1065;
+}
+
+.user-admin-backdrop-top {
+  z-index: 1060;
+}
+
+.page-link.active {
+  background: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .user-admin-listbar,
+  .user-admin-footer,
+  .user-admin-search,
+  .user-admin-actions {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .user-admin-search .form-control,
+  .user-admin-role-filter,
+  .user-admin-page-size,
+  .user-admin-email .form-control {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .user-admin-form-row,
+  .user-admin-detail-grid,
+  .user-admin-detail-split {
+    grid-template-columns: 1fr;
+  }
+
+  .user-admin-form-row > .form-label {
+    padding-top: 0;
+  }
+}
