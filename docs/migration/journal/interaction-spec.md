@@ -43,7 +43,7 @@
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 클라이언트 차단 경고는 현재 locale 카탈로그 사용, 수정/삭제/이동 API 거부 시 서버 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. Vue `allEntriesResolved` → 루트 `.is-all-resolved`(PENDING의 `.is-all-pending`과 동형). 접힘·펼침 초록 inset/배경은 이 클래스 기준으로 표시한다. 중요·참조 상태선은 하위 DOM `:has`로 조합한다. 접힘 바: 완료 1px 초록·중요 2px 빨강·참조 4px 노랑(엔트리 `$journal-paired-states` 와 동일). 단독 우선 중요>참조>완료; 중요+완료·중요+참조·삼중 조합 다중선. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | Reflection 전체 (( )) | `JournalReflectionItem` ⋯ 메뉴 「전체 (( ))」(`wrapEntireNoti`). 저장 원문 `content`의 각 `<p>`/`<li>`에 Markdown `((...))`를 멱등 적용하되 하이픈 3개 이상 단독 수평선은 제외하고, 기존 `((---))`는 `---`로 복구한다. 변경 시에만 `POST /api/journal/reflection/{id}`(multipart)로 저장한 뒤 `refreshJournalEntryHostForRoute`로 갱신한다. 이미 적용된 본문·빈 본문은 API 없이 안내만 표시한다 | ✓ |
-| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러. 일간에서는 URL `stdrdDt` 하루를 태그 기간 축으로 사용하며 날짜 이동 시 일자·일기·꿈 태그클라우드를 함께 갱신한다. | ✓ |
+| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러. 일간에서는 URL `stdrdDt` 하루를 태그 기간 축으로 사용하며 날짜 이동 시 일자·일기·꿈 태그클라우드를 함께 갱신한다. 이 블록들은 nav 아래 「표시 필터」 접이 섹션(`filterExpanded`, 기본 접힘)에 있으며 접기는 `v-show`라 필터 값을 유지한다. | ✓ |
 
 **일자 필터 모달 i18n**: 제목·결과 건수·연도/전체 연도·연월 구분선·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·모든 필터 제거 시 빈 결과·연도 변경 시 필터 유지 계약을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 
@@ -822,6 +822,8 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 **저널 스레드 본문 이력**: 스레드는 공통 `HistoryEmbed`와 `history` 테이블을 사용한다. 본문이 실제로 달라질 때 수정 전 본문을 `ref_content_type=JOURNAL_THREAD` 스냅샷으로 저장하고 `historyTriggeredAt`을 갱신한다. 제목·Prefix·소속·라이프사이클 변경은 이력을 만들지 않으며 복원도 본문만 교체한다. 목록 ⋯ 메뉴와 문맥형 상세 모달·독립 상세 페이지의 이력 액션은 `history.historyTriggeredAt`이 있을 때 활성화되고 `HistoryModal`을 연다. 조회·복원·단건 삭제·전체 삭제는 현재 사용자 소유 스레드만 허용한다. 복원은 현재 본문도 새 스냅샷으로 남기며, 성공 후 열린 상세가 있으면 상세·소속 엔트리를 재조회하고 현재 스레드 목록도 재조회한다.
 
 저널 할일 등록·수정 모달의 제목 필수 검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API의 서버 `message`가 있으면 우선 표시하고, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route의 저널 목록을 갱신한다.
+
+**아사이드 TODO 카드 라이프사이클 인터랙션**: 각 할일 행은 왼쪽 체크박스로 완료(`RESOLVED` 전이, `PUT /api/lifecycles`, contentType `JOURNAL_TODO`)하고, kebab(⋯) 드롭다운으로 보류(`PENDING`)·보류 해제(`OPEN`)·삭제(하드 `DELETE`, `journal.todo.delete.confirm` 확인)를 수행한다. `PENDING` 행은 제목 앞 「보류」 배지(`lifecycle.pending`)로 표시한다. 전이·삭제 성공 시 `store.fetchTodos()` 로 재조회하며 `RESOLVED` 는 활성 목록에서 빠진다. 완료는 별도 확인 없이 즉시 처리하고(데이터는 삭제가 아니라 `RESOLVED` 로 보존), 실패 시 서버 `message` 를 알림으로 표시한다. 목록은 월 무관 cross-month 활성 집합이라 년/월 이동에도 재조회하지 않는다. **제목 클릭 시 수정**: 각 할일의 제목(`cursor-pointer`)을 클릭하면 상세(`GET /api/journal/todo/:id`)를 조회해 기존 데이터로 등록/수정 모달을 modify 모드(`id` 포함)로 연다 — 등록(+ 버튼)과 같은 모달을 공유하며, 저장 성공 시 모달 submit 이 `fetchTodos()` 로 카드를 갱신한다.
 
 저널 해석 등록·수정 모달의 확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 해석 제목은 선택값으로 유지하고, 저장 API의 서버 `message`가 있으면 우선 표시하며, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalEntryHostForRoute()`로 현재 표시 호스트를 갱신한다. 스레드 상세에서는 열린 상세·집계 태그·소속 엔트리를 재조회하고, 그 밖의 route에서는 기존 저널 목록 갱신을 유지한다.
 

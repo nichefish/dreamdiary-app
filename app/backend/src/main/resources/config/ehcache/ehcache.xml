@@ -114,7 +114,6 @@
     <cache alias="journalReflectionWeeklyLifecycleMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 할일 -->
-    <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />
     <cache alias="journalTodoDetailDtoByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 결산 -->

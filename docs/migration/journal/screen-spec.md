@@ -796,7 +796,8 @@ const pinnedMnth = ref<number | null>(null);
 ### 섹션 4: TODO 카드
 
 **API**:
-- 목록 조회: `GET /api/journal/todos?yy=&mnth=` → `rsltList: TodoRow[]`
+- 활성 목록 조회: `GET /api/journal/todos` (`yy`·`mnth` 전달돼도 무시) → `rsltList: TodoRow[]` — 월 무관 활성 집합(OPEN·PENDING)
+- 라이프사이클 전이: `PUT /api/lifecycles` `{id, contentType:'JOURNAL_TODO', lifecycleKey}` — 완료(RESOLVED)·보류(PENDING)·해제(OPEN)
 - 삭제: `DELETE /api/journal/todo/{id}`
 - 등록: 별도 모달 (`#journal_todo_regist`) Bootstrap modal
 
@@ -805,6 +806,8 @@ const pinnedMnth = ref<number | null>(null);
 type TodoRow = {
     id: string | number;
     title: string;       // 할일 제목 (텍스트만, HTML 없음)
+    // 활성 목록엔 OPEN·PENDING만 온다(RESOLVED 제외). 행 부재 = OPEN.
+    lifecycle?: { lifecycleKey?: string | null } | null;
 };
 ```
 

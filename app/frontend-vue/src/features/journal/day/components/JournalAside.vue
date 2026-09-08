@@ -202,6 +202,22 @@
 
       <div class="separator"></div>
 
+      <!--begin::표시 필터 접이 토글 (기본 접힘 — 필터가 TODO 카드를 짓누르지 않도록)-->
+      <button
+        type="button"
+        class="btn btn-sm btn-light w-100 d-flex align-items-center justify-content-between"
+        :aria-expanded="filterExpanded"
+        @click="filterExpanded = !filterExpanded"
+      >
+        <span class="d-flex align-items-center gap-1 fs-7 fw-bold text-muted">
+          <i class="bi bi-funnel fs-7"></i> {{ t("journal.aside.filter.toggle") }}
+        </span>
+        <i :class="filterExpanded ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+      </button>
+      <!--end::표시 필터 접이 토글-->
+
+      <div v-show="filterExpanded">
+      <div class="d-flex flex-column gap-3">
       <!--begin::표시 필터 토글-->
       <div class="d-flex flex-column gap-2">
         <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
@@ -376,6 +392,9 @@
         {{ t("journal.aside.filter.reset") }}
       </button>
       <!--end::필터 초기화 버튼-->
+      </div>
+      </div>
+      <!--end::표시 필터 접이 영역-->
 
 
     </div>
@@ -407,6 +426,9 @@ const modalStore = useJournalModalStore();
 const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
+
+/** 표시 필터 섹션 접힘 상태. 기본 접힘 — 필터가 길어 TODO 카드를 짓누르지 않도록 접어 둔다. 활성 필터 값은 접혀도 v-show 로 유지된다. */
+const filterExpanded = ref(false);
 
 const currentYear = new Date().getFullYear();
 const yyOptions = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);

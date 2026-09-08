@@ -156,6 +156,8 @@ HTML 요소:
 
 **현재 Vue 동등**: ✓ — `JournalAside.vue` 인라인. 블록 A–C·라이프사이클·어사이드 목록 키워드 구현. 블록 D(고급필터 아코디언)는 **이식 대상 아님** (`vue-screen-overview.md` 필터·검색 정책).
 
+**접이 동작 (✓)**: 5개 블록과 필터 초기화 버튼은 nav(연/월·미니달력·TODAY·Pinpoint) 아래 「표시 필터」 접이 섹션(`filterExpanded`) 안에 있다. **기본 접힘**이라 평소엔 TODO 카드가 nav 바로 아래로 올라온다. 토글 버튼(`journal.aside.filter.toggle`, `bi-funnel`+chevron)으로 펼치며, 접혀도 `v-show`라 활성 필터 값은 유지된다(재조회·초기화 아님).
+
 **5개 블록 구조**:
 
 **블록 A — TAGCLOUD 토글**: ✓ 구현
@@ -247,14 +249,17 @@ HTML 요소:
 
 ### 22. `JournalAsideTodoCard` (어사이드 투두 카드)
 
-**현재 Vue 동등**: ✓ `JournalAsideTodoCard.vue` — 카드 헤더·월별 목록 조회·삭제·등록 모달 호출 구현
+**현재 Vue 동등**: ✓ `JournalAsideTodoCard.vue` — 카드 헤더·활성 집합(OPEN·PENDING) 목록 조회(월 무관 cross-month)·완료(체크)·보류·삭제·등록 모달 호출 구현
 
-현재 구현된 카드 제목과 할일 등록 버튼 문구는 현재 locale의 클라이언트 카탈로그를 사용하며, locale 변경은 목록·모달에 전달하는 대상 년월을 변경하지 않는다.
+현재 구현된 카드 제목과 할일 등록 버튼 문구는 현재 locale의 클라이언트 카탈로그를 사용한다. 목록은 월에 종속되지 않고 사용자의 활성 집합을 조회하므로 대상 년월과 무관하며, 등록 모달은 새 할일의 발생지(provenance) 년월만 대상 년월로 전달한다. locale 변경은 이 발생지 년월을 변경하지 않는다.
+
+**라이프사이클 참여 (✓)**: `JOURNAL_TODO` 는 `AttachableContentLifecyclePolicy` 에 `OPEN`/`PENDING`/`RESOLVED` 로 등록되며, 목록 조회 시 `JournalLifecycleViewHelper` 가 부착 테이블에서 `JournalTodoDto.lifecycle` 를 채운다(행 부재 = `OPEN`). 목록은 월 무관 **활성 집합(OPEN·PENDING) cross-month 투영**이며 `RESOLVED` 는 인메모리로 제외한다. 리스트 캐시(`journalTodoListByUser`)는 제거해 매 조회 신선하게 부착하고, `sortOrder` 는 사용자 전역 순번이다. `yy/mnth` 는 발생지(provenance)로 보존되나 조회·정렬 축이 아니다. 카드는 행별로 왼쪽 체크박스로 **완료(`RESOLVED` 전이, `PUT /api/lifecycles`)**, kebab(⋯) 메뉴로 **보류(`PENDING`)/보류 해제(`OPEN`)·삭제(하드 `DELETE`)**를 제공한다. `PENDING` 은 제목 앞 「보류」 배지(`lifecycle.pending`, `badge-light-warning`)로 표시한다. 전이·삭제 성공 시 `fetchTodos()` 로 재조회하며 `RESOLVED` 는 활성 목록에서 자연히 빠진다. 리스트 캐시가 없어 전이는 `cacheContext` 없이 호출한다(서버 lifecycle updater 는 `JOURNAL_TODO` 미등록이라 no-op). 완료된 todo 는 삭제가 아니라 `RESOLVED` 로 보존된다.
 
 **API**:
 | 작업 | 엔드포인트 | 응답 |
 |------|-----------|------|
-| 목록 조회 | `GET /api/journal/todos?yy=&mnth=` | `{ rsltList: TodoRow[] }` |
+| 활성 목록 조회 | `GET /api/journal/todos` (`yy`·`mnth` 전달돼도 무시) | `{ rsltList: TodoRow[] }` — 사용자 활성 집합(OPEN·PENDING) |
+| 라이프사이클 전이 | `PUT /api/lifecycles` `{id, contentType:'JOURNAL_TODO', lifecycleKey}` | `{ rslt: boolean }` — 완료(RESOLVED)·보류(PENDING)·해제(OPEN) |
 | 삭제 | `DELETE /api/journal/todo/{id}` | `{ rslt: boolean }` |
 
 **TodoRow 모델**:
@@ -262,6 +267,8 @@ HTML 요소:
 interface TodoRow {
     id: string | number;
     title: string;
+    // 활성 목록엔 OPEN·PENDING만 온다(RESOLVED 제외). 행 부재 = OPEN.
+    lifecycle?: { lifecycleKey?: string | null } | null;
 }
 ```
 

@@ -27,6 +27,7 @@ public final class AttachableContentLifecyclePolicy {
         ALLOWED.put(ContentType.JOURNAL_DREAM, EnumSet.copyOf(journalLifecycle));
         ALLOWED.put(ContentType.JOURNAL_REFLECTION, EnumSet.copyOf(journalLifecycle));
         ALLOWED.put(ContentType.JOURNAL_THREAD, EnumSet.copyOf(journalLifecycle));
+        ALLOWED.put(ContentType.JOURNAL_TODO, EnumSet.copyOf(journalLifecycle));
     }
 
     private AttachableContentLifecyclePolicy() {

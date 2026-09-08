@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntry
 import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflectionEntity;
 import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
+import io.nicheblog.dreamdiary.feature.journal.todo.repository.jpa.JournalTodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ import java.util.Set;
 /**
  * 부착 상태·라이프사이클 변경 대상 저널 콘텐츠의 존재와 소유권을 검증한다.
  *
- * <p>라이프사이클 대상인 엔트리·해석·스레드와 상태 대상인 일자·챕터·엔트리·해석이
+ * <p>라이프사이클 대상인 엔트리·해석·스레드·할일과 상태 대상인 일자·챕터·엔트리·해석이
  * 같은 원본 소유권 계약을 사용하도록 공통 경계에서 검증한다.</p>
  *
  * <p>해석({@code JOURNAL_REFLECTION}) 쓰기는 대상(About-A)이 속한 {@code journal_day.owner_id}와
@@ -45,6 +46,7 @@ public class JournalContentOwnershipGuard {
     private final JournalEntryRepository journalEntryRepository;
     private final JournalReflectionRepository journalReflectionRepository;
     private final JournalThreadRepository journalThreadRepository;
+    private final JournalTodoRepository journalTodoRepository;
 
     /**
      * 현재 로그인 사용자가 상태·라이프사이클 대상 원본 콘텐츠의 소유자인지 검증한다.
@@ -156,6 +158,9 @@ public class JournalContentOwnershipGuard {
                     .map(JournalEntryEntity::getCreatedBy)
                     .orElse(null);
             case JOURNAL_THREAD -> journalThreadRepository.findById(refId)
+                    .map(entity -> entity.getCreatedBy())
+                    .orElse(null);
+            case JOURNAL_TODO -> journalTodoRepository.findById(refId)
                     .map(entity -> entity.getCreatedBy())
                     .orElse(null);
             default -> null;

@@ -318,6 +318,8 @@ export interface JournalCalEvent {
 export interface JournalTodoItem {
   id: number;
   title?: string;
+  /** 라이프사이클 현재값(백엔드 enrich). 활성 목록엔 OPEN·PENDING만 온다. */
+  lifecycle?: { lifecycleKey?: string | null } | null;
 }
 
 export type TagCloudSection = "day" | "diary" | "dream";
@@ -400,14 +402,15 @@ export const useJournalStore = defineStore("journal", () => {
   async function fetchTodos() {
     todoError.value = null;
     try {
-      const res = await axios.get("/api/journal/todos", { params: { yy: yy.value, mnth: mnth.value } });
+      // 활성 할일은 월에 종속되지 않는다(cross-month). 백엔드가 yy/mnth를 무시하므로 전달하지 않는다.
+      const res = await axios.get("/api/journal/todos");
       if (!res.data?.rslt) {
         todoError.value = res.data?.message ?? t("journal.todo.list.load.failure");
         return;
       }
       todoList.value = (res.data?.rsltList ?? []) as JournalTodoItem[];
     } catch (e: unknown) {
-      console.error("[journal] fetchTodos failed", { yy: yy.value, mnth: mnth.value }, e);
+      console.error("[journal] fetchTodos failed", e);
       todoError.value = t("journal.todo.list.load.failure");
     }
   }
