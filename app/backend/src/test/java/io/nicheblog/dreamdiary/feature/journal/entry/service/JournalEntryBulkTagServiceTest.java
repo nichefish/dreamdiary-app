@@ -12,6 +12,9 @@ import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryBulkTagRe
 import io.nicheblog.dreamdiary.feature.journal.entry.model.JournalEntryBulkTagResDto;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.service.my.JournalEntryMyTagService;
+import io.nicheblog.dreamdiary.feature.journal.entitycatalog.service.JournalEntryEntityQueueService;
+import io.nicheblog.dreamdiary.feature.journal.embedding.service.JournalEntryEmbeddingQueueService;
+import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,20 +67,27 @@ class JournalEntryBulkTagServiceTest {
     private JournalDayResolvedGuard resolvedGuard;
     @Mock
     private JournalEntryMyTagService journalEntryMyTagService;
+    @Mock
+    private JournalEntryEntityQueueService journalEntryEntityQueueService;
+    @Mock
+    private JournalEntryEmbeddingQueueService journalEntryEmbeddingQueueService;
 
     @InjectMocks
     private JournalEntryBulkTagService service;
 
     private MockedStatic<AuthUtils> authUtils;
+    private MockedStatic<EhCacheUtils> cacheUtils;
 
     @BeforeEach
     void setUp() {
         authUtils = mockStatic(AuthUtils.class);
+        cacheUtils = mockStatic(EhCacheUtils.class);
         authUtils.when(AuthUtils::requireLoginUsername).thenReturn(FIXTURE_USERNAME);
     }
 
     @AfterEach
     void tearDown() {
+        cacheUtils.close();
         authUtils.close();
     }
 

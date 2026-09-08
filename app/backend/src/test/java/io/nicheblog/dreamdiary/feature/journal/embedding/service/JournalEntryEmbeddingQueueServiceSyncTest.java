@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.journal.embedding.entity.JournalEntryEmbe
 import io.nicheblog.dreamdiary.feature.journal.embedding.repository.jpa.JournalEntryEmbeddingRepository;
 import io.nicheblog.dreamdiary.feature.journal.entry.entity.JournalEntryEntity;
 import io.nicheblog.dreamdiary.feature.journal.entry.repository.jpa.JournalEntryRepository;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +45,9 @@ class JournalEntryEmbeddingQueueServiceSyncTest {
     @Mock
     private JournalChapterRepository journalChapterRepository;
 
+    @Mock
+    private JournalSettingService journalSettingService;
+
     private JournalEntryEmbeddingQueueService service;
 
     @BeforeEach
@@ -52,7 +56,8 @@ class JournalEntryEmbeddingQueueServiceSyncTest {
                 repository,
                 searchService,
                 journalEntryRepository,
-                journalChapterRepository
+                journalChapterRepository,
+                journalSettingService
         );
     }
 
