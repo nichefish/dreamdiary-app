@@ -131,6 +131,11 @@ const routes: Array<RouteRecordRaw> = [
         meta: { pageTitleKey: "route.title.schedule-calendar" },
       },
       {
+        path: "/keep",
+        name: "keep-list",
+        component: () => import("@/features/keep/KeepPage.vue"),
+      },
+      {
         path: "/admin",
         name: "admin-page",
         component: () => import("@/features/admin/AdminPage.vue"),
@@ -369,6 +374,7 @@ function isUserMenuRoute(path: string): boolean {
     path === "/thread" ||
     path.startsWith("/thread/") ||
     path === "/schedule" ||
+    path === "/keep" ||
     path === "/board" ||
     path.startsWith("/board/")
   );

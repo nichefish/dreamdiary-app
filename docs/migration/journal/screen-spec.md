@@ -43,6 +43,7 @@
 | 스레드 수정 | `/thread/:id/edit` | `JournalThreadEditPage.vue` | ✓ |
 | 내 설정 | `/my/profile`, `/my/security`, `/my/journal`, `/my/prefixes` | `UserMyPage.vue` + `UserMy*Tab.vue` | ✓ |
 | 일정 | `/schedule` | `ScheduleCalendar.vue` | ✓ |
+| Keep 전수관리 | `/keep` | `KeepPage.vue` | ✓ 전 범위 journal_todo(scope=all) 조회·미해결/완료 그룹·제목/본문 검색·추가(현재 년월 발생지 기본)·제목 클릭 수정·완료/보류/되돌리기. 사이드바는 활성 projection으로 유지. 대메뉴 노출은 DB 메뉴 레코드 몫(코드 fallback 에는 등록). |
 
 ### 저널 달력 (`JournalDayCalendar.vue`)
 
