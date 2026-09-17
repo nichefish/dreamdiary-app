@@ -108,13 +108,13 @@ SystemLayout                   ← 헤더/사이드바 없는 새 창/팝업 전
 
 > 상세: `journal/screen-spec.md` · `journal/interaction-spec.md` · `journal/component-spec.md`
 
-| 구분 | Vue 위치 | 레거시 | 상태 |
-|------|----------|--------|------|
-| 툴바 전체검색 | `JournalDayViewToolbar.vue` → `openSearchTab()` | `_journal_day_keyword_search.ftlh` 팝업 | ✓ **대체 완료** — 새 탭 `/journal/entry/search` |
-| 어사이드 목록 키워드 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` | aside 인라인 필터 | ✓ 현재 월·주간 **목록 축소** (`fetchDays`) — 툴바 검색과 **상태·동작 분리** |
-| 검색 팝업 고급필터 | `JournalEntrySearchPage.vue` 아코디언 | 검색 화면 고급 필터 | ✓ |
-| 어사이드 고급필터 아코디언 | — (블록 D) | aside accordion **빈 placeholder** | — **이식 대상 아님** — 실제 컨트롤은 검색 팝업에만 존재 |
-| 레이아웃 전역 툴바 | `JournalDayViewToolbar.vue` | `_journal_day_page_header.ftlh` 나머지 | ✓ 고급필터·태그 카테고리 동기화·저널 일자 등록·aside 열기. 일정 등록·개인 일정은 일정 화면에서만 제공 |
+| 구분 | Vue 위치 | 상태 |
+|------|----------|------|
+| 툴바 전체검색 | `JournalDayViewToolbar.vue` → `openSearchTab()` | ✓ **대체 완료** — 새 탭 `/journal/entry/search` |
+| 어사이드 목록 키워드 | `JournalAside.vue` `diaryKeyword` / `dreamKeyword` | ✓ 현재 월·주간 **목록 축소** (`fetchDays`) — 툴바 검색과 **상태·동작 분리** |
+| 검색 팝업 고급필터 | `JournalEntrySearchPage.vue` 아코디언 | ✓ |
+| 어사이드 고급필터 아코디언 | — (블록 D) | — **이식 대상 아님** — 실제 컨트롤은 검색 팝업에만 존재 |
+| 레이아웃 전역 툴바 | `JournalDayViewToolbar.vue` | ✓ 고급필터·태그 카테고리 동기화·저널 일자 등록·aside 열기. 일정 등록·개인 일정은 일정 화면에서만 제공 |
 
 ## 미구현/부분구현 요약
 

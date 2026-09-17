@@ -11,11 +11,10 @@ import io.nicheblog.dreamdiary.feature.attachable.related.repository.jpa.Related
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationOriginType;
 import io.nicheblog.dreamdiary.feature.attachable.related.type.RelationType;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayResolvedGuard;
-import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryResolver;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,20 +49,20 @@ public class RelatedContentService {
     @Getter
     private final RelatedContentMapstruct mapstruct;
 
-    private final JournalEntryService journalEntryService;
+    private final JournalEntryResolver journalEntryResolver;
     private final JournalThreadRepository journalThreadRepository;
     private final JournalDayResolvedGuard journalDayResolvedGuard;
 
     public RelatedContentService(
             final RelatedContentRepository repository,
             final RelatedContentMapstruct mapstruct,
-            final @Lazy JournalEntryService journalEntryService,
+            final JournalEntryResolver journalEntryResolver,
             final JournalThreadRepository journalThreadRepository,
             final JournalDayResolvedGuard journalDayResolvedGuard
     ) {
         this.repository = repository;
         this.mapstruct = mapstruct;
-        this.journalEntryService = journalEntryService;
+        this.journalEntryResolver = journalEntryResolver;
         this.journalThreadRepository = journalThreadRepository;
         this.journalDayResolvedGuard = journalDayResolvedGuard;
     }
@@ -287,7 +286,7 @@ public class RelatedContentService {
                     .map(entity -> entity.getCreatedBy())
                     .orElse(null);
         }
-        return journalEntryService.resolveCreatedBy(refKey);
+        return journalEntryResolver.resolveCreatedBy(refKey);
     }
 
     /**
@@ -303,7 +302,7 @@ public class RelatedContentService {
                     .map(entity -> entity.getTitle())
                     .orElse(null);
         }
-        return journalEntryService.resolveTitle(refKey);
+        return journalEntryResolver.resolveTitle(refKey);
     }
 
     private BaseAttachableKey[] normalizePair(final BaseAttachableKey firstKey, final BaseAttachableKey secondKey) {

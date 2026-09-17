@@ -45,7 +45,11 @@ public class JournalTodoRestController
     /**
      * 저널 할일 목록 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
+     * <pre>
+     *  scope=all 이면 RESOLVED 포함 전 범위(keep 전수관리용), 그 외에는 활성(OPEN·PENDING) 집합을 반환한다.
+     * </pre>
      *
+     * @param scope 조회 범위 (all=전 범위, 그 외/미지정=활성)
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
@@ -53,10 +57,13 @@ public class JournalTodoRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalTodoListAjax(
+            final @RequestParam(value = "scope", required = false) String scope,
             final JournalTodoSearchParam searchParam
     ) throws Exception {
 
-        final List<JournalTodoDto> journalTodoList = myJournalTodoService.getMyListDtoWithCache(searchParam);
+        final List<JournalTodoDto> journalTodoList = "all".equals(scope)
+                ? myJournalTodoService.getMyList(searchParam)
+                : myJournalTodoService.getMyActiveList(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage("common.result.success");
 

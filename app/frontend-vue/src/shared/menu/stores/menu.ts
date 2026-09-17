@@ -73,6 +73,7 @@ const FALLBACK_USER_MENU_LIST: MenuDto[] = [
     menuItem(-106, "\uc5f0\uac04 \uacb0\uc0b0", "/annual", "bi-bar-chart"),
     menuItem(-107, "\uc2a4\ub808\ub4dc", "/thread", "bi-chat-square-text"),
     menuItem(-108, "\uc77c\uc815", "/schedule", "bi-calendar-check"),
+    menuItem(-109, "Keep", "/keep", "bi-bookmark-star"),
   ]),
 ];
 

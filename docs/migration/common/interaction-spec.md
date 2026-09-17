@@ -9,21 +9,20 @@
 ### HTTP 클라이언트
 
 - 저널·게시판·attachable 스토어는 **axios** (`axios.get/post` 등) 사용.
-- 레거시 `cF.ajax` / 전역 `fetch` 오버라이드(`cF.ui.blockUI`)는 SPA 컷오버(`eb86539`)에서 소스와 함께 제거됐다. Vue SPA는 blockUI를 이식하지 않는다.
+- Vue SPA는 전역 `blockUI`(진행 차단)를 사용하지 않는다.
 - 전역 AJAX 진행 표시는 **nprogress** 상단 로딩바로 대체한다. `shared/http/ajaxLoadingBar.ts`의 `installAjaxLoadingBar(axios)`가 in-flight 카운터로 request/response 인터셉터를 등록하며, `main.ts`에서 부트 시 한 번 호출한다.
 - 제외: `config.skipLoadingBar === true`, `/api/session/ping`(모달 선행 핑). 영역별 스피너·`로딩...` 텍스트(태그클라우드 등)는 기존대로 유지하고 전역 바와 병행한다.
 - 스토어 레벨 오류 메시지는 axios 로딩 인터셉터에 의존하지 않고 각 `catch`에서 처리한다(401은 전역 응답 인터셉터).
 
 ### 목록 갱신 (저널)
 
-- 레거시 `JournalDayMonthlyApp.refresh()` 등 **미사용**.
 - CRUD·필터 후: `useJournalStore.fetchDays()` (필요 시 `fetchTagCloud()`).
 
 ### 목록 갱신 (게시판·스레드)
 
 - `useBoardPostStore.fetchList(page)`, `useJournalThreadStore.fetchList(page)` — Vue 템플릿 내 페이지 버튼.
 - `journal-thread` 상세/등록/수정 진입은 목록 내부 local state만으로 열지 않고 Vue Router 경로(`/thread`, `/thread/new`, `/thread/:id`, `/thread/:id/edit`)를 단일 진입 경로로 사용한다. 라우트 변경 시 `JournalThreadLayout`이 모달 상태를 동기화하고, 모달이 모두 닫히면 `thread-list`로 복귀한다.
-- 레거시 `#listForm` + `Pagination.fnPage` 서버 리로드는 SPA 목록에서 **대체**.
+- SPA 목록은 클라이언트 페이지네이션을 사용한다.
 
 ### CRUD 성공 알림 후 갱신
 
@@ -34,7 +33,7 @@
 ### 모달
 
 - Pinia 스토어의 `visible` / `open*` 함수 + Bootstrap 5 모달 컴포넌트.
-- 게시판 상세: 레거시 `CustomEvent('board-post:open-detail-modal')` 대신 `useBoardPostStore.openDetail(id)`.
+- 게시판 상세: `useBoardPostStore.openDetail(id)`.
 
 ### 언어(Locale) 전환
 
@@ -45,6 +44,7 @@
 - 라우터 `beforeEach`는 인증 상태 확인과 화면 마운트보다 먼저 `localeStore.ensureCatalog()`를 호출한다. 같은 locale의 catalog가 이미 준비됐으면 재요청하지 않으며, 직접 URL 진입·새로고침에서도 번역 키 대신 현재 locale 메시지를 표시한다.
 - `i18nCatalogService.t(catalog, key)`는 catalog에 키가 있으면 그 값을 쓴다. **빈 문자열도 유효한 번역**이다(예: en `date.suffix.after-month-number` → 월 접미사 없음 → `7`). 키가 없을 때만 key 문자열을 그대로 반환한다. `value || key`로 빈 값을 키로 되돌리면 안 된다.
 - 로그인 화면(`SignIn.vue`): 국기 버튼(🇰🇷/🇺🇸) — `localeStore.setLocale()` 호출, 화면 텍스트 `localeStore.t()` 카탈로그로 전환.
+- 로그인 폼(`SignIn.vue`): 아이디 또는 비밀번호가 비어 있으면 `POST /api/auth/login`을 호출하지 않고 필드 검증 메시지(`auth.login.required`)만 표시한다. 빈 값 제출은 로그인 실패 횟수에 포함되지 않는다.
 - 앱 헤더 Navbar: 국기 버튼 클릭 → ko↔en 토글. 테마 전환·사용자/관리자 모드·언어 전환·프로필·모바일 헤더 메뉴의 사용자 노출 레이블은 현재 locale의 클라이언트 카탈로그를 사용하며, locale 변경은 기존 테마·메뉴 모드·라우트·인증 상태를 보존한다.
 - 브라우저 탭 제목은 최종 route의 `meta.pageTitleKey`를 현재 locale의 클라이언트 카탈로그로 해석한다. route 또는 locale 변경 시 `App.vue`의 단일 반응형 경로가 제목을 즉시 갱신하며, locale 변경은 현재 route와 인증 상태를 변경하지 않는다.
 
@@ -52,65 +52,11 @@
 
 - `router/index.ts` + `beforeEach` 인증 (`useAuthStore.verifyAuth`). 정상 서버 인증 결과는 메모리에서 15초간 재사용하며, 신선도 만료·새로고침·강제 검증 시 `/api/auth/get-auth-account`를 다시 호출한다. 동시 검증은 진행 중 Promise를 공유한다.
 - 사이드바: `toVuePath(menu.url)` (`utils/urlMapping.ts`).
-- 메뉴 DB와 외부 링크의 `/app/**`는 프론트엔드 종류와 독립적인 제품 화면 URL이다. `.do` 경로는 레거시 MVC 화면 계약이며, 신규 제품 화면 URL은 `.do` 없이 정의할 수 있다. `toVuePath`는 제품 화면 URL을 현재 Vue 내부 route로 연결한다. 데이터 조회·저장 엔드포인트는 `/api/**`에서 분리한다.
+- 메뉴 DB와 외부 링크의 `/app/**`는 프론트엔드 종류와 독립적인 제품 화면 URL이다. `.do` 경로는 서버 MVC 화면 계약이며, 신규 제품 화면 URL은 `.do` 없이 정의할 수 있다. `toVuePath`는 제품 화면 URL을 현재 Vue 내부 route로 연결한다. 데이터 조회·저장 엔드포인트는 `/api/**`에서 분리한다.
 
 ---
 
 ## AJAX 패턴
-
-### 기반 모듈
-
-`cF.ajax` (`legacy/static/js/common/ajax.ts`) — 노출식 모듈 패턴(IIFE)
-
-### fetch 전역 오버라이드
-
-모든 `fetch` 호출은 전역 래퍼로 가로채진다:
-
-```
-window.fetch = async (url, options) => {
-    // 1. X-Requested-With: XMLHttpRequest 헤더 자동 추가
-    // 2. Content-Type: application/json 자동 추가 (FormData 제외)
-    // 3. cF.ui.blockUI() — 요청 전 UI 차단
-    // 4. 원본 fetch 수행
-    // 5. !response.ok → handleError(response) 분기
-    // 6. finally: cF.ui.unblockUI() — UI 차단 해제
-};
-```
-
-### 에러 핸들링
-
-`handleError(response)` 에서 HTTP 상태코드별 분기:
-
-| 상태코드 | 처리 방식 |
-|---------|----------|
-| 401 Unauthorized | 팝업 창이면 `closePopupAndRedirectOpener(loginFormUrl)`. 일반 창이면 SweetAlert 확인 다이얼로그 → 로그인 페이지 이동 또는 머무르기. 머무르기 선택 시 navbar에 `session-expired-message` div 삽입 (`.blink.text-danger` blink 애니메이션) |
-| 403 Forbidden | SweetAlert alert → 로그인 페이지 이동 |
-| 400 Bad Request | 응답 body를 파싱하여 필드 에러 추출. 대상 필드의 `#${fieldId}_validate_span`에 에러 메시지 표시 (`.text-danger`). 필드 없으면 SweetAlert |
-| 5xx | SweetAlert alert (`view.error.request` 메시지) |
-| 기타 | SweetAlert alert (body에서 추출한 메시지 또는 `view.error.access-denied`) |
-
-### AJAX 메소드
-
-```javascript
-// GET 요청 (query string 자동 변환)
-cF.ajax.get(url, ajaxData, callback, continueBlock?)
-
-// POST 요청 (JSON body)
-cF.ajax.post(url, ajaxData, callback, continueBlock?)
-
-// Multipart POST (파일 업로드)
-cF.ajax.multipart(url, formData, callback, continueBlock?)
-
-// 직접 fetch 옵션 지정
-cF.ajax.request(url, options, callback, continueBlock?)
-```
-
-- `continueBlock = 'block'`: 콜백 완료 후에도 blockUI 유지
-- `continueBlock = 'none'` (기본): 콜백 완료 후 unblockUI
-
-### Vue 전환 후 패턴
-
-레거시 `cF.ajax.*` / 전역 `fetch`+blockUI 경로는 SPA에서 제거됐다. Vue 스토어·서비스는 **axios**를 사용하며, 전역 진행 표시는 nprogress(`installAjaxLoadingBar`)가 담당한다. 401 등 공통 오류는 `main.ts` axios 응답 인터셉터, 그 외 메시지는 호출부 `catch`에서 처리한다.
 
 ### Vue SPA 에러 핸들링 (전역 Axios 인터셉터)
 
@@ -133,7 +79,7 @@ cF.ajax.request(url, options, callback, continueBlock?)
 - Vue 저널의 검색·목록 조회가 실패해도 직전 성공 데이터를 빈 목록이나 `0건`으로 덮지 않는다. 상세·수정용 조회 실패는 오류를 표시하고 해당 모달을 열지 않는다. 동일 계약은 aside TODO·태그 클라우드 섹션·스레드 상세 소속/연관/피커·결산 상세 엔트리·계정 신청 승인 목록에도 적용한다(실패 UI ≠ 정상 빈 결과).
 - 저장·삭제·복원처럼 결과값으로 후속 알림을 분기하는 store action은 `AuthExpiredError`를 `{ rslt: false }` 또는 `false`로 변환하지 않고 재throw한다. 호출부는 인증 만료일 때 전역 401 안내만 남기고, 실제 처리 실패일 때만 실패 알림을 표시한다.
 - 인증이 필요한 Vue SPA 모달은 `shared/auth/sessionPing.ts`의 `assertAuthenticatedBeforeModal()`을 먼저 호출한 뒤 모달 open 플래그 또는 Bootstrap `show()`를 실행한다. 이 핑은 `/api/session/ping`을 호출하며, 로그인 세션이 풀려 있으면 전역 401 인터셉터가 즉시 세션 만료 안내를 표시하고 모달은 열지 않는다. 로그인 화면의 비밀번호 변경 모달처럼 비로그인 상태에서 열려야 하는 auth 모달은 선행 핑 대상에서 제외한다.
-- 취소 시 navbar 세션 만료 메시지 표시(legacy `.blink.text-danger`)는 Vue SPA 에서 미구현.
+- 취소 시 navbar 세션 만료 메시지 표시는 Vue SPA 에서 미구현.
 
 ### 백엔드 전역 예외 응답
 
@@ -157,136 +103,19 @@ API 인증 경계는 `PublicApiRequestMatcher`를 SSOT로 사용하며 Spring Se
 
 세션 종료 WebSocket 알림은 전역 토픽을 사용하지 않는다. `SessionDestroyListener`는 종료된 세션의 사용자명으로 `/user/queue/session-invalid`에만 발송하며, 웹·모바일 클라이언트도 사용자 전용 큐만 구독한다. 다른 사용자의 세션 종료 이벤트를 현재 사용자의 세션 만료로 오인해서는 안 된다.
 
-채팅 메시지 이력은 세션 소유권을 먼저 검증하는 `GET /chat/sessions/{sessionId}/messages` 단일 경로로 조회한다. 소유권 범위를 확정하지 않는 레거시 `GET /chat/messages`는 제공하지 않는다. WebSocket 취소 요청도 대상 세션의 소유권을 검증한 뒤에만 취소 플래그를 변경한다.
+채팅 메시지 이력은 세션 소유권을 먼저 검증하는 `GET /chat/sessions/{sessionId}/messages` 단일 경로로 조회한다. 소유권 범위를 확정하지 않는 `GET /chat/messages`는 제공하지 않는다. WebSocket 취소 요청도 대상 세션의 소유권을 검증한 뒤에만 취소 플래그를 변경한다.
 
 ---
 
 ## 폼 제출 패턴
 
-### 기반 모듈
-
-`cF.form` (`legacy/static/js/common/form.ts`) — 노출식 모듈 패턴(IIFE)
-
-### 일반 폼 제출
-
-```javascript
-// 직접 폼 제출 (prefunc 선택적)
-cF.form.submit(formSelector, actionUrl, prefunc?)
-
-// jQuery submit (jquery-validation 통과용)
-cF.form.$submit(formSelector, actionUrl, prefunc?)
-```
-
-### blockUI 적용 폼 제출
-
-```javascript
-// blockUI + closeModal + submit
-cF.form.blockUISubmit(formSelector, actionUrl, prefunc?)
-// 내부: cF.ui.blockUIRequest() → cF.ui.closeModal() → cF.form.submit()
-
-// blockUI + closeModal + jQuery submit
-cF.form.$blockUISubmit(formSelector, actionUrl, prefunc?)
-```
-
-### 페이지네이션 폼 제출
-
-`_pagination.ftlh`의 `Pagination.fnPage(pageNo, pageSize?)`:
-
-```javascript
-// 내부적으로 #listForm의 pageNo, pageSize hidden 필드 업데이트 후 제출
-cF.form.blockUISubmit("#listForm", listUrl)
-```
-
-페이지 크기 변경 시 현재 페이지 자동 재계산:
-```javascript
-Pagination.fnRepage(pageNo, prevPageSize, newPageSize)
-// = Math.floor((pageNo-1)*prevPageSize / newPageSize) + 1
-```
-
-### 저널 엔트리 등록 폼
-
-각 엔트리 타입별 폼 ID:
-- DIARY: `#journalDiaryRegistForm` → `enctype="multipart/form-data"`, `method="post"`
-- DREAM: `#journalDreamRegistForm` → 동일
-- NOTE: `#journalEntryRegistForm` → 동일
-
-`<input type="hidden" name="type" value="${entryRegType}">` — 타입 구분 hidden 필드 포함
-
-제출 핸들러: `JournalEntryRegVueApp.submit('JOURNAL_DIARY'|'JOURNAL_DREAM'|'JOURNAL_NOTE')`
-
-### 저널 일자 등록 폼
-
-`#journalDayRegistForm` → `enctype="multipart/form-data"`
-저장 버튼: `dF.JournalDayRuntimeService.handleLegacyActionClick(event)` (이벤트 위임)
-닫기 버튼: `data-journal-day-action` 속성으로 액션 전달
-
-### 유효성 검사 패턴
-
-- `required` 클래스: 필수 필드 표시 (TinyMCE textarea 포함)
-- 에러 표시: `#${fieldId}_validate_span` (`.text-danger`)에 메시지 직접 삽입
-- 공백 자동 제거: `.no-space` 클래스 — `Layout.init()` 시 `cF.validate.noSpaces(".no-space")` 적용
-- 숫자만 허용: `.number` 클래스 — `cF.validate.onlyNum(".number")` 적용
-- 페이지네이션 숫자 입력: `.page-ellipsis` — `cF.validate.onlyNum(".page-ellipsis")` 적용
+Vue SPA는 각 feature 스토어 action(필요 시 axios multipart)으로 폼을 제출하고, 등록·수정 모달이 성공 알림 후 목록·상세를 갱신한다(위 「CRUD 성공 알림 후 갱신」). 필드 검증과 오류 표시는 각 모달·컴포넌트에서 처리한다.
 
 ---
 
 ## 모달 열기/닫기 패턴
 
-### Bootstrap 5 기반 모달
-
-모든 모달은 Bootstrap 5 `modal` 플러그인 기반. Freemarker macro `@modal.layout id="XXX" size="xl|xxl"` 로 껍데기 생성.
-
-### 모달 오픈 방법
-
-1. **직접 jQuery 호출** (구형 패턴):
-   ```javascript
-   $('#modal_id').modal('show');
-   ```
-
-2. **CustomEvent 패턴** (Vue 전환 후):
-   ```javascript
-   window.dispatchEvent(new CustomEvent('board-post:open-detail-modal', { detail: { id: N } }));
-   ```
-
-3. **Vue 브리지 호출**:
-   ```javascript
-   window.JournalDayRegVueApp.pendingPayload = payload;
-   $('#journal_day_reg').modal('show');
-   ```
-
-4. **서비스 함수 호출**:
-   ```javascript
-   dF.JournalDayRuntimeService.handleLegacyActionClick(event);
-   CommentList.modal(id, contentType);
-   FileGroupList.modal(fileGroupId);
-   dF.Tag.dtlModal(tagId);
-   ```
-
-### ModalHistory 패턴
-
-모달 스택 관리. 닫기 버튼에서 `ModalHistory.pop()` 호출:
-
-```javascript
-// 표준 닫기 버튼 (modal_header macro)
-onClick="ModalHistory.pop();"
-
-// 이전 모달로 돌아가기 (modal_header_with_back macro)
-onclick="ModalHistory.pop(); ModalHistory.prev();"
-```
-
-### 안전 닫기 패턴 (modal_btn_close_safe)
-
-`Layout.modalBtnCloseSafe()` 가 모든 `.modal-btn-close-safe` 버튼에 적용:
-
-```javascript
-// 클릭 시:
-// 1. isAllowed 플래그 체크 (중복 클릭 방지)
-// 2. data-bs-dismiss="modal" 속성 동적 추가
-// 3. data-func 속성의 함수 eval() 실행 (ModalHistory.pop() + 커스텀 콜백)
-// 4. 2초 후 isAllowed = false, data-bs-dismiss 제거 (안전장치 복구)
-```
-
-닫기 버튼에 저장되지 않은 변경 감지 로직을 `data-func`로 주입 가능.
+Vue SPA 모달은 Pinia 스토어의 `visible`/`open*` + Bootstrap 5 모달 컴포넌트로 연다(위 「모달」). 2회 클릭 안전 닫기는 `useSafeModalClose()` composable로 구현한다(`common/component-spec.md` §16).
 
 ### 모달 크기
 
@@ -295,74 +124,33 @@ onclick="ModalHistory.pop(); ModalHistory.prev();"
 | `xl` | `modal-xl` | 등록/수정 모달 (기본) |
 | `xxl` | `modal-xxl` | 상세 모달 (넓은 뷰) |
 
-### 모달 헤더 종류 (macro)
-
-| Macro | 특징 |
-|-------|------|
-| `@component.modal_header title` | 표준 헤더. 닫기 버튼 1개 (`ModalHistory.pop()`) |
-| `@component.modal_header_with_back title` | 이전 모달 돌아가기 + 닫기 버튼 2개 |
-| `@component.modal_header_dark title` | 다크 헤더 (`background-color: #41416e`) |
-
 ---
 
 ## 공통 확인 다이얼로그
 
 ### 로그아웃 확인
 
-Vue SPA의 `UserAccountMenu.vue`와 `SidebarFooter.vue`는 현재 locale의 `account.logout.confirm` 문구로 확인한 뒤 기존 `useAuthStore.logout()`과 로그인 화면 이동을 수행한다. locale 변경은 로그아웃 API·메뉴 초기화·이동 흐름을 변경하지 않는다.
+Vue SPA의 `UserAccountMenu.vue`와 `SidebarFooter.vue`는 현재 locale의 `account.logout.confirm` 문구로 확인한 뒤 `useAuthStore.logout()`과 로그인 화면 이동을 수행한다. locale 변경은 로그아웃 API·메뉴 초기화·이동 흐름을 변경하지 않는다.
 
-`Layout.logout()`:
-```javascript
-Swal.fire({
-    text: Message.get("view.cnfm.logout"),
-    showCancelButton: true,
-}).then(result => {
-    if (!result.value) return;
-    location.replace(Url.API_AUTH_LGOUT);
-});
-```
-
-### 401 세션 만료 처리
-
-`handleError()` 내부:
-```javascript
-cF.ui.swalOrConfirm(
-    msg + "\n" + Message.get("view.auth.redirect-to-login-form"),
-    /* 확인 콜백 */ () => { window.location.href = loginFormUrl; },
-    /* 취소 콜백 */ () => { /* navbar에 만료 메시지 표시 */ }
-);
-```
+401 세션 만료 확인·이동은 위 「Vue SPA 에러 핸들링」의 `confirmSessionExpired()` 단일 경로를 따른다.
 
 ### CRUD 삭제 확인
 
-각 서비스 모듈 내부에서 `cF.ui.swalOrConfirm()` 또는 `Swal.fire({ showCancelButton: true })` 형태로 구현. 레거시 코드에서 삭제 전 확인 다이얼로그는 서비스별로 개별 구현.
+삭제 확인은 `shared/utils/swal.ts`의 `swalConfirm()`(SweetAlert2)으로 표시한다.
 
 Vue SPA에서 Bootstrap 모달이 열린 상태의 SweetAlert2 확인 다이얼로그는 활성 모달 위에 표시한다. z-index SSOT는 `shared/utils/overlayZIndex.ts`의 `SWAL_Z`(6200)이며, `App.vue` CSS(`!important`)와 `swalFire` `didOpen` inline 강제·모달 스택 `MODAL_MAX_Z` 캡이 함께 확인창이 모달 뒤로 가려지지 않게 한다. 같은 모달 안의 TinyMCE code/link 등 보조 UI(`.tox-tinymce-aux`)는 `TINYMCE_AUX_Z`(6190)로 올려 모달(6100+)·Tagify(6120)에 가려지지 않게 하고, SweetAlert보다는 아래에 둔다. 또한 `.tox-tinymce-aux`로의 `focusin`을 `installModalStacking`이 capture 단계에서 가로채 Bootstrap 모달 FocusTrap의 포커스 회수를 면제하므로, 모달 안 에디터에서 find/replace·link 등 다이얼로그 입력창에 타이핑할 수 있다.
 
 ### 모달 닫기 버튼 확인
 
-`modal_btn_close_safe` 패턴: 레거시는 `Layout.modalBtnCloseSafe()` + `data-func`. Vue SPA 는 `useSafeModalClose()` composable로 2회 클릭 armed 닫기를 구현 — `common/component-spec.md` §16 ✓.
+`modal_btn_close_safe` 패턴: Vue SPA 는 `useSafeModalClose()` composable로 2회 클릭 armed 닫기를 구현한다 — `common/component-spec.md` §16 ✓.
 
 ---
 
 ## 태그 입력 패턴 (Tagify)
 
-### 기반 모듈
-
-`cF.tagify` (`legacy/static/js/common/helper/tagify.ts`)
-
 ### 초기화 방법
 
-```javascript
-// 기본 태그 입력
-const tagify = cF.tagify.init(selector, additionalOptions?)
-
-// 카테고리 있는 태그 입력
-const tagify = cF.tagify.initWithCtgr(selector, ctgrMap, additionalOptions?)
-
-// 메타(카테고리 + 값) 있는 태그 입력
-const tagify = cF.tagify.initMeta(selector, ctgrMap, additionalOptions?)
-```
+`TagifyEditor.vue`가 Tagify를 초기화한다. `ctgrMap`이 없으면 단순 태그, 있으면 카테고리(2단계), `metaMode`면 카테고리+값(3단계) 입력 모드다.
 
 ### 기본 옵션
 
@@ -459,9 +247,8 @@ tagify.addTags([{ value, data: { ctgr, value: meta } }]);
 
 ### ctgrMap 로딩 아키텍처
 
-**변경 전 (legacy/초기 SPA):** `TagifyEditor.vue`가 `onMounted` 시 HTTP로 ctgrMap을 직접 조회 → 모달 열릴 때마다 추가 round-trip 발생.
 
-**변경 후 (현행):** `journalCategoryMaps` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `journalModal` 모달 openers는 이 스토어에 위임하고, 템플릿은 `modalStore.dayTagCategoryMap` 등 기존 facade를 그대로 쓴다. `App.vue`·로그인 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensure`로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그·메타 포함 저장 성공 시 `applyCategoryMapsFromSaveResponse`가 서버 `rsltMap`으로 세션 ref를 **교체** — 무효화·추가 GET 없음.
+`journalCategoryMaps` Pinia 스토어가 앱 세션 SSOT로 4종 categoryMap(`dayTag`/`dayMeta`/`entryDiary`/`entryDream`)을 유지한다. `journalModal` 모달 openers는 이 스토어에 위임하고, 템플릿은 `modalStore.dayTagCategoryMap` 등 기존 facade를 그대로 쓴다. `App.vue`·로그인 시 `preloadCategoryMaps()`로 1회 HTTP 적재. 모달 오픈은 `ensure`로 **미적재 시에만** 조회하며, 이미 있으면 ref 그대로 사용(모달 오픈 갱신 아님). 태그·메타 포함 저장 성공 시 `applyCategoryMapsFromSaveResponse`가 서버 `rsltMap`으로 세션 ref를 **교체** — 무효화·추가 GET 없음.
 
 ```
 앱 부트 (인증됨)
@@ -490,22 +277,15 @@ categoryMap URL 매핑:
 
 ### 적용 대상 화면
 
-- `_journal_entry_reg_modal.ftlh`에서 DIARY 타입 (`entryRegShowTagify = true`) 과 DREAM 타입에서 Tagify 초기화
-- `entryRegShowTagify = false`: NOTE 타입 (태그 없음)
+- 엔트리 등록 모달의 DIARY·DREAM 타입에서 Tagify를 사용하고, NOTE 타입은 태그가 없다.
 
 ---
 
 ## 리치 에디터 패턴 (TinyMCE)
 
-### 기반 모듈
-
-`cF.tinymce` (`legacy/static/js/common/helper/tinymce.ts`)
-
 ### 초기화
 
-```javascript
-cF.tinymce.init(selectorStr, imgFunc?)
-```
+`RichEditor.vue`가 TinyMCE 런타임·플러그인·스킨을 단일 공유 Promise로 로드해 초기화한다(`common/component-spec.md` §RichEditor).
 
 ### 기본 설정
 
@@ -527,12 +307,11 @@ cF.tinymce.init(selectorStr, imgFunc?)
 
 ### 커스텀 버튼
 
-1. **`custom_image`** (이미지 아이콘): `imgFunc()` 호출
-   - 기본 `imgFunc`: `fileGroup0` input 클릭 → change 이벤트 → `/file/fileUploadAjax.do` 업로드 → `tinymce.execCommand('mceInsertContent', true, imgTag)` 삽입
+1. **`custom_image`** (이미지 아이콘): 파일 선택 → 이미지 업로드 → `mceInsertContent`로 삽입.
    - 이미지 태그: `<img src='URL' data-mce-src='URL' data-originalFileName='원본파일명'>`
-   - 파일 타입 검증: `cF.validate.fileSizeChck`, `cF.validate.fileImgExtnChck`
+   - 업로드 전 파일 크기·확장자를 검증한다.
 
-2. **`moreless`** (글접기/펼치기 아이콘): `cF.tinymce.morelessFunc()` 호출
+2. **`moreless`** (글접기/펼치기 아이콘): 접기 섹션을 삽입한다.
    - 삽입 구조:
      ```html
      <div class="tinymce-section" id="tinymce_section_N">
@@ -563,86 +342,19 @@ editor.on('PostRender', function() {
 });
 ```
 
-### 콘텐츠 설정 (비동기)
+### 콘텐츠 설정
 
-```javascript
-cF.tinymce.setContentWhenReady(editorNm, content, attempt?)
-// 최대 20회(50ms 간격) 재시도하여 editor 초기화 완료 후 content 설정
-// resetContent() → undoManager.clear() → setDirty(false) → save() 순서로 초기화
-```
-
-### 에디터 삭제
-
-```javascript
-cF.tinymce.destroy(selector)
-// tinymce.remove(editorElement)
-```
+`RichEditor.vue`는 에디터 초기화 완료 후 초기 content를 설정하고 편집 상태(undo/dirty)를 정리한다.
 
 ### 적용 화면
 
-- `journal_day_monthly.ftlh`, `journal_day_weekly.ftlh`: 일기/꿈/노트 등록 모달에서 사용
-- `journal_annual_list.ftlh`, `journal_annual_detail.ftlh`: 결산 등록 모달에서 사용
-- 각 엔트리 등록 모달의 textarea ID:
-  - DIARY: `tinymce_journalDiaryCn`
-  - DREAM: `tinymce_journalDreamCn`
-  - NOTE: `tinymce_journalEntryCn`
+- 저널 일기/꿈/노트 등록 모달과 결산 등록 모달에서 `RichEditor`를 사용한다. 인스턴스 정리(destroy)는 `RichEditor.vue`가 unmount 시 수행한다.
 
 ---
 
 ## 목록 새로고침 패턴
 
-### 브리지 API 패턴 (Vue 전환 후)
-
-Vue 앱이 마운트되기 전에도 호출이 가능하도록 `window` 브리지 객체에 큐잉:
-
-```javascript
-// 마운트 전 상태 (셸)
-window.JournalDayMonthlyApp = {
-    mounted: false,
-    pendingLoad: null,
-    refresh: function() { this.pendingLoad = { type: 'refresh' }; },
-    render: function(model) { this.pendingModel = model; },
-    ...
-};
-
-// Vue 마운트 완료 후 실제 구현으로 교체
-// pendingLoad / pendingModel을 확인하여 큐잉된 명령 즉시 실행
-```
-
-### 저널 일자 목록 갱신
-
-```javascript
-// 월간 새로고침
-JournalDayMonthlyApp.refresh()
-JournalDayMonthlyApp.loadMonthly()
-JournalDayMonthlyApp.applySearchParamsAndReload(patch, scope?)
-
-// 주간 새로고침
-JournalDayWeeklyApp.refresh()
-JournalDayWeeklyApp.loadWeekly(stdrdDt, targetDt)
-```
-
-### 결산 목록 갱신
-
-`JournalAnnualListApp` 부트 시 `dF.JournalAnnual.init() + listAjax()` 수행 (레거시 IIFE 동등).
-
-### 페이지네이션 기반 목록 (스레드, 게시판)
-
-서버사이드 페이지네이션. 갱신은 `Pagination.fnPage(pageNo, pageSize?)` → `cF.form.blockUISubmit("#listForm", listUrl)` → 전체 페이지 재렌더.
-
-### CRUD 완료 후 목록 처리
-
-Vue 서비스 모듈에서 CRUD 완료 콜백:
-1. 성공 응답 확인 (`rslt === true` 또는 `res.rslt`)
-2. `cF.ui.swalOrAlert(res.message)` — 성공/실패 메시지 표시 (Vue: `swalAjaxResult({ rslt, message, ... })`)
-3. 모달 닫기 (`cF.ui.closeModal()` 또는 `ModalHistory.pop()`)
-4. 목록 App의 refresh/reload 메소드 호출
-
-### 태그 헤더 갱신
-
-`JournalDayEntryTagListVueApp.setList(type, tagList)` 브리지:
-- Vue 마운트 전 호출은 `pendingByType` 큐잉
-- `journalEntryTagService.renderList` → `JournalDayEntryTagListVueApp.setList` 브리지 경유
+목록 갱신은 위 「목록 갱신 (저널)」·「목록 갱신 (게시판·스레드)」·「CRUD 성공 알림 후 갱신」의 스토어 action으로 수행한다: 저널은 `useJournalStore.fetchDays()`(+필요 시 `fetchTagCloud()`), 게시판·스레드는 `fetchList(page)`, 결산은 `JournalAnnualStore.fetchList()`. CRUD 성공은 `swalAjaxResult({ rslt, message, ... })`로 알린 뒤 갱신한다.
 
 ---
 
@@ -664,41 +376,13 @@ Vue 서비스 모듈에서 CRUD 완료 콜백:
 
 ## 뷰 전환 패턴 (저널 일자 탭)
 
-`dF.JournalDayViewService.changeView(url)`:
-- 탭 클릭 → URL 전환 (페이지 이동)
-- 탭 4종: 주간(`JOURNAL_DAY_WEEKLY`), 월간(`JOURNAL_DAY_MONTHLY`), 달력(`JOURNAL_DAY_CAL`), 메타(`JOURNAL_DAY_META_VIEW`)
-
-현재 활성 탭은 해당 페이지 ftlh에서 `.active` 클래스로 하드코딩.
+주간/월간/달력/메타 탭 전환은 `router-link`(`journal-weekly`/`journal-monthly`/`journal-calendar`/`journal-meta`)로 수행하며, 활성 탭은 현재 route로 판정한다(`JournalDayViewToolbar.vue`).
 
 ---
 
 ## 레이아웃 사이드바/어사이드 패턴
 
-`Layout.ts`:
-
-### 사이드바 상태 저장
-
-- `localStorage` 키: `layout_sidebar_desktop_state`
-- 값: `"minimized"` | `"expanded"`
-- 태블릿 뷰 (768px~1199.98px): 기본 minimized
-- 터치 기기 데스크톱 뷰: 기본 minimized
-
-### 어사이드(우측 패널) 상태
-
-- `localStorage` 키: `layout_aside_state:${location.pathname}` (경로별 독립 저장)
-- 데스크톱: `data-kt-app-aside-collapse` 속성으로 열림/닫힘 제어
-- 모바일/태블릿: `data-app-hide-aside` 속성으로 표시/숨김 제어
-- 토글 버튼: `#kt_app_engage_primary_btn` — 클릭 시 아이콘/텍스트 전환
-  - 열림: `<i class="bi bi-x-lg me-1"></i>Filter`
-  - 닫힘: `<i class="bi bi-layout-sidebar-inset-reverse me-1"></i>Filter`
-
-### 버튼 딜레이
-
-`Layout.setBtnDelay()`: 모든 `button`, `.btn`, `.badge` (`.modal-btn-close-safe` 제외)에 클릭 딜레이 적용 (`cF.ui.delayBtn()`).
-
-### Alive Check
-
-`Layout.aliveCheck(60)`: 60초 주기로 alive check URL 호출 (현재 fetch 주석 처리됨).
+사이드바 접힘/펼침과 우측 aside 표시 상태는 클라이언트에 유지하며(aside는 경로별 독립), 저널 aside 토글은 `useJournalAsideStore`가 제어한다. 레이아웃·aside 세부 구조는 `common/component-spec.md`와 `journal/screen-spec.md` aside 섹션을 참조한다.
 
 ---
 
@@ -721,7 +405,7 @@ Vue 서비스 모듈에서 CRUD 완료 콜백:
 
 ### 인증 결과 화면
 
-- legacy `verify_success.ftlh`, `verify_failure.ftlh`는 Vue route `/auth/verify-result`로 통합한다.
+- 인증 결과(`verify_success`/`verify_failure`)는 Vue route `/auth/verify-result`로 통합한다.
 - 성공/실패 분기는 query/status 또는 서버 redirect 파라미터로 표현한다.
 - 별도 FTLH 화면을 다시 만들지 않는다.
 ---

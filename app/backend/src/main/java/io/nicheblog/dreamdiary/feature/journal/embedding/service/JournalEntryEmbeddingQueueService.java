@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import io.nicheblog.dreamdiary.feature.journal.setting.service.JournalSettingService;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -68,6 +69,7 @@ public class JournalEntryEmbeddingQueueService {
     private final JournalEntryEmbeddingSearchService searchService;
     private final JournalEntryRepository journalEntryRepository;
     private final JournalChapterRepository journalChapterRepository;
+    private final JournalSettingService journalSettingService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private enum SyncAction {
@@ -86,6 +88,11 @@ public class JournalEntryEmbeddingQueueService {
     @Transactional
     public void queueForEntryId(final Integer journalEntryId) throws Exception {
         if (journalEntryId == null) return;
+
+        if (!journalSettingService.isAiEnabled()) {
+            log.debug("Journal entry embedding queue skipped. reason=aiDisabled, entryId={}", journalEntryId);
+            return;
+        }
 
         final JournalEntryEntity entry = journalEntryRepository.findById(journalEntryId).orElse(null);
         if (entry == null) {

@@ -44,12 +44,24 @@
 
       <!--begin::일간 미니 달력 (DAILY)-->
       <template v-if="store.viewType === 'DAILY'">
-        <!--begin::월 이동 컨트롤-->
-        <div class="d-flex align-items-center justify-content-between">
+        <!--begin::월 이동 컨트롤 (월 라벨 클릭 → 네이티브 날짜 선택기, 주간 범위 라벨과 동일 패턴)-->
+        <div class="d-flex align-items-center justify-content-between position-relative">
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
-          <span class="fw-bold fs-6">{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <span
+            class="fw-bold fs-6 text-hover-primary cursor-pointer"
+            :title="t('journal.aside.date-select.tooltip')"
+            @click="openDayMonthPicker"
+          >{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <input
+            ref="dayPickerRef"
+            type="date"
+            :value="dailySelectedDate || defaultMonthDate"
+            style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+            tabindex="-1"
+            @change="onDayPickerChange"
+          />
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
@@ -70,12 +82,24 @@
 
       <!--begin::월 내비게이션 (MONTHLY/CAL/LIST)-->
       <template v-else-if="store.viewType !== 'WEEKLY'">
-        <!--begin::월 이동 컨트롤-->
-        <div class="d-flex align-items-center justify-content-between">
+        <!--begin::월 이동 컨트롤 (월 라벨 클릭 → 네이티브 날짜 선택기, 주간 범위 라벨과 동일 패턴)-->
+        <div class="d-flex align-items-center justify-content-between position-relative">
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(-1)">
             <i class="bi bi-chevron-left"></i>
           </button>
-          <span class="fw-bold fs-6">{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <span
+            class="fw-bold fs-6 text-hover-primary cursor-pointer"
+            :title="t('journal.aside.date-select.tooltip')"
+            @click="openMonthPicker"
+          >{{ store.mnth }}{{ t("date.suffix.after-month-number") }}</span>
+          <input
+            ref="monthPickerRef"
+            type="date"
+            :value="defaultMonthDate"
+            style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+            tabindex="-1"
+            @change="onMonthPickerChange"
+          />
           <button type="button" class="btn btn-sm btn-icon btn-light" @click="navigateMonth(1)">
             <i class="bi bi-chevron-right"></i>
           </button>
@@ -157,9 +181,7 @@
           </button>
           <span class="mx-1">|</span>
           <span class="px-1 text-center">
-            <span class="fs-6 text-muted">{{ asideStore.pinnedYy != null ? String(asideStore.pinnedYy) : '----' }}</span>
-            <span class="text-muted"> / </span>
-            <span class="fs-6 text-muted">{{ asideStore.pinnedMnth != null ? String(asideStore.pinnedMnth) : '--' }}</span>
+            <span class="fs-6 text-muted">{{ asideStore.pinnedLabel || '----' }}</span>
             <i class="bi bi-pin-map fs-7 ms-1 text-muted"></i>
           </span>
           <span class="mx-1">|</span>
@@ -178,6 +200,22 @@
 
       <div class="separator"></div>
 
+      <!--begin::표시 필터 접이 토글 (기본 접힘 — 필터가 TODO 카드를 짓누르지 않도록)-->
+      <button
+        type="button"
+        class="btn btn-sm btn-light w-100 d-flex align-items-center justify-content-between"
+        :aria-expanded="filterExpanded"
+        @click="filterExpanded = !filterExpanded"
+      >
+        <span class="d-flex align-items-center gap-1 fs-7 fw-bold text-muted">
+          <i class="bi bi-funnel fs-7"></i> {{ t("journal.aside.filter.toggle") }}
+        </span>
+        <i :class="filterExpanded ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+      </button>
+      <!--end::표시 필터 접이 토글-->
+
+      <div v-show="filterExpanded">
+      <div class="d-flex flex-column gap-3">
       <!--begin::표시 필터 토글-->
       <div class="d-flex flex-column gap-2">
         <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
@@ -352,6 +390,9 @@
         {{ t("journal.aside.filter.reset") }}
       </button>
       <!--end::필터 초기화 버튼-->
+      </div>
+      </div>
+      <!--end::표시 필터 접이 영역-->
 
 
     </div>
@@ -384,11 +425,17 @@ const { t } = useLocaleStore();
 const route = useRoute();
 const router = useRouter();
 
+/** 표시 필터 섹션 접힘 상태. 기본 접힘 — 필터가 길어 TODO 카드를 짓누르지 않도록 접어 둔다. 활성 필터 값은 접혀도 v-show 로 유지된다. */
+const filterExpanded = ref(false);
+
 const currentYear = new Date().getFullYear();
 const yyOptions = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);
 
 /** 일간(DAILY) view에서 route query.stdrdDt → 미니 달력 선택 날짜 */
 const dailySelectedDate = computed(() => (route.query.stdrdDt as string) || "");
+
+/** 일간/월간 월 라벨 날짜 선택기 표시 기준일 — 현재 store.yy/mnth 의 1일 (YYYY-MM-DD) */
+const defaultMonthDate = computed(() => `${store.yy}-${String(store.mnth).padStart(2, "0")}-01`);
 
 /** 미니 달력에 표시할 공휴일 날짜 목록 */
 const miniCalHolidays = ref<string[]>([]);
@@ -522,15 +569,68 @@ async function onWeekPickerChange(e: Event): Promise<void> {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** 현재 년/월을 Pinpoint로 고정 (localStorage `journal_day_pinpoint`) */
-function pinpoint(): void {
-  asideStore.setPinpoint(store.yy, store.mnth);
+/** 일간 월 라벨 날짜 선택기 inputRef */
+const dayPickerRef = ref<HTMLInputElement | null>(null);
+/** 월간(MONTHLY/CAL/META) 월 라벨 날짜 선택기 inputRef */
+const monthPickerRef = ref<HTMLInputElement | null>(null);
+
+/** 일간: 월 라벨 클릭 → 날짜 선택기 열기 (표시 기준일 = 현재 선택 날짜, 없으면 해당 월 1일) */
+async function openDayMonthPicker(): Promise<void> {
+  const el = dayPickerRef.value;
+  if (el) el.value = dailySelectedDate.value || defaultMonthDate.value;
+  await nextTick();
+  (el as HTMLInputElement & { showPicker?: () => void } | null)?.showPicker?.();
 }
 
-/** 고정한 년/월로 되돌리기 */
+/** 일간: 날짜 선택 → 해당 날짜 일간 view로 이동 (onMiniCalendarSelect 와 동일 계약) */
+function onDayPickerChange(e: Event): void {
+  const val = (e.target as HTMLInputElement).value;
+  if (!val) return;
+  onMiniCalendarSelect(val);
+}
+
+/** 월간: 월 라벨 클릭 → 날짜 선택기 열기 (표시 기준일 = 해당 월 1일) */
+async function openMonthPicker(): Promise<void> {
+  const el = monthPickerRef.value;
+  if (el) el.value = defaultMonthDate.value;
+  await nextTick();
+  (el as HTMLInputElement & { showPicker?: () => void } | null)?.showPicker?.();
+}
+
+/** 월간: 날짜 선택 → 선택 날짜가 속한 달의 월간 view로 이동 (navigateMonth 와 동일하게 syncMonthlyRouteOrFetch) */
+async function onMonthPickerChange(e: Event): Promise<void> {
+  const val = (e.target as HTMLInputElement).value;
+  if (!val) return;
+  const [yStr, mStr] = val.split("-");
+  await syncMonthlyRouteOrFetch(Number(yStr), Number(mStr));
+}
+
+/** 현재 조회 중인 기간을 Pinpoint로 고정 (viewType 별 복원 기준 포함, localStorage `journal_day_pinpoint`) */
+function pinpoint(): void {
+  if (store.viewType === "DAILY") {
+    asideStore.setPinpoint({ viewType: "DAILY", yy: store.yy, mnth: store.mnth, stdrdDt: store.dailyStdrdDt });
+  } else if (store.viewType === "WEEKLY") {
+    asideStore.setPinpoint({ viewType: "WEEKLY", yy: store.yy, mnth: store.mnth, weekStartDt: store.weekStartDt });
+  } else {
+    asideStore.setPinpoint({ viewType: store.viewType, yy: store.yy, mnth: store.mnth });
+  }
+}
+
+/** 고정한 기간으로 되돌리기 (viewType 별: 일간 stdrdDt·주간 weekStartDt·월간 yy/mnth) */
 function turnback(): void {
   if (asideStore.pinnedYy == null || asideStore.pinnedMnth == null) return;
-  void gotoYyMnth(asideStore.pinnedYy, asideStore.pinnedMnth);
+  if (asideStore.pinnedViewType === "DAILY" && asideStore.pinnedStdrdDt) {
+    void router.replace({ name: "journal-daily-tab", query: { stdrdDt: asideStore.pinnedStdrdDt } });
+    return;
+  }
+  if (asideStore.pinnedViewType === "WEEKLY" && asideStore.pinnedWeekStartDt) {
+    void router.replace({ name: "journal-weekly", query: { weekStartDt: asideStore.pinnedWeekStartDt } });
+    return;
+  }
+  void router.replace({
+    name: "journal-monthly",
+    query: { yy: String(asideStore.pinnedYy), mnth: String(asideStore.pinnedMnth) },
+  });
 }
 
 function onYyChange(e: Event) {

@@ -157,14 +157,14 @@
 
 
               <!--begin::프로필-->
-              <label for="tagProfileCn" class="form-label fw-bold">{{ t("attachable.tag.profile.profile") }}</label>
+              <label for="tagProfileCn" class="form-label fw-bold">{{ profileLabel }}</label>
               <textarea
                 id="tagProfileCn"
                 v-model="model.content"
                 name="content"
                 class="form-control"
                 rows="10"
-                :placeholder="t('attachable.tag.profile.profile-placeholder')"
+                :placeholder="profilePlaceholder"
               ></textarea>
               <!--end::프로필-->
             </form>
@@ -270,6 +270,26 @@ const tagDefaultLabel = computed(() =>
  */
 const cloudSizeGuideKey = computed(
   () => `attachable.tag.profile.cloud-size.guide.${model.value.cloudSizeLock.toLowerCase()}`
+);
+
+/**
+ * 프로필 본문 라벨. 꿈(JOURNAL_DREAM) 태그에서는 "상징 해석"으로,
+ * 그 외 컨텐츠타입에서는 범용 "프로필"로 표시한다.
+ */
+const profileLabel = computed(() =>
+  model.value.contentType === "JOURNAL_DREAM"
+    ? t("attachable.tag.profile.dream-interpretation")
+    : t("attachable.tag.profile.profile")
+);
+
+/**
+ * 프로필 본문 입력 플레이스홀더. 꿈 태그에서는 반복 상징의 의미·변주 기록을,
+ * 그 외 컨텐츠타입에서는 범용 메모 안내를 노출한다.
+ */
+const profilePlaceholder = computed(() =>
+  model.value.contentType === "JOURNAL_DREAM"
+    ? t("attachable.tag.profile.dream-interpretation-placeholder")
+    : t("attachable.tag.profile.profile-placeholder")
 );
 
 onMounted(() => {

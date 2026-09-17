@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -131,26 +130,6 @@ export function JournalDayList({
   );
 }
 
-export type AddEntryFabProps = {
-  date: string;
-};
-
-/** 선택 일자 기준 AddEntry push FAB */
-export function AddEntryFab({ date }: AddEntryFabProps) {
-  const navigation = useNavigation<Nav>();
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="기록 추가"
-      onPress={() => navigation.navigate("AddEntry", { date })}
-      style={styles.fab}
-    >
-      <Text style={styles.fabText}>+</Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: "center", justifyContent: "center", gap: 8 },
   errorText: { color: "#C0392B", fontSize: 14 },
@@ -195,22 +174,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 2
   },
-  entryMoreDream: { color: "#8E44AD" },
-  fab: {
-    position: "absolute",
-    bottom: Platform.select({ ios: 32, android: 24 }),
-    right: 24,
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 6
-  },
-  fabText: { color: colors.onAccent, fontSize: 28, lineHeight: 34, fontWeight: "300" }
+  entryMoreDream: { color: "#8E44AD" }
 });

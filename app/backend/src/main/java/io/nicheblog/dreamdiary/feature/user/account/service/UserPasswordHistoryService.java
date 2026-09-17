@@ -5,12 +5,11 @@ import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserPasswordHistoryEntity;
 import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserPasswordHistoryRepository;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +52,7 @@ public class UserPasswordHistoryService {
 
         if (StringUtils.isNotBlank(user.getPassword()) && passwordEncoder.matches(newPassword, user.getPassword())) {
             log.warn("Password history validation rejected current password reuse. userId={}", user.getId());
-            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.history-reused"));
+            throw new BusinessException("user.pw.history-reused");
         }
 
         final List<UserPasswordHistoryEntity> histories = userPasswordHistoryRepository.findByUserIdOrderByChangedAtDescIdDesc(user.getId());
@@ -64,7 +63,7 @@ public class UserPasswordHistoryService {
                 .anyMatch(passwordHash -> passwordEncoder.matches(newPassword, passwordHash));
         if (reused) {
             log.warn("Password history validation rejected recent password reuse. userId={}, passwordHistoryCount={}", user.getId(), passwordHistoryCount);
-            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.history-reused"));
+            throw new BusinessException("user.pw.history-reused");
         }
     }
 

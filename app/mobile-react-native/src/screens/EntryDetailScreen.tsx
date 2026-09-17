@@ -1,6 +1,4 @@
-import { useState } from "react";
 import {
-  Alert,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -9,7 +7,6 @@ import {
   View
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { deleteEntry } from "../api/dreamDiaryApi";
 import type { RootStackParamList } from "../navigation/AppNavigator";
 import { colors } from "../theme/colors";
 import { stripHtml } from "../utils/text";
@@ -28,41 +25,6 @@ export function EntryDetailScreen({ route, navigation }: Props) {
   const typeLabel = CONTENT_TYPE_LABELS[entry.contentType] ?? entry.contentType;
   // stdrdDt가 있으면 "YYYY.MM.DD" 형태로 변환해 날짜 표시
   const dateLabel = entry.stdrdDt ? entry.stdrdDt.replace(/-/g, ".") : null;
-  const [deleting, setDeleting] = useState(false);
-
-  function handleEdit() {
-    navigation.navigate("EntryEdit", { entry, isDream });
-  }
-
-  // 꿈 해석 화면으로 이동 (꿈 엔트리에서만 호출)
-  function handleInterpretation() {
-    navigation.navigate("InterpretationDetail", { entry });
-  }
-
-  function handleDelete() {
-    Alert.alert(
-      "기록 삭제",
-      "이 기록을 삭제할까요? 되돌릴 수 없습니다.",
-      [
-        { text: "취소", style: "cancel" },
-        {
-          text: "삭제",
-          style: "destructive",
-          onPress: async () => {
-            setDeleting(true);
-            try {
-              const res = await deleteEntry(entry.id);
-              if (!res.rslt) throw new Error(res.message ?? "삭제에 실패했습니다.");
-              navigation.goBack();
-            } catch (e) {
-              setDeleting(false);
-              Alert.alert("오류", e instanceof Error ? e.message : "삭제에 실패했습니다.");
-            }
-          }
-        }
-      ]
-    );
-  }
 
   return (
     <SafeAreaView style={[styles.safeArea, isDream && styles.safeAreaDream]}>
@@ -85,25 +47,6 @@ export function EntryDetailScreen({ route, navigation }: Props) {
             </Text>
           </View>
         </View>
-
-        {/* 수정/삭제 액션 버튼 */}
-        <View style={styles.actions}>
-          <Pressable
-            accessibilityRole="button"
-            onPress={handleEdit}
-            style={styles.actionBtn}
-          >
-            <Text style={[styles.actionBtnText, isDream && styles.actionBtnTextDream]}>수정</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            disabled={deleting}
-            onPress={handleDelete}
-            style={[styles.actionBtn, deleting && styles.actionBtnDisabled]}
-          >
-            <Text style={styles.deleteBtnText}>삭제</Text>
-          </Pressable>
-        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.container}>
@@ -121,17 +64,6 @@ export function EntryDetailScreen({ route, navigation }: Props) {
         <Text style={[styles.body, isDream && styles.bodyDream]}>
           {body || "(내용 없음)"}
         </Text>
-
-        {/* 꿈 엔트리일 때만 해석 버튼 표시 */}
-        {isDream && (
-          <Pressable
-            accessibilityRole="button"
-            onPress={handleInterpretation}
-            style={styles.interpretButton}
-          >
-            <Text style={styles.interpretButtonText}>🌙 꿈 해석 보기 →</Text>
-          </Pressable>
-        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -175,18 +107,6 @@ const styles = StyleSheet.create({
   typeBadgeDream: { backgroundColor: "#E8DAEF", borderColor: "#C39BD3" },
   typeBadgeText: { color: colors.secondaryText, fontSize: 12, fontWeight: "700" },
   typeBadgeTextDream: { color: "#6C3483" },
-  actions: { flexDirection: "row", gap: 4 },
-  actionBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.border
-  },
-  actionBtnDisabled: { opacity: 0.4 },
-  actionBtnText: { color: colors.accent, fontSize: 13, fontWeight: "700" },
-  actionBtnTextDream: { color: "#8E44AD" },
-  deleteBtnText: { color: "#C0392B", fontSize: 13, fontWeight: "700" },
   // 본문
   container: { padding: 24, gap: 12, flexGrow: 1 },
   dateLabel: { color: colors.muted, fontSize: 12, fontWeight: "500" },
@@ -194,17 +114,5 @@ const styles = StyleSheet.create({
   title: { color: colors.text, fontSize: 22, fontWeight: "800", lineHeight: 30 },
   titleDream: { color: "#4A235A" },
   body: { color: colors.secondaryText, fontSize: 16, lineHeight: 26 },
-  bodyDream: { color: "#6C3483" },
-  // 꿈 해석 버튼
-  interpretButton: {
-    marginTop: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    backgroundColor: "#EDE0F7",
-    borderRadius: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#C39BD3"
-  },
-  interpretButtonText: { color: "#6C3483", fontSize: 15, fontWeight: "700" }
+  bodyDream: { color: "#6C3483" }
 });

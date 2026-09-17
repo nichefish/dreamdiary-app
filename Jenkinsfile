@@ -56,6 +56,16 @@ pipeline {
             }
         }
 
+        /**
+         * 프론트엔드 테스트(vitest) 실행.
+         * gradle testFrontend = `npm run test`. 배포(bootJar)와 분리된 게이트다.
+         */
+        stage('Test (Frontend)') {
+            steps {
+                sh './gradlew --daemon testFrontend --stacktrace'
+            }
+        }
+
         // TODO: 테스트 실행
         // stage('Test') {
         //     steps {

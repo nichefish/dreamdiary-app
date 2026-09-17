@@ -29,7 +29,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/journal",
         component: () => import("@/features/journal/day/JournalDayLayout.vue"),
-        meta: { middleware: "auth" },
+        // journalSearchShortcut: 좌측 Shift 더블탭 전체검색 단축키(useJournalSearchShortcut)를 이 일자 화면 하위에서만 허용한다는 계약 플래그.
+        meta: { middleware: "auth", journalSearchShortcut: true },
         children: [
           {
             path: "",
@@ -128,6 +129,11 @@ const routes: Array<RouteRecordRaw> = [
         name: "schedule-calendar",
         component: () => import("@/features/calendar/ScheduleCalendar.vue"),
         meta: { pageTitleKey: "route.title.schedule-calendar" },
+      },
+      {
+        path: "/keep",
+        name: "keep-list",
+        component: () => import("@/features/keep/KeepPage.vue"),
       },
       {
         path: "/admin",
@@ -368,6 +374,7 @@ function isUserMenuRoute(path: string): boolean {
     path === "/thread" ||
     path.startsWith("/thread/") ||
     path === "/schedule" ||
+    path === "/keep" ||
     path === "/board" ||
     path.startsWith("/board/")
   );

@@ -64,7 +64,7 @@ export interface JournalThreadRegistModel {
   content?: string;
 }
 
-/** 월간·주간 저널 화면에 표시할 기간별 스레드 집계 */
+/** 월간·주간·연간·일간 저널 화면에 표시할 기간별 스레드 집계 */
 export interface JournalPeriodThreadSummaryItem {
   threadId: number;
   title: string;
@@ -80,4 +80,5 @@ export interface JournalPeriodThreadSummaryItem {
 export type JournalPeriodThreadSummaryQuery =
   | { viewType: "WEEKLY"; weekStartDt: string }
   | { viewType: "LIST"; yy: number; mnth: number }
-  | { viewType: "ANNUAL"; yy: number };
+  | { viewType: "ANNUAL"; yy: number }
+  | { viewType: "DAILY"; stdrdDt: string };

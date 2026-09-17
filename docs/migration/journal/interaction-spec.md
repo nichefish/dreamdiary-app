@@ -12,25 +12,27 @@
 | 태그 클릭 컨텍스트 메뉴 | `tagContextMenu.ts` + `JournalTagContextMenu.vue` — 메뉴 액션과 태그 프로필 콘텐츠 유형 레이블은 현재 locale 카탈로그 사용 | ✓ |
 | 일자 카드 ⋯ 컨텍스트 메뉴 | `JournalDayCard.vue` — Metronic dropdown | ✓ |
 | 메타 버튼 드롭다운 | `JournalDayCard.vue` — `bi-bar-chart` 버튼 클릭 시 Bootstrap `dropup` 메뉴; 해당 일자 메타 항목 1개씩 나열; 항목 클릭 → `JournalDayMetaModal` 오픈; `width: max-content`로 내용 폭에 맞게 auto-size | ✓코드 |
-| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; 각 일자는 카드형(날짜 → 메타·태그 → SUMMARY)으로 표시하고, SUMMARY 첫 non-empty 엔트리 본문(`summaryEntryHtmlOf`, SEARCH `journalChapterList` 파생)을 레거시 `collapse-3`/`expand-btn`으로 최대 3줄 미리보기한 뒤 클릭·더보기로 전체를 펼친다(접힘 중 빈 문단·여백 축소, 펼침 시 원문 유지); `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴; 태그 입력 검색 — 컨트롤 행의 태그 입력(모달 내 datalist 미표시 대응: 인라인 typeahead 미리보기; 모달 오픈·포커스 시 `journalModalStore.dayTagCategoryMap`(SSOT)과 `/api/journal/day/tags` 를 병합해 최초 1회 로드)으로 기존 태그만 AND 필터에 추가(엔트리 검색과 동일 `findKnownTagName`·categoryMap 매칭); 카탈로그에 없는 이름은 Swal 대신 인라인 안내(모달 유지), 동명 태그(다중 카테고리)는 카테고리 선택 버튼으로 분기; 모달 닫힘 시 입력·힌트·카테고리 선택 상태 초기화(카탈로그 캐시는 유지) | ✓코드 |
+| 일자 필터 모달 (메타+태그 다중 AND) | `JournalDayMetaModal.vue` — 메타 또는 태그를 시드로 열림(`openDayFilterModal`); 상단 칩에 선택 메타(파랑)·태그(초록) 혼합 표시; 최초 시드 칩도 × 클릭으로 자유 제거(제한 없음)되며 같은 seed 의 payload 재조회로 다시 주입하지 않는다; 모든 필터 제거 시 빈 결과 반환(payload.list 전체 노출 방지); AND 필터(모든 선택 메타+태그 보유 날짜만); 행에서 비선택 메타 뱃지 클릭 → 메타 필터 추가, 비선택 태그 클릭 → 태그 필터 추가, 선택된 태그 클릭 → 태그 필터 제거; 각 행의 선택 메타 값은 `selectedMetas` 배열 순서(선택 순)대로 표시하여 행마다 순서 일관성 유지; 연도 변경 시 필터 유지(재조회만), 신규 오픈 시 시드 1개로 초기화; 각 일자는 카드형(날짜 → 메타·태그 → SUMMARY)으로 표시하고, SUMMARY 첫 non-empty 엔트리 본문(`summaryEntryHtmlOf`, SEARCH `journalChapterList` 파생)을 `collapse-3`/`expand-btn`으로 최대 3줄 미리보기한 뒤 클릭·더보기로 전체를 펼친다(접힘 중 빈 문단·여백 축소, 펼침 시 원문 유지); `JournalDayTagDetailModal` 제거하여 단일 모달로 수렴; 태그 입력 검색 — 컨트롤 행의 태그 입력(모달 내 datalist 미표시 대응: 인라인 typeahead 미리보기; 모달 오픈·포커스 시 `journalModalStore.dayTagCategoryMap`(SSOT)과 `/api/journal/day/tags` 를 병합해 최초 1회 로드)으로 기존 태그만 AND 필터에 추가(엔트리 검색과 동일 `findKnownTagName`·categoryMap 매칭); 카탈로그에 없는 이름은 Swal 대신 인라인 안내(모달 유지), 동명 태그(다중 카테고리)는 카테고리 선택 버튼으로 분기; 모달 닫힘 시 입력·힌트·카테고리 선택 상태 초기화(카탈로그 캐시는 유지) | ✓코드 |
 | 엔트리 ⋯ 컨텍스트 메뉴 | `JournalEntryItem.vue` — 새 창 보기/lifecycle/status/수정/이력/관련글/스레드에 추가/삭제. 새 창 보기는 ID 기반 읽기 전용 popup을 열며, 선택된 `RESOLVED`를 다시 클릭하면 부모 저장·파생 상태·캐시 후처리는 유지하고 직접 연결된 미완료 Reflection의 `RESOLVED` 수렴을 다시 요청한다. | ✓ |
+| 본문 선택 우클릭 컨텍스트 메뉴 | `selectionContextMenu.ts` + `JournalSelectionContextMenu.vue` — 일기/꿈 엔트리·리플렉션 본문(`.journal-content`) 드래그 선택 후 우클릭 시 네이티브 메뉴를 가로채 「검색」·「복사」 노출; 선택 상위 엔트리 `data-journal-domain`(diary/dream)에서 검색 type 파생(리플렉션은 부모 엔트리 상속), 노트·본문 밖·선택 없음은 네이티브 유지; 검색은 툴바 전체검색과 동일한 새 창 팝업 | ✓ |
 | 엔트리 클라이언트 접힘 토글 | `JournalEntryItem.vue` — `localCollapsedOverride` ref | ✓ |
 | 챕터 복사 split 버튼 | `JournalChapterItem.vue` — `copyChapter('full'/'no-pending'/'body')`, 주 버튼=전체(해석 포함)·▾ 드롭다운=보류 해석 제외·본문만(해석 제외), 3항목 항상 노출, 날짜(요일)·말머리·엔트리[·target 리플렉션] 클립보드 복사 | ✓ |
 | 챕터 접힘 스레드 요약 | `JournalChapterItem.vue` — 접힌 상태에서 하위 엔트리 `threadList`를 `threadId`로 중복 제거해 태그와 함께 접힘 바깥에 스레드 버튼 표시; 클릭 시 현재 화면 위에 전역 스레드 상세 모달 열기 | ✓ |
-| 기간별 스레드 요약 | 월간·주간·연간 결산 태그클라우드 아래에 필터와 무관한 기간 스레드를 표시하고 현재 화면 위에 스레드 상세 모달 열기; nullable Prefix는 스레드 목록과 같은 이름·색 배지로 제목 앞에 표시하며 비활성 과거 선택도 유지; 월간·연간 10개 이후 펼치기. 라벨은 `스레드` | ✓ |
+| 기간별 스레드 요약 | 월간·주간·연간·일간 태그클라우드 아래에 필터와 무관한 기간 스레드를 표시하고 현재 화면 위에 스레드 상세 모달 열기; 일간은 URL stdrdDt 그날 하루를 축으로 집계; nullable Prefix는 스레드 목록과 같은 이름·색 배지로 제목 앞에 표시하며 비활성 과거 선택도 유지; 월간·연간 10개 이후 펼치기(주간·일간 미적용). 라벨은 `스레드` | ✓ |
 | 스레드 목록 페이지 복원 | `JournalThreadList.vue` — 상세는 별도 라우트(`thread-detail`)라 목록이 재마운트되지만, `onMounted`가 `store.fetchList()`(무인자)로 store에 보존된 `currentPage`를 유지해 상세 왕복 후 진입 직전 페이지로 복원한다(재조회라 상세에서의 수정도 반영). 첫 진입은 기본 0페이지, 필터 검색·초기화(`search`/`resetFilters`)는 0페이지로 리셋. 필터는 store에 보존된다. | ✓ |
 | 꿈 복사 버튼 | `JournalDayCard.vue` — `copyDreams()`, 날짜(요일) 헤더 + 꿈 엔트리 전체 클립보드 복사 | ✓ |
 | 엔트리 복사 split 버튼 | `JournalEntryItem.vue` — `copyEntry('full'/'no-pending'/'body')`, 주 버튼=전체(해석 포함)·▾ 드롭다운=보류 해석 제외·본문만(해석 제외), 3항목 항상 노출, 날짜(요일)·본문[·target 리플렉션] 클립보드 복사 | ✓ |
-| 헤더 검색 드롭다운 | `Search.vue` — 일기/꿈 유형 선택 + debounce 검색 + 결과 링크 (`journal-entry-search`) | ✓ |
 | 메타 VIEW · 메타 컨텍스트 메뉴 | `metaContextMenu.ts` + `JournalMetaContextMenu.vue` — 헤더 `#메타` 클릭 시 팝업(태그 메뉴와 동일 UI); 현재 locale 메뉴로 「그래프로 보기」→ `addMetaToGraph`(최대 2·이미 있으면 비활성, 제한 경고도 현재 locale), 「검색」→ `openDayFilterModal`(`JournalDayMetaModal`), 「메타 설정」→ `openMetaProfile`(`JournalMetaProfileModal`, `GET /api/journal/day/metas/{id}`) | ✓코드 |
 | 메타 VIEW 비교 그래프 | `JournalDayMeta.vue` — `selectedMetas` 최대 2; 헤더에서 그래프에 포함된 메타는 굵게 표시·옆 × 제거; 연도 「전체」(yy 미전송)·임계값·메타별 통계; **한 ApexCharts**에 시리즈 최대 2개(일자 합집합 X축, 범례, 단위 다르면 Y축·툴팁에서 메타별 단위) | ✓코드 |
-| Pinpoint | `JournalAside.vue` — `pinnedYy/pinnedMnth` ref + pinpoint/turnback 함수 | ✓ |
+| Pinpoint | `JournalAside.vue` — viewType별 스냅샷(`pinnedViewType/pinnedYy/pinnedMnth/pinnedWeekStartDt/pinnedStdrdDt`) + `pinnedLabel` + pinpoint/turnback 함수 | ✓ |
 | 챕터 말머리 필터 | `JournalAside.vue` — `JOURNAL_CHAPTER_DIARY`(일기 챕터) 개인 Prefix 체크박스, `store.chapterPrefixIds` → `fetchDays` | ✓ |
 | 일기/꿈 라이프사이클 필터 | `JournalAside.vue` — `store.diaryLifecycleKey` / `store.dreamLifecycleKey` → `fetchDays` 후 일기/꿈 각각 후처리 필터 | ✓ |
 | 주간 네비게이터 | `JournalAside.vue` — 미니 달력(`JournalAsideMiniCalendar`, 일요일 시작) 주 범위 하이라이트(월~토 한 줄 + 다음 줄 일요일), 이전/다음 주 화살표, 주간 범위 라벨 | ✓ |
 | 연/월 select | 연도 select + 월 그리드 (`navigateMonth`, `gotoYyMnth`) | ✓ |
 | 일간 날짜 네비게이션 | 탭(`journal-daily-tab`)은 aside의 `JournalAsideMiniCalendar.vue`만 사용하며 중복 본문 네비게이션 행을 표시하지 않는다. 팝업(`journal-daily`)은 aside가 없으므로 본문 이전/날짜/다음 행을 유지한다. 두 경로 모두 날짜 선택 시 `router.replace({ query: { stdrdDt } })`로 이동한다. 미니 달력은 토/일·공휴일을 빨간색으로 표시하고 공휴일은 `GET /api/schedule/holidays`로 조회한다. | ✓ |
 | 툴바 키워드 전체검색 | `JournalDayViewToolbar` 로컬 ref → `openSearchTab()` → 새 탭 `/vue-app/journal/entry/search` | ✓ |
+| 저널 검색 진입 단축키 | `useJournalSearchShortcut`(App.vue 전역 설치) — 좌측 Shift(`ShiftLeft`)를 400ms 이내 연속 두 번 누르면 일기(DIARY) 전체검색 팝업을 새 창으로 연다(툴바 전체검색·본문 선택 우클릭 검색과 동일 `window.open` 계약). 저널 일자 화면(`JournalDayLayout` 하위 라우트, 라우트 meta `journalSearchShortcut`)에서만 동작하고, 검색 팝업 등 다른 화면에서는 무시한다. 입력 필드(input/textarea/select/contenteditable) 포커스·IME 조합 중(`isComposing`)에는 무시해 한글 쌍자음 입력의 Shift 를 가로채지 않는다. Shift 외 다른 키가 끼면 카운터 리셋, 누른 채 반복(`event.repeat`) 무시, 미인증 시 미동작 | ✓ |
+| 저널 엔트리 일괄 태그 | `POST /api/journal/entries/tags/bulk` (`JournalEntryBulkTagService`) — 검색 결과에서 선택한 엔트리들에 기존 태그를 ADD/REMOVE. 전체 트랜잭션(원자성)이며 쓰기 전 전량 검증(엔트리 존재·contentType 일치·소유권 `assertOwned`·완결 `assertWritableForRef`·태그 사용자 소속). tag_content 멱등 계약(soft 삭제분 복원, uk_tag_content_pair). 응답은 실제 변경 연결 쌍(changedPairs)과 집계. 프론트(C): `JournalEntrySearchPage`에서 엔트리 체크박스 선택(개별·전체 `toggleSelectAll`)·선택 시 sticky 액션 바(기존 태그 자동완성 재사용해 `bulkTagIds` 구성; 태그명이 다중 카테고리면 검색 조건 입력과 동일 계약으로 카테고리 선택 버튼을 먼저 표시하고 선택·취소 전까지 입력·추가 버튼 잠금, 확정 태그 배지에 `[카테고리]` 라벨(`fs-9 text-muted`) 표시)·`swalConfirm` 확인·`POST bulk`·성공 시 결과 알림+선택 초기화+카테고리 선택 대기 해제+`loadEntries` 재조회. 일회성 Undo(B2): 마지막 성공 작업의 `changedPairs`를 `POST /api/journal/entries/tags/bulk/undo`로 역연산(원 ADD→제거·원 REMOVE→복원), 검색화면 메모리 상태(재조회·조건변경은 유지, 다음 쓰기 성공·화면 이탈 시 폐기)+재조회. 캐시/임베딩 후처리(B3): 변경 후 엔트리 태그 축 캐시(`journalEntryTag*`)를 사용자 범위 1회, 상세(`journalEntryDtlDtoByUser`)·태그 연결(`tagContentEntityListByRef`) 캐시를 엔트리별 무효화하고, 변경 엔트리만 entity/embedding 큐에 재적재(ai 게이트 경유). | ✓ |
 | 엔트리·리플렉션 작성 미리보기 | `JournalEntryRegistModal` / `JournalReflectionRegistModal` 푸터 저장 왼쪽 `미리보기`(`btn-sm btn-light-primary`, `bi-eye`). 클릭 즉시 `/journal/entry/preview-pop` 새 창을 열고 `POST /api/journal/entries/preview`로 미저장 HTML을 `markdownContent`로 렌더한다. 팝업 차단 시 `common.error.popup`. | ✓ |
 | 엔트리 작성 에디터 템플릿 드롭다운 | `JournalEntryRegistModal`의 `RichEditor`에 `:enable-templates="true"` 전달. 툴바 `tmplat` 메뉴버튼을 열면 `GET /api/tmplats/active`(활성 템플릿)를 조회해 제목 목록을 드롭다운으로 노출하고, 선택 시 현재 커서 위치에 `mceInsertContent`로 비파괴 삽입한다(기존 내용 보존). 템플릿이 없거나 조회 실패 시 비활성 "등록된 템플릿이 없습니다" 항목만 표시한다. 다른 화면의 `RichEditor`는 prop 기본값 false 라 드롭다운이 없다. | ✓ |
 | 툴바 floating·aside 열기 | `JournalDayViewToolbar` 전체와 열린 저널 일자 aside의 상단선이 고정 앱 헤더 아래에서 sticky로 일치하고, 툴바는 별도 그림자 없이 하단 경계만 사용. aside 숨김 시 우측 끝 버튼이 `asideStore.show()` 호출. 모바일은 본문 우상단 전용 버튼 유지 | ✓ |
@@ -41,7 +43,7 @@
 | 챕터 소유권 표시 | `JournalChapterItem.vue` — API `isCreatedBy`; 타인 작성 시 배지·쓰기 버튼 숨김; 클라이언트 차단 경고는 현재 locale 카탈로그 사용, 수정/삭제/이동 API 거부 시 서버 `msg.rslt.not-owner` (403) alert | ✓ |
 | 챕터 resolved (파생) | 챕터 자체 resolved 상태 없음. Vue `allEntriesResolved` → 루트 `.is-all-resolved`(PENDING의 `.is-all-pending`과 동형). 접힘·펼침 초록 inset/배경은 이 클래스 기준으로 표시한다. 중요·참조 상태선은 하위 DOM `:has`로 조합한다. 접힘 바: 완료 1px 초록·중요 2px 빨강·참조 4px 노랑(엔트리 `$journal-paired-states` 와 동일). 단독 우선 중요>참조>완료; 중요+완료·중요+참조·삼중 조합 다중선. DB 마이그레이션: `lifecycle` 테이블 `ref_content_type='JOURNAL_CHAPTER'` RESOLVED 레코드 소프트 삭제 | ✓ |
 | Reflection 전체 (( )) | `JournalReflectionItem` ⋯ 메뉴 「전체 (( ))」(`wrapEntireNoti`). 저장 원문 `content`의 각 `<p>`/`<li>`에 Markdown `((...))`를 멱등 적용하되 하이픈 3개 이상 단독 수평선은 제외하고, 기존 `((---))`는 `---`로 복구한다. 변경 시에만 `POST /api/journal/reflection/{id}`(multipart)로 저장한 뒤 `refreshJournalEntryHostForRoute`로 갱신한다. 이미 적용된 본문·빈 본문은 API 없이 안내만 표시한다 | ✓ |
-| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러. 일간에서는 URL `stdrdDt` 하루를 태그 기간 축으로 사용하며 날짜 이동 시 일자·일기·꿈 태그클라우드를 함께 갱신한다. | ✓ |
+| TAGCLOUD/DIARIES/DREAMS | `showTagCloud` 등 + 토글 핸들러. 일간에서는 URL `stdrdDt` 하루를 태그 기간 축으로 사용하며 날짜 이동 시 일자·일기·꿈 태그클라우드를 함께 갱신한다. 이 블록들은 nav 아래 「표시 필터」 접이 섹션(`filterExpanded`, 기본 접힘)에 있으며 접기는 `v-show`라 필터 값을 유지한다. | ✓ |
 
 **일자 필터 모달 i18n**: 제목·결과 건수·연도/전체 연도·연월 구분선·필터 추가/제거·일자 새 창 tooltip·빈 상태·닫기와 조회 실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. locale 변경은 선택 메타/태그·AND 필터·모든 필터 제거 시 빈 결과·연도 변경 시 필터 유지 계약을 변경하지 않는다. 태그 입력 검색의 placeholder·카테고리 선택·미존재 태그 알림 문구는 엔트리 검색 키(`journal.entry.search.tag.*`, `journal.entry.search.category.*`)를 재사용한다.
 
@@ -60,8 +62,6 @@
 ### 정렬 토글 (Sort Toggle)
 
 **트리거**: 필터 카드 헤더 정렬 버튼 (`#sortIcon`) 클릭
-
-**레거시 구현**: `JournalDayAsideFilterHeaderApp.ts` → `bridge.sortAside()` 호출
 
 **Vue SPA 구현**:
 ```typescript
@@ -89,28 +89,26 @@ function toggleSort() {
 
 ### 핀포인트 (Pinpoint)
 
-**목적**: 현재 조회 중인 연/월을 임시 저장하고, 나중에 그 시점으로 돌아올 수 있게 함.
+**목적**: 현재 조회 중인 기간을 viewType별로 임시 저장하고, 나중에 그 뷰·시점으로 돌아올 수 있게 함(일간 기준일·주간 시작일·월간 연/월).
 
 **트리거 A — 핀 고정** (`<i class="bi bi-bookmarks">`):
-1. `asideStore.setPinpoint(store.yy, store.mnth)` — `localStorage` 동기 저장
-2. UI 갱신: 고정 연도·월 표시 (`asideStore.pinnedYy` / `pinnedMnth`)
+1. `asideStore.setPinpoint({ viewType, yy, mnth, weekStartDt?, stdrdDt? })` — 현재 `store.viewType`에 맞춰 복원 기준(일간 `stdrdDt`·주간 `weekStartDt`·월간 `yy/mnth`)까지 캡처, `localStorage` 동기 저장
+2. UI 갱신: 고정 기간 표시 (`asideStore.pinnedLabel` — 일간=기준일·주간=주 시작일·월간=연/월)
 
 **트리거 B — 돌아가기** (`<i class="bi bi-reply-all">`):
-1. `if (asideStore.pinnedYy && asideStore.pinnedMnth)`
-2. `store.gotoYyMnth(...)` 호출
-3. 목록 재조회 (`store.fetchDays()` 내부 호출됨)
+1. `if (asideStore.pinnedYy == null || asideStore.pinnedMnth == null) return`
+2. viewType별 `router.replace` 복원 — 일간 `{ name: "journal-daily-tab", query: { stdrdDt } }`, 주간 `{ name: "journal-weekly", query: { weekStartDt } }`, 월간 `{ name: "journal-monthly", query: { yy, mnth } }`
+3. 대상 뷰의 route query watch가 목록을 재조회
 
-**상태 저장 위치**: `useJournalAsideStore` + 브라우저 `localStorage` 키 `journal_day_pinpoint` (`{ yy, mnth }` JSON). 서버·계정 설정에 저장하지 않음. 새로고침·재방문 시 복원.
+**상태 저장 위치**: `useJournalAsideStore` + 브라우저 `localStorage` 키 `journal_day_pinpoint` (`{ viewType, yy, mnth, weekStartDt?, stdrdDt? }` JSON; 이전 `{ yy, mnth }` 스키마는 월간 고정으로 호환). 서버·계정 설정에 저장하지 않음. 새로고침·재방문 시 복원.
 
-**초기 표시**: `pinnedYy === null` → `<span id="pinnedYy">----</span>`, `<span id="pinnedMnth">--</span>`
+**초기 표시**: `pinnedLabel`이 빈 문자열이면 `----` 표시
 
 ---
 
 ### 챕터 말머리 필터 (Chapter Prefix Filter)
 
 **트리거**: CHAPTER PREFIXES 항목 체크박스 변경
-
-**변경 전**: 레거시·초기 Vue는 공통 코드의 챕터 카테고리 문자열을 `chapterCtgrCds`로 전송했다.
 
 **Vue SPA 구현**:
 ```typescript
@@ -201,6 +199,12 @@ const weekRangeLabel = computed(() => {
 - 목록 렌더 완료 후 선택한 날짜(`val`)에 해당하는 `#journal-day-{val}` 카드로 `scrollIntoView({ behavior: "smooth", block: "start" })`.
 - 구현: 숨긴 `<input type="date">` (opacity:0, pointer-events:none) + `showPicker()` 호출.
 
+**일간/월간 월 라벨 클릭 → 날짜 선택기** (`openDayMonthPicker`/`onDayPickerChange`, `openMonthPicker`/`onMonthPickerChange`):
+- 사이드바 월 이동 컨트롤의 월 라벨(`{mnth}월`, 이전/다음 화살표 사이)을 클릭하면 주간 범위 라벨과 동일하게 브라우저 네이티브 date picker 팝업. 일간·월간·달력(CAL)·통계(META) 뷰 모두 적용된다(월 라벨 블록이 공유됨).
+- 라벨에 `text-hover-primary cursor-pointer` 를 부여하고, 화살표 사이 컨테이너를 `position-relative` 로 하여 숨긴 `<input type="date">` (opacity:0, pointer-events:none) + `showPicker()` 로 팝업한다.
+- 일간(DAILY): 팝업 표시 기준일은 현재 선택 날짜(`route.query.stdrdDt`), 없으면 해당 월 1일(`defaultMonthDate`). 날짜 선택 시 `onMiniCalendarSelect(val)` 와 동일 계약으로 그 날짜의 일간 view 로 이동한다(년/월 동기화 + `router.replace({ query: { stdrdDt } })`).
+- 월간/CAL/META: 팝업 표시 기준일은 해당 월 1일(`defaultMonthDate`). 날짜 선택 시 선택 날짜가 속한 년/월로 `syncMonthlyRouteOrFetch(yy, mnth)` 를 호출한다(월 이동 화살표 `navigateMonth` 와 동일 경로 — `journal-monthly` 는 route query 갱신, CAL/META 는 `store.yy`/`mnth` 갱신 + `fetchDays`).
+
 **주간 미니 달력 날짜 클릭 → 해당 주 이동 + 일자 카드 스크롤** (`onWeekMiniCalendarSelect`):
 - `JournalAsideMiniCalendar`(일요일 시작)에서 날짜 클릭 시 `getWeekStartDateStr(dateStr)`로 그 날이 속한 주(월요일 시작)를 구해 `syncWeeklyRouteOrFetch`로 이동한다. 다른 주를 클릭하면 주 범위 band 가 그 주로 이동한다.
 - `syncWeeklyRouteOrFetch` 호출 후 `selectedDt`(클릭한 날 강조)를 갱신하고, `#journal-day-{dateStr}` 카드가 렌더될 때까지 재시도(`scrollToDayCardWhenReady`, `nextTick`+50ms 폴링, 최대 약 1초)한 뒤 `scrollIntoView({ behavior: "smooth", block: "start" })` 한다. 같은 주 재클릭(중복 네비게이션)이어도 조기 반환하지 않고 스크롤하며, 다른 주 이동은 fetch·재렌더가 비동기라 한 tick 뒤엔 카드가 아직 없을 수 있어 렌더 완료 후에 스크롤한다.
@@ -208,24 +212,12 @@ const weekRangeLabel = computed(() => {
 
 ---
 
-### 연/월 SELECT 기반 내비게이션
+### 연/월 내비게이션
 
-레거시에서는 연도·월을 `<select id="yy">` / `<select id="mnth">` 로 선택했다.
-Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
+`JournalAside.vue`는 연도 `<select>`(`onYyChange`) + 월 버튼 그리드로 연/월을 이동한다. 연도 목록은 현재 연도 → 2010년까지 역순이며 2010년은 `"~2010"` 레이블을 쓴다.
 
-**레거시 연도 목록**: 현재 연도 → 2010년까지 역순, 2010년은 `"~2010"` 레이블
-
-**연도 변경 시 동작** (`onYyChange`):
-1. 선택된 연도로 `store.yy = newYy`
-2. 월 선택 초기화 (`store.mnth`를 유지하거나 초기화 — 레거시는 월 select 초기화)
-3. `store.fetchDays()` 호출
-
-**월 변경 시 동작** (`onMnthChange`):
-1. `store.gotoYyMnth(store.yy, newMnth)`
-
-> **구현 노트**: Vue SPA는 현재 그리드+화살표 방식이 select보다 UX상 낫다.
-> 다만 `id="yy"`, `id="mnth"` 가 없어 레거시 jQuery 코드와 호환이 안 된다.
-> 완전 수렴 후 레거시 jQuery는 제거 대상이므로 id 호환보다 Vue 방식 유지가 맞다.
+- **연도 변경** (`onYyChange`): `store.gotoYyMnth(newYy, store.mnth)`.
+- **월 변경** (월 그리드 버튼): `store.gotoYyMnth(store.yy, newMnth)`.
 
 **DAILY/WEEKLY viewType 미니 달력**:
 - `store.viewType === 'DAILY'` 일 때 월 그리드(1~12월) 대신 `JournalAsideMiniCalendar` 컴포넌트를 렌더한다.
@@ -346,7 +338,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ### 태그 컨텍스트 메뉴와 엔트리 태그 검색 새 창
 
-**목표**: 태그 클릭 시 바로 검색을 실행하지 않고, legacy처럼 컨텍스트 메뉴를 먼저 표시한다.
+**목표**: 태그 클릭 시 바로 검색을 실행하지 않고, 컨텍스트 메뉴를 먼저 표시한다.
 
 **적용 대상**:
 - 저널 월간/주간 태그클라우드 헤더: `JournalTagCloudHeader.vue`
@@ -381,11 +373,38 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 ---
 
+### 본문 선택 우클릭 컨텍스트 메뉴 (Selection Context Menu)
+
+**구현 파일**: `app/frontend-vue/src/features/journal/shared/components/JournalSelectionContextMenu.vue` + `app/frontend-vue/src/features/journal/stores/selectionContextMenu.ts` (App.vue 전역 마운트)
+
+**목표**: 일기/꿈 엔트리·리플렉션 본문에서 텍스트를 드래그 선택한 채 우클릭하면 브라우저 기본 메뉴 대신 저널 맥락 메뉴(검색·복사)를 띄운다.
+
+**가로채기 조건**(모두 충족 시에만 `preventDefault`, 하나라도 어긋나면 브라우저 기본 메뉴 유지):
+- `window.getSelection()`에 trim 후 비지 않은 선택 텍스트가 있다.
+- 선택 시작 노드(`anchorNode`)가 `.journal-content`(엔트리·리플렉션 본문) 안에 있다.
+- 그 본문의 상위 엔트리 루트 `data-journal-domain`이 `diary` 또는 `dream`으로 존재한다.
+- 선택 없음·본문 밖·노트 본문은 조건 불충족으로 네이티브 메뉴를 그대로 둔다.
+
+**도메인 파생**(`JournalEntryItem.vue`의 `journalDomain` computed → 루트 `data-journal-domain`):
+- 꿈(`isDream` 강제 또는 `contentType === 'JOURNAL_DREAM'`) → `dream`, 일기(`JOURNAL_DIARY`) → `diary`.
+- 노트(`JOURNAL_NOTE`)·리플렉션 등에는 마커를 붙이지 않는다(null → 속성 미출력). 노트 본문은 1차 대상에서 제외한다.
+- 리플렉션 본문은 자체 마커가 없어 `.closest('[data-journal-domain]')`가 부모 엔트리 도메인을 상속한다.
+
+**메뉴**: `JournalSelectionContextMenu.vue`
+- 버튼: `검색`(`common.search`), `복사`(`common.copy`)
+- 위치: 클릭 좌표 기준, viewport 안쪽으로 clamp
+- 닫기: 외부 클릭, ESC, scroll/resize
+- 리스너: 컴포넌트가 `document`의 `contextmenu`/`click`/`keydown`과 `window` scroll/resize를 mount 시 등록하고 unmount 시 해제한다.
+
+**검색 액션**: 파생 type과 선택 텍스트를 키워드로 새 창 전체검색 팝업을 연다. `assertAuthenticatedBeforePopup(router, route)` 확인 후 `window.open(joinAppBasePath('/journal/entry/search?type={type}&searchKeywords={선택}'), 'journal-entry-search-{type}', ...)`. 툴바 전체검색(`openSearchTab`)과 동일한 팝업 진입 계약을 따른다.
+
+**복사 액션**: 선택 평문을 그대로 `navigator.clipboard.writeText`로 복사하고 `common.copy.success`/`common.copy.failure` 토스트를 표시한다. 엔트리 복사(저작 소스텍스트 계약)와 달리 사용자가 드래그한 텍스트 그대로를 담는다.
+
+---
+
 ### 일자 카드 ⋯ 컨텍스트 메뉴 (JournalDayCard Context Menu)
 
 **구현 파일**: `app/frontend-vue/src/features/journal/day/components/JournalDayCard.vue`
-
-**레거시 출처**: `legacy/static/vue/feature/journal/day/components/JournalDayContextMenu.ts`
 
 **메뉴 구조**:
 - 주간 뷰로 이동 → `router.push({ name: "journal-weekly", query: { stdrdDt: day.stdrdDt } })` (월간·캘린더·메타 등 전용; route `journal-weekly` 에서는 `v-if` 로 메뉴 미표시)
@@ -424,11 +443,10 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **저장 항목 새 창 보기**: 엔트리와 임베드 Reflection의 ⋯ 메뉴는 쓰기 가능 여부와 무관하게 `common.open-in-new-window`를 제공한다. `openJournalEntryViewPopup(id)`는 `/journal/entry/view-pop?entryId={id}`를 `journal_entry_view_{id}` 이름의 창으로 열어 같은 ID 재호출은 기존 창을 재사용하고 다른 ID는 독립 창으로 유지한다. 팝업 차단은 `common.error.popup`으로 안내한다. `JournalEntryViewPage`는 `GET /api/journal/entry/{id}`로 현재 사용자 소유 상세를 조회하며, 서버가 실제 `contentType`을 판별하므로 Primary 엔트리와 Reflection이 같은 route·조회 경로를 사용한다. 화면은 날짜·유형·순번·말머리·제목·꿈꾼(해당 시)·`markdownContent`·태그(해당 시)를 읽기 전용으로 표시한다. 잘못된 ID·빈 상세·조회 실패는 오류 로그와 `journal.entry.view.load.failure`을 표시한다.
 
-**레거시 출처**: `legacy/static/vue/feature/journal/entry/components/JournalEntryContextMenu.ts`
-
 **우측 액션 영역 구조**:
+- 본문 최종수정 glance 아이콘 (⋯ 밖, 액션 영역 첫 요소, `hasHistory` 즉 `entry.history?.historyTriggeredAt` 있을 때만 노출) → 클릭 액션 없는 `text-muted` `bi-info-circle`. hover 네이티브 `title`로 `history.last-modified`(=본문 최종수정일시 `historyTriggeredAt`) 표시. 값은 본문(content)이 실제로 달라진 저장에서만 갱신되며 재정렬·태그·상태·댓글 변경은 미반영한다(전체 리비전은 ⋯ 메뉴 「이력」→`HistoryModal`). 터치기기는 hover가 없어 ⋯ 메뉴 이력이 대체 경로다.
 - 댓글 등록 버튼 (⋯ 밖, 단독 버튼) → `attachableStore.openCommentRegist(id, contentType)`
-- 복사 split 버튼 (⋯ 밖) → 주 버튼(`bi-copy`)은 `copyEntry('full')`(전체/해석 포함), 주 버튼 옆에 항상 붙는 ▾ 캐럿(`bi-caret-down-fill`)이 `data-kt-menu` 드롭다운을 열어 상단 「보류 해석 제외 복사」(`copyEntry('no-pending')`, 보류만 제외)와 하단 「본문만 복사」(`copyEntry('body')`, 해석 제외)를 제공한다(3단계 모드는 「복사 범위 모드」 참조). 리플렉션이 없으면 세 결과가 같다. 본문 포맷은 날짜(요일)·`htmlToPlainText(content)` 평문(`content` = TinyMCE HTML 원문, 브라우저 파서로 엔티티 디코딩 후 HTML 제거; 레거시 `copy()` 동일). 성공 토스트는 범위를 명시한다(`journal.copy.full.success`/`journal.copy.no-pending.success`/`journal.copy.body.success`, 리플렉션 없으면 `common.copy.success`).
+- 복사 split 버튼 (⋯ 밖) → 주 버튼(`bi-copy`)은 `copyEntry('full')`(전체/해석 포함), 주 버튼 옆에 항상 붙는 ▾ 캐럿(`bi-caret-down-fill`)이 `data-kt-menu` 드롭다운을 열어 상단 「보류 해석 제외 복사」(`copyEntry('no-pending')`, 보류만 제외)와 「본문만 복사」(`copyEntry('body')`, 해석 제외)를 제공한다(3단계 모드는 「복사 범위 모드」 참조). 리플렉션이 없으면 세 결과가 같다. 본문 포맷은 날짜(요일)·`htmlToPlainText(content)` 평문(`content` = TinyMCE HTML 원문, 브라우저 파서로 엔티티 디코딩 후 HTML 제거). 성공 토스트는 범위를 명시한다(`journal.copy.full.success`/`journal.copy.no-pending.success`/`journal.copy.body.success`, 리플렉션 없으면 `common.copy.success`). 드롭다운 하단에는 구분선 다음으로 「링크 복사」(`copyEntryLink`, `bi-link-45deg`, `journal.entry.copy-link`)를 두어 해당 엔트리 딥링크(`/journal/daily?stdrdDt=...&entryId=...`)를 클립보드에 복사한다. 이 링크 복사는 복사 계열로 묶여 이 드롭다운 안에서만 제공하며, 액션 영역 상단에 단독 버튼으로 두지 않는다.
 - ⋯ 드롭다운:
   - 헤더: contentLabel (일기/꿈)
   - 수정 → `contentType === JOURNAL_REFLECTION` 이면 `openReflectionRegist({ id })`, 그 외 `openEntryModify(id)`
@@ -469,7 +487,7 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 
 **Reflection 태그**: Reflection 은 태그를 두지 않는다(모달에 태그 UI 없음, 서버 쓰기 DTO 에 tag 필드 없음). 저장 `content_type`은 `JOURNAL_REFLECTION`이고 `ref_content_type`은 대상 타입이다. 결산·엔트리 태그클라우드·챕터 접힘 요약의 DIARY 집계는 `JOURNAL_DIARY` 단일 축을 사용한다. 원문 뷰(`JournalEntryViewModal`)의 「수정」은 `JournalReflectionRegistModal`로 연다(태그 UI 없음). 일기용 `JournalEntryRegistModal`로 보내지 않는다. 백엔드 `JournalCacheEvictWorker`는 Reflection 저장 후 대상 일자·챕터·라이프사이클 캐시를 무효화하며 태그 캐시는 유지한다. 엔트리 삭제 후처리의 관련글 정리(`RelatedContentService.deleteAllByRef(key, createdBy)`)는 관련글 지원 타입(일기·꿈·스레드)만 수행하고, Reflection 등 미지원 타입은 no-op 한다. Reflection 은 스레드 소속 대상이 아니다. 라이프사이클·상태: Reflection은 OPEN/PENDING/RESOLVED와 COLLAPSED/IMPRTC/REFRNC를 허용한다. Reflection은 대상 엔트리 아래 임베드로만 표시되며 접힘/펼침 토글과 일자 aside 기본 접힘 모드를 따른다. primary(일기·꿈·노트) `RESOLVED` 시 딸린 Reflection도 `RESOLVED`로 맞추고, `RESOLVED` primary에 Reflection 신규 등록 시 primary를 `OPEN`(+`COLLAPSED` 해제)으로 재개한다.
 
-**임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. ⋯에서 새 창 보기·수정·이력·라이프사이클·중요/참조·삭제를 제공한다. 새 창 보기는 쓰기 가능 여부와 무관하게 ID 기반 읽기 전용 popup을 연다. Reflection은 대칭 `related_content` 관계에 참여하지 않으므로 관련글 추가 액션을 제공하지 않는다. Reflection→Reflection 중첩 등록 메뉴는 숨기고, 신규 등록은 primary 엔트리의 「해석 등록」 경로를 사용한다. Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
+**임베드 Reflection 액션**: `JournalReflectionItem` 우측은 댓글·복사·⋯. 액션 첫 요소로 본문 최종수정 glance 아이콘(`hasHistory`일 때만, `text-muted bi-info-circle`, 클릭 없음)을 두어 hover `title`로 `history.last-modified`(=`reflection.history.historyTriggeredAt`, 본문 실제 변경 저장에서만 갱신, 전체 리비전은 ⋯ 이력)를 표시한다. ⋯에서 새 창 보기·수정·이력·라이프사이클·중요/참조·삭제를 제공한다. 새 창 보기는 쓰기 가능 여부와 무관하게 ID 기반 읽기 전용 popup을 연다. Reflection은 대칭 `related_content` 관계에 참여하지 않으므로 관련글 추가 액션을 제공하지 않는다. Reflection→Reflection 중첩 등록 메뉴는 숨기고, 신규 등록은 primary 엔트리의 「해석 등록」 경로를 사용한다. Reflection에는 「스레드에 추가」를 두지 않는다. 접기는 미제공. 대상 엔트리 접힘 시 임베드는 `v-if`로 언마운트되고, 재펼침 시 `JournalEntryItem`이 `reinitMetronicAfterDom()`으로 ⋯ KTMenu를 재바인딩한다. 삭제는 `DELETE /api/journal/reflection/{id}` + `journal.reflection.delete.confirm`.
 
 **Reflection 등록 기본 라이프사이클**: 등록 시 서버(`postRegist`)가 즉시 lifecycle을 `PENDING`으로 설정한다. 프론트에서 PENDING은 자동 접힘이므로 리플렉션은 기본 접힌 상태로 시작한다. 사용자가 수동으로 OPEN 또는 RESOLVED로 변경할 수 있다.
 
@@ -486,8 +504,6 @@ Vue SPA의 현재 구현(그리드+화살표)과 달리 select 방식이었음.
 ### 엔트리 클라이언트 접힘 토글 (Entry Local Collapse Toggle)
 
 **구현 파일**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
-
-**레거시 출처**: `JournalEntryItem.ts` 왼쪽 열 토글 버튼 + `journalEntryStateService.toggle()` (localStorage 기반, 서버 상태 무변경)
 
 **동작**: 서버의 COLLAPSED 상태와 별개로 클라이언트에서 임시 펼치기/접기.
 
@@ -571,7 +587,7 @@ function toggleChapter(): void {
 
 판정은 `includeReflectionInCopy(mode, reflection.lifecycle?.lifecycleKey)`이고 `appendReflectionsToCopyText(baseText, reflections, mode)`가 판정·평문 변환·CRLF 정규화·빈 줄 경계를 함께 적용한다. 성공 토스트 키는 `copySuccessKey(mode, hasReflection)` 로 고른다. 본문만은 항상 본문 문구, `full`·`no-pending` 은 복사 대상에 리플렉션이 하나도 없으면 공용 `common.copy.success` 로 수렴한다. 세 항목 모두 리플렉션 유무와 무관하게 항상 노출한다(리플렉션이 없거나 보류가 없으면 결과만 같아진다). 검색 페이지는 성공 토스트가 건수 문구라 모드와 무관하게 기존 문구를 유지한다.
 
-**검증**: `htmlToPlainText.spec.ts` 가 마커 보존·일반/빈 문단 보존·블록/목록 줄 경계·엔티티 디코드를 계약으로 고정한다. `journalCopyReflection.spec.ts`는 CRLF 정규화·리플렉션 사이 빈 줄·복사 모드 적용을 고정한다.
+**검증**: `htmlToPlainText.spec.ts` 가 마커 보존·일반/빈 문단 보존·블록/목록 줄 경계·엔티티 디코드를 계약으로 고정한다. `journalCopyReflection.spec.ts`는 CRLF 정규화·리플렉션 사이 빈 줄·복사 모드 적용을 고정한다. `useEntryCopy.spec.ts`는 엔트리 날짜·본문·리플렉션 조립, 범위별 성공 문구, 로컬 프로필 tooltip, 딥링크와 클립보드 실패 처리를 고정한다.
 
 ---
 
@@ -627,9 +643,9 @@ async function copyChapter(mode: CopyReflectionMode = "full"): Promise<void> {
 
 ### 엔트리 복사 버튼 (Entry Copy)
 
-**구현 파일**: `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`
+**구현 파일**: 트리거 DOM은 `app/frontend-vue/src/features/journal/entry/components/JournalEntryItem.vue`, tooltip·본문/리플렉션 조립·딥링크·클립보드 결과 처리는 `app/frontend-vue/src/features/journal/entry/composables/useEntryCopy.ts`
 
-**트리거**: 우측 액션 영역 복사 split 버튼 (댓글 버튼과 링크 복사 사이). 주 버튼(`bi-copy`) 클릭은 `copyEntry('full')`(전체/해석 포함), tooltip `journal.copy.full.tooltip`(리플렉션 없으면 `common.copy`). 주 버튼 옆에 항상 붙는 ▾ 캐럿(`bi-caret-down-fill`)이 `data-kt-menu` 드롭다운을 열고, 상단 「보류 해석 제외 복사」(`journal.copy.no-pending.label`)가 `copyEntry('no-pending')`, 하단 「본문만 복사」(`journal.copy.body.label`)가 `copyEntry('body')` 를 실행한다(3단계 모드는 위 「복사 범위 모드」 참조). 리플렉션이 없으면 세 결과가 같다.
+**트리거**: 우측 액션 영역에서 댓글 버튼과 ⋯ 메뉴 사이의 복사 split 버튼. 주 버튼(`bi-copy`) 클릭은 `copyEntry('full')`(전체/해석 포함), tooltip `journal.copy.full.tooltip`(리플렉션 없으면 `common.copy`). 주 버튼 옆에 항상 붙는 ▾ 캐럿(`bi-caret-down-fill`)이 `data-kt-menu` 드롭다운을 열고, 「보류 해석 제외 복사」(`journal.copy.no-pending.label`)가 `copyEntry('no-pending')`, 「본문만 복사」(`journal.copy.body.label`)가 `copyEntry('body')` 를 실행한다(3단계 모드는 위 「복사 범위 모드」 참조). 구분선 아래 「링크 복사」(`journal.entry.copy-link`, `bi-link-45deg`)는 `copyEntryLink()`로 해당 엔트리 딥링크를 복사한다. 리플렉션이 없으면 세 본문 복사 결과가 같다.
 
 **복사 포맷**:
 ```
@@ -639,7 +655,7 @@ async function copyChapter(mode: CopyReflectionMode = "full"): Promise<void> {
 target 리플렉션 본문 평문 (full·no-pending 모드에서만, 리플렉션마다 빈 줄로 이어 붙임; no-pending 은 보류 제외)
 ```
 
-**구현**: 공통 `htmlToPlainText(content ?? markdownContent)`. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음 — 레거시 `copy()` 동일. `full`·`no-pending` 모드이면 `appendReflectionsToCopyText`가 이 엔트리를 target 으로 한 `reflectionList`를 모드에 맞게 걸러 CRLF 빈 줄로 이어 붙인다(마커 없음). 성공 토스트는 복사 범위를 명시한다(`copySuccessKey`): 전체 `journal.copy.full.success`, 보류 제외 `journal.copy.no-pending.success`, 본문만 `journal.copy.body.success`, 리플렉션이 없는 전체·보류 제외 복사는 공용 `common.copy.success`.
+**구현**: `useEntryCopy`가 공통 `htmlToPlainText(content ?? markdownContent)`를 사용한다. `content` = TinyMCE HTML 원문 (마크다운 재처리 이전). 브라우저 HTML 파서로 이름·10진수·16진수 엔티티를 화면과 동일하게 디코딩하고 HTML 제거 후 평문으로 복사 → 텍스트에디터에 그대로 재붙여넣기 가능. `#sortOrder` 없음. `full`·`no-pending` 모드이면 `appendReflectionsToCopyText`가 이 엔트리를 target 으로 한 `reflectionList`를 모드에 맞게 걸러 CRLF 빈 줄로 이어 붙인다(마커 없음). 성공 토스트는 복사 범위를 명시한다(`copySuccessKey`): 전체 `journal.copy.full.success`, 보류 제외 `journal.copy.no-pending.success`, 본문만 `journal.copy.body.success`, 리플렉션이 없는 전체·보류 제외 복사는 공용 `common.copy.success`.
 
 ---
 
@@ -659,31 +675,9 @@ target 리플렉션 본문 평문 (full·no-pending 모드에서만, 리플렉�
 
 ---
 
-### 헤더 검색 드롭다운 (Header Search Dropdown)
-
-**구현 파일**: `app/frontend-vue/src/app/layouts/default/components/search/Search.vue`
-
-**참고**: 이 파일은 `.gitignore` 경로(`/app/frontend-vue/src/app/layouts/default/components/search/`)에 포함되어 git 추적 대상이 아님.
-
-**UI 구조**:
-- 일기/꿈 유형 버튼 (`btn-primary` / `btn-info`)
-- 검색어 input (debounce 400ms 후 API 호출)
-- 결과 목록: 날짜 배지 + 80자 content snippet + 검색 페이지 링크 버튼
-- "전체 결과 보기" RouterLink → `journal-entry-search` route
-
-**검색 API**: `GET /api/journal/entries?type=DIARY|DREAM&sort=asc|desc&searchKeywords=...&tagIds=...`
-- 응답: `AjaxResponse.rsltList`
-- `type=DIARY`: 결과 행 = 일기(Primary)만. Reflection 은 별도 Aggregate(journal_reflection)이고 대상 필수(About-A)라 검색 결과 행이 되지 않는다. 대상 일기를 가리키는 Reflection 본문에 키워드가 있으면 대상 일기가 매칭된다(원문·해석 한 몸, `JournalEntrySpec#targetReflectionKeywordSubquery` 가 journal_reflection 을 EXISTS 로 조회). 태그·state 검색과 태그 클릭 팝업은 `JOURNAL_DIARY` 단일 축을 사용한다. 태그클라우드·결산·챕터 요약도 동일한 DIARY 단일 태그 축을 사용한다.
-
-**결과 클릭**: `RouterLink :to="{ name: 'journal-entry-search', query: { type, searchKeywords } }"`
-- 검색 팝업에서 직접 수정/삭제하지 않고 검색 페이지(`JournalEntrySearchPage`)로 이동
-- `JournalEntryRegistModal`은 `JournalLayout` 하위에만 마운트되므로 헤더 드롭다운에서는 모달 직접 열기 불가
-
----
-
 ### 검색 팝업 전체 기능 (`JournalEntrySearchPage.vue`)
 
-레거시 `journal_entry_search_module.ts` 의 멀티키워드·멀티태그 AND 검색을 Vue SPA 로 재현.
+멀티키워드·멀티태그 AND 검색을 제공한다.
 
 **컨트롤 바 (1행)**: 고급 필터 토글 | 초기화 | 정렬 토글(asc/desc) | 검색 || 전체 복사 | TXT 내보내기 | 키워드 배지들 | 태그 배지들 | 꿈 상태 배지들 | 조건 요약(유형/정렬/키워드 수/태그 수/상태 수) | 결과 상태 라벨 | 결과 건수
 
@@ -693,11 +687,11 @@ target 리플렉션 본문 평문 (full·no-pending 모드에서만, 리플렉�
 
 **키워드 하이라이트**: 검색 팝업은 URL `searchKeywords[]`를 `JournalEntryItem.highlightKeywords`로 전달해 엔트리 본문 `markdownContent`의 일치 텍스트를 표시한다. 하이라이트는 검색 화면 전용 표시 보조이며 검색 조건, 복사/TXT 내보내기 본문, 월간/주간/챕터 화면 렌더를 변경하지 않는다.
 
-**멀티태그 AND 검색**: 태그는 `tagIds[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 태그 제거. 태그 배지는 제거 tooltip을 제공한다. 팝업 고급 필터에서 태그를 직접 입력할 때는 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 조회해 자동완성 후보를 제공하고, 태그명+카테고리로 특정 태그 ID를 확정한 뒤 `tagIds[]`에 추가한다. 같은 이름에 여러 카테고리가 있으면 카테고리 선택 버튼을 먼저 표시하고, 선택 또는 취소 전까지 태그 입력과 추가 버튼을 잠가 카테고리 선택 대기 상태를 명확히 한다.
+**멀티태그 AND 검색**: 태그는 `tagIds[]` URL 파라미터 배열로 관리. 배지 X 클릭 → 해당 태그 제거. 태그 배지는 제거 tooltip을 제공한다. 팝업 고급 필터에서 태그를 직접 입력할 때는 현재 `type`의 엔트리 태그 categoryMap과 태그 목록을 조회해 자동완성 후보를 제공하고, 태그명+카테고리로 특정 태그 ID를 확정한 뒤 `tagIds[]`에 추가한다. 같은 이름에 여러 카테고리가 있으면 카테고리 선택 버튼을 먼저 표시하고, 선택 또는 취소 전까지 태그 입력과 추가 버튼을 잠가 카테고리 선택 대기 상태를 명확히 한다. 태그 배지는 카테고리가 있으면 `[카테고리]#태그명` 형식으로 카테고리 라벨(`fs-9 text-muted`)을 태그명 앞에 표시한다(미분류는 라벨 생략). tagId→카테고리 매핑(`tagCategoryLabelMap`)은 태그 확정 시점, categoryMap/태그 목록 조회, 결과 엔트리 태그(`entry.tag.list`의 `ctgr`) 하이드레이션에서 채우므로 URL `tagIds[]`만으로 진입한 배지도 카테고리를 표시한다.
 
 **꿈 상태 OR 검색**: 꿈 유형은 `states[]` URL 파라미터로 `NHTMR`·`HALLUC`를 관리한다. 하나를 선택하면 해당 상태만, 둘을 선택하면 공통 `state` 검색의 `EXISTS + IN` 계약으로 둘 중 하나가 있는 꿈을 조회한다. 상태만으로도 목록 조회와 TXT 내보내기를 실행할 수 있다.
 
-**검색 전/빈 결과/실패 상태**: 키워드·태그·제목·꿈 상태 조건이 모두 비어 있으면 `type`만으로 `GET /api/journal/entries`를 호출하지 않고 검색 전 안내를 표시한다. 검색 전 안내에는 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 추가 CTA를 제공한다. 검색 결과가 0건이면 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 수정 CTA를 제공한다. 초기화는 조건·결과·오류 상태를 비우고 검색 전 상태로 돌아간다. 검색 실패 시 기존 결과 배열과 결과 건수를 비우지 않고 inline 오류 안내를 표시해 실제 0건과 조회 실패를 구분한다.
+**검색 전/빈 결과/실패 상태**: 키워드·태그·제목·꿈 상태 조건이 모두 비어 있으면 `type`만으로 `GET /api/journal/entries`를 호출하지 않고 검색 전 안내를 표시한다. 검색 전 안내에는 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 추가 CTA를 제공한다. 팝업이 검색 조건 없이 처음 마운트될 때는 이 조건 추가 동작(고급 필터 열기 + 키워드 입력 포커스)을 자동으로 1회 실행해 Shift 더블탭 진입 직후 바로 키워드를 입력·검색할 수 있게 한다. 이후 조건 제거·초기화로 다시 조건이 비어도 자동 실행하지 않아 포커스 탈취를 막는다. 검색 결과가 0건이면 고급 필터를 열고 키워드 입력으로 포커스를 이동하는 조건 수정 CTA를 제공한다. 초기화는 조건·결과·오류 상태를 비우고 검색 전 상태로 돌아간다. 검색 실패 시 기존 결과 배열과 결과 건수를 비우지 않고 inline 오류 안내를 표시해 실제 0건과 조회 실패를 구분한다.
 
 **실행 전 입력 확정**: 검색, 전체 복사, TXT 내보내기는 키워드/태그 입력칸에 남아 있는 값을 먼저 URL 검색 조건으로 확정한 뒤 실행한다. 태그명이 여러 카테고리에 걸쳐 있으면 카테고리 선택이 완료될 때까지 검색·복사·내보내기 실행을 보류한다. 이미 추가된 키워드/태그를 다시 입력하면 조건을 조용히 무시하지 않고 locale 메시지로 중복 상태를 안내한다.
 
@@ -721,7 +715,7 @@ target 리플렉션 본문 평문 (full·no-pending 모드에서만, 리플렉�
 
 **TXT 내보내기**: split 버튼이다. `GET /api/journal/entries/export?type=...&sort=...&tagIds=...&searchKeywords=...&states=...&includeReflection=`. 키워드·태그·제목·꿈 상태 중 하나 이상을 검색 조건으로 인정한다. 주 버튼 `exportTxt(true)`(`includeReflection=true`, 기본)이면 서버 `buildTxt`가 각 엔트리를 target 으로 한 리플렉션 본문을 이어 붙이고, ▾ 드롭다운 「본문만 다운로드」 `exportTxt(false)`이면 붙이지 않는다.
 
-**전체 복사 포맷**: 레거시 `JournalEntrySearch.copy()` 동일 — 날짜가 바뀔 때만 `날짜(요일)` 헤더, `#순번\n본문`, 엔트리 간 빈 줄, `\r\n` 줄바꿈. 요일은 현재 locale의 공용 요일 카탈로그를 사용한다. 확정 전 입력값을 URL 검색 조건으로 반영하고 재조회한 뒤 복사한 경우 성공 알림은 조건 반영 후 복사임을 구분한다. 복사 컨트롤은 split이며 주 버튼=`copyAll('full')`(해석 포함, tooltip `journal.entry.search.copy-all.include.tooltip`), ▾ 드롭다운 상단 「보류 해석 제외 복사」=`copyAll('no-pending')`(`journal.copy.no-pending.label`), 하단 「본문만」=`copyAll('body')`(`journal.entry.search.copy-all.exclude.tooltip`)이다(3단계 모드는 「복사 범위 모드」 참조). 리플렉션은 `includeReflectionInCopy` 로 모드별로 거른다.
+**전체 복사 포맷**: 날짜가 바뀔 때만 `날짜(요일)` 헤더, `#순번\n본문`, 엔트리 간 빈 줄, `\r\n` 줄바꿈. 요일은 현재 locale의 공용 요일 카탈로그를 사용한다. 확정 전 입력값을 URL 검색 조건으로 반영하고 재조회한 뒤 복사한 경우 성공 알림은 조건 반영 후 복사임을 구분한다. 복사 컨트롤은 split이며 주 버튼=`copyAll('full')`(해석 포함, tooltip `journal.entry.search.copy-all.include.tooltip`), ▾ 드롭다운 상단 「보류 해석 제외 복사」=`copyAll('no-pending')`(`journal.copy.no-pending.label`), 하단 「본문만」=`copyAll('body')`(`journal.entry.search.copy-all.exclude.tooltip`)이다(3단계 모드는 「복사 범위 모드」 참조). 리플렉션은 `includeReflectionInCopy` 로 모드별로 거른다.
 
 **날짜별 복사**: 날짜 헤더의 일간뷰 열기 버튼 옆에 split 복사 버튼을 둔다(주 버튼=`copyDate(stdrdDt, 'full')` 해석 포함, ▾ 드롭다운 상단 「보류 해석 제외 복사」=`copyDate(stdrdDt, 'no-pending')` 보류만 제외, 하단 「본문만」=`copyDate(stdrdDt, 'body')` 해석 제외; 3단계 모드는 「복사 범위 모드」 참조). 현재 검색 결과 중 그 `stdrdDt`에 속한 엔트리만 「전체 복사 포맷」과 동일하게(날짜(요일) 헤더 1회 + `#순번\n본문` + 엔트리 간 빈 줄, `\r\n`) 복사하며, 리플렉션은 `includeReflectionInCopy` 로 모드별로 거른다. 소스는 저작 원문 `content` 우선(복사 계약, `htmlToPlainText`). 성공 알림은 날짜와 복사 건수를 표시한다(모드 무관 건수 문구).
 
@@ -789,7 +783,7 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 ### 팝업 직접 진입 세션 만료 처리 (`router/index.ts`, `sessionExpired.ts`)
 
-팝업 전용 보호 라우트(`journal-entry-search`, `journal-daily`, `journal-entry-view-popup`)는 인증이 없을 때 로그인 화면을 팝업 내부에 렌더하지 않는다. 라우터 가드는 `confirmSessionExpired(to.name)`을 호출해 레거시처럼 창 닫기 확인 alert를 표시하고, 확인 시 `window.close()`를 호출한 뒤 현재 route 이동은 `next(false)`로 중단한다.
+팝업 전용 보호 라우트(`journal-entry-search`, `journal-daily`, `journal-entry-view-popup`)는 인증이 없을 때 로그인 화면을 팝업 내부에 렌더하지 않는다. 라우터 가드는 `confirmSessionExpired(to.name)`을 호출해 창 닫기 확인 alert를 표시하고, 확인 시 `window.close()`를 호출한 뒤 현재 route 이동은 `next(false)`로 중단한다.
 
 ### 401 세션 만료 처리 (`main.ts`)
 
@@ -829,6 +823,8 @@ assistant 메시지 `metadataJson.ragSources` 행을 클릭하면 `useJournalMod
 
 저널 할일 등록·수정 모달의 제목 필수 검증·확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 저장 API의 서버 `message`가 있으면 우선 표시하고, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalDaysForRoute()`로 현재 route의 저널 목록을 갱신한다.
 
+**아사이드 TODO 카드 라이프사이클 인터랙션**: 각 할일 행은 왼쪽 체크박스로 완료(`RESOLVED` 전이, `PUT /api/lifecycles`, contentType `JOURNAL_TODO`)하고, kebab(⋯) 드롭다운으로 보류(`PENDING`)·보류 해제(`OPEN`)·삭제(하드 `DELETE`, `journal.todo.delete.confirm` 확인)를 수행한다. `PENDING` 행은 제목 앞 「보류」 배지(`lifecycle.pending`)로 표시한다. 전이·삭제 성공 시 `store.fetchTodos()` 로 재조회하며 `RESOLVED` 는 활성 목록에서 빠진다. 완료는 별도 확인 없이 즉시 처리하고(데이터는 삭제가 아니라 `RESOLVED` 로 보존), 실패 시 서버 `message` 를 알림으로 표시한다. 목록은 월 무관 cross-month 활성 집합이라 년/월 이동에도 재조회하지 않는다. **제목 클릭 시 수정**: 각 할일의 제목(`cursor-pointer`)을 클릭하면 상세(`GET /api/journal/todo/:id`)를 조회해 기존 데이터로 등록/수정 모달을 modify 모드(`id` 포함)로 연다 — 등록(+ 버튼)과 같은 모달을 공유하며, 저장 성공 시 모달 submit 이 `fetchTodos()` 로 카드를 갱신한다.
+
 저널 해석 등록·수정 모달의 확인·결과 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. 해석 제목은 선택값으로 유지하고, 저장 API의 서버 `message`가 있으면 우선 표시하며, 성공 시 모달을 닫은 뒤 성공 알림 확인 후 `refreshJournalEntryHostForRoute()`로 현재 표시 호스트를 갱신한다. 스레드 상세에서는 열린 상세·집계 태그·소속 엔트리를 재조회하고, 그 밖의 route에서는 기존 저널 목록 갱신을 유지한다.
 
 저널 해석 아이템의 라이프사이클·상태 변경 실패, 클립보드 복사 성공·실패, 삭제 확인·성공·실패 fallback은 현재 locale의 클라이언트 카탈로그를 사용한다. API 응답의 `message`를 우선 표시한다. 변경·삭제 성공 후 스레드 상세에서는 열린 상세·집계 태그·소속 엔트리를 재조회하고 스크롤하지 않으며, 그 밖의 route에서는 현재 일자를 재조회한 뒤 기존 스크롤 동작을 유지한다.
@@ -850,7 +846,7 @@ if (confirmed && !isAuthPopupRoute(route.name)) {
 **사용자 API**: `GET /api/journal/settings/me` — 로그인 사용자의 저널 설정 조회, `PUT /api/journal/settings/me` — 로그인 사용자의 저널 설정 갱신 (USER/MNGR 권한). 사용자 식별자는 요청 본문에서 받지 않고 인증 정보의 username을 사용한다.
 
 **설정 항목**:
-- `embeddingEnabled` (Boolean) — AI 임베딩 활성화 여부. ON이면 엔트리 등록/수정 시 embedding queue + entity queue에 적재하고, 기동·Admin 전수 sync와 임베딩 워커를 실행한다. OFF면 적재·전수 sync·워커를 건너뛴다.
+- `aiEnabled` (Boolean) — AI 기능(임베딩·개체추출) 활성화 여부. ON이면 엔트리 등록/수정 시 embedding queue + entity queue에 적재하고, 기동·Admin 전수 sync와 워커를 실행한다. OFF면 적재·전수 sync·워커를 건너뛴다.
 - `defaultEntryView` (`DAILY | WEEKLY | MONTHLY`) — 사용자별 저널 기본 진입 화면. 사용자 행이 없거나 값이 비어 있으면 `DAILY`를 반환하며 조회만으로 행을 생성하지 않는다. 최초 저장 시 `scope=USER`, `scope_key=username` 행을 생성한다.
 
 **저장 유일성**: `journal_setting`의 `(scope, scope_key)` 조합은 유일하다. `ADMIN/GLOBAL` 행은 전역 정책, `USER/username` 행은 사용자 정책을 담당한다.

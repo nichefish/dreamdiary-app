@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiGet, apiPost, apiDelete, assertOk } from "@/shared/api/client";
 import type { RoleRow } from "@/features/admin/stores/adminPage";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -293,18 +293,18 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     bootstrapLoading.value = true;
     try {
       const [bootstrapRes, cmpyRes, teamRes, emplymRes, rankRes] = await Promise.all([
-        axios.get("/api/admin/page/bootstrap"),
-        axios.get("/api/code/items", { params: { groupCode: "CMPY_CD" } }),
-        axios.get("/api/code/items", { params: { groupCode: "TEAM_CD" } }),
-        axios.get("/api/code/items", { params: { groupCode: "EMPLYM_CD" } }),
-        axios.get("/api/code/items", { params: { groupCode: "JOB_TITLE_CD" } }),
+        apiGet<{ roleList?: RoleRow[] }>("/api/admin/page/bootstrap"),
+        apiGet<CodeOption>("/api/code/items", { params: { groupCode: "CMPY_CD" } }),
+        apiGet<CodeOption>("/api/code/items", { params: { groupCode: "TEAM_CD" } }),
+        apiGet<CodeOption>("/api/code/items", { params: { groupCode: "EMPLYM_CD" } }),
+        apiGet<CodeOption>("/api/code/items", { params: { groupCode: "JOB_TITLE_CD" } }),
       ]);
-      const payload = bootstrapRes.data?.rsltObj ?? {};
+      const payload = bootstrapRes.rsltObj ?? {};
       roles.value = Array.isArray(payload.roleList) ? payload.roleList : [];
-      cmpyOptions.value = Array.isArray(cmpyRes.data?.rsltList) ? cmpyRes.data.rsltList : [];
-      teamOptions.value = Array.isArray(teamRes.data?.rsltList) ? teamRes.data.rsltList : [];
-      emplymOptions.value = Array.isArray(emplymRes.data?.rsltList) ? emplymRes.data.rsltList : [];
-      rankOptions.value = Array.isArray(rankRes.data?.rsltList) ? rankRes.data.rsltList : [];
+      cmpyOptions.value = Array.isArray(cmpyRes.rsltList) ? cmpyRes.rsltList : [];
+      teamOptions.value = Array.isArray(teamRes.rsltList) ? teamRes.rsltList : [];
+      emplymOptions.value = Array.isArray(emplymRes.rsltList) ? emplymRes.rsltList : [];
+      rankOptions.value = Array.isArray(rankRes.rsltList) ? rankRes.rsltList : [];
     } finally {
       bootstrapLoading.value = false;
     }
@@ -325,9 +325,15 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
       }
       if (roleKey.value) params.roleKey = roleKey.value;
 
-      const res = await axios.get("/api/users", { params });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.list.load.failure"));
-      const pageResult = res.data?.rsltObj ?? {};
+      const res = await apiGet<{
+        content?: UserRow[];
+        totalElements?: number;
+        totalPages?: number;
+        number?: number;
+        size?: number;
+      }>("/api/users", { params });
+      assertOk(res, t("user.admin.list.load.failure"));
+      const pageResult = res.rsltObj ?? {};
       rows.value = Array.isArray(pageResult.content) ? pageResult.content : [];
       totalElements.value = Number(pageResult.totalElements ?? 0);
       totalPages.value = Number(pageResult.totalPages ?? 0);
@@ -350,9 +356,9 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     detailOpen.value = true;
     detailLoading.value = true;
     try {
-      const res = await axios.get(`/api/users/${id}`);
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.detail.load.failure"));
-      detail.value = res.data?.rsltObj ?? null;
+      const res = await apiGet<UserRow>(`/api/users/${id}`);
+      assertOk(res, t("user.admin.detail.load.failure"));
+      detail.value = res.rsltObj ?? null;
     } finally {
       detailLoading.value = false;
     }
@@ -372,9 +378,9 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
   async function openEdit(id: number) {
     if (!await assertAuthenticatedBeforeModal()) return;
     saving.value = false;
-    const res = await axios.get(`/api/users/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.detail.load.failure"));
-    form.value = normalizeForm(res.data?.rsltObj ?? {});
+    const res = await apiGet<UserRow>(`/api/users/${id}`);
+    assertOk(res, t("user.admin.detail.load.failure"));
+    form.value = normalizeForm(res.rsltObj ?? {});
     formOpen.value = true;
   }
 
@@ -393,12 +399,12 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
     try {
       const id = form.value.id;
       const url = id != null ? `/api/users/${id}` : "/api/users";
-      const res = await axios.post(url, toFormData(form.value), {
+      const res = await apiPost(url, toFormData(form.value), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.save.failure"));
+      assertOk(res, t("user.admin.save.failure"));
       closeForm();
-      const message = res.data?.message ?? t("common.result.saved");
+      const message = res.message ?? t("common.result.saved");
       await swalFire({ icon: "success", text: message });
       await fetchUsers(id == null ? 0 : currentPage.value);
       if (detail.value?.id === id) await openDetail(id);
@@ -409,9 +415,9 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
   }
 
   async function passwordReset(id: number) {
-    const res = await axios.post(`/api/users/${id}/password-reset`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.reset-password.failure"));
-    return res.data?.message ?? t("user.admin.reset-password.success");
+    const res = await apiPost(`/api/users/${id}/password-reset`);
+    assertOk(res, t("user.admin.reset-password.failure"));
+    return res.message ?? t("user.admin.reset-password.success");
   }
 
   /**
@@ -420,24 +426,24 @@ export const useUserAdminStore = defineStore("userAdmin", () => {
    * 변경 후에는 성공 알림 OK 이후 목록을 갱신한다.
    */
   async function deleteUser(id: number) {
-    const res = await axios.delete(`/api/users/${id}`);
-    if (!res.data?.rslt) throw new Error(res.data?.message ?? t("user.admin.delete.failure"));
+    const res = await apiDelete(`/api/users/${id}`);
+    assertOk(res, t("user.admin.delete.failure"));
     if (detail.value?.id === id) closeDetail();
     const nextPage = rows.value.length <= 1 && currentPage.value > 0 ? currentPage.value - 1 : currentPage.value;
-    const message = res.data?.message ?? t("common.result.deleted");
+    const message = res.message ?? t("common.result.deleted");
     await swalFire({ icon: "success", text: message });
     await fetchUsers(nextPage);
     return message;
   }
 
   async function usernameDuplicateCheck(username: string) {
-    const res = await axios.get("/api/users/duplicate-check/username", { params: { username } });
-    return { ok: !!res.data?.rslt, message: res.data?.message ?? "" };
+    const res = await apiGet("/api/users/duplicate-check/username", { params: { username } });
+    return { ok: !!res.rslt, message: res.message ?? "" };
   }
 
   async function emailDuplicateCheck(email: string) {
-    const res = await axios.get("/api/users/duplicate-check/email", { params: { email } });
-    return { ok: !!res.data?.rslt, message: res.data?.message ?? "" };
+    const res = await apiGet("/api/users/duplicate-check/email", { params: { email } });
+    return { ok: !!res.rslt, message: res.message ?? "" };
   }
 
   return {

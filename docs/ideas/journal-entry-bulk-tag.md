@@ -4,7 +4,7 @@
 
 | 항목 | 값 |
 | --- | --- |
-| 상태 | 아이디어 (계약 외부) |
+| 상태 | 구현 완료 (A·B1·C·B2·B3) — interaction-spec 등재 |
 | 대상 | 저널 엔트리 검색 결과의 태그 연결 일괄 추가·제거 |
 | 현재 동작 spec 반영 | 대상 아님 |
 
@@ -38,10 +38,10 @@
 ### 태그 저장
 
 - 태그 마스터는 `tag`, 엔트리 연결은 `tag_content(tag_id, ref_id, ref_content_type, created_by)`에 저장한다.
-- `TagProcService`는 엔트리 하나의 현재 태그 집합과 요청 태그 집합을 비교해 추가·삭제하는 단건 전체 동기화 흐름이다.
+- `TagProcService`는 엔트리 하나의 현재 태그 집합과 요청 태그 집합을 비교해 추가·삭제하는 단건 동기화 흐름이다. 추가는 소프트 삭제 연결 복원을 포함한 멱등 저장이다(A 단계 반영).
 - 일괄 추가·제거 API와 여러 엔트리의 태그 연결을 한 번에 검증·저장하는 서비스는 없다.
-- `tag_content` 전체 스키마에는 `(tag_id, ref_id, ref_content_type, created_by)` 유니크 제약이 없다.
-- `TagContentEntity`는 `@SQLDelete`를 사용하지만 `deleteObsoleteTagContents`의 JPQL bulk delete 경로도 존재한다. 연결 삭제의 보존 계약은 일괄 기능과 별개로 명확한 단일 정책이 필요하다.
+- `tag_content`에 `(tag_id, ref_id, ref_content_type, created_by)` 유니크 제약(`uk_tag_content_pair`, deleted_at 제외)이 있다 — A 단계 SAVEPOINT(V0.30.1)에서 추가.
+- 연결 삭제는 `@SQLDelete`(soft)로 단일화했다 — `deleteObsoleteTagContents`도 soft UPDATE이며, 소프트 삭제된 동일 연결의 재등록은 복원(`findAnyByPair`/`reviveById`)으로 처리한다(related_content·journal_thread_entry 와 동일 관례).
 
 ### 파생 데이터와 후처리
 
@@ -177,7 +177,7 @@ POST /api/journal/entries/tags/bulk/undo
 
 부분 성공은 재시도와 결과 설명이 복잡해지고, 전체 롤백은 하나의 잘못된 엔트리 때문에 정상 대상도 변경되지 않는다. 사용자 기대와 최대 처리 건수를 함께 보고 결정한다.
 
-### 4. 태그 연결 데이터 불변식
+### 4. 태그 연결 데이터 불변식 (A 단계 SAVEPOINT에서 해소: soft+revive+deleted_at 제외 유니크로 수렴)
 
 - 활성 연결만 유일하게 할지, 소프트 삭제 이력을 포함해 연결 한 쌍당 행 하나만 허용할지
 - 중복 행 중 어떤 행을 정본으로 남길지
@@ -218,9 +218,9 @@ POST /api/journal/entries/tags/bulk/undo
 구현에 진입할 경우 다음 분할을 검토한다. 이 순서는 아직 확정된 실행 계획이 아니다.
 
 1. 기능 경계와 열린 질문을 합의하고 관련 spec에 `❌`로 등재
-2. `tag_content` 데이터 불변식 조사·정리와 멱등 저장 기반
-3. 일괄 추가·제거·Undo API, 소유권·완결 검증, 캐시·임베딩 후처리
-4. 검색 화면 선택 UI, 추가·제거 확인, 일회성 Undo와 결과 재조회
+2. `tag_content` 데이터 불변식 조사·정리와 멱등 저장 기반 ✅ 완료(V0.30.1 + revive)
+3. 일괄 추가·제거·Undo API, 소유권·완결 검증, 캐시·임베딩 후처리 — ⚠ B1(add/remove API + 전량 검증 + 멱등) 착수. Undo API=B2 완료, 캐시·임베딩 후처리=B3 완료
+4. 검색 화면 선택 UI, 추가·제거 확인, 일회성 Undo와 결과 재조회 — ⚠ C(선택 UI·확인·결과 재조회) 착수. 일회성 Undo(B2) 연동 완료
 5. 구현 상태에 맞춰 화면·인터랙션·저널 컴포넌트 spec을 `⚠` 또는 `✓`로 갱신
 
 각 단계는 독립 SAVEPOINT에서 빌드·인코딩·호출 그래프 정합을 만족해야 한다.

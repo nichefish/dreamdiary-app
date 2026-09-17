@@ -26,14 +26,29 @@ public class MyJournalTodoService {
     private final JournalTodoService journalTodoService;
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
+     * 활성 할일 목록 조회 (dto level).
      *
-     * @param searchParam 검색조건을 담고 있는 파라미터 객체
-     * @return {@link List} -- 조회된 목록
+     * @param searchParam 검색조건을 담고 있는 파라미터 객체 (yy/mnth 는 무시)
+     * @return {@link List} -- 활성 할일 목록
      */
-    public List<JournalTodoDto> getMyListDtoWithCache(final JournalTodoSearchParam searchParam) throws Exception {
+    public List<JournalTodoDto> getMyActiveList(final JournalTodoSearchParam searchParam) throws Exception {
         final String username = AuthUtils.requireLoginUsername();
-        return journalTodoService.getListDtoWithCacheByUser(username, searchParam);
+        return journalTodoService.getActiveListDtoByUser(username, searchParam);
+    }
+
+    /**
+     * 전 범위 할일 목록 조회 (dto level).
+     * <pre>
+     *  keep 전수관리 화면용 -- 활성(OPEN·PENDING)뿐 아니라 RESOLVED 까지 포함해
+     *  사용자의 모든 할일을 발생지 무관하게 반환한다.
+     * </pre>
+     *
+     * @param searchParam 검색조건을 담고 있는 파라미터 객체 (yy/mnth 는 무시)
+     * @return {@link List} -- 사용자 전 범위 할일 목록
+     */
+    public List<JournalTodoDto> getMyList(final JournalTodoSearchParam searchParam) throws Exception {
+        final String username = AuthUtils.requireLoginUsername();
+        return journalTodoService.getListDtoWithLifecycleByUser(username, searchParam);
     }
 
     /**

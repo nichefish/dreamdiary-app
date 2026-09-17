@@ -76,7 +76,7 @@ class JournalSettingServiceTest {
         assertThat(saved.getScope()).isEqualTo("USER");
         assertThat(saved.getScopeKey()).isEqualTo(FIXTURE_USERNAME);
         assertThat(saved.getDefaultEntryView()).isEqualTo(JournalDefaultEntryView.WEEKLY);
-        assertThat(saved.getEmbeddingEnabled()).isTrue();
+        assertThat(saved.getAiEnabled()).isTrue();
         assertThat(saved.getCreatedBy()).isEqualTo(FIXTURE_USERNAME);
         assertThat(saved.getUpdatedBy()).isEqualTo(FIXTURE_USERNAME);
     }
@@ -88,7 +88,7 @@ class JournalSettingServiceTest {
                 .id(21)
                 .scope("USER")
                 .scopeKey(FIXTURE_USERNAME)
-                .embeddingEnabled(true)
+                .aiEnabled(true)
                 .defaultEntryView(JournalDefaultEntryView.DAILY)
                 .createdBy(FIXTURE_USERNAME)
                 .build();

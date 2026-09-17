@@ -379,8 +379,8 @@ public class JournalThreadEntryService {
      * 주간은 최초 등장일순, 월간·연간은 기간 내 엔트리 수 내림차순으로 정렬한다.
      * 동률은 최초 등장일과 스레드 ID로 고정해 응답 순서가 매 조회마다 바뀌지 않게 한다.
      *
-     * @param viewType {@link JournalDayViewType#WEEKLY}, {@link JournalDayViewType#LIST} 또는 {@link JournalDayViewType#ANNUAL}
-     * @param searchParam 주간 시작일 또는 연·월
+     * @param viewType {@link JournalDayViewType#WEEKLY}, {@link JournalDayViewType#LIST}, {@link JournalDayViewType#ANNUAL} 또는 {@link JournalDayViewType#DAILY}
+     * @param searchParam 주간 시작일, 연·월 또는 일자
      * @return 기간별 스레드 요약
      */
     @Transactional(readOnly = true)
@@ -429,9 +429,19 @@ public class JournalThreadEntryService {
                             Comparator.nullsLast(Comparator.naturalOrder()))
                     .thenComparing(JournalThreadPeriodSummaryDto::getThreadId,
                             Comparator.nullsLast(Comparator.naturalOrder()));
+        } else if (viewType == JournalDayViewType.DAILY) {
+            final LocalDate journalDate = parseStdrdDt(searchParam != null ? searchParam.getStdrdDt() : null);
+            projections = repository.findPeriodSummaryByStdrdDt(username, journalDate);
+            comparator = Comparator
+                    .comparingLong(JournalThreadPeriodSummaryDto::getEntryCount)
+                    .reversed()
+                    .thenComparing(JournalThreadPeriodSummaryDto::getFirstEntryDate,
+                            Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(JournalThreadPeriodSummaryDto::getThreadId,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
         } else {
             log.warn("[JournalThreadEntry.periodSummary] 지원하지 않는 보기 타입. viewType={}", viewType);
-            throw new IllegalArgumentException("기간별 스레드 집계는 LIST, WEEKLY, ANNUAL 보기만 지원합니다.");
+            throw new IllegalArgumentException("기간별 스레드 집계는 LIST, WEEKLY, ANNUAL, DAILY 보기만 지원합니다.");
         }
 
         return projections.stream()
@@ -545,6 +555,22 @@ public class JournalThreadEntryService {
         } catch (final DateTimeParseException exception) {
             log.warn("[JournalThreadEntry.periodSummary] 잘못된 주간 기간. weekStartDt={}", value);
             throw new IllegalArgumentException("주간 스레드 집계에는 올바른 weekStartDt가 필요합니다.", exception);
+        }
+    }
+
+    /**
+     * 일자 문자열을 엄격한 ISO 일자로 변환한다.
+     *
+     * @param value YYYY-MM-DD 문자열
+     * @return 조회 일자
+     */
+    private LocalDate parseStdrdDt(final String value) {
+        try {
+            if (value == null || value.isBlank()) throw new DateTimeParseException("blank", "", 0);
+            return LocalDate.parse(value.trim());
+        } catch (final DateTimeParseException exception) {
+            log.warn("[JournalThreadEntry.periodSummary] 잘못된 일간 기간. stdrdDt={}", value);
+            throw new IllegalArgumentException("일간 스레드 집계에는 올바른 stdrdDt가 필요합니다.", exception);
         }
     }
 

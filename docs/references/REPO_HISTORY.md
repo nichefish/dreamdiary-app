@@ -1,14 +1,14 @@
 # DreamDiary 저장소 — 역사서
 
-> 대상: **`main`** HEAD `feb10fd2d` (2026-08-13, `Merge pull request #153 from nichefish/dev_0.27.0`)
-> 범위: 전체 817커밋 / 무병합 753커밋 · 기원 `f1759ae0c` (2024-10-12)
+> 대상: **`main`** HEAD `7d5553cb4` (2026-08-27, `Merge pull request #155 from nichefish/dev_0.29.0`)
+> 범위: 전체 888커밋 / 무병합 822커밋 · 기원 `f1759ae0c` (2024-10-12)
 > 방법론: CODE_ARCHAEOLOGY.md §2~§4 · §14
 > 증거물: [정적분석 보고서](REPO_STATIC_ANALYSIS.md)
 > 진단: [system-issues.md](SYSTEM_ISSUES.md)
 
 이 문서는 스냅샷이다. 다음 조사는 이 목차에 행을 덧붙이지 않고 같은 역할의 파일을 통째 재작성한다.
 
-**브랜치 전제** `[확정]`: 트렁크는 `main`. `master` ref 없음. 체크아웃(`dev_0.28.0` 등)은 정본이 아니다.
+**브랜치 전제** `[확정]`: 트렁크는 `main`. `master` ref 없음. 체크아웃(`dev_0.30.0` 등)은 정본이 아니다.
 
 solo. Git author는 `nichefish` 한 클러스터 `[확정]`. `Nysnyari` 1커밋은 동일인 `[강한추정]`.
 
@@ -23,6 +23,10 @@ solo. Git author는 `nichefish` 한 클러스터 `[확정]`. `Nysnyari` 1커밋�
 **라운드 3 (1차 재조사, 2026-08-15)** `[확정]`: 회고 없이 독립 재조사 — 시대 목록 불변(§6 포화). 보강: `attachable` 다형 백본(ContentType 17종·fan-in 109·상속 22엔티티)이 현재 구조 안정 축.
 
 **2차 구술사 (2026-08-15)** `[당사자 회고]`: Ⅰ. 이식의 pre-Git 생애 복원(FreeMarker+HBS = 이전 회사 유래 자기 주력 기술축). 예측 흔적 Git 정합(최초 284템플릿·표현계 284커밋·절단 607줄 삭제), 동기 `[미확인]`. 상세는 Ⅰ·Ⅳ·통섭.
+
+**라운드 4 (2차 재조사, 2026-08-30)** `[확정]` tip `feb10fd2d`(2026-08-13)→`7d5553cb4`(2026-08-27), 신규 71커밋(69 무병합) 구간 심문:
+- **시대 게이트**: 신규 구간에 새 representation·책임경계·runtime/deployment topology·검증문법의 전환이 있는가? 최대 churn은 F36/+958(기본 진입화면)·admin tmplat·shared 타입드 API 클라이언트로, 전부 Ⅲ(Vue SPA)·Ⅳ(관계축) 세계 **내부의 후속 기능**이다. **정의된 게이트상 이 구간에서 새 시대(가칭 Ⅴ) 승격 변곡을 발견하지 못했다** → Ⅳ 연장으로 판정. (존재론적으로 다음 시대가 없다는 뜻은 아니다. 검사한 구간·게이트 기준의 판정이다.)
+- **오독 정정**: 2차 재조사 도중 `ChatOrchestrator`를 잘못된 경로로 조회해 "`main`에 없음 → 재분해"라는 거짓 관측을 만들었다가 방향 게이트에서 기각. 실제 경로는 `feature/chat/service/ChatOrchestrator.java`, `main`에 1,252 LOC 건재. 아래 False Positive Log 참조.
 
 읽기 순서: **무엇이 바뀌었나**(아래 세 변환점) → **언제 바뀌었나**(4 regime) → **지금 어디가 눌리는가**([정적분석](REPO_STATIC_ANALYSIS.md)).
 
@@ -51,9 +55,9 @@ solo. Git author는 `nichefish` 한 클러스터 `[확정]`. `Nysnyari` 1커밋�
 | Ⅰ. 이식 | 2024-10 ~ 2025-03 | git 착지. 분리 테이블·FreeMarker/HBS가 이미 있음 |
 | Ⅱ. 저밀도 | 2025-04 ~ 2026-02 | 최저 활동. 끝무렵 재개·주소 정리는 **하위 사건** |
 | Ⅲ. 고밀도 재정의 | 2026-03 ~ 05 | 주소·이름·STI·Vue가 한 폭풍 |
-| Ⅳ. 고밀도 이후 | 2026-06 ~ `main` | 접기·평행면·관계축·AI 분해가 **겹침**. 시대로 쪼개지 않음 |
+| Ⅳ. 고밀도 이후 | 2026-06 ~ `main` | 접기·평행면·관계축·AI 분해가 **겹침**. 시대로 쪼개지 않음. 신규 71커밋(~08-27)도 이 세계의 후속(라운드 4 게이트) |
 
-월별 무병합 **`main`** `[확정]`: 2024-10=3 … 2025-01=47 · 02=59 · 03=12 · 04=5 · **05=0** · 06=3 · 07=3 · 08=2 · 09=7 · 10=1 · 11=14 · 12=35 · 2026-01=13 · 02=19 · **03=82 · 04=115 · 05=131** · 06=67 · 07=63 · 08=55.
+월별 무병합 **`main`** `[확정]`: 2024-10=3 … 2025-01=47 · 02=59 · 03=12 · 04=5 · **05=0** · 06=3 · 07=3 · 08=2 · 09=7 · 10=1 · 11=14 · 12=35 · 2026-01=13 · 02=19 · **03=82 · 04=115 · 05=131** · 06=67 · 07=63 · 08=124(08-27 트렁크까지).
 
 ---
 
@@ -80,6 +84,7 @@ solo. Git author는 `nichefish` 한 클러스터 `[확정]`. `Nysnyari` 1커밋�
 
 **하위 사건: 재개와 주소 정리** `[확정]` (시대 아님)
 - 2025-11 `service.impl` 제거. 2025-11~2026-01 커밋은 14·35·13. 2026-02 1층 합 31로 다시 고요.
+  - 감식 [DIG-001](digs/DIG-001-service-impl-collapse.md) `[CORROBORATED]`: `e5b2f81ec`가 39개 `*ServiceImpl` 전면 삭제 + interface→class 전환(AuthService A/B 확정) + 이후 도메인 서비스에 interface/impl 이중구조 재출현 없음(생성규칙 변경). 동기는 `[미확인]`. build-through의 실례이나 inadmissible 표본이라 거시 posterior는 미변경.
 - `DESIGN_NOTES`·`CHANGELOG`·`AGENTS.md`가 이 구간에 두꺼워짐 `[강한추정]`.
 - 2025-11을 시대로 올리지 않음: 2월이 같은 “규율 왕조”가 되지 못하고, 3월 Jaccard가 이쪽이 아니라 **다음 시대**와 붙는다.
 
@@ -119,7 +124,7 @@ solo. Git author는 `nichefish` 한 클러스터 `[확정]`. `Nysnyari` 1커밋�
 - FreeMarker MVC 제거 `c7fc9edd7`(2026-07-02). 이메일 렌더만 잔존.
   - 절단 규모 `[확정]`: FreemarkerConfig·Interceptor·ModelContributor·WebMvc 배선 607줄 삭제. **자기 주력 기술축의 의도적 퇴역** `[당사자 회고]` — 타인 legacy 정리가 아니라 오래 고도화한 자기 표현계를 스스로 절단(Ⅰ. 이식 참조). 동기 `[미확인]`.
 - FLOW 07-20 도입 → 07-21 스레드로 흡수. revert 커밋이 아니라 접기.
-- `ChatAIService` 소멸 `06ca98c26`(2026-08-08) → `ChatOrchestrator` + `feature/ai/*`. `main`에 구 파일 없음.
+- `ChatAIService` 소멸 `06ca98c26`(2026-08-08): 같은 커밋에서 `feature/chat/service/ChatAIService.java` 삭제(D) + `feature/ai/{guard,model,person,prompt,rag}` 19파일 추가(A) + `feature/chat/service/ChatOrchestrator.java` 신규 생성. `main`에 구 파일 없음 `[확정]`. 모놀리식 서비스가 축으로 분산되고 오케스트레이션이 수렴점으로 착지한 것이며, `ChatOrchestrator`는 재분해되지 않고 1,252 LOC로 건재하다(라운드 4 정정).
 - `journalModal` facade `9e8e2bf62`. `main`에서 파사드 152 LOC, `journalModalEntry.ts` 405.
 
 `git revert` 메시지 0건 `[확정]`과 이 패턴은 **다른 명제**. React(축 B)는 이 패턴의 예외.
@@ -155,7 +160,7 @@ solo. Git author는 `nichefish` 한 클러스터 `[확정]`. `Nysnyari` 1커밋�
 7. STI 이후 Entry는 결함-God가 아니라 수렴점 `[강한추정]`. 위험은 새 개념을 습관적으로 Entry에 넣는 순간부터다.
 8. 버스팩터는 이탈자가 아니라 6개월 전 나와 병행 SAVEPOINT `[강한추정]`.
 9. 고고학 정본은 `main` `[확정]`.
-10. `attachable`(구 clsf)는 현재 구조의 **안정 축** `[확정]`: 정책이 제어흐름이 아니라 `ContentType` enum + `BaseAttachable*` base에 canonical하게 있다. 고 fan-in(109)이나 값 추가 비파괴.
+10. `attachable`(구 clsf)는 현재 구조의 **강한 canonical 축** `[확정]`: `ContentType` enum 값이 한 곳에 있고, 논리 CRUD 대상 14개 모두 대응 `BaseAttachableService` 구현체를 가진다. 감식 [DIG-002](digs/DIG-002-attachable-convergence-bypass.md)는 이 coverage와 경로 완전성을 분리했다 — canonical `modify`를 국소 재구현한 `ScheduleService`·`UserService`에서 각각 `afterWrite`·`preModify` semantic hook omission이 확인되고, `JournalEntryService` 재구현은 helper 의미를 보존한다. **Canonical coverage ≠ canonical path completeness.** attachable↔journal 양방향 concrete dependency는 존재하지만 금지 방향 계약은 `[미확인]`; 동일 policy 중복은 state cache-backed 타입 4종의 좁은 한 쌍만 `[확정]`이다.
 
 ---
 
@@ -171,3 +176,5 @@ solo. Git author는 `nichefish` 한 클러스터 `[확정]`. `Nysnyari` 1커밋�
 | 2026-08-07 | `ChatAIService` = 현재 God | `main`에 없음 | 스냅샷 위키화 | 트렁크 트리에서 허브 목록 |
 | 2층 `--follow` | `AGENTS.md` = board_def 탄생 | follow 오염 | `--follow`로 탄생 | 경로·메시지 교차 |
 | 3층 `->` | 필드 rename = 설계 전환 | `reg → regist` 다수 | 화살표 키워드 | 복수 키워드+1층 |
+| 2026-08-30 라운드4 | `ChatOrchestrator` `main`에 없음 → 재분해 → 흡수·폐기 패턴 강화 | 실재(1,252 LOC, `feature/chat/service/`). 재분해 없음 | 잘못된 경로(`feature/ai/chat/…`)의 `git show` MISSING을 "부재"로 오독. 그 허구가 기존 흡수·폐기 거시서사에 **너무 잘 맞아** 즉시 증거로 흡수하려 함 | `MISSING`은 재조사 트리거이지 방향 증거 아님. 확정 전 `ls-tree`로 실경로 확인 + `--diff-filter=D`로 삭제/후계 확인. 거시서사에 잘 맞는 관측일수록 방향 게이트를 먼저 통과시킨다 |
+| 2026-08-31 DIG-002 | attachable 데이터축 서비스가 base를 쓰지 않고 기능별 `ContentType` 집합이 여러 곳에 있음 → canonical 축 부분 수렴 | 논리 CRUD 대상은 14/14 canonical service coverage. 실제 결함은 동일 `modify` 관할 재구현의 semantic hook omission 2건. 기능별 집합 대부분은 서로 다른 proposition | `BaseAttachableService` 관할 밖의 데이터축 서비스를 비교하고, 서로 다른 사건·capability 집합을 같은 대안 경로·정책으로 취급 | 비교 전에 동일 관할·역할·semantic proposition인지 입증한다. Path absence·structural difference·repeated representation만으로 bypass·불일치·중복을 판정하지 않는다 |

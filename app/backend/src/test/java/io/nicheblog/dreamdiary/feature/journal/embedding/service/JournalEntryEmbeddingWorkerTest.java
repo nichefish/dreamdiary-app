@@ -46,13 +46,13 @@ class JournalEntryEmbeddingWorkerTest {
     @BeforeEach
     void setUp() {
         worker = new JournalEntryEmbeddingWorker(queueService, searchService, journalSettingService, ollamaClient);
-        when(journalSettingService.isEmbeddingEnabled()).thenReturn(true);
+        when(journalSettingService.isAiEnabled()).thenReturn(true);
         org.mockito.Mockito.lenient().when(queueService.countPending()).thenReturn(0L);
     }
 
     @Test
     void processPendingBatch_skipsWhenEmbeddingDisabled() {
-        when(journalSettingService.isEmbeddingEnabled()).thenReturn(false);
+        when(journalSettingService.isAiEnabled()).thenReturn(false);
 
         final int successCount = worker.processPendingBatch(20);
 

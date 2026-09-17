@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.todo.model;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.lifecycle.model.cmpstn.LifecycleCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
@@ -27,7 +29,7 @@ import javax.validation.constraints.Size;
 @ToString(callSuper = true)
 public class JournalTodoDto
         extends BaseAttachableDto
-        implements Identifiable<Integer>, TagCmpstnModule, JournalPeriodModule {
+        implements Identifiable<Integer>, TagCmpstnModule, JournalPeriodModule, LifecycleCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -80,6 +82,9 @@ public class JournalTodoDto
     public Integer getKey() {
         return this.id;
     }
+
+    /** 위임 :: 라이프사이클 모듈. 목록·상세 enrich 가 부착 테이블에서 채운다. 없으면 OPEN. */
+    public LifecycleCmpstn lifecycle;
 
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;

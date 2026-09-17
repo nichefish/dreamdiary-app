@@ -17,6 +17,6 @@ import lombok.*;
 @AllArgsConstructor
 public class JournalSettingDto {
 
-    /** AI 임베딩 활성화 여부. */
-    private Boolean embeddingEnabled;
+    /** AI 기능(임베딩·개체추출) 활성화 여부. */
+    private Boolean aiEnabled;
 }

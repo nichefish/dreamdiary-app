@@ -16,6 +16,8 @@ import io.nicheblog.dreamdiary.feature.journal.reflection.entity.JournalReflecti
 import io.nicheblog.dreamdiary.feature.journal.reflection.repository.jpa.JournalReflectionRepository;
 import io.nicheblog.dreamdiary.feature.journal.thread.entity.JournalThreadEntity;
 import io.nicheblog.dreamdiary.feature.journal.thread.repository.jpa.JournalThreadRepository;
+import io.nicheblog.dreamdiary.feature.journal.todo.entity.JournalTodoEntity;
+import io.nicheblog.dreamdiary.feature.journal.todo.repository.jpa.JournalTodoRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +57,7 @@ class JournalContentOwnershipGuardTest {
     private static final Integer FIXTURE_CHAPTER_ID = 101;
     private static final Integer FIXTURE_ENTRY_ID = 102;
     private static final Integer FIXTURE_THREAD_ID = 104;
+    private static final Integer FIXTURE_TODO_ID = 105;
     private static final Integer FIXTURE_REFLECTION_ID = 103;
     private static final String FIXTURE_MIGRATION_AUDIT = "MIGRATION_SPLIT";
 
@@ -68,6 +71,8 @@ class JournalContentOwnershipGuardTest {
     private JournalReflectionRepository journalReflectionRepository;
     @Mock
     private JournalThreadRepository journalThreadRepository;
+    @Mock
+    private JournalTodoRepository journalTodoRepository;
 
     private MockedStatic<AuthUtils> authUtils;
     private JournalContentOwnershipGuard guard;
@@ -83,7 +88,8 @@ class JournalContentOwnershipGuardTest {
                 journalChapterRepository,
                 journalEntryRepository,
                 journalReflectionRepository,
-                journalThreadRepository
+                journalThreadRepository,
+                journalTodoRepository
         );
     }
 
@@ -138,6 +144,19 @@ class JournalContentOwnershipGuardTest {
         assertDoesNotThrow(() -> guard.assertOwned(FIXTURE_THREAD_ID, ContentType.JOURNAL_THREAD));
     }
 
+    /** 할일은 원본 작성자가 현재 사용자이면 허용한다. */
+    @Test
+    void ownedTodoIsAccepted() {
+        when(journalTodoRepository.findById(FIXTURE_TODO_ID)).thenReturn(Optional.of(
+                JournalTodoEntity.builder()
+                        .id(FIXTURE_TODO_ID)
+                        .createdBy(FIXTURE_OWNER)
+                        .build()
+        ));
+
+        assertDoesNotThrow(() -> guard.assertOwned(FIXTURE_TODO_ID, ContentType.JOURNAL_TODO));
+    }
+
     /** 다른 사용자가 작성한 모든 지원 대상은 권한 오류로 거부한다. */
     @Test
     void contentOwnedByAnotherUserIsRejectedForAllDomains() {
@@ -160,6 +179,12 @@ class JournalContentOwnershipGuardTest {
                         .createdBy(FIXTURE_OTHER_OWNER)
                         .build()
         ));
+        when(journalTodoRepository.findById(FIXTURE_TODO_ID)).thenReturn(Optional.of(
+                JournalTodoEntity.builder()
+                        .id(FIXTURE_TODO_ID)
+                        .createdBy(FIXTURE_OTHER_OWNER)
+                        .build()
+        ));
 
         assertThrows(NotAuthorizedException.class,
                 () -> guard.assertOwned(FIXTURE_DAY_ID, ContentType.JOURNAL_DAY));
@@ -169,6 +194,8 @@ class JournalContentOwnershipGuardTest {
                 () -> guard.assertOwned(FIXTURE_ENTRY_ID, ContentType.JOURNAL_DIARY));
         assertThrows(NotAuthorizedException.class,
                 () -> guard.assertOwned(FIXTURE_THREAD_ID, ContentType.JOURNAL_THREAD));
+        assertThrows(NotAuthorizedException.class,
+                () -> guard.assertOwned(FIXTURE_TODO_ID, ContentType.JOURNAL_TODO));
     }
 
     /** 존재하지 않는 원본 ID는 orphan 상태·라이프사이클을 만들지 못하도록 권한 오류로 거부한다. */
@@ -206,7 +233,8 @@ class JournalContentOwnershipGuardTest {
                 journalChapterRepository,
                 journalEntryRepository,
                 journalReflectionRepository,
-                journalThreadRepository
+                journalThreadRepository,
+                journalTodoRepository
         );
     }
 

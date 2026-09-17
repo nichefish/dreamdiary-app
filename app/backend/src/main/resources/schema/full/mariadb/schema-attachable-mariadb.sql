@@ -142,6 +142,7 @@ CREATE TABLE IF NOT EXISTS tag_content (
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     FOREIGN KEY (tag_id) REFERENCES tag(id),
+    UNIQUE KEY uk_tag_content_pair (tag_id, ref_id, ref_content_type, created_by),
     INDEX (ref_content_type),
     INDEX (ref_id, ref_content_type),
     INDEX (ref_id, ref_content_type, created_by)

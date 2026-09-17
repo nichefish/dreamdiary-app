@@ -29,6 +29,7 @@
 
 **기능**:
 - ID/PW 폼 로그인 → `POST /api/auth/login`
+- 아이디 또는 비밀번호가 비어 있으면 `POST /api/auth/login`을 호출하지 않고 해당 필드에 `auth.login.required`를 표시한다. 빈 비밀번호 제출은 로그인 실패로 집계하지 않는다.
 - POST /api/auth/login internal server errors return HTTP 500 with a login-scoped error message and must not be classified as login-required/session-expired.
 - Vue auth verification treats only HTTP 401 from `/api/auth/get-auth-account` as unauthenticated/session-expired; HTTP 403, HTTP 500, and network failures surface as auth verification/runtime errors and must not purge auth state as a login-required diagnosis. 정상 인증 결과는 새로고침 시 초기화되는 메모리에 15초간 신선한 상태로 보존하고, 같은 구간의 라우트 이동은 서버 조회를 생략한다. 로그인·프로필 변경·팝업 사전 확인은 `force` 검증을 사용한다.
 - Google OAuth2 소셜 로그인 → `/oauth2/authorization/google` (팝업)
@@ -60,7 +61,7 @@
 **Vue view**: `app/frontend-vue/src/features/auth/VerifyResultPage.vue`
 
 **기능**:
-- 이메일 인증 토큰 결과 표시 (레거시 `verify_success.ftlh` + `verify_failure.ftlh` 통합)
+- 이메일 인증 토큰 결과 표시
 - `?status=success` → "인증이 완료되었습니다"
 - `?status=failure&message=...` → "인증에 실패했습니다" + 메시지
 - **i18n**: 화면 내 모든 UI 텍스트는 `useLocaleStore.t()` 카탈로그 키로 표시 (`auth.verify.*`). 관련 messages_ko/en.properties 키 일괄 정의 완료.
@@ -70,7 +71,6 @@
 ## 내 설정 (`user-my`)
 
 - **Vue SPA**: `/my/profile`, `/my/security`, `/my/journal`, `/my/prefixes` (`/my`는 `/my/profile`로 redirect)
-- **Legacy file**: `legacy/templates/view/feature/user/my/user_my_page.ftlh`
 - **스토어**: `features/user/stores/userMy.ts`, `features/user/stores/userCategories.ts`
 - **본문 상단**: breadcrumb와 중복되는 제목·설명문 및 별도 새로고침 버튼은 렌더링하지 않는다. 프로필 이미지·닉네임·계정·역할 공통 정체성 헤더와 URL 기반 탭을 표시한다.
 - **메뉴 모드**: `/my` 진입은 사용자/관리자 메뉴 모드를 전환하지 않는다. 관리자 모드에서 프로필 메뉴로 들어오면 관리자 사이드바를 유지하고, 사용자 모드에서 들어오면 사용자 사이드바를 유지한다.
@@ -99,27 +99,22 @@
 
 ### Layout Structure
 
-- 레이아웃: `layout_default.ftlh` (사이드바 없음)
+- 레이아웃: 앱 기본 레이아웃.
 - 툴바: 별도 툴바 없음. `/my` 화면 진입 시 사용자 정보를 조회하고, 프로필 이미지 변경/삭제 후에는 내부적으로 사용자 정보와 인증 상태를 갱신한다.
-- 메인 영역:
-  - Vue 마운트 루트: `#user_my_app`
-  - 컨텐츠 div: `#user_my_page_div` (Vue `UserMyPageApp` 텔레포트 대상)
-  - 히든 폼: `#procForm` (GET, `id`, `userProfileId` hidden)
-  - 프로필 이미지 폼 템플릿: `#proflImageTemplate` (hidden, 파일 업로드용)
-- 모달: 비밀번호 변경 모달 (`_user_my_pw_chg_modal.ftlh`)
+- 메인 영역: `UserMyPage.vue` — 공통 정체성 헤더(프로필 이미지·닉네임·계정·역할) + URL 기반 탭(`UserMyProfileTab` / `UserMySecurityTab` / `UserMyJournalTab` / `UserMyPrefixesTab`).
+- 모달: 비밀번호 변경 모달(보안 탭)
 
 ### Key UI Elements
 
-| Element | Type | Legacy class/id | Data source | Notes |
-|---------|------|----------------|-------------|-------|
-| Vue 마운트 루트 | `<div>` | `#user_my_app` | `UserMyPageApp` | Vue 앱 마운트 |
-| 컨텐츠 영역 | `<div>` | `#user_my_page_div` | Vue 텔레포트 | 내 정보 화면 렌더 |
-| 프로필 이미지 폼 | `<form id="profllImgForm">` | `#proflImageTemplate` (hidden) | `input[type=file]` | `.png`, `.jpg`, `.jpeg` 허용 |
-| 파일 인풋 | `<input type="file" id="fileGroup0">` | `#fileGroup0` | 프로필 이미지 | accept: `.png, .jpg, .jpeg` |
+| Element | 컴포넌트 | Notes |
+|---------|----------|-------|
+| 페이지 셸 | `UserMyPage.vue` | 공통 정체성 헤더 + URL 기반 탭 |
+| 탭 | `UserMyProfileTab` / `UserMySecurityTab` / `UserMyJournalTab` / `UserMyPrefixesTab` | 프로필·보안·저널 설정·말머리 관리 |
+| 프로필 이미지 | 프로필 탭 내 파일 입력 | `.png`, `.jpg`, `.jpeg` 허용 |
 
 ### Action Buttons & Interactions
 
-Vue `UserMyPageApp` 내부에서 처리. 레거시 모듈(`user_my_module.js`, `user_my_pw_chg_module.js`, `user_my_page.js`)을 대체.
+`UserMyPage.vue`와 탭 컴포넌트가 처리한다.
 
 | Action | 기대 동작 |
 |--------|----------|
@@ -133,7 +128,7 @@ Vue `UserMyPageApp` 내부에서 처리. 레거시 모듈(`user_my_module.js`, `
 
 ### Data Displayed
 
-`#user_my_page_data` (JSON script tag)로 모든 데이터 전달:
+내 설정 데이터 필드(`userMy` store):
 
 **user 객체**:
 - `id`, `username`, `nickname`, `email`, `phoneNumber`, `profileImageUrl`
@@ -170,4 +165,3 @@ Vue `UserMyPageApp` 내부에서 처리. 레거시 모듈(`user_my_module.js`, `
 - `vacation.visible`: `authInfo.hasEcnyDt` 기반 — 입사일 없는 사용자에게는 연차 정보 미표시
 - 연차 툴팁: 기본연차(신입 여부 포함) + 근속추가연차 + 프로젝트추가연차 조합 문자열 (`\n` 개행)
 - 프로필 이미지 업로드: `onchange="return false;"` — Vue에서 직접 파일 접근 후 처리
-- `UserMyPageApp` Vue가 `user_my_module.js` + `user_my_pw_chg_module.js` + `user_my_page.js` 3개 레거시 모듈 완전 대체

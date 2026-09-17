@@ -131,7 +131,7 @@
           :title="t('journal.entry.search.tag.remove.tooltip')"
           @click="removeTag(tagId)"
         >
-          #{{ tagLabelMap[tagId] ?? tagId }}
+<span v-if="tagCategoryLabelMap[tagId]" class="fs-9 text-muted me-1">[{{ tagCategoryLabelMap[tagId] }}]</span>#{{ tagLabelMap[tagId] ?? tagId }}
           <i class="bi bi-x"></i>
         </span>
       </div>
@@ -310,6 +310,74 @@
       <div v-if="loading" class="text-muted fs-8 px-2 pb-2">
         {{ t("journal.entry.search.refreshing.keep-previous") }}
       </div>
+      <!--begin::일괄 태그 — 전체 선택 + 액션 바 (검색 화면 전용)-->
+      <div class="d-flex align-items-center gap-2 px-2 pb-1">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          :checked="allSelected"
+          :title="t('journal.entry.bulk-tag.select-all')"
+          @change="toggleSelectAll"
+        />
+        <span class="text-muted fs-8">{{ t("journal.entry.bulk-tag.select-all") }}</span>
+      </div>
+      <div v-if="lastBulkAction" class="d-flex align-items-center gap-2 px-2 pb-1">
+        <span class="text-muted fs-8">{{ t("journal.entry.bulk-tag.undo-available") }}</span>
+        <button type="button" class="btn btn-sm btn-light-warning py-1" :disabled="bulkActionInProgress" @click="undoLastBulk">
+          <i class="bi bi-arrow-counterclockwise pe-1"></i>{{ t("journal.entry.bulk-tag.undo") }}
+        </button>
+      </div>
+      <div
+        v-if="selectedCount > 0"
+        class="d-flex flex-wrap align-items-center gap-2 border rounded bg-light-primary p-2 mb-2 mx-2 sticky-top"
+        style="top: 0; z-index: 5;"
+      >
+        <span class="fw-bold fs-7 text-nowrap">{{ t("journal.entry.bulk-tag.selected-count").replace("{n}", String(selectedCount)) }}</span>
+        <div class="input-group input-group-sm" style="width: 220px;">
+          <input
+            v-model="bulkTagInput"
+            type="text"
+            class="form-control form-control-sm"
+            :placeholder="t('journal.entry.search.tag.placeholder')"
+            list="journal-entry-search-tag-options"
+            autocomplete="off"
+            :disabled="isBulkTagCategoryChoicePending"
+            @focus="ensureTagSelectorData()"
+            @keydown.enter.prevent="addBulkTagFromInput"
+          />
+          <button type="button" class="btn btn-sm btn-light-primary" :disabled="isBulkTagCategoryChoicePending" @click="addBulkTagFromInput">+ {{ t("common.add") }}</button>
+        </div>
+        <span
+          v-for="tid in bulkTagIds"
+          :key="tid"
+          class="badge badge-light-primary d-inline-flex align-items-center gap-1"
+        >
+          <span v-if="bulkTagCategory(tid)" class="fs-9 text-muted me-1">[{{ bulkTagCategory(tid) }}]</span>{{ bulkTagLabel(tid) }}
+          <button type="button" class="btn-close" style="font-size:.55rem" :aria-label="t('common.delete')" @click="removeBulkTag(tid)"></button>
+        </span>
+        <div class="ms-auto d-flex gap-1">
+          <button type="button" class="btn btn-sm btn-primary" :disabled="!canApplyBulk" @click="applyBulkTag('ADD')">{{ t("journal.entry.bulk-tag.op.add") }}</button>
+          <button type="button" class="btn btn-sm btn-light-danger" :disabled="!canApplyBulk" @click="applyBulkTag('REMOVE')">{{ t("journal.entry.bulk-tag.op.remove") }}</button>
+        </div>
+        <!--begin::일괄 태그 카테고리 선택 (이름이 다중 카테고리일 때만 — 검색 조건 입력과 동일 계약)-->
+        <div v-if="isBulkTagCategoryChoicePending" class="d-flex align-items-center flex-wrap gap-2 w-100">
+          <span class="text-muted fs-8">{{ t("journal.entry.search.category.select") }}</span>
+          <button
+            v-for="ctgr in bulkTagCategoryChoices"
+            :key="ctgr"
+            type="button"
+            class="btn btn-xs btn-light-primary"
+            @click="selectBulkTagCategory(ctgr)"
+          >
+            {{ ctgr || t("journal.entry.search.category.none") }}
+          </button>
+          <button type="button" class="btn btn-xs btn-light-secondary" @click="cancelBulkTagCategoryChoice">
+            {{ t("common.cancel") }}
+          </button>
+        </div>
+        <!--end::일괄 태그 카테고리 선택-->
+      </div>
+      <!--end::일괄 태그-->
       <div class="text-muted fs-8 px-2 pb-2">
         {{ resultSummaryLabel }}
       </div>
@@ -386,12 +454,23 @@
           </button>
         </div>
         <!--end::날짜 헤더-->
-        <JournalEntryItem
-          :dom-id="entry.id ? 'journal-entry-search-' + entry.id : undefined"
-          :entry="entry"
-          :highlight-keywords="searchKeywords"
-          :is-dream="entry.contentType === 'JOURNAL_DREAM'"
-        />
+        <div class="d-flex align-items-start gap-2">
+          <input
+            type="checkbox"
+            class="form-check-input mt-3 flex-shrink-0"
+            :checked="isEntrySelected(entry.id)"
+            :title="t('journal.entry.bulk-tag.select-entry')"
+            @change="toggleEntrySelection(entry.id)"
+          />
+          <div class="flex-grow-1 min-w-0">
+            <JournalEntryItem
+              :dom-id="entry.id ? 'journal-entry-search-' + entry.id : undefined"
+              :entry="entry"
+              :highlight-keywords="searchKeywords"
+              :is-dream="entry.contentType === 'JOURNAL_DREAM'"
+            />
+          </div>
+        </div>
       </template>
     </div>
     <!--end::결과 목록-->
@@ -419,11 +498,11 @@
  * JournalEntryItem 을 그대로 사용해 저널 일자 목록과 동일한 UI·컨텍스트 메뉴 제공.
  * 레거시 journal_entry_search_module.ts 의 멀티키워드·멀티태그 AND 검색을 Vue SPA 로 재현.
  */
-import { computed, nextTick, onScopeDispose, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onScopeDispose, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { swalAlert } from "@/shared/utils/swal";
+import { swalAlert, swalConfirm, swalFire, swalRequestError } from "@/shared/utils/swal";
 import { useJournalThreadStore } from "@/features/journal/stores/journalThread";
 import type { JournalEntryDto } from "@/features/journal/stores/journal";
 import { registerJournalEntrySearchHost } from "@/features/journal/utils/journalEntryHostRefresh";
@@ -450,6 +529,8 @@ import RelatedContentAddModal from "../shared/modals/RelatedContentAddModal.vue"
 import JournalTagContextMenu from "../shared/components/JournalTagContextMenu.vue";
 import JournalTagProfileModal from "../shared/modals/JournalTagProfileModal.vue";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
+import { useEntryBulkTag } from "./composables/useEntryBulkTag";
+import { useSearchTagCatalog } from "./composables/useSearchTagCatalog";
 
 interface JournalEntrySaveEvent {
   entryId?: number | string;
@@ -461,12 +542,6 @@ interface JournalEntrySavePrepareEvent extends JournalEntrySaveEvent {
   waitUntil: (task: Promise<void>) => void;
 }
 
-interface SearchTagDto {
-  id?: number | string;
-  tagId?: number | string;
-  name?: string;
-  ctgr?: string;
-}
 
 const route = useRoute();
 const router = useRouter();
@@ -480,9 +555,6 @@ const conditionChangedMessage = ref("");
 const keywordInput = ref("");
 const keywordInputEl = ref<HTMLInputElement | null>(null);
 const tagInput = ref("");
-const tagCategoryMap = ref<Record<string, string[]>>({});
-const tagCatalog = ref<SearchTagDto[]>([]);
-const tagSelectorLoadedType = ref("");
 const pendingTagName = ref("");
 const tagCategoryChoices = ref<string[]>([]);
 const showAdvanced = ref(false);
@@ -492,6 +564,22 @@ const sort = ref("desc");
 /** 정렬 기준 축: "date"(기본) | "title" */
 const sortField = ref("date");
 const tagIds = ref<string[]>([]);
+
+// ===== 태그 카탈로그·라벨·정규화 데이터층 — 상태·동작은 useSearchTagCatalog 컴포저블로 이관 =====
+const {
+  tagCatalog,
+  tagCategoryMap,
+  tagLabelMap,
+  tagCategoryLabelMap,
+  tagNameOptions,
+  cacheTagName,
+  cacheTagCategory,
+  hydrateTagNamesFromEntries,
+  hydrateMissingTagNames,
+  ensureTagSelectorData,
+  findKnownTagName,
+} = useSearchTagCatalog({ type, tagIds });
+
 const searchKeywords = ref<string[]>([]);
 /** 꿈 전용 상태 검색 조건. URL에는 NHTMR/HALLUC만 보존하며 복수 선택은 OR로 조회한다. */
 const states = ref<string[]>([]);
@@ -501,8 +589,41 @@ const titleInput = ref("");
 const searchAttempted = ref(false);
 const searchErrorMessage = ref("");
 
-/** tagId 를 화면 표시명으로 바꾸기 위한 로컬 캐시. URL 검색 조건에는 tagIds 만 사용한다. */
-const tagLabelMap = ref<Record<string, string>>({});
+// ===== 일괄 태그 (검색 결과에서 선택한 엔트리에 기존 태그 ADD/REMOVE) — 상태·동작은 useEntryBulkTag 컴포저블로 이관 =====
+const {
+  selectedCount,
+  allSelected,
+  canApplyBulk,
+  isBulkTagCategoryChoicePending,
+  isEntrySelected,
+  toggleEntrySelection,
+  toggleSelectAll,
+  bulkTagInput,
+  bulkTagIds,
+  bulkTagCategoryChoices,
+  bulkActionInProgress,
+  lastBulkAction,
+  bulkTagLabel,
+  bulkTagCategory,
+  addBulkTagFromInput,
+  selectBulkTagCategory,
+  cancelBulkTagCategoryChoice,
+  removeBulkTag,
+  applyBulkTag,
+  undoLastBulk,
+} = useEntryBulkTag({
+  t,
+  entries,
+  type,
+  tagCatalog,
+  tagCategoryMap,
+  tagCategoryLabelMap,
+  ensureTagSelectorData,
+  findKnownTagName,
+  cacheTagName,
+  cacheTagCategory,
+  reloadEntries: loadEntries,
+});
 
 const hasSearchConditions = computed(() =>
   searchKeywords.value.length > 0
@@ -539,7 +660,6 @@ const conditionSummaryLabel = computed(() =>
     .replace("{4}", String(states.value.length))
 );
 
-const tagNameOptions = computed(() => Object.keys(tagCategoryMap.value).sort((a, b) => a.localeCompare(b)));
 const resultDateCount = computed(() => new Set(entries.value.map((entry) => entry.stdrdDt).filter(Boolean)).size);
 const resultMonthCount = computed(() => new Set(entries.value.map((entry) => getYyMm(entry.stdrdDt)).filter(Boolean)).size);
 const tagInputHint = computed(() => isTagCategoryChoicePending.value
@@ -616,90 +736,6 @@ async function loadEntries(): Promise<void> {
   }
 }
 
-function cacheTagName(tagId?: number | string, name?: string): void {
-  if (tagId === undefined || tagId === null || !name) return;
-  tagLabelMap.value[String(tagId)] = name;
-}
-
-function hydrateTagNamesFromEntries(entryList: JournalEntryDto[]): void {
-  entryList.forEach((entry) => {
-    (entry.tag?.list ?? []).forEach((tag) => cacheTagName(tag.tagId, tag.name));
-  });
-}
-
-async function hydrateMissingTagNames(): Promise<void> {
-  const missingIds = tagIds.value.filter((tagId) => !tagLabelMap.value[tagId]);
-  if (missingIds.length === 0) return;
-
-  const requestedType = type.value;
-  try {
-    const res = await axios.get("/api/journal/entry/tags", { params: { type: requestedType } });
-    if (requestedType !== type.value) return;
-    const list = (res.data?.rsltList ?? []) as SearchTagDto[];
-    list.forEach((tag) => cacheTagName(tag.id ?? tag.tagId, tag.name));
-  } catch {
-    // 태그명 표시에 실패해도 tagIds 검색 자체는 유지한다.
-  }
-}
-
-async function ensureTagSelectorData(): Promise<void> {
-  const requestedType = type.value;
-  if (tagSelectorLoadedType.value === requestedType) return;
-
-  try {
-    const [categoryRes, tagRes] = await Promise.all([
-      axios.get("/api/journal/entry/tag/categories", { params: { type: requestedType } }),
-      axios.get("/api/journal/entry/tags", { params: { type: requestedType } }),
-    ]);
-    if (requestedType !== type.value) return;
-    tagCatalog.value = (tagRes.data?.rsltList ?? []) as SearchTagDto[];
-    tagCategoryMap.value = mergeCatalogIntoCategoryMap(
-      normalizeCategoryMap(categoryRes.data?.rsltMap ?? categoryRes.data?.rsltObj),
-      tagCatalog.value,
-    );
-    tagCatalog.value.forEach((tag) => cacheTagName(tag.id ?? tag.tagId, tag.name));
-    tagSelectorLoadedType.value = requestedType;
-  } catch {
-    console.warn("[JournalEntrySearchPage] tag selector data load failed.", { type: requestedType });
-  }
-}
-
-function mergeCatalogIntoCategoryMap(baseMap: Record<string, string[]>, catalog: SearchTagDto[]): Record<string, string[]> {
-  const next: Record<string, string[]> = {};
-  for (const [tagName, categories] of Object.entries(baseMap)) {
-    next[tagName] = [...categories];
-  }
-  catalog.forEach((tag) => {
-    const name = String(tag.name ?? "").trim();
-    if (!name) return;
-    const ctgr = String(tag.ctgr ?? "");
-    const categories = next[name] ? [...next[name]] : [];
-    if (!categories.includes(ctgr)) categories.push(ctgr);
-    next[name] = categories;
-  });
-  return next;
-}
-
-function normalizeCategoryMap(raw: unknown): Record<string, string[]> {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-  const out: Record<string, string[]> = {};
-  for (const [tagName, categories] of Object.entries(raw as Record<string, unknown>)) {
-    if (!Array.isArray(categories)) continue;
-    out[tagName] = categories.map((c) => String(c ?? "")).filter((c) => c.length > 0);
-  }
-  return out;
-}
-
-function normalizeTagName(raw: string): string {
-  return raw.trim().replace(/\s+/g, "_");
-}
-
-function findKnownTagName(input: string): string {
-  const normalized = normalizeTagName(input);
-  if (tagCategoryMap.value[normalized]) return normalized;
-  return tagNameOptions.value.find((name) => name.toLowerCase() === normalized.toLowerCase()) ?? normalized;
-}
-
 async function addTagFromInput(): Promise<boolean> {
   await ensureTagSelectorData();
   const tagName = findKnownTagName(tagInput.value);
@@ -738,6 +774,7 @@ async function addTagByNameAndCategory(tagName: string, ctgr: string): Promise<b
 
   const nextTagId = String(tagId);
   cacheTagName(nextTagId, tagName);
+  cacheTagCategory(nextTagId, ctgr);
   tagInput.value = "";
   cancelTagCategoryChoice();
   if (tagIds.value.includes(nextTagId)) {
@@ -1100,6 +1137,16 @@ function getDateEntryCountLabel(stdrdDt?: string | null): string {
  */
 const unregisterSearchHost = registerJournalEntrySearchHost(() => loadEntries());
 onScopeDispose(unregisterSearchHost);
+
+/**
+ * 팝업 최초 오픈 시 검색 조건이 없으면 고급 필터를 펼치고 키워드 입력창에 포커스를 준다.
+ * Shift 더블탭 진입(useJournalSearchShortcut) 직후 바로 키워드를 입력·검색할 수 있게 하는 진입 편의다.
+ * 최초 마운트 1회만 적용한다. 이후 조건 제거·초기화로 다시 조건이 비어도 자동 펼침/포커스를 하지 않아
+ * 사용자가 다른 요소를 조작하는 중 포커스를 빼앗기는 상황을 막는다.
+ */
+onMounted(() => {
+  if (!hasSearchConditions.value) void openConditionEditor();
+});
 </script>
 
 <style scoped>

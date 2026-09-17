@@ -394,7 +394,7 @@ CREATE TABLE IF NOT EXISTS journal_setting (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '저널 설정 ID',
     scope VARCHAR(20) NOT NULL DEFAULT 'ADMIN' COMMENT '설정 범위 (ADMIN/USER)',
     scope_key VARCHAR(100) NOT NULL DEFAULT 'GLOBAL' COMMENT '범위 키 (ADMIN=GLOBAL, USER=username)',
-    embedding_enabled TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'AI 임베딩 활성화 여부 (1=ON, 0=OFF)',
+    ai_enabled TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'AI 기능 활성화 여부 (임베딩·개체추출, 1=ON, 0=OFF)',
     default_entry_view VARCHAR(20) COMMENT '사용자별 저널 기본 진입 화면 (DAILY/WEEKLY/MONTHLY)',
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -403,5 +403,5 @@ CREATE TABLE IF NOT EXISTS journal_setting (
     UNIQUE KEY uk_journal_setting_scope (scope, scope_key)
 ) COMMENT = '저널 도메인 설정';
 
-INSERT INTO journal_setting (scope, scope_key, embedding_enabled, created_by)
+INSERT INTO journal_setting (scope, scope_key, ai_enabled, created_by)
 VALUES ('ADMIN', 'GLOBAL', 1, 'system');

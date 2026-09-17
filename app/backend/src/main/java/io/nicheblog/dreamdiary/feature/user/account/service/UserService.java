@@ -224,6 +224,8 @@ public class UserService
     @Transactional
     public ServiceResponse modify(final UserDto modifyDto) throws Exception {
         final UserEntity modifyEntity = this.getDtlEntity(modifyDto.getKey());
+        // 수정 전처리(dto): allowed-IP 정규화
+        this.preModify(modifyDto);
         mapstruct.updateFromDto(modifyDto, modifyEntity);
         this.applyRoleIds(modifyEntity);
 

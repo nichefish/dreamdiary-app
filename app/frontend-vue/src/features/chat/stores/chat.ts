@@ -1,15 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
-import ApiService from "@metronic/core/services/ApiService";
-
-interface AjaxResponse<T = unknown> {
-  rslt?: boolean;
-  msg?: string;
-  message?: string;
-  rsltObj?: T;
-  rsltList?: T[];
-}
+import { apiGet, apiPost, apiPatch, apiDelete, assertOk } from "@/shared/api/client";
+import type { AjaxResponse } from "@/shared/api/types";
 
 export const MEMORY_LIMIT_OPTIONS = [25, 50, 100, 200] as const;
 export const DEFAULT_MEMORY_LIMIT = 50;
@@ -73,16 +65,6 @@ export interface ChatMessage {
 
 type StompHeaders = Record<string, string>;
 
-function getResponseMessage(data: AjaxResponse): string {
-  return data.message || data.msg || "Request failed.";
-}
-
-function assertSuccess<T>(data: AjaxResponse<T>): AjaxResponse<T> {
-  if (!data.rslt) {
-    throw new Error(getResponseMessage(data));
-  }
-  return data;
-}
 
 function isAssistantMessage(message: ChatMessage): boolean {
   const role = (message.role || "").toUpperCase();
@@ -305,26 +287,26 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   async function fetchSetting(): Promise<void> {
-    const { data } = await ApiService.get("/chat/settings");
-    const response = assertSuccess<ChatSetting>(data);
-    if (response.rsltObj) applySetting(response.rsltObj);
+    const res = await apiGet<ChatSetting>("/chat/settings");
+    assertOk(res, "Request failed.");
+    if (res.rsltObj) applySetting(res.rsltObj);
   }
 
   async function updateSetting(nextSetting: ChatSetting): Promise<void> {
     isSettingSaving.value = true;
     try {
-      const { data } = await axios.patch("/chat/settings", nextSetting);
-      const response = assertSuccess<ChatSetting>(data);
-      if (response.rsltObj) applySetting(response.rsltObj);
+      const res = await apiPatch<ChatSetting>("/chat/settings", nextSetting);
+      assertOk(res, "Request failed.");
+      if (res.rsltObj) applySetting(res.rsltObj);
     } finally {
       isSettingSaving.value = false;
     }
   }
 
   async function fetchSessions(): Promise<void> {
-    const { data } = await ApiService.get("/chat/sessions");
-    const response = assertSuccess<ChatSession>(data);
-    sessions.value = response.rsltList || [];
+    const res = await apiGet<ChatSession>("/chat/sessions");
+    assertOk(res, "Request failed.");
+    sessions.value = res.rsltList || [];
     if (!activeSessionId.value && sessions.value.length > 0) {
       await selectSession(sessions.value[0].id);
     }
@@ -333,9 +315,9 @@ export const useChatStore = defineStore("chat", () => {
   async function createSession(): Promise<ChatSession | null> {
     isSessionLoading.value = true;
     try {
-      const { data } = await ApiService.post("/chat/sessions", {});
-      const response = assertSuccess<ChatSession>(data);
-      const session = response.rsltObj || null;
+      const res = await apiPost<ChatSession>("/chat/sessions", {});
+      assertOk(res, "Request failed.");
+      const session = res.rsltObj || null;
       if (!session) return null;
 
       sessions.value = [
@@ -354,8 +336,8 @@ export const useChatStore = defineStore("chat", () => {
 
     isSessionLoading.value = true;
     try {
-      const { data } = await ApiService.delete(`/chat/sessions/${sessionId}`);
-      assertSuccess(data);
+      const res = await apiDelete(`/chat/sessions/${sessionId}`);
+      assertOk(res, "Request failed.");
 
       sessions.value = sessions.value.filter((item) => item.id !== sessionId);
       if (activeSessionId.value !== sessionId) return;
@@ -376,11 +358,11 @@ export const useChatStore = defineStore("chat", () => {
       return;
     }
 
-    const { data } = await ApiService.get(
+    const res = await apiGet<ChatMessage>(
       `/chat/sessions/${sessionId}/messages`
     );
-    const response = assertSuccess<ChatMessage>(data);
-    messages.value = response.rsltList || [];
+    assertOk(res, "Request failed.");
+    messages.value = res.rsltList || [];
   }
 
   async function selectSession(sessionId: number): Promise<void> {
@@ -516,9 +498,9 @@ function isDefaultSessionTitle(title: string | undefined | null): boolean {
     const trimmed = title.trim();
     if (!sessionId || !trimmed) return null;
 
-    const { data } = await axios.patch(`/chat/sessions/${sessionId}`, { title: trimmed });
-    const response = assertSuccess<ChatSession>(data);
-    const updated = response.rsltObj || null;
+    const res = await apiPatch<ChatSession>(`/chat/sessions/${sessionId}`, { title: trimmed });
+    assertOk(res, "Request failed.");
+    const updated = res.rsltObj || null;
     if (!updated) return null;
 
     sessions.value = sessions.value.map((item) =>

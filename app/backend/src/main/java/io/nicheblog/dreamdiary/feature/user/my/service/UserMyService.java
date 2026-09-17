@@ -13,13 +13,12 @@ import io.nicheblog.dreamdiary.feature.user.account.service.UserPasswordHistoryS
 import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.feature.user.my.model.UserMyUpdateRequest;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -107,7 +106,7 @@ public class UserMyService {
 
         // password 일치여부 체크
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
+            throw new BusinessException("user.pw.mismatch");
         }
         this.validatePasswordResetTokenIfNeeded(retrievedEntity, param.getPasswordToken());
         userPasswordHistoryService.validateReusablePassword(retrievedEntity, newPw);
@@ -138,7 +137,7 @@ public class UserMyService {
 
         // 1. 내 비밀번호가 맞는지부터 확인
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
+            throw new BusinessException("user.pw.mismatch");
         }
 
         return true;
@@ -172,7 +171,7 @@ public class UserMyService {
 
         // 1. 내 비밀번호가 맞는지부터 확인
         if (!passwordEncoder.matches(currPw, retrievedEntity.getPassword())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
+            throw new BusinessException("user.pw.mismatch");
         }
         // 2. 맞으면 비밀번호 업데이트
         userPasswordHistoryService.validateReusablePassword(retrievedEntity, newPw);
@@ -238,7 +237,7 @@ public class UserMyService {
         if (!"Y".equals(user.acntStus.getNeedsPasswordReset())) return;
 
         if (StringUtils.isBlank(passwordToken) || StringUtils.isBlank(user.acntStus.getPasswordResetTokenHash())) {
-            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
+            throw new BusinessException("user.pw.mismatch");
         }
         if (!this.isPasswordResetTokenWindowValid(user.acntStus.getPasswordResetTokenIssuedAt())) {
             throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
@@ -249,7 +248,7 @@ public class UserMyService {
                 hashed.getBytes(StandardCharsets.UTF_8),
                 user.acntStus.getPasswordResetTokenHash().getBytes(StandardCharsets.UTF_8)
         )) {
-            throw new BadCredentialsException(MessageUtils.getMessage("user.pw.mismatch"));
+            throw new BusinessException("user.pw.mismatch");
         }
     }
 

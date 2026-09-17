@@ -1,128 +1,96 @@
-import { useCallback } from "react";
-import {
-  Pressable,
-  RefreshControl,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { useCallback, useState } from "react";
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import type { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import type { RouteProp } from "@react-navigation/native";
-import { AddEntryFab, JournalDayList } from "../components/journal/JournalDayList";
-import { QuickCapturePanel } from "../components/QuickCapturePanel";
-import { useJournalDay } from "../hooks/useJournalDay";
+import { JournalDailyView } from "../components/journal/JournalDailyView";
+import { JournalWeeklyView } from "../components/journal/JournalWeeklyView";
+import { JournalMonthlyView } from "../components/journal/JournalMonthlyView";
 import { useSelectedJournalDate } from "../hooks/useSelectedJournalDate";
 import type { MainTabParamList } from "../navigation/AppNavigator";
 import { colors } from "../theme/colors";
-import { formatDateDots } from "../utils/date";
 
 type TodayNav = BottomTabNavigationProp<MainTabParamList, "Today">;
 type TodayRoute = RouteProp<MainTabParamList, "Today">;
 
+/** 날짜 조회 보기 모드 */
+type ViewMode = "daily" | "weekly" | "monthly";
+
+const VIEW_MODES: Array<{ id: ViewMode; label: string }> = [
+  { id: "daily", label: "일" },
+  { id: "weekly", label: "주" },
+  { id: "monthly", label: "월" }
+];
+
+/**
+ * Today 탭 — 날짜 조회 허브. 일/주 토글로 일별·주별 조회 뷰를 전환한다.
+ * 달력·태그 탭에서 `{ date }` 로 진입하면 일별 모드로 전환해 해당 날짜를 보여준다.
+ */
 export function TodayScreen() {
   const navigation = useNavigation<TodayNav>();
   const route = useRoute<TodayRoute>();
   const { selectedDate, setSelectedDate, shiftDay, goToToday, atToday } = useSelectedJournalDate();
-  const {
-    loading,
-    refreshing,
-    error,
-    chapters,
-    topDreams,
-    hasAny,
-    load,
-    onRefresh
-  } = useJournalDay(selectedDate);
+  const [viewMode, setViewMode] = useState<ViewMode>("daily");
 
-  // 달력·태그 탭 등에서 `{ date }` 로 진입 시 선택일 동기화 (1회 소비)
+  // 달력·태그 탭 등에서 `{ date }` 로 진입 시 일별 모드로 전환 + 선택일 동기화 (1회 소비)
   useFocusEffect(
     useCallback(() => {
       const paramDate = route.params?.date;
       if (!paramDate) return;
       setSelectedDate(paramDate);
+      setViewMode("daily");
       navigation.setParams({ date: undefined });
     }, [navigation, route.params?.date, setSelectedDate])
   );
 
-  function handleGoToToday() {
-    if (goToToday()) {
-      void load(true);
-    }
-  }
-
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
-        }
-      >
-        <View style={styles.header}>
-          <Text style={styles.kicker}>DreamDiary</Text>
-          <Text style={styles.title}>오늘</Text>
-
-          <View style={styles.dateNav}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="이전 날"
-              onPress={() => shiftDay(-1)}
-              style={styles.dateNavButton}
-            >
-              <Text style={styles.dateNavArrow}>‹</Text>
-            </Pressable>
-
-            <Pressable
-              accessibilityRole="button"
-              onPress={handleGoToToday}
-              style={styles.dateLabelWrap}
-            >
-              <Text style={styles.dateLabel}>{formatDateDots(selectedDate)}</Text>
-              {!atToday && <Text style={styles.dateTodayHint}>오늘로</Text>}
-            </Pressable>
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="다음 날"
-              disabled={atToday}
-              onPress={() => shiftDay(1)}
-              style={[styles.dateNavButton, atToday && styles.dateNavButtonDisabled]}
-            >
-              <Text style={[styles.dateNavArrow, atToday && styles.dateNavArrowDisabled]}>›</Text>
-            </Pressable>
-          </View>
+      <View style={styles.topBar}>
+        <Text style={styles.kicker}>DreamDiary</Text>
+        <View style={styles.segment}>
+          {VIEW_MODES.map((item) => {
+            const active = item.id === viewMode;
+            return (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                key={item.id}
+                onPress={() => setViewMode(item.id)}
+                style={[styles.segmentButton, active && styles.segmentButtonActive]}
+              >
+                <Text style={[styles.segmentText, active && styles.segmentTextActive]}>
+                  {item.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
+      </View>
 
-        {atToday && (
-          <QuickCapturePanel
-            dateStr={selectedDate}
-            onSaved={() => { void load(true); }}
-          />
-        )}
-
-        <JournalDayList
-          loading={loading}
-          error={error}
-          hasAny={hasAny}
-          chapters={chapters}
-          topDreams={topDreams}
-          emptyText={atToday ? "오늘은 아직 기록이 없습니다." : "이 날의 기록이 없습니다."}
-          emptyHint={atToday ? "「빠른 기록」 또는 + 버튼으로 추가하세요." : undefined}
+      {viewMode === "daily" ? (
+        <JournalDailyView
+          selectedDate={selectedDate}
+          atToday={atToday}
+          shiftDay={shiftDay}
+          goToToday={goToToday}
         />
-      </ScrollView>
-
-      <AddEntryFab date={selectedDate} />
+      ) : viewMode === "weekly" ? (
+        <JournalWeeklyView initialDate={selectedDate} />
+      ) : (
+        <JournalMonthlyView initialDate={selectedDate} />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { flexGrow: 1, padding: 20, gap: 16, paddingBottom: 88 },
-  header: { paddingTop: 8, gap: 8 },
+  topBar: {
+    paddingTop: 8,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    gap: 10
+  },
   kicker: {
     color: colors.accent,
     fontSize: 12,
@@ -130,41 +98,22 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
     textTransform: "uppercase"
   },
-  title: { color: colors.text, fontSize: 26, fontWeight: "800" },
-  dateNav: {
+  segment: {
     flexDirection: "row",
+    gap: 6,
+    backgroundColor: colors.surface,
+    borderRadius: 8,
+    padding: 4,
+    alignSelf: "flex-start"
+  },
+  segmentButton: {
+    minWidth: 56,
     alignItems: "center",
-    gap: 4
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14
   },
-  dateNavButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6
-  },
-  dateNavButtonDisabled: {
-    opacity: 0.3
-  },
-  dateNavArrow: {
-    fontSize: 28,
-    color: colors.accent,
-    lineHeight: 32,
-    fontWeight: "300"
-  },
-  dateNavArrowDisabled: {
-    color: colors.muted
-  },
-  dateLabelWrap: {
-    flex: 1,
-    alignItems: "center",
-    gap: 2
-  },
-  dateLabel: {
-    color: colors.text,
-    fontSize: 17,
-    fontWeight: "700"
-  },
-  dateTodayHint: {
-    color: colors.accent,
-    fontSize: 11,
-    fontWeight: "600"
-  }
+  segmentButtonActive: { backgroundColor: colors.text },
+  segmentText: { color: colors.secondaryText, fontSize: 14, fontWeight: "700" },
+  segmentTextActive: { color: colors.onDark }
 });

@@ -48,7 +48,7 @@
   - `GET /api/admin/ollama/health` 상태를 AI 관리 탭의 Embedding 섹션 상단에 표시한다.
   - 탭 진입·전환 시 embedding/entity stats·Ollama health·RAG settings를 조회한다. Embedding/Entity 카드 안의 Refresh는 해당 섹션만 재조회한다.
   - AI 관리 탭은 AI Embedding Backfill / Entity Queue Backfill 카드를 5:5 컬럼으로 배치한다.
-  - 서버 기동 시 `app.journal.embedding.sync-on-startup`(기본 `true`)이고 `embeddingEnabled`가 ON이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`). OFF면 기동 sync·Admin Sync Entries·임베딩 워커를 실행하지 않고 Sync Entries/Requeue Failed 버튼을 비활성화한다.
+  - 서버 기동 시 `app.journal.embedding.sync-on-startup`(기본 `true`)이고 `aiEnabled`가 ON이면 Admin Sync Entries와 동일한 embedding queue sync job을 자동 enqueue (`DreamdiaryInitializer`). OFF면 기동 sync·Admin Sync Entries·임베딩 워커와 개체(entity) 카탈로그 enqueue·스케줄러·워커를 함께 실행하지 않고(양 파이프라인은 `aiEnabled` 공통 게이트를 큐 서비스 진입점에서 적용) Sync Entries/Requeue Failed 버튼을 비활성화한다.
   - `JOURNAL_ENTRY_EMBEDDING_SYNC` 실행 스레드의 p6spy statement SQL은 DEBUG로 남긴다. 요청 스레드 SQL은 INFO를 유지한다.
   - 전수 sync는 챕터와 기존 임베딩 행을 배치 조회하고 진행 하트비트는 50건마다 갱신한다. 단건 적재 경로의 flush 계약은 그대로다.
   - `total` = active journal entry count (Entries baseline)
@@ -201,6 +201,7 @@
 - 목록 관리 열의 ⋯ 컨텍스트 메뉴는 저널 일자·게시판 목록과 동일하게 Metronic `data-kt-menu` + `data-kt-menu-overflow="true"`를 쓴다. 목록 렌더 후 `reinitMetronicAfterDom()`으로 재바인딩한다. 트리거 `@click.stop` 금지(KTMenu body 위임); 행 클릭이 있으면 `isMetronicMenuEventTarget` 가드. 본인 계정(isMe) 삭제는 disabled다. **변경 전**: Bootstrap `strategy:fixed` 땜빵(메뉴 관리와 동일하다는 주석은 사실이 아니었다).
 - 계정 목록 조회/검색/권한 필터
 - 계정 상세/등록/수정 (프로필·고용정보 서브폼 포함)
+- 계정 등록/수정 저장 시 허용 IP 목록이 비어 있으면 `useAllowedIpYn`을 `N`으로, 허용 IP 목록을 빈 값으로 정규화해 저장한다(canonical `preModify` 계약, 등록·수정 공통). ✓
 - 계정 삭제 (본인 계정 삭제 불가)
 - 비밀번호 초기화. 초기화 전 비밀번호 해시는 `user_password_history`에 기록되어 `auth_policy.password_history_count` 재사용 제한에 포함된다.
 - 중복 체크 (아이디/이메일)
@@ -219,9 +220,9 @@
 - 본문 상단 목록/통계 전환 버튼 표시. 화면 설명은 메뉴의 `menuDescription`으로 breadcrumb 하단에 표시
 - 운영 로그 목록/검색/상세 모달
 - `/admin/log` → 전체 로그 관측 뷰 (`isStatsView = false`)
-- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**(레거시 `log_stats_user_list` 기본 노출 동일). 통계 뷰 진입 시 조회. 통계 조회 실패(`store.error`)는 정상 빈 통계와 구분하며 직전 성공 통계를 유지한다
+- `/admin/log/stats-user` → 사용자별 통계 뷰 (`isStatsView = true`) — 로그인 사용자별 + 비로그인 구분별 활동 건수 목록(로그 수 내림차순·순번 부여). 기간 미지정 시 **오늘 통계**. 통계 뷰 진입 시 조회. 통계 조회 실패(`store.error`)는 정상 빈 통계와 구분하며 직전 성공 통계를 유지한다
 - 로그 목록·검색·상세의 URL·URI·Trace·IP·Referer와 응답시간 `ms` 단위는 현재 locale의 공통 기술 카탈로그를 사용하며 기술 표기 자체는 한·영에서 동일하게 유지한다.
-- API: `GET /api/logs`, `GET /api/logs/{id}`, `GET /api/logs/stats-user` (`LogStatsUserQueryService` — 레거시 서비스를 현행 flat 패키지로 복원, 응답 `rsltObj = { userList, anonymousList }`)
+- API: `GET /api/logs`, `GET /api/logs/{id}`, `GET /api/logs/stats-user` (`LogStatsUserQueryService`, 응답 `rsltObj = { userList, anonymousList }`)
 
 ---
 

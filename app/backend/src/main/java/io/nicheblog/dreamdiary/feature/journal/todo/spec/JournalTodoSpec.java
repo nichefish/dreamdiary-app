@@ -37,8 +37,7 @@ public class JournalTodoSpec
             final CriteriaBuilder builder
     ) {
         final List<Order> order = new ArrayList<>();
-        order.add(builder.desc(root.get("yy")));
-        order.add(builder.asc(root.get("mnth")));
+        // 활성 할일은 월 무관 전역 순번(sortOrder) 우선, 동순번은 id 오름차순.
         order.add(builder.asc(root.get("sortOrder")));
         order.add(builder.asc(root.get("id")));
         query.orderBy(order);

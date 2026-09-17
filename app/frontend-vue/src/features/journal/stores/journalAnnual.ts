@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import { apiGet, apiPost, apiDelete } from "@/shared/api/client";
 import { assertAuthenticatedBeforeModal } from "@/shared/auth/sessionPing";
 import { swalConfirm, swalAlert, swalRequestError, swalAjaxResult } from "@/shared/utils/swal";
 import { useLocaleStore } from "@/shared/i18n/stores/locale";
@@ -204,8 +204,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     loading.value = true;
     error.value = null;
     try {
-      const res = await axios.get("/api/journal/annuals");
-      annualSourceList.value = res.data?.rsltList ?? [];
+      const res = await apiGet<JournalAnnualDto>("/api/journal/annuals");
+      annualSourceList.value = res.rsltList ?? [];
     } catch {
       error.value = t("journal.annual.list.load.failure");
       annualSourceList.value = [];
@@ -221,8 +221,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
   async function fetchTotal() {
     totalLoading.value = true;
     try {
-      const res = await axios.get("/api/journal/annual/total");
-      totalAnnual.value = res.data?.rsltObj ?? null;
+      const res = await apiGet<JournalAnnualDto>("/api/journal/annual/total");
+      totalAnnual.value = res.rsltObj ?? null;
     } catch {
       totalAnnual.value = null;
     } finally {
@@ -289,20 +289,20 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     }
     syncing.value = true;
     try {
-      const res = await axios.post("/api/journal/annual/make-total");
-      if (res.data?.rslt) {
+      const res = await apiPost("/api/journal/annual/make-total");
+      if (res.rslt) {
         await swalAjaxResult({
           rslt: true,
-          message: res.data?.message,
+          message: res.message,
           successFallback: t("common.result.processed"),
         });
         await Promise.all([fetchList(), fetchTotal()]);
         return true;
       }
-      console.warn("[JournalAnnual] makeTotalAnnual failed", res.data);
+      console.warn("[JournalAnnual] makeTotalAnnual failed", res);
       void swalAjaxResult({
         rslt: false,
-        message: res.data?.message,
+        message: res.message,
         failureFallback: t("common.result.failure"),
       });
       return false;
@@ -325,8 +325,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     registModel.value = null;
     try {
       registOpen.value = true;
-      const res = await axios.get(`/api/journal/annual/${yy}`);
-      const dto: JournalAnnualDto = res.data?.rsltObj ?? {};
+      const res = await apiGet<JournalAnnualDto>(`/api/journal/annual/${yy}`);
+      const dto: JournalAnnualDto = res.rsltObj ?? {};
       registModel.value = {
         id: dto.id,
         yy: dto.yy,
@@ -365,16 +365,16 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       fd.append("content", registModel.value.content ?? "");
       fd.append("tag.tagListStr", registModel.value.tag?.tagListStrWithCtgr ?? "");
 
-      const res = await axios.post(
+      const res = await apiPost(
         `/api/journal/annual/${registModel.value.yy}`,
         fd,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      if (res.data?.rslt) {
+      if (res.rslt) {
         closeRegist();
         await swalAjaxResult({
           rslt: true,
-          message: res.data?.message,
+          message: res.message,
           successFallback: wasModify ? t("common.result.modified") : t("common.result.registered"),
         });
         void fetchList();
@@ -382,7 +382,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       }
       void swalAjaxResult({
         rslt: false,
-        message: res.data?.message,
+        message: res.message,
         failureFallback: t("common.result.failure"),
       });
       return false;
@@ -405,8 +405,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     detailLoading.value = true;
     annualDetail.value = null;
     try {
-      const res = await axios.get(`/api/journal/annual/${yy}`);
-      annualDetail.value = res.data?.rsltObj ?? null;
+      const res = await apiGet<JournalAnnualDto>(`/api/journal/annual/${yy}`);
+      annualDetail.value = res.rsltObj ?? null;
     } catch {
       annualDetail.value = null;
     } finally {
@@ -438,15 +438,15 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       const path = section === "DIARY"
         ? `/api/journal/annual/${yy}/diaries`
         : `/api/journal/annual/${yy}/dreams`;
-      const res = await axios.get(path, {
+      const res = await apiGet<AnnualEntryDto>(path, {
         params: {
           showImprtc: showImprtc.value,
           showRefrnc: showRefrnc.value,
           ...getEntryFilterParams(section),
         },
       });
-      if (section === "DIARY") diaryEntries.value = res.data?.rsltList ?? [];
-      else dreamEntries.value = res.data?.rsltList ?? [];
+      if (section === "DIARY") diaryEntries.value = res.rsltList ?? [];
+      else dreamEntries.value = res.rsltList ?? [];
     } catch (e: unknown) {
       console.error("[journalAnnual] fetchEntries failed", { yy, section }, e);
       entriesError.value = t("journal.annual.entries.load.failure");
@@ -470,14 +470,14 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     try {
       if (section === "DIARY") {
         const [dayRes, diaryRes] = await Promise.all([
-          axios.get(`/api/journal/annual/${yy}/tags`, { params: { type: "DAY" } }),
-          axios.get(`/api/journal/annual/${yy}/tags`, { params: { type: "DIARY" } }),
+          apiGet<AnnualTagItem>(`/api/journal/annual/${yy}/tags`, { params: { type: "DAY" } }),
+          apiGet<AnnualTagItem>(`/api/journal/annual/${yy}/tags`, { params: { type: "DIARY" } }),
         ]);
-        tagRows.value.DAY = dayRes.data?.rsltList ?? [];
-        tagRows.value.DIARY = diaryRes.data?.rsltList ?? [];
+        tagRows.value.DAY = dayRes.rsltList ?? [];
+        tagRows.value.DIARY = diaryRes.rsltList ?? [];
       } else {
-        const dreamRes = await axios.get(`/api/journal/annual/${yy}/tags`, { params: { type: "DREAM" } });
-        tagRows.value.DREAM = dreamRes.data?.rsltList ?? [];
+        const dreamRes = await apiGet<AnnualTagItem>(`/api/journal/annual/${yy}/tags`, { params: { type: "DREAM" } });
+        tagRows.value.DREAM = dreamRes.rsltList ?? [];
       }
     } catch {
       /* 태그 행 실패는 조용히 무시 (목록 렌더에 영향 없음) */
@@ -544,8 +544,8 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     reviewRegistModel.value = null;
     try {
       reviewRegistOpen.value = true;
-      const res = await axios.get(`/api/journal/annual/review/${id}`);
-      const dto: JournalAnnualReviewDto = res.data?.rsltObj ?? {};
+      const res = await apiGet<JournalAnnualReviewDto>(`/api/journal/annual/review/${id}`);
+      const dto: JournalAnnualReviewDto = res.rsltObj ?? {};
       reviewRegistModel.value = {
         id: dto.id,
         journalAnnualId: dto.journalAnnualId,
@@ -588,14 +588,14 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       const url = model.id != null
         ? `/api/journal/annual/review/${model.id}`
         : "/api/journal/annual/reviews";
-      const res = await axios.post(url, fd, {
+      const res = await apiPost(url, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (res.data?.rslt) {
+      if (res.rslt) {
         closeReviewRegist();
         await swalAjaxResult({
           rslt: true,
-          message: res.data?.message,
+          message: res.message,
           successFallback: model.id != null ? t("common.result.modified") : t("common.result.registered"),
         });
         /* 상세 재조회 — 리뷰 목록이 detail DTO 에 포함되어 있어 refetch 로 갱신한다. */
@@ -604,7 +604,7 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
       }
       void swalAjaxResult({
         rslt: false,
-        message: res.data?.message,
+        message: res.message,
         failureFallback: t("common.result.failure"),
       });
       return false;
@@ -626,18 +626,18 @@ export const useJournalAnnualStore = defineStore("journalAnnual", () => {
     const confirmed = await swalConfirm(t("journal.annual.review.delete.confirm"));
     if (!confirmed) return;
     try {
-      const res = await axios.delete(`/api/journal/annual/review/${id}`);
-      if (res.data?.rslt) {
+      const res = await apiDelete(`/api/journal/annual/review/${id}`);
+      if (res.rslt) {
         await swalAjaxResult({
           rslt: true,
-          message: res.data?.message,
+          message: res.message,
           successFallback: t("common.result.deleted"),
         });
         if (yy) void fetchDetail(yy);
       } else {
         void swalAjaxResult({
           rslt: false,
-          message: res.data?.message,
+          message: res.message,
           failureFallback: t("journal.annual.review.delete.failure"),
         });
       }

@@ -398,7 +398,7 @@ Modes:
 | `SUMMARY` | Summarize a set of records | wider top-K, compact source lines |
 | `SYNTHESIS` | Interpret patterns, meanings, symbols, emotional arcs, whole context | widest top-K, lower vector threshold, compact source lines |
 
-First-pass intent detection lives in `RagIntentClassifier` (pure rules; `ChatOrchestrator#detectRagIntent` supplies the person-about flag and delegates to `RagSearchFacade#detectIntent`). Priority order:
+First-pass intent detection lives in `RagIntentClassifier` (pure rules; `RagContextService#detectIntent` supplies the person-about flag and delegates to `RagSearchFacade#detectIntent`). Priority order:
 
 1. Person-about lookup (`isPersonAboutLookupQuery`) → `SYNTHESIS`
 2. Explicit search cues (`찾아줘`, `검색해`, `어디에 있`, …) → `LOOKUP` (beats synthesis/summary keywords)
@@ -419,7 +419,7 @@ Detection requires all of:
 
 - a extracted person focus token (for example `민수` from `민수님`)
 - an explicit first-person **subject** marker: `나는`, `내가`, `나의`, `나한테`, or `나에게` — **not** locative scope alone (`내 대화`, `내 기록`)
-- an attitude hint such as `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, `어떤 느낌`, `어떻게 느끼`, or `느끼고` (all now routed to `SYNTHESIS`/Path C by `detectRagIntent` + `PERSON_FOCUS_HINTS`)
+- an attitude hint such as `어떻게 생각`, `생각하고`, `어떤 감정`, `어떤 마음`, `어떤 느낌`, `어떻게 느끼`, or `느끼고` (all now routed to `SYNTHESIS`/Path C by `RagContextService#detectIntent` + `PERSON_FOCUS_HINTS`)
 - **not** a person-appearance query (`등장`, `나타나`, `보여`, or `내 대화/내 기록` scope without `나는/내가`)
 
 Example (stance): `나는 민수님을 어떻게 생각하고 있니?`
@@ -449,7 +449,7 @@ When `shouldUseRulePrimaryPersonSynthesisResponse` is true — `SYNTHESIS` inten
 4. If the LLM answer passes guards → `responseMode=PERSON_SYNTHESIS_HYBRID`.
 5. If guards still fail or no tagged sources exist → `buildRulePrimaryPersonSynthesisResponse` and `responseMode=RULE_PRIMARY`. `metadataJson.guardDetail` records the **first** guard failure code; when a retry still fails, `metadataJson.retryGuardDetail` records the retry failure code (chat UI shows `guard: … · retry: …`). Rule-primary fallbacks use the same snapshot budget as hybrid for the query type (stance: up to **20** snippets / 400 chars (tag-only RAG **50**); others: **3** / 100 chars). Meaning/appearance rule-primary label the evidence block `근거 장면:`; **stance rule-primary now uses inline prose snippets** (`이런 장면들이 그렇게 느끼게 했어: …`, up to 3) instead of a labeled block.
 
-`isPersonMeaningQuery` also matches person-about questions when a person token is extracted and the query contains hints such as `에 대해`, `뭘 말해`, `알려줘`. Those questions route to `SYNTHESIS` via `detectRagIntent`.
+`isPersonMeaningQuery` also matches person-about questions when a person token is extracted and the query contains hints such as `에 대해`, `뭘 말해`, `알려줘`. Those questions route to `SYNTHESIS` via `RagContextService#detectIntent`.
 
 Appearance / meaning question types use structured rule-primary fallback shapes; **attitude uses rich-trust prose** in both hybrid and fallback. In all cases the LLM is asked to write natural interpretive prose grounded in the snapshot.
 
@@ -489,7 +489,7 @@ When tag-only retrieval returns zero rows, `RagContextService` falls back to mer
 
 When tag-only retrieval finds zero matches, the RAG context states that no tagged records exist and deterministic fallback tells the user to attach the person tag first. Body-only mentions are not used as a substitute.
 
-The entity catalog may still be consulted **only** to expand alias tokens (`민수` -> canonical `#김민수`) and to populate `personFocus.entitySummary` for **canonical display labels** and chat metadata (`canonicalLabel`, `surfaceForms`). Catalog-wide role axes, content-kind counts, and linked entry IDs must not drive person-meaning **aggregation** when tag-only RAG sources exist; `buildPersonMeaningSnapshot` uses tagged-source timeline/kind data in that case (`isTagOnlyPersonMeaningResults`).
+The entity catalog may still be consulted **only** to expand alias tokens (`민수` -> canonical `#김민수`) and to populate `personFocus.entitySummary` for **canonical display labels** and chat metadata (`canonicalLabel`, `surfaceForms`). Catalog-wide role axes, content-kind counts, and linked entry IDs must not drive person-meaning **aggregation** when tag-only RAG sources exist; `PersonSnapshotService#build` uses tagged-source timeline/kind data in that case (`isTagOnlyPersonMeaningResults`).
 
 The `PERSON_FOCUS` / `PERSON_MEANING_SCAFFOLD` context-text blocks have been **removed** (convergence, F4): whenever `personFocus` resolves, the question is handled by Path C, whose `SNAPSHOT` prompt block carries the same aggregation material — and Path C never consumes `RagContext.text`. The legacy prompt path (which does consume `RagContext.text`) can only run with `personFocus == null`, so the blocks could never render there. The anti-bucket rule ("업무 협업"/"조직 관계" without cited tags or snippets) is enforced by the Path C snapshot prompt + hollow guards, and by the legacy SYNTHESIS intent prompt wording.
 

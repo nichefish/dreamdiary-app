@@ -24,18 +24,17 @@ public interface JournalTodoRepository
         extends BaseStreamRepository<JournalTodoEntity, Integer> {
 
     /**
-     * 해당 일자에서 꿈 마지막 인덱스 조회
+     * 사용자의 마지막 할일 순번 조회 (월 무관 전역).
      *
-     * @param yy 년도
-     * @param mnth 월
-     * @return {@link Optional} -- 해당 일자에서 꿈의 마지막 인덱스
+     * @param createdBy 등록자 ID
+     * @return {@link Optional} -- 해당 사용자의 최대 sortOrder
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT MAX(todo.sortOrder) " +
             "FROM JournalTodoEntity todo " +
-            "WHERE todo.yy = :yy AND todo.mnth = :mnth")
-    Optional<Integer> findLastIndexByYyMnth(final @Param("yy") Integer yy, final @Param("mnth") Integer mnth);
+            "WHERE todo.createdBy = :createdBy")
+    Optional<Integer> findLastIndexByCreatedBy(final @Param("createdBy") String createdBy);
 }
 
 

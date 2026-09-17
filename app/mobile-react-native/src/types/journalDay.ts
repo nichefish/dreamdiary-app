@@ -48,3 +48,16 @@ export interface JournalDay {
 export function dreamEntriesFromDay(day: JournalDay | null | undefined): JournalEntry[] {
   return (day?.journalDreamSectionList ?? []).flatMap((section) => section.entries ?? []);
 }
+
+/**
+ * 해당 일자에 실제 엔트리(일기·꿈·노트 또는 꿈 섹션)가 하나라도 있는지 판별한다.
+ * @param day 조회된 일자 DTO
+ */
+export function dayHasEntries(day: JournalDay): boolean {
+  if (dreamEntriesFromDay(day).length > 0) return true;
+  return day.journalChapterList?.some((ch) =>
+    (ch.journalDiaryList?.length ?? 0) > 0 ||
+    (ch.journalDreamList?.length ?? 0) > 0 ||
+    (ch.journalNoteList?.length ?? 0) > 0
+  ) ?? false;
+}

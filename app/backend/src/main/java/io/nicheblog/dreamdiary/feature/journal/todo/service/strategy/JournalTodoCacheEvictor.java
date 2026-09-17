@@ -35,10 +35,7 @@ public class JournalTodoCacheEvictor
         try {
             final String username = param.getCreatedBy();
             final Integer id = param.getId();
-            final Integer yy = param.getYy();
-            final Integer mnth = param.getMnth();
-            // journal_todo
-            this.evictMyYyMnthCache(username, "journalTodoListByUser", yy, mnth);
+            // journal_todo :: 활성 리스트는 캐시하지 않으므로(매 조회 신선) 상세·태그 캐시만 제거한다.
             EhCacheUtils.evictUserCacheByKey("journalTodoDetailDtoByUser", username, id);
             // 태그 캐시 처리
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JOURNAL_TODO");

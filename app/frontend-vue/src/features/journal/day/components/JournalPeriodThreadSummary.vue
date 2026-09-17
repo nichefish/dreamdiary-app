@@ -62,6 +62,12 @@ const props = defineProps<{ query?: JournalPeriodThreadSummaryQuery | null }>();
 
 const periodQuery = computed<JournalPeriodThreadSummaryQuery | null>(() => {
   if (props.query) return props.query;
+  if (journalStore.viewType === "DAILY" && journalStore.dailyStdrdDt) {
+    return {
+      viewType: "DAILY",
+      stdrdDt: journalStore.dailyStdrdDt,
+    };
+  }
   if (journalStore.viewType === "WEEKLY" && journalStore.weekStartDt) {
     return {
       viewType: "WEEKLY",
@@ -81,6 +87,7 @@ const periodQuery = computed<JournalPeriodThreadSummaryQuery | null>(() => {
 const periodRequestKey = computed(() => {
   const query = periodQuery.value;
   if (!query) return "";
+  if (query.viewType === "DAILY") return `DAILY:${query.stdrdDt}`;
   if (query.viewType === "WEEKLY") return `WEEKLY:${query.weekStartDt}`;
   if (query.viewType === "ANNUAL") return `ANNUAL:${query.yy}`;
   return `LIST:${query.yy}:${query.mnth}`;
@@ -88,6 +95,7 @@ const periodRequestKey = computed(() => {
 
 const summaryViewType = computed(() => periodQuery.value?.viewType ?? null);
 const periodLabel = computed(() => {
+  if (summaryViewType.value === "DAILY") return t("journal.thread.period-summary.daily");
   if (summaryViewType.value === "LIST") return t("journal.thread.period-summary.monthly");
   if (summaryViewType.value === "ANNUAL") return t("journal.thread.period-summary.annual");
   return t("journal.thread.period-summary.weekly");

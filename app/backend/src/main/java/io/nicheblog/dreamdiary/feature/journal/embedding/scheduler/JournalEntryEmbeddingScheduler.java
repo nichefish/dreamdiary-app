@@ -30,8 +30,8 @@ public class JournalEntryEmbeddingScheduler {
             initialDelayString = "${app.journal.embedding.worker.initial-delay-ms:15000}"
     )
     public void processPendingEmbeddings() {
-        if (!journalSettingService.isEmbeddingEnabled()) {
-            log.debug("Journal entry embedding scheduler skipped. reason=embeddingDisabled");
+        if (!journalSettingService.isAiEnabled()) {
+            log.debug("Journal entry embedding scheduler skipped. reason=aiDisabled");
             return;
         }
 

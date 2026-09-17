@@ -47,7 +47,7 @@ class JournalEntryEmbeddingSchedulerTest {
 
     @Test
     void processPendingEmbeddingsSkipsWhenEmbeddingDisabled() {
-        when(journalSettingService.isEmbeddingEnabled()).thenReturn(false);
+        when(journalSettingService.isAiEnabled()).thenReturn(false);
 
         scheduler.processPendingEmbeddings();
 

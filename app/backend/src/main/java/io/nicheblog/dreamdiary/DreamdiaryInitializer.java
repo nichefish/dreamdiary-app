@@ -223,15 +223,15 @@ public class DreamdiaryInitializer
      *
      * <p>Admin Sync Entries와 동일한 {@link JournalEntryEmbeddingSyncJobService#startSync()} 경로를 사용한다.
      * 이미 RUNNING이면 중복 시작하지 않는다.
-     * {@code embeddingEnabled=false}이면 enqueue하지 않는다.</p>
+     * {@code aiEnabled=false}이면 enqueue하지 않는다.</p>
      */
     private void queueEmbeddingSyncOnStartup() {
         if (!journalProperties.getEmbedding().getSyncOnStartup()) {
             log.info("Startup task skipped. task=journalEntryEmbeddingSync reason=disabled");
             return;
         }
-        if (!journalSettingService.isEmbeddingEnabled()) {
-            log.info("Startup task skipped. task=journalEntryEmbeddingSync reason=embeddingDisabled");
+        if (!journalSettingService.isAiEnabled()) {
+            log.info("Startup task skipped. task=journalEntryEmbeddingSync reason=aiDisabled");
             return;
         }
 

@@ -76,8 +76,8 @@ public class JournalEntryEmbeddingWorker {
      * @return 임베딩 벡터 생성에 성공한 작업 건수
      */
     public int processPendingBatch(final Integer batchSize) {
-        if (!journalSettingService.isEmbeddingEnabled()) {
-            log.info("Journal entry embedding worker skipped. reason=embeddingDisabled");
+        if (!journalSettingService.isAiEnabled()) {
+            log.info("Journal entry embedding worker skipped. reason=aiDisabled");
             return 0;
         }
 

@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.attachable.related.entity.RelatedContentE
 import io.nicheblog.dreamdiary.feature.attachable.related.mapstruct.RelatedContentMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.related.repository.jpa.RelatedContentRepository;
-import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryService;
+import io.nicheblog.dreamdiary.feature.journal.entry.service.JournalEntryResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class RelatedContentQueryService {
 
     private final RelatedContentRepository relatedContentRepository;
     private final RelatedContentMapstruct relatedContentMapstruct;
-    private final JournalEntryService journalEntryService;
+    private final JournalEntryResolver journalEntryResolver;
 
     @Transactional(readOnly = true)
     public Map<String, List<RelatedContentDto>> getRelatedContentMapByRefs(
@@ -107,7 +107,7 @@ public class RelatedContentQueryService {
             this.collectTitleTarget(refKeySet, entity.getRightId(), entity.getRightContentType());
         }
 
-        return journalEntryService.resolveTitleMap(refKeySet);
+        return journalEntryResolver.resolveTitleMap(refKeySet);
     }
 
     private void collectTitleTarget(
